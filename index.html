@@ -275,11 +275,39 @@
             dinner:    { label: '저녁', time: '18:30', emoji: '🍷' }
         };
 
-        function initSystem() {
-            // 💡 ?share=... 파라미터가 있으면, 로비 없이 바로 읽기 전용 공유 화면으로 진입
+        // 💡 Firebase Realtime Database URL. 아래 안내에 따라 본인의 프로젝트 URL로 교체하세요.
+        //    예: "https://my-trip-planner-default-rtdb.asia-southeast1.firebasedatabase.app"
+        const FIREBASE_DB_URL = "https://ben-s-travel-planner-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+        let activeShareId = null;   // 파티장(편집자) 쪽: 현재 프로젝트의 최신 공유 링크 ID
+        let currentSharedId = null; // 게스트(공유받은 사람) 쪽: 지금 보고 있는 공유 링크의 ID
+
+        function generateShortId(len = 7) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            for (let i = 0; i < len; i++) id += chars[Math.floor(Math.random() * chars.length)];
+            return id;
+        }
+
+        async function initSystem() {
+            // 💡 ?id=... (신규 방식: Firebase에 저장된 데이터를 짧은 ID로 불러옴)
+            // 💡 ?share=... (구버전 방식: 이전에 만든 긴 링크와의 호환을 위해 유지)
             const params = new URLSearchParams(location.search);
+            const shareId = params.get('id');
             const shareParam = params.get('share');
-            if (shareParam) {
+
+            if (shareId) {
+                try {
+                    const res = await fetch(`${FIREBASE_DB_URL}/shares/${shareId}.json`);
+                    const payload = await res.json();
+                    if (!payload) throw new Error('not found');
+                    currentSharedId = shareId;
+                    openSharedView(payload);
+                    return;
+                } catch (e) {
+                    alert('공유 링크를 불러오는 중 오류가 발생했습니다. 링크가 만료되었거나 손상되었을 수 있어요.');
+                }
+            } else if (shareParam) {
                 try {
                     const json = LZString.decompressFromEncodedURIComponent(shareParam);
                     const payload = JSON.parse(json);
@@ -484,6 +512,7 @@
         function openProject(name) {
             activeProjectName = name;
             const p = allProjects[name];
+            activeShareId = p.shareId || null;
 
             plannerData = p.data || { 1: [] };
             hotelsData = p.hotels || {};
@@ -529,39 +558,65 @@
 
         // 💡 파티장(편집자)이 링크를 만들면, 현재 여행 데이터 전체를 압축해서 URL에 담는다.
         //    서버가 없으므로 "그 순간의 스냅샷"이며, 이후 일정을 바꾸면 링크를 새로 만들어 다시 보내야 한다.
-        function openShareModal() {
-            if (!window.LZString) { alert('공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.'); return; }
-
-            const payload = {
-                city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
-                startDate: tripStart, endDate: tripEnd,
-                data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData
-            };
-            const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(payload));
-            const baseUrl = location.origin + location.pathname;
-            const shareUrl = `${baseUrl}?share=${compressed}`;
-            const isLong = shareUrl.length > 6000;
+        async function openShareModal() {
+            if (!FIREBASE_DB_URL || FIREBASE_DB_URL.indexOf('YOUR_') === 0) {
+                alert('공유 기능을 사용하려면 먼저 Firebase 설정이 필요해요. 코드 상단의 FIREBASE_DB_URL 값을 본인의 Firebase 프로젝트 주소로 바꿔주세요.');
+                return;
+            }
 
             const root = document.getElementById('modal-root');
             root.innerHTML = `
                 <div class="modal-overlay" id="share-modal-overlay">
                     <div class="modal-box">
                         <h3>🔗 보기 전용 공유 링크</h3>
-                        <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
-                            이 링크를 받은 사람은 편집 모드/뷰 모드 구분 없이 <b>현재 일정만 그대로</b> 볼 수 있어요.<br>
-                            ⚠️ 일정을 수정한 뒤에는 이 버튼을 다시 눌러 <b>새 링크</b>를 만들어서 보내야 최신 내용이 반영돼요.
-                            ${isLong ? '<br>⚠️ 링크가 다소 깁니다. 카카오톡 등에서 링크가 깨지면, 아래 내용을 통째로 복사해서 보내주세요.' : ''}
-                        </p>
-                        <div class="modal-field">
-                            <textarea id="share-link-textarea" readonly style="width:100%; height:90px; padding:10px; border:1px solid #dcdde1; border-radius:6px; font-size:12px; resize:none; outline:none;">${shareUrl}</textarea>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
-                            <button type="button" class="modal-btn primary" onclick="copyShareLink()">복사하기</button>
-                        </div>
+                        <p style="font-size:13px; color:#7f8fa6;">링크를 만드는 중입니다...</p>
                     </div>
                 </div>
             `;
+
+            const payload = {
+                city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
+                startDate: tripStart, endDate: tripEnd,
+                data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData
+            };
+
+            try {
+                const shareId = generateShortId();
+                const res = await fetch(`${FIREBASE_DB_URL}/shares/${shareId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('save failed');
+
+                activeShareId = shareId;
+                saveData(); // 이 프로젝트의 최신 공유 ID를 기억해둬서, 나중에 '받은 제안 확인하기'에서 자동으로 찾아올 수 있게 함
+
+                const baseUrl = location.origin + location.pathname;
+                const shareUrl = `${baseUrl}?id=${shareId}`;
+
+                root.innerHTML = `
+                    <div class="modal-overlay" id="share-modal-overlay">
+                        <div class="modal-box">
+                            <h3>🔗 보기 전용 공유 링크</h3>
+                            <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
+                                이 링크를 받은 사람은 편집 모드/뷰 모드 구분 없이 <b>현재 일정만 그대로</b> 볼 수 있어요.<br>
+                                ⚠️ 일정을 수정한 뒤에는 이 버튼을 다시 눌러 <b>새 링크</b>를 만들어서 보내야 최신 내용이 반영돼요.
+                            </p>
+                            <div class="modal-field">
+                                <textarea id="share-link-textarea" readonly style="width:100%; height:60px; padding:10px; border:1px solid #dcdde1; border-radius:6px; font-size:13px; resize:none; outline:none;">${shareUrl}</textarea>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
+                                <button type="button" class="modal-btn primary" onclick="copyShareLink()">복사하기</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                root.innerHTML = '';
+                alert('링크 생성 중 오류가 발생했습니다. 네트워크 상태를 확인하거나 잠시 후 다시 시도해주세요.');
+            }
         }
 
         function copyShareLink() {
@@ -624,9 +679,10 @@
             generateSchedule(true); // 내부에서 changeDay()까지 호출되어 리스트/지도/경로가 그대로 렌더링됨
         }
 
-        /* ============ 장소 추가 건의하기 (게스트 → 파티장, 코드 교환 방식) ============ */
-        //  💡 서버가 없으므로, 건의 내용도 공유 링크와 동일하게 압축된 "코드" 문자열로 만들어
-        //     게스트가 카톡 등 메신저로 파티장에게 보내고, 파티장이 앱에 붙여넣어 확인하는 구조.
+        /* ============ 장소 추가 건의하기 (게스트 → 파티장, Firebase 실시간 동기화) ============ */
+        //  💡 게스트가 제안하면 Firebase의 /suggestions/{공유ID}/ 아래에 바로 저장되고,
+        //     파티장은 '받은 제안 확인하기' 버튼만 누르면 자동으로 최신 제안 목록을 불러온다.
+        //     더 이상 코드를 복사해서 메시지로 보낼 필요가 없다.
 
         function escapeHtml(str) {
             const div = document.createElement('div');
@@ -643,7 +699,7 @@
         let pendingSuggestPlace = null;
         let suggestAutocomplete = null;
 
-        // ---- 게스트(받은 사람) 화면: 제안 코드 만들기 ----
+        // ---- 게스트(받은 사람) 화면: 제안 보내기 ----
 
         function openSuggestModal() {
             pendingSuggestPlace = null;
@@ -659,8 +715,8 @@
                     <div class="modal-box">
                         <h3>💡 장소 추가 건의하기</h3>
                         <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
-                            추가하고 싶은 장소를 검색해서 선택하고, 원하는 날짜를 고른 뒤 코드를 만들어보세요.<br>
-                            만들어진 코드를 <b>파티장에게 메시지로 보내주면</b>, 파티장이 확인 후 일정에 추가할 수 있어요.
+                            추가하고 싶은 장소를 검색해서 선택하고, 원하는 날짜를 고른 뒤 보내보세요.<br>
+                            파티장에게 <b>바로 전달</b>되고, 파티장이 확인 후 일정에 추가할 수 있어요.
                         </p>
                         <div class="modal-field">
                             <label>장소 검색</label>
@@ -680,7 +736,7 @@
                         </div>
                         <div class="modal-actions">
                             <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
-                            <button type="button" class="modal-btn primary" onclick="generateSuggestionCode()">제안 코드 만들기</button>
+                            <button type="button" class="modal-btn primary" onclick="submitSuggestion()">제안 보내기</button>
                         </div>
                     </div>
                 </div>
@@ -703,8 +759,8 @@
             }
         }
 
-        function generateSuggestionCode() {
-            if (!window.LZString) { alert('기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+        async function submitSuggestion() {
+            if (!currentSharedId) { alert('공유 링크 정보를 찾을 수 없습니다. 링크를 다시 열어서 시도해주세요.'); return; }
             if (!pendingSuggestPlace) { alert('검색 목록에서 장소를 정확히 클릭해 선택해주세요.'); return; }
 
             const day = Number(document.getElementById('suggest-day-select').value) || 1;
@@ -712,119 +768,99 @@
             const proposer = document.getElementById('suggest-name-input').value.trim();
 
             const payload = {
-                type: 'placeSuggestion',
                 day,
                 name: pendingSuggestPlace.name,
                 address: pendingSuggestPlace.address,
                 lat: pendingSuggestPlace.lat,
                 lng: pendingSuggestPlace.lng,
-                memo, proposer
+                memo, proposer,
+                createdAt: Date.now()
             };
-            const code = LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 
-            const root = document.getElementById('modal-root');
-            root.innerHTML = `
-                <div class="modal-overlay" id="suggest-code-overlay">
-                    <div class="modal-box">
-                        <h3>✅ 제안 코드 완성!</h3>
-                        <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
-                            아래 코드를 <b>통째로 복사</b>해서 파티장에게 메시지로 보내주세요.
-                        </p>
-                        <div class="modal-field">
-                            <textarea id="suggest-code-textarea" readonly style="width:100%; height:90px; padding:10px; border:1px solid #dcdde1; border-radius:6px; font-size:12px; resize:none; outline:none;">${code}</textarea>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
-                            <button type="button" class="modal-btn primary" onclick="copySuggestCode()">복사하기</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function copySuggestCode() {
-            const textarea = document.getElementById('suggest-code-textarea');
-            textarea.select();
-            textarea.setSelectionRange(0, 99999);
-            const done = () => alert('코드가 복사되었습니다! 파티장에게 보내주세요.');
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(textarea.value).then(done).catch(() => { document.execCommand('copy'); done(); });
-            } else {
-                document.execCommand('copy');
-                done();
+            try {
+                const suggestionId = generateShortId();
+                const res = await fetch(`${FIREBASE_DB_URL}/suggestions/${currentSharedId}/${suggestionId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('save failed');
+                closeModal();
+                alert('제안이 파티장에게 전달되었습니다!');
+            } catch (e) {
+                alert('제안 전송 중 오류가 발생했습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
             }
         }
 
-        // ---- 파티장 화면: 받은 제안 코드 확인 및 반영 ----
+        // ---- 파티장 화면: 받은 제안 목록 확인 및 반영 ----
 
-        let pendingSuggestionPayload = null;
+        async function openReviewSuggestionModal() {
+            if (!activeShareId) {
+                alert('아직 만들어진 공유 링크가 없어요. 먼저 "보기 전용 공유 링크 만들기"로 링크를 한 번 생성해주세요.');
+                return;
+            }
 
-        function openReviewSuggestionModal() {
             const root = document.getElementById('modal-root');
             root.innerHTML = `
                 <div class="modal-overlay" id="review-suggestion-overlay">
                     <div class="modal-box">
-                        <h3>💡 받은 제안 코드 확인</h3>
-                        <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
-                            일행에게 받은 제안 코드를 아래에 붙여넣고 확인해보세요.
-                        </p>
-                        <div class="modal-field">
-                            <textarea id="suggestion-code-input" placeholder="여기에 제안 코드를 붙여넣으세요" style="width:100%; height:90px; padding:10px; border:1px solid #dcdde1; border-radius:6px; font-size:12px; resize:none; outline:none;"></textarea>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
-                            <button type="button" class="modal-btn primary" onclick="reviewSuggestionCode()">확인하기</button>
-                        </div>
+                        <h3>💡 받은 제안 확인</h3>
+                        <p style="font-size:13px; color:#7f8fa6;">불러오는 중...</p>
                     </div>
                 </div>
             `;
-        }
 
-        function reviewSuggestionCode() {
-            const raw = document.getElementById('suggestion-code-input').value.trim();
-            if (!raw) { alert('코드를 붙여넣어주세요.'); return; }
             try {
-                const json = LZString.decompressFromEncodedURIComponent(raw);
-                const payload = JSON.parse(json);
-                if (!payload || payload.type !== 'placeSuggestion' || !payload.name || payload.lat == null) {
-                    throw new Error('invalid payload');
-                }
-                renderSuggestionPreview(payload);
+                const res = await fetch(`${FIREBASE_DB_URL}/suggestions/${activeShareId}.json`);
+                const suggestions = await res.json();
+                renderSuggestionList(suggestions || {});
             } catch (e) {
-                alert('제안 코드를 확인할 수 없습니다. 코드를 정확히 복사했는지 다시 확인해주세요.');
+                root.innerHTML = '';
+                alert('제안 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
         }
 
-        function renderSuggestionPreview(payload) {
-            pendingSuggestionPayload = payload;
+        function renderSuggestionList(suggestions) {
+            const ids = Object.keys(suggestions);
             const root = document.getElementById('modal-root');
+
+            const itemsHtml = ids.length === 0
+                ? `<p style="font-size:13px; color:#7f8fa6; text-align:center; padding:20px 0;">아직 받은 제안이 없어요.</p>`
+                : ids.sort((a, b) => (suggestions[a].createdAt || 0) - (suggestions[b].createdAt || 0)).map(id => {
+                    const p = suggestions[id];
+                    return `
+                        <div class="modal-field" style="border:1px solid #f1f2f6; border-radius:10px; padding:12px;">
+                            <div style="font-size:15px; font-weight:bold; color:#2d3436;">${escapeHtml(p.name)}</div>
+                            <div style="font-size:12px; color:#7f8fa6; margin-top:2px;">${escapeHtml(p.address || '')}</div>
+                            <div style="font-size:13px; color:#0984e3; font-weight:bold; margin-top:6px;">${p.day}일차 추천</div>
+                            ${p.memo ? `<div style="font-size:13px; color:#2d3436; margin-top:4px;">💬 ${escapeHtml(p.memo)}</div>` : ''}
+                            ${p.proposer ? `<div style="font-size:12px; color:#7f8fa6; margin-top:2px;">보낸 사람: ${escapeHtml(p.proposer)}</div>` : ''}
+                            <div class="modal-actions" style="margin-top:10px;">
+                                <button type="button" class="modal-btn secondary" onclick="rejectSuggestion('${id}')">무시하기</button>
+                                <button type="button" class="modal-btn primary" onclick='acceptSuggestion("${id}")'>이 날짜에 추가하기</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('<div style="height:10px;"></div>');
+
             root.innerHTML = `
-                <div class="modal-overlay" id="suggestion-preview-overlay">
-                    <div class="modal-box">
-                        <h3>💡 받은 장소 제안</h3>
-                        <div class="modal-field">
-                            <label>장소</label>
-                            <div style="font-size:15px; font-weight:bold; color:#2d3436;">${escapeHtml(payload.name)}</div>
-                            <div style="font-size:12px; color:#7f8fa6; margin-top:2px;">${escapeHtml(payload.address || '')}</div>
-                        </div>
-                        <div class="modal-field">
-                            <label>추천 날짜</label>
-                            <div style="font-size:14px; color:#0984e3; font-weight:bold;">${payload.day}일차</div>
-                        </div>
-                        ${payload.memo ? `<div class="modal-field"><label>한마디</label><div style="font-size:13px; color:#2d3436;">${escapeHtml(payload.memo)}</div></div>` : ''}
-                        ${payload.proposer ? `<div class="modal-field"><label>보낸 사람</label><div style="font-size:13px; color:#2d3436;">${escapeHtml(payload.proposer)}</div></div>` : ''}
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" onclick="closeModal()">무시하기</button>
-                            <button type="button" class="modal-btn primary" onclick="acceptSuggestion()">이 날짜에 추가하기</button>
+                <div class="modal-overlay" id="review-suggestion-overlay">
+                    <div class="modal-box" style="max-width:420px;">
+                        <h3>💡 받은 제안 (${ids.length}개)</h3>
+                        <div id="suggestion-list-container">${itemsHtml}</div>
+                        <div class="modal-actions" style="margin-top:16px;">
+                            <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
                         </div>
                     </div>
                 </div>
             `;
+
+            window.currentSuggestionsCache = suggestions;
         }
 
-        function acceptSuggestion() {
-            if (!pendingSuggestionPayload) return;
-            const p = pendingSuggestionPayload;
+        async function acceptSuggestion(id) {
+            const p = (window.currentSuggestionsCache || {})[id];
+            if (!p) return;
             const day = p.day || 1;
 
             if (!plannerData[day]) plannerData[day] = [];
@@ -847,10 +883,22 @@
             });
 
             saveData();
-            pendingSuggestionPayload = null;
+            await deleteSuggestion(id);
             closeModal();
             changeDay(day);
             alert(`'${p.name}' 장소가 ${day}일차 일정에 추가되었습니다!`);
+        }
+
+        async function rejectSuggestion(id) {
+            await deleteSuggestion(id);
+            if (window.currentSuggestionsCache) delete window.currentSuggestionsCache[id];
+            renderSuggestionList(window.currentSuggestionsCache || {});
+        }
+
+        async function deleteSuggestion(id) {
+            try {
+                await fetch(`${FIREBASE_DB_URL}/suggestions/${activeShareId}/${id}.json`, { method: 'DELETE' });
+            } catch (e) { /* 삭제 실패해도 화면 흐름은 막지 않음 */ }
         }
 
         function saveAllProjects() {
@@ -875,6 +923,7 @@
             allProjects[activeProjectName].cityLng = tripCityLng;
             allProjects[activeProjectName].startDate = tripStart;
             allProjects[activeProjectName].endDate = tripEnd;
+            allProjects[activeProjectName].shareId = activeShareId;
             allProjects[activeProjectName].lastModified = new Date().toLocaleDateString();
 
             saveAllProjects();
