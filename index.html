@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>스마트 여행 플래너 - Pro</title>
+    <title>Triptic</title>
     
     <!-- 📱 홈 화면 추가(앱처럼 사용) 지원 -->
     <meta name="manifest" content="manifest.json">
@@ -13,7 +13,7 @@
     <!-- 🍎 iOS Safari 지원 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="여행 플래너">
+    <meta name="apple-mobile-web-app-title" content="Triptic">
     <link rel="apple-touch-icon" href="icon-180.png">
     
     <style>
@@ -194,8 +194,9 @@
             background: #ffffff;
         }
         #splash-screen .splash-logo {
-            width: 96px; height: 96px; border-radius: 22px;
+            width: 116px; height: 116px; border-radius: 26px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            object-fit: cover;
             opacity: 0; animation: splashFade 1.8s ease forwards;
         }
         #splash-screen .splash-title {
@@ -239,7 +240,7 @@
 
     <div id="lobby-screen">
         <div class="lobby-header">
-            <h1>✈️ 스마트 여행 플래너</h1>
+            <h1>✈️ Triptic</h1>
             <p>나만의 여행 프로젝트를 관리하세요</p>
         </div>
         <button class="new-project-btn" onclick="openCreateModal()">➕ 새 여행 만들기</button>
@@ -356,6 +357,23 @@
         let mealAutocompletes = {};// 식사 검색용 (breakfast/lunch/dinner)
 
         let allProjects = JSON.parse(localStorage.getItem('smartPlannerAllProjects')) || {};
+
+        // 💡 예전 버전 버그로 인해 서버 오류 응답({"error":"..."})이 프로젝트인 것처럼 잘못 저장된 적이 있었다.
+        //    그 결과로 남아있는 "error" 같은 가짜 프로젝트(값이 객체가 아니거나 데이터 형태가 아닌 것)를 정리한다.
+        function sanitizeAllProjects(projects) {
+            let changed = false;
+            Object.keys(projects).forEach(name => {
+                const p = projects[name];
+                if (!p || typeof p !== 'object' || Array.isArray(p)) {
+                    delete projects[name];
+                    changed = true;
+                }
+            });
+            return changed;
+        }
+        if (sanitizeAllProjects(allProjects)) {
+            localStorage.setItem('smartPlannerAllProjects', JSON.stringify(allProjects));
+        }
         let activeProjectName = null;
 
         let plannerData = {};
@@ -434,20 +452,31 @@
             if (!backupId) return;
             try {
                 const res = await fetch(`${FIREBASE_DB_URL}/devicebackups/${backupId}.json`);
+                if (!res.ok) return; // 💡 서버가 오류 상태코드를 주면(권한 문제 등) 아무 것도 하지 않는다
                 const cloudProjects = await res.json();
-                if (!cloudProjects || typeof cloudProjects !== 'object') return;
+                if (!cloudProjects || typeof cloudProjects !== 'object' || Array.isArray(cloudProjects)) return;
+                // 💡 Firebase는 실패 시에도 200으로 {"error":"..."} 같은 본문을 줄 수 있다.
+                //    최상위에 error 필드가 있으면 정상적인 프로젝트 목록이 아니므로 무시한다.
+                if (typeof cloudProjects.error === 'string') return;
+                // 💡 값이 실제 프로젝트 객체(data 필드를 가진 object) 형태가 아닌 항목은 걸러낸다
+                const cleanCloudProjects = {};
+                Object.keys(cloudProjects).forEach(name => {
+                    const p = cloudProjects[name];
+                    if (p && typeof p === 'object' && !Array.isArray(p)) cleanCloudProjects[name] = p;
+                });
+                if (Object.keys(cleanCloudProjects).length === 0) return;
 
                 const localNames = Object.keys(allProjects);
                 if (localNames.length === 0) {
                     // 로컬이 완전히 비어있으면(=아이콘을 지웠다 새로 만든 직후) 서버 백업을 통째로 복원
-                    allProjects = cloudProjects;
+                    allProjects = cleanCloudProjects;
                     saveAllProjects();
                     renderLobby();
                 } else {
                     // 로컬에 이미 데이터가 있으면, 로컬에 없는 프로젝트만 추가로 채워준다(로컬 최신 작업을 덮어쓰지 않기 위함)
                     let addedAny = false;
-                    Object.keys(cloudProjects).forEach(name => {
-                        if (!allProjects[name]) { allProjects[name] = cloudProjects[name]; addedAny = true; }
+                    Object.keys(cleanCloudProjects).forEach(name => {
+                        if (!allProjects[name]) { allProjects[name] = cleanCloudProjects[name]; addedAny = true; }
                     });
                     if (addedAny) { saveAllProjects(); renderLobby(); }
                 }
@@ -1226,7 +1255,7 @@
                 const a = document.createElement('a');
                 const today = new Date().toISOString().slice(0, 10);
                 a.href = url;
-                a.download = `여행플래너_백업_${today}.json`;
+                a.download = `Triptic_백업_${today}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
