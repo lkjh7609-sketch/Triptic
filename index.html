@@ -64,7 +64,7 @@
 
         /* 💡 공유 링크로 들어온 읽기 전용 화면: 모드 전환 탭 자체를 숨긴다 (편집/뷰 구분 없이 보기만 가능) */
         #app-screen.shared-view .mode-toggle { display: none !important; }
-        .shared-banner { background: linear-gradient(135deg, #6c5ce7, #0984e3); color: #fff; text-align: center; padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 13px; font-weight: bold; }
+
 
         /* 여행 정보 바 (도시/기간 요약) */
         .trip-info-bar { background: #ffffff; padding: 12px 14px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -176,6 +176,7 @@
         .route-link-btn { background: #e3f2fd; color: #0984e3; border: 1px dashed #0984e3; padding: 12px 24px; border-radius: 25px; font-size: 13px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(9, 132, 227, 0.15); }
 
         .pdf-btn { background: #2d3436; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 15px; font-weight: bold; margin-top: 15px; margin-bottom: 40px; cursor: pointer; }
+        #app-screen.shared-view .pdf-btn { display: none !important; }
 
         .pac-container { z-index: 10000 !important; }
 
@@ -264,11 +265,6 @@
             <div class="mode-toggle">
                 <button class="mode-btn active" id="btn-edit" onclick="setMode('edit')">✏️ 편집 모드</button>
                 <button class="mode-btn" id="btn-view" onclick="setMode('view')">📄 뷰 모드</button>
-            </div>
-
-            <div class="trip-info-bar">
-                <div class="trip-info-text" id="trip-info-text"></div>
-                <button class="trip-edit-btn edit-only" onclick="openEditTripModal()">✏️ 수정</button>
             </div>
 
             <div class="day-tabs" id="day-tabs-container"></div>
@@ -955,20 +951,14 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.className = 'view-mode';
 
-            if (!document.getElementById('shared-banner')) {
-                const banner = document.createElement('div');
-                banner.id = 'shared-banner';
-                banner.className = 'shared-banner';
-                banner.innerText = '🔗 공유받은 여행 일정 (읽기 전용)';
-                sidebar.prepend(banner);
-
+            if (!document.getElementById('suggest-place-btn')) {
                 const suggestBtn = document.createElement('button');
                 suggestBtn.type = 'button';
                 suggestBtn.id = 'suggest-place-btn';
                 suggestBtn.className = 'suggest-place-btn';
                 suggestBtn.innerText = '💡 장소 추가 건의하기';
                 suggestBtn.onclick = openSuggestModal;
-                banner.insertAdjacentElement('afterend', suggestBtn);
+                sidebar.prepend(suggestBtn);
             }
 
             generateSchedule(true); // 내부에서 changeDay()까지 호출되어 리스트/지도/경로가 그대로 렌더링됨
