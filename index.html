@@ -241,7 +241,7 @@
 
     <div id="lobby-screen">
         <div class="lobby-header">
-            <h1>✈️ Triptic</h1>
+            <h1>Triptic</h1>
             <p>나만의 여행 프로젝트를 관리하세요</p>
         </div>
         <button class="new-project-btn" onclick="openCreateModal()">➕ 새 여행 만들기</button>
@@ -258,8 +258,8 @@
     <div id="app-screen">
         <div id="map"></div>
         <div id="sidebar" class="edit-mode">
-            <button class="back-to-lobby edit-only" onclick="showLobby()">⬅️ 프로젝트 목록으로 돌아가기</button>
-            <button class="share-link-btn edit-only" onclick="openShareModal()">🔗 보기 전용 공유 링크 만들기</button>
+            <button class="back-to-lobby edit-only" onclick="showLobby()">프로젝트 목록으로 돌아가기</button>
+            <button class="share-link-btn edit-only" onclick="openShareModal()">보기 전용 공유 링크 만들기</button>
             <button class="review-suggestion-btn edit-only" onclick="openReviewSuggestionModal()">💡 받은 제안 확인하기</button>
 
             <div class="mode-toggle">
@@ -391,6 +391,16 @@
         let activeZoneIndex = 0; // 💡 이동일(하루 안에서 도시가 바뀌는 날)에 지도에 보여줄 구역 - updateMarkers()가 매번 자동으로 "마지막 구역"으로 설정함
         let sortableInstance = null;
         let currentMode = 'edit';
+        let sharedProjectName = '';
+
+        // 💡 공유받은 게스트의 이름을 기기에 저장해서, 다음에 같은 브라우저로 접속하면 다시 물어보지 않는다.
+        function getGuestName() {
+            return localStorage.getItem('tripticGuestName') || '';
+        }
+        function saveGuestName(nameValue) {
+            const v = (nameValue || '').trim();
+            if (v) localStorage.setItem('tripticGuestName', v);
+        }
         let directionsService = null;
         let directionsRenderers = [];
         let fallbackPolylines = [];
@@ -858,13 +868,14 @@
             root.innerHTML = `
                 <div class="modal-overlay" id="share-modal-overlay">
                     <div class="modal-box">
-                        <h3>🔗 보기 전용 공유 링크</h3>
+                        <h3>보기 전용 공유 링크</h3>
                         <p style="font-size:13px; color:#7f8fa6;">링크를 만드는 중입니다...</p>
                     </div>
                 </div>
             `;
 
             const payload = {
+                projectName: activeProjectName,
                 city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
                 startDate: tripStart, endDate: tripEnd,
                 data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData, flights: flightsData
@@ -888,7 +899,7 @@
                 root.innerHTML = `
                     <div class="modal-overlay" id="share-modal-overlay">
                         <div class="modal-box">
-                            <h3>🔗 보기 전용 공유 링크</h3>
+                            <h3>보기 전용 공유 링크</h3>
                             <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
                                 이 링크를 받은 사람은 편집 모드/뷰 모드 구분 없이 <b>현재 일정만 그대로</b> 볼 수 있어요.<br>
                                 ✅ 이 링크는 <b>실시간으로 연동</b>돼요. 이후 일정을 수정하면 몇 초 안에 자동으로 최신 내용이 반영되니, 링크를 새로 만들 필요 없이 <b>한 번 보낸 링크를 계속 써도 됩니다.</b>
@@ -938,6 +949,7 @@
             tripCityLng = (payload.cityLng != null) ? payload.cityLng : null;
             tripStart = payload.startDate || '';
             tripEnd = payload.endDate || '';
+            sharedProjectName = payload.projectName || '여행';
 
             document.getElementById('lobby-screen').style.display = 'none';
             const appScreen = document.getElementById('app-screen');
@@ -965,6 +977,42 @@
 
             lastSharedPayloadStr = JSON.stringify(payload);
             startSharedPolling();
+
+            if (!getGuestName()) openGuestNameModal();
+        }
+
+        // ---- 공유받은 첫 접속 시, 참여자 이름을 물어보는 팝업 ----
+        function openGuestNameModal() {
+            const root = document.getElementById('modal-root');
+            root.innerHTML = `
+                <div class="modal-overlay" id="guest-name-modal-overlay">
+                    <div class="modal-box">
+                        <h3>✈️ ${escapeHtml(sharedProjectName)}</h3>
+                        <p style="font-size:12px; color:#7f8fa6; margin-top:-10px; margin-bottom:14px; line-height:1.6;">
+                            이 여행에 참여하시는 분 이름을 알려주세요.<br>
+                            장소를 건의할 때 자동으로 이름이 채워지고, 다음에 접속할 땐 다시 물어보지 않아요.
+                        </p>
+                        <div class="modal-field">
+                            <label>참여자 이름</label>
+                            <input type="text" id="guest-name-input" placeholder="예: 민수">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn primary" style="width:100%;" onclick="confirmGuestName()">시작하기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                const input = document.getElementById('guest-name-input');
+                if (input) { input.focus(); input.addEventListener('keydown', e => { if (e.key === 'Enter') confirmGuestName(); }); }
+            }, 0);
+        }
+
+        function confirmGuestName() {
+            const input = document.getElementById('guest-name-input');
+            const v = input ? input.value.trim() : '';
+            if (v) saveGuestName(v);
+            closeModal();
         }
 
         /* ============ 공유 화면 실시간 갱신 (폴링) ============ */
@@ -1059,7 +1107,7 @@
                         </div>
                         <div class="modal-field">
                             <label>내 이름 (선택)</label>
-                            <input type="text" id="suggest-name-input" placeholder="예: 민수">
+                            <input type="text" id="suggest-name-input" placeholder="예: 민수" value="${escapeHtml(getGuestName())}">
                         </div>
                         <div class="modal-actions">
                             <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
@@ -1093,6 +1141,7 @@
             const day = Number(document.getElementById('suggest-day-select').value) || 1;
             const memo = document.getElementById('suggest-memo-input').value.trim();
             const proposer = document.getElementById('suggest-name-input').value.trim();
+            saveGuestName(proposer);
 
             const payload = {
                 day,
@@ -1330,6 +1379,7 @@
         async function pushShareUpdate() {
             if (!activeShareId || !activeProjectName) return;
             const payload = {
+                projectName: activeProjectName,
                 city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
                 startDate: tripStart, endDate: tripEnd,
                 data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData, flights: flightsData
@@ -2496,7 +2546,7 @@
                 if (flightArrival) {
                     const f = flightArrival;
                     ensure(16);
-                    boldText(`✈️ 도착 항공편 · ${f.flightNo}${f.airline ? ' (' + f.airline + ')' : ''}`, marginL, 11.5, COLOR_PRIMARY);
+                    boldText(`도착 항공편 · ${f.flightNo}${f.airline ? ' (' + f.airline + ')' : ''}`, marginL, 11.5, COLOR_PRIMARY);
                     y += 5.5;
                     normalText(`${f.dep.iata || f.dep.name || '?'} → ${f.arr.iata || f.arr.name || '?'}   |   ${f.dep.time || '--:--'} 출발 → ${f.arr.time || '--:--'} 도착`, marginL, 10, COLOR_TEXT);
                     y += 5;
@@ -2508,7 +2558,7 @@
                 // ---- 출발 숙소 ----
                 if (startHotel) {
                     ensure(14);
-                    boldText(`🏨 출발 숙소`, marginL, 11, COLOR_ACCENT);
+                    boldText(`출발 숙소`, marginL, 11, COLOR_ACCENT);
                     y += 5.5;
                     wrappedText(startHotel.name || '', marginL, 10, COLOR_TEXT, usableW);
                     if (startHotel.address) wrappedText(startHotel.address, marginL, 8.5, COLOR_SUB, usableW);
@@ -2534,7 +2584,7 @@
                 // ---- 복귀 숙소 ----
                 if (endHotel) {
                     ensure(14);
-                    boldText(`🏨 복귀 숙소`, marginL, 11, COLOR_ACCENT);
+                    boldText(`복귀 숙소`, marginL, 11, COLOR_ACCENT);
                     y += 5.5;
                     wrappedText(endHotel.name || '', marginL, 10, COLOR_TEXT, usableW);
                     if (endHotel.address) wrappedText(endHotel.address, marginL, 8.5, COLOR_SUB, usableW);
@@ -2546,7 +2596,7 @@
                 if (flightDeparture) {
                     const f = flightDeparture;
                     ensure(16);
-                    boldText(`✈️ 귀국 항공편 · ${f.flightNo}${f.airline ? ' (' + f.airline + ')' : ''}`, marginL, 11.5, COLOR_PRIMARY);
+                    boldText(`귀국 항공편 · ${f.flightNo}${f.airline ? ' (' + f.airline + ')' : ''}`, marginL, 11.5, COLOR_PRIMARY);
                     y += 5.5;
                     normalText(`${f.dep.iata || f.dep.name || '?'} → ${f.arr.iata || f.arr.name || '?'}   |   ${f.dep.time || '--:--'} 출발 → ${f.arr.time || '--:--'} 도착`, marginL, 10, COLOR_TEXT);
                     y += 5;
@@ -2559,7 +2609,7 @@
                 if (dayExpenses.length > 0) {
                     const dayTotal = dayExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
                     ensure(10 + dayExpenses.length * 5);
-                    boldText(`💰 이 날의 경비`, marginL, 11, COLOR_ACCENT);
+                    boldText(`이 날의 경비`, marginL, 11, COLOR_ACCENT);
                     y += 5.5;
                     dayExpenses.forEach(e => {
                         ensure(5);
