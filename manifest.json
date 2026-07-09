@@ -1,6 +1,6 @@
 {
   "name": "Triptic",
-  "short_name": "여행 플래너",
+  "short_name": "Triptic",
   "description": "여행 일정, 항공편, 숙소, 식사, 경비를 한 곳에서 관리하고 지도로 확인하세요",
   "start_url": "./index.html",
   "display": "standalone",
