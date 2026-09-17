@@ -25,6 +25,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 
+    <!-- 🔑 환경 변수 로더 (Vercel / Local) -->
+    <script>
+        window.ENV = window.ENV || null;
+        window.__envPromise = (async function() {
+            try {
+                const res = await fetch('/api/env');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && (data.GOOGLE_MAPS_API_KEY || data.SUPABASE_URL)) {
+                        window.ENV = data;
+                        return data;
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const isNativeApp = window.location.protocol === 'capacitor:' ||
+                                  window.location.hostname === 'localhost' ||
+                                  window.location.protocol === 'file:';
+                if (isNativeApp) {
+                    const remoteRes = await fetch('https://triptic-ten.vercel.app/api/env');
+                    if (remoteRes.ok) {
+                        const data = await remoteRes.json();
+                        window.ENV = data;
+                        return data;
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ 환경 변수 로드 실패:', e);
+            }
+
+            return window.ENV || {};
+        })();
+    </script>
+
     <style>
         /* ==========================================================================
            🎨 차분하고 편안한 웜 베이지 디자인 시스템 (Warm Minimalist Beige)
@@ -2384,16 +2419,73 @@
         </button>
     </div>
 
-    <!-- 🗺️ Google Maps API -->
+    <!-- 🗺️ Google Maps API 동적 로더 (Vercel 환경 변수 연동) -->
     <script>
-        // Google Maps API 키를 환경 변수에서 로드
-        const GOOGLE_MAPS_API_KEY = window.ENV?.GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY_HERE';
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initSystem`;
-        script.onerror = function() { window.initSystem && window.initSystem(); window.gm_authFailure && window.gm_authFailure(); };
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
+        window._tripticSystemStarted = false;
+        window.safeInitSystem = function() {
+            if (window._tripticSystemStarted) return;
+            if (typeof window.initSystem === 'function') {
+                window._tripticSystemStarted = true;
+                window.initSystem();
+            } else {
+                const timer = setInterval(function() {
+                    if (typeof window.initSystem === 'function') {
+                        clearInterval(timer);
+                        if (!window._tripticSystemStarted) {
+                            window._tripticSystemStarted = true;
+                            window.initSystem();
+                        }
+                    }
+                }, 30);
+                setTimeout(function() {
+                    clearInterval(timer);
+                    if (!window._tripticSystemStarted && typeof window.initSystem === 'function') {
+                        window._tripticSystemStarted = true;
+                        window.initSystem();
+                    }
+                }, 10000);
+            }
+        };
+
+        window.onGoogleMapsInit = function() {
+            window.safeInitSystem();
+        };
+
+        (async function loadGoogleMaps() {
+            try {
+                const env = await (window.__envPromise || Promise.resolve(window.ENV || {}));
+                const apiKey = env?.GOOGLE_MAPS_API_KEY || localStorage.getItem('GOOGLE_MAPS_API_KEY') || '';
+
+                if (!apiKey) {
+                    console.error('❌ Google Maps API 키를 찾을 수 없습니다. Vercel 환경 변수(GOOGLE_MAPS_API_KEY)를 확인해 주세요.');
+                    window.safeInitSystem();
+                    if (typeof window.gm_authFailure === 'function') window.gm_authFailure();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places&callback=onGoogleMapsInit`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = function() {
+                    console.error('❌ Google Maps 스크립트 로드 실패');
+                    window.safeInitSystem();
+                    if (typeof window.gm_authFailure === 'function') window.gm_authFailure();
+                };
+                document.head.appendChild(script);
+
+                // 지도 로딩 지연 시 스플래시 화면 대기 해제 세이프가드 (6초)
+                setTimeout(function() {
+                    if (!window._tripticSystemStarted) {
+                        console.warn('⚠️ Google Maps 로드 지연으로 인해 기본 모드로 앱을 시작합니다.');
+                        window.safeInitSystem();
+                    }
+                }, 6000);
+            } catch (err) {
+                console.error('Google Maps 로더 오류:', err);
+                window.safeInitSystem();
+            }
+        })();
     </script>
 
     <script>
