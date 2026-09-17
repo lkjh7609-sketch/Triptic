@@ -13,7 +13,7 @@
  * 8. Graceful handling for Google Maps API script (bypass cache, fail naturally when offline)
  */
 
-const CACHE_NAME = 'triptic-v3';
+const CACHE_NAME = 'triptic-v4';
 
 // 1. App shell files
 const APP_SHELL = [
@@ -22,14 +22,17 @@ const APP_SHELL = [
   './manifest.json',
   './icon-180.png',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-1024.png'
 ];
 
 // 2. Versioned external CDN resources
 const CDN_ASSETS = [
+  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
   'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
 ];
 
 // Combined assets to precache during install
