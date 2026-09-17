@@ -601,25 +601,149 @@
             display: none;
             flex-direction: column;
             height: 100%;
+            height: 100dvh;
             width: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
+        /* 📱 모바일 기본 (일정 목록 모드): 지도는 숨겨지고 사이드바가 100% 전면 활용 */
         #map {
-            height: 38vh;
+            display: none;
             width: 100%;
-            flex-shrink: 0;
+            height: 100%;
+            height: 100dvh;
+            flex: 1;
             z-index: 1;
-            box-shadow: 0 2px 6px rgba(43, 37, 32, 0.04);
         }
         #sidebar {
-            height: 62vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(88px + env(safe-area-inset-bottom, 0px));
             background: var(--bg-surface);
             z-index: 2;
             position: relative;
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* 📱 모바일 지도 모드 활성화 시 (#app-screen.mobile-map-active) */
+        #app-screen.mobile-map-active #map {
+            display: block;
+        }
+        #app-screen.mobile-map-active #sidebar {
+            display: none;
+        }
+
+        /* 📱 모바일 플로팅 뷰 전환 알약 버튼 (Airbnb / Triple 스타일) */
+        .mobile-view-toggle-btn {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #1E293B;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 9999px;
+            padding: 12px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .mobile-view-toggle-btn:active {
+            transform: translateX(-50%) scale(0.95);
+            background: #0F172A;
+        }
+        .mobile-view-toggle-btn .toggle-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+        .mobile-view-toggle-btn .toggle-text {
+            font-size: 13.5px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        /* 📱 모바일 지도 상단 플로팅 칩 */
+        .mobile-map-header-chip {
+            display: none;
+        }
+        #app-screen.mobile-map-active .mobile-map-header-chip {
+            display: inline-flex;
+            position: fixed;
+            top: calc(16px + env(safe-area-inset-top, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 900;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--text-title);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .planner-top-bar {
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .top-nav-btn, .icon-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-height: 34px;
+            }
+            .trip-info-bar {
+                padding: 8px 12px;
+                margin-bottom: 8px;
+            }
+            .trip-info-text {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            .trip-info-text .city-name {
+                font-size: 14.5px;
+            }
+            .mode-toggle {
+                margin-bottom: 8px;
+                padding: 3px;
+            }
+            .mode-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-height: 32px;
+            }
+            .day-tabs {
+                margin-bottom: 8px;
+            }
+            .input-section {
+                margin-bottom: 8px;
+            }
+            .extra-actions {
+                margin-bottom: 10px;
+            }
         }
 
         /* 🔝 상단 네비게이션 툴바 */
@@ -1911,21 +2035,28 @@
 
             /* 플래너 PC 분할 화면 (왼쪽 지도 48%, 오른쪽 일정 패널 52%) */
             #app-screen {
-                flex-direction: row;
+                flex-direction: row !important;
                 max-width: 100vw;
                 height: 100vh;
             }
             #map {
-                width: 48%;
-                height: 100vh;
+                display: block !important;
+                width: 48% !important;
+                height: 100vh !important;
                 box-shadow: 1px 0 10px rgba(43, 37, 32, 0.05);
             }
             #sidebar {
-                width: 52%;
-                height: 100vh;
-                padding: 24px 32px;
+                display: flex !important;
+                flex-direction: column !important;
+                width: 52% !important;
+                height: 100vh !important;
+                padding: 24px 32px !important;
                 background: var(--bg-surface);
                 border-left: 1px solid var(--border-color);
+            }
+            .mobile-view-toggle-btn,
+            .mobile-map-header-chip {
+                display: none !important;
             }
         }
     </style>
@@ -1993,6 +2124,13 @@
     <!-- 🗺️ 플래너 앱 화면 -->
     <div id="app-screen">
         <div id="map"></div>
+
+        <!-- 📱 모바일 지도 상단 헤더 칩 (현재 일차 안내 & 클릭 시 일정 복귀) -->
+        <div class="mobile-map-header-chip" id="mobile-map-header-chip" onclick="toggleMobileView('list')" title="일정 목록으로 돌아가기">
+            <span id="mobile-map-chip-text">📍 일정 보기</span>
+            <span style="font-size: 11px; opacity: 0.7; margin-left: 2px;">(목록으로)</span>
+        </div>
+
         <div id="sidebar" class="edit-mode">
             <!-- 🔝 상단 네비게이션 바 -->
             <div class="planner-top-bar">
@@ -2093,6 +2231,12 @@
                 <button type="button" class="pdf-btn" onclick="openPdfModal()">📄 깔끔한 일정표 PDF 내보내기</button>
             </div>
         </div>
+
+        <!-- 📱 모바일 플로팅 뷰 전환 알약 버튼 (Airbnb / Triple 스타일) -->
+        <button type="button" id="mobile-view-toggle-btn" class="mobile-view-toggle-btn" onclick="toggleMobileView()" aria-label="지도 및 일정 화면 전환">
+            <span id="mobile-view-toggle-icon" class="toggle-icon">🗺️</span>
+            <span id="mobile-view-toggle-text" class="toggle-text">지도 보기</span>
+        </button>
     </div>
 
     <!-- 🗺️ Google Maps API -->
@@ -2646,6 +2790,7 @@
         }
 
         function renderLobby() {
+            toggleMobileView('list');
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
             activeProjectName = null;
@@ -3136,6 +3281,7 @@
             const appScreen = document.getElementById('app-screen');
             appScreen.style.display = 'flex';
             appScreen.classList.remove('shared-view');
+            toggleMobileView('list');
 
             const centerPoint = (tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 35.6762, lng: 139.6503 };
 
@@ -3167,7 +3313,49 @@
             checkSuggestionsCount();
         }
 
+        /* 📱 모바일 뷰(일정 목록 ↔ 지도) 전환 핸들러 */
+        function updateMobileMapChip() {
+            const chipText = document.getElementById('mobile-map-chip-text');
+            if (!chipText) return;
+            const city = tripCity || '여행지';
+            chipText.textContent = `📍 ${city} · ${currentDay}일차`;
+        }
+
+        function toggleMobileView(target) {
+            const appScreen = document.getElementById('app-screen');
+            const toggleIcon = document.getElementById('mobile-view-toggle-icon');
+            const toggleText = document.getElementById('mobile-view-toggle-text');
+            if (!appScreen) return;
+
+            let shouldBeMap;
+            if (target === 'map') {
+                shouldBeMap = true;
+            } else if (target === 'list') {
+                shouldBeMap = false;
+            } else {
+                shouldBeMap = !appScreen.classList.contains('mobile-map-active');
+            }
+
+            if (shouldBeMap) {
+                appScreen.classList.add('mobile-map-active');
+                if (toggleIcon) toggleIcon.textContent = '📋';
+                if (toggleText) toggleText.textContent = '일정 목록';
+                updateMobileMapChip();
+                if (map) {
+                    setTimeout(() => {
+                        google.maps.event.trigger(map, 'resize');
+                        updateMarkers();
+                    }, 60);
+                }
+            } else {
+                appScreen.classList.remove('mobile-map-active');
+                if (toggleIcon) toggleIcon.textContent = '🗺️';
+                if (toggleText) toggleText.textContent = '지도 보기';
+            }
+        }
+
         function showLobby() {
+            toggleMobileView('list');
             saveData();
             activeProjectName = null;
             renderLobby();
@@ -3180,6 +3368,7 @@
                 <span class="city-name">📍 ${escapeHtml(tripCity || '도시 미설정')}</span><br>
                 <span>${escapeHtml(tripStart)} ~ ${escapeHtml(tripEnd)} (${totalTripDays}일간)</span>
             `;
+            updateMobileMapChip();
         }
 
         function setMode(mode) {
@@ -3269,6 +3458,7 @@
             renderList();
             updateMarkers();
             refreshExtraButtonStates();
+            updateMobileMapChip();
         }
 
         function renderList() {
@@ -4914,6 +5104,7 @@
             const appScreen = document.getElementById('app-screen');
             appScreen.style.display = 'flex';
             appScreen.classList.add('shared-view');
+            toggleMobileView('list');
 
             const centerPoint = (tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 37.5665, lng: 126.9780 };
             map = new google.maps.Map(document.getElementById('map'), {
