@@ -2386,7 +2386,16 @@
     </div>
 
     <!-- 🗺️ Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqjLBKMKYi2fslw4J7Mh3lPt_GOw7DHsE&libraries=places&callback=initSystem" onerror="window.initSystem && window.initSystem(); window.gm_authFailure && window.gm_authFailure();" async defer></script>
+    <script>
+        // Google Maps API 키를 환경 변수에서 로드
+        const GOOGLE_MAPS_API_KEY = window.ENV?.GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY_HERE';
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initSystem`;
+        script.onerror = function() { window.initSystem && window.initSystem(); window.gm_authFailure && window.gm_authFailure(); };
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    </script>
 
     <script>
         /* ==========================================================================

@@ -11,6 +11,7 @@ export default function handler(req, res) {
     const env = {
         SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
         SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '',
+        GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || '',
         GEMINI_API_KEY_EXISTS: !!process.env.GEMINI_API_KEY // 키 존재 여부만 전달
     };
 
