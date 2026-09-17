@@ -1,0 +1,15 @@
+{
+  "appId": "com.triptic.travel",
+  "appName": "Triptic",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "automatic",
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK"
+    }
+  }
+}
