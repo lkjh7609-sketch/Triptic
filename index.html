@@ -157,6 +157,9 @@
             width: 100%;
             max-width: 1080px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
         }
         .lobby-header {
             margin: 16px 0 24px;
@@ -238,73 +241,180 @@
             transform: scale(0.98);
         }
 
-        /* ☁️ 백업 & 기기 연동 카드 */
-        .sync-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 14px 16px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-card);
-        }
-        .sync-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .sync-card-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-title);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sync-code-badge {
-            background: var(--bg-subtle);
-            color: var(--brand-primary);
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
-            font-family: monospace;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            border: 1px solid var(--border-color);
-        }
-        .sync-actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .sync-btn {
-            flex: 1;
-            min-width: 85px;
-            min-height: 34px;
-            background: var(--bg-subtle);
-            border: 1px solid var(--border-color);
-            color: var(--text-body);
-            padding: 5px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: background var(--transition-fast);
-        }
-        .sync-btn:hover {
-            background: var(--bg-hover);
-        }
-
         /* 🗂️ 여행 카드 리스트 (PC 그리드 & 모바일 스택) */
         .project-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
-            margin-bottom: 40px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        /* ☁️ 로비 하단 텍스트 버튼 (기기 동기화 & 백업) */
+        .lobby-footer {
+            margin-top: 32px;
+            padding: 20px 0 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .lobby-footer-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            padding: 8px 18px;
+            border-radius: var(--radius-pill);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            font-family: inherit;
+        }
+        .lobby-footer-btn:hover {
+            color: var(--brand-primary);
+            background: rgba(30, 58, 95, 0.06);
+        }
+        .lobby-footer-btn:active {
+            transform: scale(0.98);
+        }
+        .lobby-footer-btn .footer-btn-icon {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        /* ☁️ 기기 동기화 & 백업 팝업 모달 */
+        .sync-modal-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            text-align: left;
+        }
+        .sync-modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .sync-modal-header h3 {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sync-modal-desc {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+        .sync-modal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 13px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sync-card-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sync-code-display-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            gap: 10px;
+        }
+        .sync-code-val {
+            font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--brand-primary);
+            letter-spacing: 1.2px;
+        }
+        .sync-code-copy-btn {
+            background: var(--brand-primary);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity var(--transition-fast);
+            white-space: nowrap;
+        }
+        .sync-code-copy-btn:hover {
+            opacity: 0.9;
+        }
+        .sync-card-tip {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .sync-modal-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        @media (max-width: 480px) {
+            .sync-modal-btn-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .sync-modal-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+        .sync-modal-btn:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.08);
+            background: #ffffff;
+        }
+        .sync-btn-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .sync-btn-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+        .sync-btn-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+        .sync-btn-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .project-card {
             background: var(--bg-card);
@@ -1498,23 +1608,16 @@
                 </button>
             </div>
 
-            <!-- ☁️ 기기 동기화 및 백업 카드 -->
-            <div class="sync-card">
-                <div class="sync-card-header">
-                    <span class="sync-card-title">☁️ 기기 동기화 & 백업</span>
-                    <span class="sync-code-badge" id="my-backup-code" title="이 기기의 복구 코드">CODE</span>
-                </div>
-                <div class="sync-actions">
-                    <button type="button" class="sync-btn" onclick="copyBackupCode()">📋 코드 복사</button>
-                    <button type="button" class="sync-btn" onclick="openImportCloudModal()">🔄 다른 기기 연결</button>
-                    <button type="button" class="sync-btn" onclick="pushBackupSync(true)">☁️ 지금 백업</button>
-                    <button type="button" class="sync-btn" onclick="exportAllData()">📤 파일 저장</button>
-                    <button type="button" class="sync-btn" onclick="document.getElementById('import-file-input').click()">📥 파일 불러오기</button>
-                </div>
+            <div id="project-list-container" class="project-list"></div>
+
+            <!-- ☁️ 하단 기기 동기화 & 백업 텍스트 버튼 -->
+            <div class="lobby-footer">
+                <button type="button" class="lobby-footer-btn" onclick="openSyncBackupModal()">
+                    <span class="footer-btn-icon">☁️</span>
+                    <span>기기 동기화 &amp; 백업</span>
+                </button>
             </div>
             <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importAllData(event)">
-
-            <div id="project-list-container" class="project-list"></div>
         </div>
     </div>
 
@@ -1957,6 +2060,81 @@
             }
         }
 
+        function openSyncBackupModal() {
+            const currentCode = backupId || localStorage.getItem('smartPlannerBackupId') || '—';
+            openModal(`
+                <div class="sync-modal-wrap">
+                    <div class="sync-modal-header">
+                        <h3>☁️ 기기 동기화 &amp; 백업</h3>
+                        <p class="sync-modal-desc">
+                            모바일, 태블릿, PC 등 여러 기기에서 일정을 함께 확인하고 안전하게 보관하세요.
+                        </p>
+                    </div>
+
+                    <!-- 1. 내 기기 고유 복구 코드 -->
+                    <div class="sync-modal-card">
+                        <div class="sync-card-label">내 기기 고유 복구 코드</div>
+                        <div class="sync-code-display-row">
+                            <code class="sync-code-val" id="my-backup-code">${escapeHtml(currentCode)}</code>
+                            <button type="button" class="sync-code-copy-btn" onclick="copyBackupCode()">📋 코드 복사</button>
+                        </div>
+                        <div class="sync-card-tip">다른 기기에서 위 코드를 입력하면 저장된 여행 일정을 그대로 가져올 수 있습니다.</div>
+                    </div>
+
+                    <!-- 2. 클라우드 동기화 -->
+                    <div class="sync-modal-card">
+                        <div class="sync-card-label">클라우드 실시간 동기화</div>
+                        <div class="sync-modal-btn-grid">
+                            <button type="button" class="sync-modal-btn" onclick="pushBackupSync(true)">
+                                <span class="sync-btn-icon">☁️</span>
+                                <span class="sync-btn-label">
+                                    <span class="sync-btn-title">지금 백업</span>
+                                    <span class="sync-btn-desc">클라우드에 즉시 저장</span>
+                                </span>
+                            </button>
+                            <button type="button" class="sync-modal-btn" onclick="openImportCloudModal()">
+                                <span class="sync-btn-icon">🔄</span>
+                                <span class="sync-btn-label">
+                                    <span class="sync-btn-title">다른 기기 연결</span>
+                                    <span class="sync-btn-desc">복구 코드로 일정 병합</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. 오프라인 파일 보관 -->
+                    <div class="sync-modal-card">
+                        <div class="sync-card-label">파일 백업 (오프라인 보관)</div>
+                        <div class="sync-modal-btn-grid">
+                            <button type="button" class="sync-modal-btn" onclick="exportAllData()">
+                                <span class="sync-btn-icon">📤</span>
+                                <span class="sync-btn-label">
+                                    <span class="sync-btn-title">파일로 저장</span>
+                                    <span class="sync-btn-desc">JSON 형식으로 다운로드</span>
+                                </span>
+                            </button>
+                            <button type="button" class="sync-modal-btn" onclick="triggerImportFileInput()">
+                                <span class="sync-btn-icon">📥</span>
+                                <span class="sync-btn-label">
+                                    <span class="sync-btn-title">파일 불러오기</span>
+                                    <span class="sync-btn-desc">백업된 JSON 파일 가져오기</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top: 4px;">
+                        <button type="button" class="modal-btn secondary" style="width: 100%;" onclick="closeModal()">닫기</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function triggerImportFileInput() {
+            const fi = document.getElementById('import-file-input');
+            if (fi) fi.click();
+        }
+
         function openImportCloudModal() {
             openModal(`
                 <h3>🔄 다른 기기 데이터 불러오기</h3>
@@ -1968,7 +2146,7 @@
                     <input type="text" id="target-backup-code" placeholder="예: aB3xK9Zq10">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
+                    <button type="button" class="modal-btn secondary" onclick="openSyncBackupModal()">뒤로</button>
                     <button type="button" class="modal-btn primary" onclick="submitImportCloud()">가져오기</button>
                 </div>
             `);
@@ -2241,6 +2419,7 @@
                     allProjects = { ...allProjects, ...imported };
                     saveAllProjects();
                     renderLobby();
+                    closeModal();
                     showToast(`🎉 ${count}개의 여행을 불러왔습니다!`);
                 } catch (err) {
                     showToast('올바른 백업 JSON 파일이 아닙니다.', { type: 'error' });
