@@ -225,18 +225,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     if (cLower.includes('osaka') || cLower.includes('오사카') || pLower.includes('dotonbori') || pLower.includes('도톤보리') || pLower.includes('namba') || pLower.includes('난바')) {
         const pool = [
             {
-                name: '앗치치혼포 도톤보리점 (あっちち本舗)',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 2분 (150m)',
-                estimatedRating: 4.6,
-                signatureMenu: '타코야키 9알 (600엔)',
-                priceRange: '1인당 600~1,000엔',
-                reason: '도톤보리 강변 다리 바로 옆에 위치한 오사카 대표 타코야키 맛집. 겉은 바삭하고 속은 부드러운 정통 문어빵입니다.',
-                tip: '도톤보리 강변 뷰 테라스석에서 시원한 나마비루(생맥주)와 함께 즐기면 최고입니다.'
-            },
-            {
-                name: '킨류 라멘 도톤보리 본점 (金龍ラーメン)',
+                name: '킨류 라멘 도톤보리 본점',
                 category: 'restaurant',
                 categoryLabel: '로컬 맛집',
                 distance: '도보 3분 (220m)',
@@ -247,7 +236,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '셀프바에서 매콤한 부추무침과 김치를 무료로 듬뿍 얹어 칼칼하게 드셔보세요.'
             },
             {
-                name: '쿠시카츠 다루마 도톤보리점 (串かつだるま)',
+                name: '쿠시카츠 다루마 도톤보리점',
                 category: 'restaurant',
                 categoryLabel: '로컬 맛집',
                 distance: '도보 4분 (300m)',
@@ -258,29 +247,40 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '양배추와 하이볼을 곁들이면 기름지지 않고 깔끔합니다. 소스는 뿌려 먹는 방식으로 위생적입니다.'
             },
             {
-                name: '호놀룰루 커피 도톤보리점 (Honolulu Coffee)',
+                name: '이치란 라멘 도톤보리점',
+                category: 'restaurant',
+                categoryLabel: '로컬 맛집',
+                distance: '도보 5분 (350m)',
+                estimatedRating: 4.6,
+                signatureMenu: '천연 돈코츠 라멘',
+                priceRange: '1인당 1,000~1,500엔',
+                reason: '칸막이 좌석에서 오롯이 맛에 집중할 수 있는 진하고 깊은 돈코츠 라멘 전문점입니다.',
+                tip: '비법 소스 3배, 면 익힘 보통, 마늘 1쪽 설정이 한국인 입맛에 가장 황금비율입니다.'
+            },
+            {
+                name: '아라비카 교토 도톤보리점',
                 category: 'cafe',
                 categoryLabel: '감성 카페',
                 distance: '도보 3분 (200m)',
-                estimatedRating: 4.4,
-                signatureMenu: '코나 커피 & 마카다미아 너트 팬케이크',
-                priceRange: '1인당 800~1,500엔',
-                reason: '도톤보리 강변을 내려다보며 여유롭게 쉴 수 있는 테라스 카페. 깊고 진한 하와이 코나 원두 향이 가득합니다.',
-                tip: '오후 쇼핑 후 강변 테라스석에 앉아 유람선(톰보리 리버크루즈)을 구경하기에 최적입니다.'
+                estimatedRating: 4.6,
+                signatureMenu: '라떼 & 에스프레소',
+                priceRange: '1인당 600~900엔',
+                reason: '도톤보리 강변을 내려다보며 여유롭게 쉴 수 있는 스페셜티 커피 카페입니다.',
+                tip: '테이크아웃해서 도톤보리 강변을 산책하며 즐기기 좋습니다.'
             },
             {
-                name: '도톤보리 글리코상 포토스팟 (에비스바시)',
+                name: '글리코 러닝맨 포토스팟',
                 category: 'spot',
                 categoryLabel: '주변 명소',
                 distance: '도보 1분 (80m)',
                 estimatedRating: 4.8,
                 signatureMenu: '글리코 러너 만세 포즈 인증샷',
                 priceRange: '무료',
-                reason: '오사카 여행의 상징적인 명소. 에비스바시 다리 난간에서 글리코상을 배경으로 인생샷을 남겨보세요.',
+                reason: '오사카 여행의 상징적인 명소. 에비스바시 다리에서 글리코상을 배경으로 인생샷을 남겨보세요.',
                 tip: '해 질 녘 네온사인이 화려하게 켜지는 저녁 7~9시 사이에 방문하면 가장 활기차고 사진이 예쁩니다.'
             },
             {
-                name: '신사이바시스지 상점가 (心斎橋筋)',
+                name: '신사이바시스지 상점가',
                 category: 'spot',
                 categoryLabel: '주변 명소',
                 distance: '도보 3분 (250m)',
@@ -291,7 +291,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '도톤보리에서 신사이바시역 방향으로 쭉 걸어가며 로컬 패션 매장과 기념품 숍을 둘러보세요.'
             },
             {
-                name: '크로스 호텔 오사카 (Cross Hotel Osaka)',
+                name: '크로스 호텔 오사카',
                 category: 'hotel',
                 categoryLabel: '숙소',
                 distance: '도보 2분 (160m)',
@@ -309,29 +309,29 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     if (cLower.includes('kyoto') || cLower.includes('교토') || pLower.includes('gion') || pLower.includes('기온') || pLower.includes('kiyomizu') || pLower.includes('청수사')) {
         const pool = [
             {
-                name: '스타벅스 교토 니넨자카 야사카차야점',
+                name: '스타벅스 교토 니넨자카점',
                 category: 'cafe',
                 categoryLabel: '감성 카페',
                 distance: '도보 5분 (350m)',
                 estimatedRating: 4.7,
                 signatureMenu: '말차 라떼 & 에스프레소',
                 priceRange: '1인당 600~900엔',
-                reason: '100년이 넘은 전통 목조 가옥(마치야)을 개조한 세계 유일 다다미 좌식 스타벅스입니다.',
+                reason: '100년이 넘은 전통 목조 가옥을 개조한 세계 유일 다다미 좌식 스타벅스입니다.',
                 tip: '2층 다다미방 좌석은 신발을 벗고 올라가 교토 고즈넉한 정취를 만끽하기에 좋습니다.'
             },
             {
-                name: '% 아라비카 교토 히가시야마 (% Arabica)',
+                name: '아라비카 교토 히가시야마점',
                 category: 'cafe',
                 categoryLabel: '감성 카페',
                 distance: '도보 4분 (300m)',
                 estimatedRating: 4.6,
-                signatureMenu: '교토 라떼 (Kyoto Latte)',
+                signatureMenu: '교토 라떼',
                 priceRange: '1인당 600~800엔',
                 reason: '야사카 탑을 배경으로 커피 인증샷을 찍는 교토 최고의 스페셜티 커피 브랜드 본점입니다.',
                 tip: '연유가 살짝 들어간 달콤 쌉싸름한 교토 라떼를 테이크아웃해 골목을 산책해보세요.'
             },
             {
-                name: '멘야 이노이치 (麺屋 猪一)',
+                name: '멘야 이노이치',
                 category: 'restaurant',
                 categoryLabel: '로컬 맛집',
                 distance: '도보 8분 (600m)',
@@ -342,7 +342,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '토치로 구운 소고기 차슈와 함께 제공되는 유자 껍질을 살짝 뿌려 먹으면 풍미가 극대화됩니다.'
             },
             {
-                name: '기온 탄토 (Gion Tanto)',
+                name: '기온 탄토',
                 category: 'restaurant',
                 categoryLabel: '로컬 맛집',
                 distance: '도보 6분 (450m)',
@@ -353,7 +353,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '창가 자리를 요청하면 버드나무와 작은 개천이 흐르는 교토 특유의 감성을 즐길 수 있습니다.'
             },
             {
-                name: '산넨자카 & 니넨자카 거리 (Sannenzaka & Ninenzaka)',
+                name: '산넨자카 & 니넨자카 거리',
                 category: 'spot',
                 categoryLabel: '주변 명소',
                 distance: '도보 3분 (200m)',
@@ -364,7 +364,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '오전 9시 이전이나 오후 5시 이후에 방문하면 붐비지 않고 고즈넉한 사진을 남길 수 있습니다.'
             },
             {
-                name: '기온 료칸 카라쿠 (Gion Ryokan Karaku)',
+                name: '기온 료칸 카라쿠',
                 category: 'hotel',
                 categoryLabel: '숙소',
                 distance: '도보 7분 (500m)',
@@ -382,18 +382,18 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     if (cLower.includes('tokyo') || cLower.includes('도쿄') || pLower.includes('shibuya') || pLower.includes('shinjuku') || pLower.includes('ginza')) {
         const pool = [
             {
-                name: '이치란 라멘 시부야점 (一蘭)',
+                name: '이치란 라멘 시부야점',
                 category: 'restaurant',
                 categoryLabel: '로컬 맛집',
                 distance: '도보 4분 (300m)',
                 estimatedRating: 4.6,
-                signatureMenu: '천연 돈코츠 라멘 (비법 소스 3배)',
+                signatureMenu: '천연 돈코츠 라멘',
                 priceRange: '1인당 1,000~1,500엔',
                 reason: '독서실 칸막이 좌석에서 오롯이 맛에 집중할 수 있는 진하고 깊은 돈코츠 라멘의 대명사입니다.',
-                tip: '비법 소스(빨간 양념) 3배, 면 익힘 보통, 마늘 1쪽 설정이 한국인 입맛에 가장 황금비율입니다.'
+                tip: '비법 소스 3배, 면 익힘 보통, 마늘 1쪽 설정이 한국인 입맛에 가장 황금비율입니다.'
             },
             {
-                name: '블루보틀 커피 아오야마 카페',
+                name: '블루보틀 커피 아오야마점',
                 category: 'cafe',
                 categoryLabel: '감성 카페',
                 distance: '도보 6분 (450m)',
@@ -404,7 +404,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '바람 솔솔 부는 야외 발코니 테이블에서 갓 구운 따뜻한 리에주 와플을 꼭 드셔보세요.'
             },
             {
-                name: '시부야 스카이 전망대 (SHIBUYA SKY)',
+                name: '시부야 스카이 전망대',
                 category: 'spot',
                 categoryLabel: '주변 명소',
                 distance: '도보 3분 (250m)',
@@ -415,7 +415,7 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
                 tip: '일몰 30분 전 시간대로 사전 예매하면 노을과 화려한 도쿄 야경을 모두 담을 수 있습니다.'
             },
             {
-                name: '도쿄 그레이서리 신주쿠 호텔',
+                name: '호텔 그레이서리 신주쿠',
                 category: 'hotel',
                 categoryLabel: '숙소',
                 distance: '도보 5분 (400m)',
@@ -577,7 +577,7 @@ ${categoryFocus} 엄선해 주세요.
 }
 `.trim();
 
-    // 1순위: Google Gemini API (하루 1,500회 무료, 가장 안정적이고 빠름)
+    // Gemini API만 사용 (하루 1,500회 무료, 가장 안정적이고 빠름)
     if (geminiKey) {
         try {
             const result = await callGemini(geminiKey, prompt);
@@ -595,50 +595,13 @@ ${categoryFocus} 엄선해 주세요.
         }
     }
 
-    // 2순위: Groq API (하루 14,400회 무료, 초고속)
-    if (groqKey) {
-        try {
-            const result = await callGroq(groqKey, prompt);
-            if (result && result.recommendations && result.recommendations.length > 0) {
-                return res.status(200).json({
-                    success: true,
-                    provider: result.provider,
-                    modelUsed: result.modelUsed,
-                    basePlace: placeName,
-                    recommendations: result.recommendations
-                });
-            }
-        } catch (e) {
-            console.warn('[Groq Call Error]:', e);
-        }
-    }
-
-    // 3순위: OpenRouter API (무료 모델 순회)
-    if (openrouterKey) {
-        try {
-            const result = await callOpenRouter(openrouterKey, prompt);
-            if (result && result.recommendations && result.recommendations.length > 0) {
-                return res.status(200).json({
-                    success: true,
-                    provider: result.provider,
-                    modelUsed: result.modelUsed,
-                    basePlace: placeName,
-                    recommendations: result.recommendations
-                });
-            }
-        } catch (e) {
-            console.warn('[OpenRouter Call Error]:', e);
-        }
-    }
-
-    // 4순위: 스마트 큐레이션 폴백 엔진 (AI API 키가 없거나 일일 한도 초과 시 100% 정상 서빙)
+    // 폴백: 스마트 큐레이션 엔진 (Gemini API 키가 없거나 실패 시)
     const curatedRecs = getCuratedFallbackRecommendations(placeName, city, category);
     return res.status(200).json({
         success: true,
-        provider: 'Triptic Curated AI',
-        modelUsed: 'triptic/curated-fallback',
+        provider: 'Triptic Curated',
+        modelUsed: 'curated-recommendations',
         isFallback: true,
-        notice: 'OpenRouter 일일 무료 한도(50회)가 소진되어 Triptic 스마트 큐레이션 데이터로 안전하게 추천되었습니다. 실시간 최신 모델을 계속 사용하시려면 Vercel에 Gemini API 키(하루 1,500회 무료)를 등록해보세요.',
         basePlace: placeName,
         recommendations: curatedRecs
     });
