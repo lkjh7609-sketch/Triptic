@@ -3423,7 +3423,11 @@
             }, 8000);
 
             try {
-                const redirectUrl = window.location.origin;
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const isNativeApp = window.location.protocol === 'capacitor:' || typeof window.Capacitor !== 'undefined';
+                // Vercel Preview URL의 Deployment Protection(SSO 로그인) 우회를 위해 프로덕션 도메인 우선 적용
+                const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic-ten.vercel.app';
+
                 const result = await client.auth.signInWithOAuth({
                     provider: provider,
                     options: {
