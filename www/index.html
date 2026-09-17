@@ -720,31 +720,52 @@
             white-space: nowrap;
         }
 
-        /* 📱 모바일 지도 상단 플로팅 칩 */
+        /* 📱 모바일 지도 상단 플로팅 칩 (단일 행 유지) */
         .mobile-map-header-chip {
             display: none;
         }
         #app-screen.mobile-map-active .mobile-map-header-chip {
             display: inline-flex;
             position: fixed;
-            top: calc(16px + env(safe-area-inset-top, 0px));
+            top: calc(14px + env(safe-area-inset-top, 0px));
             left: 50%;
             transform: translateX(-50%);
             z-index: 900;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: var(--text-title);
             border: 1px solid var(--border-color);
-            padding: 8px 16px;
+            padding: 7px 15px;
             border-radius: 9999px;
             font-size: 13px;
             font-weight: 700;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
+            flex-wrap: nowrap;
+            max-width: calc(100vw - 32px);
+            box-sizing: border-box;
+        }
+
+        #mobile-map-chip-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .mobile-map-chip-sub {
+            font-size: 11px;
+            opacity: 0.65;
+            margin-left: 2px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         @media (max-width: 768px) {
@@ -2723,7 +2744,7 @@
         <!-- 📱 모바일 지도 상단 헤더 칩 (현재 일차 안내 & 클릭 시 일정 복귀) -->
         <div class="mobile-map-header-chip" id="mobile-map-header-chip" onclick="toggleMobileView('list')" title="일정 목록으로 돌아가기">
             <span id="mobile-map-chip-text">📍 일정 보기</span>
-            <span style="font-size: 11px; opacity: 0.7; margin-left: 2px;">(목록으로)</span>
+            <span class="mobile-map-chip-sub">(목록으로)</span>
         </div>
 
         <div id="sidebar" class="edit-mode">
