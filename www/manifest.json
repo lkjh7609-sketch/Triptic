@@ -2,11 +2,11 @@
   "name": "Triptic",
   "short_name": "Triptic",
   "description": "여행 일정, 항공편, 숙소, 식사, 경비를 한 곳에서 관리하고 지도로 확인하세요",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F9F9F7",
   "theme_color": "#1E3A5F",
-  "scope": "./",
+  "scope": "/",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
