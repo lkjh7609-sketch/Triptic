@@ -1084,6 +1084,69 @@
             color: #ffffff;
         }
 
+        /* 📍 일차별 활동 도시 안내 바 */
+        .day-city-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+        .day-city-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+        .day-city-badge {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-title);
+            white-space: nowrap;
+        }
+        .day-city-sub {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .day-city-change-btn {
+            background: var(--bg-subtle, #F8FAFC);
+            border: 1px solid var(--border-color);
+            color: var(--primary, #3B82F6);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .day-city-change-btn:hover {
+            background: #EFF6FF;
+            border-color: #BFDBFE;
+            color: #2563EB;
+        }
+        .quick-city-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: var(--text-title);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .quick-city-chip:hover {
+            background: var(--bg-subtle);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
         /* 🔍 장소 검색 섹션 */
         .input-section {
             background: var(--bg-card);
@@ -2769,6 +2832,17 @@
             <!-- 📅 일차별 탭 목록 -->
             <div class="day-tabs" id="day-tabs-container"></div>
 
+            <!-- 📍 일차별 활동 도시 안내 및 변경 바 -->
+            <div class="day-city-bar edit-only" id="day-city-bar">
+                <div class="day-city-info">
+                    <span class="day-city-badge">📍 <span id="day-city-name">도시 로딩 중...</span></span>
+                    <span class="day-city-sub" id="day-city-sub">(<span id="day-city-day-num">1</span>일차 활동 도시)</span>
+                </div>
+                <button type="button" class="day-city-change-btn" onclick="openDayCityModal()">
+                    도시 변경
+                </button>
+            </div>
+
             <!-- 🔍 장소 검색창 -->
             <div class="input-section edit-only">
                 <div class="input-group">
@@ -3331,7 +3405,19 @@
         let mealsData = {};
         let expensesData = {};
         let flightsData = { outbound: null, return: null };
+        let dayCities = {};
         let tripCurrency = 'KRW';
+
+        function getDayCity(day = currentDay) {
+            if (dayCities && dayCities[day] && dayCities[day].name) {
+                return dayCities[day];
+            }
+            return {
+                name: tripCity || '',
+                lat: tripCityLat,
+                lng: tripCityLng
+            };
+        }
 
         let currentDay = 1;
         let totalTripDays = 1;
@@ -4132,6 +4218,7 @@
             p.meals = mealsData;
             p.expenses = expensesData;
             p.flights = flightsData;
+            p.dayCities = dayCities;
             p.currency = tripCurrency;
             p.currentDay = currentDay;
             p.city = tripCity;
@@ -4303,6 +4390,7 @@
                 meals: {},
                 expenses: {},
                 flights: { outbound: pendingFlights.outbound, return: pendingFlights.return },
+                dayCities: {},
                 currency: currVal || 'KRW',
                 currentDay: 1,
                 startDate: startVal,
@@ -4314,6 +4402,161 @@
             closeModal();
             openProject(name);
             showToast(`🎉 '${escapeHtml(name)}' 여행이 시작되었습니다!`);
+        }
+
+        /* 📍 일차별 활동 도시 변경 모달 및 처리 (방안 A: 여행 끝까지 일괄 적용 지원) */
+        let pendingDayCity = null;
+
+        function openDayCityModal() {
+            const currentCityObj = getDayCity(currentDay);
+            pendingDayCity = null;
+
+            // 이미 사용 중인 도시 목록 수집 (빠른 선택용)
+            const usedCities = [];
+            const seen = new Set();
+            if (tripCity) {
+                usedCities.push({ name: tripCity, lat: tripCityLat, lng: tripCityLng });
+                seen.add(tripCity.toLowerCase());
+            }
+            if (dayCities) {
+                Object.values(dayCities).forEach(c => {
+                    if (c && c.name && !seen.has(c.name.toLowerCase())) {
+                        seen.add(c.name.toLowerCase());
+                        usedCities.push(c);
+                    }
+                });
+            }
+
+            const quickCityPillsHTML = usedCities.length > 0 ? `
+                <div style="margin-top: 10px;">
+                    <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">⚡️ 등록된 도시 빠른 선택:</label>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                        ${usedCities.map((c, idx) => `
+                            <button type="button" class="quick-city-chip" onclick="selectQuickCity(${idx})">
+                                📍 ${escapeHtml(c.name.split(',')[0].trim())}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : '';
+
+            openModal(`
+                <h3>📍 ${currentDay}일차 활동 도시 설정</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+                    현재 설정된 도시: <strong style="color:var(--text-heading);">${escapeHtml(currentCityObj.name || '미설정')}</strong>
+                </p>
+                <div class="modal-field">
+                    <label>새로운 도시 검색 (자동완성)</label>
+                    <input type="text" id="day-city-input" placeholder="도시 검색 후 목록에서 선택 (예: Kyoto, Japan)">
+                    ${quickCityPillsHTML}
+                </div>
+
+                <div class="modal-field" style="background:var(--bg-subtle, #F8FAFC); padding:12px 14px; border-radius:var(--radius-sm, 8px); border:1px solid var(--border-color, #E2E8F0); margin-top:14px;">
+                    <label style="font-weight:700; color:var(--text-heading); margin-bottom:8px; display:block;">적용 범위 선택</label>
+                    <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; cursor:pointer; font-size:13px; line-height:1.4;">
+                        <input type="radio" name="day-city-scope" value="rest" checked style="margin-top:2px;">
+                        <div>
+                            <strong>이 날부터 여행 끝까지 일괄 적용 ⭐️</strong>
+                            <div style="font-size:12px; color:var(--text-muted);">
+                                ${currentDay}일차부터 ${totalTripDays}일차까지 모든 일정의 도시를 변경합니다.
+                            </div>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:13px; line-height:1.4;">
+                        <input type="radio" name="day-city-scope" value="single" style="margin-top:2px;">
+                        <div>
+                            <strong>이 날(${currentDay}일차)만 적용</strong>
+                            <div style="font-size:12px; color:var(--text-muted);">
+                                오직 ${currentDay}일차 하루만 이 도시로 지정합니다.
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="modal-actions" style="margin-top:16px;">
+                    <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
+                    <button type="button" class="modal-btn primary" onclick="submitDayCityChange()">도시 적용</button>
+                </div>
+            `);
+
+            window._currentUsedCities = usedCities;
+
+            const input = document.getElementById('day-city-input');
+            if (window.google && google.maps && google.maps.places) {
+                const ac = new google.maps.places.Autocomplete(input, { types: ['(cities)'] });
+                ac.addListener('place_changed', () => {
+                    const place = ac.getPlace();
+                    if (place && place.geometry) {
+                        pendingDayCity = {
+                            name: place.formatted_address || place.name,
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng()
+                        };
+                    }
+                });
+            }
+        }
+
+        window.selectQuickCity = function(idx) {
+            const c = window._currentUsedCities && window._currentUsedCities[idx];
+            if (!c) return;
+            pendingDayCity = { name: c.name, lat: c.lat, lng: c.lng };
+            const input = document.getElementById('day-city-input');
+            if (input) input.value = c.name;
+        };
+
+        function submitDayCityChange() {
+            const input = document.getElementById('day-city-input');
+            const manualName = input ? input.value.trim() : '';
+            if (!pendingDayCity && manualName) {
+                pendingDayCity = {
+                    name: manualName,
+                    lat: tripCityLat,
+                    lng: tripCityLng
+                };
+            }
+
+            if (!pendingDayCity || !pendingDayCity.name) {
+                showToast('변경할 도시를 검색하여 선택해 주세요.', { type: 'error' });
+                return;
+            }
+
+            const scope = document.querySelector('input[name="day-city-scope"]:checked')?.value || 'rest';
+
+            if (!dayCities) dayCities = {};
+
+            const shortCity = pendingDayCity.name.split(',')[0].trim();
+
+            if (scope === 'rest') {
+                for (let d = currentDay; d <= totalTripDays; d++) {
+                    dayCities[d] = {
+                        name: pendingDayCity.name,
+                        lat: pendingDayCity.lat,
+                        lng: pendingDayCity.lng
+                    };
+                }
+                showToast(`📍 ${currentDay}일차부터 ${totalTripDays}일차까지 도시가 '${escapeHtml(shortCity)}'(으)로 변경되었습니다!`);
+            } else {
+                dayCities[currentDay] = {
+                    name: pendingDayCity.name,
+                    lat: pendingDayCity.lat,
+                    lng: pendingDayCity.lng
+                };
+                showToast(`📍 ${currentDay}일차 도시가 '${escapeHtml(shortCity)}'(으)로 변경되었습니다!`);
+            }
+
+            saveData();
+            closeModal();
+            renderDayCityBar();
+            renderTripInfoBar();
+            updateMobileMapChip();
+
+            // 만약 현재 일차에 장소가 아직 없으면 지도를 새 도시로 부드럽게 이동
+            const currentList = plannerData[currentDay] || [];
+            if (currentList.length === 0 && map && pendingDayCity.lat && pendingDayCity.lng) {
+                map.panTo({ lat: pendingDayCity.lat, lng: pendingDayCity.lng });
+                map.setZoom(13);
+            }
         }
 
         function openEditTripModal() {
@@ -4446,6 +4689,7 @@
             mealsData = p.meals || {};
             expensesData = p.expenses || {};
             flightsData = p.flights || { outbound: null, return: null };
+            dayCities = p.dayCities || {};
             tripCurrency = p.currency || 'KRW';
             currentDay = p.currentDay || 1;
 
@@ -4461,7 +4705,8 @@
             appScreen.classList.remove('shared-view');
             toggleMobileView('list');
 
-            const centerPoint = (tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 35.6762, lng: 139.6503 };
+            const initialCity = getDayCity(currentDay);
+            const centerPoint = (initialCity.lat && initialCity.lng) ? { lat: initialCity.lat, lng: initialCity.lng } : ((tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 35.6762, lng: 139.6503 });
 
             if (!map) {
                 map = new google.maps.Map(document.getElementById('map'), {
@@ -4495,7 +4740,8 @@
         function updateMobileMapChip() {
             const chipText = document.getElementById('mobile-map-chip-text');
             if (!chipText) return;
-            const city = tripCity || '여행지';
+            const c = getDayCity(currentDay);
+            const city = (c.name && c.name.split(',')[0].trim()) || (tripCity && tripCity.split(',')[0].trim()) || '여행지';
             chipText.textContent = `📍 ${city} · ${currentDay}일차`;
         }
 
@@ -4523,7 +4769,7 @@
                     setTimeout(() => {
                         google.maps.event.trigger(map, 'resize');
                         updateMarkers();
-                    }, 60);
+                    }, 100);
                 }
             } else {
                 appScreen.classList.remove('mobile-map-active');
@@ -4539,14 +4785,41 @@
             renderLobby();
         }
 
+        function renderDayCityBar() {
+            const bar = document.getElementById('day-city-bar');
+            if (!bar) return;
+            const c = getDayCity(currentDay);
+            const cityNameEl = document.getElementById('day-city-name');
+            const dayNumEl = document.getElementById('day-city-day-num');
+            if (cityNameEl) cityNameEl.textContent = c.name ? c.name.split(',')[0].trim() : (tripCity ? tripCity.split(',')[0].trim() : '도시 미설정');
+            if (dayNumEl) dayNumEl.textContent = currentDay;
+        }
+
         function renderTripInfoBar() {
             const el = document.getElementById('trip-info-text');
             if (!el) return;
+
+            const uniqueCities = [];
+            const seen = new Set();
+            for (let d = 1; d <= totalTripDays; d++) {
+                const c = getDayCity(d);
+                const shortName = c.name ? c.name.split(',')[0].trim() : '';
+                if (shortName && !seen.has(shortName.toLowerCase())) {
+                    seen.add(shortName.toLowerCase());
+                    uniqueCities.push(shortName);
+                }
+            }
+            if (uniqueCities.length === 0 && tripCity) {
+                uniqueCities.push(tripCity.split(',')[0].trim());
+            }
+            const cityDisplay = uniqueCities.length > 1 ? uniqueCities.join(' · ') : (uniqueCities[0] || '도시 미설정');
+
             el.innerHTML = `
-                <span class="city-name">📍 ${escapeHtml(tripCity || '도시 미설정')}</span><br>
+                <span class="city-name">📍 ${escapeHtml(cityDisplay)}</span><br>
                 <span>${escapeHtml(tripStart)} ~ ${escapeHtml(tripEnd)} (${totalTripDays}일간)</span>
             `;
             updateMobileMapChip();
+            renderDayCityBar();
         }
 
         function setMode(mode) {
@@ -4583,6 +4856,9 @@
                 });
                 Object.keys(expensesData).forEach(d => {
                     if (Number(d) > diffDays) delete expensesData[d];
+                });
+                Object.keys(dayCities).forEach(d => {
+                    if (Number(d) > diffDays) delete dayCities[d];
                 });
             } else {
                 plannerData = {};
@@ -4635,10 +4911,23 @@
 
             closeAllSections();
             saveData();
+            renderDayCityBar();
             renderList();
             updateMarkers();
             refreshExtraButtonStates();
             updateMobileMapChip();
+
+            // 만약 현재 일차에 등록된 장소/숙소가 없으면 지도를 해당 일차 도시로 자동 이동
+            const currentList = plannerData[day] || [];
+            const hotels = getDayHotels(day);
+            const hasAnyPoints = currentList.length > 0 || (hotels.startHotel && hotels.startHotel.lat != null) || (hotels.endHotel && hotels.endHotel.lat != null);
+            if (!hasAnyPoints && map) {
+                const c = getDayCity(day);
+                if (c.lat && c.lng) {
+                    map.panTo({ lat: c.lat, lng: c.lng });
+                    map.setZoom(13);
+                }
+            }
         }
 
         function renderList() {
@@ -5652,7 +5941,8 @@
             currentAiBaseIndex = baseIndex;
 
             const safeName = escapeHtml(basePlace.name);
-            const city = (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
+            const currentCityObj = getDayCity(currentDay);
+            const city = (currentCityObj && currentCityObj.name) || (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
 
             openModal(`
                 <div class="ai-rec-modal">
@@ -5707,7 +5997,8 @@
                 `;
             }
 
-            const city = (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
+            const currentCityObj = getDayCity(currentDay);
+            const city = (currentCityObj && currentCityObj.name) || (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
             fetchAiRecommendations(baseIndex, category, city);
         }
 
@@ -5731,10 +6022,15 @@
                     })
                 });
 
-                const data = await response.json();
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (jsonErr) {
+                    console.warn('AI Response JSON Parse Error:', jsonErr);
+                }
 
-                if (!response.ok) {
-                    renderAiRecError(data.error || 'AI 추천을 불러오지 못했습니다.');
+                if (!response.ok || !data) {
+                    renderAiRecError(data?.error || `AI 추천 서버 일시 지연 (${response.status})`);
                     return;
                 }
 
@@ -5742,6 +6038,7 @@
                 currentAiRecCache[cacheKey] = recs;
                 renderAiRecommendations(recs, baseIndex, city, data.modelUsed);
             } catch (err) {
+                console.error('AI recommendation error:', err);
                 renderAiRecError('네트워크 연결 상태를 확인하고 잠시 후 다시 시도해 주세요.');
             }
         }
@@ -6222,6 +6519,7 @@
                 city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
                 startDate: tripStart, endDate: tripEnd, currency: tripCurrency,
                 data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData, flights: flightsData,
+                dayCities: dayCities,
                 updatedAt: Date.now()
             };
 
@@ -6298,6 +6596,7 @@
                 city: tripCity, cityLat: tripCityLat, cityLng: tripCityLng,
                 startDate: tripStart, endDate: tripEnd, currency: tripCurrency,
                 data: plannerData, hotels: hotelsData, meals: mealsData, expenses: expensesData, flights: flightsData,
+                dayCities: dayCities,
                 updatedAt: Date.now()
             };
             try {
@@ -6316,6 +6615,7 @@
             mealsData = payload.meals || {};
             expensesData = payload.expenses || {};
             flightsData = payload.flights || { outbound: null, return: null };
+            dayCities = payload.dayCities || {};
             tripCurrency = payload.currency || 'KRW';
             currentDay = 1;
 
@@ -6779,9 +7079,8 @@
                     pdf.addPage();
                     y = marginT;
                     if (isContinuation) {
-                        pdf.setFontSize(8);
-                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
-                        const headText = `${cleanPdfText(tripCity) || '여행'} 일정표 · ${currentDayNum}일차 (계속)`;
+                        const curCityName = (getDayCity(currentDayNum) && getDayCity(currentDayNum).name) || tripCity;
+                        const headText = `${cleanPdfText(curCityName) || '여행'} 일정표 · ${currentDayNum}일차 (계속)`;
                         pdf.text(headText, marginL, y + 3);
                         pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
                         pdf.setLineWidth(0.2);
@@ -7016,7 +7315,8 @@
                     y += 5.5;
                     pdf.setFontSize(15);
                     pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
-                    const dayTitle = `${cleanPdfText(tripCity) || '여행'} 일정표 · ${dayNum}일차 (DAY ${dayNum})`;
+                    const curCityName = (getDayCity(dayNum) && getDayCity(dayNum).name) || tripCity;
+                    const dayTitle = `${cleanPdfText(curCityName) || '여행'} 일정표 · ${dayNum}일차 (DAY ${dayNum})`;
                     pdf.text(dayTitle, marginL, y + 2);
                     pdf.text(dayTitle, marginL + 0.15, y + 2);
 

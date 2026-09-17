@@ -528,7 +528,7 @@ function filterByCategory(items, category, placeName, cityName) {
     return supplement.slice(0, 5);
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
@@ -580,7 +580,7 @@ ${categoryFocus} 엄선해 주세요.
 }
 `.trim();
 
-    // Gemini API만 사용 (하루 1,500회 무료, 가장 안정적이고 빠름)
+    // 1. Google Gemini API (하루 1,500회 무료, 최고 품질)
     if (geminiKey) {
         try {
             const result = await callGemini(geminiKey, prompt);
@@ -598,7 +598,43 @@ ${categoryFocus} 엄선해 주세요.
         }
     }
 
-    // 폴백: 스마트 큐레이션 엔진 (Gemini API 키가 없거나 실패 시)
+    // 2. Groq Cloud API (초고속 LPU)
+    if (groqKey) {
+        try {
+            const result = await callGroq(groqKey, prompt);
+            if (result && result.recommendations && result.recommendations.length > 0) {
+                return res.status(200).json({
+                    success: true,
+                    provider: result.provider,
+                    modelUsed: result.modelUsed,
+                    basePlace: placeName,
+                    recommendations: result.recommendations
+                });
+            }
+        } catch (e) {
+            console.warn('[Groq Call Error]:', e);
+        }
+    }
+
+    // 3. OpenRouter API
+    if (openrouterKey) {
+        try {
+            const result = await callOpenRouter(openrouterKey, prompt);
+            if (result && result.recommendations && result.recommendations.length > 0) {
+                return res.status(200).json({
+                    success: true,
+                    provider: result.provider,
+                    modelUsed: result.modelUsed,
+                    basePlace: placeName,
+                    recommendations: result.recommendations
+                });
+            }
+        } catch (e) {
+            console.warn('[OpenRouter Call Error]:', e);
+        }
+    }
+
+    // 4. 폴백: 스마트 큐레이션 엔진 (API 키 없거나 네트워크 오류 시 무중단 지원)
     const curatedRecs = getCuratedFallbackRecommendations(placeName, city, category);
     return res.status(200).json({
         success: true,
@@ -608,4 +644,4 @@ ${categoryFocus} 엄선해 주세요.
         basePlace: placeName,
         recommendations: curatedRecs
     });
-};
+}
