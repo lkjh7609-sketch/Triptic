@@ -248,6 +248,45 @@
             gap: 16px;
             margin-bottom: 24px;
         }
+        .project-list.empty-state-container {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            min-height: 260px !important;
+            text-align: center !important;
+            grid-column: 1 / -1 !important;
+            margin: 40px auto 30px !important;
+        }
+        .lobby-empty-notice {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 44px 32px;
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .lobby-empty-notice .empty-icon {
+            font-size: 38px;
+            margin-bottom: 14px;
+            opacity: 0.85;
+        }
+        .lobby-empty-notice .empty-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+        .lobby-empty-notice .empty-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
 
         /* ☁️ 로비 하단 텍스트 버튼 (기기 동기화 & 백업) */
         .lobby-footer {
@@ -1863,6 +1902,12 @@
                 align-content: start;
                 align-items: start;
             }
+            .project-list.empty-state-container {
+                display: flex !important;
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+                margin: 60px auto 40px !important;
+            }
 
             /* 플래너 PC 분할 화면 (왼쪽 지도 48%, 오른쪽 일정 패널 52%) */
             #app-screen {
@@ -2318,16 +2363,18 @@
         async function restoreFromCloudBackupIfNeeded() {
             if (!backupId || !FIREBASE_DB_URL) return;
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/devicebackups/${backupId}.json`);
+                const res = await fetch(`${FIREBASE_DB_URL}/shares/backup_${backupId}.json`);
                 if (!res.ok) return;
                 const cloudProjects = await res.json();
-                if (!cloudProjects || typeof cloudProjects !== 'object' || Array.isArray(cloudProjects)) return;
-                if (typeof cloudProjects.error === 'string') return;
+                if (!cloudProjects || typeof cloudProjects !== 'object' || Array.isArray(cloudProjects) || cloudProjects.error) return;
 
                 const cleanCloud = {};
                 Object.keys(cloudProjects).forEach(k => {
+                    if (k === 'error') return;
                     const p = cloudProjects[k];
-                    if (p && typeof p === 'object' && !Array.isArray(p)) cleanCloud[k] = p;
+                    if (p && typeof p === 'object' && !Array.isArray(p) && (p.city || p.startDate || p.data)) {
+                        cleanCloud[k] = p;
+                    }
                 });
 
                 let updated = false;
@@ -2368,10 +2415,17 @@
         async function pushBackupSync(showNotify = false) {
             if (!backupId || !FIREBASE_DB_URL) return;
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/devicebackups/${backupId}.json`, {
+                const cleanPayload = {};
+                Object.keys(allProjects).forEach(k => {
+                    if (k !== 'error' && allProjects[k] && typeof allProjects[k] === 'object' && !Array.isArray(allProjects[k])) {
+                        cleanPayload[k] = allProjects[k];
+                    }
+                });
+
+                const res = await fetch(`${FIREBASE_DB_URL}/shares/backup_${backupId}.json`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(allProjects)
+                    body: JSON.stringify(cleanPayload)
                 });
                 if (res.ok && showNotify) {
                     showToast('☁️ 클라우드에 최신 데이터가 백업되었습니다.');
@@ -2482,14 +2536,49 @@
             }
 
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/devicebackups/${code}.json`);
-                const data = await res.json();
-                if (!data || typeof data !== 'object') {
+                // 1. Try /shares/backup_${code}.json
+                let res = await fetch(`${FIREBASE_DB_URL}/shares/backup_${code}.json`);
+                let data = null;
+                if (res.ok) {
+                    try { data = await res.json(); } catch(e) {}
+                }
+
+                // 2. If null or error, try /shares/${code}.json
+                if (!data || data.error) {
+                    res = await fetch(`${FIREBASE_DB_URL}/shares/${code}.json`);
+                    if (res.ok) {
+                        try { data = await res.json(); } catch(e) {}
+                    }
+                }
+
+                // 3. Fallback to /devicebackups/${code}.json
+                if (!data || data.error) {
+                    res = await fetch(`${FIREBASE_DB_URL}/devicebackups/${code}.json`);
+                    if (res.ok) {
+                        try { data = await res.json(); } catch(e) {}
+                    }
+                }
+
+                if (!data || typeof data !== 'object' || Array.isArray(data) || data.error) {
                     showToast('해당 코드로 저장된 백업 데이터를 찾을 수 없습니다.', { type: 'error' });
                     return;
                 }
 
-                allProjects = { ...allProjects, ...data };
+                const validProjects = {};
+                Object.keys(data).forEach(k => {
+                    if (k === 'error') return;
+                    const p = data[k];
+                    if (p && typeof p === 'object' && !Array.isArray(p) && (p.city || p.startDate || p.data)) {
+                        validProjects[k] = p;
+                    }
+                });
+
+                if (Object.keys(validProjects).length === 0) {
+                    showToast('해당 코드에 등록된 유효한 여행 일정이 없습니다.', { type: 'error' });
+                    return;
+                }
+
+                allProjects = { ...allProjects, ...validProjects };
                 saveAllProjects();
                 renderLobby();
                 closeModal();
@@ -2528,6 +2617,21 @@
                 }
             }
 
+            // Clean up any legacy corrupted "error" project from localStorage
+            let needsSave = false;
+            if (allProjects['error'] !== undefined) {
+                delete allProjects['error'];
+                needsSave = true;
+            }
+            Object.keys(allProjects).forEach(k => {
+                const p = allProjects[k];
+                if (!p || typeof p !== 'object' || Array.isArray(p) || (!p.city && !p.startDate && !p.data)) {
+                    delete allProjects[k];
+                    needsSave = true;
+                }
+            });
+            if (needsSave) saveAllProjects(false);
+
             ensureBackupId();
             renderLobby();
             restoreFromCloudBackupIfNeeded();
@@ -2549,21 +2653,28 @@
             const container = document.getElementById('project-list-container');
             container.innerHTML = '';
 
-            const sortedNames = Object.keys(allProjects).sort((a, b) => {
+            const sortedNames = Object.keys(allProjects).filter(name => {
+                const p = allProjects[name];
+                return name !== 'error' && p && typeof p === 'object' && !Array.isArray(p) && (p.city || p.startDate || p.data);
+            }).sort((a, b) => {
                 const timeA = allProjects[a].updatedAt || 0;
                 const timeB = allProjects[b].updatedAt || 0;
                 return timeB - timeA;
             });
 
             if (sortedNames.length === 0) {
+                container.className = 'project-list empty-state-container';
                 container.innerHTML = `
-                    <div class="empty-day-notice" style="grid-column: 1 / -1;">
-                        저장된 여행 일정이 없습니다.<br>
-                        위의 <b>[새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!
+                    <div class="lobby-empty-notice">
+                        <div class="empty-icon">🗺️</div>
+                        <div class="empty-title">저장된 여행 일정이 없습니다</div>
+                        <div class="empty-desc">위의 <b>[＋ 새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!</div>
                     </div>
                 `;
                 return;
             }
+
+            container.className = 'project-list';
 
             sortedNames.forEach(name => {
                 const p = allProjects[name];

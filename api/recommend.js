@@ -1,13 +1,71 @@
-// Vercel Serverless Function: OpenRouter Free AI Nearby Recommendations
+// Vercel Serverless Function: OpenRouter Dynamic Free AI Nearby Recommendations
 // EndPoint: POST /api/recommend
 
-const FREE_MODELS = [
-    'google/gemini-2.0-flash-lite:free',
-    'meta-llama/llama-3.3-70b-instruct:free',
-    'deepseek/deepseek-r1:free',
-    'mistralai/mistral-small-3.1-24b-instruct:free',
-    'qwen/qwen-2.5-72b-instruct:free'
-];
+let cachedFreeModels = null;
+let lastCacheTime = 0;
+
+// OpenRouter 공식 무료 자동 라우터 및 실시간 활성 무료 모델 목록 조회
+async function getCandidateFreeModels(apiKey) {
+    const now = Date.now();
+    if (cachedFreeModels && (now - lastCacheTime < 10 * 60 * 1000)) {
+        return cachedFreeModels;
+    }
+
+    // 기본 후보군 (openrouter/free 자동 라우터 최우선)
+    const candidates = ['openrouter/free'];
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch('https://openrouter.ai/api/v1/models', {
+            headers: { 'Authorization': `Bearer ${apiKey}` },
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            const data = await res.json();
+            const models = data.data || [];
+            
+            // 무료 모델 필터링: :free 접미사 또는 pricing=0
+            // 안전검사/오디오/이미지 전용 모델 제외하고 텍스트/챗 모델 위주 선별
+            const dynamicFree = models
+                .filter(m => {
+                    const isFree = m.id.endsWith(':free') || (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0');
+                    const isSpecial = m.id.includes('safety') || m.id.includes('lyria') || m.id.includes('clip');
+                    return isFree && !isSpecial && m.id !== 'openrouter/free';
+                })
+                .map(m => m.id);
+
+            // 주요 고성능 무료 모델 우선 순위 부여
+            dynamicFree.sort((a, b) => {
+                const priorityOrder = ['gemma', 'nemotron', 'llama', 'deepseek', 'mistral', 'qwen', 'liquid'];
+                const scoreA = priorityOrder.findIndex(p => a.includes(p));
+                const scoreB = priorityOrder.findIndex(p => b.includes(p));
+                return (scoreA === -1 ? 99 : scoreA) - (scoreB === -1 ? 99 : scoreB);
+            });
+
+            candidates.push(...dynamicFree.slice(0, 6));
+        }
+    } catch (e) {
+        console.warn('[AI Models] Dynamic free models fetch failed, using fallback list:', e.message);
+    }
+
+    // 최소 안전 보장 폴백 목록
+    const fallbacks = [
+        'google/gemma-4-31b-it:free',
+        'nvidia/nemotron-3-super-120b-a12b:free',
+        'liquid/lfm-2.5-2.6b:free',
+        'z-ai/glm-5.2:free'
+    ];
+    fallbacks.forEach(fb => {
+        if (!candidates.includes(fb)) candidates.push(fb);
+    });
+
+    cachedFreeModels = candidates;
+    lastCacheTime = now;
+    return candidates;
+}
 
 module.exports = async (req, res) => {
     // CORS 헤더 설정
@@ -65,10 +123,11 @@ ${categoryFocus} 엄선해 주세요.
 }
 `.trim();
 
+    const candidateModels = await getCandidateFreeModels(apiKey);
     let lastError = null;
 
-    // 🔄 무료 모델 자동 폴백(Fallback) 루프
-    for (const model of FREE_MODELS) {
+    // 🔄 자동 무료 모델 순회 루프
+    for (const model of candidateModels) {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 9500); // 9.5초 타임아웃
@@ -77,7 +136,7 @@ ${categoryFocus} 엄선해 주세요.
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': 'https://triptic.vercel.app',
+                    'HTTP-Referer': 'https://triptic-ten.vercel.app',
                     'X-Title': 'Triptic Travel Planner',
                     'Content-Type': 'application/json'
                 },
@@ -98,8 +157,8 @@ ${categoryFocus} 엄선해 주세요.
             if (!response.ok) {
                 const errText = await response.text();
                 lastError = `Model ${model} returned ${response.status}: ${errText}`;
-                console.warn(`[AI Recommend] ${model} 실패, 다음 모델로 폴백 시도:`, lastError);
-                continue; // 다음 무료 모델로 시도
+                console.warn(`[AI Recommend] ${model} 실패, 다음 무료 모델로 자동 폴백:`, lastError);
+                continue;
             }
 
             const data = await response.json();
@@ -109,7 +168,7 @@ ${categoryFocus} 엄선해 주세요.
                 continue;
             }
 
-            // JSON 파싱 (혹시 마크다운 ```json ... ``` 래핑되어 있을 경우 정제)
+            // JSON 파싱 (마크다운 ```json ... ``` 래핑 정제)
             let jsonStr = content.trim();
             if (jsonStr.startsWith('```')) {
                 jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -126,7 +185,7 @@ ${categoryFocus} 엄선해 주세요.
             }
         } catch (err) {
             lastError = err.message || String(err);
-            console.warn(`[AI Recommend] ${model} 예외 발생, 다음 모델 시도:`, lastError);
+            console.warn(`[AI Recommend] ${model} 예외 발생, 다음 무료 모델 시도:`, lastError);
         }
     }
 
