@@ -5145,10 +5145,15 @@
 
         function openPdfModal() {
             openModal(`
-                <h3>📄 깔끔한 여행 일정표 PDF</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                    출력하여 오프라인에서 보거나 여행 동행자에게 공유할 수 있습니다.
+                <h3>📄 여행 일정표 PDF 내보내기</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+                    전체 일정을 시간대별 표(Table)로 요약하고, 하단에 장소별 주소와 메모가 정리된 고화질 PDF를 생성합니다.
                 </p>
+                <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:10px 14px; font-size:12px; color:var(--text-secondary); margin-bottom:16px; line-height:1.6;">
+                    • 📋 <strong>타임라인 요약표</strong>: 시간, 구분, 장소, 이동 시간 한눈에 정리<br>
+                    • 📍 <strong>장소별 상세 가이드</strong>: 주소, 메모/팁, 대중교통 이동 안내<br>
+                    • 🖨️ A4 용지 인쇄 및 모바일/태블릿 오프라인 보관 최적화
+                </div>
                 <div class="modal-actions" style="flex-direction:column; gap:10px;">
                     <button type="button" class="modal-btn primary" onclick="exportToPDF('all')">📚 전체 일정 통합 PDF (${totalTripDays}일치)</button>
                     <button type="button" class="modal-btn secondary" onclick="exportToPDF('current')">📄 현재 ${currentDay}일차만 PDF 출력</button>
@@ -5182,9 +5187,23 @@
             pdf.setFont('NanumGothic', 'normal');
         }
 
+        function cleanPdfText(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
+                .replace(/[\u{1F600}-\u{1F64F}]/gu, '')
+                .replace(/[\u{1F680}-\u{1F6FF}]/gu, '')
+                .replace(/[\u{2600}-\u{27BF}]/gu, '')
+                .replace(/[\u{FE00}-\u{FE0F}]/gu, '')
+                .replace(/[\u{1F900}-\u{1F9FF}]/gu, '')
+                .replace(/[\u{200D}]/gu, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         async function exportToPDF(exportMode = 'all') {
             closeModal();
-            showToast('⏳ 고화질 PDF를 생성하고 있습니다...', { duration: 3000 });
+            showToast('⏳ 고화질 여행 일정표 PDF를 생성하고 있습니다...', { duration: 3500 });
 
             try {
                 window.jsPDF = window.jspdf.jsPDF;
@@ -5192,49 +5211,252 @@
                 await ensureKoreanFont(pdf);
 
                 const pageW = 210, pageH = 297;
-                const marginL = 16, marginR = 16, marginT = 18, marginB = 16;
-                const usableW = pageW - marginL - marginR;
-                const COLOR_PRIMARY = [30, 58, 95];
-                const COLOR_ACCENT  = [37, 99, 235];
-                const COLOR_TEXT    = [15, 23, 42];
-                const COLOR_SUB     = [71, 85, 105];
-                const COLOR_LINE    = [226, 232, 240];
+                const marginL = 14, marginR = 14, marginT = 14, marginB = 14;
+                const usableW = pageW - marginL - marginR; // 182mm
+
+                const C_NAVY    = [30, 58, 95];
+                const C_BLUE    = [37, 99, 235];
+                const C_TEXT    = [15, 23, 42];
+                const C_MUTED   = [71, 85, 105];
+                const C_LINE    = [226, 232, 240];
+                const C_BG_ALT  = [248, 250, 252];
+                const C_CARD    = [250, 251, 253];
+                const C_SEC_BG  = [241, 245, 249];
+
+                // Table columns: 22 + 26 + 78 + 56 = 182mm
+                const colW_time = 22;
+                const colW_type = 26;
+                const colW_name = 78;
+                const colW_note = 56;
+
+                const colX_time = marginL;
+                const colX_type = colX_time + colW_time;
+                const colX_name = colX_type + colW_type;
+                const colX_note = colX_name + colW_name;
 
                 let y = marginT;
+                let currentDayNum = 1;
 
-                function newPage() {
+                function newPage(isContinuation = false) {
                     pdf.addPage();
                     y = marginT;
+                    if (isContinuation) {
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                        const headText = `${cleanPdfText(tripCity) || '여행'} 일정표 · ${currentDayNum}일차 (계속)`;
+                        pdf.text(headText, marginL, y + 3);
+                        pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+                        pdf.setLineWidth(0.2);
+                        pdf.line(marginL, y + 5, pageW - marginR, y + 5);
+                        y += 9;
+                    }
                 }
-                function ensure(need) {
-                    if (y + need > pageH - marginB) newPage();
+
+                function ensureSpace(needMm, isContinuation = true) {
+                    if (y + needMm > pageH - marginB) {
+                        newPage(isContinuation);
+                        return true;
+                    }
+                    return false;
                 }
-                function boldText(text, x, size, color) {
-                    pdf.setFontSize(size);
-                    pdf.setTextColor(color[0], color[1], color[2]);
-                    pdf.text(String(text), x, y);
-                    pdf.text(String(text), x + 0.15, y);
+
+                function drawSectionHeader(title) {
+                    ensureSpace(12, false);
+                    const h = 6.2;
+                    pdf.setFillColor(C_SEC_BG[0], C_SEC_BG[1], C_SEC_BG[2]);
+                    pdf.rect(marginL, y, usableW, h, 'F');
+
+                    pdf.setFillColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    pdf.rect(marginL, y, 2.5, h, 'F');
+
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    pdf.text(title, marginL + 5, y + 4.4);
+                    pdf.text(title, marginL + 5.1, y + 4.4);
+                    y += h + 3.0;
                 }
-                function normalText(text, x, size, color) {
-                    pdf.setFontSize(size);
-                    pdf.setTextColor(color[0], color[1], color[2]);
-                    pdf.text(String(text), x, y);
+
+                function drawTableHeader() {
+                    const h = 7.5;
+                    pdf.setFillColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    pdf.rect(marginL, y, usableW, h, 'F');
+
+                    pdf.setFontSize(8.5);
+                    pdf.setTextColor(255, 255, 255);
+                    const headers = [
+                        { text: '시간', x: colX_time + colW_time / 2, align: 'center' },
+                        { text: '구분', x: colX_type + colW_type / 2, align: 'center' },
+                        { text: '일정 및 장소', x: colX_name + 3, align: 'left' },
+                        { text: '이동 및 비고', x: colX_note + 3, align: 'left' }
+                    ];
+                    headers.forEach(hd => {
+                        if (hd.align === 'center') {
+                            pdf.text(hd.text, hd.x, y + 5.0, { align: 'center' });
+                            pdf.text(hd.text, hd.x + 0.1, y + 5.0, { align: 'center' });
+                        } else {
+                            pdf.text(hd.text, hd.x, y + 5.0);
+                            pdf.text(hd.text, hd.x + 0.1, y + 5.0);
+                        }
+                    });
+                    y += h;
                 }
-                function wrappedText(text, x, size, color, maxWidth) {
-                    pdf.setFontSize(size);
-                    pdf.setTextColor(color[0], color[1], color[2]);
-                    const lines = pdf.splitTextToSize(String(text), maxWidth);
-                    ensure(lines.length * (size * 0.42) + 1);
-                    pdf.text(lines, x, y);
-                    y += lines.length * (size * 0.42);
-                    return lines.length;
+
+                function drawTableRow(row, isAlt) {
+                    const timeStr = cleanPdfText(row.time || '-');
+                    const typeStr = cleanPdfText(row.type || '');
+                    const nameStr = cleanPdfText(row.name || '');
+                    const noteStr = cleanPdfText(row.note || '-');
+
+                    pdf.setFontSize(8.5);
+                    const nameLines = pdf.splitTextToSize(nameStr, colW_name - 6);
+                    pdf.setFontSize(8);
+                    const noteLines = pdf.splitTextToSize(noteStr, colW_note - 6);
+
+                    const maxLines = Math.max(1, nameLines.length, noteLines.length);
+                    const rowH = Math.max(7.5, maxLines * 4.2 + 3.2);
+
+                    if (ensureSpace(rowH)) {
+                        drawTableHeader();
+                    }
+
+                    if (isAlt) {
+                        pdf.setFillColor(C_BG_ALT[0], C_BG_ALT[1], C_BG_ALT[2]);
+                        pdf.rect(marginL, y, usableW, rowH, 'F');
+                    }
+
+                    // Row bottom border
+                    pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+                    pdf.setLineWidth(0.15);
+                    pdf.line(marginL, y + rowH, pageW - marginR, y + rowH);
+
+                    // Col 1: 시간
+                    pdf.setFontSize(8.5);
+                    pdf.setTextColor(C_TEXT[0], C_TEXT[1], C_TEXT[2]);
+                    pdf.text(timeStr, colX_time + colW_time / 2, y + 5.0, { align: 'center' });
+
+                    // Col 2: 구분
+                    pdf.setFontSize(8);
+                    if (row.isFlight) {
+                        pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    } else if (row.isHotel) {
+                        pdf.setTextColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
+                    } else if (row.isMeal) {
+                        pdf.setTextColor(180, 83, 9);
+                    } else {
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                    }
+                    pdf.text(typeStr, colX_type + colW_type / 2, y + 5.0, { align: 'center' });
+
+                    // Col 3: 일정 및 장소
+                    pdf.setFontSize(8.5);
+                    pdf.setTextColor(C_TEXT[0], C_TEXT[1], C_TEXT[2]);
+                    let curLineY = y + 5.0;
+                    nameLines.forEach(ln => {
+                        pdf.text(ln, colX_name + 3, curLineY);
+                        if (row.isBold) pdf.text(ln, colX_name + 3.1, curLineY);
+                        curLineY += 4.2;
+                    });
+
+                    // Col 4: 이동 및 비고
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                    curLineY = y + 5.0;
+                    noteLines.forEach(ln => {
+                        pdf.text(ln, colX_note + 3, curLineY);
+                        curLineY += 4.2;
+                    });
+
+                    y += rowH;
                 }
-                function hr() {
-                    ensure(4);
-                    pdf.setDrawColor(COLOR_LINE[0], COLOR_LINE[1], COLOR_LINE[2]);
+
+                function drawPlaceDetailCard(cardData) {
+                    const name = cleanPdfText(cardData.name);
+                    const tag = cleanPdfText(cardData.tag);
+                    const time = cleanPdfText(cardData.time);
+                    const address = cleanPdfText(cardData.address);
+                    const memo = cleanPdfText(cardData.memo);
+                    const transit = cleanPdfText(cardData.transit);
+
+                    const textW = usableW - 10;
+                    pdf.setFontSize(8);
+                    const addrLines = address ? pdf.splitTextToSize(`[주소] ${address}`, textW) : [];
+                    const memoLines = memo ? pdf.splitTextToSize(`[메모] ${memo}`, textW) : [];
+                    const transitLines = transit ? pdf.splitTextToSize(`[이동 안내] ${transit}`, textW) : [];
+
+                    const lineH = 3.9;
+                    let innerH = 6.0;
+                    if (addrLines.length > 0) innerH += addrLines.length * lineH + 1.0;
+                    if (memoLines.length > 0) innerH += memoLines.length * lineH + 1.2;
+                    if (transitLines.length > 0) innerH += transitLines.length * lineH + 1.0;
+
+                    const cardH = innerH + 3.0;
+
+                    if (ensureSpace(cardH + 3.0)) {
+                        drawSectionHeader('2. 장소별 상세 안내 & 메모 (계속)');
+                    }
+
+                    // Card background & border
+                    pdf.setFillColor(C_CARD[0], C_CARD[1], C_CARD[2]);
+                    pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
                     pdf.setLineWidth(0.2);
-                    pdf.line(marginL, y, pageW - marginR, y);
-                    y += 4;
+                    pdf.roundedRect(marginL, y, usableW, cardH, 1.2, 1.2, 'FD');
+
+                    // Left accent bar
+                    const accentColor = cardData.accentColor || C_NAVY;
+                    pdf.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
+                    pdf.rect(marginL, y, 1.8, cardH, 'F');
+
+                    // Header line inside card
+                    let cardY = y + 5.0;
+                    pdf.setFontSize(9.5);
+                    pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    pdf.text(name, marginL + 5, cardY);
+                    pdf.text(name, marginL + 5.1, cardY);
+
+                    // Right tags: Time & Category
+                    let rightTagStr = '';
+                    if (time) rightTagStr += `[${time}] `;
+                    if (tag) rightTagStr += tag;
+                    if (rightTagStr) {
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                        pdf.text(rightTagStr, pageW - marginR - 4, cardY, { align: 'right' });
+                    }
+
+                    // Address lines
+                    if (addrLines.length > 0) {
+                        cardY += 4.5;
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                        addrLines.forEach(ln => {
+                            pdf.text(ln, marginL + 5, cardY);
+                            cardY += lineH;
+                        });
+                    }
+
+                    // Memo lines
+                    if (memoLines.length > 0) {
+                        cardY += 4.5;
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(C_TEXT[0], C_TEXT[1], C_TEXT[2]);
+                        memoLines.forEach(ln => {
+                            pdf.text(ln, marginL + 5, cardY);
+                            cardY += lineH;
+                        });
+                    }
+
+                    // Transit guidance
+                    if (transitLines.length > 0) {
+                        cardY += 4.5;
+                        pdf.setFontSize(7.8);
+                        pdf.setTextColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
+                        transitLines.forEach(ln => {
+                            pdf.text(ln, marginL + 5, cardY);
+                            cardY += lineH;
+                        });
+                    }
+
+                    y += cardH + 2.8;
                 }
 
                 const targetDays = exportMode === 'all'
@@ -5242,110 +5464,306 @@
                     : [currentDay];
 
                 targetDays.forEach((dayNum, loopIdx) => {
-                    if (loopIdx > 0) newPage();
+                    currentDayNum = dayNum;
+                    if (loopIdx > 0) newPage(false);
 
                     const dateObj = tripDates[dayNum];
                     const dateStr = dateObj ? dateObj.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }) : '';
 
-                    boldText(`${tripCity || '여행'} 일정표 · ${dayNum}일차`, marginL, 16, COLOR_PRIMARY);
-                    y += 6;
-                    normalText(`${tripStart} ~ ${tripEnd} (총 ${totalTripDays}일 중 ${dayNum}일차)  |  ${dateStr}`, marginL, 9.5, COLOR_SUB);
-                    y += 5;
-                    pdf.setDrawColor(COLOR_PRIMARY[0], COLOR_PRIMARY[1], COLOR_PRIMARY[2]);
+                    // Main Day Header Banner
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
+                    pdf.text('TRIPTIC ITINERARY GUIDE', marginL, y + 2);
+
+                    y += 5.5;
+                    pdf.setFontSize(15);
+                    pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                    const dayTitle = `${cleanPdfText(tripCity) || '여행'} 일정표 · ${dayNum}일차 (DAY ${dayNum})`;
+                    pdf.text(dayTitle, marginL, y + 2);
+                    pdf.text(dayTitle, marginL + 0.15, y + 2);
+
+                    y += 6.5;
+                    pdf.setFontSize(8.5);
+                    pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                    const periodText = `여행 기간: ${cleanPdfText(tripStart)} ~ ${cleanPdfText(tripEnd)} (총 ${totalTripDays}일 중 ${dayNum}일차)  |  ${cleanPdfText(dateStr)}`;
+                    pdf.text(periodText, marginL, y + 2);
+
+                    y += 5.0;
+                    pdf.setDrawColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
                     pdf.setLineWidth(0.6);
                     pdf.line(marginL, y, pageW - marginR, y);
-                    y += 7;
+                    y += 6.0;
 
                     const isFirst = dayNum === 1;
                     const isLast = dayNum === totalTripDays;
                     const { startHotel, endHotel } = getDayHotels(dayNum);
                     const flightArrival = (isFirst && flightsData.outbound) ? flightsData.outbound : null;
                     const flightDeparture = (isLast && flightsData.return) ? flightsData.return : null;
-                    const dayItems = plannerData[dayNum] || [];
+                    const dayItems = (plannerData[dayNum] || []).filter(item => item && item.name);
                     const dayExpenses = expensesData[dayNum] || [];
 
+                    // Sequence for transit calculations
+                    const seq = [];
+                    if (flightArrival && flightArrival.arr) {
+                        seq.push({
+                            name: `${flightArrival.flightNo} 도착`,
+                            lat: flightArrival.arr.lat,
+                            lng: flightArrival.arr.lng,
+                            address: flightArrival.arr.name || ''
+                        });
+                    }
+                    if (startHotel) seq.push(startHotel);
+                    dayItems.forEach(p => seq.push(p));
+                    if (endHotel) seq.push(endHotel);
+                    if (flightDeparture && flightDeparture.dep) {
+                        seq.push({
+                            name: `${flightDeparture.flightNo} 출발`,
+                            lat: flightDeparture.dep.lat,
+                            lng: flightDeparture.dep.lng,
+                            address: flightDeparture.dep.name || ''
+                        });
+                    }
+
+                    function getTransitToNext(itemObj) {
+                        const idx = seq.indexOf(itemObj);
+                        if (idx !== -1 && idx + 1 < seq.length) {
+                            const a = seq[idx];
+                            const b = seq[idx + 1];
+                            if (a && b && a.lat != null && a.lng != null && b.lat != null && b.lng != null) {
+                                const cacheKey = `${a.lat.toFixed(5)},${a.lng.toFixed(5)}->${b.lat.toFixed(5)},${b.lng.toFixed(5)}`;
+                                const cached = directionsCache.get(cacheKey);
+                                if (cached && cached.duration) {
+                                    return {
+                                        duration: cached.duration,
+                                        nextName: b.name
+                                    };
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+                    // 1. Build Table Rows
+                    const tableRows = [];
                     if (flightArrival) {
-                        ensure(15);
-                        boldText(`도착 항공편: ${flightArrival.flightNo}`, marginL, 11, COLOR_PRIMARY);
-                        y += 5;
-                        normalText(`${flightArrival.dep.name || flightArrival.dep.iata || '?'} → ${flightArrival.arr.name || flightArrival.arr.iata || '?'}  |  ${flightArrival.dep.time || ''} ~ ${flightArrival.arr.time || ''}`, marginL, 9.5, COLOR_TEXT);
-                        y += 5;
-                        hr();
+                        const transitInfo = seq.length > 0 ? getTransitToNext(seq[0]) : null;
+                        const noteParts = [];
+                        if (flightArrival.airline) noteParts.push(flightArrival.airline);
+                        if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
+                        tableRows.push({
+                            time: flightArrival.arr.time || '도착',
+                            type: '[항공 · 도착]',
+                            name: `${flightArrival.flightNo} (${flightArrival.dep.iata || flightArrival.dep.name || '?'} → ${flightArrival.arr.iata || flightArrival.arr.name || '?'})`,
+                            note: noteParts.join(' | ') || '공항 도착 및 입국',
+                            isFlight: true,
+                            isBold: true
+                        });
                     }
 
                     if (startHotel) {
-                        ensure(14);
-                        boldText(`출발 숙소: ${startHotel.name}`, marginL, 10.5, COLOR_ACCENT);
-                        y += 5;
-                        if (startHotel.address) wrappedText(startHotel.address, marginL, 8.5, COLOR_SUB, usableW);
-                        y += 3;
-                        hr();
-                    }
-
-                    if (dayItems.length === 0) {
-                        ensure(10);
-                        normalText('(이 날짜는 자유 일정입니다)', marginL, 9.5, COLOR_SUB);
-                        y += 8;
-                    } else {
-                        dayItems.forEach((item, idx) => {
-                            const mealLabel = item.mealType ? `[${MEAL_META[item.mealType].label}] ` : '';
-                            ensure(12);
-                            boldText(`${idx + 1}. ${item.time || ''}  ${mealLabel}${item.name}`, marginL, 10, COLOR_TEXT);
-                            y += 4.5;
-                            if (item.address) wrappedText(item.address, marginL + 4, 8, COLOR_SUB, usableW - 4);
-                            if (item.memo) wrappedText(`📝 ${item.memo}`, marginL + 4, 8, COLOR_ACCENT, usableW - 4);
-                            y += 3;
+                        const transitInfo = getTransitToNext(startHotel);
+                        const noteParts = [];
+                        if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
+                        else noteParts.push('일정 시작');
+                        tableRows.push({
+                            time: '09:00',
+                            type: '[출발 숙소]',
+                            name: startHotel.name,
+                            note: noteParts.join(' | '),
+                            isHotel: true,
+                            isBold: true
                         });
                     }
-                    hr();
+
+                    if (dayItems.length === 0 && !flightArrival && !startHotel && !endHotel && !flightDeparture) {
+                        tableRows.push({
+                            time: '-',
+                            type: '[자유 일정]',
+                            name: '등록된 일정이 없습니다 (자유 여행)',
+                            note: '-',
+                            isBold: false
+                        });
+                    } else {
+                        dayItems.forEach((item, idx) => {
+                            const mealLabel = item.mealType && MEAL_META[item.mealType]
+                                ? `[식사 · ${MEAL_META[item.mealType].label}]`
+                                : '[관광]';
+                            const transitInfo = getTransitToNext(item);
+                            const noteParts = [];
+                            if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
+                            if (item.memo) {
+                                const cleanM = cleanPdfText(item.memo);
+                                const excerpt = cleanM.length > 20 ? cleanM.substring(0, 18) + '...' : cleanM;
+                                noteParts.push(excerpt);
+                            }
+                            tableRows.push({
+                                time: item.time || '-',
+                                type: mealLabel,
+                                name: `${idx + 1}. ${item.name}`,
+                                note: noteParts.join(' | ') || '-',
+                                isMeal: !!item.mealType,
+                                isBold: false
+                            });
+                        });
+                    }
 
                     if (endHotel) {
-                        ensure(14);
-                        boldText(`복귀 숙소: ${endHotel.name}`, marginL, 10.5, COLOR_ACCENT);
-                        y += 5;
-                        if (endHotel.address) wrappedText(endHotel.address, marginL, 8.5, COLOR_SUB, usableW);
-                        y += 3;
-                        hr();
+                        tableRows.push({
+                            time: '복귀',
+                            type: '[복귀 숙소]',
+                            name: endHotel.name,
+                            note: '체크인 및 휴식',
+                            isHotel: true,
+                            isBold: true
+                        });
                     }
 
                     if (flightDeparture) {
-                        ensure(15);
-                        boldText(`귀국 항공편: ${flightDeparture.flightNo}`, marginL, 11, COLOR_PRIMARY);
-                        y += 5;
-                        normalText(`${flightDeparture.dep.name || flightDeparture.dep.iata || '?'} → ${flightDeparture.arr.name || flightDeparture.arr.iata || '?'}  |  ${flightDeparture.dep.time || ''} ~ ${flightDeparture.arr.time || ''}`, marginL, 9.5, COLOR_TEXT);
-                        y += 5;
-                        hr();
+                        tableRows.push({
+                            time: flightDeparture.dep.time || '출발',
+                            type: '[항공 · 출발]',
+                            name: `${flightDeparture.flightNo} (${flightDeparture.dep.iata || flightDeparture.dep.name || '?'} → ${flightDeparture.arr.iata || flightDeparture.arr.name || '?'})`,
+                            note: flightDeparture.airline || '공항 이동 및 출국',
+                            isFlight: true,
+                            isBold: true
+                        });
                     }
 
-                    if (dayExpenses.length > 0) {
-                        const sum = dayExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-                        ensure(12 + dayExpenses.length * 4);
-                        boldText(`이 날의 경비`, marginL, 10.5, COLOR_ACCENT);
-                        y += 5;
-                        dayExpenses.forEach(e => {
-                            normalText(`• ${e.desc}`, marginL, 8.5, COLOR_TEXT);
-                            normalText(formatMoney(e.amount), pageW - marginR - 30, 8.5, COLOR_TEXT);
-                            y += 4.5;
+                    // Render Section 1: Timeline Table
+                    drawSectionHeader('1. 타임라인 전체 일정 요약 (Timeline Summary Table)');
+                    drawTableHeader();
+                    tableRows.forEach((row, rIdx) => {
+                        drawTableRow(row, rIdx % 2 === 1);
+                    });
+                    y += 5.0;
+
+                    // 2. Build Detail Cards for Section 2
+                    const detailCards = [];
+                    if (startHotel && (startHotel.address || startHotel.name)) {
+                        const transitInfo = getTransitToNext(startHotel);
+                        detailCards.push({
+                            name: `출발 숙소 : ${startHotel.name}`,
+                            tag: '숙소 / 출발',
+                            time: '09:00',
+                            address: startHotel.address,
+                            memo: '',
+                            transit: transitInfo ? `다음 장소(${cleanPdfText(transitInfo.nextName)})까지 대중교통 약 ${transitInfo.duration} 소요` : '',
+                            accentColor: C_BLUE
                         });
-                        boldText(`합계: ${formatMoney(sum)}`, pageW - marginR - 35, 9.5, COLOR_PRIMARY);
-                        y += 6;
+                    }
+
+                    dayItems.forEach((item, idx) => {
+                        const transitInfo = getTransitToNext(item);
+                        const tag = item.mealType && MEAL_META[item.mealType]
+                            ? `식사 · ${MEAL_META[item.mealType].label}`
+                            : '관광 / 일정';
+                        detailCards.push({
+                            name: `${idx + 1}. ${item.name}`,
+                            tag: tag,
+                            time: item.time ? `예정 ${item.time}` : '',
+                            address: item.address,
+                            memo: item.memo,
+                            transit: transitInfo ? `다음 장소(${cleanPdfText(transitInfo.nextName)})까지 대중교통 약 ${transitInfo.duration} 소요` : '',
+                            accentColor: item.mealType ? [180, 83, 9] : C_NAVY
+                        });
+                    });
+
+                    if (endHotel && (endHotel.address || endHotel.name)) {
+                        detailCards.push({
+                            name: `복귀 숙소 : ${endHotel.name}`,
+                            tag: '숙소 / 휴식',
+                            time: '복귀',
+                            address: endHotel.address,
+                            memo: '',
+                            transit: '',
+                            accentColor: C_BLUE
+                        });
+                    }
+
+                    // Render Section 2: Place Details
+                    drawSectionHeader('2. 장소별 상세 안내 & 메모 (Place Details & Guide)');
+                    if (detailCards.length === 0) {
+                        ensureSpace(10);
+                        pdf.setFontSize(8.5);
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                        pdf.text('(이 날짜에는 등록된 상세 장소가 없습니다 - 자유 일정)', marginL + 4, y + 4);
+                        y += 8.0;
+                    } else {
+                        detailCards.forEach(card => {
+                            drawPlaceDetailCard(card);
+                        });
+                    }
+                    y += 3.0;
+
+                    // 3. Render Section 3: Expenses (if any)
+                    if (dayExpenses.length > 0) {
+                        drawSectionHeader('3. 일자별 지출 경비 요약 (Daily Expenses)');
+                        const sum = dayExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+                        ensureSpace(16);
+                        pdf.setFillColor(C_SEC_BG[0], C_SEC_BG[1], C_SEC_BG[2]);
+                        pdf.rect(marginL, y, usableW, 6.5, 'F');
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                        pdf.text('지출 항목 / 내용', marginL + 4, y + 4.4);
+                        pdf.text('금액', pageW - marginR - 4, y + 4.4, { align: 'right' });
+                        y += 6.5;
+
+                        dayExpenses.forEach((e, eIdx) => {
+                            const rowH = 6.2;
+                            ensureSpace(rowH);
+                            if (eIdx % 2 === 1) {
+                                pdf.setFillColor(C_BG_ALT[0], C_BG_ALT[1], C_BG_ALT[2]);
+                                pdf.rect(marginL, y, usableW, rowH, 'F');
+                            }
+                            pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+                            pdf.setLineWidth(0.15);
+                            pdf.line(marginL, y + rowH, pageW - marginR, y + rowH);
+
+                            pdf.setFontSize(8.2);
+                            pdf.setTextColor(C_TEXT[0], C_TEXT[1], C_TEXT[2]);
+                            pdf.text(cleanPdfText(e.desc || '-'), marginL + 4, y + 4.3);
+                            pdf.text(cleanPdfText(formatMoney(e.amount)), pageW - marginR - 4, y + 4.3, { align: 'right' });
+                            y += rowH;
+                        });
+
+                        // Total Row
+                        const totalH = 7.5;
+                        ensureSpace(totalH);
+                        pdf.setFillColor(C_SEC_BG[0], C_SEC_BG[1], C_SEC_BG[2]);
+                        pdf.rect(marginL, y, usableW, totalH, 'F');
+                        pdf.setFontSize(9);
+                        pdf.setTextColor(C_NAVY[0], C_NAVY[1], C_NAVY[2]);
+                        pdf.text('지출 합계', marginL + 4, y + 5.0);
+                        pdf.text('지출 합계', marginL + 4.1, y + 5.0);
+
+                        const sumText = cleanPdfText(formatMoney(sum));
+                        pdf.text(sumText, pageW - marginR - 4, y + 5.0, { align: 'right' });
+                        pdf.text(sumText, pageW - marginR - 4.1, y + 5.0, { align: 'right' });
+                        y += totalH + 4.0;
                     }
                 });
 
+                // Running Footer across all pages
                 const totalPages = pdf.getNumberOfPages();
                 for (let p = 1; p <= totalPages; p++) {
                     pdf.setPage(p);
+                    pdf.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+                    pdf.setLineWidth(0.2);
+                    pdf.line(marginL, pageH - 10, pageW - marginR, pageH - 10);
+
                     pdf.setFontSize(8);
-                    pdf.setTextColor(COLOR_SUB[0], COLOR_SUB[1], COLOR_SUB[2]);
-                    pdf.text(`Triptic 일정표  ·  ${p} / ${totalPages}`, pageW / 2, pageH - 8, { align: 'center' });
+                    pdf.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+                    pdf.text(`Triptic 여행 플래너 · ${cleanPdfText(tripCity) || '여행'} 일정표`, marginL, pageH - 6);
+                    pdf.text(`${p} / ${totalPages} 페이지`, pageW - marginR, pageH - 6, { align: 'right' });
                 }
 
                 const filename = exportMode === 'all'
-                    ? `여행일정표_${tripCity || '여행'}_전체.pdf`
-                    : `여행일정표_${currentDay}일차.pdf`;
+                    ? `여행일정표_${cleanPdfText(tripCity) || '여행'}_전체일정.pdf`
+                    : `여행일정표_${cleanPdfText(tripCity) || '여행'}_${currentDay}일차.pdf`;
 
                 pdf.save(filename);
-                showToast('🎉 PDF가 성공적으로 다운로드되었습니다!');
+                showToast('🎉 PDF 일정표가 성공적으로 다운로드되었습니다!');
             } catch (err) {
                 console.error(err);
                 showToast('PDF 생성 중 오류가 발생했습니다.', { type: 'error' });
