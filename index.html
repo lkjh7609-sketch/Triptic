@@ -1510,7 +1510,7 @@
         .action-group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: flex-start;
         }
@@ -3778,7 +3778,7 @@
                             <span class="place-address">${escapeHtml(item.address || '')}</span>
                         </div>
                         ${memoHTML}
-                        <div class="action-group edit-only" style="margin-top:10px;">
+                        <div class="action-group edit-only" style="margin-top:14px;">
                             <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
                             <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
                         </div>
