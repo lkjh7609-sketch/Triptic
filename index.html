@@ -5146,6 +5146,14 @@
             if (currentMode === 'view') drawRoutesForViewMode();
         }
 
+        function renderMapMarkers() {
+            // 지도 마커 렌더링 함수 (현재는 handleRouteDisplay로 대체)
+            // 향후 구현 예정
+            if (typeof handleRouteDisplay === 'function') {
+                // handleRouteDisplay();
+            }
+        }
+
         function drawRoutesForViewMode() {
             if (!plannerData[currentDay] || !map) return;
 
