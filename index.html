@@ -2314,7 +2314,7 @@
             <!-- 🔄 모드 전환 탭 -->
             <div class="mode-toggle">
                 <button type="button" class="mode-btn active" id="btn-edit" onclick="setMode('edit')">편집 모드</button>
-                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">보기 모드</button>
+                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">경로 모드</button>
             </div>
 
             <!-- 📅 일차별 탭 목록 -->
@@ -3570,6 +3570,8 @@
             document.getElementById('btn-view').classList.toggle('active', mode === 'view');
             if (mode === 'view') closeAllSections();
             handleRouteDisplay();
+            renderList();
+            renderMapMarkers();
         }
 
         function generateSchedule(isLoad = false) {
@@ -4025,6 +4027,8 @@
             else parts[1] = val;
             plannerData[currentDay][index].time = parts.join(':');
             saveData();
+            renderList();
+            renderMapMarkers();
         }
 
         function updateMemo(index, val) {
@@ -4983,14 +4987,10 @@
             renderList();
             renderMapMarkers();
 
-            // 추가 버튼 완료 상태로 변경
-            const btn = document.getElementById(`ai-rec-add-btn-${recIndex}`);
-            if (btn) {
-                btn.className = 'ai-rec-add-btn added';
-                btn.innerHTML = '✓ 추가 완료';
-                btn.disabled = true;
-            }
+            // AI 추천 모달 닫기 (화면에서 추가된 일정 즉시 보이게)
+            closeModal();
 
+            // 추가 완료 토스트 표시
             showToast(`'${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
         }
 
