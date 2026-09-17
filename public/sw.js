@@ -13,7 +13,7 @@
  * 8. Graceful handling for Google Maps API script (bypass cache, fail naturally when offline)
  */
 
-const CACHE_NAME = 'triptic-v2';
+const CACHE_NAME = 'triptic-v3';
 
 // 1. App shell files
 const APP_SHELL = [
@@ -163,51 +163,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Navigation / HTML requests: Cache-first with offline fallback to index.html
+  // 2. Navigation / HTML requests: Network-first strategy (always fetch fresh HTML, offline fallback)
   if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      (async () => {
-        try {
-          // Check cache first (direct match, then ignoring query parameters)
-          let cached = await caches.match(event.request);
-          if (!cached) {
-            cached = await caches.match(event.request, { ignoreSearch: true });
-          }
-          if (!cached) {
-            cached = await getOfflineFallback();
-          }
-
-          if (cached) {
-            // Update cache in the background when online
-            fetch(event.request)
-              .then(async (networkResponse) => {
-                if (networkResponse.ok) {
-                  const cache = await caches.open(CACHE_NAME);
-                  await cache.put(event.request, networkResponse);
-                }
-              })
-              .catch(() => {
-                // Ignore network errors when offline
-              });
-            return cached;
-          }
-
-          // If not in cache yet, fetch from network
-          const networkResponse = await fetch(event.request);
+      fetch(event.request)
+        .then(async (networkResponse) => {
           if (networkResponse.ok) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
-        } catch (error) {
-          // Offline fallback: serve cached index.html
-          const fallback = await getOfflineFallback();
-          if (fallback) {
-            return fallback;
-          }
-          throw error;
-        }
-      })()
+        })
+        .catch(async () => {
+          return await getOfflineFallback();
+        })
     );
     return;
   }
