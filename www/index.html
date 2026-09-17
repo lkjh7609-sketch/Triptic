@@ -24,6 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- 🔑 환경 변수 로더 (Vercel / Local) -->
     <script>
@@ -2247,9 +2248,238 @@
                 display: none !important;
             }
         }
+
+        /* ==========================================================================
+           🔒 인증 벽 (로그인 필수 및 배경 블러 처리)
+           ========================================================================== */
+        body.auth-locked #lobby-screen,
+        body.auth-locked #app-screen {
+            filter: blur(16px) brightness(0.96) !important;
+            pointer-events: none !important;
+            user-select: none !important;
+            transition: filter 0.4s ease, opacity 0.4s ease;
+        }
+
+        .auth-wall-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(249, 249, 247, 0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            box-sizing: border-box;
+            animation: authFadeIn 0.3s ease;
+        }
+
+        @keyframes authFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .auth-wall-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color, #E5E7EB);
+            border-radius: 24px;
+            padding: 38px 30px;
+            width: 100%;
+            max-width: 410px;
+            box-shadow: 0 20px 45px rgba(10, 22, 40, 0.12), 0 4px 12px rgba(10, 22, 40, 0.06);
+            text-align: center;
+            box-sizing: border-box;
+            animation: authCardPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes authCardPop {
+            from {
+                opacity: 0;
+                transform: translateY(16px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .auth-brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .auth-logo-glyph {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .auth-brand-name {
+            font-size: 26px;
+            font-weight: 850;
+            color: var(--text-title, #0A1628);
+            letter-spacing: -0.03em;
+        }
+
+        .auth-wall-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text-title, #0A1628);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .auth-wall-subtitle {
+            font-size: 13.5px;
+            color: var(--text-muted, #64748B);
+            line-height: 1.6;
+            margin: 0 0 26px 0;
+        }
+
+        .auth-wall-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .social-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            height: 48px;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 650;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .social-login-btn:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .social-login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .social-login-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-google {
+            background: #ffffff;
+            color: #1F2937;
+            border: 1.5px solid #E5E7EB;
+        }
+        .btn-google:hover {
+            border-color: #D1D5DB;
+            background: #F9FAFB;
+        }
+
+        .btn-kakao {
+            background: #FEE500;
+            color: #191919;
+        }
+        .btn-kakao:hover {
+            background: #FADA0A;
+        }
+
+        .btn-naver {
+            background: #03C75A;
+            color: #ffffff;
+        }
+        .btn-naver:hover {
+            background: #02B350;
+        }
+
+        .auth-wall-footnote {
+            font-size: 12px;
+            color: var(--text-muted, #94A3B8);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* 👤 로비 헤더 사용자 프로필 & 액션 영역 */
+        .lobby-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .lobby-header-actions {
+                width: auto;
+                justify-content: flex-end;
+            }
+        }
+
+        .user-profile-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card, #ffffff);
+            border: 1px solid var(--border-color, #E5E7EB);
+            padding: 5px 12px 5px 6px;
+            border-radius: 9999px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            max-width: 100%;
+        }
+
+        .user-avatar-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-subtle, #F1F5F9);
+            border: 1px solid var(--border-color, #E5E7EB);
+        }
+
+        .user-profile-name {
+            font-size: 13.5px;
+            font-weight: 650;
+            color: var(--text-title, #0A1628);
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted, #64748B);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            font-family: inherit;
+        }
+
+        .user-logout-btn:hover {
+            color: #EF4444;
+            background: #FEE2E2;
+        }
     </style>
 </head>
-<body>
+<body class="auth-locked">
 
     <!-- ⚡ 스플래시 화면 -->
     <div id="splash-screen">
@@ -2260,6 +2490,59 @@
 
     <!-- 🔔 토스트 컨테이너 -->
     <div id="toast-container"></div>
+
+    <!-- 🔒 간편 로그인 인증 월 (배경 블러 처리 및 로그인 필수) -->
+    <div id="auth-wall-overlay" class="auth-wall-overlay" style="display: flex;">
+        <div class="auth-wall-card">
+            <div class="auth-brand-badge">
+                <svg class="auth-logo-glyph" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 27.5L28.5 4.5L17.5 28.5L14 19.5L4 27.5Z" fill="url(#triptic-auth-grad-1)" />
+                    <path d="M28.5 4.5L14 19.5L22 17.5L28.5 4.5Z" fill="url(#triptic-auth-grad-2)" />
+                    <path d="M14 19.5L17.5 28.5L16.2 22.8L14 19.5Z" fill="#0A1628" opacity="0.3" />
+                    <defs>
+                        <linearGradient id="triptic-auth-grad-1" x1="4" y1="28" x2="28" y2="4" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#1E3A5F" />
+                            <stop offset="60%" stop-color="#2563EB" />
+                            <stop offset="100%" stop-color="#38BDF8" />
+                        </linearGradient>
+                        <linearGradient id="triptic-auth-grad-2" x1="14" y1="19.5" x2="28.5" y2="4.5" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#38BDF8" />
+                            <stop offset="100%" stop-color="#93C5FD" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="auth-brand-name">Triptic</span>
+            </div>
+            <h2 class="auth-wall-title">로그인 후 여행을 시작하세요</h2>
+            <p class="auth-wall-subtitle">간편 로그인으로 모든 기기에서 나의 여행 일정을 안전하게 실시간 클라우드 동기화하세요.</p>
+            <div class="auth-wall-buttons">
+                <button type="button" class="social-login-btn btn-google" onclick="handleSocialLogin('google')">
+                    <svg width="20" height="20" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                        <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/>
+                        <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/>
+                        <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z"/>
+                    </svg>
+                    <span>Google로 계속하기</span>
+                </button>
+                <button type="button" class="social-login-btn btn-kakao" onclick="handleSocialLogin('kakao')">
+                    <svg width="20" height="20" viewBox="0 0 18 18">
+                        <path fill="#000000" d="M9 1C4.582 1 1 3.79 1 7.25c0 2.271 1.534 4.258 3.834 5.379-.158.551-.567 2-.651 2.31 0 0-.053.213.11.293.164.08.356 0 .356 0 .466-.062 2.706-1.757 3.139-2.056.404.056.818.086 1.24.086 4.418 0 8-2.79 8-6.25S13.418 1 9 1z"/>
+                    </svg>
+                    <span>카카오로 계속하기</span>
+                </button>
+                <button type="button" class="social-login-btn btn-naver" onclick="handleSocialLogin('naver')">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#FFFFFF" d="M11.5 9.5L6.5 2H2v14h4.5V8.5l5 7.5H16V2h-4.5z"/>
+                    </svg>
+                    <span>네이버로 계속하기</span>
+                </button>
+            </div>
+            <p class="auth-wall-footnote">
+                로그인 시 Triptic의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
+            </p>
+        </div>
+    </div>
 
     <!-- 🏠 로비(프로젝트 목록) 화면 -->
     <div id="lobby-screen">
@@ -2288,9 +2571,16 @@
                     </div>
                     <p class="lobby-brand-subtitle">차분하고 직관적인 여행 일정 관리</p>
                 </div>
-                <button type="button" class="new-project-btn" onclick="openCreateModal()">
-                    <span>＋</span> 새 여행 만들기
-                </button>
+                <div class="lobby-header-actions">
+                    <div id="user-profile-badge" class="user-profile-badge" style="display: none;">
+                        <img id="user-profile-avatar" class="user-avatar-img" src="" alt="프로필">
+                        <span id="user-profile-name" class="user-profile-name"></span>
+                        <button type="button" class="user-logout-btn" onclick="handleLogout()" title="로그아웃">로그아웃</button>
+                    </div>
+                    <button type="button" class="new-project-btn" onclick="openCreateModal()">
+                        <span>＋</span> 새 여행 만들기
+                    </button>
+                </div>
             </div>
 
             <div id="project-list-container" class="project-list"></div>
@@ -2486,6 +2776,171 @@
                 window.safeInitSystem();
             }
         })();
+    </script>
+
+    <!-- 🔐 Supabase Auth & 소셜 간편 로그인 컨트롤러 -->
+    <script>
+        let supabaseAuthClient = null;
+
+        async function getSupabaseAuthClient() {
+            if (supabaseAuthClient) return supabaseAuthClient;
+            const env = await (window.__envPromise || Promise.resolve(window.ENV || {}));
+            const supabaseUrl = env?.SUPABASE_URL || 'https://mfwfqfzdgcgfnnmnlrxu.supabase.co';
+            const supabaseKey = env?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1md2ZxZnpkZ2NnZm5ubW5scnh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTE2NzAsImV4cCI6MjA1MjcyNzY3MH0.kXP5vVkp4ND0xEU5VXvGQ_qZy2fWJlG4KqYgBqCTkXc';
+
+            if (window.supabase) {
+                supabaseAuthClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                window.supabaseClient = supabaseAuthClient;
+            }
+            return supabaseAuthClient;
+        }
+
+        function lockApp() {
+            document.body.classList.add('auth-locked');
+            const overlay = document.getElementById('auth-wall-overlay');
+            if (overlay) overlay.style.display = 'flex';
+            const badge = document.getElementById('user-profile-badge');
+            if (badge) badge.style.display = 'none';
+        }
+
+        function unlockApp(user) {
+            document.body.classList.remove('auth-locked');
+            const overlay = document.getElementById('auth-wall-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            const badge = document.getElementById('user-profile-badge');
+            const avatar = document.getElementById('user-profile-avatar');
+            const nameEl = document.getElementById('user-profile-name');
+            if (badge && user) {
+                const metadata = user.user_metadata || {};
+                const displayName = metadata.full_name || metadata.name || user.email?.split('@')[0] || '여행자';
+                const photoUrl = metadata.avatar_url || metadata.picture || '';
+
+                if (avatar) {
+                    if (photoUrl) {
+                        avatar.src = photoUrl;
+                        avatar.style.display = 'block';
+                    } else {
+                        avatar.style.display = 'none';
+                    }
+                }
+                if (nameEl) nameEl.textContent = `${displayName}님`;
+                badge.style.display = 'inline-flex';
+            }
+        }
+
+        async function handleSocialLogin(provider) {
+            const client = await getSupabaseAuthClient();
+            if (!client) {
+                alert('인증 서비스를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
+                return;
+            }
+
+            const btn = document.querySelector(`.btn-${provider}`);
+            const originalContent = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span>⏳ 연결 중...</span>`;
+            }
+
+            try {
+                const redirectUrl = window.location.origin;
+                let result;
+
+                if (provider === 'naver') {
+                    try {
+                        result = await client.auth.signInWithOAuth({
+                            provider: 'naver',
+                            options: { redirectTo: redirectUrl }
+                        });
+                    } catch (e) {
+                        result = await client.auth.signInWithOAuth({
+                            provider: 'custom:naver',
+                            options: { redirectTo: redirectUrl }
+                        });
+                    }
+                } else {
+                    result = await client.auth.signInWithOAuth({
+                        provider: provider,
+                        options: { redirectTo: redirectUrl }
+                    });
+                }
+
+                if (result?.error) {
+                    if (provider === 'naver') {
+                        const customResult = await client.auth.signInWithOAuth({
+                            provider: 'custom:naver',
+                            options: { redirectTo: redirectUrl }
+                        });
+                        if (customResult?.error) throw customResult.error;
+                    } else {
+                        throw result.error;
+                    }
+                }
+            } catch (err) {
+                console.error('로그인 오류:', err);
+                alert(`로그인 중 오류가 발생했습니다: ${err.message || err}`);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                }
+            }
+        }
+
+        async function handleLogout() {
+            const client = await getSupabaseAuthClient();
+            if (!client) return;
+
+            if (confirm('로그아웃 하시겠습니까?')) {
+                await client.auth.signOut();
+                lockApp();
+                if (typeof showToast === 'function') {
+                    showToast('로그아웃되었습니다.');
+                }
+            }
+        }
+
+        async function initAuthProtection() {
+            const client = await getSupabaseAuthClient();
+            if (!client) {
+                setTimeout(initAuthProtection, 100);
+                return;
+            }
+
+            try {
+                const { data: { session } } = await client.auth.getSession();
+                if (session && session.user) {
+                    unlockApp(session.user);
+                } else {
+                    lockApp();
+                }
+            } catch (e) {
+                console.warn('세션 확인 중 오류:', e);
+                lockApp();
+            }
+
+            client.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session?.user) {
+                    unlockApp(session.user);
+                    if (window.location.hash.includes('access_token=') || window.location.search.includes('code=')) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    if (typeof showToast === 'function') {
+                        const name = session.user.user_metadata?.full_name || '여행자';
+                        showToast(`반가워요, ${name}님! 🎉`);
+                    }
+                } else if (event === 'SIGNED_OUT') {
+                    lockApp();
+                }
+            });
+        }
+
+        // 초기 실행: 기존 세션 힌트 확인 후 즉시 시작
+        const hasExistingAuthHint = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('-auth-token'));
+        if (!hasExistingAuthHint) {
+            lockApp();
+        }
+        initAuthProtection();
     </script>
 
     <script>
