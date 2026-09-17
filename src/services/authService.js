@@ -10,8 +10,8 @@ const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.ENV?.SUPABASE
 export const supabase = (typeof window !== 'undefined' && window.supabaseClient) || createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export async function signInWithProvider(provider) {
-    const client = (typeof window !== 'undefined' && window.supabaseClient) || supabase;
-    const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const redirectUrl = isLocal ? (window.location.origin || '') : 'https://triptic-ten.vercel.app';
 
     const result = await client.auth.signInWithOAuth({
         provider: provider,
