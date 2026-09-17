@@ -2427,6 +2427,21 @@
                 width: auto;
                 justify-content: flex-end;
             }
+            .lobby-header-actions .new-project-btn {
+                margin-bottom: 0;
+                width: auto;
+                min-width: 170px;
+            }
+        }
+
+        .lobby-header-actions .new-project-btn {
+            margin-bottom: 0;
+            width: auto;
+            min-height: 42px;
+            padding: 9px 18px;
+            font-size: 14.5px;
+            box-sizing: border-box;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.15);
         }
 
         .user-profile-badge {
@@ -2435,10 +2450,12 @@
             gap: 8px;
             background: var(--bg-card, #ffffff);
             border: 1px solid var(--border-color, #E5E7EB);
-            padding: 5px 12px 5px 6px;
+            padding: 4px 12px 4px 6px;
             border-radius: 9999px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            max-width: 100%;
+            min-height: 42px;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
 
         .user-avatar-img {
@@ -2494,9 +2511,65 @@
         .guest-bypass-btn:hover {
             color: var(--brand-primary, #2563EB);
         }
+
+        .header-login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: var(--brand-primary, #2563EB);
+            border: 1.5px solid var(--brand-primary, #2563EB);
+            padding: 9px 18px;
+            border-radius: var(--radius-md, 12px);
+            font-size: 14.5px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: all var(--transition-fast, 0.15s ease);
+            min-height: 42px;
+            font-family: inherit;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .header-login-btn:hover {
+            background: var(--brand-primary, #2563EB);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        .header-login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-card-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            color: var(--text-muted, #94A3B8);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+        .auth-card-close-btn:hover {
+            background: var(--bg-subtle, #F1F5F9);
+            color: var(--text-title, #0A1628);
+        }
+
+        .auth-wall-card {
+            position: relative;
+        }
     </style>
 </head>
-<body class="auth-locked">
+<body>
 
     <!-- ⚡ 스플래시 화면 -->
     <div id="splash-screen">
@@ -2508,9 +2581,10 @@
     <!-- 🔔 토스트 컨테이너 -->
     <div id="toast-container"></div>
 
-    <!-- 🔒 간편 로그인 인증 월 (배경 블러 처리 및 로그인 필수) -->
-    <div id="auth-wall-overlay" class="auth-wall-overlay" style="display: flex;">
+    <!-- 🔒 간편 로그인 인증 월 (로그인 필요 시 팝업) -->
+    <div id="auth-wall-overlay" class="auth-wall-overlay" style="display: none;" onclick="if(event.target === this) hideAuthWall()">
         <div class="auth-wall-card">
+            <button type="button" class="auth-card-close-btn" onclick="hideAuthWall()" title="닫기" aria-label="닫기">✕</button>
             <div class="auth-brand-badge">
                 <svg class="auth-logo-glyph" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 27.5L28.5 4.5L17.5 28.5L14 19.5L4 27.5Z" fill="url(#triptic-auth-grad-1)" />
@@ -2531,7 +2605,7 @@
                 <span class="auth-brand-name">Triptic</span>
             </div>
             <h2 class="auth-wall-title">로그인 후 여행을 시작하세요</h2>
-            <p class="auth-wall-subtitle">간편 로그인으로 모든 기기에서 나의 여행 일정을 안전하게 실시간 클라우드 동기화하세요.</p>
+            <p class="auth-wall-subtitle">간편 로그인으로 나만의 여행 일정을 생성하고 모든 기기에서 안전하게 클라우드 동기화하세요.</p>
             <div class="auth-wall-buttons">
                 <button type="button" class="social-login-btn btn-google" onclick="handleSocialLogin('google')">
                     <svg width="20" height="20" viewBox="0 0 18 18">
@@ -2559,8 +2633,8 @@
                 로그인 시 Triptic의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
             </p>
             <div style="margin-top: 14px; border-top: 1px solid var(--border-color, #F1F5F9); padding-top: 10px;">
-                <button type="button" class="guest-bypass-btn" onclick="unlockApp({ user_metadata: { full_name: '게스트' } })">
-                    로그인 없이 먼저 둘러보기 →
+                <button type="button" class="guest-bypass-btn" onclick="hideAuthWall()">
+                    샘플 여행 둘러보기로 돌아가기 →
                 </button>
             </div>
         </div>
@@ -2594,13 +2668,16 @@
                     <p class="lobby-brand-subtitle">차분하고 직관적인 여행 일정 관리</p>
                 </div>
                 <div class="lobby-header-actions">
+                    <button type="button" class="new-project-btn" onclick="handleNewProjectClick()">
+                        <span>＋</span> 새 여행 만들기
+                    </button>
                     <div id="user-profile-badge" class="user-profile-badge" style="display: none;">
                         <img id="user-profile-avatar" class="user-avatar-img" src="" alt="프로필">
                         <span id="user-profile-name" class="user-profile-name"></span>
                         <button type="button" class="user-logout-btn" onclick="handleLogout()" title="로그아웃">로그아웃</button>
                     </div>
-                    <button type="button" class="new-project-btn" onclick="openCreateModal()">
-                        <span>＋</span> 새 여행 만들기
+                    <button type="button" id="header-login-btn" class="header-login-btn" onclick="showAuthWall()">
+                        <span>로그인</span>
                     </button>
                 </div>
             </div>
@@ -2803,6 +2880,7 @@
     <!-- 🔐 Supabase Auth & 소셜 간편 로그인 컨트롤러 -->
     <script>
         let supabaseAuthClient = null;
+        let currentUser = null;
 
         async function getSupabaseAuthClient() {
             if (supabaseAuthClient) return supabaseAuthClient;
@@ -2817,23 +2895,26 @@
             return supabaseAuthClient;
         }
 
-        function lockApp() {
+        function showAuthWall() {
             document.body.classList.add('auth-locked');
             const overlay = document.getElementById('auth-wall-overlay');
             if (overlay) overlay.style.display = 'flex';
-            const badge = document.getElementById('user-profile-badge');
-            if (badge) badge.style.display = 'none';
         }
 
-        function unlockApp(user) {
+        function hideAuthWall() {
             document.body.classList.remove('auth-locked');
             const overlay = document.getElementById('auth-wall-overlay');
             if (overlay) overlay.style.display = 'none';
+        }
 
+        function updateAuthUI(user) {
+            currentUser = user || null;
             const badge = document.getElementById('user-profile-badge');
             const avatar = document.getElementById('user-profile-avatar');
             const nameEl = document.getElementById('user-profile-name');
-            if (badge && user) {
+            const loginBtn = document.getElementById('header-login-btn');
+
+            if (user) {
                 const metadata = user.user_metadata || {};
                 const displayName = metadata.full_name || metadata.name || user.email?.split('@')[0] || '여행자';
                 const photoUrl = metadata.avatar_url || metadata.picture || '';
@@ -2847,8 +2928,33 @@
                     }
                 }
                 if (nameEl) nameEl.textContent = `${displayName}님`;
-                badge.style.display = 'inline-flex';
+                if (badge) badge.style.display = 'inline-flex';
+                if (loginBtn) loginBtn.style.display = 'none';
+            } else {
+                if (badge) badge.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'inline-flex';
             }
+        }
+
+        function unlockApp(user) {
+            hideAuthWall();
+            updateAuthUI(user);
+            if (typeof renderLobby === 'function' && document.getElementById('lobby-screen')?.style.display !== 'none') {
+                renderLobby();
+            }
+        }
+
+        function handleNewProjectClick() {
+            if (!currentUser) {
+                if (typeof showToast === 'function') {
+                    showToast('로그인이 필요한 서비스입니다.', { type: 'info', duration: 4000 });
+                } else {
+                    alert('로그인이 필요한 서비스입니다.');
+                }
+                showAuthWall();
+                return;
+            }
+            openCreateModal();
         }
 
         async function handleSocialLogin(provider) {
@@ -2920,9 +3026,13 @@
 
             if (confirm('로그아웃 하시겠습니까?')) {
                 await client.auth.signOut();
-                lockApp();
+                currentUser = null;
+                updateAuthUI(null);
                 if (typeof showToast === 'function') {
                     showToast('로그아웃되었습니다.');
+                }
+                if (typeof renderLobby === 'function') {
+                    renderLobby();
                 }
             }
         }
@@ -2930,7 +3040,7 @@
         async function initAuthProtection() {
             const client = await getSupabaseAuthClient();
             if (!client) {
-                setTimeout(initAuthProtection, 100);
+                setTimeout(initAuthProtection, 150);
                 return;
             }
 
@@ -2939,11 +3049,11 @@
                 if (session && session.user) {
                     unlockApp(session.user);
                 } else {
-                    lockApp();
+                    updateAuthUI(null);
                 }
             } catch (e) {
                 console.warn('세션 확인 중 오류:', e);
-                lockApp();
+                updateAuthUI(null);
             }
 
             client.auth.onAuthStateChange(async (event, session) => {
@@ -2957,16 +3067,15 @@
                         showToast(`반가워요, ${name}님! 🎉`);
                     }
                 } else if (event === 'SIGNED_OUT') {
-                    lockApp();
+                    currentUser = null;
+                    updateAuthUI(null);
+                    if (typeof renderLobby === 'function') {
+                        renderLobby();
+                    }
                 }
             });
         }
 
-        // 초기 실행: 기존 세션 힌트 확인 후 즉시 시작
-        const hasExistingAuthHint = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('-auth-token'));
-        if (!hasExistingAuthHint) {
-            lockApp();
-        }
         initAuthProtection();
     </script>
 
@@ -3014,6 +3123,193 @@
             breakfast: { label: '아침', time: '08:00', emoji: '🍳' },
             lunch:     { label: '점심', time: '12:30', emoji: '🍜' },
             dinner:    { label: '저녁', time: '18:30', emoji: '🍷' }
+        };
+
+        // 🌟 비로그인(게스트) 사용자용 추천 샘플 여행 데이터
+        const SAMPLE_PROJECT_NAME = '도쿄 3박 4일 감성 힐링 여행';
+        const SAMPLE_PROJECT_DATA = {
+            city: 'Tokyo, Japan',
+            cityLat: 35.6762,
+            cityLng: 139.6503,
+            startDate: '2026-10-15',
+            endDate: '2026-10-18',
+            currency: 'JPY',
+            currentDay: 1,
+            updatedAt: Date.now() - 3600000,
+            data: {
+                1: [
+                    {
+                        name: '하네다 국제공항 (HND)',
+                        address: 'Hanedakuko, Ota City, Tokyo 144-0041 일본',
+                        lat: 35.5494,
+                        lng: 139.7798,
+                        time: '11:30',
+                        memo: '도쿄 도착 후 게이큐선 또는 도쿄 모노레일 탑승'
+                    },
+                    {
+                        name: '호텔 그레이서리 신주쿠 (체크인)',
+                        address: '1-19-1 Kabukicho, Shinjuku City, Tokyo 160-8466 일본',
+                        lat: 35.6953,
+                        lng: 139.7020,
+                        time: '14:00',
+                        memo: '짐 보관 후 신주쿠 교엔 정원 산책 출발'
+                    },
+                    {
+                        name: '신주쿠 교엔 국립정원',
+                        address: '11 Naitomachi, Shinjuku City, Tokyo 160-0014 일본',
+                        lat: 35.6852,
+                        lng: 139.7101,
+                        time: '15:30',
+                        memo: '도심 속 푸른 정원 산책 & 감성 테라스 카페'
+                    },
+                    {
+                        name: '신주쿠 오모이데요코초',
+                        address: '1 Chome-2 Nishishinjuku, Shinjuku City, Tokyo 160-0023 일본',
+                        lat: 35.6934,
+                        lng: 139.6998,
+                        time: '18:30',
+                        memo: '옛 쇼와 시대 정취의 야키토리 골목에서 시원한 생맥주'
+                    }
+                ],
+                2: [
+                    {
+                        name: '시부야 스카이 (SHIBUYA SKY)',
+                        address: '2 Chome-24-12 Shibuya, Shibuya City, Tokyo 150-0002 일본',
+                        lat: 35.6585,
+                        lng: 139.7022,
+                        time: '10:30',
+                        memo: '도쿄 시내가 360도 한눈에 내려다보이는 루프탑 전망대'
+                    },
+                    {
+                        name: '하라주쿠 캣스트리트 & 오모테산도',
+                        address: 'Jingumae, Shibuya City, Tokyo 150-0001 일본',
+                        lat: 35.6666,
+                        lng: 139.7093,
+                        time: '13:30',
+                        memo: '편집숍 & 감성 디저트 카페 거리 둘러보기'
+                    },
+                    {
+                        name: '메이지 신궁 산책로',
+                        address: '1-1 Yoyogikamizonocho, Shibuya City, Tokyo 151-8557 일본',
+                        lat: 35.6764,
+                        lng: 139.6993,
+                        time: '16:00',
+                        memo: '울창한 삼나무 숲길 힐링 산책'
+                    },
+                    {
+                        name: '시부야 스크램블 교차로 & 디너',
+                        address: '2 Chome-2 Shibuya, Shibuya City, Tokyo 150-0002 일본',
+                        lat: 35.6595,
+                        lng: 139.7005,
+                        time: '19:00',
+                        memo: '도쿄 야경과 함께하는 정통 와규 스키야키 디너'
+                    }
+                ],
+                3: [
+                    {
+                        name: '아사쿠사 센소지 (카미나리몬)',
+                        address: '2 Chome-3-1 Asakusa, Taito City, Tokyo 111-0032 일본',
+                        lat: 35.7148,
+                        lng: 139.7967,
+                        time: '10:00',
+                        memo: '나카미세도리 전통 길거리 간식(말차 아이스크림, 센베이)'
+                    },
+                    {
+                        name: '도쿄 스카이트리 & 소라마치',
+                        address: '1 Chome-1-2 Oshiage, Sumida City, Tokyo 131-0045 일본',
+                        lat: 35.7101,
+                        lng: 139.8107,
+                        time: '13:30',
+                        memo: '스카이트리 타운 쇼핑 및 기념품 구경'
+                    },
+                    {
+                        name: '긴자 식스 (GINZA SIX) & 옥상정원',
+                        address: '6 Chome-10-1 Ginza, Chuo City, Tokyo 104-0061 일본',
+                        lat: 35.6696,
+                        lng: 139.7640,
+                        time: '17:00',
+                        memo: '츠타야 서점 아트북 라운지 & 긴자 명품거리 야경 산책'
+                    }
+                ],
+                4: [
+                    {
+                        name: '츠키지 장외시장',
+                        address: '4 Chome-16-2 Tsukiji, Chuo City, Tokyo 104-0045 일본',
+                        lat: 35.6655,
+                        lng: 139.7708,
+                        time: '09:30',
+                        memo: '신선한 우니 카이센동 & 타마고야키 브런치'
+                    },
+                    {
+                        name: '롯폰기 힐즈 모리 미술관',
+                        address: '6 Chome-10-1 Roppongi, Minato City, Tokyo 106-6150 일본',
+                        lat: 35.6605,
+                        lng: 139.7292,
+                        time: '12:30',
+                        memo: '모던 아트 전시 관람 및 도쿄 타워 전망'
+                    },
+                    {
+                        name: '하네다 국제공항 귀국 (HND)',
+                        address: 'Hanedakuko, Ota City, Tokyo 144-0041 일본',
+                        lat: 35.5494,
+                        lng: 139.7798,
+                        time: '16:00',
+                        memo: '면세점 쇼핑 후 서울행 항공편 탑승'
+                    }
+                ]
+            },
+            hotels: {
+                1: { name: '호텔 그레이서리 신주쿠', address: '1-19-1 Kabukicho, Shinjuku, Tokyo', lat: 35.6953, lng: 139.7020 },
+                2: { name: '호텔 그레이서리 신주쿠', address: '1-19-1 Kabukicho, Shinjuku, Tokyo', lat: 35.6953, lng: 139.7020 },
+                3: { name: '호텔 그레이서리 신주쿠', address: '1-19-1 Kabukicho, Shinjuku, Tokyo', lat: 35.6953, lng: 139.7020 }
+            },
+            meals: {
+                1: {
+                    dinner: { name: '신주쿠 오모이데요코초 카부토', emoji: '🍷', label: '저녁', time: '18:30', memo: '야키토리 꼬치구이' }
+                },
+                2: {
+                    lunch: { name: '블루보틀 커피 아오야마', emoji: '🍜', label: '점심', time: '12:30', memo: '핸드드립 & 브런치' },
+                    dinner: { name: '이마한 스키야키 신주쿠점', emoji: '🍷', label: '저녁', time: '19:00', memo: '전통 와규 스키야키 코스' }
+                },
+                3: {
+                    breakfast: { name: '나카미세도리 전통 간식', emoji: '🍳', label: '아침', time: '09:30', memo: '따뜻한 키비당고 & 녹차' },
+                    lunch: { name: '소라마치 라멘 스트리트', emoji: '🍜', label: '점심', time: '13:00', memo: '특제 츠케멘' }
+                },
+                4: {
+                    breakfast: { name: '츠키지 토라즈시 (카이센동)', emoji: '🍳', label: '아침', time: '09:30', memo: '특상 우니 마구로 덮밥' }
+                }
+            },
+            flights: {
+                outbound: {
+                    flightNo: 'OZ102',
+                    airline: '아시아나항공',
+                    depAirport: 'GMP',
+                    arrAirport: 'HND',
+                    depTime: '2026-10-15 09:00',
+                    arrTime: '2026-10-15 11:15'
+                },
+                return: {
+                    flightNo: 'OZ101',
+                    airline: '아시아나항공',
+                    depAirport: 'HND',
+                    arrAirport: 'GMP',
+                    depTime: '2026-10-18 18:00',
+                    arrTime: '2026-10-18 20:30'
+                }
+            },
+            expenses: {
+                1: [
+                    { id: 'exp-1', category: 'transport', desc: '공항 모노레일 & 스이카 충전', amount: 3000, currency: 'JPY' },
+                    { id: 'exp-2', category: 'food', desc: '오모이데요코초 야키토리', amount: 4500, currency: 'JPY' }
+                ],
+                2: [
+                    { id: 'exp-3', category: 'sightseeing', desc: '시부야 스카이 입장권', amount: 2200, currency: 'JPY' },
+                    { id: 'exp-4', category: 'food', desc: '이마한 와규 스키야키', amount: 9800, currency: 'JPY' }
+                ],
+                3: [
+                    { id: 'exp-5', category: 'sightseeing', desc: '도쿄 스카이트리 전망대', amount: 3100, currency: 'JPY' }
+                ]
+            }
         };
 
         // 전역 상태
@@ -3572,6 +3868,63 @@
             const container = document.getElementById('project-list-container');
             container.innerHTML = '';
 
+            // 🌟 비로그인(게스트) 상태일 때는 추천 샘플 여행 일정 1개만 노출
+            if (!currentUser) {
+                container.className = 'project-list';
+                allProjects[SAMPLE_PROJECT_NAME] = JSON.parse(JSON.stringify(SAMPLE_PROJECT_DATA));
+
+                const p = SAMPLE_PROJECT_DATA;
+                let totalPlaces = 0;
+                if (p.data) {
+                    Object.values(p.data).forEach(arr => {
+                        if (Array.isArray(arr)) totalPlaces += arr.length;
+                    });
+                }
+
+                const card = document.createElement('div');
+                card.className = 'project-card sample-project-card';
+                card.style.border = '1.5px solid rgba(37, 99, 235, 0.25)';
+                card.style.background = 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)';
+                card.innerHTML = `
+                    <div class="project-card-header">
+                        <div class="project-card-badge" style="background: rgba(37, 99, 235, 0.08); color: var(--brand-primary, #2563EB);">
+                            <span>📍</span>
+                            <span>${escapeHtml(p.city)}</span>
+                        </div>
+                        <div class="project-card-actions">
+                            <span class="sample-badge-tag" style="background: #EFF6FF; color: #2563EB; font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 6px; border: 1px solid rgba(37, 99, 235, 0.2);">✨ 추천 샘플 일정</span>
+                        </div>
+                    </div>
+                    <div class="project-card-main">
+                        <h3 class="project-card-title">${escapeHtml(SAMPLE_PROJECT_NAME)}</h3>
+                        <div class="project-card-dates">
+                            <span>🗓️</span>
+                            <span>${escapeHtml(p.startDate)} ~ ${escapeHtml(p.endDate)}</span>
+                            <span class="project-duration-tag">3박 4일</span>
+                        </div>
+                    </div>
+                    <div class="project-card-footer">
+                        <div class="project-card-meta">
+                            <span class="project-places-badge">장소 ${totalPlaces}곳</span>
+                            <span class="project-updated-time" style="color: var(--brand-primary, #2563EB); font-weight: 600;">체험용 샘플</span>
+                        </div>
+                        <span class="project-open-link" style="color: var(--brand-primary, #2563EB); font-weight: 700;">일정 보기 →</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    openProject(SAMPLE_PROJECT_NAME);
+                });
+
+                container.appendChild(card);
+                return;
+            }
+
+            // 로그인 상태: 샘플 프로젝트 임시 데이터 정리
+            if (allProjects[SAMPLE_PROJECT_NAME] && !localStorage.getItem('smartPlannerAllProjects')?.includes(SAMPLE_PROJECT_NAME)) {
+                delete allProjects[SAMPLE_PROJECT_NAME];
+            }
+
             const sortedNames = Object.keys(allProjects).filter(name => {
                 const p = allProjects[name];
                 return name !== 'error' && p && typeof p === 'object' && !Array.isArray(p) && (p.city || p.startDate || p.data);
@@ -3724,7 +4077,11 @@
 
         function saveAllProjects(silent = false) {
             try {
-                const serialized = JSON.stringify(allProjects);
+                const payload = { ...allProjects };
+                if (payload[SAMPLE_PROJECT_NAME] && !localStorage.getItem('smartPlannerAllProjects')?.includes(SAMPLE_PROJECT_NAME)) {
+                    delete payload[SAMPLE_PROJECT_NAME];
+                }
+                const serialized = JSON.stringify(payload);
                 const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
 
                 // 4.5MB 이상이면 경고 (5MB 제한에 근접)
@@ -3759,6 +4116,7 @@
 
         function saveData() {
             if (!activeProjectName || !allProjects[activeProjectName]) return;
+            if (activeProjectName === SAMPLE_PROJECT_NAME) return;
 
             if (plannerData[currentDay]) {
                 plannerData[currentDay] = plannerData[currentDay].filter(item => item && item.lat != null && item.lng != null);
@@ -3804,6 +4162,12 @@
         }
 
         function importAllData(event) {
+            if (!currentUser) {
+                showToast('로그인이 필요한 서비스입니다.', { type: 'info' });
+                showAuthWall();
+                return;
+            }
+
             const file = event.target.files[0];
             event.target.value = '';
             if (!file) return;
@@ -3828,6 +4192,16 @@
         }
 
         function openCreateModal() {
+            if (!currentUser) {
+                if (typeof showToast === 'function') {
+                    showToast('로그인이 필요한 서비스입니다.', { type: 'info', duration: 4000 });
+                } else {
+                    alert('로그인이 필요한 서비스입니다.');
+                }
+                showAuthWall();
+                return;
+            }
+
             pendingCity = null;
             pendingFlights = { outbound: null, return: null };
             pendingManualAirport = { outbound: { dep: null, arr: null }, return: { dep: null, arr: null } };
@@ -4055,6 +4429,9 @@
         }
 
         function openProject(name) {
+            if (name === SAMPLE_PROJECT_NAME && !allProjects[SAMPLE_PROJECT_NAME]) {
+                allProjects[SAMPLE_PROJECT_NAME] = JSON.parse(JSON.stringify(SAMPLE_PROJECT_DATA));
+            }
             activeProjectName = name;
             const p = allProjects[name];
             if (!p) return;
