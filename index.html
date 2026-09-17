@@ -2943,6 +2943,12 @@
 
         (async function loadGoogleMaps() {
             try {
+                if (!navigator.onLine) {
+                    console.warn('📡 현재 오프라인 상태입니다. 로컬 저장 데이터를 기반으로 즉시 시작합니다.');
+                    window.safeInitSystem();
+                    return;
+                }
+
                 const env = await (window.__envPromise || Promise.resolve(window.ENV || {}));
                 const apiKey = env?.GOOGLE_MAPS_API_KEY || localStorage.getItem('GOOGLE_MAPS_API_KEY') || '';
 
@@ -2958,19 +2964,19 @@
                 script.async = true;
                 script.defer = true;
                 script.onerror = function() {
-                    console.error('❌ Google Maps 스크립트 로드 실패');
+                    console.error('❌ Google Maps 스크립트 로드 실패 (오프라인 상태)');
                     window.safeInitSystem();
                     if (typeof window.gm_authFailure === 'function') window.gm_authFailure();
                 };
                 document.head.appendChild(script);
 
-                // 지도 로딩 지연 시 스플래시 화면 대기 해제 세이프가드 (6초)
+                // 지도 로딩 지연 시 스플래시 화면 대기 해제 세이프가드 (2.5초로 단축하여 오프라인에서 즉시 열리도록 개선)
                 setTimeout(function() {
                     if (!window._tripticSystemStarted) {
-                        console.warn('⚠️ Google Maps 로드 지연으로 인해 기본 모드로 앱을 시작합니다.');
+                        console.warn('⚠️ Google Maps 로드 대기 시간 초과로 오프라인 기본 모드로 앱을 시작합니다.');
                         window.safeInitSystem();
                     }
-                }, 6000);
+                }, 2500);
             } catch (err) {
                 console.error('Google Maps 로더 오류:', err);
                 window.safeInitSystem();
@@ -3642,13 +3648,25 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3').then(reg => {
+                navigator.serviceWorker.register('./sw.js?v=4').then(reg => {
                     reg.update().catch(() => {});
                 }).catch(err => {
                     console.log('SW Registration skipped:', err);
                 });
             });
         }
+
+        // 📡 오프라인 / 온라인 네트워크 감지 알림
+        window.addEventListener('offline', () => {
+            if (typeof showToast === 'function') {
+                showToast('📡 오프라인 상태입니다. 저장된 여행 일정을 자유롭게 열람하실 수 있습니다.', { type: 'info', duration: 4500 });
+            }
+        });
+        window.addEventListener('online', () => {
+            if (typeof showToast === 'function') {
+                showToast('🌐 인터넷이 다시 연결되었습니다.', { type: 'success', duration: 3000 });
+            }
+        });
 
         window.addEventListener('resize', () => {
             if (map && window.google && google.maps) {
@@ -4798,25 +4816,44 @@
             const initialCity = getDayCity(currentDay);
             const centerPoint = (initialCity.lat && initialCity.lng) ? { lat: initialCity.lat, lng: initialCity.lng } : ((tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 35.6762, lng: 139.6503 });
 
-            if (!map) {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 13,
-                    center: centerPoint,
-                    disableDefaultUI: true,
-                    zoomControl: true
-                });
-                autocomplete = new google.maps.places.Autocomplete(document.getElementById('search-input'));
-                autocomplete.bindTo('bounds', map);
-                document.getElementById('search-input').addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        addPlace();
+            const hasGoogleMaps = typeof window.google !== 'undefined' && typeof window.google.maps !== 'undefined';
+            if (hasGoogleMaps) {
+                if (!map) {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 13,
+                        center: centerPoint,
+                        disableDefaultUI: true,
+                        zoomControl: true
+                    });
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput && window.google.maps.places) {
+                        autocomplete = new google.maps.places.Autocomplete(searchInput);
+                        autocomplete.bindTo('bounds', map);
+                        searchInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addPlace();
+                            }
+                        });
                     }
-                });
+                } else {
+                    google.maps.event.trigger(map, 'resize');
+                    map.setCenter(centerPoint);
+                    map.setZoom(13);
+                }
             } else {
-                google.maps.event.trigger(map, 'resize');
-                map.setCenter(centerPoint);
-                map.setZoom(13);
+                const mapEl = document.getElementById('map');
+                if (mapEl && !map) {
+                    mapEl.innerHTML = `
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:24px; text-align:center; color:var(--text-muted); background:#F8FAFC;">
+                            <div style="font-size:38px; margin-bottom:12px;">📡</div>
+                            <div style="font-size:16px; font-weight:750; color:var(--text-title); margin-bottom:6px;">오프라인 열람 모드</div>
+                            <div style="font-size:13px; line-height:1.6; max-width:280px; color:var(--text-body);">
+                                인터넷 연결이 없어 실시간 지도는 숨겨졌지만,<br><b>저장된 여행 일정표와 메모</b>는 자유롭게 확인하실 수 있습니다.
+                            </div>
+                        </div>
+                    `;
+                }
             }
 
             setMode('edit');
@@ -6727,12 +6764,14 @@
             toggleMobileView('list');
 
             const centerPoint = (tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 37.5665, lng: 126.9780 };
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 13,
-                center: centerPoint,
-                disableDefaultUI: true,
-                zoomControl: true
-            });
+            if (typeof window.google !== 'undefined' && typeof window.google.maps !== 'undefined') {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 13,
+                    center: centerPoint,
+                    disableDefaultUI: true,
+                    zoomControl: true
+                });
+            }
 
             currentMode = 'view';
             document.getElementById('sidebar').className = 'view-mode';
