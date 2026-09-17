@@ -190,7 +190,7 @@ ${categoryFocus} 엄선해 주세요.
     }
 
     return res.status(502).json({
-        error: 'OpenRouter 무료 모델 호출에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        error: 'AI 추천을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
         detail: lastError
     });
 };
