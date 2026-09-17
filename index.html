@@ -4714,6 +4714,37 @@
             showToast('여행 정보가 성공적으로 수정되었습니다.');
         }
 
+        function updateProjectActionButtons(isSample) {
+            const shareBtn = document.getElementById('share-action-btn');
+            const suggestionBtn = document.getElementById('suggestion-action-btn');
+            if (shareBtn) {
+                if (isSample) {
+                    shareBtn.disabled = true;
+                    shareBtn.style.opacity = '0.38';
+                    shareBtn.style.cursor = 'not-allowed';
+                    shareBtn.title = '샘플 여행은 공유할 수 없습니다.';
+                } else {
+                    shareBtn.disabled = false;
+                    shareBtn.style.opacity = '1';
+                    shareBtn.style.cursor = 'pointer';
+                    shareBtn.title = '공유하기';
+                }
+            }
+            if (suggestionBtn) {
+                if (isSample) {
+                    suggestionBtn.disabled = true;
+                    suggestionBtn.style.opacity = '0.38';
+                    suggestionBtn.style.cursor = 'not-allowed';
+                    suggestionBtn.title = '샘플 여행은 제안 기능을 이용할 수 없습니다.';
+                } else {
+                    suggestionBtn.disabled = false;
+                    suggestionBtn.style.opacity = '1';
+                    suggestionBtn.style.cursor = 'pointer';
+                    suggestionBtn.title = '제안 확인';
+                }
+            }
+        }
+
         function openProject(name) {
             if (name === SAMPLE_PROJECT_NAME && !allProjects[SAMPLE_PROJECT_NAME]) {
                 allProjects[SAMPLE_PROJECT_NAME] = JSON.parse(JSON.stringify(SAMPLE_PROJECT_DATA));
@@ -4743,6 +4774,7 @@
             appScreen.style.display = 'flex';
             appScreen.classList.remove('shared-view');
             toggleMobileView('list');
+            updateProjectActionButtons(name === SAMPLE_PROJECT_NAME);
 
             const initialCity = getDayCity(currentDay);
             const centerPoint = (initialCity.lat && initialCity.lng) ? { lat: initialCity.lat, lng: initialCity.lng } : ((tripCityLat && tripCityLng) ? { lat: tripCityLat, lng: tripCityLng } : { lat: 35.6762, lng: 139.6503 });
@@ -6543,6 +6575,10 @@
         }
 
         async function openShareModal() {
+            if (activeProjectName === SAMPLE_PROJECT_NAME) {
+                showToast('샘플 여행은 공유 기능을 지원하지 않습니다. 나만의 새 여행을 만들어 공유해 보세요!', { type: 'info' });
+                return;
+            }
             if (!FIREBASE_DB_URL) {
                 showToast('Firebase DB 설정이 필요합니다.', { type: 'error' });
                 return;
@@ -6874,6 +6910,10 @@
         }
 
         async function openReviewSuggestionModal() {
+            if (activeProjectName === SAMPLE_PROJECT_NAME) {
+                showToast('샘플 여행은 제안 기능을 지원하지 않습니다.', { type: 'info' });
+                return;
+            }
             if (!activeShareId) {
                 showToast('공유 링크가 생성되어 있지 않습니다. 먼저 [공유] 링크를 만들어 주세요.', { type: 'error' });
                 return;
