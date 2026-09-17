@@ -300,11 +300,12 @@
             flex-direction: column !important;
             justify-content: center !important;
             align-items: center !important;
+            flex: 1 1 auto !important;
             width: 100% !important;
-            min-height: 260px !important;
+            min-height: 280px !important;
             text-align: center !important;
             grid-column: 1 / -1 !important;
-            margin: 40px auto 30px !important;
+            margin: auto 0 !important;
         }
         .lobby-empty-notice {
             display: flex;
@@ -312,25 +313,20 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 44px 32px;
+            padding: 24px 20px;
             max-width: 480px;
             width: 100%;
-            margin: 0 auto;
-        }
-        .lobby-empty-notice .empty-icon {
-            font-size: 38px;
-            margin-bottom: 14px;
-            opacity: 0.85;
+            margin: auto;
         }
         .lobby-empty-notice .empty-title {
-            font-size: 16.5px;
-            font-weight: 700;
+            font-size: 19px;
+            font-weight: 750;
             color: var(--text-title);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: -0.3px;
         }
         .lobby-empty-notice .empty-desc {
-            font-size: 14px;
+            font-size: 14.5px;
             color: var(--text-muted);
             line-height: 1.6;
         }
@@ -994,44 +990,41 @@
         #sidebar.view-mode .edit-only { display: none !important; }
         #sidebar.edit-mode .view-only { display: none !important; }
 
-        /* 📅 일차별 탭 목록 */
+        /* 📅 일차별 탭 목록 (한 줄에 3일차씩 균등 배치) */
         .day-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-            overflow-x: auto;
-            overflow-y: hidden !important;
-            padding: 4px 4px 10px 4px;
-            white-space: nowrap;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            margin-bottom: 12px;
+            padding: 2px 0 6px 0;
+            width: 100%;
             box-sizing: border-box;
-            min-height: 54px;
-            height: 54px;
-            -webkit-overflow-scrolling: touch;
+            min-height: auto;
+            height: auto;
+            overflow: visible;
         }
         .day-tabs::-webkit-scrollbar {
             display: none;
         }
         .day-tab {
-            flex-shrink: 0;
-            padding: 8px 14px;
+            width: 100%;
+            padding: 7px 4px;
             border: 1px solid var(--border-color);
             background: var(--bg-card);
             border-radius: var(--radius-pill);
             font-weight: 700;
             color: var(--text-muted);
-            font-size: 13px;
             box-shadow: var(--shadow-card);
             cursor: pointer;
-            height: 38px;
-            min-height: 38px;
+            height: 36px;
+            min-height: 36px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 3px;
             transition: all var(--transition-fast);
             box-sizing: border-box;
+            white-space: nowrap;
         }
         .day-tab:hover {
             background: var(--bg-subtle);
@@ -1041,11 +1034,29 @@
             color: #ffffff;
             border-color: var(--brand-primary);
         }
+        .day-tab-num {
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: -0.2px;
+            flex-shrink: 0;
+        }
+        .day-tab-date {
+            font-size: 9.5px;
+            font-weight: 500;
+            opacity: 0.85;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+        }
         .day-tab-count {
             background: rgba(0, 0, 0, 0.07);
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: var(--radius-pill);
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 14px;
+            text-align: center;
+            line-height: 1.2;
+            flex-shrink: 0;
         }
         .day-tab.active .day-tab-count {
             background: rgba(255, 255, 255, 0.25);
@@ -2204,9 +2215,13 @@
             }
             .project-list.empty-state-container {
                 display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                flex: 1 1 auto !important;
                 grid-column: 1 / -1 !important;
                 width: 100% !important;
-                margin: 60px auto 40px !important;
+                margin: auto 0 !important;
             }
 
             /* 💻 플래너 PC 분할 화면 (지도 대화면 62%+, 오른쪽 일정 패널 38% 컴팩트) */
@@ -2236,12 +2251,15 @@
                 border-left: 1px solid var(--border-color);
             }
             .day-tabs {
-                flex-wrap: wrap !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 7px !important;
                 overflow-x: visible !important;
                 overflow-y: visible !important;
                 padding: 2px 0 6px 0 !important;
                 min-height: auto !important;
                 height: auto !important;
+                width: 100% !important;
             }
             .mobile-view-toggle-btn,
             .mobile-map-header-chip {
@@ -3938,7 +3956,6 @@
                 container.className = 'project-list empty-state-container';
                 container.innerHTML = `
                     <div class="lobby-empty-notice">
-                        <div class="empty-icon">여행</div>
                         <div class="empty-title">저장된 여행 일정이 없습니다</div>
                         <div class="empty-desc">위의 <b>[＋ 새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!</div>
                     </div>
@@ -4606,8 +4623,8 @@
                 btn.className = `day-tab ${i === currentDay ? 'active' : ''}`;
                 btn.id = `tab-day-${i}`;
                 btn.innerHTML = `
-                    <span>${i}일차</span>
-                    <span style="font-size:11px; opacity:0.85;">(${month}/${day} ${w})</span>
+                    <span class="day-tab-num">${i}일차</span>
+                    <span class="day-tab-date">(${month}/${day} ${w})</span>
                     <span class="day-tab-count">${placeCount}</span>
                 `;
                 btn.onclick = () => changeDay(i);
