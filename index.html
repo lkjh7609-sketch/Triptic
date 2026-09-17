@@ -33,8 +33,8 @@
            - 모바일과 PC 환경에 각각 완벽히 대응하는 유연한 반응형 아키텍처
            ========================================================================== */
         :root {
-            /* 🌊 3번 방향: Nordic Travel (포근한 웜 화이트 + 쨍하고 선명한 딥 오션 네이비) */
-            --bg-page: #F9F9F7;          /* 맑고 편안한 웜 오프화이트/노르딕 린넨 */
+            /* 🌊 딥 오션 네이비 & 웜 화이트 테마 (차분하고 선명한 가독성) */
+            --bg-page: #F9F9F7;          /* 맑고 편안한 웜 오프화이트/린넨 */
             --bg-surface: #F3F4F1;       /* 사이드바 / 서브 서피스 */
             --bg-card: #FFFFFF;          /* 순백 카드 */
             --bg-input: #FFFFFF;         /* 인풋 배경 */
@@ -164,41 +164,52 @@
             flex-direction: column;
             gap: 16px;
         }
-        .lobby-brand-container {
+        .lobby-brand-block {
             display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .triptic-logo-mark {
+            display: inline-flex;
             align-items: center;
-            gap: 16px;
+            gap: 11px;
+            user-select: none;
         }
-        .lobby-brand-emblem {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(30, 58, 95, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            object-fit: cover;
+        .triptic-logo-glyph {
+            width: 32px;
+            height: 32px;
             flex-shrink: 0;
+            filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.22));
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .lobby-brand-eyebrow {
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.6px;
-            color: var(--brand-primary);
-            margin-bottom: 2px;
+        .triptic-logo-mark:hover .triptic-logo-glyph {
+            transform: translateY(-2px) scale(1.06);
         }
-        .lobby-brand-title {
+        .triptic-logo-text {
             color: var(--text-title);
             margin: 0;
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: -0.8px;
-            line-height: 1.15;
+            font-size: 32px;
+            font-weight: 850;
+            letter-spacing: -0.035em;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Inter', system-ui, sans-serif;
+        }
+        .triptic-logo-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #38BDF8);
+            margin-left: -6px;
+            margin-top: 14px;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.45);
+            flex-shrink: 0;
         }
         .lobby-brand-subtitle {
             color: var(--text-muted);
-            margin: 3px 0 0 0;
-            font-size: 13px;
+            margin: 2px 0 0 0;
+            font-size: 13.5px;
             font-weight: 500;
+            letter-spacing: -0.01em;
         }
 
         .new-project-btn {
@@ -1396,16 +1407,20 @@
                 padding-bottom: 24px;
                 border-bottom: 1px solid var(--border-color);
             }
-            .lobby-brand-emblem {
-                width: 72px;
-                height: 72px;
-                border-radius: 18px;
+            .triptic-logo-glyph {
+                width: 36px;
+                height: 36px;
             }
-            .lobby-brand-title {
-                font-size: 34px;
+            .triptic-logo-text {
+                font-size: 38px;
+            }
+            .triptic-logo-dot {
+                width: 8px;
+                height: 8px;
+                margin-top: 18px;
             }
             .lobby-brand-subtitle {
-                font-size: 14px;
+                font-size: 14.5px;
             }
             .new-project-btn {
                 margin-bottom: 0;
@@ -1455,13 +1470,28 @@
     <div id="lobby-screen">
         <div class="lobby-container">
             <div class="lobby-header">
-                <div class="lobby-brand-container">
-                    <img src="icon-192.png" alt="Triptic 로고" class="lobby-brand-emblem">
-                    <div class="lobby-header-text">
-                        <div class="lobby-brand-eyebrow">Nordic Travel Itinerary</div>
-                        <h1 class="lobby-brand-title">Triptic</h1>
-                        <p class="lobby-brand-subtitle">차분하고 직관적인 나만의 여행 일정 관리</p>
+                <div class="lobby-brand-block">
+                    <div class="triptic-logo-mark">
+                        <svg class="triptic-logo-glyph" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Triptic 로고">
+                            <path d="M4 27.5L28.5 4.5L17.5 28.5L14 19.5L4 27.5Z" fill="url(#triptic-grad-1)" />
+                            <path d="M28.5 4.5L14 19.5L22 17.5L28.5 4.5Z" fill="url(#triptic-grad-2)" />
+                            <path d="M14 19.5L17.5 28.5L16.2 22.8L14 19.5Z" fill="#0A1628" opacity="0.3" />
+                            <defs>
+                                <linearGradient id="triptic-grad-1" x1="4" y1="28" x2="28" y2="4" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#1E3A5F" />
+                                    <stop offset="60%" stop-color="#2563EB" />
+                                    <stop offset="100%" stop-color="#38BDF8" />
+                                </linearGradient>
+                                <linearGradient id="triptic-grad-2" x1="14" y1="19.5" x2="28.5" y2="4.5" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#38BDF8" />
+                                    <stop offset="100%" stop-color="#93C5FD" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <h1 class="triptic-logo-text">Triptic</h1>
+                        <span class="triptic-logo-dot"></span>
                     </div>
+                    <p class="lobby-brand-subtitle">차분하고 직관적인 여행 일정 관리</p>
                 </div>
                 <button type="button" class="new-project-btn" onclick="openCreateModal()">
                     <span>＋</span> 새 여행 만들기
