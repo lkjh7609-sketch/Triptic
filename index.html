@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Triptic">
     <link rel="apple-touch-icon" href="icon-180.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
     
     <!-- 🔤 프리텐다드 폰트 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
@@ -159,18 +160,45 @@
         }
         .lobby-header {
             margin: 16px 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-        .lobby-header-text h1 {
-            color: var(--text-title);
-            margin: 0 0 6px 0;
-            font-size: 26px;
+        .lobby-brand-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .lobby-brand-emblem {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(30, 58, 95, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .lobby-brand-eyebrow {
+            font-size: 11px;
             font-weight: 800;
-            letter-spacing: -0.6px;
+            text-transform: uppercase;
+            letter-spacing: 1.6px;
+            color: var(--brand-primary);
+            margin-bottom: 2px;
         }
-        .lobby-header-text p {
-            color: var(--text-muted);
+        .lobby-brand-title {
+            color: var(--text-title);
             margin: 0;
-            font-size: 14px;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
+            line-height: 1.15;
+        }
+        .lobby-brand-subtitle {
+            color: var(--text-muted);
+            margin: 3px 0 0 0;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         .new-project-btn {
@@ -1361,16 +1389,23 @@
                 padding: 40px 32px 60px;
             }
             .lobby-header {
-                display: flex;
+                flex-direction: row;
                 justify-content: space-between;
-                align-items: flex-end;
-                margin-bottom: 28px;
-                padding-bottom: 20px;
+                align-items: center;
+                margin-bottom: 32px;
+                padding-bottom: 24px;
                 border-bottom: 1px solid var(--border-color);
             }
-            .lobby-header-text h1 {
-                font-size: 32px;
-                margin: 0 0 6px 0;
+            .lobby-brand-emblem {
+                width: 72px;
+                height: 72px;
+                border-radius: 18px;
+            }
+            .lobby-brand-title {
+                font-size: 34px;
+            }
+            .lobby-brand-subtitle {
+                font-size: 14px;
             }
             .new-project-btn {
                 margin-bottom: 0;
@@ -1420,12 +1455,16 @@
     <div id="lobby-screen">
         <div class="lobby-container">
             <div class="lobby-header">
-                <div class="lobby-header-text">
-                    <h1>Triptic</h1>
-                    <p>차분하고 편안한 여행 일정 관리를 시작하세요</p>
+                <div class="lobby-brand-container">
+                    <img src="icon-192.png" alt="Triptic 로고" class="lobby-brand-emblem">
+                    <div class="lobby-header-text">
+                        <div class="lobby-brand-eyebrow">Nordic Travel Itinerary</div>
+                        <h1 class="lobby-brand-title">Triptic</h1>
+                        <p class="lobby-brand-subtitle">차분하고 직관적인 나만의 여행 일정 관리</p>
+                    </div>
                 </div>
                 <button type="button" class="new-project-btn" onclick="openCreateModal()">
-                    <span>➕</span> 새 여행 만들기
+                    <span>＋</span> 새 여행 만들기
                 </button>
             </div>
 
