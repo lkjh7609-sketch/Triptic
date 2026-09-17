@@ -3141,13 +3141,36 @@
 
         function saveAllProjects(silent = false) {
             try {
-                localStorage.setItem('smartPlannerAllProjects', JSON.stringify(allProjects));
+                const serialized = JSON.stringify(allProjects);
+                const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
+
+                // 4.5MB 이상이면 경고 (5MB 제한에 근접)
+                if (sizeInMB > 4.5) {
+                    console.warn(`localStorage 용량 경고: ${sizeInMB.toFixed(2)}MB / 5MB`);
+                    showToast('저장 공간이 거의 가득 찼습니다. 백업 후 오래된 여행을 삭제하세요.', {
+                        type: 'warning',
+                        duration: 5000
+                    });
+                }
+
+                localStorage.setItem('smartPlannerAllProjects', serialized);
                 if (!silent) scheduleBackupSync();
+                return true;
             } catch (e) {
-                showToast('⚠️ 로컬 저장 공간이 가득 찼습니다. 오래된 여행을 파일로 내보낸 뒤 삭제해 주세요.', {
-                    type: 'error',
-                    duration: 6000
-                });
+                if (e.name === 'QuotaExceededError') {
+                    console.error('localStorage 용량 초과:', e);
+                    showToast('저장 공간이 가득 찼습니다. 백업 후 일부 여행을 삭제해 주세요.', {
+                        type: 'error',
+                        duration: 6000
+                    });
+                } else {
+                    console.error('저장 오류:', e);
+                    showToast('데이터 저장 중 오류가 발생했습니다.', {
+                        type: 'error',
+                        duration: 5000
+                    });
+                }
+                return false;
             }
         }
 
@@ -3661,11 +3684,9 @@
             const flightStartContainer = document.getElementById('flight-start-container');
             const flightEndContainer = document.getElementById('flight-end-container');
 
-            container.innerHTML = '';
-            startContainer.innerHTML = '';
-            endContainer.innerHTML = '';
-            flightStartContainer.innerHTML = '';
-            flightEndContainer.innerHTML = '';
+            // 성능 최적화: 한 번에 모든 컨테이너 클리어
+            const containers = [container, startContainer, endContainer, flightStartContainer, flightEndContainer];
+            containers.forEach(c => { if (c) c.innerHTML = ''; });
 
             if (!plannerData[currentDay]) plannerData[currentDay] = [];
             plannerData[currentDay] = plannerData[currentDay].filter(item => item && item.lat != null && item.lng != null);

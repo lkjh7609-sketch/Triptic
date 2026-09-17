@@ -12,10 +12,13 @@ async function callGemini(apiKey, prompt) {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 9500);
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
             const res = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey  // 헤더로 이동 (URL 쿼리 대신)
+                },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
