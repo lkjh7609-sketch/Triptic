@@ -103,7 +103,7 @@ export interface Recommendation {
     priceRange?: string;
     reason: string;
     tip?: string;
-    googlePlace?: google.maps.places.PlaceResult;
+    googlePlace?: any; // Google Places API result
 }
 
 // API 응답 타입
@@ -145,7 +145,7 @@ export interface ToastOptions {
 // Google Maps 타입 (글로벌 선언)
 declare global {
     interface Window {
-        google: typeof google;
+        google: any;
         appState: any;
         showToast: (message: string, options?: ToastOptions) => void;
         SUPABASE_ENABLED: boolean;
