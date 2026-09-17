@@ -2477,6 +2477,23 @@
             color: #EF4444;
             background: #FEE2E2;
         }
+
+        .guest-bypass-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted, #64748B);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            padding: 4px 8px;
+            transition: color 0.2s;
+            font-family: inherit;
+        }
+        .guest-bypass-btn:hover {
+            color: var(--brand-primary, #2563EB);
+        }
     </style>
 </head>
 <body class="auth-locked">
@@ -2541,6 +2558,11 @@
             <p class="auth-wall-footnote">
                 로그인 시 Triptic의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
             </p>
+            <div style="margin-top: 14px; border-top: 1px solid var(--border-color, #F1F5F9); padding-top: 10px;">
+                <button type="button" class="guest-bypass-btn" onclick="unlockApp({ user_metadata: { full_name: '게스트' } })">
+                    로그인 없이 먼저 둘러보기 →
+                </button>
+            </div>
         </div>
     </div>
 
@@ -2879,7 +2901,12 @@
                 }
             } catch (err) {
                 console.error('로그인 오류:', err);
-                alert(`로그인 중 오류가 발생했습니다: ${err.message || err}`);
+                const msg = err.message || (typeof err === 'object' ? JSON.stringify(err) : String(err));
+                if (msg.includes('provider is not enabled')) {
+                    alert(`⚠️ [${provider.toUpperCase()}] 로그인이 Supabase 콘솔에서 아직 활성화되지 않았습니다.\n\nSupabase 대시보드 > Authentication > Providers에서 [${provider.toUpperCase()}] 스위치를 켜고 설정을 완료해 주세요.`);
+                } else {
+                    alert(`로그인 중 오류가 발생했습니다: ${msg}`);
+                }
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = originalContent;
