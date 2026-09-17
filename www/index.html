@@ -2986,8 +2986,8 @@
         async function getSupabaseAuthClient() {
             if (supabaseAuthClient) return supabaseAuthClient;
             const env = await (window.__envPromise || Promise.resolve(window.ENV || {}));
-            const supabaseUrl = env?.SUPABASE_URL || 'https://mfwfqfzdgcgfnnmnlrxu.supabase.co';
-            const supabaseKey = env?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1md2ZxZnpkZ2NnZm5ubW5scnh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTE2NzAsImV4cCI6MjA1MjcyNzY3MH0.kXP5vVkp4ND0xEU5VXvGQ_qZy2fWJlG4KqYgBqCTkXc';
+            const supabaseUrl = env?.SUPABASE_URL || 'https://ifzykfemjzqquyzgpqax.supabase.co';
+            const supabaseKey = env?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmenlrZmVtanpxcXV5emdwcWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NjMwNTQsImV4cCI6MjEwNTIzOTA1NH0.69gjmsn3sv07uefbvvPWptY5h3v6bIJ_HLCcWJuq5VQ';
 
             if (window.supabase) {
                 supabaseAuthClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -3072,9 +3072,28 @@
             }
         }
 
+        async function syncUserProfile(user) {
+            if (!user) return;
+            try {
+                const client = await getSupabaseAuthClient();
+                if (!client) return;
+                const metadata = user.user_metadata || {};
+                const displayName = metadata.full_name || metadata.name || metadata.nickname || metadata.user_name || user.email?.split('@')[0] || '여행자';
+                await client.from('user_profiles').upsert({
+                    id: user.id,
+                    guest_name: displayName,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+            } catch (e) {
+                // RLS 또는 정책 미설정 시 콘솔 경고만 기록
+                console.warn('user_profiles 동기화 건너뜀:', e);
+            }
+        }
+
         function unlockApp(user) {
             hideAuthWall();
             updateAuthUI(user);
+            syncUserProfile(user);
             if (typeof renderLobby === 'function' && document.getElementById('lobby-screen')?.style.display !== 'none') {
                 renderLobby();
             }
