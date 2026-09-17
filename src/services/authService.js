@@ -13,35 +13,12 @@ export async function signInWithProvider(provider) {
     const client = (typeof window !== 'undefined' && window.supabaseClient) || supabase;
     const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
-    let result;
-    if (provider === 'naver') {
-        try {
-            result = await client.auth.signInWithOAuth({
-                provider: 'naver',
-                options: { redirectTo: redirectUrl }
-            });
-        } catch (e) {
-            result = await client.auth.signInWithOAuth({
-                provider: 'custom:naver',
-                options: { redirectTo: redirectUrl }
-            });
-        }
-    } else {
-        result = await client.auth.signInWithOAuth({
-            provider: provider,
-            options: { redirectTo: redirectUrl }
-        });
-    }
+    const result = await client.auth.signInWithOAuth({
+        provider: provider,
+        options: { redirectTo: redirectUrl }
+    });
 
     if (result?.error) {
-        if (provider === 'naver') {
-            const customResult = await client.auth.signInWithOAuth({
-                provider: 'custom:naver',
-                options: { redirectTo: redirectUrl }
-            });
-            if (customResult?.error) throw customResult.error;
-            return customResult.data;
-        }
         throw result.error;
     }
 
