@@ -1471,6 +1471,7 @@
             flex-shrink: 0;
             flex-wrap: nowrap;
             flex: 1;
+            justify-content: space-between;
         }
 
         .time-wrapper {
@@ -1512,7 +1513,7 @@
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
-            justify-content: flex-start;
+            justify-content: flex-end;
         }
 
         .delete-btn {
@@ -2291,16 +2292,13 @@
                 </button>
                 <div class="top-action-group">
                     <button type="button" class="icon-btn edit-only" id="share-action-btn" onclick="openShareModal()">
-                        <span>🔗</span> 공유
+                        공유
                     </button>
                     <button type="button" class="icon-btn edit-only" id="suggestion-action-btn" onclick="openReviewSuggestionModal()">
-                        <span>💡</span> 제안 <span id="suggestion-badge" class="badge-count" style="display:none">0</span>
+                        제안 <span id="suggestion-badge" class="badge-count" style="display:none">0</span>
                     </button>
-                    <button type="button" class="icon-btn" onclick="copyItineraryText()" title="일정 텍스트 복사">
-                        <span>📋</span> 복사
-                    </button>
-                    <button type="button" class="icon-btn" onclick="openPdfModal()" title="PDF 출력">
-                        <span>📄</span> PDF
+                    <button type="button" class="icon-btn" onclick="openExportModal()" title="내보내기">
+                        내보내기
                     </button>
                 </div>
             </div>
@@ -2315,8 +2313,8 @@
 
             <!-- 🔄 모드 전환 탭 -->
             <div class="mode-toggle">
-                <button type="button" class="mode-btn active" id="btn-edit" onclick="setMode('edit')">✏️ 편집 모드</button>
-                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">📄 뷰 모드 (경로)</button>
+                <button type="button" class="mode-btn active" id="btn-edit" onclick="setMode('edit')">편집 모드</button>
+                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">보기 모드</button>
             </div>
 
             <!-- 📅 일차별 탭 목록 -->
@@ -2332,9 +2330,9 @@
 
             <!-- 🏨 숙소 / 식사 / 경비 토글 버튼 -->
             <div class="extra-actions edit-only">
-                <button type="button" class="extra-btn" id="hotel-toggle-btn" onclick="toggleSection('hotel')">🏨 숙소</button>
-                <button type="button" class="extra-btn" id="meal-toggle-btn" onclick="toggleSection('meal')">🍽 식사</button>
-                <button type="button" class="extra-btn" id="expense-toggle-btn" onclick="toggleSection('expense')">💰 경비</button>
+                <button type="button" class="extra-btn" id="hotel-toggle-btn" onclick="toggleSection('hotel')">숙소</button>
+                <button type="button" class="extra-btn" id="meal-toggle-btn" onclick="toggleSection('meal')">식사</button>
+                <button type="button" class="extra-btn" id="expense-toggle-btn" onclick="toggleSection('expense')">경비</button>
             </div>
 
             <!-- 🏨 숙소 섹션 -->
@@ -3004,7 +3002,7 @@
                 container.className = 'project-list empty-state-container';
                 container.innerHTML = `
                     <div class="lobby-empty-notice">
-                        <div class="empty-icon">🗺️</div>
+                        <div class="empty-icon">여행</div>
                         <div class="empty-title">저장된 여행 일정이 없습니다</div>
                         <div class="empty-desc">위의 <b>[＋ 새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!</div>
                     </div>
@@ -3768,7 +3766,7 @@
                                 <span class="time-colon">:</span>
                                 <select class="time-select" onchange="updateTime(${index}, this.value, 'minute')">${generateMinuteOptions(timeParts[1])}</select>
                             </div>
-                            <button type="button" class="ai-recommend-btn edit-only" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">✨ AI 추천</button>
+                            <button type="button" class="ai-recommend-btn edit-only" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">AI 추천</button>
                         </div>
                         <div class="time-text view-only">${escapeHtml(item.time || '10:00')}</div>
                     </div>
@@ -3779,7 +3777,7 @@
                         </div>
                         ${memoHTML}
                         <div class="action-group edit-only" style="margin-top:14px;">
-                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
+                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">이동</button>
                             <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
                         </div>
                     </div>
@@ -5592,6 +5590,19 @@
             showToast('제안이 삭제되었습니다.');
         }
 
+        // 내보내기 모달 (복사/PDF 선택)
+        function openExportModal() {
+            openModal(`
+                <h3>내보내기</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">일정을 내보낼 방식을 선택하세요.</p>
+                <div class="modal-actions" style="flex-direction:column; gap:10px;">
+                    <button type="button" class="modal-btn primary" style="width:100%;" onclick="closeModal(); copyItineraryText();">텍스트 복사</button>
+                    <button type="button" class="modal-btn primary" style="width:100%;" onclick="closeModal(); openPdfModal();">PDF 다운로드</button>
+                    <button type="button" class="modal-btn secondary" style="width:100%;" onclick="closeModal()">취소</button>
+                </div>
+            `);
+        }
+
         function copyItineraryText() {
             let text = `✈️ [${activeProjectName || sharedProjectName}]\n`;
             text += `📍 목적지: ${tripCity}\n`;
@@ -5630,7 +5641,7 @@
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                showToast('📋 전체 일정이 텍스트로 복사되었습니다!<br>카카오톡이나 메시지에 붙여넣어 보세요.');
+                showToast('전체 일정이 텍스트로 복사되었습니다!');
             }).catch(() => {
                 showToast('클립보드 복사에 실패했습니다.', { type: 'error' });
             });
