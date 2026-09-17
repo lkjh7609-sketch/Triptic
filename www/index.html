@@ -25,6 +25,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 
+    <!-- 🔑 환경 변수 로더 (Vercel / Local) -->
+    <script>
+        window.ENV = window.ENV || null;
+        window.__envPromise = (async function() {
+            try {
+                const res = await fetch('/api/env');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && (data.GOOGLE_MAPS_API_KEY || data.SUPABASE_URL)) {
+                        window.ENV = data;
+                        return data;
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const isNativeApp = window.location.protocol === 'capacitor:' ||
+                                  window.location.hostname === 'localhost' ||
+                                  window.location.protocol === 'file:';
+                if (isNativeApp) {
+                    const remoteRes = await fetch('https://triptic-ten.vercel.app/api/env');
+                    if (remoteRes.ok) {
+                        const data = await remoteRes.json();
+                        window.ENV = data;
+                        return data;
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ 환경 변수 로드 실패:', e);
+            }
+
+            return window.ENV || {};
+        })();
+    </script>
+
     <style>
         /* ==========================================================================
            🎨 차분하고 편안한 웜 베이지 디자인 시스템 (Warm Minimalist Beige)
@@ -1470,6 +1505,8 @@
             gap: 3px;
             flex-shrink: 0;
             flex-wrap: nowrap;
+            flex: 1;
+            justify-content: space-between;
         }
 
         .time-wrapper {
@@ -1509,9 +1546,9 @@
         .action-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-            flex-wrap: nowrap;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .delete-btn {
@@ -2290,16 +2327,13 @@
                 </button>
                 <div class="top-action-group">
                     <button type="button" class="icon-btn edit-only" id="share-action-btn" onclick="openShareModal()">
-                        <span>🔗</span> 공유
+                        공유
                     </button>
                     <button type="button" class="icon-btn edit-only" id="suggestion-action-btn" onclick="openReviewSuggestionModal()">
-                        <span>💡</span> 제안 <span id="suggestion-badge" class="badge-count" style="display:none">0</span>
+                        제안 <span id="suggestion-badge" class="badge-count" style="display:none">0</span>
                     </button>
-                    <button type="button" class="icon-btn" onclick="copyItineraryText()" title="일정 텍스트 복사">
-                        <span>📋</span> 복사
-                    </button>
-                    <button type="button" class="icon-btn" onclick="openPdfModal()" title="PDF 출력">
-                        <span>📄</span> PDF
+                    <button type="button" class="icon-btn" onclick="openExportModal()" title="내보내기">
+                        내보내기
                     </button>
                 </div>
             </div>
@@ -2314,8 +2348,8 @@
 
             <!-- 🔄 모드 전환 탭 -->
             <div class="mode-toggle">
-                <button type="button" class="mode-btn active" id="btn-edit" onclick="setMode('edit')">✏️ 편집 모드</button>
-                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">📄 뷰 모드 (경로)</button>
+                <button type="button" class="mode-btn active" id="btn-edit" onclick="setMode('edit')">편집 모드</button>
+                <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">경로 모드</button>
             </div>
 
             <!-- 📅 일차별 탭 목록 -->
@@ -2331,9 +2365,9 @@
 
             <!-- 🏨 숙소 / 식사 / 경비 토글 버튼 -->
             <div class="extra-actions edit-only">
-                <button type="button" class="extra-btn" id="hotel-toggle-btn" onclick="toggleSection('hotel')">🏨 숙소</button>
-                <button type="button" class="extra-btn" id="meal-toggle-btn" onclick="toggleSection('meal')">🍽 식사</button>
-                <button type="button" class="extra-btn" id="expense-toggle-btn" onclick="toggleSection('expense')">💰 경비</button>
+                <button type="button" class="extra-btn" id="hotel-toggle-btn" onclick="toggleSection('hotel')">숙소</button>
+                <button type="button" class="extra-btn" id="meal-toggle-btn" onclick="toggleSection('meal')">식사</button>
+                <button type="button" class="extra-btn" id="expense-toggle-btn" onclick="toggleSection('expense')">경비</button>
             </div>
 
             <!-- 🏨 숙소 섹션 -->
@@ -2385,16 +2419,73 @@
         </button>
     </div>
 
-    <!-- 🗺️ Google Maps API -->
+    <!-- 🗺️ Google Maps API 동적 로더 (Vercel 환경 변수 연동) -->
     <script>
-        // Google Maps API 키를 환경 변수에서 로드
-        const GOOGLE_MAPS_API_KEY = window.ENV?.GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY_HERE';
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initSystem`;
-        script.onerror = function() { window.initSystem && window.initSystem(); window.gm_authFailure && window.gm_authFailure(); };
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
+        window._tripticSystemStarted = false;
+        window.safeInitSystem = function() {
+            if (window._tripticSystemStarted) return;
+            if (typeof window.initSystem === 'function') {
+                window._tripticSystemStarted = true;
+                window.initSystem();
+            } else {
+                const timer = setInterval(function() {
+                    if (typeof window.initSystem === 'function') {
+                        clearInterval(timer);
+                        if (!window._tripticSystemStarted) {
+                            window._tripticSystemStarted = true;
+                            window.initSystem();
+                        }
+                    }
+                }, 30);
+                setTimeout(function() {
+                    clearInterval(timer);
+                    if (!window._tripticSystemStarted && typeof window.initSystem === 'function') {
+                        window._tripticSystemStarted = true;
+                        window.initSystem();
+                    }
+                }, 10000);
+            }
+        };
+
+        window.onGoogleMapsInit = function() {
+            window.safeInitSystem();
+        };
+
+        (async function loadGoogleMaps() {
+            try {
+                const env = await (window.__envPromise || Promise.resolve(window.ENV || {}));
+                const apiKey = env?.GOOGLE_MAPS_API_KEY || localStorage.getItem('GOOGLE_MAPS_API_KEY') || '';
+
+                if (!apiKey) {
+                    console.error('❌ Google Maps API 키를 찾을 수 없습니다. Vercel 환경 변수(GOOGLE_MAPS_API_KEY)를 확인해 주세요.');
+                    window.safeInitSystem();
+                    if (typeof window.gm_authFailure === 'function') window.gm_authFailure();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places&callback=onGoogleMapsInit`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = function() {
+                    console.error('❌ Google Maps 스크립트 로드 실패');
+                    window.safeInitSystem();
+                    if (typeof window.gm_authFailure === 'function') window.gm_authFailure();
+                };
+                document.head.appendChild(script);
+
+                // 지도 로딩 지연 시 스플래시 화면 대기 해제 세이프가드 (6초)
+                setTimeout(function() {
+                    if (!window._tripticSystemStarted) {
+                        console.warn('⚠️ Google Maps 로드 지연으로 인해 기본 모드로 앱을 시작합니다.');
+                        window.safeInitSystem();
+                    }
+                }, 6000);
+            } catch (err) {
+                console.error('Google Maps 로더 오류:', err);
+                window.safeInitSystem();
+            }
+        })();
     </script>
 
     <script>
@@ -3012,7 +3103,7 @@
                 container.className = 'project-list empty-state-container';
                 container.innerHTML = `
                     <div class="lobby-empty-notice">
-                        <div class="empty-icon">🗺️</div>
+                        <div class="empty-icon">여행</div>
                         <div class="empty-title">저장된 여행 일정이 없습니다</div>
                         <div class="empty-desc">위의 <b>[＋ 새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!</div>
                     </div>
@@ -3151,13 +3242,36 @@
 
         function saveAllProjects(silent = false) {
             try {
-                localStorage.setItem('smartPlannerAllProjects', JSON.stringify(allProjects));
+                const serialized = JSON.stringify(allProjects);
+                const sizeInMB = new Blob([serialized]).size / (1024 * 1024);
+
+                // 4.5MB 이상이면 경고 (5MB 제한에 근접)
+                if (sizeInMB > 4.5) {
+                    console.warn(`localStorage 용량 경고: ${sizeInMB.toFixed(2)}MB / 5MB`);
+                    showToast('저장 공간이 거의 가득 찼습니다. 백업 후 오래된 여행을 삭제하세요.', {
+                        type: 'warning',
+                        duration: 5000
+                    });
+                }
+
+                localStorage.setItem('smartPlannerAllProjects', serialized);
                 if (!silent) scheduleBackupSync();
+                return true;
             } catch (e) {
-                showToast('⚠️ 로컬 저장 공간이 가득 찼습니다. 오래된 여행을 파일로 내보낸 뒤 삭제해 주세요.', {
-                    type: 'error',
-                    duration: 6000
-                });
+                if (e.name === 'QuotaExceededError') {
+                    console.error('localStorage 용량 초과:', e);
+                    showToast('저장 공간이 가득 찼습니다. 백업 후 일부 여행을 삭제해 주세요.', {
+                        type: 'error',
+                        duration: 6000
+                    });
+                } else {
+                    console.error('저장 오류:', e);
+                    showToast('데이터 저장 중 오류가 발생했습니다.', {
+                        type: 'error',
+                        duration: 5000
+                    });
+                }
+                return false;
             }
         }
 
@@ -3580,6 +3694,8 @@
             document.getElementById('btn-view').classList.toggle('active', mode === 'view');
             if (mode === 'view') closeAllSections();
             handleRouteDisplay();
+            renderList();
+            renderMapMarkers();
         }
 
         function generateSchedule(isLoad = false) {
@@ -3669,11 +3785,9 @@
             const flightStartContainer = document.getElementById('flight-start-container');
             const flightEndContainer = document.getElementById('flight-end-container');
 
-            container.innerHTML = '';
-            startContainer.innerHTML = '';
-            endContainer.innerHTML = '';
-            flightStartContainer.innerHTML = '';
-            flightEndContainer.innerHTML = '';
+            // 성능 최적화: 한 번에 모든 컨테이너 클리어
+            const containers = [container, startContainer, endContainer, flightStartContainer, flightEndContainer];
+            containers.forEach(c => { if (c) c.innerHTML = ''; });
 
             if (!plannerData[currentDay]) plannerData[currentDay] = [];
             plannerData[currentDay] = plannerData[currentDay].filter(item => item && item.lat != null && item.lng != null);
@@ -3776,13 +3890,9 @@
                                 <span class="time-colon">:</span>
                                 <select class="time-select" onchange="updateTime(${index}, this.value, 'minute')">${generateMinuteOptions(timeParts[1])}</select>
                             </div>
+                            <button type="button" class="ai-recommend-btn edit-only" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">AI 추천</button>
                         </div>
                         <div class="time-text view-only">${escapeHtml(item.time || '10:00')}</div>
-                        <div class="action-group edit-only">
-                            <button type="button" class="ai-recommend-btn" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">✨ AI 추천</button>
-                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
-                            <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
-                        </div>
                     </div>
                     <div class="place-content">
                         <div style="cursor:pointer;" onclick="showPlaceDetails(${index})" title="장소 정보 보기">
@@ -3790,6 +3900,10 @@
                             <span class="place-address">${escapeHtml(item.address || '')}</span>
                         </div>
                         ${memoHTML}
+                        <div class="action-group edit-only" style="margin-top:14px;">
+                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">이동</button>
+                            <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
+                        </div>
                     </div>
                 `;
 
@@ -4035,6 +4149,8 @@
             else parts[1] = val;
             plannerData[currentDay][index].time = parts.join(':');
             saveData();
+            renderList();
+            renderMapMarkers();
         }
 
         function updateMemo(index, val) {
@@ -4738,15 +4854,10 @@
             const basePlace = currentList[baseIndex];
             const cacheKey = `${currentDay}_${baseIndex}_${category}`;
 
-            // 캐시 확인
-            if (currentAiRecCache[cacheKey]) {
-                renderAiRecommendations(currentAiRecCache[cacheKey], baseIndex, city);
-                return;
-            }
-
+            // 캐시 사용하지 않고 항상 새로 가져오기 (최신 데이터 보장)
             try {
                 const isNativeApp = window.location.protocol === 'capacitor:' || window.location.hostname === 'localhost';
-                const apiUrl = isNativeApp ? 'https://kunyang.vercel.app/api/recommend' : '/api/recommend';
+                const apiUrl = isNativeApp ? 'https://triptic-ten.vercel.app/api/recommend' : '/api/recommend';
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -4845,7 +4956,7 @@
                                target="_blank" rel="noopener" class="ai-rec-link-btn" title="구글 지도에서 실시간 위치 및 사진 확인">
                                 📍 구글지도 ↗
                             </a>
-                            <button type="button" class="ai-rec-add-btn" id="ai-rec-add-btn-${i}" onclick="addAiRecommendationToTrip(${baseIndex}, ${i})">
+                            <button type="button" class="ai-rec-add-btn" id="ai-rec-add-btn-${i}" onclick="openTimeSelectForRecommendation(${baseIndex}, ${i})">
                                 <span>＋</span> 일정에 추가
                             </button>
                         </div>
@@ -4882,7 +4993,53 @@
             });
         }
 
-        function addAiRecommendationToTrip(baseIndex, recIndex) {
+        function openTimeSelectForRecommendation(baseIndex, recIndex) {
+            const rec = currentAiActiveList[recIndex];
+            if (!rec) return;
+
+            const currentList = plannerData[currentDay];
+            const baseItem = currentList[baseIndex];
+
+            // 기본 시간: 기준 장소 시간 + 1시간
+            let defaultTime = '12:00';
+            if (baseItem && baseItem.time && baseItem.time.includes(':')) {
+                const [hh, mm] = baseItem.time.split(':').map(Number);
+                const nextHour = Math.min(23, (hh || 10) + 1);
+                defaultTime = `${String(nextHour).padStart(2, '0')}:${String(mm || 0).padStart(2, '0')}`;
+            }
+
+            const [defHour, defMinute] = defaultTime.split(':');
+
+            openModal(`
+                <h3>'${escapeHtml(rec.name)}' 추가</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">일정에 추가할 시간을 선택하세요.</p>
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:24px 0;">
+                    <select id="add-rec-hour" class="time-select" style="font-size:18px; padding:8px 12px; height:auto;">
+                        ${generateHourOptions(defHour)}
+                    </select>
+                    <span style="font-size:20px; font-weight:800; color:var(--brand-primary);">:</span>
+                    <select id="add-rec-minute" class="time-select" style="font-size:18px; padding:8px 12px; height:auto;">
+                        ${generateMinuteOptions(defMinute)}
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
+                    <button type="button" class="modal-btn primary" onclick="confirmAddRecommendation(${baseIndex}, ${recIndex})">추가</button>
+                </div>
+            `);
+        }
+
+        function confirmAddRecommendation(baseIndex, recIndex) {
+            const hourSelect = document.getElementById('add-rec-hour');
+            const minuteSelect = document.getElementById('add-rec-minute');
+            if (!hourSelect || !minuteSelect) return;
+
+            const selectedTime = `${hourSelect.value}:${minuteSelect.value}`;
+            closeModal();
+            addAiRecommendationToTrip(baseIndex, recIndex, selectedTime);
+        }
+
+        function addAiRecommendationToTrip(baseIndex, recIndex, customTime) {
             const currentList = plannerData[currentDay];
             if (!currentList || !currentList[baseIndex]) return;
             const baseItem = currentList[baseIndex];
@@ -4910,9 +5067,9 @@
                 lng = lng + (Math.random() - 0.5) * 0.003;
             }
 
-            // 시간 계산: 기준 장소 시간 + 60분
-            let newTime = '12:00';
-            if (baseItem.time && baseItem.time.includes(':')) {
+            // 시간 설정: 사용자가 선택한 시간 또는 기본 시간
+            let newTime = customTime || '12:00';
+            if (!customTime && baseItem.time && baseItem.time.includes(':')) {
                 const [hh, mm] = baseItem.time.split(':').map(Number);
                 const nextHour = Math.min(23, (hh || 10) + 1);
                 newTime = `${String(nextHour).padStart(2, '0')}:${String(mm || 0).padStart(2, '0')}`;
@@ -4952,15 +5109,11 @@
             renderList();
             renderMapMarkers();
 
-            // 추가 버튼 완료 상태로 변경
-            const btn = document.getElementById(`ai-rec-add-btn-${recIndex}`);
-            if (btn) {
-                btn.className = 'ai-rec-add-btn added';
-                btn.innerHTML = '✓ 추가 완료';
-                btn.disabled = true;
-            }
+            // AI 추천 모달 닫기 (화면에서 추가된 일정 즉시 보이게)
+            closeModal();
 
-            showToast(`🎉 '${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
+            // 추가 완료 토스트 표시
+            showToast(`'${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
         }
 
         const ZONE_DISTANCE_THRESHOLD_KM = 20;
@@ -5092,6 +5245,14 @@
         function handleRouteDisplay() {
             clearRoutes();
             if (currentMode === 'view') drawRoutesForViewMode();
+        }
+
+        function renderMapMarkers() {
+            // 지도 마커 렌더링 함수 (현재는 handleRouteDisplay로 대체)
+            // 향후 구현 예정
+            if (typeof handleRouteDisplay === 'function') {
+                // handleRouteDisplay();
+            }
         }
 
         function drawRoutesForViewMode() {
@@ -5600,6 +5761,19 @@
             showToast('제안이 삭제되었습니다.');
         }
 
+        // 내보내기 모달 (복사/PDF 선택)
+        function openExportModal() {
+            openModal(`
+                <h3>내보내기</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">일정을 내보낼 방식을 선택하세요.</p>
+                <div class="modal-actions" style="flex-direction:column; gap:10px;">
+                    <button type="button" class="modal-btn primary" style="width:100%;" onclick="closeModal(); copyItineraryText();">텍스트 복사</button>
+                    <button type="button" class="modal-btn primary" style="width:100%;" onclick="closeModal(); openPdfModal();">PDF 다운로드</button>
+                    <button type="button" class="modal-btn secondary" style="width:100%;" onclick="closeModal()">취소</button>
+                </div>
+            `);
+        }
+
         function copyItineraryText() {
             let text = `✈️ [${activeProjectName || sharedProjectName}]\n`;
             text += `📍 목적지: ${tripCity}\n`;
@@ -5638,7 +5812,7 @@
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                showToast('📋 전체 일정이 텍스트로 복사되었습니다!<br>카카오톡이나 메시지에 붙여넣어 보세요.');
+                showToast('전체 일정이 텍스트로 복사되었습니다!');
             }).catch(() => {
                 showToast('클립보드 복사에 실패했습니다.', { type: 'error' });
             });

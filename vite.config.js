@@ -1,9 +1,34 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
-  root: '.',
-  publicDir: 'public',
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    root: '.',
+    publicDir: 'public',
+
+    plugins: [
+      {
+        name: 'api-env-dev-server',
+        configureServer(server) {
+          server.middlewares.use('/api/env', (req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.end(JSON.stringify({
+              GOOGLE_MAPS_API_KEY: env.GOOGLE_MAPS_API_KEY || env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || '',
+              SUPABASE_URL: env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
+              SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '',
+              AVIATIONSTACK_API_KEY: env.AVIATIONSTACK_API_KEY || env.NEXT_PUBLIC_AVIATIONSTACK_API_KEY || process.env.AVIATIONSTACK_API_KEY || '',
+              GEMINI_API_KEY_EXISTS: !!(env.GEMINI_API_KEY || process.env.GEMINI_API_KEY)
+            }));
+          });
+        }
+      }
+    ],
+
+    css: {
+      postcss: {}
+    },
 
   build: {
     outDir: 'dist',
@@ -72,4 +97,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@supabase/supabase-js']
   }
+};
 });
