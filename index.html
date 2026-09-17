@@ -4728,12 +4728,7 @@
             const basePlace = currentList[baseIndex];
             const cacheKey = `${currentDay}_${baseIndex}_${category}`;
 
-            // 캐시 확인
-            if (currentAiRecCache[cacheKey]) {
-                renderAiRecommendations(currentAiRecCache[cacheKey], baseIndex, city);
-                return;
-            }
-
+            // 캐시 사용하지 않고 항상 새로 가져오기 (최신 데이터 보장)
             try {
                 const isNativeApp = window.location.protocol === 'capacitor:' || window.location.hostname === 'localhost';
                 const apiUrl = isNativeApp ? 'https://triptic-ten.vercel.app/api/recommend' : '/api/recommend';
@@ -4835,7 +4830,7 @@
                                target="_blank" rel="noopener" class="ai-rec-link-btn" title="구글 지도에서 실시간 위치 및 사진 확인">
                                 📍 구글지도 ↗
                             </a>
-                            <button type="button" class="ai-rec-add-btn" id="ai-rec-add-btn-${i}" onclick="addAiRecommendationToTrip(${baseIndex}, ${i})">
+                            <button type="button" class="ai-rec-add-btn" id="ai-rec-add-btn-${i}" onclick="openTimeSelectForRecommendation(${baseIndex}, ${i})">
                                 <span>＋</span> 일정에 추가
                             </button>
                         </div>
@@ -4872,7 +4867,53 @@
             });
         }
 
-        function addAiRecommendationToTrip(baseIndex, recIndex) {
+        function openTimeSelectForRecommendation(baseIndex, recIndex) {
+            const rec = currentAiActiveList[recIndex];
+            if (!rec) return;
+
+            const currentList = plannerData[currentDay];
+            const baseItem = currentList[baseIndex];
+
+            // 기본 시간: 기준 장소 시간 + 1시간
+            let defaultTime = '12:00';
+            if (baseItem && baseItem.time && baseItem.time.includes(':')) {
+                const [hh, mm] = baseItem.time.split(':').map(Number);
+                const nextHour = Math.min(23, (hh || 10) + 1);
+                defaultTime = `${String(nextHour).padStart(2, '0')}:${String(mm || 0).padStart(2, '0')}`;
+            }
+
+            const [defHour, defMinute] = defaultTime.split(':');
+
+            openModal(`
+                <h3>'${escapeHtml(rec.name)}' 추가</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">일정에 추가할 시간을 선택하세요.</p>
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:24px 0;">
+                    <select id="add-rec-hour" class="time-select" style="font-size:18px; padding:8px 12px; height:auto;">
+                        ${generateHourOptions(defHour)}
+                    </select>
+                    <span style="font-size:20px; font-weight:800; color:var(--brand-primary);">:</span>
+                    <select id="add-rec-minute" class="time-select" style="font-size:18px; padding:8px 12px; height:auto;">
+                        ${generateMinuteOptions(defMinute)}
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
+                    <button type="button" class="modal-btn primary" onclick="confirmAddRecommendation(${baseIndex}, ${recIndex})">추가</button>
+                </div>
+            `);
+        }
+
+        function confirmAddRecommendation(baseIndex, recIndex) {
+            const hourSelect = document.getElementById('add-rec-hour');
+            const minuteSelect = document.getElementById('add-rec-minute');
+            if (!hourSelect || !minuteSelect) return;
+
+            const selectedTime = `${hourSelect.value}:${minuteSelect.value}`;
+            closeModal();
+            addAiRecommendationToTrip(baseIndex, recIndex, selectedTime);
+        }
+
+        function addAiRecommendationToTrip(baseIndex, recIndex, customTime) {
             const currentList = plannerData[currentDay];
             if (!currentList || !currentList[baseIndex]) return;
             const baseItem = currentList[baseIndex];
@@ -4900,9 +4941,9 @@
                 lng = lng + (Math.random() - 0.5) * 0.003;
             }
 
-            // 시간 계산: 기준 장소 시간 + 60분
-            let newTime = '12:00';
-            if (baseItem.time && baseItem.time.includes(':')) {
+            // 시간 설정: 사용자가 선택한 시간 또는 기본 시간
+            let newTime = customTime || '12:00';
+            if (!customTime && baseItem.time && baseItem.time.includes(':')) {
                 const [hh, mm] = baseItem.time.split(':').map(Number);
                 const nextHour = Math.min(23, (hh || 10) + 1);
                 newTime = `${String(nextHour).padStart(2, '0')}:${String(mm || 0).padStart(2, '0')}`;
@@ -4950,7 +4991,7 @@
                 btn.disabled = true;
             }
 
-            showToast(`🎉 '${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
+            showToast(`'${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
         }
 
         const ZONE_DISTANCE_THRESHOLD_KM = 20;
