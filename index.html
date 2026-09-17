@@ -1262,6 +1262,268 @@
             background: var(--bg-hover);
         }
 
+        .ai-recommend-btn {
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.08), rgba(37, 99, 235, 0.12));
+            color: var(--brand-primary);
+            border: 1px solid rgba(37, 99, 235, 0.25);
+            padding: 5px 9px;
+            border-radius: var(--radius-sm);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 34px;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .ai-recommend-btn:hover {
+            background: var(--brand-primary);
+            color: #ffffff;
+            border-color: var(--brand-primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* ✨ AI 추천 모달 및 카드 스타일 */
+        .ai-rec-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 82vh;
+            text-align: left;
+        }
+        .ai-rec-header h3 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-rec-header p {
+            margin: 0;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .ai-rec-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .ai-rec-tab {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+        .ai-rec-tab:hover {
+            border-color: var(--brand-primary);
+            color: var(--text-title);
+        }
+        .ai-rec-tab.active {
+            background: var(--brand-primary);
+            color: #ffffff;
+            border-color: var(--brand-primary);
+        }
+        .ai-rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            max-height: 52vh;
+            padding-right: 4px;
+        }
+        .ai-rec-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+            transition: all var(--transition-fast);
+        }
+        .ai-rec-card:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 4px 14px rgba(30, 58, 95, 0.08);
+        }
+        .ai-rec-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-rec-cat-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+        }
+        .ai-rec-cat-badge.restaurant { background: #FEF3C7; color: #92400E; }
+        .ai-rec-cat-badge.cafe { background: #EDE9FE; color: #5B21B6; }
+        .ai-rec-cat-badge.hotel { background: #DBEAFE; color: #1E40AF; }
+        .ai-rec-cat-badge.spot { background: #DCFCE7; color: #166534; }
+        .ai-rec-dist {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--brand-primary);
+        }
+        .ai-rec-card-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .ai-rec-name {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.3;
+        }
+        .ai-rec-rating {
+            font-size: 12px;
+            color: var(--text-title);
+            white-space: nowrap;
+            background: var(--bg-surface);
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .rating-source {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+        .ai-rec-menu-tag {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-surface);
+            padding: 5px 9px;
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            width: fit-content;
+        }
+        .menu-label { font-weight: 700; color: var(--text-title); margin-right: 4px; }
+        .ai-rec-desc {
+            margin: 0;
+            font-size: 12.5px;
+            color: var(--text-body);
+            line-height: 1.5;
+        }
+        .ai-rec-tip {
+            font-size: 11.5px;
+            color: #065F46;
+            background: #ECFDF5;
+            padding: 7px 10px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+            border: 1px solid #A7F3D0;
+        }
+        .ai-rec-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .ai-rec-link-btn {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+        }
+        .ai-rec-link-btn:hover {
+            background: var(--bg-surface);
+            color: var(--brand-primary);
+        }
+        .ai-rec-add-btn {
+            background: var(--brand-primary);
+            color: #ffffff;
+            border: none;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+        .ai-rec-add-btn:hover {
+            background: #152B47;
+            transform: translateY(-1px);
+        }
+        .ai-rec-add-btn.added {
+            background: #10B981;
+            cursor: default;
+            transform: none;
+        }
+        .ai-rec-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px;
+            text-align: center;
+            gap: 12px;
+        }
+        .ai-sparkle-spin {
+            font-size: 32px;
+            animation: pulseSparkle 1.4s ease-in-out infinite alternate;
+        }
+        @keyframes pulseSparkle {
+            0% { transform: scale(0.9) rotate(0deg); opacity: 0.7; }
+            100% { transform: scale(1.15) rotate(15deg); opacity: 1; filter: drop-shadow(0 0 10px #2563EB); }
+        }
+        .ai-loading-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+        .ai-loading-sub {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .ai-rec-skeleton {
+            width: 100%;
+            height: 90px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(90deg, var(--bg-surface) 25%, #E2E8F0 50%, var(--bg-surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         .meal-tag {
             display: inline-block;
             background: var(--warning-light);
@@ -3014,6 +3276,7 @@
                         </div>
                         <div class="time-text view-only">${escapeHtml(item.time || '10:00')}</div>
                         <div class="action-group edit-only">
+                            <button type="button" class="ai-recommend-btn" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">✨ AI 추천</button>
                             <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
                             <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
                         </div>
@@ -3819,9 +4082,14 @@
                     ${phoneHTML}
                     ${websiteHTML}
                     ${hoursHTML}
-                    <div class="modal-actions" style="margin-top:16px;">
-                        <a href="${place.url || mapsUrl}" target="_blank" rel="noopener" class="modal-btn primary" style="text-decoration:none;">구글 지도에서 열기 ↗</a>
-                        <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
+                    <div class="modal-actions" style="margin-top:16px; flex-direction:column; gap:8px;">
+                        <button type="button" class="modal-btn" style="background:linear-gradient(135deg, #1E3A5F, #2563EB); color:#ffffff; border:none; padding:10px; width:100%; border-radius:var(--radius-sm); font-weight:700; cursor:pointer;" onclick="closeModal(); openAiRecommendModal(${index});">
+                            ✨ 이 주변 AI 추천 맛집·카페·숙소 보기
+                        </button>
+                        <div style="display:flex; gap:8px; width:100%;">
+                            <a href="${place.url || mapsUrl}" target="_blank" rel="noopener" class="modal-btn primary" style="text-decoration:none; flex:1; text-align:center;">구글 지도 열기 ↗</a>
+                            <button type="button" class="modal-btn secondary" style="flex:1;" onclick="closeModal()">닫기</button>
+                        </div>
                     </div>
                 `;
             }
@@ -3833,9 +4101,14 @@
                     <h3>${escapeHtml(item.name)}</h3>
                     <p style="font-size:13px; color:var(--text-body); margin:0 0 8px;">${escapeHtml(item.address || '')}</p>
                     <p style="font-size:12px; color:var(--text-muted); margin-top:12px;">구글 지도 상세 정보를 추가로 불러오지 못했습니다.</p>
-                    <div class="modal-actions">
-                        <a href="${mapsUrl}" target="_blank" rel="noopener" class="modal-btn primary" style="text-decoration:none;">구글 지도에서 보기 ↗</a>
-                        <button type="button" class="modal-btn secondary" onclick="closeModal()">닫기</button>
+                    <div class="modal-actions" style="margin-top:16px; flex-direction:column; gap:8px;">
+                        <button type="button" class="modal-btn" style="background:linear-gradient(135deg, #1E3A5F, #2563EB); color:#ffffff; border:none; padding:10px; width:100%; border-radius:var(--radius-sm); font-weight:700; cursor:pointer;" onclick="closeModal(); openAiRecommendModal(${index});">
+                            ✨ 이 주변 AI 추천 맛집·카페·숙소 보기
+                        </button>
+                        <div style="display:flex; gap:8px; width:100%;">
+                            <a href="${mapsUrl}" target="_blank" rel="noopener" class="modal-btn primary" style="text-decoration:none; flex:1; text-align:center;">구글 지도 보기 ↗</a>
+                            <button type="button" class="modal-btn secondary" style="flex:1;" onclick="closeModal()">닫기</button>
+                        </div>
                     </div>
                 `;
             }
@@ -3871,6 +4144,323 @@
                     }
                 });
             }
+        }
+
+        // ==========================================================================
+        // ✨ OpenRouter AI 기반 주변 장소 추천 시스템 (자동 모델 폴백 & 구글 평점 연동)
+        // ==========================================================================
+        let currentAiRecCache = {}; // 캐시: `${day}_${baseIndex}_${category}` -> recommendations
+        let currentAiActiveList = []; // 현재 모달에 렌더링된 추천 목록
+        let currentAiBaseIndex = null;
+
+        function getCategoryEmoji(cat) {
+            switch (cat) {
+                case 'restaurant': return '🍽️';
+                case 'cafe': return '☕';
+                case 'hotel': return '🏨';
+                case 'spot': return '📸';
+                default: return '📍';
+            }
+        }
+
+        function openAiRecommendModal(baseIndex, category = 'all') {
+            const currentList = plannerData[currentDay];
+            if (!currentList || !currentList[baseIndex]) return;
+            const basePlace = currentList[baseIndex];
+            currentAiBaseIndex = baseIndex;
+
+            const safeName = escapeHtml(basePlace.name);
+            const city = (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
+
+            openModal(`
+                <div class="ai-rec-modal">
+                    <div class="ai-rec-header">
+                        <h3><span>✨</span> '${safeName}' 주변 AI 추천</h3>
+                        <p>OpenRouter AI가 추천하는 근처 로컬 맛집, 감성 카페, 숙소 및 명소입니다.</p>
+                    </div>
+
+                    <div class="ai-rec-tabs">
+                        <button type="button" class="ai-rec-tab ${category === 'all' ? 'active' : ''}" onclick="switchAiRecCategory(${baseIndex}, 'all')">전체</button>
+                        <button type="button" class="ai-rec-tab ${category === 'restaurant' ? 'active' : ''}" onclick="switchAiRecCategory(${baseIndex}, 'restaurant')">🍽️ 맛집</button>
+                        <button type="button" class="ai-rec-tab ${category === 'cafe' ? 'active' : ''}" onclick="switchAiRecCategory(${baseIndex}, 'cafe')">☕ 카페</button>
+                        <button type="button" class="ai-rec-tab ${category === 'hotel' ? 'active' : ''}" onclick="switchAiRecCategory(${baseIndex}, 'hotel')">🏨 숙소</button>
+                        <button type="button" class="ai-rec-tab ${category === 'spot' ? 'active' : ''}" onclick="switchAiRecCategory(${baseIndex}, 'spot')">📸 명소</button>
+                    </div>
+
+                    <div id="ai-rec-content-area" class="ai-rec-list">
+                        <div class="ai-rec-loading">
+                            <div class="ai-sparkle-spin">✨</div>
+                            <p class="ai-loading-title">OpenRouter AI로 주변 핫스팟 탐색 중...</p>
+                            <p class="ai-loading-sub">무료 AI 모델(Gemini, LLaMA 등)이 동선과 현지 평점을 분석하고 있습니다.</p>
+                            <div class="ai-rec-skeleton"></div>
+                            <div class="ai-rec-skeleton"></div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top:4px;">
+                        <button type="button" class="modal-btn secondary" style="width:100%;" onclick="closeModal()">닫기</button>
+                    </div>
+                </div>
+            `);
+
+            fetchAiRecommendations(baseIndex, category, city);
+        }
+
+        function switchAiRecCategory(baseIndex, category) {
+            document.querySelectorAll('.ai-rec-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('onclick').includes(`'${category}'`)) {
+                    tab.classList.add('active');
+                }
+            });
+
+            const contentArea = document.getElementById('ai-rec-content-area');
+            if (contentArea) {
+                contentArea.innerHTML = `
+                    <div class="ai-rec-loading">
+                        <div class="ai-sparkle-spin">✨</div>
+                        <p class="ai-loading-title">추천 목록을 불러오는 중...</p>
+                        <div class="ai-rec-skeleton"></div>
+                    </div>
+                `;
+            }
+
+            const city = (activeProjectName && allProjects[activeProjectName] && allProjects[activeProjectName].city) || tripCity || '';
+            fetchAiRecommendations(baseIndex, category, city);
+        }
+
+        async function fetchAiRecommendations(baseIndex, category, city) {
+            const currentList = plannerData[currentDay];
+            if (!currentList || !currentList[baseIndex]) return;
+            const basePlace = currentList[baseIndex];
+            const cacheKey = `${currentDay}_${baseIndex}_${category}`;
+
+            // 캐시 확인
+            if (currentAiRecCache[cacheKey]) {
+                renderAiRecommendations(currentAiRecCache[cacheKey], baseIndex, city);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        placeName: basePlace.name,
+                        city: city,
+                        category: category
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    renderAiRecError(data.error || 'AI 추천을 불러오지 못했습니다.', data.detail);
+                    return;
+                }
+
+                const recs = data.recommendations || [];
+                currentAiRecCache[cacheKey] = recs;
+                renderAiRecommendations(recs, baseIndex, city, data.modelUsed);
+            } catch (err) {
+                renderAiRecError('네트워크 오류가 발생했습니다. Vercel 배포 상태 및 인터넷 연결을 확인해주세요.', err.message);
+            }
+        }
+
+        function renderAiRecError(message, detail) {
+            const container = document.getElementById('ai-rec-content-area');
+            if (!container) return;
+
+            const isKeyMissing = message && message.includes('OPENROUTER_API_KEY');
+
+            container.innerHTML = `
+                <div style="padding:24px 16px; text-align:center; background:var(--bg-surface); border-radius:var(--radius-md); border:1px dashed var(--border-color);">
+                    <div style="font-size:30px; margin-bottom:8px;">${isKeyMissing ? '🔑' : '⚠️'}</div>
+                    <p style="font-size:14px; font-weight:700; color:var(--text-title); margin:0 0 6px;">${escapeHtml(message)}</p>
+                    ${isKeyMissing ? `
+                        <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin:0 0 12px;">
+                            Vercel 대시보드 → <b>Settings</b> → <b>Environment Variables</b>에<br>
+                            이름: <code>OPENROUTER_API_KEY</code> / 값: 발급받은 무료 키를 등록해 주시면 바로 작동합니다.
+                        </p>
+                    ` : ''}
+                    ${detail ? `<p style="font-size:11px; color:var(--text-light); font-family:monospace; margin:8px 0 0;">${escapeHtml(String(detail).slice(0, 150))}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function renderAiRecommendations(recommendations, baseIndex, city, modelUsed) {
+            const container = document.getElementById('ai-rec-content-area');
+            if (!container) return;
+
+            if (!recommendations || recommendations.length === 0) {
+                container.innerHTML = `
+                    <div style="padding:32px 16px; text-align:center; color:var(--text-muted); font-size:13px;">
+                        해당 카테고리에 추천할 장소를 찾지 못했습니다.<br>
+                        다른 탭을 선택해 보세요.
+                    </div>
+                `;
+                return;
+            }
+
+            currentAiActiveList = recommendations;
+
+            let html = '';
+            recommendations.forEach((rec, i) => {
+                const safeName = escapeHtml(rec.name);
+                const emoji = getCategoryEmoji(rec.category);
+                const ratingNum = rec.estimatedRating ? Number(rec.estimatedRating).toFixed(1) : '4.5';
+
+                html += `
+                    <div class="ai-rec-card" id="ai-rec-card-${i}">
+                        <div class="ai-rec-card-top">
+                            <div class="ai-rec-cat-badge ${escapeHtml(rec.category || 'spot')}">
+                                ${emoji} ${escapeHtml(rec.categoryLabel || '추천 스팟')}
+                            </div>
+                            <div class="ai-rec-dist">${escapeHtml(rec.distance || '')}</div>
+                        </div>
+                        <div class="ai-rec-card-body">
+                            <div class="ai-rec-card-name-row">
+                                <h4 class="ai-rec-name">${safeName}</h4>
+                                <span class="ai-rec-rating" id="ai-rec-rating-${i}">
+                                    ⭐ <b>${ratingNum}</b> <small class="rating-source">(AI 추정)</small>
+                                </span>
+                            </div>
+                            ${rec.signatureMenu ? `
+                                <div class="ai-rec-menu-tag">
+                                    <span class="menu-label">대표 메뉴:</span>
+                                    <span>${escapeHtml(rec.signatureMenu)}</span>
+                                    ${rec.priceRange ? `<span style="color:var(--text-muted); margin-left:4px;">· ${escapeHtml(rec.priceRange)}</span>` : ''}
+                                </div>
+                            ` : ''}
+                            <p class="ai-rec-desc">${escapeHtml(rec.reason || '')}</p>
+                            ${rec.tip ? `
+                                <div class="ai-rec-tip">
+                                    <span>💡</span>
+                                    <span>${escapeHtml(rec.tip)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="ai-rec-card-actions">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rec.name + (city ? ' ' + city : ''))}" 
+                               target="_blank" rel="noopener" class="ai-rec-link-btn" title="구글 지도에서 실시간 위치 및 사진 확인">
+                                📍 구글지도 ↗
+                            </a>
+                            <button type="button" class="ai-rec-add-btn" id="ai-rec-add-btn-${i}" onclick="addAiRecommendationToTrip(${baseIndex}, ${i})">
+                                <span>＋</span> 일정에 추가
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // 🌐 실시간 Google Places Service를 통한 평점 및 리뷰 수 연동
+            enrichRecommendationsWithGooglePlaces(recommendations, city);
+        }
+
+        function enrichRecommendationsWithGooglePlaces(recommendations, city) {
+            if (!(window.google && google.maps && google.maps.places && map)) return;
+            const service = new google.maps.places.PlacesService(map);
+
+            recommendations.forEach((rec, i) => {
+                const queryStr = city ? `${rec.name} ${city}` : rec.name;
+                service.findPlaceFromQuery({
+                    query: queryStr,
+                    fields: ['name', 'rating', 'user_ratings_total', 'formatted_address', 'geometry', 'place_id']
+                }, (results, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && results && results[0]) {
+                        const place = results[0];
+                        rec.googlePlace = place;
+                        const ratingEl = document.getElementById(`ai-rec-rating-${i}`);
+                        if (ratingEl && place.rating) {
+                            const totalReviews = place.user_ratings_total ? place.user_ratings_total.toLocaleString() : '0';
+                            ratingEl.innerHTML = `⭐ <b>${place.rating.toFixed(1)}</b> <small class="rating-source">(구글 리뷰 ${totalReviews}개)</small>`;
+                        }
+                    }
+                });
+            });
+        }
+
+        function addAiRecommendationToTrip(baseIndex, recIndex) {
+            const currentList = plannerData[currentDay];
+            if (!currentList || !currentList[baseIndex]) return;
+            const baseItem = currentList[baseIndex];
+            const rec = currentAiActiveList[recIndex];
+            if (!rec) return;
+
+            // 좌표 결정: Google Places 정보가 있으면 100% 정밀 좌표, 없으면 기준 장소 인근 오프셋 좌표
+            let lat = baseItem.lat;
+            let lng = baseItem.lng;
+            let address = baseItem.address || '';
+            let placeId = null;
+
+            if (rec.googlePlace && rec.googlePlace.geometry && rec.googlePlace.geometry.location) {
+                lat = typeof rec.googlePlace.geometry.location.lat === 'function' 
+                    ? rec.googlePlace.geometry.location.lat() 
+                    : rec.googlePlace.geometry.location.lat;
+                lng = typeof rec.googlePlace.geometry.location.lng === 'function' 
+                    ? rec.googlePlace.geometry.location.lng() 
+                    : rec.googlePlace.geometry.location.lng;
+                address = rec.googlePlace.formatted_address || address;
+                placeId = rec.googlePlace.place_id || null;
+            } else {
+                // 살짝 오프셋을 주어 지도 마커가 겹치지 않게 함
+                lat = lat + (Math.random() - 0.5) * 0.003;
+                lng = lng + (Math.random() - 0.5) * 0.003;
+            }
+
+            // 시간 계산: 기준 장소 시간 + 60분
+            let newTime = '12:00';
+            if (baseItem.time && baseItem.time.includes(':')) {
+                const [hh, mm] = baseItem.time.split(':').map(Number);
+                const nextHour = Math.min(23, (hh || 10) + 1);
+                newTime = `${String(nextHour).padStart(2, '0')}:${String(mm || 0).padStart(2, '0')}`;
+            }
+
+            // 메모 구성: 대표 메뉴 및 꿀팁
+            const memoParts = [];
+            if (rec.signatureMenu) memoParts.push(`대표메뉴: ${rec.signatureMenu}`);
+            if (rec.priceRange) memoParts.push(`가격대: ${rec.priceRange}`);
+            if (rec.tip) memoParts.push(`💡 ${rec.tip}`);
+            const memoText = memoParts.join('\n');
+
+            // 식사 타입 매핑 (맛집/카페인 경우)
+            let mealType = null;
+            if (rec.category === 'restaurant') {
+                const hour = parseInt(newTime.split(':')[0], 10);
+                mealType = hour >= 16 ? 'dinner' : 'lunch';
+            } else if (rec.category === 'cafe') {
+                mealType = 'cafe';
+            }
+
+            const newPlaceItem = {
+                name: rec.name,
+                address: address,
+                lat: lat,
+                lng: lng,
+                time: newTime,
+                memo: memoText,
+                mealType: mealType,
+                placeId: placeId
+            };
+
+            // 기준 장소 바로 다음 위치에 삽입
+            currentList.splice(baseIndex + 1, 0, newPlaceItem);
+
+            saveCurrentProject();
+            renderList();
+            renderMapMarkers();
+
+            // 추가 버튼 완료 상태로 변경
+            const btn = document.getElementById(`ai-rec-add-btn-${recIndex}`);
+            if (btn) {
+                btn.className = 'ai-rec-add-btn added';
+                btn.innerHTML = '✓ 추가 완료';
+                btn.disabled = true;
+            }
+
+            showToast(`🎉 '${escapeHtml(rec.name)}'이(가) ${currentDay}일차 일정에 추가되었습니다!`);
         }
 
         const ZONE_DISTANCE_THRESHOLD_KM = 20;
