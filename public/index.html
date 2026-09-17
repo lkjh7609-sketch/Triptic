@@ -1011,21 +1011,158 @@
         #sidebar.view-mode .edit-only { display: none !important; }
         #sidebar.edit-mode .view-only { display: none !important; }
 
-        /* 📅 일차별 탭 목록 (한 줄에 3일차씩 균등 배치) */
+        /* 📅 일차별 탭 목록 및 스와이프 페이지네이션 (3x2 그리드 + 스와이프) */
+        .day-tabs-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .day-tabs-track,
         .day-tabs {
+            display: flex !important;
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 2px 0 4px 0;
+            margin-bottom: 0;
+        }
+        .day-tabs-track::-webkit-scrollbar,
+        .day-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .day-tabs-page {
+            min-width: 100%;
+            width: 100%;
+            flex-shrink: 0;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 7px;
-            margin-bottom: 12px;
-            padding: 2px 0 6px 0;
-            width: 100%;
             box-sizing: border-box;
-            min-height: auto;
-            height: auto;
-            overflow: visible;
+            scroll-snap-align: start;
+            padding: 0 1px;
         }
-        .day-tabs::-webkit-scrollbar {
-            display: none;
+
+        /* ‹ › 플로팅 사이드 빠른 이동 화살표 (6일 초과 시 표시) */
+        .day-tabs-side-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-card, #FFFFFF);
+            border: 1px solid var(--border-color, #E2E8F0);
+            color: var(--text-heading, #1E293B);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 10;
+            transition: all var(--transition-fast, 0.2s);
+            padding: 0;
+            line-height: 1;
+        }
+        .day-tabs-side-arrow:hover {
+            background: var(--brand-primary, #2563EB);
+            color: #ffffff;
+            border-color: var(--brand-primary, #2563EB);
+            transform: translateY(-50%) scale(1.08);
+        }
+        .day-tabs-side-arrow.prev {
+            left: -8px;
+        }
+        .day-tabs-side-arrow.next {
+            right: -8px;
+        }
+
+        /* 📄 하단 스와이프 인디케이터 바 */
+        .day-tabs-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            padding: 4px 10px;
+            background: var(--bg-subtle, #F8FAFC);
+            border: 1px solid var(--border-color, #E2E8F0);
+            border-radius: var(--radius-pill, 9999px);
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .day-page-arrow {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-card, #FFFFFF);
+            border: 1px solid var(--border-color, #E2E8F0);
+            color: var(--text-muted, #64748B);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast, 0.2s);
+            padding: 0;
+            flex-shrink: 0;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .day-page-arrow:hover:not(:disabled) {
+            background: var(--brand-primary, #2563EB);
+            color: #FFFFFF;
+            border-color: var(--brand-primary, #2563EB);
+        }
+        .day-page-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .day-page-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .day-page-info {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-heading, #1E293B);
+            letter-spacing: -0.2px;
+        }
+        .day-page-dots {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .day-page-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border-color, #CBD5E1);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: all var(--transition-fast, 0.2s);
+        }
+        .day-page-dot.active {
+            width: 14px;
+            border-radius: 3px;
+            background: var(--brand-primary, #2563EB);
+        }
+        .day-page-hint {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--brand-primary, #2563EB);
+            opacity: 0.85;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
         }
         .day-tab {
             width: 100%;
@@ -1145,6 +1282,137 @@
             background: var(--bg-subtle);
             border-color: var(--primary);
             color: var(--primary);
+        }
+
+        /* 📍 일차별 활동 도시 변경 모달 전용 스타일 */
+        .day-city-modal-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .current-city-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-subtle, #F8FAFC);
+            border: 1px solid var(--border-color, #E2E8F0);
+            border-radius: var(--radius-sm, 8px);
+            padding: 10px 12px;
+            box-sizing: border-box;
+        }
+        .current-city-icon {
+            font-size: 20px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .current-city-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .current-city-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted, #64748B);
+        }
+        .current-city-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-heading, #1E293B);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 🎯 도시 적용 범위 선택 박스 */
+        .city-scope-section {
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        .city-scope-title {
+            font-size: 12.5px;
+            font-weight: 750;
+            color: var(--text-heading, #1E293B);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .city-scope-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .city-scope-card {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            padding: 11px 13px !important;
+            border-radius: var(--radius-sm, 8px) !important;
+            border: 1.5px solid var(--border-color, #E2E8F0) !important;
+            background: var(--bg-card, #FFFFFF) !important;
+            cursor: pointer !important;
+            transition: all var(--transition-fast, 0.2s) !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            text-decoration: none !important;
+        }
+        .city-scope-card:hover {
+            border-color: var(--brand-primary, #2563EB) !important;
+            background: var(--bg-subtle, #F8FAFC) !important;
+        }
+        .city-scope-card.selected,
+        .city-scope-card:has(input[type="radio"]:checked) {
+            border-color: var(--brand-primary, #2563EB) !important;
+            background: rgba(37, 99, 235, 0.05) !important;
+            box-shadow: 0 0 0 1px var(--brand-primary, #2563EB) !important;
+        }
+        .city-scope-card input[type="radio"] {
+            width: 18px !important;
+            min-width: 18px !important;
+            max-width: 18px !important;
+            height: 18px !important;
+            margin: 2px 0 0 0 !important;
+            padding: 0 !important;
+            accent-color: var(--brand-primary, #2563EB) !important;
+            cursor: pointer !important;
+            flex-shrink: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .city-scope-card-content {
+            flex: 1 !important;
+            min-width: 0 !important;
+            text-align: left !important;
+        }
+        .city-scope-card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 3px;
+        }
+        .city-scope-card-title {
+            font-size: 13.5px;
+            font-weight: 750;
+            color: var(--text-heading, #1E293B);
+            line-height: 1.3;
+        }
+        .city-scope-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: var(--radius-pill, 10px);
+            background: #FEF3C7;
+            color: #92400E;
+            white-space: nowrap;
+        }
+        .city-scope-card-desc {
+            font-size: 12px;
+            color: var(--text-muted, #64748B);
+            line-height: 1.4;
         }
 
         /* 🔍 장소 검색 섹션 */
@@ -2334,15 +2602,11 @@
                 background: var(--bg-surface);
                 border-left: 1px solid var(--border-color);
             }
-            .day-tabs {
+            .day-tabs-page {
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
                 gap: 7px !important;
-                overflow-x: visible !important;
-                overflow-y: visible !important;
-                padding: 2px 0 6px 0 !important;
-                min-height: auto !important;
-                height: auto !important;
+                min-width: 100% !important;
                 width: 100% !important;
             }
             .mobile-view-toggle-btn,
@@ -2831,8 +3095,30 @@
                 <button type="button" class="mode-btn" id="btn-view" onclick="setMode('view')">경로 모드</button>
             </div>
 
-            <!-- 📅 일차별 탭 목록 -->
-            <div class="day-tabs" id="day-tabs-container"></div>
+            <!-- 📅 일차별 탭 목록 (스와이프 페이지네이션 지원) -->
+            <div class="day-tabs-wrapper" id="day-tabs-wrapper">
+                <button type="button" class="day-tabs-side-arrow prev" id="day-tabs-side-prev" onclick="changeDayPage(-1)" aria-label="이전 일차 보기" style="display: none;">
+                    ‹
+                </button>
+                <div class="day-tabs-track" id="day-tabs-container"></div>
+                <button type="button" class="day-tabs-side-arrow next" id="day-tabs-side-next" onclick="changeDayPage(1)" aria-label="다음 일차 보기" style="display: none;">
+                    ›
+                </button>
+
+                <div class="day-tabs-pagination" id="day-tabs-pagination" style="display: none;">
+                    <button type="button" class="day-page-arrow prev" id="day-page-prev-btn" onclick="changeDayPage(-1)" aria-label="이전 페이지">
+                        ‹
+                    </button>
+                    <div class="day-page-center" onclick="changeDayPage(1)">
+                        <span class="day-page-info" id="day-page-info">1~6일차</span>
+                        <div class="day-page-dots" id="day-page-dots"></div>
+                        <span class="day-page-hint">스와이프 ➔</span>
+                    </div>
+                    <button type="button" class="day-page-arrow next" id="day-page-next-btn" onclick="changeDayPage(1)" aria-label="다음 페이지">
+                        ›
+                    </button>
+                </div>
+            </div>
 
             <!-- 📍 일차별 활동 도시 안내 및 변경 바 -->
             <div class="day-city-bar edit-only" id="day-city-bar">
@@ -4483,6 +4769,23 @@
         /* 📍 일차별 활동 도시 변경 모달 및 처리 (방안 A: 여행 끝까지 일괄 적용 지원) */
         let pendingDayCity = null;
 
+        window.updateScopeCardVisual = function(scopeVal) {
+            const cardRest = document.getElementById('scope-card-rest');
+            const cardSingle = document.getElementById('scope-card-single');
+            const radioRest = document.querySelector('input[name="day-city-scope"][value="rest"]');
+            const radioSingle = document.querySelector('input[name="day-city-scope"][value="single"]');
+            
+            if (scopeVal === 'rest') {
+                if (cardRest) cardRest.classList.add('selected');
+                if (cardSingle) cardSingle.classList.remove('selected');
+                if (radioRest) radioRest.checked = true;
+            } else {
+                if (cardSingle) cardSingle.classList.add('selected');
+                if (cardRest) cardRest.classList.remove('selected');
+                if (radioSingle) radioSingle.checked = true;
+            }
+        };
+
         function openDayCityModal() {
             const currentCityObj = getDayCity(currentDay);
             pendingDayCity = null;
@@ -4517,41 +4820,59 @@
             ` : '';
 
             openModal(`
-                <h3>📍 ${currentDay}일차 활동 도시 설정</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
-                    현재 설정된 도시: <strong style="color:var(--text-heading);">${escapeHtml(currentCityObj.name || '미설정')}</strong>
-                </p>
-                <div class="modal-field">
-                    <label>새로운 도시 검색 (자동완성)</label>
-                    <input type="text" id="day-city-input" placeholder="도시 검색 후 목록에서 선택 (예: Kyoto, Japan)">
-                    ${quickCityPillsHTML}
-                </div>
-
-                <div class="modal-field" style="background:var(--bg-subtle, #F8FAFC); padding:12px 14px; border-radius:var(--radius-sm, 8px); border:1px solid var(--border-color, #E2E8F0); margin-top:14px;">
-                    <label style="font-weight:700; color:var(--text-heading); margin-bottom:8px; display:block;">적용 범위 선택</label>
-                    <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; cursor:pointer; font-size:13px; line-height:1.4;">
-                        <input type="radio" name="day-city-scope" value="rest" checked style="margin-top:2px;">
-                        <div>
-                            <strong>이 날부터 여행 끝까지 일괄 적용 ⭐️</strong>
-                            <div style="font-size:12px; color:var(--text-muted);">
-                                ${currentDay}일차부터 ${totalTripDays}일차까지 모든 일정의 도시를 변경합니다.
-                            </div>
+                <div class="day-city-modal-container">
+                    <h3 style="margin-top:0; margin-bottom:12px; font-size:17px; font-weight:800; color:var(--text-heading);">📍 ${currentDay}일차 활동 도시 설정</h3>
+                    
+                    <div class="current-city-banner">
+                        <span class="current-city-icon">🏙️</span>
+                        <div class="current-city-details">
+                            <span class="current-city-label">${currentDay}일차 현재 도시</span>
+                            <strong class="current-city-name">${escapeHtml(currentCityObj.name || '미설정')}</strong>
                         </div>
-                    </label>
-                    <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:13px; line-height:1.4;">
-                        <input type="radio" name="day-city-scope" value="single" style="margin-top:2px;">
-                        <div>
-                            <strong>이 날(${currentDay}일차)만 적용</strong>
-                            <div style="font-size:12px; color:var(--text-muted);">
-                                오직 ${currentDay}일차 하루만 이 도시로 지정합니다.
-                            </div>
-                        </div>
-                    </label>
-                </div>
+                    </div>
 
-                <div class="modal-actions" style="margin-top:16px;">
-                    <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
-                    <button type="button" class="modal-btn primary" onclick="submitDayCityChange()">도시 적용</button>
+                    <div class="modal-field" style="margin-top:14px; margin-bottom:14px;">
+                        <label for="day-city-input">새로운 도시 검색 (자동완성)</label>
+                        <input type="text" id="day-city-input" placeholder="도시 검색 후 목록에서 선택 (예: Kyoto, Japan)" autocomplete="off">
+                        ${quickCityPillsHTML}
+                    </div>
+
+                    <div class="city-scope-section">
+                        <div class="city-scope-title">
+                            <span>적용 범위 선택</span>
+                        </div>
+                        <div class="city-scope-options">
+                            <label class="city-scope-card selected" id="scope-card-rest" onclick="updateScopeCardVisual('rest')">
+                                <input type="radio" name="day-city-scope" value="rest" checked onchange="updateScopeCardVisual('rest')">
+                                <div class="city-scope-card-content">
+                                    <div class="city-scope-card-title-row">
+                                        <span class="city-scope-card-title">이 날부터 여행 끝까지 일괄 적용</span>
+                                        <span class="city-scope-badge">추천 ⭐️</span>
+                                    </div>
+                                    <div class="city-scope-card-desc">
+                                        ${currentDay}일차부터 ${totalTripDays}일차까지 모든 일정의 도시를 변경합니다.
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="city-scope-card" id="scope-card-single" onclick="updateScopeCardVisual('single')">
+                                <input type="radio" name="day-city-scope" value="single" onchange="updateScopeCardVisual('single')">
+                                <div class="city-scope-card-content">
+                                    <div class="city-scope-card-title-row">
+                                        <span class="city-scope-card-title">이 날(${currentDay}일차)만 적용</span>
+                                    </div>
+                                    <div class="city-scope-card-desc">
+                                        오직 ${currentDay}일차 하루만 이 도시로 지정합니다.
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top:18px;">
+                        <button type="button" class="modal-btn secondary" onclick="closeModal()">취소</button>
+                        <button type="button" class="modal-btn primary" onclick="submitDayCityChange()">도시 적용</button>
+                    </div>
                 </div>
             `);
 
@@ -4996,8 +5317,18 @@
             container.innerHTML = '';
 
             const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+            const totalPages = Math.ceil(diffDays / 6);
+            let currentPageEl = null;
 
             for (let i = 1; i <= diffDays; i++) {
+                const pageIndex = Math.floor((i - 1) / 6);
+                if ((i - 1) % 6 === 0) {
+                    currentPageEl = document.createElement('div');
+                    currentPageEl.className = 'day-tabs-page';
+                    currentPageEl.id = `day-tabs-page-${pageIndex}`;
+                    container.appendChild(currentPageEl);
+                }
+
                 const activeDate = new Date(startDate);
                 activeDate.setDate(startDate.getDate() + (i - 1));
                 const month = activeDate.getMonth() + 1;
@@ -5018,13 +5349,132 @@
                     <span class="day-tab-count">${placeCount}</span>
                 `;
                 btn.onclick = () => changeDay(i);
-                container.appendChild(btn);
+                if (currentPageEl) {
+                    currentPageEl.appendChild(btn);
+                }
             }
 
             if (currentDay > diffDays) currentDay = diffDays;
 
+            initDayTabsSwipeListener();
+            renderDayTabsPagination(totalPages);
             renderTripInfoBar();
             changeDay(currentDay);
+        }
+
+        let currentDayPage = 0;
+        let totalDayPages = 1;
+
+        function renderDayTabsPagination(totalPages) {
+            totalDayPages = totalPages;
+            const paginationEl = document.getElementById('day-tabs-pagination');
+            const sidePrev = document.getElementById('day-tabs-side-prev');
+            const sideNext = document.getElementById('day-tabs-side-next');
+            const dotsEl = document.getElementById('day-page-dots');
+
+            if (totalPages <= 1) {
+                if (paginationEl) paginationEl.style.display = 'none';
+                if (sidePrev) sidePrev.style.display = 'none';
+                if (sideNext) sideNext.style.display = 'none';
+                return;
+            }
+
+            if (paginationEl) paginationEl.style.display = 'flex';
+            if (dotsEl) {
+                dotsEl.innerHTML = '';
+                for (let p = 0; p < totalPages; p++) {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = `day-page-dot ${p === currentDayPage ? 'active' : ''}`;
+                    dot.title = `${p * 6 + 1}~${Math.min((p + 1) * 6, totalTripDays)}일차`;
+                    dot.onclick = (e) => {
+                        e.stopPropagation();
+                        goToDayPage(p);
+                    };
+                    dotsEl.appendChild(dot);
+                }
+            }
+            updateDayTabsPaginationUI(currentDayPage);
+        }
+
+        function updateDayTabsPaginationUI(pageIndex) {
+            currentDayPage = pageIndex;
+            const totalDays = totalTripDays || (window.currentTrip && window.currentTrip.totalDays) || Object.keys(tripDates).length || 1;
+            const startDay = pageIndex * 6 + 1;
+            const endDay = Math.min((pageIndex + 1) * 6, totalDays);
+
+            const infoEl = document.getElementById('day-page-info');
+            if (infoEl) {
+                infoEl.textContent = `${startDay}~${endDay}일차 (${pageIndex + 1}/${totalDayPages})`;
+            }
+
+            const sidePrev = document.getElementById('day-tabs-side-prev');
+            const sideNext = document.getElementById('day-tabs-side-next');
+            const prevBtn = document.getElementById('day-page-prev-btn');
+            const nextBtn = document.getElementById('day-page-next-btn');
+
+            const hasPrev = pageIndex > 0;
+            const hasNext = pageIndex < totalDayPages - 1;
+
+            if (sidePrev) {
+                sidePrev.style.display = (totalDayPages > 1 && hasPrev) ? 'flex' : 'none';
+            }
+            if (sideNext) {
+                sideNext.style.display = (totalDayPages > 1 && hasNext) ? 'flex' : 'none';
+            }
+            if (prevBtn) {
+                prevBtn.disabled = !hasPrev;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = !hasNext;
+            }
+
+            const dots = document.querySelectorAll('.day-page-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === pageIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function changeDayPage(direction) {
+            const targetPage = Math.max(0, Math.min(totalDayPages - 1, currentDayPage + direction));
+            goToDayPage(targetPage);
+        }
+
+        function goToDayPage(pageIndex) {
+            currentDayPage = pageIndex;
+            const container = document.getElementById('day-tabs-container');
+            if (!container) return;
+            const pageEl = document.getElementById(`day-tabs-page-${pageIndex}`);
+            if (pageEl) {
+                const leftPos = pageEl.offsetLeft;
+                container.scrollTo({ left: leftPos, behavior: 'smooth' });
+            } else {
+                const scrollWidth = container.clientWidth;
+                container.scrollTo({ left: scrollWidth * pageIndex, behavior: 'smooth' });
+            }
+            updateDayTabsPaginationUI(pageIndex);
+        }
+
+        function initDayTabsSwipeListener() {
+            const container = document.getElementById('day-tabs-container');
+            if (!container || container._swipeListenerAttached) return;
+            container._swipeListenerAttached = true;
+            let scrollTimer = null;
+            container.addEventListener('scroll', () => {
+                clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(() => {
+                    const scrollLeft = container.scrollLeft;
+                    const width = container.clientWidth || 1;
+                    const pageIndex = Math.round(scrollLeft / width);
+                    if (pageIndex >= 0 && pageIndex < totalDayPages && pageIndex !== currentDayPage) {
+                        updateDayTabsPaginationUI(pageIndex);
+                    }
+                }, 70);
+            }, { passive: true });
         }
 
         function changeDay(day) {
@@ -5033,7 +5483,12 @@
             const selected = document.getElementById(`tab-day-${day}`);
             if (selected) {
                 selected.classList.add('active');
-                selected.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+
+            // 만약 선택된 일차가 현재 보이는 페이지가 아니면 해당 페이지로 스크롤
+            const targetPage = Math.floor((day - 1) / 6);
+            if (totalDayPages > 1 && targetPage !== currentDayPage) {
+                goToDayPage(targetPage);
             }
 
             closeAllSections();
