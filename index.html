@@ -1470,6 +1470,7 @@
             gap: 3px;
             flex-shrink: 0;
             flex-wrap: nowrap;
+            flex: 1;
         }
 
         .time-wrapper {
@@ -1509,9 +1510,9 @@
         .action-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-            flex-wrap: nowrap;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .delete-btn {
@@ -3767,13 +3768,9 @@
                                 <span class="time-colon">:</span>
                                 <select class="time-select" onchange="updateTime(${index}, this.value, 'minute')">${generateMinuteOptions(timeParts[1])}</select>
                             </div>
+                            <button type="button" class="ai-recommend-btn edit-only" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">✨ AI 추천</button>
                         </div>
                         <div class="time-text view-only">${escapeHtml(item.time || '10:00')}</div>
-                        <div class="action-group edit-only">
-                            <button type="button" class="ai-recommend-btn" onclick="openAiRecommendModal(${index})" title="이 장소 주변 맛집·카페·숙소 AI 추천">✨ AI 추천</button>
-                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
-                            <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
-                        </div>
                     </div>
                     <div class="place-content">
                         <div style="cursor:pointer;" onclick="showPlaceDetails(${index})" title="장소 정보 보기">
@@ -3781,6 +3778,10 @@
                             <span class="place-address">${escapeHtml(item.address || '')}</span>
                         </div>
                         ${memoHTML}
+                        <div class="action-group edit-only" style="margin-top:10px;">
+                            <button type="button" class="move-day-btn" onclick="openMoveDayModal(${index})" title="다른 날로 이동">📅 이동</button>
+                            <button type="button" class="delete-btn" onclick="deletePlace(${index})">삭제</button>
+                        </div>
                     </div>
                 `;
 
@@ -4737,7 +4738,7 @@
 
             try {
                 const isNativeApp = window.location.protocol === 'capacitor:' || window.location.hostname === 'localhost';
-                const apiUrl = isNativeApp ? 'https://kunyang.vercel.app/api/recommend' : '/api/recommend';
+                const apiUrl = isNativeApp ? 'https://triptic-ten.vercel.app/api/recommend' : '/api/recommend';
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
