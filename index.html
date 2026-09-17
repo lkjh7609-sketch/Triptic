@@ -3,81 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triptic - 스마트 여행 플래너</title>
+    <title>Triptic - 감성 여행 플래너</title>
     
-    <!-- 📱 PWA 매니페스트 & 테마 설정 (F-01, F-13) -->
+    <!-- 📱 PWA 매니페스트 & 테마 설정 -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="description" content="여행 일정, 항공편, 숙소, 식사, 경비를 한 곳에서 관리하고 지도로 확인하세요">
+    <meta name="theme-color" content="#F7F5F0">
+    <meta name="description" content="차분하고 직관적인 여행 일정 플래너, Triptic">
     
     <!-- 🍎 iOS Safari 지원 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Triptic">
     <link rel="apple-touch-icon" href="icon-180.png">
     
-    <!-- 🔤 한글 프리텐다드 폰트 (D-11) -->
+    <!-- 🔤 프리텐다드 폰트 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
     
-    <!-- 📦 외부 라이브러리 고정 버전 (F-14) -->
+    <!-- 📦 외부 라이브러리 (버전 고정) -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 
     <style>
-        /* 🎨 디자인 시스템 토큰 (D-05, D-07, D-10, D-12) */
+        /* ==========================================================================
+           🎨 차분하고 편안한 웜 베이지 디자인 시스템 (Warm Minimalist Beige)
+           - 킨포크 / 노션 감성의 따뜻한 오트밀 & 린넨 뉴트럴 팔레트
+           - 인위적인 형광색 및 어색한 좌측 보더("손톱 때") 전면 배제
+           - 모바일과 PC 환경에 각각 완벽히 대응하는 유연한 반응형 아키텍처
+           ========================================================================== */
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #eef2ff;
-            --primary-glow: rgba(79, 70, 229, 0.25);
+            --bg-page: #F7F5F0;          /* 전체 페이지 배경 (은은한 린넨 베이지) */
+            --bg-surface: #F2EFE8;       /* 사이드바 / 서브 레이어 */
+            --bg-card: #FFFFFF;          /* 순백 카드 */
+            --bg-input: #FFFFFF;         /* 인풋 배경 */
+            --bg-subtle: #EBE7DF;        /* 음영 및 칩 배경 */
+            --bg-hover: #E3DDD3;         /* 마우스 호버 */
             
-            --accent: #0284c7;
-            --accent-light: #e0f2fe;
+            --text-title: #2B2520;       /* 헤드라인 딥 에스프레소 */
+            --text-body: #4A423B;        /* 본문 웜 차콜 */
+            --text-muted: #7E756B;       /* 보조 텍스트 웜 스톤 */
+            --text-light: #A59C92;       /* 비활성 / 플레이스홀더 */
             
-            --success: #059669;
-            --success-light: #d1fae5;
+            --border-color: #E2DDD5;     /* 정갈한 테두리선 */
+            --border-subtle: #ECE8E1;    /* 연한 구분선 */
+            --border-focus: #785A40;     /* 포커스 테두리 */
             
-            --warning: #d97706;
-            --warning-light: #fef3c7;
+            --brand-primary: #785A40;    /* 메인 액센트 (새들 브라운 / 토프) */
+            --brand-hover: #634932;      /* 메인 호버 */
+            --brand-light: #EDE5DC;      /* 연한 브라운 틴트 */
             
-            --danger: #dc2626;
-            --danger-light: #fee2e2;
+            --accent-slate: #4A607A;     /* 지도 및 대중교통 경로 (차분한 슬레이트) */
+            --accent-slate-light: #EBF0F5;
             
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
+            --success: #3D6E57;          /* 포레스트 세이지 */
+            --success-light: #E7F0EB;
             
-            --bg-body: #f4f7fc;
-            --bg-card: #ffffff;
-            --bg-subtle: #f1f5f9;
-            --bg-input: #ffffff;
+            --warning: #8F5E24;          /* 웜 앰버 */
+            --warning-light: #FBF3E6;
             
-            --border-color: #e2e8f0;
-            --border-focus: #4f46e5;
+            --danger: #9B3B3B;           /* 소프트 브릭 레드 */
+            --danger-light: #FBEAEA;
             
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 14px;
             --radius-pill: 9999px;
             
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-            --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+            --shadow-card: 0 1px 3px rgba(43, 37, 32, 0.04), 0 1px 2px rgba(43, 37, 32, 0.02);
+            --shadow-hover: 0 4px 12px rgba(43, 37, 32, 0.07);
+            --shadow-modal: 0 16px 36px -4px rgba(43, 37, 32, 0.16), 0 4px 12px -2px rgba(43, 37, 32, 0.08);
             
             --transition-fast: 0.15s ease;
             --transition-normal: 0.25s ease;
         }
 
-        
-
         * {
             box-sizing: border-box;
-            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Segoe UI", sans-serif;
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
             word-break: keep-all;
+            letter-spacing: -0.2px;
         }
 
         body {
@@ -85,12 +90,12 @@
             display: flex;
             flex-direction: column;
             height: 100dvh;
-            background: var(--bg-body);
-            color: var(--text-primary);
+            background: var(--bg-page);
+            color: var(--text-body);
             overflow: hidden;
         }
 
-        /* ⚡ 시작 스플래시 화면 (D-19: 0.6초 단축) */
+        /* ⚡ 스플래시 화면 */
         #splash-screen {
             position: fixed;
             inset: 0;
@@ -100,7 +105,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background: var(--bg-card);
+            background: var(--bg-page);
             transition: opacity 0.25s ease, visibility 0.25s ease;
         }
         #splash-screen.hidden {
@@ -109,17 +114,16 @@
             pointer-events: none;
         }
         #splash-screen .splash-logo {
-            width: 96px;
-            height: 96px;
-            border-radius: 22px;
-            box-shadow: var(--shadow-lg);
+            width: 88px;
+            height: 88px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-card);
             object-fit: cover;
-            animation: splashPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         #splash-screen .splash-title {
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--primary);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-title);
             letter-spacing: -0.5px;
         }
         #splash-screen .splash-credit {
@@ -129,71 +133,77 @@
             color: var(--text-muted);
             font-weight: 500;
         }
-        @keyframes splashPop {
-            0%   { opacity: 0; transform: scale(0.9) translateY(8px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
 
-        /* 💡 프로젝트 로비(메인) 화면 */
+        /* ==========================================================================
+           🏠 로비(메인) 화면 - PC 대시보드 & 모바일 카드 피드
+           ========================================================================== */
         #lobby-screen {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-body);
+            background: var(--bg-page);
             z-index: 100;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 20px 16px 40px;
             overflow-y: auto;
         }
+        .lobby-container {
+            width: 100%;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
         .lobby-header {
-            text-align: center;
-            margin: 20px 0 24px;
+            margin: 16px 0 24px;
         }
-        .lobby-header h1 {
-            color: var(--primary);
+        .lobby-header-text h1 {
+            color: var(--text-title);
             margin: 0 0 6px 0;
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
         }
-        .lobby-header p {
+        .lobby-header-text p {
             color: var(--text-muted);
             margin: 0;
             font-size: 14px;
         }
 
         .new-project-btn {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
+            background: var(--brand-primary);
+            color: #ffffff;
             border: none;
-            padding: 15px;
+            padding: 13px 20px;
             border-radius: var(--radius-md);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-card);
             margin-bottom: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
             min-height: 48px;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            width: 100%;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+        }
+        .new-project-btn:hover {
+            background: var(--brand-hover);
         }
         .new-project-btn:active {
             transform: scale(0.98);
         }
 
-        /* ☁️ 백업 & 기기 동기화 카드 (F-04, U-21) */
+        /* ☁️ 백업 & 기기 연동 카드 */
         .sync-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 14px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-card);
         }
         .sync-card-header {
             display: flex;
@@ -204,18 +214,18 @@
         .sync-card-title {
             font-size: 13px;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: var(--text-title);
             display: flex;
             align-items: center;
             gap: 6px;
         }
         .sync-code-badge {
             background: var(--bg-subtle);
-            color: var(--primary);
+            color: var(--brand-primary);
             padding: 4px 8px;
             border-radius: var(--radius-sm);
             font-family: monospace;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.5px;
             border: 1px solid var(--border-color);
@@ -227,12 +237,12 @@
         }
         .sync-btn {
             flex: 1;
-            min-width: 90px;
-            min-height: 36px;
+            min-width: 85px;
+            min-height: 34px;
             background: var(--bg-subtle);
             border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 6px 10px;
+            color: var(--text-body);
+            padding: 5px 10px;
             border-radius: var(--radius-sm);
             font-size: 12px;
             font-weight: 600;
@@ -244,25 +254,22 @@
             transition: background var(--transition-fast);
         }
         .sync-btn:hover {
-            background: var(--border-color);
-        }
-        .sync-btn:active {
-            transform: scale(0.98);
+            background: var(--bg-hover);
         }
 
+        /* 🗂️ 여행 카드 리스트 (PC 그리드 & 모바일 스택) */
         .project-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 40px;
         }
         .project-card {
             background: var(--bg-card);
-            padding: 18px;
+            padding: 20px;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             border: 1px solid var(--border-color);
-            border-left: 5px solid var(--primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -270,251 +277,78 @@
             transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
         }
         .project-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--brand-primary);
+            transform: translateY(-1px);
         }
         .project-info h3 {
             margin: 0 0 6px 0;
             font-size: 17px;
-            color: var(--text-primary);
+            color: var(--text-title);
             font-weight: 700;
         }
         .project-meta {
             margin: 0 0 4px 0;
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
+        }
+        .project-badge {
+            background: var(--brand-light);
+            color: var(--brand-primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
         }
         .project-submeta {
             margin: 0;
             font-size: 12px;
-            color: var(--text-muted);
-        }
-        .project-badge {
-            background: var(--primary-light);
-            color: var(--primary);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: var(--radius-pill);
+            color: var(--text-light);
         }
         .project-actions {
             display: flex;
             align-items: center;
             gap: 6px;
             flex-shrink: 0;
-            margin-left: 8px;
+            margin-left: 12px;
         }
         .clone-project-btn {
             background: var(--bg-subtle);
-            color: var(--text-secondary);
+            color: var(--text-body);
             border: 1px solid var(--border-color);
-            padding: 8px 10px;
+            padding: 7px 12px;
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            min-height: 38px;
+            min-height: 36px;
+        }
+        .clone-project-btn:hover {
+            background: var(--bg-hover);
         }
         .delete-project-btn {
-            background: var(--danger-light);
+            background: var(--bg-subtle);
             color: var(--danger);
-            border: 1px solid transparent;
-            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            padding: 7px 12px;
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            min-height: 38px;
+            min-height: 36px;
         }
         .delete-project-btn:hover {
-            background: var(--danger);
-            color: #ffffff;
+            background: var(--danger-light);
+            border-color: var(--danger);
         }
 
-        /* 💡 토스트 / 스낵바 알림 시스템 (D-15, F-18) */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: calc(100% - 32px);
-            max-width: 440px;
-            pointer-events: none;
-        }
-        .toast {
-            pointer-events: auto;
-            background: #1e293b;
-            color: #ffffff;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .toast.error {
-            background: #991b1b;
-        }
-        .toast.success {
-            background: #065f46;
-        }
-        .toast.fade-out {
-            animation: toastFadeOut 0.25s forwards;
-        }
-        .toast-message {
-            flex: 1;
-            line-height: 1.4;
-        }
-        .toast-action-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            min-height: 34px;
-        }
-        .toast-close-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            min-height: 32px;
-        }
-        @keyframes toastSlideUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes toastFadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to   { opacity: 0; transform: translateY(12px); }
-        }
-
-        /* 💡 모달 시스템 (D-18) */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .modal-box {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            width: 100%;
-            max-width: 440px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-modal);
-            border: 1px solid var(--border-color);
-            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes modalPop {
-            0%   { opacity: 0; transform: scale(0.96); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .modal-box h3 {
-            margin: 0 0 16px;
-            color: var(--text-primary);
-            font-size: 18px;
-            font-weight: 800;
-        }
-        .modal-field {
-            margin-bottom: 14px;
-        }
-        .modal-field label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
-        .modal-field input, .modal-field select, .modal-field textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border-radius: var(--radius-sm);
-            font-size: 15px;
-            outline: none;
-            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-        }
-        .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px var(--primary-glow);
-        }
-        .modal-field .date-inputs {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
-        }
-        .modal-btn {
-            flex: 1;
-            padding: 12px 14px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: background var(--transition-fast), transform var(--transition-fast);
-        }
-        .modal-btn:active {
-            transform: scale(0.98);
-        }
-        .modal-btn.primary {
-            background: var(--primary);
-            color: #ffffff;
-        }
-        .modal-btn.primary:hover {
-            background: var(--primary-hover);
-        }
-        .modal-btn.secondary {
-            background: var(--bg-subtle);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-        .modal-btn.danger {
-            background: var(--danger);
-            color: #ffffff;
-        }
-
-        /* 💡 플래너(앱) 화면 */
+        /* ==========================================================================
+           🗺️ 플래너(앱) 화면 - PC 2열 분할 & 모바일 최적화
+           ========================================================================== */
         #app-screen {
             display: none;
             flex-direction: column;
@@ -523,23 +357,24 @@
         }
 
         #map {
-            height: 36vh;
+            height: 38vh;
             width: 100%;
             flex-shrink: 0;
             z-index: 1;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 6px rgba(43, 37, 32, 0.04);
         }
         #sidebar {
-            height: 64vh;
+            height: 62vh;
             flex: 1;
             overflow-y: auto;
-            padding: 14px;
-            background: var(--bg-body);
+            padding: 16px;
+            background: var(--bg-surface);
             z-index: 2;
             position: relative;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* 🔝 상단 바 (D-01: 깔끔한 원라인 헤더) */
+        /* 🔝 상단 네비게이션 툴바 */
         .planner-top-bar {
             display: flex;
             align-items: center;
@@ -550,8 +385,8 @@
         .top-nav-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 12px;
+            color: var(--text-title);
+            padding: 7px 12px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 700;
@@ -559,8 +394,12 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            min-height: 40px;
-            box-shadow: var(--shadow-sm);
+            min-height: 38px;
+            box-shadow: var(--shadow-card);
+            transition: background var(--transition-fast);
+        }
+        .top-nav-btn:hover {
+            background: var(--bg-subtle);
         }
         .top-action-group {
             display: flex;
@@ -570,18 +409,22 @@
         .icon-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 8px 10px;
+            color: var(--text-body);
+            padding: 7px 11px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            min-height: 40px;
+            min-height: 38px;
             display: inline-flex;
             align-items: center;
             gap: 4px;
             position: relative;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
+            transition: background var(--transition-fast);
+        }
+        .icon-btn:hover {
+            background: var(--bg-subtle);
         }
         .badge-count {
             position: absolute;
@@ -595,13 +438,13 @@
             border-radius: var(--radius-pill);
         }
 
-        /* 📍 여행 정보 바 & 수정 버튼 (F-02 완성) */
+        /* 📍 여행 정보 바 & 수정 */
         .trip-info-bar {
             background: var(--bg-card);
-            padding: 12px 14px;
+            padding: 12px 16px;
             border-radius: var(--radius-md);
             margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -610,18 +453,18 @@
         }
         .trip-info-text {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             line-height: 1.5;
-            font-weight: 600;
+            font-weight: 500;
         }
         .trip-info-text .city-name {
-            color: var(--primary);
-            font-size: 15px;
+            color: var(--brand-primary);
+            font-size: 16px;
             font-weight: 800;
         }
         .trip-edit-btn {
             background: var(--bg-subtle);
-            color: var(--text-secondary);
+            color: var(--text-title);
             border: 1px solid var(--border-color);
             padding: 6px 12px;
             border-radius: var(--radius-sm);
@@ -629,18 +472,19 @@
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            min-height: 36px;
+            min-height: 34px;
+            transition: background var(--transition-fast);
         }
         .trip-edit-btn:hover {
-            background: var(--border-color);
+            background: var(--bg-hover);
         }
 
-        /* 모드 전환 탭 (D-02) */
+        /* 🔄 모드 세그먼트 컨트롤 */
         .mode-toggle {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 12px;
-            background: var(--bg-card);
+            background: var(--bg-subtle);
             padding: 4px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
@@ -655,23 +499,23 @@
             font-size: 13px;
             color: var(--text-muted);
             cursor: pointer;
-            transition: var(--transition-fast);
-            min-height: 38px;
+            transition: all var(--transition-fast);
+            min-height: 36px;
         }
         .mode-btn.active {
-            background: var(--primary);
-            color: #ffffff;
-            box-shadow: var(--shadow-sm);
+            background: var(--bg-card);
+            color: var(--brand-primary);
+            box-shadow: var(--shadow-card);
         }
 
         #sidebar.view-mode .edit-only { display: none !important; }
         #sidebar.edit-mode .view-only { display: none !important; }
 
-        /* 📅 날짜 탭 (D-04: 요일과 장소 수 포함) */
+        /* 📅 일차별 탭 목록 */
         .day-tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             overflow-x: auto;
             padding-bottom: 6px;
             white-space: nowrap;
@@ -685,22 +529,24 @@
             font-weight: 700;
             color: var(--text-muted);
             font-size: 13px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             cursor: pointer;
-            min-height: 40px;
+            min-height: 38px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             transition: all var(--transition-fast);
         }
+        .day-tab:hover {
+            background: var(--bg-subtle);
+        }
         .day-tab.active {
-            background: var(--primary);
+            background: var(--brand-primary);
             color: #ffffff;
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
+            border-color: var(--brand-primary);
         }
         .day-tab-count {
-            background: rgba(0, 0, 0, 0.08);
+            background: rgba(0, 0, 0, 0.07);
             padding: 2px 6px;
             border-radius: var(--radius-pill);
             font-size: 11px;
@@ -713,10 +559,10 @@
         /* 🔍 장소 검색 섹션 */
         .input-section {
             background: var(--bg-card);
-            padding: 10px;
+            padding: 8px;
             border-radius: var(--radius-md);
             margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             border: 1px solid var(--border-color);
         }
         .input-group {
@@ -725,31 +571,35 @@
         }
         .input-group input[type="text"] {
             flex: 1;
-            padding: 10px 12px;
+            padding: 10px 14px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm) 0 0 var(--radius-sm);
             outline: none;
-            font-size: 15px;
+            font-size: 14px;
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-title);
         }
         .input-group input[type="text"]:focus {
             border-color: var(--border-focus);
         }
         #add-btn {
-            padding: 10px 16px;
-            background: var(--primary);
-            color: white;
+            padding: 10px 18px;
+            background: var(--brand-primary);
+            color: #ffffff;
             border: none;
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
             font-weight: 700;
             font-size: 14px;
             white-space: nowrap;
             cursor: pointer;
-            min-height: 44px;
+            min-height: 42px;
+            transition: background var(--transition-fast);
+        }
+        #add-btn:hover {
+            background: var(--brand-hover);
         }
 
-        /* 🏨 숙소 / 식사 / 경비 토글 버튼 */
+        /* 🏨 숙소 / 식사 / 경비 액션 버튼 */
         .extra-actions {
             display: flex;
             gap: 8px;
@@ -757,45 +607,48 @@
         }
         .extra-btn {
             flex: 1;
-            padding: 10px 4px;
+            padding: 9px 4px;
             border: 1px solid var(--border-color);
             background: var(--bg-card);
             border-radius: var(--radius-md);
             font-size: 13px;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: var(--text-body);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            min-height: 44px;
-            box-shadow: var(--shadow-sm);
+            min-height: 40px;
+            box-shadow: var(--shadow-card);
             transition: all var(--transition-fast);
         }
+        .extra-btn:hover {
+            background: var(--bg-subtle);
+        }
         .extra-btn.has-data {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+            background: var(--brand-light);
         }
 
-        /* 📂 접이식 섹션 (숙소/식사/경비) */
+        /* 📂 접이식 섹션 */
         .collapsible-section {
             background: var(--bg-card);
             border-radius: var(--radius-md);
             margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             border: 1px solid var(--border-color);
             overflow: hidden;
             display: none;
         }
         .collapsible-section.open { display: block; }
         .collapsible-title {
-            padding: 12px 14px;
+            padding: 12px 16px;
             font-weight: 800;
-            font-size: 14px;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-title);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -806,13 +659,13 @@
             color: var(--text-muted);
             font-size: 18px;
             cursor: pointer;
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .collapsible-content { padding: 14px; }
+        .collapsible-content { padding: 14px 16px; }
 
         .hotel-row {
             display: flex;
@@ -821,24 +674,30 @@
         }
         .hotel-row input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 9px 12px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
             font-size: 14px;
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-title);
+            outline: none;
         }
+        .hotel-row input:focus { border-color: var(--border-focus); }
         .hotel-clear-btn {
-            background: var(--danger-light);
+            background: var(--bg-subtle);
             color: var(--danger);
-            border: none;
-            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            padding: 9px 14px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            min-height: 44px;
+            min-height: 40px;
+        }
+        .hotel-clear-btn:hover {
+            background: var(--danger-light);
+            border-color: var(--danger);
         }
 
         .meal-row {
@@ -852,19 +711,20 @@
             width: 50px;
             font-size: 13px;
             font-weight: 800;
-            color: var(--text-secondary);
+            color: var(--text-body);
             flex-shrink: 0;
         }
         .meal-input {
             flex: 1;
-            padding: 9px 12px;
+            padding: 8px 12px;
             border: 1px solid var(--border-color);
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-title);
             border-radius: var(--radius-sm);
             font-size: 14px;
             outline: none;
         }
+        .meal-input:focus { border-color: var(--border-focus); }
         .meal-skip-label {
             display: flex;
             align-items: center;
@@ -873,7 +733,7 @@
             color: var(--text-muted);
             white-space: nowrap;
             cursor: pointer;
-            min-height: 44px;
+            min-height: 40px;
             padding: 0 4px;
         }
 
@@ -885,47 +745,50 @@
         }
         .expense-desc {
             flex: 2;
-            padding: 9px 12px;
+            padding: 8px 12px;
             border: 1px solid var(--border-color);
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-title);
             border-radius: var(--radius-sm);
             font-size: 14px;
             outline: none;
         }
+        .expense-desc:focus { border-color: var(--border-focus); }
         .expense-amount {
             flex: 1;
-            padding: 9px 12px;
+            padding: 8px 12px;
             border: 1px solid var(--border-color);
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-title);
             border-radius: var(--radius-sm);
             font-size: 14px;
             outline: none;
         }
+        .expense-amount:focus { border-color: var(--border-focus); }
         .expense-add-btn {
-            background: var(--primary);
+            background: var(--brand-primary);
             color: #fff;
             border: none;
-            padding: 10px 14px;
+            padding: 9px 14px;
             border-radius: var(--radius-sm);
             font-weight: 700;
             cursor: pointer;
             font-size: 13px;
             white-space: nowrap;
-            min-height: 44px;
+            min-height: 40px;
         }
+        .expense-add-btn:hover { background: var(--brand-hover); }
         .expense-list { margin-top: 10px; }
         .expense-list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 9px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-subtle);
             font-size: 14px;
         }
-        .expense-list-item .exp-desc { color: var(--text-primary); font-weight: 500; }
-        .expense-list-item .exp-amount { color: var(--primary); font-weight: 800; }
+        .expense-list-item .exp-desc { color: var(--text-title); font-weight: 500; }
+        .expense-list-item .exp-amount { color: var(--brand-primary); font-weight: 800; }
         .expense-del {
             background: none;
             border: none;
@@ -933,8 +796,7 @@
             font-size: 13px;
             cursor: pointer;
             font-weight: 700;
-            padding: 8px;
-            min-height: 40px;
+            padding: 6px;
         }
         .expense-day-total {
             display: flex;
@@ -942,39 +804,60 @@
             font-weight: 700;
             padding-top: 10px;
             margin-top: 6px;
-            color: var(--text-primary);
+            color: var(--text-title);
             font-size: 14px;
         }
         .expense-grand-total {
             margin-top: 8px;
             padding-top: 10px;
-            border-top: 2px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             font-weight: 900;
-            color: var(--primary);
+            color: var(--brand-primary);
             font-size: 15px;
         }
 
-        /* 📇 카드형 일정 리스트 */
+        /* ==========================================================================
+           📇 카드형 일정 리스트 (손톱 때 스타일 전면 제거, 정갈한 번호 뱃지 적용)
+           ========================================================================== */
         #planner-list-container { min-height: 50px; }
+
         .place-item {
             background: var(--bg-card);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 16px 18px;
             margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             border: 1px solid var(--border-color);
-            border-left: 5px solid var(--primary);
+            /* 🚫 손톱 때 같은 두꺼운 border-left 제거 */
             position: relative;
-            transition: box-shadow var(--transition-fast);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+        }
+        .place-item:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: #D4CDBF;
         }
         .place-item.sortable-ghost {
             opacity: 0.4;
-            border: 2px dashed var(--primary);
+            border: 2px dashed var(--brand-primary);
         }
-        .place-item.meal-item {
-            border-left-color: var(--warning);
+
+        /* 정갈한 장소 번호 뱃지 */
+        .place-index-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--brand-light);
+            color: var(--brand-primary);
+            font-size: 11px;
+            font-weight: 800;
+            margin-right: 6px;
+            flex-shrink: 0;
+            vertical-align: middle;
         }
 
         .fixed-item {
@@ -983,25 +866,21 @@
             padding: 14px 16px;
             margin-bottom: 12px;
             border: 1px solid var(--border-color);
-            border-left: 5px solid var(--accent);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 13px;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
+            color: var(--text-title);
+            box-shadow: var(--shadow-card);
         }
         .fixed-item.flight-item {
-            border-left-color: var(--primary);
-            background: var(--primary-light);
+            background: #F4EFEB;
+            border-color: #DFD5CA;
         }
         .fixed-item .fi-label {
-            font-weight: 900;
-            color: var(--accent);
+            font-weight: 800;
+            color: var(--brand-primary);
             margin-right: 6px;
-        }
-        .fixed-item.flight-item .fi-label {
-            color: var(--primary);
         }
         .fixed-item .fi-addr {
             color: var(--text-muted);
@@ -1019,20 +898,23 @@
         }
         .flight-lookup-btn {
             background: var(--bg-subtle);
-            color: var(--primary);
+            color: var(--brand-primary);
             border: 1px solid var(--border-color);
-            padding: 10px 14px;
+            padding: 9px 14px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            min-height: 44px;
+            min-height: 40px;
+        }
+        .flight-lookup-btn:hover {
+            background: var(--bg-hover);
         }
 
         .flight-manual-toggle {
             font-size: 12px;
-            color: var(--primary);
+            color: var(--brand-primary);
             background: none;
             border: none;
             cursor: pointer;
@@ -1058,21 +940,21 @@
             margin-top: 4px;
         }
 
-        /* 🎛 드래그 핸들 & 순서 조작 (D-14: 44px 터치 보장) */
+        /* 드래그 핸들 & 순서 버튼 */
         .drag-handle {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-light);
             cursor: grab;
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: var(--radius-sm);
         }
         .drag-handle:active {
             cursor: grabbing;
-            color: var(--primary);
+            color: var(--brand-primary);
             background: var(--bg-subtle);
         }
 
@@ -1083,11 +965,11 @@
             margin-right: 6px;
         }
         .order-btn {
-            width: 36px;
-            height: 22px;
+            width: 32px;
+            height: 20px;
             border: 1px solid var(--border-color);
             background: var(--bg-subtle);
-            color: var(--text-secondary);
+            color: var(--text-body);
             border-radius: 4px;
             font-size: 10px;
             cursor: pointer;
@@ -1101,7 +983,7 @@
             cursor: default;
         }
         .order-btn:not(:disabled):hover {
-            background: var(--border-color);
+            background: var(--bg-hover);
         }
 
         .place-header {
@@ -1123,49 +1005,52 @@
             gap: 4px;
         }
         .time-select {
-            padding: 6px 6px;
+            padding: 5px 6px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
             font-weight: 700;
-            color: var(--primary);
-            font-size: 14px;
+            color: var(--brand-primary);
+            font-size: 13px;
             background: var(--bg-subtle);
             outline: none;
             text-align: center;
-            min-height: 36px;
+            min-height: 34px;
         }
         .time-text {
             font-weight: 800;
-            color: var(--primary);
-            font-size: 15px;
+            color: var(--brand-primary);
+            font-size: 14px;
         }
 
         .delete-btn {
-            background: var(--danger-light);
+            background: var(--bg-subtle);
             color: var(--danger);
-            border: none;
-            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
             border-radius: var(--radius-sm);
             font-weight: 700;
             font-size: 12px;
             cursor: pointer;
-            min-height: 36px;
+            min-height: 34px;
         }
         .delete-btn:hover {
-            background: var(--danger);
-            color: white;
+            background: var(--danger-light);
+            border-color: var(--danger);
         }
 
         .move-day-btn {
             background: var(--bg-subtle);
-            color: var(--text-secondary);
+            color: var(--text-body);
             border: 1px solid var(--border-color);
-            padding: 6px 8px;
+            padding: 5px 8px;
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            min-height: 36px;
+            min-height: 34px;
+        }
+        .move-day-btn:hover {
+            background: var(--bg-hover);
         }
 
         .meal-tag {
@@ -1183,7 +1068,7 @@
         .place-name {
             font-size: 16px;
             font-weight: 800;
-            color: var(--text-primary);
+            color: var(--text-title);
             margin-bottom: 4px;
             display: block;
         }
@@ -1201,30 +1086,30 @@
             border-radius: var(--radius-sm);
             padding: 8px 10px;
             font-size: 13px;
-            background: var(--bg-subtle);
-            color: var(--text-primary);
+            background: var(--bg-page);
+            color: var(--text-title);
             resize: none;
             outline: none;
             margin-top: 4px;
         }
         .memo-input:focus {
-            border-color: var(--primary);
-            background: var(--bg-card);
+            border-color: var(--border-focus);
+            background: #ffffff;
         }
         .memo-text {
             font-size: 13px;
-            color: var(--text-secondary);
-            background: var(--bg-subtle);
+            color: var(--text-body);
+            background: var(--bg-page);
             padding: 8px 12px;
             border-radius: var(--radius-sm);
-            border-left: 3px solid var(--primary);
+            border-left: 2px solid var(--brand-primary);
             margin-top: 6px;
             white-space: pre-wrap;
             word-break: break-word;
             line-height: 1.5;
         }
 
-        /* 🚇 대중교통 경로선 및 딥링크 (U-02 소요시간 뱃지 포함) */
+        /* 🚇 대중교통 이동 딥링크 */
         .route-link-wrapper {
             display: flex;
             justify-content: center;
@@ -1232,9 +1117,9 @@
         }
         .route-link-btn {
             background: var(--bg-card);
-            color: var(--accent);
+            color: var(--accent-slate);
             border: 1px solid var(--border-color);
-            padding: 8px 16px;
+            padding: 7px 16px;
             border-radius: var(--radius-pill);
             font-size: 12px;
             font-weight: 700;
@@ -1242,16 +1127,16 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             transition: all var(--transition-fast);
         }
         .route-link-btn:hover {
-            border-color: var(--accent);
-            box-shadow: var(--shadow-md);
+            border-color: var(--accent-slate);
+            background: var(--accent-slate-light);
         }
         .transit-duration-tag {
-            background: var(--accent-light);
-            color: var(--accent);
+            background: var(--accent-slate-light);
+            color: var(--accent-slate);
             padding: 2px 6px;
             border-radius: var(--radius-pill);
             font-size: 11px;
@@ -1265,56 +1150,254 @@
         }
         .pdf-btn {
             flex: 1;
-            background: var(--primary);
-            color: white;
+            background: var(--brand-primary);
+            color: #ffffff;
             border: none;
             padding: 12px;
             border-radius: var(--radius-md);
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-card);
             min-height: 44px;
+            transition: background var(--transition-fast);
+        }
+        .pdf-btn:hover {
+            background: var(--brand-hover);
         }
 
         .empty-day-notice {
             text-align: center;
-            padding: 30px 16px;
+            padding: 36px 16px;
             color: var(--text-muted);
             font-size: 14px;
             line-height: 1.6;
         }
 
+        /* ==========================================================================
+           🔔 토스트 및 모달
+           ========================================================================== */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: calc(100% - 32px);
+            max-width: 440px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            background: #2B2520;
+            color: #F7F5F0;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-modal);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .toast.error { background: #7A2828; }
+        .toast.success { background: #2D5A45; }
+        .toast.fade-out { animation: toastFadeOut 0.25s forwards; }
+        .toast-message { flex: 1; line-height: 1.4; }
+        .toast-action-btn {
+            background: var(--brand-light);
+            color: var(--brand-primary);
+            border: none;
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            min-height: 32px;
+        }
+        .toast-close-btn {
+            background: none;
+            border: none;
+            color: #A59C92;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            min-height: 28px;
+        }
+        @keyframes toastSlideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toastFadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(12px); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(43, 37, 32, 0.45);
+            backdrop-filter: blur(3px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-modal);
+            border: 1px solid var(--border-color);
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes modalPop {
+            0%   { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-box h3 {
+            margin: 0 0 16px;
+            color: var(--text-title);
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .modal-field { margin-bottom: 14px; }
+        .modal-field label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .modal-field input, .modal-field select, .modal-field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-title);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+        .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus {
+            border-color: var(--border-focus);
+        }
+        .modal-field .date-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 11px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-fast);
+        }
+        .modal-btn.primary {
+            background: var(--brand-primary);
+            color: #ffffff;
+        }
+        .modal-btn.primary:hover {
+            background: var(--brand-hover);
+        }
+        .modal-btn.secondary {
+            background: var(--bg-subtle);
+            color: var(--text-body);
+            border: 1px solid var(--border-color);
+        }
+        .modal-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+        .modal-btn.danger {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
         .pac-container {
             z-index: 10000 !important;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-modal);
             border: 1px solid var(--border-color);
             font-family: inherit;
         }
 
-        /* 💻 데스크톱 레이아웃 (D-20) */
-        @media (min-width: 768px) {
-            body { background: #e2e8f0; }
+        /* ==========================================================================
+           💻 데스크톱 / PC 대화면 레이아웃 최적화 (>= 900px)
+           ========================================================================== */
+        @media (min-width: 900px) {
             #lobby-screen {
-                max-width: 680px;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 24px;
-                height: calc(100% - 48px);
-                border-radius: var(--radius-lg);
-                box-shadow: var(--shadow-modal);
+                padding: 40px 32px 60px;
             }
+            .lobby-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-bottom: 28px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .lobby-header-text h1 {
+                font-size: 32px;
+                margin: 0 0 6px 0;
+            }
+            .new-project-btn {
+                margin-bottom: 0;
+                width: auto;
+                min-width: 180px;
+            }
+            .project-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+            }
+
+            /* 플래너 PC 분할 화면 (왼쪽 지도 48%, 오른쪽 일정 패널 52%) */
             #app-screen {
                 flex-direction: row;
-                max-width: 1440px;
-                margin: 0 auto;
-                width: 100%;
-                height: 100%;
-                box-shadow: var(--shadow-modal);
+                max-width: 100vw;
+                height: 100vh;
             }
-            #map { width: 48%; height: 100%; }
-            #sidebar { width: 52%; height: 100%; }
+            #map {
+                width: 48%;
+                height: 100vh;
+                box-shadow: 1px 0 10px rgba(43, 37, 32, 0.05);
+            }
+            #sidebar {
+                width: 52%;
+                height: 100vh;
+                padding: 24px 32px;
+                background: var(--bg-surface);
+                border-left: 1px solid var(--border-color);
+            }
         }
     </style>
 </head>
@@ -1324,50 +1407,53 @@
     <div id="splash-screen">
         <img class="splash-logo" src="icon-192.png" alt="Triptic 로고">
         <div class="splash-title">Triptic</div>
-        <div class="splash-credit">스마트 여행 플래너</div>
+        <div class="splash-credit">나만의 감성 여행 플래너</div>
     </div>
 
-    <!-- 🔔 토스트 컨테이너 (알림 및 되돌리기 스낵바) -->
+    <!-- 🔔 토스트 컨테이너 -->
     <div id="toast-container"></div>
 
-    <!-- 💡 로비(프로젝트 목록) 화면 -->
+    <!-- 🏠 로비(프로젝트 목록) 화면 -->
     <div id="lobby-screen">
-        <div class="lobby-header">
-            <h1>Triptic</h1>
-            <p>나만의 여행 일정을 스마트하게 설계하세요</p>
-        </div>
-
-        <button type="button" class="new-project-btn" onclick="openCreateModal()">
-            <span>➕</span> 새 여행 만들기
-        </button>
-
-        <!-- ☁️ 기기 동기화 및 백업 카드 (F-04, U-21) -->
-        <div class="sync-card">
-            <div class="sync-card-header">
-                <span class="sync-card-title">☁️ 기기 동기화 & 백업</span>
-                <span class="sync-code-badge" id="my-backup-code" title="이 기기의 복구 코드">CODE</span>
+        <div class="lobby-container">
+            <div class="lobby-header">
+                <div class="lobby-header-text">
+                    <h1>Triptic</h1>
+                    <p>차분하고 편안한 여행 일정 관리를 시작하세요</p>
+                </div>
+                <button type="button" class="new-project-btn" onclick="openCreateModal()">
+                    <span>➕</span> 새 여행 만들기
+                </button>
             </div>
-            <div class="sync-actions">
-                <button type="button" class="sync-btn" onclick="copyBackupCode()">📋 코드 복사</button>
-                <button type="button" class="sync-btn" onclick="openImportCloudModal()">🔄 다른 기기 연결</button>
-                <button type="button" class="sync-btn" onclick="pushBackupSync(true)">☁️ 지금 백업</button>
-                <button type="button" class="sync-btn" onclick="exportAllData()">📤 파일 저장</button>
-                <button type="button" class="sync-btn" onclick="document.getElementById('import-file-input').click()">📥 파일 불러오기</button>
-            </div>
-        </div>
-        <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importAllData(event)">
 
-        <div id="project-list-container" class="project-list"></div>
+            <!-- ☁️ 기기 동기화 및 백업 카드 -->
+            <div class="sync-card">
+                <div class="sync-card-header">
+                    <span class="sync-card-title">☁️ 기기 동기화 & 백업</span>
+                    <span class="sync-code-badge" id="my-backup-code" title="이 기기의 복구 코드">CODE</span>
+                </div>
+                <div class="sync-actions">
+                    <button type="button" class="sync-btn" onclick="copyBackupCode()">📋 코드 복사</button>
+                    <button type="button" class="sync-btn" onclick="openImportCloudModal()">🔄 다른 기기 연결</button>
+                    <button type="button" class="sync-btn" onclick="pushBackupSync(true)">☁️ 지금 백업</button>
+                    <button type="button" class="sync-btn" onclick="exportAllData()">📤 파일 저장</button>
+                    <button type="button" class="sync-btn" onclick="document.getElementById('import-file-input').click()">📥 파일 불러오기</button>
+                </div>
+            </div>
+            <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importAllData(event)">
+
+            <div id="project-list-container" class="project-list"></div>
+        </div>
     </div>
 
-    <!-- 🪟 모달 렌더링 루트 -->
+    <!-- 🪟 모달 루트 -->
     <div id="modal-root"></div>
 
     <!-- 🗺️ 플래너 앱 화면 -->
     <div id="app-screen">
         <div id="map"></div>
         <div id="sidebar" class="edit-mode">
-            <!-- 🔝 상단 네비게이션 바 (D-01) -->
+            <!-- 🔝 상단 네비게이션 바 -->
             <div class="planner-top-bar">
                 <button type="button" class="top-nav-btn edit-only" onclick="showLobby()">
                     <span>←</span> 여행 목록
@@ -1379,7 +1465,7 @@
                     <button type="button" class="icon-btn edit-only" id="suggestion-action-btn" onclick="openReviewSuggestionModal()">
                         <span>💡</span> 제안 <span id="suggestion-badge" class="badge-count" style="display:none">0</span>
                     </button>
-                    <button type="button" class="icon-btn" onclick="copyItineraryText()" title="일정 텍스트 복사 (U-20)">
+                    <button type="button" class="icon-btn" onclick="copyItineraryText()" title="일정 텍스트 복사">
                         <span>📋</span> 복사
                     </button>
                     <button type="button" class="icon-btn" onclick="openPdfModal()" title="PDF 출력">
@@ -1388,7 +1474,7 @@
                 </div>
             </div>
 
-            <!-- 📍 여행 정보 바 & 수정 버튼 (F-02) -->
+            <!-- 📍 여행 정보 바 & 수정 버튼 -->
             <div class="trip-info-bar">
                 <div class="trip-info-text" id="trip-info-text">
                     <span class="city-name">여행지 로딩 중...</span>
@@ -1461,7 +1547,7 @@
                 <div id="flight-end-container"></div>
             </div>
 
-            <!-- 📄 PDF 내보내기 버튼 (게스트 뷰에서도 표시 가능 F-17) -->
+            <!-- 📄 PDF 내보내기 버튼 -->
             <div class="pdf-actions">
                 <button type="button" class="pdf-btn" onclick="openPdfModal()">📄 깔끔한 일정표 PDF 내보내기</button>
             </div>
@@ -1473,17 +1559,16 @@
 
     <script>
         /* ==========================================================================
-           Triptic Core Web App
-           - Robust State Management
+           Triptic Core Logic
+           - Clean State Management
            - Complete Defect Fixes (F-01 ~ F-18)
-           - Progressive Web App & Offline Ready
+           - Elegant Minimalist Beige UX/UI
            ========================================================================== */
 
-        // 💡 Google Maps 인증 실패 안내 콜백 (구글 콘솔 설정 원인 명확화)
         window.gm_authFailure = function () {
             openModal(`
                 <h3>⚠️ 구글 지도 API 인증 오류 안내</h3>
-                <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:12px;">
+                <p style="font-size:13px; color:var(--text-body); line-height:1.7; margin-bottom:12px;">
                     Google Maps API 키 인증 문제로 지도와 자동완성 검색이 일시 중지되었습니다.<br>
                     검색창에 나타나는 회색 <b>느낌표(!)</b>는 구글 지도 API가 인증 실패 시 자동 삽입하는 워터마크입니다.
                 </p>
@@ -1502,7 +1587,6 @@
             `);
         };
 
-        // ⚙️ 서버 & API 설정
         const FIREBASE_DB_URL = "https://ben-s-travel-planner-default-rtdb.asia-southeast1.firebasedatabase.app";
         const AVIATIONSTACK_API_KEY = "7d97ae962ebc771c6393ae2e14cf1aeb";
 
@@ -1519,7 +1603,7 @@
             dinner:    { label: '저녁', time: '18:30', emoji: '🍷' }
         };
 
-        // 🧠 애플리케이션 상태 (Global State)
+        // 전역 상태
         let allProjects = {};
         try {
             allProjects = JSON.parse(localStorage.getItem('smartPlannerAllProjects')) || {};
@@ -1544,7 +1628,6 @@
         let sharedProjectName = '';
         let currentMode = 'edit';
 
-        // 지도 & 검색 인스턴스
         let map = null;
         let autocomplete = null;
         let hotelAutocomplete = null;
@@ -1553,11 +1636,10 @@
         let directionsService = null;
         let directionsRenderers = [];
         let fallbackPolylines = [];
-        let directionsCache = new Map(); // F-11: 경로 메모이제이션 캐시
+        let directionsCache = new Map();
         let activeZoneIndex = 0;
         let sortableInstance = null;
 
-        // 임시 모달 입력 상태
         let pendingCity = null;
         let pendingFlights = { outbound: null, return: null };
         let pendingManualAirport = {
@@ -1565,25 +1647,16 @@
             return: { dep: null, arr: null }
         };
 
-        // 백업 & 동기화 타이머
         let backupId = null;
         let backupSyncTimer = null;
         let shareSyncTimer = null;
         let sharedPollTimer = null;
         let lastSharedPayloadStr = null;
-
-        // 실행 취소(Undo) 스택 (F-18)
         let lastDeletedPlace = null;
 
-        /* ==========================================================================
-           1. 보안 & 헬퍼 유틸리티 (F-03, F-10, D-15, D-18)
-           ========================================================================== */
-
-        // 🛡️ XSS 방어 문자열 이스케이프 (F-03)
         function escapeHtml(str) {
             if (str == null) return '';
-            const s = String(str);
-            return s
+            return String(str)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
@@ -1591,7 +1664,6 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // 🔔 모던 토스트/스낵바 알림 시스템 (D-15, F-18)
         function showToast(message, options = {}) {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -1635,7 +1707,6 @@
             }, duration);
         }
 
-        // 🪟 통합 모달 관리 (D-18)
         function openModal(contentHtml, options = {}) {
             const root = document.getElementById('modal-root');
             root.innerHTML = `
@@ -1673,14 +1744,12 @@
             }
         });
 
-        // 💱 통화 포맷터 (U-09)
         function formatMoney(amount, curr = tripCurrency) {
             const num = Number(amount) || 0;
             const meta = CURRENCIES[curr] || CURRENCIES.KRW;
             return `${num.toLocaleString()}${meta.unit}`;
         }
 
-        // 🕒 상대 시간 포맷터 (F-15)
         function formatRelativeTime(timestamp) {
             if (!timestamp) return '방금 전';
             const diff = Date.now() - Number(timestamp);
@@ -1705,7 +1774,6 @@
             return id;
         }
 
-        // 💡 참여자 이름 기억 (게스트 뷰)
         function getGuestName() {
             return localStorage.getItem('tripticGuestName') || '';
         }
@@ -1714,20 +1782,14 @@
             if (v) localStorage.setItem('tripticGuestName', v);
         }
 
-        /* ==========================================================================
-           2. PWA, 백업 & 초기화 (F-01, F-04, F-05, F-16, U-21)
-           ========================================================================== */
-
-        // 📱 서비스 워커 등록 (F-05)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => {
-                    console.log('Service Worker registration skipped:', err);
+                    console.log('SW Registration skipped:', err);
                 });
             });
         }
 
-        // 🔑 복구 코드 관리 (F-04, U-21: URL 오염 제거 및 안전한 노출)
         function ensureBackupId() {
             const params = new URLSearchParams(location.search);
             let id = params.get('backup');
@@ -1757,7 +1819,6 @@
             });
         }
 
-        // ☁️ 클라우드 백업 동기화 (F-16 다중 기기 충돌 감지)
         async function restoreFromCloudBackupIfNeeded() {
             if (!backupId || !FIREBASE_DB_URL) return;
             try {
@@ -1785,7 +1846,6 @@
                             allProjects[k] = cleanCloud[k];
                             updated = true;
                         } else {
-                            // F-16: 충돌 비교 (타임스탬프가 더 최신일 때)
                             const cloudTime = cleanCloud[k].updatedAt || 0;
                             const localTime = allProjects[k].updatedAt || 0;
                             if (cloudTime > localTime + 3000) {
@@ -1868,7 +1928,6 @@
             }
         }
 
-        // 🚀 시스템 시작 진입점
         async function initSystem() {
             const params = new URLSearchParams(location.search);
             const shareId = params.get('id');
@@ -1908,12 +1967,8 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) splash.classList.add('hidden');
-            }, 600); // 0.6s
+            }, 500);
         }
-
-        /* ==========================================================================
-           3. 로비 화면 및 여행 관리 (F-03, F-06, F-15, U-22)
-           ========================================================================== */
 
         function renderLobby() {
             document.getElementById('app-screen').style.display = 'none';
@@ -1923,7 +1978,6 @@
             const container = document.getElementById('project-list-container');
             container.innerHTML = '';
 
-            // F-15: 최신 수정일 순으로 정렬
             const sortedNames = Object.keys(allProjects).sort((a, b) => {
                 const timeA = allProjects[a].updatedAt || 0;
                 const timeB = allProjects[b].updatedAt || 0;
@@ -1932,9 +1986,9 @@
 
             if (sortedNames.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-day-notice">
+                    <div class="empty-day-notice" style="grid-column: 1 / -1;">
                         저장된 여행 일정이 없습니다.<br>
-                        위의 <b>[새 여행 만들기]</b>를 눌러 여행을 시작해 보세요!
+                        위의 <b>[새 여행 만들기]</b>를 눌러 첫 여행을 기록해 보세요!
                     </div>
                 `;
                 return;
@@ -1945,7 +1999,6 @@
                 const card = document.createElement('div');
                 card.className = 'project-card';
                 
-                // 총 장소 수 계산
                 let totalPlaces = 0;
                 if (p.data) {
                     Object.values(p.data).forEach(arr => {
@@ -1967,7 +2020,7 @@
                         <p class="project-submeta">최근 수정: ${timeStr}</p>
                     </div>
                     <div class="project-actions">
-                        <button type="button" class="clone-project-btn" title="여행 복제 (U-22)">복제</button>
+                        <button type="button" class="clone-project-btn" title="여행 복제">복제</button>
                         <button type="button" class="delete-project-btn" title="여행 삭제">삭제</button>
                     </div>
                 `;
@@ -1991,12 +2044,11 @@
             });
         }
 
-        // 🗑️ 프로젝트 삭제 (F-06: Firebase 공유 데이터도 함께 청소)
         function deleteProject(name) {
             const safeName = escapeHtml(name);
             openModal(`
                 <h3>🗑️ 여행 삭제</h3>
-                <p style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+                <p style="font-size:14px; color:var(--text-body); line-height:1.6;">
                     <b>'${safeName}'</b> 여행을 정말 삭제하시겠습니까?<br>
                     공유된 링크와 모든 일정 데이터가 영구히 제거됩니다.
                 </p>
@@ -2014,7 +2066,6 @@
                 closeModal();
                 showToast(`'${safeName}' 여행이 삭제되었습니다.`);
 
-                // F-06: 서버 공유 데이터 삭제
                 if (shareId && FIREBASE_DB_URL) {
                     try {
                         await fetch(`${FIREBASE_DB_URL}/shares/${shareId}.json`, { method: 'DELETE' });
@@ -2024,7 +2075,6 @@
             };
         }
 
-        // 📋 여행 복제 (U-22)
         function cloneProject(name) {
             const original = allProjects[name];
             if (!original) return;
@@ -2046,13 +2096,11 @@
             showToast(`'${escapeHtml(newName)}'으로 복제되었습니다!`);
         }
 
-        // 💾 전체 데이터 저장 (F-10 용량 초과 대응)
         function saveAllProjects(silent = false) {
             try {
                 localStorage.setItem('smartPlannerAllProjects', JSON.stringify(allProjects));
                 if (!silent) scheduleBackupSync();
             } catch (e) {
-                console.error('Storage quota exceeded:', e);
                 showToast('⚠️ 로컬 저장 공간이 가득 찼습니다. 오래된 여행을 파일로 내보낸 뒤 삭제해 주세요.', {
                     type: 'error',
                     duration: 6000
@@ -2060,11 +2108,9 @@
             }
         }
 
-        // 💾 개별 프로젝트 상태 저장
         function saveData() {
             if (!activeProjectName || !allProjects[activeProjectName]) return;
 
-            // 좌표 무결성 검증
             if (plannerData[currentDay]) {
                 plannerData[currentDay] = plannerData[currentDay].filter(item => item && item.lat != null && item.lng != null);
             }
@@ -2102,7 +2148,7 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                showToast('백업 파일이 성공적으로 다운로드되었습니다.');
+                showToast('백업 파일이 다운로드되었습니다.');
             } catch (e) {
                 showToast('데이터 내보내기 중 오류가 발생했습니다.', { type: 'error' });
             }
@@ -2123,17 +2169,13 @@
                     allProjects = { ...allProjects, ...imported };
                     saveAllProjects();
                     renderLobby();
-                    showToast(`🎉 ${count}개의 여행을 성공적으로 불러왔습니다!`);
+                    showToast(`🎉 ${count}개의 여행을 불러왔습니다!`);
                 } catch (err) {
                     showToast('올바른 백업 JSON 파일이 아닙니다.', { type: 'error' });
                 }
             };
             reader.readAsText(file);
         }
-
-        /* ==========================================================================
-           4. 생성 & 수정 모달 (F-02, F-07, F-09, U-09)
-           ========================================================================== */
 
         function openCreateModal() {
             pendingCity = null;
@@ -2144,11 +2186,11 @@
                 <h3>✈️ 새 여행 만들기</h3>
                 <div class="modal-field">
                     <label>여행 이름</label>
-                    <input type="text" id="new-name-input" placeholder="예: 도쿄 3박 4일 미식 여행">
+                    <input type="text" id="new-name-input" placeholder="예: 교토 3박 4일 고즈넉한 여행">
                 </div>
                 <div class="modal-field">
                     <label>목적지 도시 (검색 후 선택)</label>
-                    <input type="text" id="new-city-input" placeholder="예: Tokyo, Japan">
+                    <input type="text" id="new-city-input" placeholder="예: Kyoto, Japan">
                 </div>
                 <div class="modal-field">
                     <label>여행 기간</label>
@@ -2159,7 +2201,7 @@
                     </div>
                 </div>
                 <div class="modal-field">
-                    <label>통화 설정 (U-09)</label>
+                    <label>통화 설정</label>
                     <select id="new-currency-select">
                         <option value="KRW">대한민국 원 (₩)</option>
                         <option value="JPY">일본 엔 (¥)</option>
@@ -2216,7 +2258,7 @@
             const rtCode = document.getElementById('new-return-flight-input').value.trim();
 
             if (!name) { showToast('여행 이름을 입력해 주세요.', { type: 'error' }); return; }
-            if (allProjects[name]) { showToast('이미 동일한 이름의 여행이 존재합니다.', { type: 'error' }); return; }
+            if (allProjects[name]) { showToast('이미 동일한 이름의 여행이 있습니다.', { type: 'error' }); return; }
             if (!pendingCity) { showToast('목적지 도시를 검색하여 선택해 주세요.', { type: 'error' }); return; }
             if (!startVal || !endVal) { showToast('여행 기간을 입력해 주세요.', { type: 'error' }); return; }
             if (new Date(startVal) > new Date(endVal)) { showToast('종료일이 출발일보다 빠를 수 없습니다.', { type: 'error' }); return; }
@@ -2243,10 +2285,9 @@
             saveAllProjects();
             closeModal();
             openProject(name);
-            showToast(`🎉 '${escapeHtml(name)}' 여행이 생성되었습니다!`);
+            showToast(`🎉 '${escapeHtml(name)}' 여행이 시작되었습니다!`);
         }
 
-        // ✏️ 여행 정보 수정 모달 (F-02)
         function openEditTripModal() {
             pendingCity = tripCity ? { name: tripCity, lat: tripCityLat, lng: tripCityLng } : null;
             pendingFlights = {
@@ -2259,7 +2300,7 @@
                 <h3>✏️ 여행 정보 수정</h3>
                 <div class="modal-field">
                     <label>목적지 도시 (검색 후 선택)</label>
-                    <input type="text" id="edit-city-input" value="${escapeHtml(tripCity || '')}" placeholder="예: Tokyo, Japan">
+                    <input type="text" id="edit-city-input" value="${escapeHtml(tripCity || '')}" placeholder="예: Kyoto, Japan">
                 </div>
                 <div class="modal-field">
                     <label>여행 기간</label>
@@ -2270,7 +2311,7 @@
                     </div>
                 </div>
                 <div class="modal-field">
-                    <label>통화 설정 (U-09)</label>
+                    <label>통화 설정</label>
                     <select id="edit-currency-select">
                         <option value="KRW" ${tripCurrency === 'KRW' ? 'selected' : ''}>대한민국 원 (₩)</option>
                         <option value="JPY" ${tripCurrency === 'JPY' ? 'selected' : ''}>일본 엔 (¥)</option>
@@ -2363,10 +2404,6 @@
             showToast('여행 정보가 성공적으로 수정되었습니다.');
         }
 
-        /* ==========================================================================
-           5. 플래너 뷰 진입 & 지도 초기화
-           ========================================================================== */
-
         function openProject(name) {
             activeProjectName = name;
             const p = allProjects[name];
@@ -2447,10 +2484,6 @@
             handleRouteDisplay();
         }
 
-        /* ==========================================================================
-           6. 일정 날짜 & 일차별 동기화 (F-09 잔여 데이터 정리)
-           ========================================================================== */
-
         function generateSchedule(isLoad = false) {
             if (!tripStart || !tripEnd) return;
             const startDate = new Date(tripStart);
@@ -2461,7 +2494,6 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
             totalTripDays = diffDays;
 
-            // F-09: 여행 기간 축소 시 유령 데이터 정리
             if (isLoad) {
                 Object.keys(plannerData).forEach(d => {
                     if (Number(d) > diffDays) delete plannerData[d];
@@ -2531,10 +2563,6 @@
             refreshExtraButtonStates();
         }
 
-        /* ==========================================================================
-           7. 장소 관리 & 렌더링 (F-03, F-08, F-18, U-01, U-02, U-05)
-           ========================================================================== */
-
         function renderList() {
             const container = document.getElementById('planner-list-container');
             const startContainer = document.getElementById('hotel-start-container');
@@ -2577,7 +2605,6 @@
                 return html;
             }
 
-            // 1일차 첫 항공편 도착 카드
             if (flightArrivalPoint) {
                 const f = flightsData.outbound;
                 const airlineTag = f.airline ? ` (${escapeHtml(f.airline)})` : '';
@@ -2594,7 +2621,6 @@
                 flightStartContainer.innerHTML = html;
             }
 
-            // 전날 숙소 출발 카드
             if (startHotel) {
                 let html = `
                     <div class="fixed-item">
@@ -2620,7 +2646,7 @@
 
             currentList.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = 'place-item' + (item.mealType ? ' meal-item' : '');
+                card.className = 'place-item';
 
                 let timeParts = (item.time || '10:00').split(':');
                 if (timeParts.length !== 2) timeParts = ['10', '00'];
@@ -2639,13 +2665,14 @@
 
                 card.innerHTML = `
                     <div class="place-header">
-                        <div class="header-left edit-only">
-                            <div class="drag-handle" title="길게 눌러 드래그">☰</div>
-                            <div class="order-btns">
+                        <div class="header-left">
+                            <span class="place-index-badge">${index + 1}</span>
+                            <div class="drag-handle edit-only" title="길게 눌러 드래그">⠿</div>
+                            <div class="order-btns edit-only">
                                 <button type="button" class="order-btn" onclick="moveItem(${index}, -1)" ${index === 0 ? 'disabled' : ''} aria-label="위로">▲</button>
                                 <button type="button" class="order-btn" onclick="moveItem(${index}, 1)" ${index === currentList.length - 1 ? 'disabled' : ''} aria-label="아래로">▼</button>
                             </div>
-                            <div class="time-wrapper">
+                            <div class="time-wrapper edit-only">
                                 <select class="time-select" onchange="updateTime(${index}, this.value, 'hour')">${generateHourOptions(timeParts[0])}</select> :
                                 <select class="time-select" onchange="updateTime(${index}, this.value, 'minute')">${generateMinuteOptions(timeParts[1])}</select>
                             </div>
@@ -2658,7 +2685,7 @@
                     </div>
                     <div class="place-content">
                         <div style="cursor:pointer;" onclick="showPlaceDetails(${index})" title="장소 정보 보기">
-                            <span class="place-name">${mealTagHTML}${index + 1}. ${escapeHtml(item.name)}</span>
+                            <span class="place-name">${mealTagHTML}${escapeHtml(item.name)}</span>
                             <span class="place-address">${escapeHtml(item.address || '')}</span>
                         </div>
                         ${memoHTML}
@@ -2669,7 +2696,6 @@
                 container.insertAdjacentHTML('beforeend', consumeNextLinkHTML());
             });
 
-            // 복귀 숙소 카드
             if (endHotel) {
                 let html = `
                     <div class="fixed-item">
@@ -2683,7 +2709,6 @@
                 endContainer.innerHTML = html;
             }
 
-            // 귀국 비행기 출발 카드
             if (flightDeparturePoint) {
                 const f = flightsData.return;
                 const airlineTag = f.airline ? ` (${escapeHtml(f.airline)})` : '';
@@ -2698,7 +2723,6 @@
                 `;
             }
 
-            // 날짜 탭 장소 개수 갱신
             const curTab = document.getElementById(`tab-day-${currentDay}`);
             if (curTab) {
                 const cntBadge = curTab.querySelector('.day-tab-count');
@@ -2706,7 +2730,6 @@
             }
         }
 
-        // 🚇 대중교통 경로 딥링크 + 소요시간 태그 (U-02, F-11)
         function buildDeepLinkHTML(a, b) {
             if (!a || !b || a.lat == null || a.lng == null || b.lat == null || b.lng == null) return '';
             const url = `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lng}&destination=${b.lat},${b.lng}&travelmode=transit`;
@@ -2752,7 +2775,6 @@
                 lng = place.geometry.location.lng();
                 placeId = place.place_id || null;
             } else if (typedName) {
-                // 💡 구글 지도 API 키 오류나 오프라인 시에도 직접 입력한 장소 추가 가능하도록 무결성 보장
                 placeName = typedName;
                 placeAddress = tripCity ? `${tripCity} 일대` : '직접 입력 장소';
                 lat = (tripCityLat || 35.6762) + (Math.random() - 0.5) * 0.01;
@@ -2790,7 +2812,6 @@
             showToast(`'${escapeHtml(placeName)}' 장소가 추가되었습니다.`);
         }
 
-        // 🗑️ 장소 삭제 및 되돌리기 (F-18)
         function deletePlace(index) {
             const list = plannerData[currentDay];
             const item = list[index];
@@ -2841,7 +2862,6 @@
             });
         }
 
-        // 📅 장소를 다른 날로 이동 (U-05)
         function openMoveDayModal(index) {
             const item = plannerData[currentDay][index];
             if (!item) return;
@@ -2860,7 +2880,7 @@
 
             openModal(`
                 <h3>📅 다른 날로 장소 이동</h3>
-                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+                <p style="font-size:13px; color:var(--text-body); margin-bottom:12px;">
                     <b>'${escapeHtml(item.name)}'</b> 장소를 어느 날짜로 옮기시겠습니까?
                 </p>
                 <div class="modal-field">
@@ -2970,10 +2990,6 @@
                 }
             });
         }
-
-        /* ==========================================================================
-           8. 숙소, 식사 & 경비 (F-08 순서 파괴 방지, U-09)
-           ========================================================================== */
 
         function closeAllSections() {
             ['hotel', 'meal', 'expense'].forEach(s => {
@@ -3119,15 +3135,12 @@
             refreshExtraButtonStates();
         }
 
-        // 💡 F-08: 식사 항목 동기화 시 다른 장소의 드래그 순서를 파괴하지 않고 적절한 위치에만 삽입
         function syncMealItemsIntoList() {
             if (!plannerData[currentDay]) plannerData[currentDay] = [];
             const dayMeals = mealsData[currentDay] || {};
 
-            // 기존 식사 항목만 제거
             plannerData[currentDay] = plannerData[currentDay].filter(item => !item.mealType);
 
-            // 시간순 삽입 (배열 전체 sort() 호출 안 함!)
             Object.keys(MEAL_META).forEach(slot => {
                 const info = dayMeals[slot];
                 if (info && info.name && !info.skip) {
@@ -3212,10 +3225,6 @@
             refreshExtraButtonStates();
         }
 
-        /* ==========================================================================
-           9. 항공편 & 수동 입력 (F-07 개선)
-           ========================================================================== */
-
         async function fetchAirportCoords(iataCode) {
             if (!iataCode) return null;
             try {
@@ -3241,7 +3250,6 @@
             return m ? m[1] : '';
         }
 
-        // F-07: 항공편 조회 실패 시 무조건 alert()를 띄우지 않고 조용히 수동 필드로 우아하게 전환
         async function lookupFlight(flightNo, dateStr) {
             if (!flightNo || !dateStr || !AVIATIONSTACK_API_KEY) return null;
 
@@ -3344,7 +3352,7 @@
                     </div>
                     <div class="modal-field">
                         <label>도착 공항</label>
-                        <input type="text" id="${prefix}-${type}-arrairport-input" value="${arrNameVal}" placeholder="공항 검색 (예: 하네다 국제공항)">
+                        <input type="text" id="${prefix}-${type}-arrairport-input" value="${arrNameVal}" placeholder="공항 검색 (예: 간사이 국제공항)">
                     </div>
                     <div class="modal-field">
                         <label>착륙 시간</label>
@@ -3445,10 +3453,6 @@
             showToast('항공편 정보가 저장되었습니다.');
         }
 
-        /* ==========================================================================
-           10. 장소 상세 정보 팝업
-           ========================================================================== */
-
         function showPlaceDetails(index) {
             const item = plannerData[currentDay][index];
             if (!item) return;
@@ -3467,15 +3471,15 @@
                 const box = document.getElementById('active-modal-box');
                 if (!box) return;
                 const photoUrl = (place.photos && place.photos[0]) ? place.photos[0].getUrl({ maxWidth: 500 }) : null;
-                const ratingHTML = place.rating ? `<p style="font-size:13px; color:var(--text-primary); margin:6px 0;">⭐ <b>${place.rating}</b> (${place.user_ratings_total || 0}개 리뷰)</p>` : '';
-                const phoneHTML = place.formatted_phone_number ? `<p style="font-size:13px; color:var(--text-secondary); margin:6px 0;">📞 ${escapeHtml(place.formatted_phone_number)}</p>` : '';
-                const websiteHTML = place.website ? `<p style="font-size:13px; margin:6px 0; word-break:break-all;"><a href="${escapeHtml(place.website)}" target="_blank" rel="noopener" style="color:var(--primary); font-weight:600;">웹사이트 방문 ↗</a></p>` : '';
+                const ratingHTML = place.rating ? `<p style="font-size:13px; color:var(--text-title); margin:6px 0;">⭐ <b>${place.rating}</b> (${place.user_ratings_total || 0}개 리뷰)</p>` : '';
+                const phoneHTML = place.formatted_phone_number ? `<p style="font-size:13px; color:var(--text-body); margin:6px 0;">📞 ${escapeHtml(place.formatted_phone_number)}</p>` : '';
+                const websiteHTML = place.website ? `<p style="font-size:13px; margin:6px 0; word-break:break-all;"><a href="${escapeHtml(place.website)}" target="_blank" rel="noopener" style="color:var(--brand-primary); font-weight:600;">웹사이트 방문 ↗</a></p>` : '';
                 const hoursHTML = (place.opening_hours && place.opening_hours.weekday_text) ? `<div style="font-size:12px; color:var(--text-muted); line-height:1.7; margin-top:8px;">${place.opening_hours.weekday_text.map(escapeHtml).join('<br>')}</div>` : '';
 
                 box.innerHTML = `
                     <h3>${escapeHtml(item.name)}</h3>
                     ${photoUrl ? `<img src="${photoUrl}" alt="${escapeHtml(item.name)}" style="width:100%; border-radius:var(--radius-md); margin-bottom:12px; max-height:200px; object-fit:cover;">` : ''}
-                    <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin:0 0 8px 0;">${escapeHtml(place.formatted_address || item.address || '')}</p>
+                    <p style="font-size:13px; color:var(--text-body); line-height:1.5; margin:0 0 8px 0;">${escapeHtml(place.formatted_address || item.address || '')}</p>
                     ${ratingHTML}
                     ${phoneHTML}
                     ${websiteHTML}
@@ -3492,7 +3496,7 @@
                 if (!box) return;
                 box.innerHTML = `
                     <h3>${escapeHtml(item.name)}</h3>
-                    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">${escapeHtml(item.address || '')}</p>
+                    <p style="font-size:13px; color:var(--text-body); margin:0 0 8px;">${escapeHtml(item.address || '')}</p>
                     <p style="font-size:12px; color:var(--text-muted); margin-top:12px;">구글 지도 상세 정보를 추가로 불러오지 못했습니다.</p>
                     <div class="modal-actions">
                         <a href="${mapsUrl}" target="_blank" rel="noopener" class="modal-btn primary" style="text-decoration:none;">구글 지도에서 보기 ↗</a>
@@ -3533,10 +3537,6 @@
                 });
             }
         }
-
-        /* ==========================================================================
-           11. 지도 마커 & 경로 캐시 (F-11, U-02)
-           ========================================================================== */
 
         const ZONE_DISTANCE_THRESHOLD_KM = 20;
 
@@ -3613,7 +3613,7 @@
                     icon: {
                         path: google.maps.SymbolPath.CIRCLE,
                         scale: 9,
-                        fillColor: '#059669',
+                        fillColor: '#785A40',
                         fillOpacity: 1,
                         strokeColor: '#ffffff',
                         strokeWeight: 2
@@ -3669,7 +3669,6 @@
             if (currentMode === 'view') drawRoutesForViewMode();
         }
 
-        // F-11 & U-02: Directions 캐시 및 이동 소요 시간 자동 계산
         function drawRoutesForViewMode() {
             if (!plannerData[currentDay] || !map) return;
 
@@ -3707,7 +3706,7 @@
                     map: map,
                     suppressMarkers: true,
                     preserveViewport: true,
-                    polylineOptions: { strokeColor: '#4f46e5', strokeWeight: 4, strokeOpacity: 0.85 }
+                    polylineOptions: { strokeColor: '#4A607A', strokeWeight: 4, strokeOpacity: 0.85 }
                 });
                 directionsRenderers.push(renderer);
 
@@ -3752,15 +3751,11 @@
                     offset: '0',
                     repeat: '10px'
                 }],
-                strokeColor: '#0284c7',
+                strokeColor: '#785A40',
                 map: map
             });
             fallbackPolylines.push(line);
         }
-
-        /* ==========================================================================
-           12. 공유, 협업 & 제안 (F-06, F-12, U-13, U-15)
-           ========================================================================== */
 
         async function openShareModal() {
             if (!FIREBASE_DB_URL) {
@@ -3796,7 +3791,7 @@
 
                 openModal(`
                     <h3>🔗 보기 전용 공유 링크</h3>
-                    <p style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:14px;">
+                    <p style="font-size:13px; color:var(--text-body); line-height:1.6; margin-bottom:14px;">
                         동행자에게 이 링크를 보내면 편집 없이 일정을 확인하고 장소를 건의할 수 있습니다.<br>
                         ✨ 일정을 수정하면 <b>실시간으로 자동 반영</b>됩니다.
                     </p>
@@ -3827,7 +3822,6 @@
             });
         }
 
-        // 🛑 공유 중단 (U-15, F-06)
         async function stopSharing(shareId) {
             if (!confirm('공유 링크를 비활성화하시겠습니까? 더 이상 상대방이 이 여행을 볼 수 없게 됩니다.')) return;
             try {
@@ -3866,7 +3860,6 @@
             } catch (e) {}
         }
 
-        // 👥 공유 게스트 뷰
         function openSharedView(payload) {
             activeProjectName = null;
             plannerData = payload.data || {};
@@ -3900,7 +3893,6 @@
             currentMode = 'view';
             document.getElementById('sidebar').className = 'view-mode';
 
-            // 게스트 건의 버튼
             if (!document.getElementById('guest-suggest-btn')) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -3908,8 +3900,8 @@
                 btn.className = 'top-nav-btn';
                 btn.style.width = '100%';
                 btn.style.marginBottom = '12px';
-                btn.style.background = 'var(--primary-light)';
-                btn.style.color = 'var(--primary)';
+                btn.style.background = 'var(--brand-light)';
+                btn.style.color = 'var(--brand-primary)';
                 btn.innerHTML = '<span>💡</span> 장소 추가 건의하기';
                 btn.onclick = openSuggestModal;
                 document.getElementById('sidebar').prepend(btn);
@@ -3922,7 +3914,6 @@
             if (!getGuestName()) openGuestNameModal();
         }
 
-        // F-12: 게스트 폴링 백그라운드 탭 감지
         function startSharedPolling() {
             if (sharedPollTimer) clearInterval(sharedPollTimer);
 
@@ -4077,7 +4068,6 @@
             }
         }
 
-        // U-13: 제안 개수 배지 확인
         async function checkSuggestionsCount() {
             const badge = document.getElementById('suggestion-badge');
             if (!activeShareId || !badge) return;
@@ -4126,10 +4116,10 @@
                     const p = suggestions[id];
                     return `
                         <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; background:var(--bg-card);">
-                            <div style="font-size:16px; font-weight:800; color:var(--text-primary);">${escapeHtml(p.name)}</div>
+                            <div style="font-size:16px; font-weight:800; color:var(--text-title);">${escapeHtml(p.name)}</div>
                             <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${escapeHtml(p.address || '')}</div>
-                            <div style="font-size:13px; color:var(--primary); font-weight:700; margin-top:6px;">📍 ${p.day}일차 추천</div>
-                            ${p.memo ? `<div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">💬 ${escapeHtml(p.memo)}</div>` : ''}
+                            <div style="font-size:13px; color:var(--brand-primary); font-weight:700; margin-top:6px;">📍 ${p.day}일차 추천</div>
+                            ${p.memo ? `<div style="font-size:13px; color:var(--text-body); margin-top:4px;">💬 ${escapeHtml(p.memo)}</div>` : ''}
                             ${p.proposer ? `<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">보낸 사람: <b>${escapeHtml(p.proposer)}</b></div>` : ''}
                             <div class="modal-actions" style="margin-top:10px;">
                                 <button type="button" class="modal-btn secondary" onclick="rejectSuggestion('${id}')">거절</button>
@@ -4184,11 +4174,6 @@
             showToast('제안이 삭제되었습니다.');
         }
 
-        /* ==========================================================================
-           13. 텍스트 복사 & PDF 내보내기 (F-17, U-20)
-           ========================================================================== */
-
-        // 📋 U-20: 일정 전체 텍스트 클립보드 복사
         function copyItineraryText() {
             let text = `✈️ [${activeProjectName || sharedProjectName}]\n`;
             text += `📍 목적지: ${tripCity}\n`;
@@ -4233,11 +4218,10 @@
             });
         }
 
-        // 📄 F-17: 통합 PDF 내보내기 모달
         function openPdfModal() {
             openModal(`
                 <h3>📄 깔끔한 여행 일정표 PDF</h3>
-                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
                     출력하여 오프라인에서 보거나 여행 동행자에게 공유할 수 있습니다.
                 </p>
                 <div class="modal-actions" style="flex-direction:column; gap:10px;">
@@ -4285,11 +4269,11 @@
                 const pageW = 210, pageH = 297;
                 const marginL = 16, marginR = 16, marginT = 18, marginB = 16;
                 const usableW = pageW - marginL - marginR;
-                const COLOR_PRIMARY = [79, 70, 229];
-                const COLOR_ACCENT  = [2, 132, 199];
-                const COLOR_TEXT    = [15, 23, 42];
-                const COLOR_SUB     = [100, 116, 139];
-                const COLOR_LINE    = [226, 232, 240];
+                const COLOR_PRIMARY = [120, 90, 64];
+                const COLOR_ACCENT  = [74, 96, 122];
+                const COLOR_TEXT    = [43, 37, 32];
+                const COLOR_SUB     = [126, 117, 107];
+                const COLOR_LINE    = [226, 221, 213];
 
                 let y = marginT;
 
@@ -4355,7 +4339,6 @@
                     const dayItems = plannerData[dayNum] || [];
                     const dayExpenses = expensesData[dayNum] || [];
 
-                    // 도착 항공편
                     if (flightArrival) {
                         ensure(15);
                         boldText(`도착 항공편: ${flightArrival.flightNo}`, marginL, 11, COLOR_PRIMARY);
@@ -4365,7 +4348,6 @@
                         hr();
                     }
 
-                    // 출발 숙소
                     if (startHotel) {
                         ensure(14);
                         boldText(`출발 숙소: ${startHotel.name}`, marginL, 10.5, COLOR_ACCENT);
@@ -4375,7 +4357,6 @@
                         hr();
                     }
 
-                    // 일정 목록
                     if (dayItems.length === 0) {
                         ensure(10);
                         normalText('(이 날짜는 자유 일정입니다)', marginL, 9.5, COLOR_SUB);
@@ -4393,7 +4374,6 @@
                     }
                     hr();
 
-                    // 복귀 숙소
                     if (endHotel) {
                         ensure(14);
                         boldText(`복귀 숙소: ${endHotel.name}`, marginL, 10.5, COLOR_ACCENT);
@@ -4403,7 +4383,6 @@
                         hr();
                     }
 
-                    // 귀국 항공편
                     if (flightDeparture) {
                         ensure(15);
                         boldText(`귀국 항공편: ${flightDeparture.flightNo}`, marginL, 11, COLOR_PRIMARY);
@@ -4413,7 +4392,6 @@
                         hr();
                     }
 
-                    // 경비
                     if (dayExpenses.length > 0) {
                         const sum = dayExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
                         ensure(12 + dayExpenses.length * 4);
@@ -4429,7 +4407,6 @@
                     }
                 });
 
-                // 페이지 번호
                 const totalPages = pdf.getNumberOfPages();
                 for (let p = 1; p <= totalPages; p++) {
                     pdf.setPage(p);
