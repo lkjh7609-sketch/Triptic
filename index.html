@@ -1869,11 +1869,11 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 6px;
             flex-shrink: 0;
             flex-wrap: nowrap;
             flex: 1;
-            justify-content: space-between;
+            justify-content: flex-start;
         }
 
         .time-wrapper {
@@ -1983,6 +1983,7 @@
             white-space: nowrap;
             font-family: inherit;
             box-sizing: border-box;
+            margin-left: auto; /* 왼쪽 그룹(번호·핸들·순서·시간)은 붙이고, 이 버튼만 오른쪽 끝으로 */
         }
         .ai-recommend-btn:hover {
             background: var(--brand-primary);
@@ -3127,7 +3128,7 @@
             <div class="day-city-bar edit-only" id="day-city-bar">
                 <div class="day-city-info">
                     <span class="day-city-badge">📍 <span id="day-city-name">도시 로딩 중...</span></span>
-                    <span class="day-city-sub" id="day-city-sub">(<span id="day-city-day-num">1</span>일차 활동 도시)</span>
+                    <span class="day-city-sub" id="day-city-sub">(<span id="day-city-day-num">1</span>일차 방문 도시)</span>
                 </div>
                 <button type="button" class="day-city-change-btn" onclick="openDayCityModal()">
                     도시 변경
