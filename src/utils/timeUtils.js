@@ -47,8 +47,10 @@ export function isValidTimeFormat(time) {
  */
 export function addMinutes(time, minutes) {
     const [hh, mm] = time.split(':').map(Number);
-    const totalMinutes = hh * 60 + mm + minutes;
-    const newHour = Math.floor(totalMinutes / 60) % 24;
-    const newMinute = totalMinutes % 60;
+    const DAY_MINUTES = 24 * 60;
+    // JS의 %는 피연산자 부호를 보존하므로, 음수 분 처리 시 DAY_MINUTES를 더해 정규화
+    const normalized = (((hh * 60 + mm + minutes) % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+    const newHour = Math.floor(normalized / 60);
+    const newMinute = normalized % 60;
     return `${String(newHour).padStart(2, '0')}:${String(newMinute).padStart(2, '0')}`;
 }

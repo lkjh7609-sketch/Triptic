@@ -5,13 +5,25 @@
 let cachedOpenRouterModels = null;
 let lastCacheTime = 0;
 
+// 전체 요청은 이 예산(ms) 안에서 상위 제공자들을 시도하고, 남은 시간이 없으면
+// 즉시 4번 큐레이션 폴백으로 넘어간다. 플랫폼의 함수 실행 시간 제한(Vercel Hobby
+// 기본 10초)보다 확실히 짧게 잡아, 폴백에 항상 도달할 수 있도록 한다.
+const TOTAL_BUDGET_MS = 8000;
+const MIN_ATTEMPT_MS = 1500; // 이보다 적게 남으면 해당 제공자는 아예 시도하지 않음
+
+function remainingMs(deadline) {
+    return deadline - Date.now();
+}
+
 // 1. Google Gemini API (가장 안정적 & 고성능: 하루 1,500회 완전 무료, 초고속, 구조화 JSON 지원)
-async function callGemini(apiKey, prompt) {
+async function callGemini(apiKey, prompt, deadline) {
     const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
     for (const model of models) {
+        const budget = remainingMs(deadline);
+        if (budget < MIN_ATTEMPT_MS) break;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 9500);
+            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
             const res = await fetch(url, {
                 method: 'POST',
@@ -61,12 +73,14 @@ async function callGemini(apiKey, prompt) {
 }
 
 // 2. Groq API (초고속 LPU: 하루 14,400회 무료, LLaMA 3.3 70B)
-async function callGroq(apiKey, prompt) {
+async function callGroq(apiKey, prompt, deadline) {
     const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
     for (const model of models) {
+        const budget = remainingMs(deadline);
+        if (budget < MIN_ATTEMPT_MS) break;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 9500);
+            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
             const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -113,7 +127,7 @@ async function callGroq(apiKey, prompt) {
 }
 
 // 3. OpenRouter API
-async function getOpenRouterCandidateModels(apiKey) {
+async function getOpenRouterCandidateModels(apiKey, deadline) {
     const now = Date.now();
     if (cachedOpenRouterModels && (now - lastCacheTime < 10 * 60 * 1000)) {
         return cachedOpenRouterModels;
@@ -121,8 +135,9 @@ async function getOpenRouterCandidateModels(apiKey) {
 
     const candidates = ['openrouter/free'];
     try {
+        const budget = remainingMs(deadline);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), Math.max(500, Math.min(4000, budget - 200)));
         const res = await fetch('https://openrouter.ai/api/v1/models', {
             headers: { 'Authorization': `Bearer ${apiKey}` },
             signal: controller.signal
@@ -158,20 +173,22 @@ async function getOpenRouterCandidateModels(apiKey) {
     return candidates;
 }
 
-async function callOpenRouter(apiKey, prompt) {
-    const candidateModels = await getOpenRouterCandidateModels(apiKey);
+async function callOpenRouter(apiKey, prompt, deadline) {
+    const candidateModels = await getOpenRouterCandidateModels(apiKey, deadline);
     let lastError = null;
 
     for (const model of candidateModels) {
+        const budget = remainingMs(deadline);
+        if (budget < MIN_ATTEMPT_MS) break;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 9500);
+            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
 
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': 'https://triptic-ten.vercel.app',
+                    'HTTP-Referer': 'https://triptic.my',
                     'X-Title': 'Triptic Travel Planner',
                     'Content-Type': 'application/json'
                 },
@@ -528,11 +545,45 @@ function filterByCategory(items, category, placeName, cityName) {
     return supplement.slice(0, 5);
 }
 
+const ALLOWED_ORIGINS = new Set([
+    'https://triptic.my',
+    'https://www.triptic.my',
+    'https://triptic-ten.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'capacitor://localhost'
+]);
+
+// 인스턴스 단위 간이 레이트리밋 (콜드 스타트마다 초기화되어 완전한 방어는 아니지만,
+// 무료 LLM 쿼터를 타인이 스크립트로 순식간에 소진하는 것은 억제한다)
+const recommendHits = new Map();
+function isRateLimited(ip, limit = 20, windowMs = 60_000) {
+    const now = Date.now();
+    const rec = recommendHits.get(ip);
+    if (!rec || now - rec.start > windowMs) {
+        recommendHits.set(ip, { start: now, count: 1 });
+        return false;
+    }
+    rec.count += 1;
+    return rec.count > limit;
+}
+
+const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'hotel', 'spot']);
+
+// 제어 문자를 제거하고 길이를 제한해, 프롬프트 인젝션 표면과 과도한 토큰 사용을 억제한다.
+function sanitizeInput(value, maxLen) {
+    if (typeof value !== 'string') return '';
+    return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
+}
+
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    if (origin && ALLOWED_ORIGINS.has(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -543,15 +594,24 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+    if (isRateLimited(ip)) {
+        return res.status(429).json({ error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' });
+    }
+
     const geminiKey = process.env.GEMINI_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;
     const openrouterKey = process.env.OPENROUTER_API_KEY;
 
-    const { placeName, city, category } = req.body || {};
+    const placeName = sanitizeInput(req.body?.placeName, 100);
+    const city = sanitizeInput(req.body?.city, 60);
+    const category = CATEGORIES.has(req.body?.category) ? req.body.category : 'all';
+
     if (!placeName) {
         return res.status(400).json({ error: '기준 장소 이름(placeName)이 필요합니다.' });
     }
 
+    const deadline = Date.now() + TOTAL_BUDGET_MS;
     const locationContext = city ? `${city}의 '${placeName}'` : `'${placeName}'`;
     const categoryFocus = category && category !== 'all' 
         ? `특히 [${category}] 분야에 집중해서` 
@@ -581,9 +641,9 @@ ${categoryFocus} 엄선해 주세요.
 `.trim();
 
     // 1. Google Gemini API (하루 1,500회 무료, 최고 품질)
-    if (geminiKey) {
+    if (geminiKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
         try {
-            const result = await callGemini(geminiKey, prompt);
+            const result = await callGemini(geminiKey, prompt, deadline);
             if (result && result.recommendations && result.recommendations.length > 0) {
                 return res.status(200).json({
                     success: true,
@@ -599,9 +659,9 @@ ${categoryFocus} 엄선해 주세요.
     }
 
     // 2. Groq Cloud API (초고속 LPU)
-    if (groqKey) {
+    if (groqKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
         try {
-            const result = await callGroq(groqKey, prompt);
+            const result = await callGroq(groqKey, prompt, deadline);
             if (result && result.recommendations && result.recommendations.length > 0) {
                 return res.status(200).json({
                     success: true,
@@ -617,9 +677,9 @@ ${categoryFocus} 엄선해 주세요.
     }
 
     // 3. OpenRouter API
-    if (openrouterKey) {
+    if (openrouterKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
         try {
-            const result = await callOpenRouter(openrouterKey, prompt);
+            const result = await callOpenRouter(openrouterKey, prompt, deadline);
             if (result && result.recommendations && result.recommendations.length > 0) {
                 return res.status(200).json({
                     success: true,

@@ -57,7 +57,7 @@ export class ApiService {
      * @param {string} query - 검색어
      * @returns {Promise<Array>} 장소 목록
      */
-    static async searchPlaces(query) {
+    static async searchPlaces(_query) {
         // Google Places API는 전역 객체로 관리
         // 이 함수는 래퍼 역할만 수행
         return new Promise((resolve, reject) => {

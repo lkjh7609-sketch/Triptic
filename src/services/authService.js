@@ -1,17 +1,12 @@
 // Supabase Auth Service for Triptic
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm';
-
-const DEFAULT_SUPABASE_URL = 'https://mfwfqfzdgcgfnnmnlrxu.supabase.co';
-const DEFAULT_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1md2ZxZnpkZ2NnZm5ubW5scnh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTE2NzAsImV4cCI6MjA1MjcyNzY3MH0.kXP5vVkp4ND0xEU5VXvGQ_qZy2fWJlG4KqYgBqCTkXc';
-
-const SUPABASE_URL = (typeof window !== 'undefined' && window.ENV?.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
-const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.ENV?.SUPABASE_ANON_KEY) || DEFAULT_ANON_KEY;
-
-export const supabase = (typeof window !== 'undefined' && window.supabaseClient) || createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { getSupabaseClient } from './supabaseClient.js';
 
 export async function signInWithProvider(provider) {
+    const client = await getSupabaseClient();
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const redirectUrl = isLocal ? (window.location.origin || '') : 'https://triptic-ten.vercel.app';
+    const isNativeApp = typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || typeof window.Capacitor !== 'undefined');
+    // Vercel Preview URL의 Deployment Protection(SSO 로그인) 우회를 위해 프로덕션 도메인 우선 적용
+    const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic.my';
 
     const result = await client.auth.signInWithOAuth({
         provider: provider,
@@ -26,7 +21,7 @@ export async function signInWithProvider(provider) {
 }
 
 export async function signOut() {
-    const client = (typeof window !== 'undefined' && window.supabaseClient) || supabase;
+    const client = await getSupabaseClient();
     const { error } = await client.auth.signOut();
     if (error) {
         console.error('Sign-out error:', error);
@@ -35,7 +30,7 @@ export async function signOut() {
 }
 
 export async function getCurrentUser() {
-    const client = (typeof window !== 'undefined' && window.supabaseClient) || supabase;
+    const client = await getSupabaseClient();
     const { data: { user }, error } = await client.auth.getUser();
     if (error) {
         console.error('Get user error:', error);
@@ -45,8 +40,23 @@ export async function getCurrentUser() {
 }
 
 export function onAuthStateChange(callback) {
-    const client = (typeof window !== 'undefined' && window.supabaseClient) || supabase;
-    return client.auth.onAuthStateChanged((event, session) => {
-        callback(event, session);
+    // Supabase 클라이언트 로딩이 비동기이므로, 준비되는 즉시 구독을 건다.
+    // 구독 해제 함수도 준비 완료 후에만 유효하므로 래핑해서 반환한다.
+    let subscription = null;
+    let unsubscribed = false;
+
+    getSupabaseClient().then((client) => {
+        if (unsubscribed) return;
+        const { data } = client.auth.onAuthStateChange((event, session) => {
+            callback(event, session);
+        });
+        subscription = data?.subscription;
     });
+
+    return {
+        unsubscribe() {
+            unsubscribed = true;
+            subscription?.unsubscribe();
+        }
+    };
 }
