@@ -3493,16 +3493,23 @@
                 return;
             }
 
+            // 공유 링크(?id= 또는 ?share=)로 들어온 방문자에게는 로그인 화면을 띄우지 않음
+            // (비로그인 상태로도 공유받은 일정을 바로 볼 수 있어야 하므로)
+            const urlParams = new URLSearchParams(location.search);
+            const isSharedRoute = !!(urlParams.get('id') || urlParams.get('share'));
+
             try {
                 const { data: { session } } = await client.auth.getSession();
                 if (session && session.user) {
                     unlockApp(session.user);
                 } else {
                     updateAuthUI(null);
+                    if (!isSharedRoute) showAuthWall();
                 }
             } catch (e) {
                 console.warn('세션 확인 중 오류:', e);
                 updateAuthUI(null);
+                if (!isSharedRoute) showAuthWall();
             }
 
             client.auth.onAuthStateChange(async (event, session) => {
