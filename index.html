@@ -371,6 +371,27 @@
             opacity: 0.85;
         }
 
+        /* 📜 하단 법적 고지 링크 (개인정보처리방침 / 이용약관) */
+        .lobby-legal-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            padding: 0 0 28px;
+            font-size: 12px;
+        }
+        .lobby-legal-links a {
+            color: var(--text-light, #94A3B8);
+            text-decoration: none;
+        }
+        .lobby-legal-links a:hover {
+            color: var(--text-muted);
+            text-decoration: underline;
+        }
+        .lobby-legal-links .legal-sep {
+            color: var(--text-light, #94A3B8);
+        }
+
         /* ☁️ 기기 동기화 & 백업 팝업 모달 */
         .sync-modal-wrap {
             display: flex;
@@ -3083,6 +3104,12 @@
                     <span class="footer-btn-icon">☁️</span>
                     <span>기기 동기화 &amp; 백업</span>
                 </button>
+            </div>
+            <!-- 📜 개인정보처리방침 / 이용약관 -->
+            <div class="lobby-legal-links">
+                <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>
+                <span class="legal-sep">·</span>
+                <a href="/terms.html" target="_blank" rel="noopener">이용약관</a>
             </div>
             <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importAllData(event)">
         </div>
