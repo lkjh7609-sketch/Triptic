@@ -723,6 +723,41 @@
             white-space: nowrap;
         }
 
+        /* 📍 지도 "현재 위치" 커스텀 컨트롤 (구글 지도 우하단, 줌 컨트롤과 함께 스택됨) */
+        .current-location-btn {
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+            background: var(--bg-card, #ffffff);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background 0.15s ease;
+        }
+        .current-location-btn:hover {
+            background: var(--bg-hover, #F1F5F9);
+        }
+        .current-location-btn:active {
+            transform: scale(0.94);
+        }
+        .current-location-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--brand-primary, #1E3A5F);
+        }
+        .current-location-btn.locating svg {
+            animation: current-location-spin 1s linear infinite;
+        }
+        @keyframes current-location-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* 📱 모바일 지도 상단 플로팅 칩 (단일 행 유지) */
         .mobile-map-header-chip {
             display: none;
@@ -5082,6 +5117,7 @@
                         disableDefaultUI: true,
                         zoomControl: true
                     });
+                    addCurrentLocationControl(map);
                     const searchInput = document.getElementById('search-input');
                     if (searchInput && window.google.maps.places) {
                         autocomplete = new google.maps.places.Autocomplete(searchInput);
@@ -6918,6 +6954,78 @@
             handleRouteDisplay();
         }
 
+        /**
+         * 지도 우하단에 "현재 위치" 커스텀 컨트롤을 추가한다 (줌 컨트롤과 같은 자리에 스택됨).
+         * 클릭 시 브라우저 위치 정보로 지도를 이동시킨다.
+         */
+        function addCurrentLocationControl(mapInstance) {
+            if (!mapInstance || !window.google || !google.maps) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'current-location-btn';
+            btn.title = '현재 위치로 이동';
+            btn.setAttribute('aria-label', '현재 위치로 이동');
+            btn.innerHTML = `
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                </svg>
+            `;
+
+            let locationMarker = null;
+
+            btn.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    showToast('이 브라우저는 위치 정보를 지원하지 않습니다.', { type: 'error' });
+                    return;
+                }
+
+                btn.classList.add('locating');
+                btn.disabled = true;
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        btn.classList.remove('locating');
+                        btn.disabled = false;
+
+                        const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        mapInstance.panTo(here);
+                        mapInstance.setZoom(16);
+
+                        if (locationMarker) {
+                            locationMarker.setPosition(here);
+                        } else {
+                            locationMarker = new google.maps.Marker({
+                                map: mapInstance,
+                                position: here,
+                                title: '현재 위치',
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 8,
+                                    fillColor: '#2563EB',
+                                    fillOpacity: 1,
+                                    strokeColor: '#ffffff',
+                                    strokeWeight: 2
+                                },
+                                zIndex: 999
+                            });
+                        }
+                    },
+                    (err) => {
+                        btn.classList.remove('locating');
+                        btn.disabled = false;
+                        const msg = err.code === err.PERMISSION_DENIED
+                            ? '위치 정보 접근이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해 주세요.'
+                            : '현재 위치를 가져오지 못했습니다.';
+                        showToast(msg, { type: 'error' });
+                    },
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+                );
+            });
+
+            mapInstance.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(btn);
+        }
+
         function clearRoutes() {
             directionsRenderers.forEach(r => r.setMap(null));
             directionsRenderers = [];
@@ -6927,7 +7035,10 @@
 
         function handleRouteDisplay() {
             clearRoutes();
-            if (currentMode === 'view') drawRoutesForViewMode();
+            // 경로 모드일 때는 물론, 모바일에서 지도 화면으로 전환했을 때도
+            // 편집 모드 여부와 무관하게 항상 장소 간 경로를 보여준다.
+            const isMobileMapView = document.getElementById('app-screen')?.classList.contains('mobile-map-active');
+            if (currentMode === 'view' || isMobileMapView) drawRoutesForViewMode();
         }
 
         function renderMapMarkers() {
@@ -7141,6 +7252,7 @@
                     disableDefaultUI: true,
                     zoomControl: true
                 });
+                addCurrentLocationControl(map);
             }
 
             currentMode = 'view';
