@@ -47,6 +47,10 @@ CREATE TABLE IF NOT EXISTS public.trips (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- trips 테이블이 예전 버전 스키마로 이미 존재했을 수 있으므로(그 경우 위
+-- CREATE TABLE IF NOT EXISTS는 아무 효과가 없음), snapshot 컬럼을 별도로 보강한다.
+ALTER TABLE public.trips ADD COLUMN IF NOT EXISTS snapshot JSONB NOT NULL DEFAULT '{}'::jsonb;
+
 -- 3. 일차별 장소 데이터 (예약됨 — 현재 애플리케이션 코드는 미사용)
 CREATE TABLE IF NOT EXISTS public.places (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

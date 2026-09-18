@@ -51,3 +51,4 @@ android/
 # Vite가 루트 index.html을 직접 번들링해 dist/index.html을 만들기 때문에,
 # public/(Vite publicDir)에 원본 사본을 두면 빌드 산출물과 내용이 어긋날 수 있습니다.
 public/index.html
+.env*
