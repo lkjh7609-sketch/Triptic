@@ -3782,18 +3782,14 @@
                 outbound: {
                     flightNo: 'OZ102',
                     airline: '아시아나항공',
-                    depAirport: 'GMP',
-                    arrAirport: 'HND',
-                    depTime: '2026-10-15 09:00',
-                    arrTime: '2026-10-15 11:15'
+                    dep: { iata: 'GMP', name: '김포국제공항', lat: 37.5583, lng: 126.7906, time: '09:00' },
+                    arr: { iata: 'HND', name: '하네다 국제공항', lat: 35.5494, lng: 139.7798, time: '11:15' }
                 },
                 return: {
                     flightNo: 'OZ101',
                     airline: '아시아나항공',
-                    depAirport: 'HND',
-                    arrAirport: 'GMP',
-                    depTime: '2026-10-18 18:00',
-                    arrTime: '2026-10-18 20:30'
+                    dep: { iata: 'HND', name: '하네다 국제공항', lat: 35.5494, lng: 139.7798, time: '18:00' },
+                    arr: { iata: 'GMP', name: '김포국제공항', lat: 37.5583, lng: 126.7906, time: '20:30' }
                 }
             },
             expenses: {
@@ -7573,6 +7569,7 @@
         }
 
         function copyItineraryText() {
+            try {
             let text = `✈️ [${activeProjectName || sharedProjectName}]\n`;
             text += `📍 목적지: ${tripCity}\n`;
             text += `📅 기간: ${tripStart} ~ ${tripEnd} (${totalTripDays}일간)\n\n`;
@@ -7586,7 +7583,8 @@
                 text += `[${d}일차] ${dateStr}\n`;
 
                 if (d === 1 && flightsData.outbound) {
-                    text += `✈️ 도착: ${flightsData.outbound.flightNo} (${flightsData.outbound.arr.name || ''})\n`;
+                    const arrName = (flightsData.outbound.arr && flightsData.outbound.arr.name) || '';
+                    text += `✈️ 도착: ${flightsData.outbound.flightNo} (${arrName})\n`;
                 }
 
                 const hotel = getEffectiveHotel(d);
@@ -7597,14 +7595,15 @@
                     text += `  (자유 일정)\n`;
                 } else {
                     items.forEach((item, idx) => {
-                        const meal = item.mealType ? `[${MEAL_META[item.mealType].label}] ` : '';
+                        const meal = (item.mealType && MEAL_META[item.mealType]) ? `[${MEAL_META[item.mealType].label}] ` : '';
                         text += `  ${idx + 1}. ${item.time || ''} ${meal}${item.name}\n`;
                         if (item.memo) text += `     ㄴ 📝 ${item.memo}\n`;
                     });
                 }
 
                 if (d === totalTripDays && flightsData.return) {
-                    text += `✈️ 귀국: ${flightsData.return.flightNo} (${flightsData.return.dep.name || ''})\n`;
+                    const depName = (flightsData.return.dep && flightsData.return.dep.name) || '';
+                    text += `✈️ 귀국: ${flightsData.return.flightNo} (${depName})\n`;
                 }
                 text += `\n`;
             }
@@ -7614,6 +7613,10 @@
             }).catch(() => {
                 showToast('클립보드 복사에 실패했습니다.', { type: 'error' });
             });
+            } catch (e) {
+                console.error(e);
+                showToast('일정 텍스트를 만드는 중 오류가 발생했습니다.', { type: 'error' });
+            }
         }
 
         function openPdfModal() {
@@ -8019,14 +8022,16 @@
                     // 1. Build Table Rows
                     const tableRows = [];
                     if (flightArrival) {
+                        const fArr = flightArrival.arr || {};
+                        const fDep = flightArrival.dep || {};
                         const transitInfo = seq.length > 0 ? getTransitToNext(seq[0]) : null;
                         const noteParts = [];
                         if (flightArrival.airline) noteParts.push(flightArrival.airline);
                         if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
                         tableRows.push({
-                            time: flightArrival.arr.time || '도착',
+                            time: fArr.time || '도착',
                             type: '[항공 · 도착]',
-                            name: `${flightArrival.flightNo} (${flightArrival.dep.iata || flightArrival.dep.name || '?'} → ${flightArrival.arr.iata || flightArrival.arr.name || '?'})`,
+                            name: `${flightArrival.flightNo} (${fDep.iata || fDep.name || '?'} → ${fArr.iata || fArr.name || '?'})`,
                             note: noteParts.join(' | ') || '공항 도착 및 입국',
                             isFlight: true,
                             isBold: true
@@ -8092,10 +8097,12 @@
                     }
 
                     if (flightDeparture) {
+                        const gDep = flightDeparture.dep || {};
+                        const gArr = flightDeparture.arr || {};
                         tableRows.push({
-                            time: flightDeparture.dep.time || '출발',
+                            time: gDep.time || '출발',
                             type: '[항공 · 출발]',
-                            name: `${flightDeparture.flightNo} (${flightDeparture.dep.iata || flightDeparture.dep.name || '?'} → ${flightDeparture.arr.iata || flightDeparture.arr.name || '?'})`,
+                            name: `${flightDeparture.flightNo} (${gDep.iata || gDep.name || '?'} → ${gArr.iata || gArr.name || '?'})`,
                             note: flightDeparture.airline || '공항 이동 및 출국',
                             isFlight: true,
                             isBold: true

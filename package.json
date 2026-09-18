@@ -23,7 +23,11 @@
     "transform": {
       "^.+\\.(js|ts)$": "babel-jest"
     },
-    "moduleFileExtensions": ["ts", "js", "json"],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
@@ -46,6 +50,7 @@
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",
     "@babel/preset-typescript": "^7.23.0",
+    "@capacitor/cli": "^8.5.2",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -62,6 +67,10 @@
     "vite-bundle-visualizer": "^1.0.0"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/status-bar": "^8.0.3",
     "@supabase/supabase-js": "^2.38.0"
   },
   "engines": {
