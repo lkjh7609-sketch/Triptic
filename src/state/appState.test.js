@@ -78,12 +78,13 @@ describe('AppState', () => {
             const listener = jest.fn();
             const unsubscribe = appState.subscribe('dayChanged', listener);
 
-            appState.setCurrentDay(1);
+            // reset() 직후 currentDay는 이미 1이므로, 실제 변경이 발생하는 값으로 설정해야 함
+            appState.setCurrentDay(2);
             expect(listener).toHaveBeenCalledTimes(1);
 
             unsubscribe(); // 구독 해제
 
-            appState.setCurrentDay(2);
+            appState.setCurrentDay(3);
             expect(listener).toHaveBeenCalledTimes(1); // 더 이상 호출 안됨
         });
 

@@ -52,7 +52,7 @@ class TripticState {
     get tripCity() { return this._tripCity; }
     get tripStart() { return this._tripStart; }
     get tripEnd() { return this._tripEnd; }
-    get totalTripDays() { return this._totalTripDays; }
+    get totalDays() { return this._totalTripDays; }
     get currentMode() { return this._currentMode; }
     get map() { return this._map; }
 
@@ -161,6 +161,8 @@ class TripticState {
         this._expensesData = {};
         this._flightsData = { outbound: null, return: null };
         this._notify('stateReset', null);
+        // stateReset 알림 이후 리스너를 비워, 테스트/화면 전환 간 구독이 누수되지 않도록 함
+        this._listeners.clear();
     }
 }
 

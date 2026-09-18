@@ -81,7 +81,8 @@ export interface Trip {
         outbound?: Flight;
         return?: Flight;
     };
-    shareId?: string;
+    shareId?: string; // Supabase shared_trips.share_code
+    supabaseId?: string; // Supabase trips.id (UUID) — 클라우드 동기화 시 연결됨
     currentDay?: number;
     updatedAt?: number;
 }

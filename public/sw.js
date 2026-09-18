@@ -1,19 +1,18 @@
 /**
  * Triptic Service Worker
- * Version: triptic-v2
  *
  * Requirements implemented:
  * 1. App shell caching: index.html, manifest.json, icon-180.png, icon-192.png, icon-512.png
  * 2. External CDN caching: SortableJS, jsPDF, lz-string (versioned URLs)
- * 3. Network-first strategy for API calls (Google Maps API, Firebase, aviationstack)
+ * 3. Network-first strategy for API calls (Google Maps API, Supabase)
  * 4. Cache-first strategy for static assets
  * 5. Offline fallback: serve cached index.html when offline
- * 6. Cache versioning: 'triptic-v2'
+ * 6. Cache versioning (bump CACHE_NAME to force clients to refresh)
  * 7. Old cache cleanup on activate
  * 8. Graceful handling for Google Maps API script (bypass cache, fail naturally when offline)
  */
 
-const CACHE_NAME = 'triptic-v4';
+const CACHE_NAME = 'triptic-v5';
 
 // 1. App shell files
 const APP_SHELL = [
@@ -50,7 +49,11 @@ function isGoogleMapsScript(url) {
 }
 
 /**
- * Helper to identify API requests (Google Maps API calls, Firebase, aviationstack)
+ * Helper to identify API requests (Google Maps API calls, Supabase)
+ *
+ * 지도 타일(gstatic)과 access_key가 실린 요청(aviationstack)은 캐시하지 않는다:
+ * 타일은 무제한으로 쌓여 캐시가 계속 커지고, access_key가 붙은 URL을 캐시 키로
+ * 쓰면 API 키가 디스크에 평문으로 영구 저장되기 때문이다.
  */
 function isApiRequest(url) {
   // Exclude the Google Maps bootstrap script (handled separately)
@@ -58,18 +61,23 @@ function isApiRequest(url) {
     return false;
   }
 
-  // Google Maps API runtime requests (places, geocode, directions, tiles, etc.)
-  if (url.hostname.includes('maps.googleapis.com') || url.hostname.includes('maps.gstatic.com')) {
+  // 지도 타일 등은 무제한으로 쌓이므로 캐시하지 않음 (네트워크 직행)
+  if (url.hostname.includes('maps.gstatic.com')) {
+    return false;
+  }
+
+  // access_key/API 키가 쿼리스트링에 실리는 요청은 캐시 키에 키가 그대로 남으므로 제외
+  if (url.searchParams.has('access_key') || url.searchParams.has('key')) {
+    return false;
+  }
+
+  // Google Maps API runtime requests (places, geocode, directions 등)
+  if (url.hostname.includes('maps.googleapis.com')) {
     return true;
   }
 
-  // Firebase Realtime Database REST API
-  if (url.hostname.includes('firebasedatabase.app') || url.hostname.includes('firebaseio.com')) {
-    return true;
-  }
-
-  // aviationstack flight data API
-  if (url.hostname.includes('aviationstack.com')) {
+  // Supabase REST/Auth API (공유 일정 조회 등은 오프라인 열람 가치가 있어 캐시)
+  if (url.hostname.endsWith('.supabase.co')) {
     return true;
   }
 
@@ -184,7 +192,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. API calls (Google Maps, Firebase, aviationstack): Network-first strategy
+  // 3. API calls (Google Maps, Supabase): Network-first strategy
   if (isApiRequest(url)) {
     event.respondWith(
       (async () => {
