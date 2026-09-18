@@ -571,7 +571,7 @@ const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'hotel', 'spot']);
 // 제어 문자를 제거하고 길이를 제한해, 프롬프트 인젝션 표면과 과도한 토큰 사용을 억제한다.
 function sanitizeInput(value, maxLen) {
     if (typeof value !== 'string') return '';
-    return value.replace(/[\r\n -]/g, ' ').trim().slice(0, maxLen);
+    return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
 }
 
 export default async function handler(req, res) {
