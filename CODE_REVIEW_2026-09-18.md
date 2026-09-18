@@ -47,7 +47,9 @@
 - **`index.html`**: 기기 백업 코드 기능 전체 제거(로그인 기반 자동 동기화로 대체), 공유 링크·동행자 제안 기능을 Supabase 호출로 전면 교체. `FIREBASE_DB_URL` 등 Firebase 관련 코드 0건.
 - **`sw.js`**: Firebase 캐싱 로직 제거, Supabase로 교체.
 
-⚠️ **DB 마이그레이션은 사용자가 직접 실행해야 합니다** — 이 세션은 라이브 Supabase 프로젝트에 대한 자격 증명이 없어 `supabase/schema.sql`을 실제로 실행/검증할 수 없었습니다. Supabase SQL Editor에서 스키마를 적용한 뒤, 공유 링크 생성 → 다른 브라우저(비로그인)로 열람 → 제안 등록 → 수락/거절까지 실제 흐름을 한 번 테스트해 보시길 권합니다.
+✅ **DB 마이그레이션 완료 및 검증됨** — 사용자가 Supabase SQL Editor에서 `supabase/schema.sql`을 직접 적용했고, 로컬(`npm run dev`, 실제 Vercel 환경변수 연결)에서 로그인 → 여행 생성 → 공유 링크 → 동행자 제안까지 실제 흐름을 테스트해 정상 동작을 확인함. anon REST 호출(`trips`/`shared_trips`/`suggestions` 조회, `get_shared_trip` RPC)로 RLS도 별도 검증함.
+
+✅ **PR 생성 및 CI 워크플로 반영 완료** — `fix/code-review-2026-09-18` 브랜치로 PR 생성됨. `.github/workflows/main.yml`의 `continue-on-error`/`|| echo` 폴백은 GitHub 웹 에디터에서 직접 제거되어 브랜치에 반영됨(로컬 PAT에 `workflow` 스코프가 없어 CLI 푸시로는 불가했음).
 
 ---
 
