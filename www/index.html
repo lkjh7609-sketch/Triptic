@@ -371,6 +371,27 @@
             opacity: 0.85;
         }
 
+        /* 📜 하단 법적 고지 링크 (개인정보처리방침 / 이용약관) */
+        .lobby-legal-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            padding: 0 0 28px;
+            font-size: 12px;
+        }
+        .lobby-legal-links a {
+            color: var(--text-light, #94A3B8);
+            text-decoration: none;
+        }
+        .lobby-legal-links a:hover {
+            color: var(--text-muted);
+            text-decoration: underline;
+        }
+        .lobby-legal-links .legal-sep {
+            color: var(--text-light, #94A3B8);
+        }
+
         /* ☁️ 기기 동기화 & 백업 팝업 모달 */
         .sync-modal-wrap {
             display: flex;
@@ -721,6 +742,41 @@
             font-size: 13.5px;
             line-height: 1;
             white-space: nowrap;
+        }
+
+        /* 📍 지도 "현재 위치" 커스텀 컨트롤 (구글 지도 우하단, 줌 컨트롤과 함께 스택됨) */
+        .current-location-btn {
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+            background: var(--bg-card, #ffffff);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background 0.15s ease;
+        }
+        .current-location-btn:hover {
+            background: var(--bg-hover, #F1F5F9);
+        }
+        .current-location-btn:active {
+            transform: scale(0.94);
+        }
+        .current-location-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--brand-primary, #1E3A5F);
+        }
+        .current-location-btn.locating svg {
+            animation: current-location-spin 1s linear infinite;
+        }
+        @keyframes current-location-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* 📱 모바일 지도 상단 플로팅 칩 (단일 행 유지) */
@@ -1869,11 +1925,11 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 6px;
             flex-shrink: 0;
             flex-wrap: nowrap;
             flex: 1;
-            justify-content: space-between;
+            justify-content: flex-start;
         }
 
         .time-wrapper {
@@ -1983,6 +2039,7 @@
             white-space: nowrap;
             font-family: inherit;
             box-sizing: border-box;
+            margin-left: auto; /* 왼쪽 그룹(번호·핸들·순서·시간)은 붙이고, 이 버튼만 오른쪽 끝으로 */
         }
         .ai-recommend-btn:hover {
             background: var(--brand-primary);
@@ -2904,28 +2961,6 @@
             transform: scale(0.98);
         }
 
-        .auth-card-close-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: transparent;
-            border: none;
-            font-size: 18px;
-            color: var(--text-muted, #94A3B8);
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, color 0.2s;
-        }
-        .auth-card-close-btn:hover {
-            background: var(--bg-subtle, #F1F5F9);
-            color: var(--text-title, #0A1628);
-        }
-
         .auth-wall-card {
             position: relative;
         }
@@ -2946,7 +2981,6 @@
     <!-- 🔒 간편 로그인 인증 월 (로그인 필요 시 팝업) -->
     <div id="auth-wall-overlay" class="auth-wall-overlay" style="display: none;" onclick="if(event.target === this) hideAuthWall()">
         <div class="auth-wall-card">
-            <button type="button" class="auth-card-close-btn" onclick="hideAuthWall()" title="닫기" aria-label="닫기">✕</button>
             <div class="auth-brand-badge">
                 <svg class="auth-logo-glyph" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 27.5L28.5 4.5L17.5 28.5L14 19.5L4 27.5Z" fill="url(#triptic-auth-grad-1)" />
@@ -2991,7 +3025,7 @@
             </p>
             <div style="margin-top: 14px; border-top: 1px solid var(--border-color, #F1F5F9); padding-top: 10px;">
                 <button type="button" class="guest-bypass-btn" onclick="hideAuthWall()">
-                    샘플 여행 둘러보기로 돌아가기 →
+                    로그인 없이 샘플 여행 둘러보기 →
                 </button>
             </div>
         </div>
@@ -3047,6 +3081,12 @@
                     <span class="footer-btn-icon">☁️</span>
                     <span>기기 동기화 &amp; 백업</span>
                 </button>
+            </div>
+            <!-- 📜 개인정보처리방침 / 이용약관 -->
+            <div class="lobby-legal-links">
+                <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>
+                <span class="legal-sep">·</span>
+                <a href="/terms.html" target="_blank" rel="noopener">이용약관</a>
             </div>
             <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importAllData(event)">
         </div>
@@ -3127,7 +3167,7 @@
             <div class="day-city-bar edit-only" id="day-city-bar">
                 <div class="day-city-info">
                     <span class="day-city-badge">📍 <span id="day-city-name">도시 로딩 중...</span></span>
-                    <span class="day-city-sub" id="day-city-sub">(<span id="day-city-day-num">1</span>일차 활동 도시)</span>
+                    <span class="day-city-sub" id="day-city-sub">(<span id="day-city-day-num">1</span>일차 방문 도시)</span>
                 </div>
                 <button type="button" class="day-city-change-btn" onclick="openDayCityModal()">
                     도시 변경
@@ -3443,7 +3483,7 @@
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const isNativeApp = window.location.protocol === 'capacitor:' || typeof window.Capacitor !== 'undefined';
                 // Vercel Preview URL의 Deployment Protection(SSO 로그인) 우회를 위해 프로덕션 도메인 우선 적용
-                const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic-ten.vercel.app';
+                const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic.my';
 
                 const result = await client.auth.signInWithOAuth({
                     provider: provider,
@@ -3493,16 +3533,23 @@
                 return;
             }
 
+            // 공유 링크(?id= 또는 ?share=)로 들어온 방문자에게는 로그인 화면을 띄우지 않음
+            // (비로그인 상태로도 공유받은 일정을 바로 볼 수 있어야 하므로)
+            const urlParams = new URLSearchParams(location.search);
+            const isSharedRoute = !!(urlParams.get('id') || urlParams.get('share'));
+
             try {
                 const { data: { session } } = await client.auth.getSession();
                 if (session && session.user) {
                     unlockApp(session.user);
                 } else {
                     updateAuthUI(null);
+                    if (!isSharedRoute) showAuthWall();
                 }
             } catch (e) {
                 console.warn('세션 확인 중 오류:', e);
                 updateAuthUI(null);
+                if (!isSharedRoute) showAuthWall();
             }
 
             client.auth.onAuthStateChange(async (event, session) => {
@@ -5074,6 +5121,7 @@
                         disableDefaultUI: true,
                         zoomControl: true
                     });
+                    addCurrentLocationControl(map);
                     const searchInput = document.getElementById('search-input');
                     if (searchInput && window.google.maps.places) {
                         autocomplete = new google.maps.places.Autocomplete(searchInput);
@@ -6910,6 +6958,78 @@
             handleRouteDisplay();
         }
 
+        /**
+         * 지도 우하단에 "현재 위치" 커스텀 컨트롤을 추가한다 (줌 컨트롤과 같은 자리에 스택됨).
+         * 클릭 시 브라우저 위치 정보로 지도를 이동시킨다.
+         */
+        function addCurrentLocationControl(mapInstance) {
+            if (!mapInstance || !window.google || !google.maps) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'current-location-btn';
+            btn.title = '현재 위치로 이동';
+            btn.setAttribute('aria-label', '현재 위치로 이동');
+            btn.innerHTML = `
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                </svg>
+            `;
+
+            let locationMarker = null;
+
+            btn.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    showToast('이 브라우저는 위치 정보를 지원하지 않습니다.', { type: 'error' });
+                    return;
+                }
+
+                btn.classList.add('locating');
+                btn.disabled = true;
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        btn.classList.remove('locating');
+                        btn.disabled = false;
+
+                        const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        mapInstance.panTo(here);
+                        mapInstance.setZoom(16);
+
+                        if (locationMarker) {
+                            locationMarker.setPosition(here);
+                        } else {
+                            locationMarker = new google.maps.Marker({
+                                map: mapInstance,
+                                position: here,
+                                title: '현재 위치',
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 8,
+                                    fillColor: '#2563EB',
+                                    fillOpacity: 1,
+                                    strokeColor: '#ffffff',
+                                    strokeWeight: 2
+                                },
+                                zIndex: 999
+                            });
+                        }
+                    },
+                    (err) => {
+                        btn.classList.remove('locating');
+                        btn.disabled = false;
+                        const msg = err.code === err.PERMISSION_DENIED
+                            ? '위치 정보 접근이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해 주세요.'
+                            : '현재 위치를 가져오지 못했습니다.';
+                        showToast(msg, { type: 'error' });
+                    },
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+                );
+            });
+
+            mapInstance.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(btn);
+        }
+
         function clearRoutes() {
             directionsRenderers.forEach(r => r.setMap(null));
             directionsRenderers = [];
@@ -6919,7 +7039,10 @@
 
         function handleRouteDisplay() {
             clearRoutes();
-            if (currentMode === 'view') drawRoutesForViewMode();
+            // 경로 모드일 때는 물론, 모바일에서 지도 화면으로 전환했을 때도
+            // 편집 모드 여부와 무관하게 항상 장소 간 경로를 보여준다.
+            const isMobileMapView = document.getElementById('app-screen')?.classList.contains('mobile-map-active');
+            if (currentMode === 'view' || isMobileMapView) drawRoutesForViewMode();
         }
 
         function renderMapMarkers() {
@@ -7133,6 +7256,7 @@
                     disableDefaultUI: true,
                     zoomControl: true
                 });
+                addCurrentLocationControl(map);
             }
 
             currentMode = 'view';

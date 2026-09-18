@@ -2961,28 +2961,6 @@
             transform: scale(0.98);
         }
 
-        .auth-card-close-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: transparent;
-            border: none;
-            font-size: 18px;
-            color: var(--text-muted, #94A3B8);
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, color 0.2s;
-        }
-        .auth-card-close-btn:hover {
-            background: var(--bg-subtle, #F1F5F9);
-            color: var(--text-title, #0A1628);
-        }
-
         .auth-wall-card {
             position: relative;
         }
@@ -3003,7 +2981,6 @@
     <!-- 🔒 간편 로그인 인증 월 (로그인 필요 시 팝업) -->
     <div id="auth-wall-overlay" class="auth-wall-overlay" style="display: none;" onclick="if(event.target === this) hideAuthWall()">
         <div class="auth-wall-card">
-            <button type="button" class="auth-card-close-btn" onclick="hideAuthWall()" title="닫기" aria-label="닫기">✕</button>
             <div class="auth-brand-badge">
                 <svg class="auth-logo-glyph" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 27.5L28.5 4.5L17.5 28.5L14 19.5L4 27.5Z" fill="url(#triptic-auth-grad-1)" />
