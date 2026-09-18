@@ -188,7 +188,7 @@ async function callOpenRouter(apiKey, prompt, deadline) {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': 'https://triptic-ten.vercel.app',
+                    'HTTP-Referer': 'https://triptic.my',
                     'X-Title': 'Triptic Travel Planner',
                     'Content-Type': 'application/json'
                 },
@@ -546,6 +546,8 @@ function filterByCategory(items, category, placeName, cityName) {
 }
 
 const ALLOWED_ORIGINS = new Set([
+    'https://triptic.my',
+    'https://www.triptic.my',
     'https://triptic-ten.vercel.app',
     'http://localhost:3000',
     'http://127.0.0.1:3000',

@@ -2,6 +2,8 @@
 // /api/env.js
 
 const ALLOWED_ORIGINS = new Set([
+    'https://triptic.my',
+    'https://www.triptic.my',
     'https://triptic-ten.vercel.app',
     'http://localhost:3000',
     'http://127.0.0.1:3000'

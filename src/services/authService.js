@@ -6,7 +6,7 @@ export async function signInWithProvider(provider) {
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const isNativeApp = typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || typeof window.Capacitor !== 'undefined');
     // Vercel Preview URL의 Deployment Protection(SSO 로그인) 우회를 위해 프로덕션 도메인 우선 적용
-    const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic-ten.vercel.app';
+    const redirectUrl = (isLocal && !isNativeApp) ? window.location.origin : 'https://triptic.my';
 
     const result = await client.auth.signInWithOAuth({
         provider: provider,
