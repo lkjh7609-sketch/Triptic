@@ -37,11 +37,17 @@ Thumbs.db
 .vercel
 
 # Capacitor
-ios/
+# 주의: ios/ 와 capacitor.config.json은 실제로는 커밋되어 추적 중입니다
+# (네이티브 프로젝트 셸을 저장소에 함께 보관하는 방식). 여기 남겨두면
+# "제외됨"이라는 오해를 주므로 android/(아직 미생성)만 무시합니다.
 android/
-capacitor.config.json
 
 # Temporary files
 *.tmp
 *.temp
 .cache/
+
+# public/index.html은 scripts/build.js가 더 이상 생성하지 않습니다.
+# Vite가 루트 index.html을 직접 번들링해 dist/index.html을 만들기 때문에,
+# public/(Vite publicDir)에 원본 사본을 두면 빌드 산출물과 내용이 어긋날 수 있습니다.
+public/index.html
