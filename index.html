@@ -2495,9 +2495,14 @@
             max-width: 440px;
             max-height: 90vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             box-shadow: var(--shadow-modal);
             border: 1px solid var(--border-color);
-            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            /* forwards를 쓰지 않음: 애니메이션이 끝난 뒤에도 transform이 요소에 남아있으면
+               Safari(WebKit)에서 overflow-y:auto와 함께 스크롤이 막히는 버그가 있음.
+               fill-mode 기본값(none)이면 0.2s 후 transform이 완전히 해제되어 스크롤이 정상 동작함
+               (100% 키프레임이 기본 상태와 시각적으로 동일해 애니메이션 종료 시 깜빡임도 없음). */
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes modalPop {
             0%   { opacity: 0; transform: scale(0.96); }
