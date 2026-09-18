@@ -316,7 +316,7 @@ function rateLimited(ip, limit = 20, windowMs = 60_000) {
 
 // 제어문자 제거 + 길이 제한으로 인젝션 표면 축소
 const sanitize = (v, max) =>
-    typeof v === 'string' ? v.replace(/[\r\n -]/g, ' ').trim().slice(0, max) : '';
+    typeof v === 'string' ? v.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, max) : '';
 
 export default async function handler(req, res) {
     const origin = req.headers.origin;
