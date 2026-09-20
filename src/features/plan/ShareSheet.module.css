@@ -80,3 +80,8 @@
   color: var(--text-on-brand);
   font-weight: 600;
 }
+
+.exportRow {
+  display: flex;
+  gap: var(--space-2);
+}
