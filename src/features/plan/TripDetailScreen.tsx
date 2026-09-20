@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { useTrip } from './hooks/useTrips';
-import { tripService } from '@/shared/api/tripService';
+import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
+import { tripService, type LocalProject } from '@/shared/api/tripService';
 import { DayChips } from './DayChips';
 import { ItineraryItemCard } from './ItineraryItemCard';
 import { LegLabel } from './LegLabel';
 import { TripMapView } from './TripMapView';
+import { AddPlaceModal } from './AddPlaceModal';
+import { ItemDetailSheet } from './ItemDetailSheet';
 import { useTripRoutes } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -26,8 +28,11 @@ export function TripDetailScreen() {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
+  const updateSnapshot = useUpdateTripSnapshot(tripId);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [showAddPlace, setShowAddPlace] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     trackScreenView('trip_detail');
@@ -41,6 +46,28 @@ export function TripDetailScreen() {
     return plannerData[currentDay] ?? [];
   }, [project, currentDay]);
   const { startHotel, endHotel } = getDayHotels(currentDay, totalDays, hotelsData);
+
+  /** project.data[currentDay]를 갱신한 새 스냅샷을 저장한다 */
+  async function persistDayItems(nextItems: PlaceItem[]) {
+    if (!project || !trip) return;
+    const plannerData = { ...((project.data ?? {}) as PlannerData) };
+    plannerData[currentDay] = nextItems;
+    const nextProject: LocalProject = { ...project, data: plannerData };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+  }
+
+  async function handleAddPlace(item: PlaceItem) {
+    await persistDayItems([...dayItems, item]);
+  }
+
+  async function handleUpdateItem(index: number, patch: Partial<PlaceItem>) {
+    const next = dayItems.map((it, i) => (i === index ? { ...it, ...patch } : it));
+    await persistDayItems(next);
+  }
+
+  async function handleDeleteItem(index: number) {
+    await persistDayItems(dayItems.filter((_, i) => i !== index));
+  }
 
   if (isLoading) {
     return (
@@ -102,8 +129,27 @@ export function TripDetailScreen() {
           />
         </div>
       ) : (
-        <TripTimeline dayItems={dayItems} startHotel={startHotel} endHotel={endHotel} />
+        <TripTimeline
+          dayItems={dayItems}
+          startHotel={startHotel}
+          endHotel={endHotel}
+          onAddClick={() => setShowAddPlace(true)}
+          onItemClick={setEditingIndex}
+        />
       )}
+
+      {showAddPlace ? (
+        <AddPlaceModal onClose={() => setShowAddPlace(false)} onAdd={handleAddPlace} />
+      ) : null}
+
+      {editingIndex !== null && dayItems[editingIndex] ? (
+        <ItemDetailSheet
+          item={dayItems[editingIndex]}
+          onClose={() => setEditingIndex(null)}
+          onSave={(patch) => handleUpdateItem(editingIndex, patch)}
+          onDelete={() => handleDeleteItem(editingIndex)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -117,26 +163,28 @@ interface TripTimelineProps {
   dayItems: PlaceItem[];
   startHotel: Hotel | null;
   endHotel: Hotel | null;
+  onAddClick: () => void;
+  onItemClick: (index: number) => void;
 }
 
-function TripTimeline({ dayItems, startHotel, endHotel }: TripTimelineProps) {
+function TripTimeline({ dayItems, startHotel, endHotel, onAddClick, onItemClick }: TripTimelineProps) {
   const legs = useTripRoutes({ map: null, dayItems, startHotel, endHotel, activeZoneIndex: 0 });
-
-  if (dayItems.length === 0) {
-    return <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />;
-  }
 
   return (
     <div className={styles.timeline}>
-      {dayItems.map((item, index) => (
-        <div key={`${item.name}-${index}`}>
-          <ItineraryItemCard index={index} item={item} />
-          {index < dayItems.length - 1 && legs[index] ? <LegLabel leg={legs[index]} /> : null}
-        </div>
-      ))}
+      {dayItems.length === 0 ? (
+        <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />
+      ) : (
+        dayItems.map((item, index) => (
+          <div key={`${item.name}-${index}`}>
+            <ItineraryItemCard index={index} item={item} onClick={() => onItemClick(index)} />
+            {index < dayItems.length - 1 && legs[index] ? <LegLabel leg={legs[index]} /> : null}
+          </div>
+        ))
+      )}
       <div className={styles.addButtonWrap}>
-        <button type="button" className={styles.addButton} disabled>
-          + 일정 추가 (준비 중)
+        <button type="button" className={styles.addButton} onClick={onAddClick}>
+          + 일정 추가
         </button>
       </div>
     </div>
