@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
 import { tripService, type LocalProject } from '@/shared/api/tripService';
 import { DayChips } from './DayChips';
-import { ItineraryItemCard } from './ItineraryItemCard';
+import { SortableItineraryItem } from './SortableItineraryItem';
 import { LegLabel } from './LegLabel';
 import { TripMapView } from './TripMapView';
 import { AddPlaceModal } from './AddPlaceModal';
@@ -84,6 +86,11 @@ export function TripDetailScreen() {
 
   async function handleDeleteItem(index: number) {
     await persistDayItems(dayItems.filter((_, i) => i !== index));
+  }
+
+  /** 드래그 순서 변경 (DEVELOPMENT_PLAN.md §9 Phase 2: dnd-kit) */
+  async function handleReorder(nextItems: PlaceItem[]) {
+    await persistDayItems(nextItems);
   }
 
   /** 항목을 다른 날짜로 옮긴다 — 두 날짜를 한 스냅샷 안에서 함께 갱신한다 */
@@ -180,6 +187,7 @@ export function TripDetailScreen() {
           endHotel={endHotel}
           onAddClick={() => setShowAddPlace(true)}
           onItemClick={setEditingIndex}
+          onReorder={handleReorder}
         />
       )}
 
@@ -225,22 +233,52 @@ interface TripTimelineProps {
   endHotel: Hotel | null;
   onAddClick: () => void;
   onItemClick: (index: number) => void;
+  onReorder: (nextItems: PlaceItem[]) => void;
 }
 
-function TripTimeline({ dayItems, startHotel, endHotel, onAddClick, onItemClick }: TripTimelineProps) {
+function TripTimeline({
+  dayItems,
+  startHotel,
+  endHotel,
+  onAddClick,
+  onItemClick,
+  onReorder,
+}: TripTimelineProps) {
   const legs = useTripRoutes({ map: null, dayItems, startHotel, endHotel, activeZoneIndex: 0 });
+  // 드래그 인터랙션 동안만 안정적이면 충분하다 — key가 없는 레거시 항목은
+  // "그 순간의 index" 기반으로 식별한다 (types.ts PlaceItem.key 주석 참고).
+  const itemIds = dayItems.map((item, i) => item.key ?? `idx-${i}`);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = itemIds.indexOf(String(active.id));
+    const newIndex = itemIds.indexOf(String(over.id));
+    if (oldIndex === -1 || newIndex === -1) return;
+    onReorder(arrayMove(dayItems, oldIndex, newIndex));
+  }
 
   return (
     <div className={styles.timeline}>
       {dayItems.length === 0 ? (
         <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />
       ) : (
-        dayItems.map((item, index) => (
-          <div key={`${item.name}-${index}`}>
-            <ItineraryItemCard index={index} item={item} onClick={() => onItemClick(index)} />
-            {index < dayItems.length - 1 && legs[index] ? <LegLabel leg={legs[index]} /> : null}
-          </div>
-        ))
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+            {dayItems.map((item, index) => (
+              <div key={itemIds[index]}>
+                <SortableItineraryItem
+                  id={itemIds[index]}
+                  index={index}
+                  item={item}
+                  onClick={() => onItemClick(index)}
+                />
+                {index < dayItems.length - 1 && legs[index] ? <LegLabel leg={legs[index]} /> : null}
+              </div>
+            ))}
+          </SortableContext>
+        </DndContext>
       )}
       <div className={styles.addButtonWrap}>
         <button type="button" className={styles.addButton} onClick={onAddClick}>
