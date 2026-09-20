@@ -136,6 +136,14 @@ export class TripService {
     return (data as TripRow[]) ?? [];
   }
 
+  /** 단일 여행 조회 (여행 상세 화면용) */
+  async getTrip(tripId: string): Promise<TripRow | null> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.from('trips').select('*').eq('id', tripId).maybeSingle();
+    if (error) throw error;
+    return (data as TripRow | null) ?? null;
+  }
+
   /** Supabase trips 행을 로컬 프로젝트(allProjects[name]) 형식으로 변환 */
   toLocalProject(row: TripRow): LocalProject {
     const snap = row.snapshot || {};

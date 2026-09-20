@@ -1,0 +1,50 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.headerTitle {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0;
+}
+
+.addButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.section {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+  margin: var(--space-2) 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pastToggle {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--brand);
+  font-size: var(--font-label-size);
+  padding: var(--space-2) 0;
+  cursor: pointer;
+}

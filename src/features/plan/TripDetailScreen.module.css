@@ -1,0 +1,85 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.backButton {
+  appearance: none;
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: var(--text-primary);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.headerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dates {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
+
+.toggleButton {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface-card);
+  border-radius: var(--radius-pill);
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-label-size);
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline {
+  padding-bottom: var(--space-8);
+}
+
+.addButtonWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.addButton {
+  appearance: none;
+  border: 1px dashed var(--border-strong);
+  background: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--font-body-size);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.mapWrap {
+  height: calc(100vh - 220px);
+}

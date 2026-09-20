@@ -1,0 +1,57 @@
+.card {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  align-items: flex-start;
+}
+
+.marker {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--marker-fill);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.time {
+  color: var(--brand);
+  font-size: var(--font-label-size);
+  font-weight: 600;
+}
+
+.category {
+  color: var(--text-muted);
+  font-size: var(--font-caption-size);
+}
+
+.name {
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-line);
+  font-weight: var(--font-headline-weight);
+  color: var(--text-primary);
+  margin: 2px 0 0;
+  overflow-wrap: break-word;
+}
+
+.memo {
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
