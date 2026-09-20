@@ -123,7 +123,7 @@ export class StorageService {
                 available: 5,
                 percentage: (usedBytes / maxBytes) * 100
             };
-        } catch (e) {
+        } catch {
             return { used: 0, available: 5, percentage: 0 };
         }
     }

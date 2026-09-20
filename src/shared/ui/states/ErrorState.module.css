@@ -1,0 +1,37 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+}
+
+.summary {
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line);
+  color: var(--text-body);
+}
+
+.retry {
+  appearance: none;
+  border: 1px solid var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-label-size);
+  font-weight: var(--font-label-weight);
+  min-height: 44px;
+  cursor: pointer;
+}
+.retry:active {
+  background: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.supportLink {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  text-decoration: underline;
+}

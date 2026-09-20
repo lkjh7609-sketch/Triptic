@@ -43,7 +43,7 @@ describe('AppState', () => {
 
     describe('Event subscription', () => {
         test('dayChanged 이벤트를 구독할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('dayChanged', listener);
 
             appState.setCurrentDay(5);
@@ -53,7 +53,7 @@ describe('AppState', () => {
         });
 
         test('projectChanged 이벤트를 구독할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('projectChanged', listener);
 
             appState.setActiveProject('Kyoto Trip');
@@ -62,8 +62,8 @@ describe('AppState', () => {
         });
 
         test('여러 리스너가 동일한 이벤트를 구독할 수 있어야 함', () => {
-            const listener1 = jest.fn();
-            const listener2 = jest.fn();
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
 
             appState.subscribe('dayChanged', listener1);
             appState.subscribe('dayChanged', listener2);
@@ -75,7 +75,7 @@ describe('AppState', () => {
         });
 
         test('구독을 해제할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             const unsubscribe = appState.subscribe('dayChanged', listener);
 
             // reset() 직후 currentDay는 이미 1이므로, 실제 변경이 발생하는 값으로 설정해야 함
@@ -91,7 +91,7 @@ describe('AppState', () => {
         test('같은 값으로 설정하면 이벤트가 발생하지 않아야 함', () => {
             appState.setCurrentDay(1);
 
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('dayChanged', listener);
 
             appState.setCurrentDay(1); // 같은 값
@@ -102,7 +102,7 @@ describe('AppState', () => {
 
     describe('Data management', () => {
         test('plannerData를 업데이트할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('plannerDataChanged', listener);
 
             const places = [
@@ -116,7 +116,7 @@ describe('AppState', () => {
         });
 
         test('프로젝트를 추가할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('projectAdded', listener);
 
             const project = {
@@ -134,7 +134,7 @@ describe('AppState', () => {
         });
 
         test('프로젝트를 삭제할 수 있어야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
 
             appState.addProject('Test Trip', { city: 'Seoul' });
             appState.subscribe('projectDeleted', listener);
@@ -148,7 +148,7 @@ describe('AppState', () => {
 
     describe('State reset', () => {
         test('reset은 모든 상태를 초기화해야 함', () => {
-            const listener = jest.fn();
+            const listener = vi.fn();
             appState.subscribe('stateReset', listener);
 
             // 상태 설정
@@ -168,10 +168,10 @@ describe('AppState', () => {
 
     describe('Error handling in listeners', () => {
         test('리스너 에러가 다른 리스너에 영향을 주지 않아야 함', () => {
-            const errorListener = jest.fn(() => {
+            const errorListener = vi.fn(() => {
                 throw new Error('Listener error');
             });
-            const normalListener = jest.fn();
+            const normalListener = vi.fn();
 
             appState.subscribe('dayChanged', errorListener);
             appState.subscribe('dayChanged', normalListener);

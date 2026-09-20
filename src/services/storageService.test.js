@@ -16,12 +16,12 @@ const localStorageMock = (() => {
 })();
 
 global.localStorage = localStorageMock;
-global.showToast = jest.fn(); // Toast 함수 mock
+global.showToast = vi.fn(); // Toast 함수 mock
 
 describe('StorageService', () => {
     beforeEach(() => {
         localStorage.clear();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('save', () => {

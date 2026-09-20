@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -8,6 +9,9 @@ export default defineConfig(({ mode }) => {
     publicDir: 'public',
 
     plugins: [
+      // 새 React 앱(index.html → src/app/main.tsx)의 JSX/Fast Refresh 변환.
+      // legacy/index.html은 순수 vanilla 번들이라 이 플러그인의 영향을 받지 않는다.
+      react(),
       {
         // 로컬 개발 서버에서 프로덕션 api/*.js 서버리스 함수와 동일한 동작을 흉내낸다.
         // AVIATIONSTACK_API_KEY는 절대 브라우저로 내려보내지 않고(H-4/H-2 수정),
@@ -79,19 +83,23 @@ export default defineConfig(({ mode }) => {
       }
     },
     rollupOptions: {
+      // Strangler 전환(ADR-001): 새 React 셸(index.html)과 기존 vanilla 앱
+      // (legacy/index.html)을 한 빌드에서 각각 dist/index.html, dist/legacy/index.html로
+      // 산출한다. 기존 앱은 Phase 2 패리티 체크리스트 통과 전까지 배포 경로를 바꾸지 않는다.
       input: {
-        main: resolve(__dirname, 'index.html')
+        main: resolve(__dirname, 'index.html'),
+        legacy: resolve(__dirname, 'legacy/index.html')
       },
       output: {
         manualChunks: {
-          // 유틸리티 분리
+          // 유틸리티 분리 (legacy 앱이 사용)
           'utils': [
             './src/utils/dateUtils.js',
             './src/utils/timeUtils.js',
             './src/utils/escapeHtml.js',
             './src/utils/id.js'
           ],
-          // 서비스 분리
+          // 서비스 분리 (legacy 앱이 사용 — 새 앱은 src/shared/api/*.ts를 별도로 번들한다)
           'services': [
             './src/services/storageService.js',
             './src/services/apiService.js',
@@ -113,10 +121,13 @@ export default defineConfig(({ mode }) => {
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      '@/app': resolve(__dirname, './src/app'),
+      '@/features': resolve(__dirname, './src/features'),
+      '@/shared': resolve(__dirname, './src/shared'),
+      '@/types': resolve(__dirname, './src/types'),
       '@/utils': resolve(__dirname, './src/utils'),
       '@/services': resolve(__dirname, './src/services'),
-      '@/state': resolve(__dirname, './src/state'),
-      '@/types': resolve(__dirname, './src/types')
+      '@/state': resolve(__dirname, './src/state')
     }
   },
 
