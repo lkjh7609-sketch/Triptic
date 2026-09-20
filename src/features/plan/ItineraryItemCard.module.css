@@ -3,6 +3,16 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.card:active {
+  background: var(--surface-subtle);
 }
 
 .marker {
