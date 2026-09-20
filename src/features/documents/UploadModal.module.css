@@ -1,0 +1,25 @@
+.consentText {
+  font-size: var(--font-label-size);
+  color: var(--text-body);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.fileInput {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  font-size: var(--font-label-size);
+}
+
+.status {
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.error {
+  font-size: var(--font-label-size);
+  color: var(--danger);
+  margin: 0;
+}

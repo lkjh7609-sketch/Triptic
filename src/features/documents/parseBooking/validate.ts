@@ -59,11 +59,17 @@ export function verifyParsedFlight(
     next.departure.airportIata = { value: null, confidence: 0 };
     warnings.push('출발 공항 코드가 실재 공항 DB에 없어 비웠습니다.');
   }
+  // 커밋 시(§9) 지도 렌더링에 필요한 좌표 — 추출값이 아니라 DB 조회값이라 신뢰도는 없다
+  next.departure.airportLat = depAirport?.lat ?? null;
+  next.departure.airportLng = depAirport?.lng ?? null;
+
   const arrAirport = lookupAirport(ctx.airports, next.arrival.airportIata.value);
   if (next.arrival.airportIata.value && !arrAirport) {
     next.arrival.airportIata = { value: null, confidence: 0 };
     warnings.push('도착 공항 코드가 실재 공항 DB에 없어 비웠습니다.');
   }
+  next.arrival.airportLat = arrAirport?.lat ?? null;
+  next.arrival.airportLng = arrAirport?.lng ?? null;
 
   if (next.flightNumber.value && !FLIGHT_NUMBER_RE.test(next.flightNumber.value)) {
     next.flightNumber.confidence = Math.min(next.flightNumber.confidence, 0.3);

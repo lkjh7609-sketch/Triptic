@@ -22,6 +22,10 @@ import { ExpenseModal } from './ExpenseModal';
 import { FlightModal } from './FlightModal';
 import { DayCityModal } from './DayCityModal';
 import { SuggestionsModal } from './SuggestionsModal';
+import { UploadModal } from '@/features/documents/UploadModal';
+import { ReviewSheet } from '@/features/documents/ReviewSheet';
+import { usePendingBookings } from '@/features/documents/useDocuments';
+import type { ParseBookingResponse } from '@/features/documents/documentService';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
@@ -71,6 +75,9 @@ export function TripDetailScreen() {
   const [showDayCityModal, setShowDayCityModal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showReviewSheet, setShowReviewSheet] = useState(false);
+  const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
 
   useEffect(() => {
     trackScreenView('trip_detail');
@@ -332,6 +339,20 @@ export function TripDetailScreen() {
           <button type="button" className={styles.hotelButton} onClick={() => setShowFlightModal(true)}>
             ✈️ 항공편
           </button>
+          {!isSample ? (
+            <button
+              type="button"
+              className={styles.hotelButton}
+              onClick={() =>
+                (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
+              }
+            >
+              📄 서류로 추가
+              {(pendingBookings.data?.length ?? 0) > 0 ? (
+                <span className={styles.inlineBadge}>{pendingBookings.data!.length}</span>
+              ) : null}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -435,6 +456,29 @@ export function TripDetailScreen() {
           pdfInput={pdfInput}
           isSample={isSample}
           onClose={() => setShowShare(false)}
+        />
+      ) : null}
+
+      {showUploadModal && tripId ? (
+        <UploadModal
+          tripId={tripId}
+          onClose={() => setShowUploadModal(false)}
+          onParsed={(result: ParseBookingResponse) => {
+            setShowUploadModal(false);
+            if (result.bookings.length > 0) setShowReviewSheet(true);
+          }}
+        />
+      ) : null}
+
+      {showReviewSheet && tripId && trip ? (
+        <ReviewSheet
+          tripId={tripId}
+          bookings={pendingBookings.data ?? []}
+          tripStartDate={trip.start_date ?? ''}
+          tripEndDate={trip.end_date ?? ''}
+          flightsData={flightsData}
+          onCommitFlight={handleSaveFlights}
+          onClose={() => setShowReviewSheet(false)}
         />
       ) : null}
     </div>
