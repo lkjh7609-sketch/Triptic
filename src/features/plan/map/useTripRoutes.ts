@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { computeDayZones, nearestZoneIndexForPoint, type GeoPoint } from './geo';
 import { DirectionsCache } from './directionsCache';
 import type { Hotel } from './hotels';
+import { loadGoogleMaps } from '@/shared/api/googleMapsLoader';
 
 export interface RouteWaypoint extends GeoPoint {
   /** dayItems 안에서의 인덱스. 숙소는 'start-hotel' | 'end-hotel' */
@@ -29,6 +30,13 @@ export interface RouteLeg {
 }
 
 interface UseTripRoutesOptions<T extends GeoPoint> {
+  /**
+   * null이면 실제 렌더링(폴리라인 표시) 없이 구간 거리·시간 정보만 계산한다
+   * — 목록 모드에서 LegLabel에 값을 채우는 용도. DirectionsService 자체는
+   * 지도 인스턴스 없이도 호출 가능하다(원본과 달리 새로 추가한 동작. 리액트
+   * UI에서는 "지도가 화면에 없어도 구간 정보는 필요하다"는 경우가 있기 때문
+   * — 알고리즘 자체(연결 순서·캐시·폴백)는 원본과 동일하다).
+   */
   map: google.maps.Map | null;
   /** 그 날의 일정 항목. useMemo로 참조를 안정시켜 전달할 것(매 렌더 재실행 방지) */
   dayItems: T[];
@@ -54,124 +62,141 @@ export function useTripRoutes<T extends GeoPoint>({
   const [legs, setLegs] = useState<RouteLeg[]>([]);
 
   useEffect(() => {
-    if (!map) return;
+    let cancelled = false;
 
-    // clearRoutes (원본 그대로)
-    renderersRef.current.forEach((r) => r.setMap(null));
-    renderersRef.current = [];
-    fallbackPolylinesRef.current.forEach((p) => p.setMap(null));
-    fallbackPolylinesRef.current = [];
-
-    const dayZones = computeDayZones(dayItems);
-    const multiZone = dayZones.length > 1;
-    const activeIndices = multiZone
-      ? new Set(dayZones[Math.min(activeZoneIndex, dayZones.length - 1)].indices)
-      : null;
-
-    const list: RouteWaypoint[] = [];
-    if (
-      startHotel &&
-      (!multiZone ||
-        nearestZoneIndexForPoint(dayZones, dayItems, startHotel) === activeZoneIndex)
-    ) {
-      list.push({ lat: startHotel.lat, lng: startHotel.lng, ref: 'start-hotel' });
-    }
-    dayItems.forEach((p, idx) => {
-      if (p.lat == null || p.lng == null) return;
-      if (multiZone && !activeIndices!.has(idx)) return;
-      list.push({ lat: p.lat, lng: p.lng, ref: idx });
-    });
-    if (
-      endHotel &&
-      (!multiZone || nearestZoneIndexForPoint(dayZones, dayItems, endHotel) === activeZoneIndex)
-    ) {
-      list.push({ lat: endHotel.lat, lng: endHotel.lng, ref: 'end-hotel' });
-    }
-
-    if (list.length < 2) {
-      // 외부 시스템(Directions API) 응답으로 채워지는 상태를 "연결할 구간 없음"으로
-      // 동기화하는 것 — 파생 가능한 렌더 상태가 아니라 effect의 정상 책임이다.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLegs([]);
-      return;
-    }
-
-    if (!directionsServiceRef.current) {
-      directionsServiceRef.current = new google.maps.DirectionsService();
-    }
-    const directionsService = directionsServiceRef.current;
-
-    const initialLegs: RouteLeg[] = [];
-    for (let i = 0; i < list.length - 1; i++) {
-      initialLegs.push({ from: list[i], to: list[i + 1], status: 'loading', distanceText: null, durationText: null });
-    }
-    setLegs(initialLegs);
-
-    const drawDashedFallback = (origin: GeoPoint, destination: GeoPoint) => {
-      const line = new google.maps.Polyline({
-        path: [origin, destination],
-        strokeOpacity: 0,
-        icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 }, offset: '0', repeat: '10px' }],
-        strokeColor: '#1E3A5F',
-        map,
-      });
-      fallbackPolylinesRef.current.push(line);
-    };
-
-    const patchLeg = (index: number, patch: Partial<RouteLeg>) => {
-      setLegs((prev) => prev.map((leg, i) => (i === index ? { ...leg, ...patch } : leg)));
-    };
-
-    for (let i = 0; i < list.length - 1; i++) {
-      const origin = list[i];
-      const destination = list[i + 1];
-
-      const renderer = new google.maps.DirectionsRenderer({
-        map,
-        suppressMarkers: true,
-        preserveViewport: true,
-        polylineOptions: { strokeColor: '#2563EB', strokeWeight: 4, strokeOpacity: 0.85 },
-      });
-      renderersRef.current.push(renderer);
-
-      const cached = sharedDirectionsCache.get(origin, destination);
-      if (cached) {
-        if (cached.status === 'OK') {
-          renderer.setDirections(cached.result);
-          patchLeg(i, { status: 'ok', distanceText: cached.distance, durationText: cached.duration });
-        } else {
-          renderer.setMap(null);
-          drawDashedFallback(origin, destination);
-          patchLeg(i, { status: 'estimate' });
-        }
-        continue;
-      }
-
-      directionsService.route(
-        { origin, destination, travelMode: google.maps.TravelMode.TRANSIT },
-        (result, status) => {
-          if (status === 'OK' && result?.routes?.[0]) {
-            renderer.setDirections(result);
-            const leg = result.routes[0].legs[0];
-            const durationText = leg ? leg.duration!.text : '';
-            const distanceText = leg ? leg.distance!.text : '';
-            sharedDirectionsCache.setHit(origin, destination, result, durationText, distanceText);
-            patchLeg(i, { status: 'ok', distanceText, durationText });
-          } else {
-            renderer.setMap(null);
-            sharedDirectionsCache.setMiss(origin, destination);
-            drawDashedFallback(origin, destination);
-            patchLeg(i, { status: 'estimate' });
-          }
-        },
-      );
-    }
-
-    return () => {
+    const clearRoutes = () => {
       renderersRef.current.forEach((r) => r.setMap(null));
       renderersRef.current = [];
       fallbackPolylinesRef.current.forEach((p) => p.setMap(null));
       fallbackPolylinesRef.current = [];
+    };
+
+    loadGoogleMaps().then(() => {
+      if (cancelled) return;
+      runRouteCalculation();
+    });
+
+    function runRouteCalculation() {
+      clearRoutes();
+
+      const dayZones = computeDayZones(dayItems);
+      const multiZone = dayZones.length > 1;
+      const activeIndices = multiZone
+        ? new Set(dayZones[Math.min(activeZoneIndex, dayZones.length - 1)].indices)
+        : null;
+
+      const list: RouteWaypoint[] = [];
+      if (
+        startHotel &&
+        (!multiZone ||
+          nearestZoneIndexForPoint(dayZones, dayItems, startHotel) === activeZoneIndex)
+      ) {
+        list.push({ lat: startHotel.lat, lng: startHotel.lng, ref: 'start-hotel' });
+      }
+      dayItems.forEach((p, idx) => {
+        if (p.lat == null || p.lng == null) return;
+        if (multiZone && !activeIndices!.has(idx)) return;
+        list.push({ lat: p.lat, lng: p.lng, ref: idx });
+      });
+      if (
+        endHotel &&
+        (!multiZone || nearestZoneIndexForPoint(dayZones, dayItems, endHotel) === activeZoneIndex)
+      ) {
+        list.push({ lat: endHotel.lat, lng: endHotel.lng, ref: 'end-hotel' });
+      }
+
+      if (list.length < 2) {
+        setLegs([]);
+        return;
+      }
+
+      if (!directionsServiceRef.current) {
+        directionsServiceRef.current = new google.maps.DirectionsService();
+      }
+      const directionsService = directionsServiceRef.current;
+
+      const initialLegs: RouteLeg[] = [];
+      for (let i = 0; i < list.length - 1; i++) {
+        initialLegs.push({
+          from: list[i],
+          to: list[i + 1],
+          status: 'loading',
+          distanceText: null,
+          durationText: null,
+        });
+      }
+      setLegs(initialLegs);
+
+      const drawDashedFallback = (origin: GeoPoint, destination: GeoPoint) => {
+        if (!map) return;
+        const line = new google.maps.Polyline({
+          path: [origin, destination],
+          strokeOpacity: 0,
+          icons: [
+            { icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 }, offset: '0', repeat: '10px' },
+          ],
+          strokeColor: '#1E3A5F',
+          map,
+        });
+        fallbackPolylinesRef.current.push(line);
+      };
+
+      const patchLeg = (index: number, patch: Partial<RouteLeg>) => {
+        if (cancelled) return;
+        setLegs((prev) => prev.map((leg, i) => (i === index ? { ...leg, ...patch } : leg)));
+      };
+
+      for (let i = 0; i < list.length - 1; i++) {
+        const origin = list[i];
+        const destination = list[i + 1];
+
+        const renderer = map
+          ? new google.maps.DirectionsRenderer({
+              map,
+              suppressMarkers: true,
+              preserveViewport: true,
+              polylineOptions: { strokeColor: '#2563EB', strokeWeight: 4, strokeOpacity: 0.85 },
+            })
+          : null;
+        if (renderer) renderersRef.current.push(renderer);
+
+        const cached = sharedDirectionsCache.get(origin, destination);
+        if (cached) {
+          if (cached.status === 'OK') {
+            renderer?.setDirections(cached.result);
+            patchLeg(i, { status: 'ok', distanceText: cached.distance, durationText: cached.duration });
+          } else {
+            renderer?.setMap(null);
+            drawDashedFallback(origin, destination);
+            patchLeg(i, { status: 'estimate' });
+          }
+          continue;
+        }
+
+        directionsService.route(
+          { origin, destination, travelMode: google.maps.TravelMode.TRANSIT },
+          (result, status) => {
+            if (status === 'OK' && result?.routes?.[0]) {
+              renderer?.setDirections(result);
+              const leg = result.routes[0].legs[0];
+              const durationText = leg ? leg.duration!.text : '';
+              const distanceText = leg ? leg.distance!.text : '';
+              sharedDirectionsCache.setHit(origin, destination, result, durationText, distanceText);
+              patchLeg(i, { status: 'ok', distanceText, durationText });
+            } else {
+              renderer?.setMap(null);
+              sharedDirectionsCache.setMiss(origin, destination);
+              drawDashedFallback(origin, destination);
+              patchLeg(i, { status: 'estimate' });
+            }
+          },
+        );
+      }
+    }
+
+    return () => {
+      cancelled = true;
+      clearRoutes();
     };
     // dayItems/startHotel/endHotel은 얕은 비교이므로, 호출부에서 useMemo 등으로
     // 참조를 안정시켜야 불필요한 재실행(경로 재호출)을 피할 수 있다.

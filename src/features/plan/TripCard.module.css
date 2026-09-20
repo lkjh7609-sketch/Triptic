@@ -1,0 +1,55 @@
+.card {
+  display: block;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-line);
+  font-weight: var(--font-headline-weight);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dday {
+  flex-shrink: 0;
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+}
+
+.dates {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  font-size: var(--font-caption-size);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+}
