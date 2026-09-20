@@ -56,6 +56,17 @@ export const router = createBrowserRouter(
         },
       ],
     },
+    {
+      // 공유 링크(/shared/:code)는 하단 4탭 셸(AppShell) 밖의 독립 화면이다 — 로그인
+      // 없이 누구나 열 수 있어야 하고, legacy도 로비/탭 없이 읽기 전용 뷰만 보여줬다
+      // (index.html openSharedView가 app-screen에 shared-view 클래스만 추가하고
+      // 로비를 완전히 감춘 것과 동일한 구조).
+      path: 'shared/:code',
+      lazy: async () => {
+        const { SharedTripScreen } = await import('@/features/shared/SharedTripScreen');
+        return { Component: SharedTripScreen };
+      },
+    },
   ],
   { basename: '/preview' },
 );

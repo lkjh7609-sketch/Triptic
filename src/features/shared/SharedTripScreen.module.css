@@ -1,0 +1,66 @@
+.screen {
+  padding-bottom: var(--space-8);
+}
+
+.header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0;
+}
+
+.dates {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-label-size);
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border);
+}
+
+.cityBadge {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.timeline {
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+.suggestButtonWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.suggestButton {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  min-height: 44px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.suggestSent {
+  font-size: var(--font-caption-size);
+  color: var(--brand);
+  margin: 0;
+}

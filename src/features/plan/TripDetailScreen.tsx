@@ -4,11 +4,10 @@ import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
-import { tripService, type LocalProject } from '@/shared/api/tripService';
+import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
+import { tripService, type LocalProject, type Suggestion } from '@/shared/api/tripService';
 import { DayChips } from './DayChips';
 import { SortableItineraryItem } from './SortableItineraryItem';
-import { LegLabel } from './LegLabel';
 import { TripMapView } from './TripMapView';
 import { AddPlaceModal } from './AddPlaceModal';
 import { ItemDetailSheet } from './ItemDetailSheet';
@@ -18,11 +17,13 @@ import { MealsModal } from './MealsModal';
 import { ExpenseModal } from './ExpenseModal';
 import { FlightModal } from './FlightModal';
 import { DayCityModal } from './DayCityModal';
+import { SuggestionsModal } from './SuggestionsModal';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { syncMealItemsIntoDay } from './map/meals';
 import { getDayCity } from './dayCities';
+import { FixedPointCard, FlightPointCard, LegBetween } from './FixedPointCard';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
@@ -53,6 +54,7 @@ export function TripDetailScreen() {
   const navigate = useNavigate();
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
   const updateSnapshot = useUpdateTripSnapshot(tripId);
+  const { data: suggestions } = useSuggestions(tripId);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [showAddPlace, setShowAddPlace] = useState(false);
@@ -62,6 +64,7 @@ export function TripDetailScreen() {
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showDayCityModal, setShowDayCityModal] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
@@ -201,6 +204,24 @@ export function TripDetailScreen() {
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
+  /** 동행자 제안 수락 — 해당 일차 맨 뒤에 추가한다 (index.html acceptSuggestion 이식) */
+  async function handleAcceptSuggestion(s: Suggestion) {
+    if (!project || !trip) return;
+    const plannerData = { ...((project.data ?? {}) as PlannerData) };
+    const dayList = plannerData[s.day] ?? [];
+    const validList = dayList.filter(Boolean);
+    const defaultTime = validList.length > 0 ? validList[validList.length - 1].time || '10:00' : '10:00';
+    let memo = s.proposer ? `[${s.proposer}님 추천] ` : '';
+    if (s.memo) memo += s.memo;
+    plannerData[s.day] = [
+      ...dayList,
+      { name: s.name, address: s.address ?? '', lat: s.lat ?? 0, lng: s.lng ?? 0, time: defaultTime, memo },
+    ];
+    const nextProject: LocalProject = { ...project, data: plannerData };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+    setCurrentDay(s.day);
+  }
+
   if (isLoading) {
     return (
       <div style={{ padding: 16 }}>
@@ -239,6 +260,14 @@ export function TripDetailScreen() {
           onClick={() => setViewMode((v) => (v === 'list' ? 'map' : 'list'))}
         >
           {viewMode === 'list' ? '🗺' : '📋'}
+        </button>
+        <button
+          type="button"
+          className={styles.toggleButton}
+          aria-label="받은 제안"
+          onClick={() => setShowSuggestions(true)}
+        >
+          💡{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
         </button>
         <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
           ↗
@@ -352,6 +381,15 @@ export function TripDetailScreen() {
           endDate={trip.end_date ?? ''}
           onClose={() => setShowFlightModal(false)}
           onSave={handleSaveFlights}
+        />
+      ) : null}
+
+      {showSuggestions && tripId ? (
+        <SuggestionsModal
+          tripId={tripId}
+          suggestions={suggestions ?? []}
+          onClose={() => setShowSuggestions(false)}
+          onAccept={handleAcceptSuggestion}
         />
       ) : null}
 
@@ -499,45 +537,3 @@ function TripTimeline({
   );
 }
 
-/** 구간 라벨 래퍼 — 대응하는 leg가 없으면(고정 지점 사이 등) 아무것도 그리지 않는다 */
-function LegBetween({ leg }: { leg: RouteLeg | undefined }) {
-  if (!leg) return null;
-  return <LegLabel leg={leg} />;
-}
-
-interface FixedPointCardProps {
-  icon: string;
-  label: string;
-  name: string;
-  address?: string;
-}
-
-/** 숙소 등 고정 지점 카드 (index.html .fixed-item 이식) */
-function FixedPointCard({ icon, label, name, address }: FixedPointCardProps) {
-  return (
-    <div className={styles.fixedItem}>
-      <span className={styles.fixedLabel}>
-        {icon} {label}
-      </span>
-      <span className={styles.fixedName}>{name}</span>
-      {address ? <span className={styles.fixedAddress}>{address}</span> : null}
-    </div>
-  );
-}
-
-/** 항공편 카드 (index.html .fixed-item.flight-item 이식) */
-function FlightPointCard({ flight }: { flight: FlightInfo }) {
-  const airlineTag = flight.airline ? ` (${flight.airline})` : '';
-  return (
-    <div className={styles.fixedItem}>
-      <span className={styles.fixedLabel}>✈️ {flight.flightNo}</span>
-      <span className={styles.fixedName}>
-        {flight.dep.name || flight.dep.iata || '?'} → {flight.arr.name || flight.arr.iata || '?'}
-        {airlineTag}
-      </span>
-      <span className={styles.fixedAddress}>
-        {flight.dep.time || ''} 출발 → {flight.arr.time || ''} 도착
-      </span>
-    </div>
-  );
-}

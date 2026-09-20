@@ -43,7 +43,8 @@ export function ShareSheet({ tripId, onClose, itineraryText }: ShareSheetProps) 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 시트가 열릴 때 1회만 생성/조회
   }, []);
 
-  const shareUrl = shareCode ? `${window.location.origin}/shared/${shareCode}` : '';
+  // basename('/preview')이 라우터에 있어야 /shared/:code가 매치된다 — router.tsx 참고
+  const shareUrl = shareCode ? `${window.location.origin}/preview/shared/${shareCode}` : '';
 
   async function handleCopy() {
     try {
