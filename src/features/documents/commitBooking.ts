@@ -15,8 +15,8 @@
  * 이건 "조용한 자동 확정 금지"(§1) 원칙에도 더 맞는다 — 주소만으로 지오코딩하면
  * 같은 체인의 다른 지점을 잘못 고를 위험이 있다.
  */
-import type { ParsedFlight } from './parseBooking/schema';
-import type { FlightAirportInfo, FlightInfo } from '../plan/types';
+import type { ParsedFlight } from './parseBooking/schema.ts';
+import type { FlightAirportInfo, FlightInfo } from '../plan/types.ts';
 
 function splitLocal(local: string | null | undefined): { date: string; time: string } | null {
   if (!local) return null;

@@ -1,4 +1,4 @@
-import type { PlaceCategory } from './placeCategory';
+import type { PlaceCategory } from './placeCategory.ts';
 
 /** trips.snapshot.data[day]의 항목 (index.html plannerData와 동일한 형태 — ADR-001) */
 export interface PlaceItem {
