@@ -16,13 +16,22 @@ export interface SelectedPlace {
   types: string[];
 }
 
-export function usePlaceAutocomplete(onSelect: (place: SelectedPlace) => void) {
+export interface UsePlaceAutocompleteOptions {
+  /** Google Places Autocomplete의 types 제한 (예: 도시만 검색하려면 ['(cities)']) */
+  types?: string[];
+}
+
+export function usePlaceAutocomplete(
+  onSelect: (place: SelectedPlace) => void,
+  options?: UsePlaceAutocompleteOptions,
+) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [ready, setReady] = useState(false);
   const onSelectRef = useRef(onSelect);
   useEffect(() => {
     onSelectRef.current = onSelect;
   }, [onSelect]);
+  const types = options?.types;
 
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +41,7 @@ export function usePlaceAutocomplete(onSelect: (place: SelectedPlace) => void) {
       if (cancelled || !inputRef.current) return;
       autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
         fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types'],
+        ...(types ? { types } : {}),
       });
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete!.getPlace();
@@ -52,6 +62,9 @@ export function usePlaceAutocomplete(onSelect: (place: SelectedPlace) => void) {
       cancelled = true;
       if (autocomplete) google.maps.event.clearInstanceListeners(autocomplete);
     };
+    // types는 onSelect처럼 이 훅을 쓰는 컴포넌트 생애주기 동안 값이 바뀌지 않는 정적
+    // 옵션이므로 마운트 시점 값만 쓰고 재구독하지 않는다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { inputRef, ready };

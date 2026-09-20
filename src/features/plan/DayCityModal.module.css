@@ -1,0 +1,58 @@
+.currentBanner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.currentLabel {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.currentName {
+  font-size: var(--font-body-size);
+  color: var(--text-title);
+}
+
+.scopeSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.scopeCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  cursor: pointer;
+}
+
+.scopeCardSelected {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.scopeTitle {
+  font-weight: 600;
+  color: var(--text-title);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scopeBadge {
+  font-size: var(--font-caption-size);
+  color: var(--brand);
+}
+
+.scopeDesc {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
