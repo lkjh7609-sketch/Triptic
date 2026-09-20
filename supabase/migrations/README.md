@@ -1,6 +1,6 @@
 # Supabase 마이그레이션 — 적용 상태
 
-> ✅ **`0000`~`0007`, `0009`~`0012`는 2026-09-20 Supabase MCP(project_ref
+> ✅ **`0000`~`0007`, `0009`~`0013`는 Supabase MCP(project_ref
 > `ifzykfemjzqquyzgpqax`)를 통해 운영 프로젝트에 실제 적용 완료.**
 > `0008`만 의도적으로 보류 중이다 (이유는 아래 참고).
 
@@ -39,6 +39,7 @@ name/currency` 접근). 그래서 `0000`은 아래 코드 패치와 **같은 배
 | `0010_usage_events.sql` | usage_events + 한도 확인 함수 | ✅ 적용됨 |
 | `0011_account_deletion_request.sql` | 계정 삭제 요청/취소 RPC (즉시 반영분만) | ✅ 적용됨 |
 | `0012_security_hardening.sql` | get_advisors 실측 기반 보안 정리 (아래 참고) | ✅ 적용됨 |
+| `0013_fix_get_shared_trip_columns.sql` | `get_shared_trip()`이 `0000`에서 rename된 옛 컬럼명(`t.name`/`t.currency`)을 여전히 참조해 공유 링크 조회 시 에러가 나던 프로덕션 버그 수정 | ✅ 적용됨 |
 
 ### `0012`을 추가한 이유 (계획에 없던 후속 조치)
 
