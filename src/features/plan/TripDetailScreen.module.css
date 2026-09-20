@@ -83,6 +83,23 @@
   text-align: center;
 }
 
+/* .toggleButton의 .badge(절대 위치)와 달리 .hotelButton은 overflow:hidden으로
+ * 텍스트를 자르기 때문에 절대 위치 배지가 잘린다 — 글자 옆 인라인 배지로 대신한다 */
+.inlineBadge {
+  display: inline-block;
+  min-width: 15px;
+  height: 15px;
+  margin-left: 4px;
+  padding: 0 3px;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
 .dayHeaderActions {
   display: flex;
   gap: var(--space-2);

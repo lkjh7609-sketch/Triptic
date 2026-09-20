@@ -26,12 +26,19 @@ export const ParsedFlight = z.object({
     airportName: F(z.string()),
     terminal: F(z.string()),
     scheduledLocal: F(z.string().regex(LOCAL_DATETIME_RE)),
+    /** LLM/파서가 채우지 않아도 된다(optional) — resolveFlightAirports()가 공항 DB
+     * 조회 결과로 채운다. 커밋 시(§9) 지도 렌더링에 좌표가 필요해서 스키마에 넣었다
+     * (신뢰도 없음 — 추출값이 아니라 DB 조회값). */
+    airportLat: z.number().nullable().optional(),
+    airportLng: z.number().nullable().optional(),
   }),
   arrival: z.object({
     airportIata: F(z.string().length(3)),
     airportName: F(z.string()),
     terminal: F(z.string()),
     scheduledLocal: F(z.string().regex(LOCAL_DATETIME_RE)),
+    airportLat: z.number().nullable().optional(),
+    airportLng: z.number().nullable().optional(),
   }),
   bookingReference: F(z.string()),
   seat: F(z.string()),

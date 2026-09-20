@@ -44,6 +44,14 @@ describe('verifyParsedFlight', () => {
     expect(flight.arrival.airportIata.value).toBe('NRT');
   });
 
+  it('커밋 시 지도 렌더링에 쓸 공항 좌표를 DB에서 채운다(추출값이 아니라 조회값)', () => {
+    const { flight } = verifyParsedFlight(baseFlight(), ctx);
+    expect(flight.departure.airportLat).toBeCloseTo(37.4691, 2);
+    expect(flight.departure.airportLng).toBeCloseTo(126.451, 2);
+    expect(flight.arrival.airportLat).toBeCloseTo(35.7686, 2);
+    expect(flight.arrival.airportLng).toBeCloseTo(140.3887, 2);
+  });
+
   it('실재하지 않는 공항 코드는 비우고 신뢰도를 0으로 만든다', () => {
     const { flight, warnings } = verifyParsedFlight(
       baseFlight({ departure: { ...baseFlight().departure, airportIata: field('ZZZ') } }),
