@@ -9,10 +9,10 @@
  * 전용 파서보다 신뢰도가 낮다(§8 "결정론적 파서(detect≥0.7) 0.92" 대비 이
  * 파서는 detect 상한 자체를 0.75로 잡아 항상 항공사 전용 파서보다 밀린다).
  */
-import { FLIGHT_NUMBER, PNR, TIME_24H } from '../../patterns';
-import { lookupAirport } from '../../airports';
-import type { ParsedFlight } from '../../schema';
-import type { BookingParser, ParseContext } from '../registry';
+import { FLIGHT_NUMBER, PNR, TIME_24H } from '../../patterns.ts';
+import { lookupAirport } from '../../airports.ts';
+import type { ParsedFlight } from '../../schema.ts';
+import type { BookingParser, ParseContext } from '../registry.ts';
 
 const AIRPORT_CODE_CANDIDATE = /\b[A-Z]{3}\b/g;
 const PNR_LABEL_NEAR = /(booking reference|confirmation|pnr|예약번호|예약\s*번호)/i;

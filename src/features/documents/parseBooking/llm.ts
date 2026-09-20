@@ -7,8 +7,8 @@
  * 마스킹을 하지 않는다(호출 순서는 엣지 함수 진입점이 보장한다, §2 C단계).
  */
 import { z } from 'zod';
-import type { ParsedBooking } from './schema';
-import { ParsedFlight, ParsedLodging, ParsedRail, ParsedCarRental, ParsedActivity } from './schema';
+import type { ParsedBooking } from './schema.ts';
+import { ParsedFlight, ParsedLodging, ParsedRail, ParsedCarRental, ParsedActivity } from './schema.ts';
 
 /** Gemini responseSchema(OpenAPI 3.0 서브셋)는 additionalProperties/$schema를 모른다 —
  * 보내기 전에 재귀적으로 걷어낸다(실측: 남겨두면 400 INVALID_ARGUMENT). */
