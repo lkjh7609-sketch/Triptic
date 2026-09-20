@@ -1,0 +1,83 @@
+.card {
+  display: block;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-decoration: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ddayBadge,
+.ongoingBadge {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-on-brand);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+}
+
+.title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dates {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-label-size);
+  opacity: 0.9;
+}
+
+.infoRow {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: var(--font-label-size);
+}
+
+.flightRow {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-label-size);
+  opacity: 0.9;
+}
+
+.itemList {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--font-label-size);
+}
+
+.itemTime {
+  font-weight: 700;
+}
+
+.emptyMessage {
+  margin: 0;
+  font-size: var(--font-body-size);
+}
+
+.cta {
+  display: inline-block;
+  margin-top: var(--space-3);
+  background: var(--text-on-brand);
+  color: var(--brand);
+  font-weight: 700;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+}

@@ -9,6 +9,9 @@ interface TripCardProps {
   onRename: (tripId: string, newTitle: string) => void;
   onDuplicate: (tripId: string) => void;
   onDelete: (tripId: string) => void;
+  /** 홈 대시보드의 "지난 여행" 가로 스크롤(02-screens.md §2.1)처럼 카드를 훑어보기만
+   * 하는 자리에서는 이름변경/복제/삭제 메뉴가 의미가 없어 숨긴다. 기본은 표시(true). */
+  showMenu?: boolean;
 }
 
 /**
@@ -16,7 +19,7 @@ interface TripCardProps {
  * 스펙은 "스와이프: 복제/삭제"를 명시하지만, 이번 라운드는 ⋮ 메뉴로 대체한다
  * (스와이프 제스처는 후속 다듬기 — 기능 자체(복제/삭제/이름변경)는 패리티 항목이라 먼저 갖춘다).
  */
-export function TripCard({ trip, onRename, onDuplicate, onDelete }: TripCardProps) {
+export function TripCard({ trip, onRename, onDuplicate, onDelete, showMenu = true }: TripCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const dday = getDDay(trip.start_date);
 
@@ -59,14 +62,16 @@ export function TripCard({ trip, onRename, onDuplicate, onDelete }: TripCardProp
             {dday !== null ? (
               <span className={styles.dday}>{dday === 0 ? 'D-DAY' : `D-${dday}`}</span>
             ) : null}
-            <button
-              type="button"
-              className={styles.menuButton}
-              aria-label="여행 메뉴"
-              onClick={handleMenuClick}
-            >
-              ⋮
-            </button>
+            {showMenu ? (
+              <button
+                type="button"
+                className={styles.menuButton}
+                aria-label="여행 메뉴"
+                onClick={handleMenuClick}
+              >
+                ⋮
+              </button>
+            ) : null}
           </div>
         </div>
         <p className={styles.dates}>
@@ -79,7 +84,7 @@ export function TripCard({ trip, onRename, onDuplicate, onDelete }: TripCardProp
         ) : null}
       </Link>
 
-      {menuOpen ? (
+      {showMenu && menuOpen ? (
         <div className={styles.menu}>
           <button type="button" className={styles.menuItem} onClick={handleRename}>
             이름 변경
