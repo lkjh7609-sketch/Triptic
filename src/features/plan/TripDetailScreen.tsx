@@ -437,20 +437,33 @@ function TripTimeline({
   onItemClick,
   onReorder,
 }: TripTimelineProps) {
+  // useTripRoutes의 effect 의존성 배열에 들어가는 객체다 — 매 렌더마다 새 리터럴을
+  // 넘기면 참조가 달라져 effect가 끝없이 재실행되고(각 실행이 setLegs로 다시
+  // 렌더를 유발) 무한 루프에 빠진다. flightArrival/flightDeparture(FlightInfo)
+  // 자체는 flightsData가 useMemo로 안정된 참조라 여기서도 useMemo로 감싸면
+  // 같은 편도가 유지되는 한 참조가 고정된다.
+  const flightArrivalPoint = useMemo(
+    () =>
+      flightArrival && flightArrival.arr.lat != null && flightArrival.arr.lng != null
+        ? { lat: flightArrival.arr.lat, lng: flightArrival.arr.lng }
+        : null,
+    [flightArrival],
+  );
+  const flightDeparturePoint = useMemo(
+    () =>
+      flightDeparture && flightDeparture.dep.lat != null && flightDeparture.dep.lng != null
+        ? { lat: flightDeparture.dep.lat, lng: flightDeparture.dep.lng }
+        : null,
+    [flightDeparture],
+  );
   const legs = useTripRoutes({
     map: null,
     dayItems,
     startHotel,
     endHotel,
     activeZoneIndex: 0,
-    flightArrival:
-      flightArrival && flightArrival.arr.lat != null && flightArrival.arr.lng != null
-        ? { lat: flightArrival.arr.lat, lng: flightArrival.arr.lng }
-        : null,
-    flightDeparture:
-      flightDeparture && flightDeparture.dep.lat != null && flightDeparture.dep.lng != null
-        ? { lat: flightDeparture.dep.lat, lng: flightDeparture.dep.lng }
-        : null,
+    flightArrival: flightArrivalPoint,
+    flightDeparture: flightDeparturePoint,
   });
   // 드래그 인터랙션 동안만 안정적이면 충분하다 — key가 없는 레거시 항목은
   // "그 순간의 index" 기반으로 식별한다 (types.ts PlaceItem.key 주석 참고).
