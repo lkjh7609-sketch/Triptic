@@ -10,11 +10,22 @@
  * 6. Cache versioning (bump CACHE_NAME to force clients to refresh)
  * 7. Old cache cleanup on activate
  * 8. Graceful handling for Google Maps API script (bypass cache, fail naturally when offline)
+ *
+ * ⚠️ ADR-001(Strangler): 이 하나의 sw.js가 루트(legacy)와 /preview/(새 React 앱)
+ * 둘 다를 맡는다. 두 앱은 오프라인 폴백 셸이 다르므로(legacy는 ./index.html,
+ * 새 앱은 ./preview/index.html) getOfflineFallback이 요청 경로를 보고 골라야
+ * 한다 — 하드코딩해서 legacy만 반환하면 /preview/ 경로가 오프라인일 때 엉뚱한
+ * legacy 화면이 뜬다.
+ *
+ * ⚠️ 이 파일이 원본이다 — scripts/build.js가 매 dev/build 실행 시 이 파일을
+ * www/sw.js, public/sw.js로 그대로 복사한다. public/sw.js를 직접 고치면 다음
+ * 빌드에서 덮어써진다(2026-09-21 세션에서 실제로 이걸로 한 번 고침이 사라졌다
+ * — 반드시 이 루트 파일을 고칠 것).
  */
 
-const CACHE_NAME = 'triptic-v5';
+const CACHE_NAME = 'triptic-v6';
 
-// 1. App shell files
+// 1. App shell files (legacy 루트 + 새 React 앱(/preview/) 둘 다 프리캐시)
 const APP_SHELL = [
   './',
   './index.html',
@@ -22,7 +33,8 @@ const APP_SHELL = [
   './icon-180.png',
   './icon-192.png',
   './icon-512.png',
-  './icon-1024.png'
+  './icon-1024.png',
+  './preview/index.html'
 ];
 
 // 2. Versioned external CDN resources
@@ -85,10 +97,18 @@ function isApiRequest(url) {
 }
 
 /**
- * Helper to get cached index.html offline fallback
+ * Helper to get the cached offline-fallback shell — /preview/ 경로 요청이면 새
+ * React 앱 셸을, 그 외(legacy)는 루트 index.html을 돌려준다.
  */
-async function getOfflineFallback() {
+async function getOfflineFallback(request) {
   const cache = await caches.open(CACHE_NAME);
+  const pathname = request ? new URL(request.url).pathname : '';
+  if (pathname.startsWith('/preview/')) {
+    return (
+      (await cache.match('./preview/index.html')) ||
+      (await cache.match('/preview/index.html'))
+    );
+  }
   return (
     (await cache.match('./index.html')) ||
     (await cache.match('index.html')) ||
@@ -186,7 +206,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          return await getOfflineFallback();
+          return await getOfflineFallback(event.request);
         })
     );
     return;
@@ -236,7 +256,7 @@ self.addEventListener('fetch', (event) => {
       } catch (error) {
         // Fallback to index.html if offline and requesting HTML document
         if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
-          const fallback = await getOfflineFallback();
+          const fallback = await getOfflineFallback(event.request);
           if (fallback) {
             return fallback;
           }
