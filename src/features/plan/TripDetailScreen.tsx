@@ -14,14 +14,26 @@ import { AddPlaceModal } from './AddPlaceModal';
 import { ItemDetailSheet } from './ItemDetailSheet';
 import { SetHotelModal } from './SetHotelModal';
 import { ShareSheet } from './ShareSheet';
+import { MealsModal } from './MealsModal';
+import { ExpenseModal } from './ExpenseModal';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
+import { syncMealItemsIntoDay } from './map/meals';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { trackScreenView } from '@/shared/monitoring';
-import type { HotelItem, HotelsData, PlaceItem, PlannerData } from './types';
+import type {
+  DayMeals,
+  ExpenseItem,
+  ExpensesData,
+  HotelItem,
+  HotelsData,
+  MealsData,
+  PlaceItem,
+  PlannerData,
+} from './types';
 import styles from './TripDetailScreen.module.css';
 
 /**
@@ -39,6 +51,8 @@ export function TripDetailScreen() {
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showHotelModal, setShowHotelModal] = useState(false);
+  const [showMealsModal, setShowMealsModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
@@ -47,6 +61,8 @@ export function TripDetailScreen() {
 
   const project = useMemo(() => (trip ? tripService.toLocalProject(trip) : null), [trip]);
   const hotelsData = useMemo(() => (project?.hotels ?? {}) as HotelsData, [project]);
+  const mealsData = useMemo(() => (project?.meals ?? {}) as MealsData, [project]);
+  const expensesData = useMemo(() => (project?.expenses ?? {}) as ExpensesData, [project]);
   const totalDays = project?.totalDays || 1;
   const dayItems: PlaceItem[] = useMemo(() => {
     const plannerData = (project?.data ?? {}) as PlannerData;
@@ -115,6 +131,26 @@ export function TripDetailScreen() {
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
+  /** 식사 슬롯 저장 — mealsData와 plannerData(식사 항목)를 한 스냅샷으로 함께 갱신한다
+   * (index.html selectMeal/toggleMealSkip → saveData가 mealsData/plannerData를 같이
+   * 저장하던 것과 동일한 시점 보장) */
+  async function handleSaveMeals(dayMeals: DayMeals) {
+    if (!project || !trip) return;
+    const nextMeals = { ...((project.meals ?? {}) as MealsData), [currentDay]: dayMeals };
+    const plannerData = { ...((project.data ?? {}) as PlannerData) };
+    plannerData[currentDay] = syncMealItemsIntoDay(dayItems, dayMeals);
+    const nextProject: LocalProject = { ...project, meals: nextMeals, data: plannerData };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+  }
+
+  /** 경비 저장 (index.html addExpense/deleteExpense 이식) */
+  async function handleSaveExpenses(dayExpenses: ExpenseItem[]) {
+    if (!project || !trip) return;
+    const nextExpenses = { ...((project.expenses ?? {}) as ExpensesData), [currentDay]: dayExpenses };
+    const nextProject: LocalProject = { ...project, expenses: nextExpenses };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+  }
+
   if (isLoading) {
     return (
       <div style={{ padding: 16 }}>
@@ -166,9 +202,17 @@ export function TripDetailScreen() {
           Day {currentDay}
           {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
         </span>
-        <button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
-          🏨 {hotelsData[currentDay]?.name ?? '숙소 지정'}
-        </button>
+        <div className={styles.dayHeaderActions}>
+          <button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
+            🏨 {hotelsData[currentDay]?.name ?? '숙소'}
+          </button>
+          <button type="button" className={styles.hotelButton} onClick={() => setShowMealsModal(true)}>
+            🍽 식사
+          </button>
+          <button type="button" className={styles.hotelButton} onClick={() => setShowExpenseModal(true)}>
+            💰 경비
+          </button>
+        </div>
       </div>
 
       {viewMode === 'map' ? (
@@ -212,6 +256,24 @@ export function TripDetailScreen() {
           currentHotel={hotelsData[currentDay] ?? null}
           onClose={() => setShowHotelModal(false)}
           onSave={handleSetHotel}
+        />
+      ) : null}
+
+      {showMealsModal ? (
+        <MealsModal
+          dayMeals={mealsData[currentDay] ?? {}}
+          onClose={() => setShowMealsModal(false)}
+          onSave={handleSaveMeals}
+        />
+      ) : null}
+
+      {showExpenseModal ? (
+        <ExpenseModal
+          currentDay={currentDay}
+          currency={project?.currency ?? 'KRW'}
+          expensesData={expensesData}
+          onClose={() => setShowExpenseModal(false)}
+          onSave={handleSaveExpenses}
         />
       ) : null}
 
