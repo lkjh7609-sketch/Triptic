@@ -3,7 +3,7 @@
  * 원본: index.html syncMealItemsIntoList (2026-09-20 기준 라인 6067~6094)의 알고리즘을
  * 그대로 옮겼다 — 전역 변수(plannerData, mealsData, currentDay) 의존만 인자로 바꿨다.
  */
-import type { DayMeals, MealSlot, PlaceItem } from '../types';
+import type { DayMeals, MealSlot, PlaceItem } from '../types.ts';
 
 export const MEAL_META: Record<MealSlot, { label: string; time: string; emoji: string }> = {
   breakfast: { label: '아침', time: '08:00', emoji: '🍳' },
