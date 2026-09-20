@@ -48,3 +48,18 @@
   padding: var(--space-2) 0;
   cursor: pointer;
 }
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.footerButton {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-caption-size);
+  cursor: pointer;
+}
