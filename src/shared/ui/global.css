@@ -1,0 +1,47 @@
+@import './tokens.css';
+
+/*
+ * 폰트 스택 (01-design-system.md §3.1)
+ * ko/en: Pretendard Variable · zh-CN: Noto Sans SC (동적 로드, Phase 6 — 07-i18n.md §4.1)
+ * Pretendard 자체는 index.html에서 CDN <link>로 로드한다 (레거시 앱과 동일 소스).
+ */
+:root {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+}
+:root:lang(zh) {
+  --font-sans:
+    'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* 포커스 링 제거 금지 (01-design-system.md §8 접근성 체크리스트) */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

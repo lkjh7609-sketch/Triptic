@@ -4,6 +4,10 @@
  *
  * 저장 전략: 각 여행의 전체 상태(plannerData/hotels/meals/expenses/flights/dayCities)를
  * trips.snapshot(JSONB) 컬럼에 그대로 저장한다. supabase/schema.sql의 주석 참고.
+ *
+ * ⚠️ Triptic 3.0 스키마 정합화(supabase/migrations/0000_reconcile_legacy_schema.sql):
+ * trips.user_id/name/currency → owner_id/title/base_currency로 컬럼명이 바뀌었다.
+ * 이 파일은 그 마이그레이션과 같은 배포 사이클에 맞춰 함께 수정됐다.
  */
 
 import { getSupabaseClient } from './supabaseClient.js';
@@ -31,15 +35,15 @@ export class SupabaseService {
         if (!user) throw new Error('인증되지 않은 사용자입니다.');
 
         const row = {
-            user_id: user.id,
-            name,
+            owner_id: user.id,
+            title: name,
             city: project.city || null,
             city_lat: project.cityLat ?? null,
             city_lng: project.cityLng ?? null,
             start_date: project.startDate || null,
             end_date: project.endDate || null,
             total_days: project.totalDays || null,
-            currency: project.currency || 'KRW',
+            base_currency: project.currency || 'KRW',
             snapshot: {
                 data: project.data || {},
                 hotels: project.hotels || {},
@@ -84,7 +88,7 @@ export class SupabaseService {
         const { data, error } = await supabase
             .from('trips')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('owner_id', user.id)
             .order('updated_at', { ascending: false });
 
         if (error) throw error;
@@ -105,7 +109,7 @@ export class SupabaseService {
             startDate: row.start_date || '',
             endDate: row.end_date || '',
             totalDays: row.total_days || 0,
-            currency: row.currency || 'KRW',
+            currency: row.base_currency || 'KRW',
             data: snap.data || {},
             hotels: snap.hotels || {},
             meals: snap.meals || {},

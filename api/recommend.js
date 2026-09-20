@@ -157,7 +157,9 @@ async function getOpenRouterCandidateModels(apiKey, deadline) {
 
             candidates.push(...dynamicFree.slice(0, 5));
         }
-    } catch (e) {}
+    } catch {
+        // 동적 후보 조회 실패 시 아래 폴백 목록을 그대로 사용한다.
+    }
 
     const fallbacks = [
         'google/gemma-4-31b-it:free',
@@ -573,6 +575,7 @@ const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'hotel', 'spot']);
 // 제어 문자를 제거하고 길이를 제한해, 프롬프트 인젝션 표면과 과도한 토큰 사용을 억제한다.
 function sanitizeInput(value, maxLen) {
     if (typeof value !== 'string') return '';
+    // eslint-disable-next-line no-control-regex -- 의도적으로 제어 문자를 제거한다
     return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
 }
 

@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "moduleResolution": "node",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false,
-    "jsx": "preserve",
-    "declaration": true,
-    "declarationMap": true,
+    "jsx": "react-jsx",
+    "declaration": false,
     "sourceMap": true,
-    "outDir": "./dist",
+    "noEmit": true,
+    "isolatedModules": true,
     "rootDir": "./src",
-    "removeComments": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -32,20 +31,22 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@/app/*": ["src/app/*"],
+      "@/features/*": ["src/features/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/types/*": ["src/types/*"],
       "@/utils/*": ["src/utils/*"],
       "@/services/*": ["src/services/*"],
-      "@/state/*": ["src/state/*"],
-      "@/types/*": ["src/types/*"]
+      "@/state/*": ["src/state/*"]
     }
   },
   "include": [
-    "src/**/*",
-    "src/**/*.test.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "**/*.test.js",
-    "**/*.spec.js"
+    "www",
+    "legacy"
   ]
 }
