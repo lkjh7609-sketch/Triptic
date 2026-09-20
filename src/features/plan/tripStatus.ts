@@ -8,6 +8,7 @@ export function getTripPhase(startDate: string | null, endDate: string | null): 
   const today = startOfDay(new Date());
   const start = startOfDay(parseISO(startDate));
   const end = startOfDay(parseISO(endDate));
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 'upcoming';
   if (isWithinInterval(today, { start, end })) return 'ongoing';
   if (today < start) return 'upcoming';
   return 'past';
@@ -18,6 +19,7 @@ export function getDDay(startDate: string | null): number | null {
   if (!startDate) return null;
   const today = startOfDay(new Date());
   const start = startOfDay(parseISO(startDate));
+  if (Number.isNaN(start.getTime())) return null;
   const diff = differenceInCalendarDays(start, today);
   return diff >= 0 ? diff : null;
 }

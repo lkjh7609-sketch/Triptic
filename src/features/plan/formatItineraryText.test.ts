@@ -62,6 +62,19 @@ describe('formatItineraryText', () => {
     expect(day2Section).toContain('🏨 숙소: 다이이치 호텔');
   });
 
+  it('유효하지 않은 날짜 문자열이어도 크래시 없이 빈 날짜 라벨로 처리한다', () => {
+    const text = formatItineraryText({
+      title: 't',
+      city: null,
+      startDate: '110120-02-06',
+      endDate: '110320-02-06',
+      totalDays: 1,
+      plannerData: {},
+      hotelsData: {},
+    });
+    expect(text).toContain('[1일차]');
+  });
+
   it('첫날/마지막날 항공편 라벨을 포함한다', () => {
     const text = formatItineraryText({
       title: 't',

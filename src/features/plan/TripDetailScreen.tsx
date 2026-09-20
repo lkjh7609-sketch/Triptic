@@ -223,7 +223,10 @@ export function TripDetailScreen() {
 }
 
 function formatDayDate(tripStartDate: string, dayIndex: number): string {
-  const date = new Date(parseISO(tripStartDate).getTime() + (dayIndex - 1) * 86_400_000);
+  const start = parseISO(tripStartDate);
+  if (Number.isNaN(start.getTime())) return '';
+  const date = new Date(start.getTime() + (dayIndex - 1) * 86_400_000);
+  if (Number.isNaN(date.getTime())) return '';
   return format(date, 'M/d (E)', { locale: ko });
 }
 
