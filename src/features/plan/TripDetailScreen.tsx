@@ -17,15 +17,19 @@ import { ShareSheet } from './ShareSheet';
 import { MealsModal } from './MealsModal';
 import { ExpenseModal } from './ExpenseModal';
 import { FlightModal } from './FlightModal';
+import { DayCityModal } from './DayCityModal';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { syncMealItemsIntoDay } from './map/meals';
+import { getDayCity } from './dayCities';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { trackScreenView } from '@/shared/monitoring';
 import type {
+  DayCitiesData,
+  DayCityInfo,
   DayMeals,
   ExpenseItem,
   ExpensesData,
@@ -57,6 +61,7 @@ export function TripDetailScreen() {
   const [showMealsModal, setShowMealsModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
+  const [showDayCityModal, setShowDayCityModal] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
@@ -71,7 +76,13 @@ export function TripDetailScreen() {
     () => (project?.flights ?? { outbound: null, return: null }) as FlightsData,
     [project],
   );
+  const dayCitiesData = useMemo(() => (project?.dayCities ?? {}) as DayCitiesData, [project]);
   const totalDays = project?.totalDays || 1;
+  const currentCity = getDayCity(currentDay, dayCitiesData, {
+    name: project?.city ?? null,
+    lat: project?.cityLat ?? null,
+    lng: project?.cityLng ?? null,
+  });
   const isFirstDay = currentDay === 1;
   const isLastDay = currentDay === totalDays;
   /** 첫날 도착 지점/마지막날 출발 지점으로만 표시된다 (index.html renderList flightArrivalPoint/flightDeparturePoint) */
@@ -177,6 +188,19 @@ export function TripDetailScreen() {
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
+  /** 일차별 도시 변경 (index.html submitDayCityChange 이식) */
+  async function handleSaveDayCity(city: DayCityInfo, scope: 'rest' | 'single') {
+    if (!project || !trip) return;
+    const nextDayCities = { ...dayCitiesData };
+    if (scope === 'rest') {
+      for (let d = currentDay; d <= totalDays; d++) nextDayCities[d] = city;
+    } else {
+      nextDayCities[currentDay] = city;
+    }
+    const nextProject: LocalProject = { ...project, dayCities: nextDayCities };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+  }
+
   if (isLoading) {
     return (
       <div style={{ padding: 16 }}>
@@ -229,6 +253,9 @@ export function TripDetailScreen() {
           {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
         </span>
         <div className={styles.dayHeaderActions}>
+          <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
+            📍 {currentCity.name ? currentCity.name.split(',')[0].trim() : '도시 미설정'}
+          </button>
           <button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
             🏨 {hotelsData[currentDay]?.name ?? '숙소'}
           </button>
@@ -305,6 +332,16 @@ export function TripDetailScreen() {
           expensesData={expensesData}
           onClose={() => setShowExpenseModal(false)}
           onSave={handleSaveExpenses}
+        />
+      ) : null}
+
+      {showDayCityModal ? (
+        <DayCityModal
+          currentDay={currentDay}
+          totalDays={totalDays}
+          currentCity={currentCity}
+          onClose={() => setShowDayCityModal(false)}
+          onSave={handleSaveDayCity}
         />
       ) : null}
 

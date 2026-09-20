@@ -55,9 +55,9 @@ export type ExpensesData = Record<number, ExpenseItem[]>;
 
 /** 일차별 다른 도시 설정 (index.html dayCities[day] 이식) */
 export interface DayCityInfo {
-  city: string;
-  cityLat?: number | null;
-  cityLng?: number | null;
+  name: string;
+  lat: number | null;
+  lng: number | null;
 }
 
 export type DayCitiesData = Record<number, DayCityInfo>;
