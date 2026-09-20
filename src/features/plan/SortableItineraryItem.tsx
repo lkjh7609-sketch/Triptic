@@ -8,6 +8,7 @@ interface SortableItineraryItemProps {
   index: number;
   item: PlaceItem;
   onClick: () => void;
+  weather?: { tempC: number; conditionCode: string } | null;
 }
 
 /**
@@ -17,7 +18,7 @@ interface SortableItineraryItemProps {
  * dnd-kit로 못박았다), 드래그 핸들 없이 카드 전체를 길게 눌러 드래그한다
  * (01-design-system.md §6.2 "길게 누르기 → 순서 변경 모드"에 가장 가까운 대응).
  */
-export function SortableItineraryItem({ id, index, item, onClick }: SortableItineraryItemProps) {
+export function SortableItineraryItem({ id, index, item, onClick, weather }: SortableItineraryItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
@@ -30,7 +31,7 @@ export function SortableItineraryItem({ id, index, item, onClick }: SortableItin
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <ItineraryItemCard index={index} item={item} onClick={onClick} />
+      <ItineraryItemCard index={index} item={item} onClick={onClick} weather={weather} />
     </div>
   );
 }

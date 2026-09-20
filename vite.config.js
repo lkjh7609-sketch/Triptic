@@ -63,6 +63,30 @@ export default defineConfig(({ mode }) => {
               res.end(JSON.stringify({ error: String(e) }));
             }
           });
+
+          // WEATHERKIT_* 4종은 Apple Developer Program 미가입으로 아직 비어있다
+          // (사용자 명시 승인) — 로컬에서도 프로덕션 api/weather.js와 동일하게 항상
+          // 503을 반환한다. 실제 키가 채워지면 이 미들웨어도 WeatherKit 호출 로직을
+          // 갖춰야 하지만, 캐시/평년값 폴백까지 포함한 전체 로직을 여기 다시
+          // 옮기면 api/weather.js와 두 벌로 갈라져 드리프트하기 쉬우므로(api/flight
+          // 미들웨어도 이미 그런 이유로 최소 재구현만 유지) 키가 실제로 채워지는
+          // 시점에 함께 갖춘다.
+          server.middlewares.use('/api/weather', (req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            const configured = !!(
+              (env.WEATHERKIT_TEAM_ID || process.env.WEATHERKIT_TEAM_ID) &&
+              (env.WEATHERKIT_SERVICE_ID || process.env.WEATHERKIT_SERVICE_ID) &&
+              (env.WEATHERKIT_KEY_ID || process.env.WEATHERKIT_KEY_ID) &&
+              (env.WEATHERKIT_PRIVATE_KEY || process.env.WEATHERKIT_PRIVATE_KEY)
+            );
+            res.statusCode = configured ? 501 : 503;
+            res.end(JSON.stringify({
+              error: configured
+                ? 'WEATHERKIT_* 키는 설정됐지만 로컬 dev 미들웨어는 아직 실제 조회를 구현하지 않았습니다 — 프로덕션(api/weather.js)에서 확인하세요.'
+                : '날씨 조회 서비스가 아직 설정되지 않았습니다.',
+            }));
+          });
         }
       }
     ],

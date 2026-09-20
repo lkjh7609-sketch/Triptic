@@ -115,6 +115,36 @@
   border-bottom: 1px solid var(--border);
 }
 
+.dayHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dayWeather {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-body);
+}
+
+.weatherSkeleton {
+  display: inline-block;
+  width: 48px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+}
+
+.climateBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--surface-subtle);
+  border-radius: var(--radius-pill);
+  padding: 1px 6px;
+}
+
 .timeline {
   padding-bottom: var(--space-8);
 }
