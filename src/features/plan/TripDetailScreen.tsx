@@ -12,6 +12,7 @@ import { AddPlaceModal } from './AddPlaceModal';
 import { ItemDetailSheet } from './ItemDetailSheet';
 import { SetHotelModal } from './SetHotelModal';
 import { ShareSheet } from './ShareSheet';
+import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -43,13 +44,25 @@ export function TripDetailScreen() {
   }, []);
 
   const project = useMemo(() => (trip ? tripService.toLocalProject(trip) : null), [trip]);
-  const hotelsData = (project?.hotels ?? {}) as HotelsData;
+  const hotelsData = useMemo(() => (project?.hotels ?? {}) as HotelsData, [project]);
   const totalDays = project?.totalDays || 1;
   const dayItems: PlaceItem[] = useMemo(() => {
     const plannerData = (project?.data ?? {}) as PlannerData;
     return plannerData[currentDay] ?? [];
   }, [project, currentDay]);
   const { startHotel, endHotel } = getDayHotels(currentDay, totalDays, hotelsData);
+  const itineraryText = useMemo(() => {
+    if (!project || !trip) return undefined;
+    return formatItineraryText({
+      title: trip.title,
+      city: trip.city,
+      startDate: trip.start_date,
+      endDate: trip.end_date,
+      totalDays,
+      plannerData: (project.data ?? {}) as PlannerData,
+      hotelsData,
+    });
+  }, [project, trip, totalDays, hotelsData]);
 
   /** project.data[currentDay]를 갱신한 새 스냅샷을 저장한다 */
   async function persistDayItems(nextItems: PlaceItem[]) {
@@ -71,6 +84,18 @@ export function TripDetailScreen() {
 
   async function handleDeleteItem(index: number) {
     await persistDayItems(dayItems.filter((_, i) => i !== index));
+  }
+
+  /** 항목을 다른 날짜로 옮긴다 — 두 날짜를 한 스냅샷 안에서 함께 갱신한다 */
+  async function handleMoveItem(index: number, targetDay: number) {
+    if (!project || !trip) return;
+    const item = dayItems[index];
+    if (!item) return;
+    const plannerData = { ...((project.data ?? {}) as PlannerData) };
+    plannerData[currentDay] = dayItems.filter((_, i) => i !== index);
+    plannerData[targetDay] = [...(plannerData[targetDay] ?? []), item];
+    const nextProject: LocalProject = { ...project, data: plannerData };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
   /** 이 날짜의 숙소를 갱신한다 (hotelsData[currentDay], index.html clearHotel/renderHotelSection 이식) */
@@ -165,9 +190,12 @@ export function TripDetailScreen() {
       {editingIndex !== null && dayItems[editingIndex] ? (
         <ItemDetailSheet
           item={dayItems[editingIndex]}
+          currentDay={currentDay}
+          totalDays={totalDays}
           onClose={() => setEditingIndex(null)}
           onSave={(patch) => handleUpdateItem(editingIndex, patch)}
           onDelete={() => handleDeleteItem(editingIndex)}
+          onMoveToDay={(targetDay) => handleMoveItem(editingIndex, targetDay)}
         />
       ) : null}
 
@@ -179,7 +207,9 @@ export function TripDetailScreen() {
         />
       ) : null}
 
-      {showShare && tripId ? <ShareSheet tripId={tripId} onClose={() => setShowShare(false)} /> : null}
+      {showShare && tripId ? (
+        <ShareSheet tripId={tripId} itineraryText={itineraryText} onClose={() => setShowShare(false)} />
+      ) : null}
     </div>
   );
 }
