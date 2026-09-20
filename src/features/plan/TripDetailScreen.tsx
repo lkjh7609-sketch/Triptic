@@ -116,6 +116,23 @@ export function TripDetailScreen() {
       hotelsData,
     });
   }, [project, trip, totalDays, hotelsData]);
+  const pdfInput = useMemo(() => {
+    if (!project || !trip) return undefined;
+    return {
+      title: trip.title,
+      city: trip.city ?? '',
+      startDate: trip.start_date ?? '',
+      endDate: trip.end_date ?? '',
+      totalDays,
+      currency: project.currency ?? 'KRW',
+      currentDay,
+      plannerData: (project.data ?? {}) as PlannerData,
+      hotelsData,
+      flightsData,
+      expensesData,
+      dayCitiesData,
+    };
+  }, [project, trip, totalDays, currentDay, hotelsData, flightsData, expensesData, dayCitiesData]);
 
   /** project.data[currentDay]를 갱신한 새 스냅샷을 저장한다 */
   async function persistDayItems(nextItems: PlaceItem[]) {
@@ -276,14 +293,7 @@ export function TripDetailScreen() {
         >
           💡{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
         </button>
-        <button
-          type="button"
-          className={styles.toggleButton}
-          aria-label="공유"
-          onClick={() => setShowShare(true)}
-          disabled={isSample}
-          title={isSample ? '샘플 여행은 공유할 수 없습니다.' : undefined}
-        >
+        <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
           ↗
         </button>
       </div>
@@ -408,7 +418,13 @@ export function TripDetailScreen() {
       ) : null}
 
       {showShare && tripId ? (
-        <ShareSheet tripId={tripId} itineraryText={itineraryText} onClose={() => setShowShare(false)} />
+        <ShareSheet
+          tripId={tripId}
+          itineraryText={itineraryText}
+          pdfInput={pdfInput}
+          isSample={isSample}
+          onClose={() => setShowShare(false)}
+        />
       ) : null}
     </div>
   );

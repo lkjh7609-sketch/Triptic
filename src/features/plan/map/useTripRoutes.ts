@@ -50,8 +50,11 @@ interface UseTripRoutesOptions<T extends GeoPoint> {
   flightDeparture?: GeoPoint | null;
 }
 
-/** 세션 동안 유지되는 구간 캐시 — 동일 구간 중복 호출 방지 (패리티 체크리스트 항목) */
-const sharedDirectionsCache = new DirectionsCache();
+/** 세션 동안 유지되는 구간 캐시 — 동일 구간 중복 호출 방지 (패리티 체크리스트 항목).
+ * PDF 내보내기(pdfExport.ts)가 legacy exportToPDF의 getTransitToNext처럼 이미
+ * 계산된 구간 소요시간을 재사용하려고 export한다 — 방문한 적 없는 날의 구간은
+ * 캐시가 비어 있을 수 있고, 그 경우 legacy와 동일하게 이동 정보 없이 표시된다. */
+export const sharedDirectionsCache = new DirectionsCache();
 
 export function useTripRoutes<T extends GeoPoint>({
   map,
