@@ -29,6 +29,7 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
     setSaving(true);
     try {
       await onAdd({
+        key: crypto.randomUUID(),
         name: selected.name,
         address: selected.address,
         lat: selected.lat,
