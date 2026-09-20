@@ -6,6 +6,8 @@ import styles from './ShareSheet.module.css';
 interface ShareSheetProps {
   tripId: string;
   onClose: () => void;
+  /** 텍스트 복사(index.html copyItineraryText 이식)용 — 없으면 텍스트 복사 버튼을 숨긴다 */
+  itineraryText?: string;
 }
 
 /**
@@ -13,11 +15,14 @@ interface ShareSheetProps {
  * 서비스 레이어(tripService.createShareLink/revokeShareLinks)는 legacy와 동일하게
  * shared_trips 테이블을 쓴다. 공유 링크로 여는 읽기 전용 뷰어 화면(/shared/:code)은
  * 아직 없다 — 이번 라운드는 생성·복사·해제까지만 다룬다.
+ * 전체 일정 텍스트 복사(legacy copyItineraryText)도 같은 시트에 얹었다 — 헤더가
+ * 이미 버튼 3개로 빽빽해서 별도 아이콘 대신 공유 흐름 안에 자연스럽게 포함시켰다.
  */
-export function ShareSheet({ tripId, onClose }: ShareSheetProps) {
+export function ShareSheet({ tripId, onClose, itineraryText }: ShareSheetProps) {
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [textCopied, setTextCopied] = useState(false);
 
   async function handleCreate() {
     setLoading(true);
@@ -47,6 +52,17 @@ export function ShareSheet({ tripId, onClose }: ShareSheetProps) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       captureError(err, { context: 'copyShareLink' });
+    }
+  }
+
+  async function handleCopyText() {
+    if (!itineraryText) return;
+    try {
+      await navigator.clipboard.writeText(itineraryText);
+      setTextCopied(true);
+      setTimeout(() => setTextCopied(false), 2000);
+    } catch (err) {
+      captureError(err, { context: 'copyItineraryText' });
     }
   }
 
@@ -91,6 +107,12 @@ export function ShareSheet({ tripId, onClose }: ShareSheetProps) {
             {copied ? '복사됨!' : '복사하기'}
           </button>
         </div>
+
+        {itineraryText ? (
+          <button type="button" className={styles.secondary} onClick={handleCopyText}>
+            {textCopied ? '텍스트 복사됨!' : '📋 전체 일정 텍스트로 복사'}
+          </button>
+        ) : null}
       </div>
     </div>
   );

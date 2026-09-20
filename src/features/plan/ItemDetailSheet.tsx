@@ -4,17 +4,28 @@ import styles from './ItemDetailSheet.module.css';
 
 interface ItemDetailSheetProps {
   item: PlaceItem;
+  currentDay: number;
+  totalDays: number;
   onClose: () => void;
   onSave: (patch: Partial<PlaceItem>) => Promise<void>;
   onDelete: () => Promise<void>;
+  onMoveToDay: (targetDay: number) => Promise<void>;
 }
 
 /**
  * 일정 항목 상세 시트 (02-screens.md §3.2 "항목 탭 → 상세 시트")
- * 이번 라운드는 시간·메모 편집 + 삭제까지만 다룬다. 전화·영업시간·사진은
- * Places Details 추가 호출이 필요해 범위가 커서 후속 작업으로 미룬다.
+ * 시간·메모 편집 + 삭제 + 다른 날로 이동(§10.3 패리티 항목)까지 다룬다.
+ * 전화·영업시간·사진은 Places Details 추가 호출이 필요해 후속 작업으로 미룬다.
  */
-export function ItemDetailSheet({ item, onClose, onSave, onDelete }: ItemDetailSheetProps) {
+export function ItemDetailSheet({
+  item,
+  currentDay,
+  totalDays,
+  onClose,
+  onSave,
+  onDelete,
+  onMoveToDay,
+}: ItemDetailSheetProps) {
   const [time, setTime] = useState(item.time ?? '');
   const [memo, setMemo] = useState(item.memo ?? '');
   const [busy, setBusy] = useState(false);
@@ -33,6 +44,18 @@ export function ItemDetailSheet({ item, onClose, onSave, onDelete }: ItemDetailS
     setBusy(true);
     try {
       await onDelete();
+      onClose();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleMove(e: React.ChangeEvent<HTMLSelectElement>) {
+    const targetDay = Number(e.target.value);
+    if (!targetDay || targetDay === currentDay) return;
+    setBusy(true);
+    try {
+      await onMoveToDay(targetDay);
       onClose();
     } finally {
       setBusy(false);
@@ -78,6 +101,21 @@ export function ItemDetailSheet({ item, onClose, onSave, onDelete }: ItemDetailS
             onChange={(e) => setMemo(e.target.value)}
           />
         </div>
+
+        {totalDays > 1 ? (
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="item-move-day">
+              다른 날로 이동
+            </label>
+            <select id="item-move-day" className={styles.input} value={currentDay} disabled={busy} onChange={handleMove}>
+              {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => (
+                <option key={day} value={day}>
+                  Day {day}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <div className={styles.actions}>
           <button type="button" className={styles.deleteButton} disabled={busy} onClick={handleDelete}>
