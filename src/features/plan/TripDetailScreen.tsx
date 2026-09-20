@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { format, parseISO } from 'date-fns';
+import { addDays, format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useWeather, type WeatherDailyEntry } from '@/features/weather/useWeather';
+import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
+import { formatTemp } from '@/features/weather/weatherRules';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
@@ -88,6 +91,13 @@ export function TripDetailScreen() {
     lat: project?.cityLat ?? null,
     lng: project?.cityLng ?? null,
   });
+  /** 여행 단위로 한 번만 묶어서 조회한다(05-weather.md §3.1) — 같은 도시로 날짜만
+   * 바꿔가며 봐도 TanStack Query 캐시가 같아 네트워크 호출이 늘지 않는다. */
+  const weather = useWeather(currentCity.lat, currentCity.lng, trip?.start_date, trip?.end_date);
+  const dayDateISO = trip?.start_date
+    ? format(addDays(parseISO(trip.start_date), currentDay - 1), 'yyyy-MM-dd')
+    : null;
+  const dayWeather = dayDateISO ? weather.data?.daily.find((d) => d.date === dayDateISO) : undefined;
   const isFirstDay = currentDay === 1;
   const isLastDay = currentDay === totalDays;
   /** 첫날 도착 지점/마지막날 출발 지점으로만 표시된다 (index.html renderList flightArrivalPoint/flightDeparturePoint) */
@@ -301,9 +311,10 @@ export function TripDetailScreen() {
       <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
 
       <div className={styles.dayHeader}>
-        <span>
+        <span className={styles.dayHeaderTitle}>
           Day {currentDay}
           {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
+          <DayWeatherBadge loading={weather.isLoading} entry={dayWeather} />
         </span>
         <div className={styles.dayHeaderActions}>
           <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
@@ -436,6 +447,33 @@ function formatDayDate(tripStartDate: string, dayIndex: number): string {
   const date = new Date(start.getTime() + (dayIndex - 1) * 86_400_000);
   if (Number.isNaN(date.getTime())) return '';
   return format(date, 'M/d (E)', { locale: ko });
+}
+
+interface DayWeatherBadgeProps {
+  loading: boolean;
+  entry: WeatherDailyEntry | undefined;
+}
+
+/**
+ * 일자 헤더 최고/최저 기온 (05-weather.md §6.1 "Day 1  5/20(수)  ☀️ 16°/23°").
+ * 로딩 중엔 스켈레톤, 실패/데이터없음이면 아무것도 렌더링하지 않는다(§6.3) —
+ * 0°/--° 같은 가짜 값을 채우지 않는다. 평년값(예보 10일 초과)은 "평년" 배지로
+ * 구분한다(§5.1 "평년값을 예보처럼 보여주면 안 된다").
+ */
+function DayWeatherBadge({ loading, entry }: DayWeatherBadgeProps) {
+  if (loading) return <span className={styles.weatherSkeleton} aria-hidden="true" />;
+  if (!entry) return null;
+  const min = formatTemp(entry.tempMinC);
+  const max = formatTemp(entry.tempMaxC);
+  if (min == null && max == null) return null;
+  const icon = entry.conditionCode ? weatherIcon(mapConditionCode(entry.conditionCode), true) : null;
+  return (
+    <span className={styles.dayWeather}>
+      {icon ? <span aria-hidden="true">{icon}</span> : null}
+      {min ?? '–'}/{max ?? '–'}
+      {entry.source === 'climate_normal' ? <span className={styles.climateBadge}>평년</span> : null}
+    </span>
+  );
 }
 
 interface TripTimelineProps {

@@ -65,3 +65,22 @@
   color: var(--text-muted);
   margin: 2px 0 0;
 }
+
+.weather {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 1px;
+}
+
+.weatherIcon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.weatherTemp {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
