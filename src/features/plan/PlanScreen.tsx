@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip } from './hooks/useTrips';
+import { useQueryClient } from '@tanstack/react-query';
+import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
 import { TripCard } from './TripCard';
+import { SampleTripCard } from './SampleTripCard';
+import { SAMPLE_TRIP_ID, resetSampleTrip } from './sampleTrip';
 import { CreateTripModal } from './CreateTripModal';
 import { BackupModal } from './BackupModal';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -19,6 +22,7 @@ import styles from './PlanScreen.module.css';
  */
 export function PlanScreen() {
   const { user, loading: sessionLoading } = useSession();
+  const queryClient = useQueryClient();
   const { data: trips, isLoading, isError, refetch } = useTrips();
   const renameTrip = useRenameTrip();
   const duplicateTrip = useDuplicateTrip();
@@ -37,6 +41,15 @@ export function PlanScreen() {
     trackScreenView('plan_trip_list');
   }, []);
 
+  /** 비로그인 상태로 목록에 도착할 때마다 샘플 여행을 원본으로 리셋한다 — 둘러보다 만든
+   * 변경은 저장되지 않고, 다시 열면 처음부터 시작한다 (index.html renderLobby 이식). */
+  useEffect(() => {
+    if (!sessionLoading && !user) {
+      resetSampleTrip();
+      queryClient.removeQueries({ queryKey: tripQueryKey(SAMPLE_TRIP_ID) });
+    }
+  }, [sessionLoading, user, queryClient]);
+
   const grouped = useMemo(() => {
     const list = trips ?? [];
     return {
@@ -53,6 +66,10 @@ export function PlanScreen() {
       <div className={styles.section}>
         <EmptyState icon="🧳" message="로그인하면 내 여행을 저장하고 어디서든 이어갈 수 있어요." />
         <LoginButtons />
+        <h2 className={styles.sectionTitle}>먼저 둘러보기</h2>
+        <div className={styles.list}>
+          <SampleTripCard />
+        </div>
       </div>
     );
   }

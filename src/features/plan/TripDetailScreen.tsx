@@ -6,6 +6,7 @@ import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } f
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
 import { tripService, type LocalProject, type Suggestion } from '@/shared/api/tripService';
+import { SAMPLE_TRIP_ID } from './sampleTrip';
 import { DayChips } from './DayChips';
 import { SortableItineraryItem } from './SortableItineraryItem';
 import { TripMapView } from './TripMapView';
@@ -52,6 +53,7 @@ import styles from './TripDetailScreen.module.css';
 export function TripDetailScreen() {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
+  const isSample = tripId === SAMPLE_TRIP_ID;
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
   const updateSnapshot = useUpdateTripSnapshot(tripId);
   const { data: suggestions } = useSuggestions(tripId);
@@ -248,7 +250,10 @@ export function TripDetailScreen() {
           ←
         </button>
         <div className={styles.headerInfo}>
-          <h1 className={styles.title}>{trip.title}</h1>
+          <h1 className={styles.title}>
+            {trip.title}
+            {isSample ? <span className={styles.sampleBadge}>체험용 샘플</span> : null}
+          </h1>
           <p className={styles.dates}>
             {trip.start_date} ~ {trip.end_date}
           </p>
@@ -266,10 +271,19 @@ export function TripDetailScreen() {
           className={styles.toggleButton}
           aria-label="받은 제안"
           onClick={() => setShowSuggestions(true)}
+          disabled={isSample}
+          title={isSample ? '샘플 여행은 제안 기능을 이용할 수 없습니다.' : undefined}
         >
           💡{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
         </button>
-        <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
+        <button
+          type="button"
+          className={styles.toggleButton}
+          aria-label="공유"
+          onClick={() => setShowShare(true)}
+          disabled={isSample}
+          title={isSample ? '샘플 여행은 공유할 수 없습니다.' : undefined}
+        >
           ↗
         </button>
       </div>
