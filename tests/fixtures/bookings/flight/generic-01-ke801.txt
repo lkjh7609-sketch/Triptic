@@ -1,0 +1,14 @@
+E-TICKET ITINERARY RECEIPT
+
+Passenger: [REDACTED]
+
+Flight: KE801
+From: Seoul (ICN) Incheon International Airport
+To: Tokyo (NRT) Narita International Airport
+Date: 2026-05-20
+Departure: 08:00
+Arrival: 11:00
+
+Booking Reference: ABC123
+Seat: 12A
+Class: Economy

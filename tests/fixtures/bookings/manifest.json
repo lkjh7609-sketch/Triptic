@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "file": "flight/generic-01-ke801.txt",
+      "expected": "flight/generic-01-ke801.expected.json",
+      "source": "synthetic",
+      "collectedAt": "2026-09-21",
+      "consent": "n/a — 합성 문서, 실제 예약 아님",
+      "note": "04-document-ai.md §11.2 원칙대로 실제 사용자 문서를 쓰지 않고 합성 문서로 구성했다."
+    },
+    {
+      "file": "flight/generic-02-oz502.txt",
+      "expected": "flight/generic-02-oz502.expected.json",
+      "source": "synthetic",
+      "collectedAt": "2026-09-21",
+      "consent": "n/a — 합성 문서, 실제 예약 아님"
+    }
+  ]
+}
