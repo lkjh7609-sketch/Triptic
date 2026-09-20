@@ -1,0 +1,29 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tile {
+  background: var(--surface-card);
+  padding: var(--space-3) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.value {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  color: var(--text-primary);
+}
+
+.label {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
