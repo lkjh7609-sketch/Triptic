@@ -1,0 +1,89 @@
+.addRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.descInput {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  font-size: var(--font-body-size);
+  min-width: 0;
+}
+
+.amountInput {
+  flex: 0 0 110px;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  font-size: var(--font-body-size);
+}
+
+.addBtn {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-weight: 600;
+}
+.addBtn:disabled {
+  opacity: 0.5;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.empty {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-3) 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.itemDesc {
+  flex: 1;
+  color: var(--text-title);
+  font-weight: 500;
+}
+
+.itemAmount {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.deleteBtn {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-caption-size);
+}
+
+.totalRow,
+.grandTotalRow {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.grandTotalRow {
+  color: var(--brand);
+  font-weight: 800;
+}

@@ -30,3 +30,34 @@ export interface HotelItem {
 
 export type PlannerData = Record<number, PlaceItem[]>;
 export type HotelsData = Record<number, HotelItem>;
+
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner';
+
+/** 식사 슬롯 1건 (index.html mealsData[day][slot] 이식 — ADR-001) */
+export interface MealSlotInfo {
+  skip: boolean;
+  name?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+}
+
+export type DayMeals = Partial<Record<MealSlot, MealSlotInfo>>;
+export type MealsData = Record<number, DayMeals>;
+
+/** 경비 항목 (index.html expensesData[day] 이식) */
+export interface ExpenseItem {
+  desc: string;
+  amount: number;
+}
+
+export type ExpensesData = Record<number, ExpenseItem[]>;
+
+/** 일차별 다른 도시 설정 (index.html dayCities[day] 이식) */
+export interface DayCityInfo {
+  city: string;
+  cityLat?: number | null;
+  cityLng?: number | null;
+}
+
+export type DayCitiesData = Record<number, DayCityInfo>;
