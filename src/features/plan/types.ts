@@ -61,3 +61,28 @@ export interface DayCityInfo {
 }
 
 export type DayCitiesData = Record<number, DayCityInfo>;
+
+/** 항공편 도착/출발 지점 (index.html lookupFlight 이식) */
+export interface FlightAirportInfo {
+  iata: string;
+  name: string;
+  lat: number | null;
+  lng: number | null;
+  time: string;
+}
+
+/** 항공편 1건 (index.html flightsData.outbound/return 이식) */
+export interface FlightInfo {
+  flightNo: string;
+  date: string;
+  airline?: string;
+  /** 자동 조회 실패 후 수동 입력한 경우 true (index.html saveManualFlight) */
+  manual?: boolean;
+  dep: FlightAirportInfo;
+  arr: FlightAirportInfo;
+}
+
+export interface FlightsData {
+  outbound: FlightInfo | null;
+  return: FlightInfo | null;
+}

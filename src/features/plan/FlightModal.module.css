@@ -1,0 +1,77 @@
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.slotLabel {
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.lookupRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.flightNoInput {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  font-size: var(--font-body-size);
+  min-width: 0;
+}
+
+.lookupBtn {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-weight: 600;
+}
+.lookupBtn:disabled {
+  opacity: 0.5;
+}
+
+.preview {
+  font-size: var(--font-caption-size);
+  color: var(--text-body);
+  margin: 0;
+}
+
+.hint {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.manualToggle {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  color: var(--brand);
+  font-size: var(--font-caption-size);
+  padding: 0;
+}
+
+.manualFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.applyManualBtn {
+  min-height: 40px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-weight: 600;
+}

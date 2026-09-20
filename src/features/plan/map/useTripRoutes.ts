@@ -16,8 +16,8 @@ import type { Hotel } from './hotels';
 import { loadGoogleMaps } from '@/shared/api/googleMapsLoader';
 
 export interface RouteWaypoint extends GeoPoint {
-  /** dayItems 안에서의 인덱스. 숙소는 'start-hotel' | 'end-hotel' */
-  ref: number | 'start-hotel' | 'end-hotel';
+  /** dayItems 안에서의 인덱스. 숙소는 'start-hotel' | 'end-hotel', 항공편은 'flight-arrival' | 'flight-departure' */
+  ref: number | 'start-hotel' | 'end-hotel' | 'flight-arrival' | 'flight-departure';
 }
 
 export interface RouteLeg {
@@ -44,6 +44,10 @@ interface UseTripRoutesOptions<T extends GeoPoint> {
   endHotel: Hotel | null;
   /** 존이 여러 개인 날, 현재 보고 있는 존 (01-design-system.md §6.4 "존 전환 칩") */
   activeZoneIndex: number;
+  /** 첫날 항공편 도착 지점 (index.html renderList flightArrivalPoint) — 여정 맨 앞에 연결된다 */
+  flightArrival?: GeoPoint | null;
+  /** 마지막날 항공편 출발 지점 (index.html renderList flightDeparturePoint) — 여정 맨 끝에 연결된다 */
+  flightDeparture?: GeoPoint | null;
 }
 
 /** 세션 동안 유지되는 구간 캐시 — 동일 구간 중복 호출 방지 (패리티 체크리스트 항목) */
@@ -55,6 +59,8 @@ export function useTripRoutes<T extends GeoPoint>({
   startHotel,
   endHotel,
   activeZoneIndex,
+  flightArrival,
+  flightDeparture,
 }: UseTripRoutesOptions<T>): RouteLeg[] {
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   const renderersRef = useRef<google.maps.DirectionsRenderer[]>([]);
@@ -86,6 +92,9 @@ export function useTripRoutes<T extends GeoPoint>({
         : null;
 
       const list: RouteWaypoint[] = [];
+      if (flightArrival) {
+        list.push({ lat: flightArrival.lat, lng: flightArrival.lng, ref: 'flight-arrival' });
+      }
       if (
         startHotel &&
         (!multiZone ||
@@ -103,6 +112,9 @@ export function useTripRoutes<T extends GeoPoint>({
         (!multiZone || nearestZoneIndexForPoint(dayZones, dayItems, endHotel) === activeZoneIndex)
       ) {
         list.push({ lat: endHotel.lat, lng: endHotel.lng, ref: 'end-hotel' });
+      }
+      if (flightDeparture) {
+        list.push({ lat: flightDeparture.lat, lng: flightDeparture.lng, ref: 'flight-departure' });
       }
 
       if (list.length < 2) {
@@ -200,7 +212,7 @@ export function useTripRoutes<T extends GeoPoint>({
     };
     // dayItems/startHotel/endHotel은 얕은 비교이므로, 호출부에서 useMemo 등으로
     // 참조를 안정시켜야 불필요한 재실행(경로 재호출)을 피할 수 있다.
-  }, [map, dayItems, startHotel, endHotel, activeZoneIndex]);
+  }, [map, dayItems, startHotel, endHotel, activeZoneIndex, flightArrival, flightDeparture]);
 
   return legs;
 }
