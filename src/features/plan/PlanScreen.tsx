@@ -3,6 +3,7 @@ import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip } from './hook
 import { getTripPhase } from './tripStatus';
 import { TripCard } from './TripCard';
 import { CreateTripModal } from './CreateTripModal';
+import { BackupModal } from './BackupModal';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
@@ -24,6 +25,7 @@ export function PlanScreen() {
   const deleteTrip = useDeleteTrip();
   const [showCreate, setShowCreate] = useState(false);
   const [showPast, setShowPast] = useState(false);
+  const [showBackup, setShowBackup] = useState(false);
 
   const cardCallbacks = {
     onRename: (tripId: string, newTitle: string) => renameTrip.mutate({ tripId, newTitle }),
@@ -134,7 +136,19 @@ export function PlanScreen() {
         </>
       )}
 
+      {(trips?.length ?? 0) > 0 ? (
+        <div className={styles.footer}>
+          <button type="button" className={styles.footerButton} onClick={() => setShowBackup(true)}>
+            ☁️ 기기 동기화 & 백업
+          </button>
+        </div>
+      ) : null}
+
       {showCreate ? <CreateTripModal onClose={() => setShowCreate(false)} /> : null}
+
+      {showBackup ? (
+        <BackupModal trips={trips ?? []} onClose={() => setShowBackup(false)} onImported={() => refetch()} />
+      ) : null}
     </div>
   );
 }
