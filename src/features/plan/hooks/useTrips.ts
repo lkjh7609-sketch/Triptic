@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tripService, type LocalProject, type TripRow } from '@/shared/api/tripService';
+import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
 
 export const tripsQueryKey = ['trips'] as const;
 
@@ -38,17 +39,32 @@ export function tripQueryKey(tripId: string) {
 export function useTrip(tripId: string | undefined) {
   return useQuery<TripRow | null>({
     queryKey: tripQueryKey(tripId ?? ''),
-    queryFn: () => tripService.getTrip(tripId!),
+    queryFn: () => (tripId === SAMPLE_TRIP_ID ? getSampleTripRow() : tripService.getTrip(tripId!)),
     enabled: !!tripId,
   });
 }
 
-/** snapshot 부분 갱신 (장소 추가/삭제/순서변경 등). project는 이미 toLocalProject로 변환된 전체 상태 */
+/** snapshot 부분 갱신 (장소 추가/삭제/순서변경 등). project는 이미 toLocalProject로 변환된 전체 상태
+ * 비로그인 샘플 여행(SAMPLE_TRIP_ID)은 Supabase에 절대 쓰지 않고 메모리에만 반영한다
+ * (index.html saveData의 `activeProjectName === SAMPLE_PROJECT_NAME` 조기 반환과 동일 — sampleTrip.ts 참고). */
 export function useUpdateTripSnapshot(tripId: string | undefined) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ project, name }: { project: LocalProject; name: string }) =>
-      tripService.saveTrip({ ...project, supabaseId: tripId }, name),
+    mutationFn: ({ project, name }: { project: LocalProject; name: string }) => {
+      if (tripId === SAMPLE_TRIP_ID) {
+        return Promise.resolve(
+          updateSampleTripSnapshot({
+            data: project.data || {},
+            hotels: project.hotels || {},
+            meals: project.meals || {},
+            expenses: project.expenses || {},
+            flights: project.flights || { outbound: null, return: null },
+            dayCities: project.dayCities || {},
+          }),
+        );
+      }
+      return tripService.saveTrip({ ...project, supabaseId: tripId }, name);
+    },
     onSuccess: (row) => {
       queryClient.setQueryData(tripQueryKey(row.id), row);
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
@@ -90,12 +106,14 @@ export function useDuplicateTrip() {
   });
 }
 
-/** 동행자 제안 목록 (index.html checkSuggestionsCount/openReviewSuggestionModal 이식) */
+/** 동행자 제안 목록 (index.html checkSuggestionsCount/openReviewSuggestionModal 이식)
+ * 샘플 여행은 제안 기능을 지원하지 않는다(index.html openReviewSuggestionModal 가드와 동일) —
+ * 실존하지 않는 tripId로 Supabase를 호출하지 않도록 여기서 막는다. */
 export function useSuggestions(tripId: string | undefined) {
   return useQuery({
     queryKey: ['suggestions', tripId ?? ''],
     queryFn: () => tripService.listSuggestions(tripId!),
-    enabled: !!tripId,
+    enabled: !!tripId && tripId !== SAMPLE_TRIP_ID,
   });
 }
 
