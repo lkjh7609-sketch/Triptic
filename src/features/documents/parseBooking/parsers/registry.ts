@@ -2,8 +2,8 @@
  * 결정론적 파서 레지스트리 (04-document-ai.md §4.1, §4.2)
  * LLM보다 먼저 시도한다 — 정형 포맷은 규칙이 더 정확하고, 빠르고, 무료다.
  */
-import type { AirportIndex } from '../airports';
-import type { ParsedBooking } from '../schema';
+import type { AirportIndex } from '../airports.ts';
+import type { ParsedBooking } from '../schema.ts';
 
 export interface ParseContext {
   tripStartDate: string;

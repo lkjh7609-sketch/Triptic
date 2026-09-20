@@ -4,9 +4,9 @@
  * 공항 좌표·타임존은 항상 번들 DB에서 가져온다 — LLM이 준 값은 쓰지 않는다.
  */
 import { fromZonedTime } from 'date-fns-tz';
-import type { AirportIndex } from './airports';
-import { lookupAirport } from './airports';
-import type { ParsedFlight, ParsedLodging } from './schema';
+import type { AirportIndex } from './airports.ts';
+import { lookupAirport } from './airports.ts';
+import type { ParsedFlight, ParsedLodging } from './schema.ts';
 
 const FLIGHT_NUMBER_RE = /^[A-Z0-9]{2}\d{1,4}$/;
 /** 상업 여객기 평균 순항 계획 속도(대권거리 기준 근사치) + 이착륙/지상 대기 여유시간 */

@@ -5,10 +5,10 @@
  * 원칙과 충돌한다(틀린 패턴이 높은 신뢰도로 자동 채택될 수 있음). 지금은
  * 폴백 파서 하나만 등록돼 있고, 그 밖의 모든 문서는 §6 LLM 추출로 넘어간다.
  */
-import { genericIataParser } from './flight/generic-iata';
-import type { BookingParser } from './registry';
+import { genericIataParser } from './flight/generic-iata.ts';
+import type { BookingParser } from './registry.ts';
 
 export const ALL_PARSERS: BookingParser[] = [genericIataParser];
 
-export { selectParser } from './registry';
-export type { BookingParser, ParseContext } from './registry';
+export { selectParser } from './registry.ts';
+export type { BookingParser, ParseContext } from './registry.ts';
