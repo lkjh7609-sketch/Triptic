@@ -1,14 +1,15 @@
 /**
  * Supabase 데이터베이스 서비스 (새 React 앱 전용 — src/services/supabaseService.js 이식)
  *
- * ⚠️ 이 파일은 아직 정규화 스키마(03-data-model.md §3, itinerary_items/bookings/legs)가
- * 아니라 **snapshot 기반 스키마**를 대상으로 한다 — 단, 컬럼명은
- * supabase/migrations/0000_reconcile_legacy_schema.sql 적용 이후 기준
- * (trips.owner_id/title/base_currency/city/snapshot, profiles)이다.
- * itinerary_items 등 정규화 테이블을 사용하는 새 쿼리 계층은 실제 데이터 이관
- * (M2~M4, 아직 작성 전)이 끝난 뒤 Phase 2에서 추가한다. 그 전까지 계획(Plan) 탭은
- * 이 서비스를 통해 기존 앱과 동일한 데이터를 읽고 써야 패리티 체크리스트
- * (DEVELOPMENT_PLAN.md §10.3)를 통과할 수 있다.
+ * ⚠️ Plan 탭의 1차 데이터는 계속 **snapshot 기반 스키마**다(컬럼명은
+ * supabase/migrations/0000_reconcile_legacy_schema.sql 적용 이후 기준 —
+ * trips.owner_id/title/base_currency/city/snapshot, profiles) — 이미 Phase 2에서
+ * 19/19 패리티까지 검증된 안정적인 읽기/쓰기 경로라 그대로 유지한다(ADR-002
+ * 이관 시 Plan 탭 자체를 정규화 테이블로 바꾸지 않기로 한 결정, 03-data-model.md §6).
+ * 대신 saveTrip()이 성공할 때마다 정규화 테이블(itinerary_items/trip_days/legs/
+ * expenses)을 파생 프로젝션으로 재동기화한다(sync-trip-normalized Edge Function,
+ * §6 M5) — 통계 RPC(get_user_travel_stats)·공유 링크(get_shared_trip)처럼
+ * 정규화 테이블을 읽는 쪽이 이 프로젝션을 쓴다.
  */
 import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/utils/id.js';
@@ -109,6 +110,20 @@ export class TripService {
 
     const { data, error } = await supabase.from('trips').upsert(row).select().single();
     if (error) throw error;
+
+    // ADR-002(03-data-model.md §6 M5) — snapshot 저장 직후 정규화 테이블을
+    // 파생 프로젝션으로 재동기화한다. 실패해도 snapshot(1차 데이터)은 이미
+    // 저장돼 있으므로 saveTrip() 자체는 실패시키지 않는다 — 다음 저장 때
+    // 전체 재계산되므로 자연 치유된다. invoke()는 함수 쪽 에러를 reject가
+    // 아니라 {error} 필드로 돌려주므로 둘 다 잡는다.
+    const tripId = (data as TripRow).id;
+    supabase.functions
+      .invoke('sync-trip-normalized', { body: { tripId } })
+      .then(({ error: fnErr }) => {
+        if (fnErr) captureError(fnErr, { context: 'syncTripNormalized', tripId });
+      })
+      .catch((err) => captureError(err, { context: 'syncTripNormalized', tripId }));
+
     return data as TripRow;
   }
 
