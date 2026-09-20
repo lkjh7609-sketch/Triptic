@@ -1,0 +1,25 @@
+.fixedItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 var(--space-4);
+  padding: var(--space-3);
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+}
+
+.fixedLabel {
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.fixedName {
+  font-size: var(--font-body-size);
+  color: var(--text-title);
+}
+
+.fixedAddress {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}

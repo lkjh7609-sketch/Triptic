@@ -89,3 +89,23 @@ export function useDuplicateTrip() {
     },
   });
 }
+
+/** 동행자 제안 목록 (index.html checkSuggestionsCount/openReviewSuggestionModal 이식) */
+export function useSuggestions(tripId: string | undefined) {
+  return useQuery({
+    queryKey: ['suggestions', tripId ?? ''],
+    queryFn: () => tripService.listSuggestions(tripId!),
+    enabled: !!tripId,
+  });
+}
+
+/** 제안 거절 — 목록에서 제거만 한다 (index.html rejectSuggestion 이식) */
+export function useRejectSuggestion(tripId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (suggestionId: string) => tripService.deleteSuggestion(suggestionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suggestions', tripId ?? ''] });
+    },
+  });
+}
