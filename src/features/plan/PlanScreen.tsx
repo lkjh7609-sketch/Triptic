@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTrips } from './hooks/useTrips';
+import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
 import { TripCard } from './TripCard';
 import { CreateTripModal } from './CreateTripModal';
@@ -19,8 +19,17 @@ import styles from './PlanScreen.module.css';
 export function PlanScreen() {
   const { user, loading: sessionLoading } = useSession();
   const { data: trips, isLoading, isError, refetch } = useTrips();
+  const renameTrip = useRenameTrip();
+  const duplicateTrip = useDuplicateTrip();
+  const deleteTrip = useDeleteTrip();
   const [showCreate, setShowCreate] = useState(false);
   const [showPast, setShowPast] = useState(false);
+
+  const cardCallbacks = {
+    onRename: (tripId: string, newTitle: string) => renameTrip.mutate({ tripId, newTitle }),
+    onDuplicate: (tripId: string) => duplicateTrip.mutate(tripId),
+    onDelete: (tripId: string) => deleteTrip.mutate(tripId),
+  };
 
   useEffect(() => {
     trackScreenView('plan_trip_list');
@@ -87,7 +96,7 @@ export function PlanScreen() {
               <h2 className={styles.sectionTitle}>진행 중</h2>
               <div className={styles.list}>
                 {grouped.ongoing.map((t) => (
-                  <TripCard key={t.id} trip={t} />
+                  <TripCard key={t.id} trip={t} {...cardCallbacks} />
                 ))}
               </div>
             </section>
@@ -98,7 +107,7 @@ export function PlanScreen() {
               <h2 className={styles.sectionTitle}>예정</h2>
               <div className={styles.list}>
                 {grouped.upcoming.map((t) => (
-                  <TripCard key={t.id} trip={t} />
+                  <TripCard key={t.id} trip={t} {...cardCallbacks} />
                 ))}
               </div>
             </section>
@@ -116,7 +125,7 @@ export function PlanScreen() {
               {showPast ? (
                 <div className={styles.list}>
                   {grouped.past.map((t) => (
-                    <TripCard key={t.id} trip={t} />
+                    <TripCard key={t.id} trip={t} {...cardCallbacks} />
                   ))}
                 </div>
               ) : null}

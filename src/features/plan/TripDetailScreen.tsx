@@ -10,13 +10,15 @@ import { LegLabel } from './LegLabel';
 import { TripMapView } from './TripMapView';
 import { AddPlaceModal } from './AddPlaceModal';
 import { ItemDetailSheet } from './ItemDetailSheet';
+import { SetHotelModal } from './SetHotelModal';
+import { ShareSheet } from './ShareSheet';
 import { useTripRoutes } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { trackScreenView } from '@/shared/monitoring';
-import type { HotelsData, PlaceItem, PlannerData } from './types';
+import type { HotelItem, HotelsData, PlaceItem, PlannerData } from './types';
 import styles from './TripDetailScreen.module.css';
 
 /**
@@ -33,6 +35,8 @@ export function TripDetailScreen() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showHotelModal, setShowHotelModal] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     trackScreenView('trip_detail');
@@ -67,6 +71,16 @@ export function TripDetailScreen() {
 
   async function handleDeleteItem(index: number) {
     await persistDayItems(dayItems.filter((_, i) => i !== index));
+  }
+
+  /** 이 날짜의 숙소를 갱신한다 (hotelsData[currentDay], index.html clearHotel/renderHotelSection 이식) */
+  async function handleSetHotel(hotel: HotelItem | null) {
+    if (!project || !trip) return;
+    const nextHotels = { ...((project.hotels ?? {}) as HotelsData) };
+    if (hotel) nextHotels[currentDay] = hotel;
+    else delete nextHotels[currentDay];
+    const nextProject: LocalProject = { ...project, hotels: nextHotels };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
   if (isLoading) {
@@ -108,6 +122,9 @@ export function TripDetailScreen() {
         >
           {viewMode === 'list' ? '🗺' : '📋'}
         </button>
+        <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
+          ↗
+        </button>
       </div>
 
       <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
@@ -117,6 +134,9 @@ export function TripDetailScreen() {
           Day {currentDay}
           {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
         </span>
+        <button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
+          🏨 {hotelsData[currentDay]?.name ?? '숙소 지정'}
+        </button>
       </div>
 
       {viewMode === 'map' ? (
@@ -150,6 +170,16 @@ export function TripDetailScreen() {
           onDelete={() => handleDeleteItem(editingIndex)}
         />
       ) : null}
+
+      {showHotelModal ? (
+        <SetHotelModal
+          currentHotel={hotelsData[currentDay] ?? null}
+          onClose={() => setShowHotelModal(false)}
+          onSave={handleSetHotel}
+        />
+      ) : null}
+
+      {showShare && tripId ? <ShareSheet tripId={tripId} onClose={() => setShowShare(false)} /> : null}
     </div>
   );
 }

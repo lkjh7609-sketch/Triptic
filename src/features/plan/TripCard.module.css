@@ -1,3 +1,7 @@
+.cardWrap {
+  position: relative;
+}
+
 .card {
   display: block;
   background: var(--surface-card);
@@ -14,6 +18,55 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.menuButton {
+  appearance: none;
+  border: none;
+  background: none;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: 40px;
+  right: var(--space-4);
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 10;
+  min-width: 120px;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3);
+  border: none;
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-label-size);
+  cursor: pointer;
+}
+.menuItem:active {
+  background: var(--surface-subtle);
+}
+.menuItem.danger {
+  color: var(--danger);
 }
 
 .title {
