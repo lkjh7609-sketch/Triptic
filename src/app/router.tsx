@@ -1,25 +1,52 @@
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from './AppShell';
-import { HomeScreen } from '@/features/home/HomeScreen';
-import { PlanScreen } from '@/features/plan/PlanScreen';
-import { TripDetailScreen } from '@/features/plan/TripDetailScreen';
-import { CommunityScreen } from '@/features/community/CommunityScreen';
-import { SettingsScreen } from '@/features/settings/SettingsScreen';
 
 /**
  * 하단 4탭 라우팅 (DEVELOPMENT_PLAN.md §7, §9 Phase 1~2)
- * 탭별 세부 화면(글 상세 등)은 각 담당 Phase에서 계속 중첩 라우트로 추가한다.
+ * 각 화면은 lazy 라우트로 분리한다 — 번들 예산(§10.1: 초기 로드 JS ≤ 250KB
+ * gzip)이 계획/지도 관련 의존성(Google Maps 로더, dnd-kit 등) 추가로 임계치에
+ * 근접해, 탭을 실제로 열 때만 해당 코드를 받도록 코드 스플리팅했다.
  */
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppShell />,
     children: [
-      { index: true, element: <HomeScreen /> },
-      { path: 'plan', element: <PlanScreen /> },
-      { path: 'plan/:tripId', element: <TripDetailScreen /> },
-      { path: 'community', element: <CommunityScreen /> },
-      { path: 'settings', element: <SettingsScreen /> },
+      {
+        index: true,
+        lazy: async () => {
+          const { HomeScreen } = await import('@/features/home/HomeScreen');
+          return { Component: HomeScreen };
+        },
+      },
+      {
+        path: 'plan',
+        lazy: async () => {
+          const { PlanScreen } = await import('@/features/plan/PlanScreen');
+          return { Component: PlanScreen };
+        },
+      },
+      {
+        path: 'plan/:tripId',
+        lazy: async () => {
+          const { TripDetailScreen } = await import('@/features/plan/TripDetailScreen');
+          return { Component: TripDetailScreen };
+        },
+      },
+      {
+        path: 'community',
+        lazy: async () => {
+          const { CommunityScreen } = await import('@/features/community/CommunityScreen');
+          return { Component: CommunityScreen };
+        },
+      },
+      {
+        path: 'settings',
+        lazy: async () => {
+          const { SettingsScreen } = await import('@/features/settings/SettingsScreen');
+          return { Component: SettingsScreen };
+        },
+      },
     ],
   },
 ]);
