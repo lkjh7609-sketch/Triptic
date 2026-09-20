@@ -1,5 +1,8 @@
 {
-  "outputDirectory": ".",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/preview/(.*)", "destination": "/preview/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

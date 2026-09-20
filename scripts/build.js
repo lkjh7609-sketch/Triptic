@@ -25,7 +25,10 @@ const publicDir = path.resolve(rootDir, 'public'); // Vite의 publicDir (dist/ �
 // preview/index.html에 있으며, 이건 Vite 번들링 없이는 실행되지 않으므로
 // Capacitor(www/, 정적 파일을 그대로 실행)에는 미러링하지 않는다. 패리티
 // 체크리스트(DEVELOPMENT_PLAN.md §10.3) 통과 후 실제 컷오버 시점에만 바꾼다.
-const STATIC_ASSETS = ['manifest.json', 'sw.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-1024.png'];
+// ⚠️ vercel.json outputDirectory를 "dist"로 바꾼 뒤 발견: privacy.html/terms.html이
+// Vite rollupOptions.input에 없어 dist/에 전혀 포함되지 않고 있었다(레포 루트를
+// 그대로 서빙하던 시절엔 우연히 노출됐을 뿐). publicDir에 복사해 dist/로 자동 반영한다.
+const STATIC_ASSETS = ['manifest.json', 'sw.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-1024.png', 'privacy.html', 'terms.html'];
 
 console.log('📦 Syncing Triptic web assets for Capacitor (www/) & Vite (public/)...');
 
