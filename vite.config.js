@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
     publicDir: 'public',
 
     plugins: [
-      // 새 React 앱(index.html → src/app/main.tsx)의 JSX/Fast Refresh 변환.
-      // legacy/index.html은 순수 vanilla 번들이라 이 플러그인의 영향을 받지 않는다.
+      // 새 React 앱(preview/index.html → src/app/main.tsx)의 JSX/Fast Refresh 변환.
+      // 루트 index.html(legacy)은 순수 vanilla 번들이라 이 플러그인의 영향을 받지 않는다.
       react(),
       {
         // 로컬 개발 서버에서 프로덕션 api/*.js 서버리스 함수와 동일한 동작을 흉내낸다.
@@ -83,12 +83,15 @@ export default defineConfig(({ mode }) => {
       }
     },
     rollupOptions: {
-      // Strangler 전환(ADR-001): 새 React 셸(index.html)과 기존 vanilla 앱
-      // (legacy/index.html)을 한 빌드에서 각각 dist/index.html, dist/legacy/index.html로
-      // 산출한다. 기존 앱은 Phase 2 패리티 체크리스트 통과 전까지 배포 경로를 바꾸지 않는다.
+      // Strangler 전환(ADR-001): 루트 index.html은 기존 vanilla 앱(8,254줄)이
+      // 그대로 차지한다 — triptic.my는 Phase 2 패리티 체크리스트 통과 전까지
+      // 절대 새 React 앱으로 바뀌면 안 된다. 새 React 셸은 /preview/ 경로에서만
+      // 확인 가능하다 (⚠️ 한 번 이 둘을 뒤바꿔 배포했다가 실사용자에게 빈 화면이
+      // 노출되는 사고가 있었다 — vite.config.js를 다시 고칠 때 이 순서를
+      // 절대 바꾸지 말 것. supabase/migrations/README.md 커밋 이력 참고).
       input: {
         main: resolve(__dirname, 'index.html'),
-        legacy: resolve(__dirname, 'legacy/index.html')
+        preview: resolve(__dirname, 'preview/index.html')
       },
       output: {
         manualChunks: {
