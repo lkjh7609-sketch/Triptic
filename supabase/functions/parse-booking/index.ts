@@ -35,7 +35,10 @@ function corsHeaders(origin: string | null) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Vary', 'Origin');
   }
-  headers.set('Access-Control-Allow-Headers', 'authorization, content-type');
+  // supabase-js가 모든 요청에 자동으로 붙이는 헤더(apikey, x-client-info)까지
+  // 허용해야 한다 — 빠지면 프리플라이트는 200이 나와도 브라우저가 실제 요청을
+  // 자체적으로 막아버려서(네트워크 로그에 POST 자체가 안 찍힘) 원인 파악이 어렵다.
+  headers.set('Access-Control-Allow-Headers', 'authorization, x-client-info, apikey, content-type');
   headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
   return headers;
 }
