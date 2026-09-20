@@ -6,47 +6,56 @@ import { AppShell } from './AppShell';
  * 각 화면은 lazy 라우트로 분리한다 — 번들 예산(§10.1: 초기 로드 JS ≤ 250KB
  * gzip)이 계획/지도 관련 의존성(Google Maps 로더, dnd-kit 등) 추가로 임계치에
  * 근접해, 탭을 실제로 열 때만 해당 코드를 받도록 코드 스플리팅했다.
+ *
+ * ⚠️ basename: '/preview' — Phase 2 패리티 체크리스트(§10.3) 통과 전까지 새
+ * React 앱은 루트(triptic.my)가 아니라 /preview/ 아래에서만 서빙된다(ADR-001
+ * Strangler 전략, vercel.json outputDirectory 전환 때 실제 배포 확인하며 발견:
+ * basename 없이는 라우터가 /preview/ 하위 경로를 전혀 매치하지 못해 404가 났다).
+ * 실제 컷오버 시점에 '/'로 바꾸고 legacy를 걷어낸다.
  */
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <AppShell />,
-    children: [
-      {
-        index: true,
-        lazy: async () => {
-          const { HomeScreen } = await import('@/features/home/HomeScreen');
-          return { Component: HomeScreen };
+export const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <AppShell />,
+      children: [
+        {
+          index: true,
+          lazy: async () => {
+            const { HomeScreen } = await import('@/features/home/HomeScreen');
+            return { Component: HomeScreen };
+          },
         },
-      },
-      {
-        path: 'plan',
-        lazy: async () => {
-          const { PlanScreen } = await import('@/features/plan/PlanScreen');
-          return { Component: PlanScreen };
+        {
+          path: 'plan',
+          lazy: async () => {
+            const { PlanScreen } = await import('@/features/plan/PlanScreen');
+            return { Component: PlanScreen };
+          },
         },
-      },
-      {
-        path: 'plan/:tripId',
-        lazy: async () => {
-          const { TripDetailScreen } = await import('@/features/plan/TripDetailScreen');
-          return { Component: TripDetailScreen };
+        {
+          path: 'plan/:tripId',
+          lazy: async () => {
+            const { TripDetailScreen } = await import('@/features/plan/TripDetailScreen');
+            return { Component: TripDetailScreen };
+          },
         },
-      },
-      {
-        path: 'community',
-        lazy: async () => {
-          const { CommunityScreen } = await import('@/features/community/CommunityScreen');
-          return { Component: CommunityScreen };
+        {
+          path: 'community',
+          lazy: async () => {
+            const { CommunityScreen } = await import('@/features/community/CommunityScreen');
+            return { Component: CommunityScreen };
+          },
         },
-      },
-      {
-        path: 'settings',
-        lazy: async () => {
-          const { SettingsScreen } = await import('@/features/settings/SettingsScreen');
-          return { Component: SettingsScreen };
+        {
+          path: 'settings',
+          lazy: async () => {
+            const { SettingsScreen } = await import('@/features/settings/SettingsScreen');
+            return { Component: SettingsScreen };
+          },
         },
-      },
-    ],
-  },
-]);
+      ],
+    },
+  ],
+  { basename: '/preview' },
+);
