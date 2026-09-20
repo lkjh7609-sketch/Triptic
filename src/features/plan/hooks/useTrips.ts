@@ -55,3 +55,37 @@ export function useUpdateTripSnapshot(tripId: string | undefined) {
     },
   });
 }
+
+/** 여행 이름 변경 (02-screens.md §3.1 "여행 복제 / 삭제 / 이름 변경") */
+export function useRenameTrip() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ tripId, newTitle }: { tripId: string; newTitle: string }) => {
+      const trip = await tripService.getTrip(tripId);
+      if (!trip) throw new Error('여행을 찾을 수 없습니다.');
+      const project = tripService.toLocalProject(trip);
+      return tripService.saveTrip({ ...project, supabaseId: tripId }, newTitle);
+    },
+    onSuccess: (row) => {
+      queryClient.setQueryData(tripQueryKey(row.id), row);
+      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+  });
+}
+
+/** 여행 복제 — snapshot을 그대로 복사해 새 여행으로 저장한다(원본은 그대로 둔다) */
+export function useDuplicateTrip() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (tripId: string) => {
+      const trip = await tripService.getTrip(tripId);
+      if (!trip) throw new Error('여행을 찾을 수 없습니다.');
+      const project = tripService.toLocalProject(trip);
+      const { supabaseId: _omit, ...withoutId } = project;
+      return tripService.saveTrip(withoutId, `${trip.title} 사본`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+  });
+}

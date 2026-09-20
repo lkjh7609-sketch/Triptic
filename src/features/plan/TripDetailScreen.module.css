@@ -48,6 +48,22 @@
   cursor: pointer;
 }
 
+.hotelButton {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface-card);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--space-3);
+  min-height: 32px;
+  font-size: var(--font-caption-size);
+  color: var(--text-body);
+  cursor: pointer;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .dayHeader {
   display: flex;
   align-items: center;
