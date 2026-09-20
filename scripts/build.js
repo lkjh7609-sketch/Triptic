@@ -19,11 +19,12 @@ const publicDir = path.resolve(rootDir, 'public'); // Vite의 publicDir (dist/ �
 // 복사하지 않는다 — 원본을 그대로 복사하면 빌드된 산출물과 내용이 어긋나기 쉽다.
 // www/(Capacitor)는 Vite 빌드를 거치지 않고 원본을 그대로 사용하므로 복사가 필요하다.
 //
-// ⚠️ Triptic 3.0 Strangler 전환(ADR-001): 루트 index.html은 이제 새 React 앱의
-// 진입점(<script type="module" src="/src/app/main.tsx">)이라 Vite 번들링 없이는
-// 실행되지 않는다. Capacitor(www/)는 정적 파일을 그대로 실행하므로, 패리티
-// 체크리스트(DEVELOPMENT_PLAN.md §10.3) 통과 전까지는 legacy/index.html(기존
-// vanilla 앱, 번들링 불필요)을 계속 www/index.html로 미러링한다.
+// ⚠️ Triptic 3.0 Strangler 전환(ADR-001): 루트 index.html은 기존 vanilla 앱(8,254줄)
+// 그대로다 — Vite 번들링 없이도 그대로 실행 가능하므로 원본을 복사하면 된다.
+// 새 React 앱의 진입점(<script type="module" src="/src/app/main.tsx">)은
+// preview/index.html에 있으며, 이건 Vite 번들링 없이는 실행되지 않으므로
+// Capacitor(www/, 정적 파일을 그대로 실행)에는 미러링하지 않는다. 패리티
+// 체크리스트(DEVELOPMENT_PLAN.md §10.3) 통과 후 실제 컷오버 시점에만 바꾼다.
 const STATIC_ASSETS = ['manifest.json', 'sw.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-1024.png'];
 
 console.log('📦 Syncing Triptic web assets for Capacitor (www/) & Vite (public/)...');
@@ -38,12 +39,12 @@ STATIC_ASSETS.forEach(file => {
     console.log(`  ✓ Synced ${file} → www/, public/`);
 });
 
-const indexSrc = path.join(rootDir, 'legacy', 'index.html');
+const indexSrc = path.join(rootDir, 'index.html');
 if (fs.existsSync(indexSrc)) {
     fs.copyFileSync(indexSrc, path.join(wwwDir, 'index.html'));
-    console.log('  ✓ Synced legacy/index.html → www/index.html (Capacitor, Phase 2 패리티 통과 전까지 유지)');
+    console.log('  ✓ Synced index.html → www/ (Capacitor)');
 } else {
-    console.warn('  ⚠️ File not found: legacy/index.html');
+    console.warn('  ⚠️ File not found: index.html');
 }
 
 console.log('✅ Web assets successfully synced!\n');
