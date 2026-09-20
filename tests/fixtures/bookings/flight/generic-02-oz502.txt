@@ -1,0 +1,12 @@
+ASIANA AIRLINES - ELECTRONIC TICKET
+
+Passenger: [REDACTED]
+
+Flight OZ502
+Departure City: Seoul Incheon (ICN)
+Arrival City: Paris Charles de Gaulle (CDG)
+Flight Date: 2026-06-01
+Std: 13:30
+Sta: 18:45
+
+Confirmation Number: XYZ789

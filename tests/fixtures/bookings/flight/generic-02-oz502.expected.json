@@ -1,0 +1,10 @@
+{
+  "kind": "flight",
+  "carrierIata": "OZ",
+  "flightNumber": "OZ502",
+  "departureAirportIata": "ICN",
+  "arrivalAirportIata": "CDG",
+  "departureScheduledLocal": "2026-06-01T13:30",
+  "arrivalScheduledLocal": "2026-06-01T18:45",
+  "bookingReference": "XYZ789"
+}

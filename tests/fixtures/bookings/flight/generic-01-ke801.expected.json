@@ -1,0 +1,10 @@
+{
+  "kind": "flight",
+  "carrierIata": "KE",
+  "flightNumber": "KE801",
+  "departureAirportIata": "ICN",
+  "arrivalAirportIata": "NRT",
+  "departureScheduledLocal": "2026-05-20T08:00",
+  "arrivalScheduledLocal": "2026-05-20T11:00",
+  "bookingReference": "ABC123"
+}
