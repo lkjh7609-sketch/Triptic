@@ -67,6 +67,9 @@ export function formatItineraryText(input: ItineraryTextInput): string {
 }
 
 function formatDayLabel(startDate: string, dayIndex: number): string {
-  const date = new Date(parseISO(startDate).getTime() + (dayIndex - 1) * 86_400_000);
+  const start = parseISO(startDate);
+  if (Number.isNaN(start.getTime())) return '';
+  const date = new Date(start.getTime() + (dayIndex - 1) * 86_400_000);
+  if (Number.isNaN(date.getTime())) return '';
   return `${date.getMonth() + 1}/${date.getDate()} (${WEEKDAYS[date.getDay()]})`;
 }

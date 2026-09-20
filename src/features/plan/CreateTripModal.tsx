@@ -6,12 +6,28 @@ import { useCreateTrip } from './hooks/useTrips';
 import { captureError } from '@/shared/monitoring';
 import styles from './CreateTripModal.module.css';
 
+/**
+ * <input type="date">는 정상적인 사용자 입력에서는 항상 YYYY-MM-DD(4자리 연도)를
+ * 내놓지만, 값이 비정상 경로(자동화, 수동 조작 등)로 세팅되면 "110120-02-06"처럼
+ * 파싱은 되지만 의미 없는 문자열이 들어올 수 있다 — 이 경우 TripDetailScreen의
+ * 날짜 계산이 RangeError로 크래시했다. 형식과 연도 범위를 함께 검증한다.
+ */
+const dateField = (message: string) =>
+  z
+    .string()
+    .min(1, message)
+    .regex(/^\d{4}-\d{2}-\d{2}$/, '날짜 형식이 올바르지 않아요')
+    .refine((v) => {
+      const d = new Date(v);
+      return !Number.isNaN(d.getTime()) && d.getFullYear() >= 1970 && d.getFullYear() <= 2100;
+    }, '유효한 날짜를 선택해 주세요');
+
 const CreateTripSchema = z
   .object({
     title: z.string().min(1, '여행 이름을 입력해 주세요').max(100),
     city: z.string().max(100).optional(),
-    startDate: z.string().min(1, '시작일을 선택해 주세요'),
-    endDate: z.string().min(1, '종료일을 선택해 주세요'),
+    startDate: dateField('시작일을 선택해 주세요'),
+    endDate: dateField('종료일을 선택해 주세요'),
   })
   .refine((v) => v.endDate >= v.startDate, {
     message: '종료일은 시작일 이후여야 해요',
