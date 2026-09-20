@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useNavigate } from 'react-router';
 import { useCreateTrip } from './hooks/useTrips';
+import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { CURRENCIES } from './expenses';
 import { captureError } from '@/shared/monitoring';
 import styles from './CreateTripModal.module.css';
 
@@ -25,9 +28,9 @@ const dateField = (message: string) =>
 const CreateTripSchema = z
   .object({
     title: z.string().min(1, '여행 이름을 입력해 주세요').max(100),
-    city: z.string().max(100).optional(),
     startDate: dateField('시작일을 선택해 주세요'),
     endDate: dateField('종료일을 선택해 주세요'),
+    currency: z.string(),
   })
   .refine((v) => v.endDate >= v.startDate, {
     message: '종료일은 시작일 이후여야 해요',
@@ -40,19 +43,35 @@ interface CreateTripModalProps {
   onClose: () => void;
 }
 
-/** 여행 생성 (02-screens.md §3.1 "+" 버튼). 최소 필드만 — 상세 편집은 여행 상세 화면에서 */
+/**
+ * 여행 생성 (02-screens.md §3.1 "+" 버튼, index.html handleNewProjectClick/
+ * submitCreateProject 이식). 최소 필드만 — 상세 편집은 여행 상세 화면에서.
+ * 도시는 legacy와 동일하게 Places Autocomplete((cities))로 **반드시 선택**해야
+ * 한다(자유 텍스트 금지) — cityLat/cityLng가 있어야 날씨·지도 경로가 동작한다.
+ */
 export function CreateTripModal({ onClose }: CreateTripModalProps) {
   const navigate = useNavigate();
   const createTrip = useCreateTrip();
+  const [city, setCity] = useState<SelectedPlace | null>(null);
+  const [cityError, setCityError] = useState<string | null>(null);
+  const { inputRef: cityInputRef } = usePlaceAutocomplete((place) => {
+    setCity(place);
+    setCityError(null);
+  }, { types: ['(cities)'] });
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateTripValues>({
     resolver: zodResolver(CreateTripSchema),
+    defaultValues: { currency: 'KRW' },
   });
 
   async function onSubmit(values: CreateTripValues) {
+    if (!city) {
+      setCityError('목적지 도시를 검색해서 선택해 주세요.');
+      return;
+    }
     try {
       const totalDays =
         Math.round(
@@ -62,11 +81,13 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
       const row = await createTrip.mutateAsync({
         name: values.title,
         project: {
-          city: values.city || null,
+          city: city.address || city.name,
+          cityLat: city.lat,
+          cityLng: city.lng,
           startDate: values.startDate,
           endDate: values.endDate,
           totalDays,
-          currency: 'KRW',
+          currency: values.currency,
           data: {},
           hotels: {},
           meals: {},
@@ -106,9 +127,29 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="trip-city">
-            도시 (선택)
+            목적지 도시 (검색 후 선택)
           </label>
-          <input id="trip-city" className={styles.input} placeholder="Tokyo" {...register('city')} />
+          <input
+            id="trip-city"
+            ref={cityInputRef}
+            className={styles.input}
+            placeholder="예: Kyoto, Japan"
+            defaultValue=""
+          />
+          {cityError ? <span className={styles.error}>{cityError}</span> : null}
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="trip-currency">
+            통화 설정
+          </label>
+          <select id="trip-currency" className={styles.input} {...register('currency')}>
+            {Object.entries(CURRENCIES).map(([code, meta]) => (
+              <option key={code} value={code}>
+                {code} ({meta.symbol})
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.row}>
