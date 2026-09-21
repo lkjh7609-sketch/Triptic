@@ -10,7 +10,7 @@
  *
  * ⚠️ 배포 전 필요한 시크릿(전부 Supabase 프로젝트 시크릿 — Vercel 환경변수와
  * 별개다): SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
- * GEMINI_API_KEY, GROQ_API_KEY(선택), OPENROUTER_API_KEY(선택).
+ * DEEPSEEK_API_KEY.
  * `supabase secrets set --env-file .env.functions` 또는 대시보드에서 등록.
  *
  * ⚠️ 이 파일 자체는 로컬에 Deno가 없어 실행해보지 못했다 — 배포 후 가장
@@ -141,9 +141,7 @@ Deno.serve(async (req) => {
     if (bookings.length === 0) {
       const hints = matched ? `(결정론적 파서 ${matched.id} 시도했으나 결과 없음)` : '';
       const llmResult = await extractWithLLM(maskedText, hints, trip.start_date, trip.end_date, {
-        geminiApiKey: Deno.env.get('GEMINI_API_KEY') ?? undefined,
-        groqApiKey: Deno.env.get('GROQ_API_KEY') ?? undefined,
-        openrouterApiKey: Deno.env.get('OPENROUTER_API_KEY') ?? undefined,
+        deepseekApiKey: Deno.env.get('DEEPSEEK_API_KEY') ?? undefined,
       });
       if (llmResult) {
         bookings = llmResult.bookings;

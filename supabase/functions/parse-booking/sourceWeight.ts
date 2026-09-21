@@ -6,8 +6,7 @@
  */
 export function sourceWeight(parserUsed: string, detectScore?: number): number {
   if (parserUsed.startsWith('pkpass/') || parserUsed.startsWith('ics/')) return 1.0;
-  if (parserUsed.startsWith('llm/gemini')) return 0.85; // 텍스트 기준 — 비전 경로 붙으면 0.75로 분기
-  if (parserUsed.startsWith('llm/')) return 0.85;
+  if (parserUsed.startsWith('llm/')) return 0.85; // 텍스트 기준 — 비전 경로 붙으면 0.75로 분기
   // 결정론적 파서: detect≥0.9면 0.98, detect≥0.7이면 0.92
   if (detectScore != null && detectScore >= 0.9) return 0.98;
   return 0.92;
