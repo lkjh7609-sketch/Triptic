@@ -1,1 +1,44 @@
-{}
+{
+  "confidenceField": {
+    "warning": "⚠️ Please check this",
+    "empty": "Couldn't read this — enter manually",
+    "viewOriginal": "View original"
+  },
+  "review": {
+    "emptyTitle": "No bookings to review",
+    "title": "📋 Review extracted info",
+    "dialogLabel": "Review extracted info",
+    "desc": "Here's what we read automatically. Please check it before adding it to your itinerary.",
+    "flightLabel": "✈️ Flight",
+    "flightNumberField": "Flight number",
+    "departureAirportField": "Departure airport",
+    "arrivalAirportField": "Arrival airport",
+    "departureTimeField": "Departure time",
+    "arrivalTimeField": "Arrival time",
+    "ignore": "Ignore",
+    "applying": "Adding…",
+    "applyToItinerary": "Add to itinerary",
+    "lodgingLabel": "🏨 Lodging",
+    "railLabel": "🚄 Rail",
+    "bookingLabel": "📍 Booking",
+    "nameUnrecognized": "(Couldn't recognize the name)",
+    "manualHint": "This booking type isn't added automatically yet — use the details above to add it manually via 🏨 Lodging or + Add item."
+  },
+  "upload": {
+    "title": "📄 Fill your itinerary from a booking document",
+    "dialogLabel": "Fill itinerary from a booking document",
+    "consentText": "Upload a flight or hotel confirmation as a PDF or photo, and we'll automatically read the flight number, times, and hotel details to draft your itinerary. Sensitive info like passport or card numbers is always redacted before it's sent to the recognition (AI) server. Extracted details are only ever added to your itinerary after you confirm them.",
+    "agreeAndContinue": "Agree and continue",
+    "uploadTitle": "📄 Upload booking document",
+    "fileHint": "PDF, JPG, PNG (up to 20MB)",
+    "processing": "⏳ Reading your document…",
+    "uploadError": "Something went wrong during upload. Please try again."
+  },
+  "archive": {
+    "title": "🎟 Voucher archive",
+    "empty": "No vouchers yet. Add one with \"📄 Add from document.\"",
+    "addToWallet": "Add to Apple Wallet",
+    "deleteConfirm": "Delete '{{name}}'? This can't be undone.",
+    "voucherOriginalAlt": "Original voucher"
+  }
+}

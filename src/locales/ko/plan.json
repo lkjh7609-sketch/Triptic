@@ -1,1 +1,222 @@
-{}
+{
+  "addPlace": {
+    "title": "일정 추가",
+    "searchPlaceholder": "장소 검색",
+    "selectHint": "검색 결과 목록에서 장소를 선택해 주세요.",
+    "timeLabel": "시간 (선택)",
+    "memoLabel": "메모 (선택)",
+    "memoPlaceholder": "체크인 후 짐 보관",
+    "adding": "추가하는 중…"
+  },
+  "placeCategory": {
+    "sight": "관광",
+    "restaurant": "식당",
+    "cafe": "카페",
+    "shopping": "쇼핑",
+    "lodging": "숙소",
+    "transport": "교통",
+    "other": "기타"
+  },
+  "backup": {
+    "title": "기기 동기화 & 백업",
+    "fileNamePrefix": "Triptic_백업",
+    "invalidFile": "올바른 백업 JSON 파일이 아닙니다.",
+    "conflictTitle": "이름이 같은 여행이 있습니다",
+    "conflictDesc": "이미 있는 여행 이름이에요:",
+    "conflictMore": " 외 {{count}}개",
+    "conflictQuestion": "어떻게 처리할까요?",
+    "keepBoth": "둘 다 보관하기",
+    "overwrite": "기존 여행 덮어쓰기",
+    "desc": "내 모든 여행을 JSON 파일로 내려받거나, 백업 파일에서 다시 불러올 수 있어요.",
+    "exportBtn": "백업 파일 내보내기",
+    "importBtn": "백업 파일 가져오기",
+    "importedSuffix": "(가져옴)",
+    "importedSuffixN": "(가져옴 {{n}})",
+    "importSuccess_other": "{{count}}개의 여행을 불러왔습니다!",
+    "importError": "가져오는 중 오류가 발생했습니다."
+  },
+  "createTrip": {
+    "title": "새 여행",
+    "nameLabel": "여행 이름",
+    "namePlaceholder": "도쿄 여행",
+    "cityLabel": "목적지 도시 (검색 후 선택)",
+    "cityPlaceholderExample": "예: Kyoto, Japan",
+    "cityRequired": "목적지 도시를 검색해서 선택해 주세요.",
+    "currencyLabel": "통화 설정",
+    "startLabel": "시작일",
+    "endLabel": "종료일",
+    "creating": "만드는 중…",
+    "create": "만들기",
+    "errors": {
+      "titleRequired": "여행 이름을 입력해 주세요",
+      "dateFormat": "날짜 형식이 올바르지 않아요",
+      "dateInvalid": "유효한 날짜를 선택해 주세요",
+      "startRequired": "시작일을 선택해 주세요",
+      "endRequired": "종료일을 선택해 주세요",
+      "endAfterStart": "종료일은 시작일 이후여야 해요"
+    }
+  },
+  "day": {
+    "header": "Day {{index}}",
+    "tablistLabel": "일차 선택"
+  },
+  "dayCity": {
+    "title": "{{day}}일차 활동 도시 설정",
+    "currentLabel": "{{day}}일차 현재 도시",
+    "unset": "미설정",
+    "searchPlaceholder": "도시 검색 (예: Kyoto, Japan)",
+    "scopeRestTitle": "이 날부터 여행 끝까지 일괄 적용",
+    "scopeRestBadge": "추천",
+    "scopeRestDesc": "{{from}}일차부터 {{to}}일차까지 모든 일정의 도시를 변경합니다.",
+    "scopeSingleTitle": "이 날({{day}}일차)만 적용",
+    "scopeSingleDesc": "오직 {{day}}일차 하루만 이 도시로 지정합니다.",
+    "applying": "적용 중…",
+    "apply": "도시 적용"
+  },
+  "expense": {
+    "title": "이 날의 경비",
+    "descPlaceholder": "사용처 (예: 점심 식사)",
+    "amountPlaceholder": "금액 ({{symbol}})",
+    "currencyAria": "통화",
+    "categoryAria": "카테고리",
+    "paymentAria": "결제수단",
+    "paymentPlaceholder": "결제수단",
+    "fetchingRate": "환율 조회…",
+    "empty": "아직 등록된 경비가 없습니다.",
+    "fxWarning": "환율 조회에 실패했어요. 금액은 저장되지만 합계에는 반영되지 않아요.",
+    "unconverted": "환산 불가",
+    "unconvertedCount_other": "(환산 불가 {{count}}건 제외)",
+    "dayTotal": "이 날 합계",
+    "grandTotal": "전체 여행 합계",
+    "chartByDay": "일자별 합계",
+    "chartByCategory": "카테고리별 합계",
+    "category": {
+      "food": "식비",
+      "transport": "교통",
+      "lodging": "숙박",
+      "shopping": "쇼핑",
+      "activity": "액티비티",
+      "other": "기타"
+    },
+    "payment": {
+      "cash": "현금",
+      "card": "카드",
+      "other": "기타"
+    }
+  },
+  "flightCard": {
+    "schedule": "{{depTime}} 출발 → {{arrTime}} 도착"
+  },
+  "flight": {
+    "title": "항공편",
+    "outboundLabel": "출국",
+    "returnLabel": "귀국",
+    "flightNoPlaceholder": "편명 (예: OZ102)",
+    "lookupBtn": "조회",
+    "lookingUp": "조회 중…",
+    "noResultHint": "자동 조회 결과가 없으면 아래에서 직접 입력할 수 있어요.",
+    "manualToggle": "항공편 직접 입력 (수동 지정)",
+    "airlinePlaceholder": "항공사 (예: 대한항공)",
+    "depPlaceholder": "출발 공항 검색 (예: 인천국제공항)",
+    "arrPlaceholder": "도착 공항 검색 (예: 간사이 국제공항)",
+    "applyManual": "이 항공편 정보 적용",
+    "saving": "저장 중…"
+  },
+  "itemDetail": {
+    "mapLink": "Google Maps에서 보기",
+    "timeLabel": "시간",
+    "memoLabel": "메모",
+    "moveToDay": "다른 날로 이동"
+  },
+  "meals": {
+    "title": "이 날의 식사",
+    "searchPlaceholder": "{{meal}} 식당 검색",
+    "skip": "건너뛰기",
+    "saving": "저장 중…"
+  },
+  "mealSlot": {
+    "breakfast": "아침",
+    "lunch": "점심",
+    "dinner": "저녁"
+  },
+  "planScreen": {
+    "myTrips": "내 여행",
+    "createTripAria": "여행 만들기",
+    "loginMessage": "로그인하면 내 여행을 저장하고 어디서든 이어갈 수 있어요.",
+    "browseFirst": "먼저 둘러보기",
+    "listError": "여행 목록을 불러오지 못했어요.",
+    "firstTripMessage": "첫 여행을 만들어 보세요.",
+    "ongoing": "진행 중",
+    "upcoming": "예정",
+    "pastToggle_other": "지난 여행 {{count}}건 {{state}}",
+    "pastShow": "보기 ▼",
+    "pastHide": "숨기기 ▲",
+    "backupFooter": "기기 동기화 & 백업"
+  },
+  "sampleTrip": {
+    "badge": "추천 샘플 일정",
+    "duration": "{{nights}}박 {{days}}일",
+    "placeCount_other": "장소 {{count}}곳",
+    "openLink": "일정 보기"
+  },
+  "setHotel": {
+    "title": "숙소 지정",
+    "searchPlaceholder": "숙소 검색",
+    "clear": "숙소 해제",
+    "saving": "저장 중…"
+  },
+  "share": {
+    "title": "보기 전용 공유 링크",
+    "sampleMessage": "샘플 여행은 공유할 수 없습니다. 나만의 새 여행을 만들어 공유해 보세요!",
+    "desc": "동행자에게 이 링크를 보내면 편집 없이 일정을 확인할 수 있어요.",
+    "generatingLink": "생성하는 중…",
+    "revoke": "공유 중단",
+    "revokeConfirm": "공유를 중단할까요? 더 이상 상대방이 이 여행을 볼 수 없게 돼요.",
+    "copied": "복사됨!",
+    "copyText": "전체 일정 텍스트로 복사",
+    "textCopied": "텍스트 복사됨!",
+    "pdfAllBtn": "전체 일정 PDF ({{days}}일치)",
+    "pdfCurrentBtn": "{{day}}일차만 PDF",
+    "generatingPdf": "생성 중…"
+  },
+  "suggestions": {
+    "title": "동행자 추천 제안 ({{count}}건)",
+    "empty": "아직 동행자가 보낸 제안이 없습니다.",
+    "dayTag": "{{day}}일차 추천",
+    "sentBy": "보낸 사람",
+    "reject": "거절",
+    "addToItinerary": "일정에 추가"
+  },
+  "tripCard": {
+    "periodUndecided": "기간 미정",
+    "menuAria": "여행 메뉴",
+    "rename": "이름 변경",
+    "renamePrompt": "새 여행 이름을 입력해 주세요",
+    "duplicate": "복제",
+    "deleteConfirm": "'{{title}}' 여행을 삭제할까요? 되돌릴 수 없어요."
+  },
+  "tripDetail": {
+    "backAria": "뒤로가기",
+    "sampleBadge": "체험용 샘플",
+    "mapViewAria": "지도 보기",
+    "listViewAria": "목록 보기",
+    "suggestionsAria": "받은 제안",
+    "suggestionsSampleTitle": "샘플 여행은 제안 기능을 이용할 수 없습니다.",
+    "voucherAria": "바우처 보관함",
+    "shareAria": "공유",
+    "cityUnset": "도시 미설정",
+    "hotelUnset": "숙소",
+    "mealsLabel": "식사",
+    "expenseLabel": "경비",
+    "addByDocument": "서류로 추가",
+    "startLabel": "출발",
+    "returnLabel": "복귀",
+    "addItem": "일정 추가",
+    "emptyDay": "이 날에는 아직 일정이 없어요.",
+    "notFound": "여행을 불러오지 못했어요.",
+    "climateBadge": "평년"
+  },
+  "tripMap": {
+    "ariaLabel": "일정 지도"
+  }
+}

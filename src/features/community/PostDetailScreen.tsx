@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { trackScreenView, captureError } from '@/shared/monitoring';
@@ -16,13 +17,8 @@ import { translateText } from './translateClient';
 import type { Locale } from './types';
 import styles from './PostDetailScreen.module.css';
 
-const STATUS_NOTICE: Record<string, string> = {
-  pending_review: '⏳ 이 글은 현재 운영자 검토를 기다리고 있어요. 검토가 끝나면 다른 사용자에게도 보여요.',
-  hidden: '🙈 신고가 접수되어 다른 사용자에게는 보이지 않아요.',
-  removed: '🚫 커뮤니티 가이드라인 위반으로 삭제됐어요.',
-};
-
 export function PostDetailScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const { user } = useSession();
@@ -52,7 +48,7 @@ export function PostDetailScreen() {
     );
   }
   if (isError || !post) {
-    return <ErrorState summary="글을 불러오지 못했어요." onRetry={() => refetch()} />;
+    return <ErrorState summary={t('detail.loadError')} onRetry={() => refetch()} />;
   }
 
   const isOwn = user?.id === post.author_id;
@@ -71,7 +67,7 @@ export function PostDetailScreen() {
   }
 
   async function handleDeletePost() {
-    if (!window.confirm('이 글을 삭제할까요?')) return;
+    if (!window.confirm(t('detail.deleteConfirm'))) return;
     await deletePost.mutateAsync(post!.id);
     navigate('/community');
   }
@@ -89,11 +85,11 @@ export function PostDetailScreen() {
   return (
     <div className={styles.wrap}>
       <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← 뒤로
+        ← {t('action.back', { ns: 'common' })}
       </button>
 
       {post.status !== 'published' ? (
-        <p className={styles.statusNotice}>{STATUS_NOTICE[post.status]}</p>
+        <p className={styles.statusNotice}>{t(`detail.statusNotice.${post.status}`)}</p>
       ) : null}
 
       <div className={styles.post}>
@@ -105,7 +101,7 @@ export function PostDetailScreen() {
               <span className={styles.avatarFallback}>🅤</span>
             )}
             <div>
-              <div className={styles.authorName}>{post.author?.display_name || '여행자'}</div>
+              <div className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</div>
               <div className={styles.time}>
                 {post.destination?.name ? `${post.destination.name} · ` : ''}
                 {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: ko })}
@@ -127,11 +123,11 @@ export function PostDetailScreen() {
             {translated ? (
               <>
                 <p className={styles.translatedText}>{translated}</p>
-                <span className={styles.translatedLabel}>자동 번역됨</span>
+                <span className={styles.translatedLabel}>{t('detail.translatedLabel')}</span>
               </>
             ) : (
               <button type="button" className={styles.translateBtn} disabled={translating} onClick={handleTranslate}>
-                {translating ? '번역 중…' : '번역 보기'}
+                {translating ? t('detail.translating') : t('detail.translateView')}
               </button>
             )}
           </div>
@@ -154,9 +150,9 @@ export function PostDetailScreen() {
             disabled={!user}
             onClick={() => toggleLike.mutate(!!post.likedByMe)}
           >
-            {post.likedByMe ? '♥' : '♡'} 좋아요 {post.like_count}
+            {post.likedByMe ? '♥' : '♡'} {t('detail.like', { count: post.like_count })}
           </button>
-          <span className={styles.commentCount}>💬 댓글 {post.comment_count}</span>
+          <span className={styles.commentCount}>💬 {t('detail.comment', { count: post.comment_count })}</span>
         </div>
       </div>
 
@@ -164,7 +160,7 @@ export function PostDetailScreen() {
         {(comments ?? []).map((c) => (
           <div key={c.id} className={styles.commentRow}>
             <div className={styles.commentHeader}>
-              <span className={styles.commentAuthor}>{c.author?.display_name || '여행자'}</span>
+              <span className={styles.commentAuthor}>{c.author?.display_name || t('post.fallbackAuthor')}</span>
               <span className={styles.commentTime}>
                 {formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true, locale: ko })}
               </span>
@@ -178,14 +174,14 @@ export function PostDetailScreen() {
             <p className={styles.commentBody}>{c.body}</p>
           </div>
         ))}
-        {(comments ?? []).length === 0 ? <EmptyState icon="💬" message="아직 댓글이 없어요." /> : null}
+        {(comments ?? []).length === 0 ? <EmptyState icon="💬" message={t('detail.noComments')} /> : null}
       </div>
 
       {user ? (
         <div className={styles.commentInputRow}>
           <input
             className={styles.commentInput}
-            placeholder="댓글을 남겨보세요"
+            placeholder={t('detail.commentPlaceholder')}
             value={commentBody}
             maxLength={500}
             onChange={(e) => setCommentBody(e.target.value)}
@@ -199,7 +195,7 @@ export function PostDetailScreen() {
             disabled={createComment.isPending || !commentBody.trim()}
             onClick={handleSubmitComment}
           >
-            등록
+            {t('detail.commentSubmit')}
           </button>
         </div>
       ) : null}

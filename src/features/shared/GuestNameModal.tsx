@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
 
 interface GuestNameModalProps {
@@ -8,22 +10,31 @@ interface GuestNameModalProps {
 
 /** 게스트 이름 입력 (index.html openGuestNameModal/confirmGuestName 이식) */
 export function GuestNameModal({ projectName, onConfirm }: GuestNameModalProps) {
+  const { t } = useTranslation('community');
   const [name, setName] = useState('');
+  const focusTrapRef = useFocusTrap<HTMLDivElement>();
 
   return (
     <div className={modalStyles.overlay}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={focusTrapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('guestName.dialogLabel')}
+      >
         <h2 className={modalStyles.title}>✈️ {projectName}</h2>
         <p className={modalStyles.hint}>
-          동행하시는 분의 성함이나 별명을 알려주세요.
+          {t('guestName.promptLine1')}
           <br />
-          장소를 건의할 때 작성자로 표시됩니다.
+          {t('guestName.promptLine2')}
         </p>
         <div className={modalStyles.field}>
-          <label className={modalStyles.label}>내 이름</label>
+          <label className={modalStyles.label}>{t('guestName.nameLabel')}</label>
           <input
             className={modalStyles.input}
-            placeholder="예: 민수"
+            placeholder={t('guestName.namePlaceholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
@@ -33,7 +44,7 @@ export function GuestNameModal({ projectName, onConfirm }: GuestNameModalProps) 
         </div>
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.primary} onClick={() => onConfirm(name)}>
-            입장하기
+            {t('guestName.enter')}
           </button>
         </div>
       </div>

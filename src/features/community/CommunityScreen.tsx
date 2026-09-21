@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -18,6 +19,7 @@ type Tab = 'all' | 'following';
  * 06-community.md §5(모더레이션 안전장치)와 같은 커밋에서 함께 구현했다.
  */
 export function CommunityScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
   const [tab, setTab] = useState<Tab>('all');
   const { data: destinations } = useDestinations();
@@ -35,10 +37,10 @@ export function CommunityScreen() {
   return (
     <div className={styles.wrap}>
       <div className={styles.topBar}>
-        <h1 className={styles.title}>커뮤니티</h1>
+        <h1 className={styles.title}>{t('feed.title')}</h1>
         {user ? (
           <Link to="/community/compose" className={styles.composeBtn}>
-            ✏️ 글쓰기
+            {t('feed.compose')}
           </Link>
         ) : null}
       </div>
@@ -59,19 +61,19 @@ export function CommunityScreen() {
           className={tab === 'all' ? styles.tabActive : styles.tab}
           onClick={() => setTab('all')}
         >
-          전체
+          {t('feed.tabAll')}
         </button>
         <button
           type="button"
           className={tab === 'following' ? styles.tabActive : styles.tab}
           onClick={() => setTab('following')}
         >
-          구독
+          {t('feed.tabFollowing')}
         </button>
       </div>
 
       {tab === 'following' && !user ? (
-        <EmptyState icon="🔒" message="로그인하면 구독한 여행지의 글만 모아볼 수 있어요." />
+        <EmptyState icon="🔒" message={t('feed.loginToFollow')} />
       ) : feed.isLoading ? (
         <div style={{ padding: 16 }}>
           <Skeleton height="80px" />
@@ -79,11 +81,11 @@ export function CommunityScreen() {
           <Skeleton height="80px" />
         </div>
       ) : feed.isError ? (
-        <ErrorState summary="피드를 불러오지 못했어요." onRetry={() => feed.refetch()} />
+        <ErrorState summary={t('feed.loadError')} onRetry={() => feed.refetch()} />
       ) : posts.length === 0 ? (
         <EmptyState
           icon="💬"
-          message={tab === 'following' ? '구독한 여행지에 아직 글이 없어요.' : '아직 등록된 글이 없어요.'}
+          message={tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}
         />
       ) : (
         <>
@@ -100,7 +102,7 @@ export function CommunityScreen() {
                 onClick={() => feed.fetchNextPage()}
                 disabled={feed.isFetchingNextPage}
               >
-                {feed.isFetchingNextPage ? '불러오는 중…' : '더 보기'}
+                {feed.isFetchingNextPage ? t('state.loading', { ns: 'common' }) : t('feed.loadMore')}
               </button>
             </div>
           ) : null}

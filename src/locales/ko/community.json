@@ -1,1 +1,138 @@
-{}
+{
+  "admin": {
+    "accessDenied": "운영자 권한이 필요한 화면이에요.",
+    "title": "운영 콘솔",
+    "tabs": {
+      "reports": "신고 큐",
+      "pending": "자동 플래그 큐"
+    },
+    "reportDetail": "신고 상세: {{detail}}",
+    "dismiss": "기각",
+    "approve": "승인",
+    "noReports": "처리할 신고가 없어요.",
+    "noPending": "검토 대기 중인 글이 없어요."
+  },
+  "report": {
+    "title": "🚩 신고하기",
+    "dialogLabel": "신고하기",
+    "doneTitle": "🚩 신고가 접수됐어요",
+    "doneDesc": "신고해 주신 콘텐츠는 이제 회원님 화면에서 보이지 않아요. 24시간 이내에 검토 후 처리 결과를 알려드릴게요.",
+    "reasonPrompt": "신고 사유를 선택해 주세요.",
+    "detailPlaceholder": "상세 설명 (선택)",
+    "submit": "신고",
+    "submitting": "신고하는 중…",
+    "submitError": "신고 접수에 실패했습니다.",
+    "reason": {
+      "spam": "스팸/광고",
+      "harassment": "괴롭힘",
+      "hate": "혐오 발언",
+      "sexual": "성적인 콘텐츠",
+      "violence": "폭력적인 콘텐츠",
+      "illegal": "불법 행위",
+      "misinformation": "허위 정보",
+      "impersonation": "사칭",
+      "other": "기타"
+    }
+  },
+  "feed": {
+    "title": "커뮤니티",
+    "compose": "✏️ 글쓰기",
+    "tabAll": "전체",
+    "tabFollowing": "구독",
+    "loginToFollow": "로그인하면 구독한 여행지의 글만 모아볼 수 있어요.",
+    "loadError": "피드를 불러오지 못했어요.",
+    "emptyFollowing": "구독한 여행지에 아직 글이 없어요.",
+    "emptyAll": "아직 등록된 글이 없어요.",
+    "loadMore": "더 보기"
+  },
+  "destination": {
+    "loadError": "여행지 정보를 불러오지 못했어요.",
+    "postCount_other": "📝 글 {{count}}개",
+    "following": "구독 중 ✓",
+    "follow": "+ 구독",
+    "createTripHere": "🗺 이 여행지로 여행 만들기",
+    "emptyPosts": "아직 이 여행지에 등록된 글이 없어요."
+  },
+  "post": {
+    "fallbackAuthor": "여행자"
+  },
+  "menu": {
+    "ariaLabel": "더보기",
+    "report": "신고",
+    "blockUser": "사용자 차단",
+    "blockConfirm": "이 사용자를 차단할까요? 차단하면 서로의 글·댓글이 보이지 않아요."
+  },
+  "detail": {
+    "statusNotice": {
+      "pending_review": "⏳ 이 글은 현재 운영자 검토를 기다리고 있어요. 검토가 끝나면 다른 사용자에게도 보여요.",
+      "hidden": "🙈 신고가 접수되어 다른 사용자에게는 보이지 않아요.",
+      "removed": "🚫 커뮤니티 가이드라인 위반으로 삭제됐어요."
+    },
+    "loadError": "글을 불러오지 못했어요.",
+    "deleteConfirm": "이 글을 삭제할까요?",
+    "translatedLabel": "자동 번역됨",
+    "translating": "번역 중…",
+    "translateView": "번역 보기",
+    "like_other": "좋아요 {{count}}",
+    "comment_other": "댓글 {{count}}",
+    "commentPlaceholder": "댓글을 남겨보세요",
+    "commentSubmit": "등록",
+    "noComments": "아직 댓글이 없어요."
+  },
+  "profile": {
+    "loadError": "프로필을 불러오지 못했어요.",
+    "postsHeader": "작성한 글",
+    "noPosts": "아직 작성한 글이 없어요."
+  },
+  "compose": {
+    "loginRequired": "로그인 후 글을 작성할 수 있어요.",
+    "title": "글쓰기",
+    "submitting": "게시 중…",
+    "submit": "게시",
+    "destinationLabel": "여행지 (필수)",
+    "destinationPlaceholder": "여행지를 선택해 주세요",
+    "destinationRequiredError": "여행지를 선택해 주세요.",
+    "bodyPlaceholder": "여행 이야기를 들려주세요",
+    "bodyRequiredError": "내용을 입력해 주세요.",
+    "tripLabel": "내 일정 첨부 (선택)",
+    "tripNone": "첨부 안 함",
+    "photoLabel": "사진 (최대 {{max}}장)",
+    "addPhoto": "+ 사진",
+    "processingPhoto": "처리 중…",
+    "maxImagesError": "이미지는 최대 {{max}}장까지 첨부할 수 있어요.",
+    "uploadImageError": "이미지 업로드에 실패했어요.",
+    "moderationBlockedError": "커뮤니티 가이드라인을 위반하는 내용이 포함돼 있어 게시가 차단됐어요.",
+    "submitError": "게시에 실패했어요. 잠시 후 다시 시도해 주세요."
+  },
+  "guestName": {
+    "dialogLabel": "이름 입력",
+    "promptLine1": "동행하시는 분의 성함이나 별명을 알려주세요.",
+    "promptLine2": "장소를 건의할 때 작성자로 표시됩니다.",
+    "nameLabel": "내 이름",
+    "namePlaceholder": "예: 민수",
+    "enter": "입장하기"
+  },
+  "suggest": {
+    "title": "💡 장소 추가 건의하기",
+    "dialogLabel": "장소 추가 건의하기",
+    "searchLabel": "추가할 장소 검색",
+    "searchPlaceholder": "장소 이름을 검색하세요",
+    "dayLabel": "추천 일차",
+    "dayOption": "{{day}}일차",
+    "memoLabel": "한마디 메모 (선택)",
+    "memoPlaceholder": "예: 여기 디저트 유명하대요!",
+    "proposerLabel": "작성자 이름",
+    "submitting": "보내는 중…",
+    "submit": "건의 보내기"
+  },
+  "shared": {
+    "loadError": "공유 링크가 만료되었거나 찾을 수 없어요.",
+    "daysCount_other": "{{count}}일간",
+    "dayLabel": "{{day}}일차",
+    "cityUnset": "도시 미설정",
+    "departure": "출발",
+    "return": "복귀",
+    "suggestSent": "🎉 제안이 여행 작성자에게 전송되었어요!",
+    "emptyDay": "이 날에는 아직 일정이 없어요."
+  }
+}

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useToggleLike } from './hooks/usePosts';
 import { PostActionsMenu } from './PostActionsMenu';
@@ -15,6 +16,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, showDestination = true }: PostCardProps) {
+  const { t } = useTranslation('community');
   const { user } = useSession();
   const navigate = useNavigate();
   const toggleLike = useToggleLike(post.id, user?.id ?? null);
@@ -39,7 +41,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
           ) : (
             <span className={styles.avatarFallback}>🅤</span>
           )}
-          <span className={styles.authorName}>{post.author?.display_name || '여행자'}</span>
+          <span className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</span>
           {showDestination && post.destination?.name ? (
             <span className={styles.destinationBadge}>· {post.destination.name}</span>
           ) : null}

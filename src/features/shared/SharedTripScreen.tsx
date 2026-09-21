@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { tripService } from '@/shared/api/tripService';
 import { DayChips } from '@/features/plan/DayChips';
 import { ItineraryItemCard } from '@/features/plan/ItineraryItemCard';
@@ -76,6 +77,7 @@ function toPlaceItem(row: SharedItemRow): PlaceItem {
  * 동행자는 게스트 이름을 한 번 입력하면(localStorage) 장소를 건의할 수 있다.
  */
 export function SharedTripScreen() {
+  const { t } = useTranslation('community');
   const { code } = useParams<{ code: string }>();
   const [currentDay, setCurrentDay] = useState(1);
   const [showSuggest, setShowSuggest] = useState(false);
@@ -104,7 +106,7 @@ export function SharedTripScreen() {
   }
 
   if (isError || !payload) {
-    return <ErrorState summary="공유 링크가 만료되었거나 찾을 수 없어요." />;
+    return <ErrorState summary={t('shared.loadError')} />;
   }
 
   const days = payload.days ?? [];
@@ -139,16 +141,16 @@ export function SharedTripScreen() {
       <header className={styles.header}>
         <h1 className={styles.title}>✈️ {payload.trip.title}</h1>
         <p className={styles.dates}>
-          {payload.trip.start_date} ~ {payload.trip.end_date} ({totalDays}일간)
+          {payload.trip.start_date} ~ {payload.trip.end_date} ({t('shared.daysCount', { count: totalDays })})
         </p>
       </header>
 
       <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
 
       <div className={styles.dayHeader}>
-        <span>Day {currentDay}</span>
+        <span>{t('shared.dayLabel', { day: currentDay })}</span>
         <span className={styles.cityBadge}>
-          📍 {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : '도시 미설정'}
+          📍 {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : t('shared.cityUnset')}
         </span>
       </div>
 
@@ -156,9 +158,9 @@ export function SharedTripScreen() {
 
       <div className={styles.suggestButtonWrap}>
         <button type="button" className={styles.suggestButton} onClick={() => setShowSuggest(true)}>
-          💡 장소 추가 건의하기
+          {t('suggest.title')}
         </button>
-        {suggestSent ? <p className={styles.suggestSent}>🎉 제안이 여행 작성자에게 전송되었어요!</p> : null}
+        {suggestSent ? <p className={styles.suggestSent}>{t('shared.suggestSent')}</p> : null}
       </div>
 
       {!guestName ? (
@@ -193,6 +195,7 @@ interface SharedTimelineProps {
  * 항공편 고정 카드(FlightPointCard)는 정규화 테이블에 도착공항 좌표가 없어(위
  * toPlaceItem 주석 참고) 재현하지 않는다 — dayItems 흐름에 일반 항목으로 포함된다. */
 function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps) {
+  const { t } = useTranslation('community');
   const legs = useTripRoutes({
     map: null,
     dayItems,
@@ -218,14 +221,14 @@ function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps)
   const isEmpty = dayItems.length === 0 && !startHotel && !endHotel;
 
   if (isEmpty) {
-    return <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />;
+    return <EmptyState icon="📍" message={t('shared.emptyDay')} />;
   }
 
   return (
     <div className={styles.timeline}>
       {startHotel ? (
         <>
-          <FixedPointCard icon="🏨" label="출발" name={startHotel.name} address={startHotel.address} />
+          <FixedPointCard icon="🏨" label={t('shared.departure')} name={startHotel.name} address={startHotel.address} />
           <LegBetween leg={legAfter('start-hotel')} />
         </>
       ) : null}
@@ -237,7 +240,7 @@ function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps)
         </div>
       ))}
 
-      {endHotel ? <FixedPointCard icon="🏨" label="복귀" name={endHotel.name} address={endHotel.address} /> : null}
+      {endHotel ? <FixedPointCard icon="🏨" label={t('shared.return')} name={endHotel.name} address={endHotel.address} /> : null}
     </div>
   );
 }

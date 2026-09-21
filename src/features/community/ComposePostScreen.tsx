@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView, captureError } from '@/shared/monitoring';
 import { useTrips } from '@/features/plan/hooks/useTrips';
@@ -22,6 +23,7 @@ interface PendingImage extends UploadedPostImage {
  * 거친다 — 클라이언트가 직접 posts를 published로 insert할 수 없다(0023).
  */
 export function ComposePostScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const navigate = useNavigate();
   const { user } = useSession();
   const { data: destinations } = useDestinations();
@@ -43,7 +45,7 @@ export function ComposePostScreen() {
   if (!user) {
     return (
       <div className={styles.wrap}>
-        <p className={styles.hint}>로그인 후 글을 작성할 수 있어요.</p>
+        <p className={styles.hint}>{t('compose.loginRequired')}</p>
       </div>
     );
   }
@@ -53,7 +55,7 @@ export function ComposePostScreen() {
     e.target.value = '';
     if (files.length === 0) return;
     if (images.length + files.length > MAX_IMAGES) {
-      setStatusMessage({ type: 'error', text: `이미지는 최대 ${MAX_IMAGES}장까지 첨부할 수 있어요.` });
+      setStatusMessage({ type: 'error', text: t('compose.maxImagesError', { max: MAX_IMAGES }) });
       return;
     }
     setUploading(true);
@@ -65,7 +67,7 @@ export function ComposePostScreen() {
       }
     } catch (err) {
       captureError(err, { context: 'uploadPostImage' });
-      setStatusMessage({ type: 'error', text: '이미지 업로드에 실패했어요.' });
+      setStatusMessage({ type: 'error', text: t('compose.uploadImageError') });
     } finally {
       setUploading(false);
     }
@@ -78,11 +80,11 @@ export function ComposePostScreen() {
   async function handleSubmit() {
     setStatusMessage(null);
     if (!destinationId) {
-      setStatusMessage({ type: 'error', text: '여행지를 선택해 주세요.' });
+      setStatusMessage({ type: 'error', text: t('compose.destinationRequiredError') });
       return;
     }
     if (!body.trim()) {
-      setStatusMessage({ type: 'error', text: '내용을 입력해 주세요.' });
+      setStatusMessage({ type: 'error', text: t('compose.bodyRequiredError') });
       return;
     }
     try {
@@ -96,7 +98,7 @@ export function ComposePostScreen() {
       if (result.status === 'removed') {
         setStatusMessage({
           type: 'error',
-          text: '커뮤니티 가이드라인을 위반하는 내용이 포함돼 있어 게시가 차단됐어요.',
+          text: t('compose.moderationBlockedError'),
         });
         return;
       }
@@ -107,7 +109,7 @@ export function ComposePostScreen() {
       navigate(`/community/post/${result.id}`);
     } catch (err) {
       captureError(err, { context: 'createPost' });
-      setStatusMessage({ type: 'error', text: '게시에 실패했어요. 잠시 후 다시 시도해 주세요.' });
+      setStatusMessage({ type: 'error', text: t('compose.submitError') });
     }
   }
 
@@ -115,23 +117,23 @@ export function ComposePostScreen() {
     <div className={styles.wrap}>
       <div className={styles.topBar}>
         <button type="button" className={styles.cancelBtn} onClick={() => navigate(-1)}>
-          취소
+          {t('action.cancel', { ns: 'common' })}
         </button>
-        <h1 className={styles.title}>글쓰기</h1>
+        <h1 className={styles.title}>{t('compose.title')}</h1>
         <button
           type="button"
           className={styles.submitBtn}
           disabled={createPost.isPending || uploading}
           onClick={handleSubmit}
         >
-          {createPost.isPending ? '게시 중…' : '게시'}
+          {createPost.isPending ? t('compose.submitting') : t('compose.submit')}
         </button>
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>여행지 (필수)</label>
+        <label className={styles.label}>{t('compose.destinationLabel')}</label>
         <select className={styles.select} value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
-          <option value="">여행지를 선택해 주세요</option>
+          <option value="">{t('compose.destinationPlaceholder')}</option>
           {(destinations ?? []).map((d) => (
             <option key={d.id} value={d.id}>
               {d.name}
@@ -143,7 +145,7 @@ export function ComposePostScreen() {
       <div className={styles.field}>
         <textarea
           className={styles.bodyInput}
-          placeholder="여행 이야기를 들려주세요"
+          placeholder={t('compose.bodyPlaceholder')}
           value={body}
           maxLength={MAX_BODY_LENGTH}
           onChange={(e) => setBody(e.target.value)}
@@ -154,19 +156,19 @@ export function ComposePostScreen() {
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>내 일정 첨부 (선택)</label>
+        <label className={styles.label}>{t('compose.tripLabel')}</label>
         <select className={styles.select} value={tripId} onChange={(e) => setTripId(e.target.value)}>
-          <option value="">첨부 안 함</option>
-          {(trips ?? []).map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.title}
+          <option value="">{t('compose.tripNone')}</option>
+          {(trips ?? []).map((trip) => (
+            <option key={trip.id} value={trip.id}>
+              {trip.title}
             </option>
           ))}
         </select>
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>사진 (최대 {MAX_IMAGES}장)</label>
+        <label className={styles.label}>{t('compose.photoLabel', { max: MAX_IMAGES })}</label>
         <div className={styles.imageGrid}>
           {images.map((img, i) => (
             <div key={img.storagePath} className={styles.imageThumbWrap}>
@@ -183,7 +185,7 @@ export function ComposePostScreen() {
               disabled={uploading}
               onClick={() => fileInputRef.current?.click()}
             >
-              {uploading ? '처리 중…' : '+ 사진'}
+              {uploading ? t('compose.processingPhoto') : t('compose.addPhoto')}
             </button>
           ) : null}
         </div>

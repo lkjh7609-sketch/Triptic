@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { MEAL_META } from './map/meals';
 import { captureError } from '@/shared/monitoring';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { DayMeals, MealSlot, MealSlotInfo } from './types';
 import styles from './MealsModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -19,8 +21,10 @@ interface MealsModalProps {
  * plannerData[day]에 mealType 항목을 다시 채워 넣는다.
  */
 export function MealsModal({ dayMeals, onClose, onSave }: MealsModalProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const [slots, setSlots] = useState<DayMeals>(dayMeals);
   const [saving, setSaving] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   function updateSlot(slot: MealSlot, info: MealSlotInfo) {
     setSlots((prev) => ({ ...prev, [slot]: info }));
@@ -57,20 +61,28 @@ export function MealsModal({ dayMeals, onClose, onSave }: MealsModalProps) {
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>🍽 이 날의 식사</h2>
+      <div
+        ref={trapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('meals.title')}
+      >
+        <h2 className={modalStyles.title}>🍽 {t('meals.title')}</h2>
         {(Object.keys(MEAL_META) as MealSlot[]).map((slot) => {
           const meta = MEAL_META[slot];
+          const mealLabel = t(`mealSlot.${slot}`);
           const info = slots[slot] ?? { skip: false };
           return (
             <div key={slot} className={styles.mealRow}>
               <div className={styles.mealLabel}>
-                {meta.emoji} {meta.label}
+                {meta.emoji} {mealLabel}
               </div>
               <input
                 ref={inputRefs[slot]}
                 className={styles.mealInput}
-                placeholder={`${meta.label} 식당 검색`}
+                placeholder={t('meals.searchPlaceholder', { meal: mealLabel })}
                 defaultValue={info.name ?? ''}
                 disabled={info.skip}
               />
@@ -80,17 +92,17 @@ export function MealsModal({ dayMeals, onClose, onSave }: MealsModalProps) {
                   checked={!!info.skip}
                   onChange={(e) => toggleSkip(slot, e.target.checked)}
                 />
-                건너뛰기
+                {t('meals.skip')}
               </label>
             </div>
           );
         })}
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
-            취소
+            {t('action.cancel', { ns: 'common' })}
           </button>
           <button type="button" className={modalStyles.primary} disabled={saving} onClick={handleSave}>
-            {saving ? '저장 중…' : '저장'}
+            {saving ? t('meals.saving') : t('action.save', { ns: 'common' })}
           </button>
         </div>
       </div>

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { PlaceItem } from './types';
 import styles from './ItemDetailSheet.module.css';
 
@@ -26,9 +28,11 @@ export function ItemDetailSheet({
   onDelete,
   onMoveToDay,
 }: ItemDetailSheetProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const [time, setTime] = useState(item.time ?? '');
   const [memo, setMemo] = useState(item.memo ?? '');
   const [busy, setBusy] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   async function handleSave() {
     setBusy(true);
@@ -64,7 +68,14 @@ export function ItemDetailSheet({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={trapRef}
+        className={styles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={item.name}
+      >
         <h2 className={styles.title}>{item.name}</h2>
         {item.address ? <p className={styles.address}>{item.address}</p> : null}
 
@@ -74,12 +85,12 @@ export function ItemDetailSheet({
           target="_blank"
           rel="noopener"
         >
-          Google Maps에서 보기 ↗
+          {t('itemDetail.mapLink')} ↗
         </a>
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="item-time">
-            시간
+            {t('itemDetail.timeLabel')}
           </label>
           <input
             id="item-time"
@@ -92,7 +103,7 @@ export function ItemDetailSheet({
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="item-memo">
-            메모
+            {t('itemDetail.memoLabel')}
           </label>
           <input
             id="item-memo"
@@ -105,12 +116,12 @@ export function ItemDetailSheet({
         {totalDays > 1 ? (
           <div className={styles.field}>
             <label className={styles.label} htmlFor="item-move-day">
-              다른 날로 이동
+              {t('itemDetail.moveToDay')}
             </label>
             <select id="item-move-day" className={styles.input} value={currentDay} disabled={busy} onChange={handleMove}>
               {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => (
                 <option key={day} value={day}>
-                  Day {day}
+                  {t('day.header', { index: day })}
                 </option>
               ))}
             </select>
@@ -119,10 +130,10 @@ export function ItemDetailSheet({
 
         <div className={styles.actions}>
           <button type="button" className={styles.deleteButton} disabled={busy} onClick={handleDelete}>
-            삭제
+            {t('action.delete', { ns: 'common' })}
           </button>
           <button type="button" className={styles.primary} disabled={busy} onClick={handleSave}>
-            저장
+            {t('action.save', { ns: 'common' })}
           </button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { LegLabel } from './LegLabel';
 import type { RouteLeg } from './map/useTripRoutes';
 import type { FlightInfo } from './types';
@@ -36,6 +37,7 @@ export function FixedPointCard({ icon, label, name, address }: FixedPointCardPro
 
 /** 항공편 카드 (index.html .fixed-item.flight-item 이식) */
 export function FlightPointCard({ flight }: { flight: FlightInfo }) {
+  const { t } = useTranslation('plan');
   const airlineTag = flight.airline ? ` (${flight.airline})` : '';
   return (
     <div className={styles.fixedItem}>
@@ -45,7 +47,7 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
         {airlineTag}
       </span>
       <span className={styles.fixedAddress}>
-        {flight.dep.time || ''} 출발 → {flight.arr.time || ''} 도착
+        {t('flightCard.schedule', { depTime: flight.dep.time || '', arrTime: flight.arr.time || '' })}
       </span>
     </div>
   );

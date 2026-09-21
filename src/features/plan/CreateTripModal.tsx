@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useCreateTrip } from './hooks/useTrips';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { CURRENCIES } from './expenses';
 import { captureError } from '@/shared/monitoring';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import styles from './CreateTripModal.module.css';
 
 /**
@@ -14,30 +17,35 @@ import styles from './CreateTripModal.module.css';
  * 내놓지만, 값이 비정상 경로(자동화, 수동 조작 등)로 세팅되면 "110120-02-06"처럼
  * 파싱은 되지만 의미 없는 문자열이 들어올 수 있다 — 이 경우 TripDetailScreen의
  * 날짜 계산이 RangeError로 크래시했다. 형식과 연도 범위를 함께 검증한다.
+ *
+ * 검증 메시지는 t()가 필요해 스키마를 모듈 스코프 상수 대신 컴포넌트 안에서
+ * 현재 언어로 빌드한다(buildCreateTripSchema) — 언어가 바뀌면 스키마도 다시 빌드된다.
  */
-const dateField = (message: string) =>
+const dateField = (t: TFunction, message: string) =>
   z
     .string()
     .min(1, message)
-    .regex(/^\d{4}-\d{2}-\d{2}$/, '날짜 형식이 올바르지 않아요')
+    .regex(/^\d{4}-\d{2}-\d{2}$/, t('createTrip.errors.dateFormat'))
     .refine((v) => {
       const d = new Date(v);
       return !Number.isNaN(d.getTime()) && d.getFullYear() >= 1970 && d.getFullYear() <= 2100;
-    }, '유효한 날짜를 선택해 주세요');
+    }, t('createTrip.errors.dateInvalid'));
 
-const CreateTripSchema = z
-  .object({
-    title: z.string().min(1, '여행 이름을 입력해 주세요').max(100),
-    startDate: dateField('시작일을 선택해 주세요'),
-    endDate: dateField('종료일을 선택해 주세요'),
-    currency: z.string(),
-  })
-  .refine((v) => v.endDate >= v.startDate, {
-    message: '종료일은 시작일 이후여야 해요',
-    path: ['endDate'],
-  });
+function buildCreateTripSchema(t: TFunction) {
+  return z
+    .object({
+      title: z.string().min(1, t('createTrip.errors.titleRequired')).max(100),
+      startDate: dateField(t, t('createTrip.errors.startRequired')),
+      endDate: dateField(t, t('createTrip.errors.endRequired')),
+      currency: z.string(),
+    })
+    .refine((v) => v.endDate >= v.startDate, {
+      message: t('createTrip.errors.endAfterStart'),
+      path: ['endDate'],
+    });
+}
 
-type CreateTripValues = z.infer<typeof CreateTripSchema>;
+type CreateTripValues = z.infer<ReturnType<typeof buildCreateTripSchema>>;
 
 interface CreateTripModalProps {
   onClose: () => void;
@@ -50,6 +58,7 @@ interface CreateTripModalProps {
  * 한다(자유 텍스트 금지) — cityLat/cityLng가 있어야 날씨·지도 경로가 동작한다.
  */
 export function CreateTripModal({ onClose }: CreateTripModalProps) {
+  const { t, i18n } = useTranslation(['plan', 'common']);
   const navigate = useNavigate();
   const createTrip = useCreateTrip();
   const [city, setCity] = useState<SelectedPlace | null>(null);
@@ -58,18 +67,20 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
     setCity(place);
     setCityError(null);
   }, { types: ['(cities)'] });
+  const trapRef = useFocusTrap<HTMLFormElement>(onClose);
+  const schema = useMemo(() => buildCreateTripSchema(t), [t, i18n.language]);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateTripValues>({
-    resolver: zodResolver(CreateTripSchema),
+    resolver: zodResolver(schema),
     defaultValues: { currency: 'KRW' },
   });
 
   async function onSubmit(values: CreateTripValues) {
     if (!city) {
-      setCityError('목적지 도시를 검색해서 선택해 주세요.');
+      setCityError(t('createTrip.cityRequired'));
       return;
     }
     try {
@@ -106,20 +117,24 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <form
+        ref={trapRef}
         className={styles.sheet}
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit(onSubmit)}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('createTrip.title')}
       >
-        <h2 className={styles.title}>새 여행</h2>
+        <h2 className={styles.title}>{t('createTrip.title')}</h2>
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="trip-title">
-            여행 이름
+            {t('createTrip.nameLabel')}
           </label>
           <input
             id="trip-title"
             className={styles.input}
-            placeholder="도쿄 여행"
+            placeholder={t('createTrip.namePlaceholder')}
             {...register('title')}
           />
           {errors.title ? <span className={styles.error}>{errors.title.message}</span> : null}
@@ -127,13 +142,13 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="trip-city">
-            목적지 도시 (검색 후 선택)
+            {t('createTrip.cityLabel')}
           </label>
           <input
             id="trip-city"
             ref={cityInputRef}
             className={styles.input}
-            placeholder="예: Kyoto, Japan"
+            placeholder={t('createTrip.cityPlaceholderExample')}
             defaultValue=""
           />
           {cityError ? <span className={styles.error}>{cityError}</span> : null}
@@ -141,7 +156,7 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="trip-currency">
-            통화 설정
+            {t('createTrip.currencyLabel')}
           </label>
           <select id="trip-currency" className={styles.input} {...register('currency')}>
             {Object.entries(CURRENCIES).map(([code, meta]) => (
@@ -155,7 +170,7 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
         <div className={styles.row}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="trip-start">
-              시작일
+              {t('createTrip.startLabel')}
             </label>
             <input id="trip-start" type="date" className={styles.input} {...register('startDate')} />
             {errors.startDate ? (
@@ -164,7 +179,7 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="trip-end">
-              종료일
+              {t('createTrip.endLabel')}
             </label>
             <input id="trip-end" type="date" className={styles.input} {...register('endDate')} />
             {errors.endDate ? <span className={styles.error}>{errors.endDate.message}</span> : null}
@@ -173,10 +188,10 @@ export function CreateTripModal({ onClose }: CreateTripModalProps) {
 
         <div className={styles.actions}>
           <button type="button" className={styles.secondary} onClick={onClose}>
-            취소
+            {t('action.cancel', { ns: 'common' })}
           </button>
           <button type="submit" className={styles.primary} disabled={isSubmitting}>
-            {isSubmitting ? '만드는 중…' : '만들기'}
+            {isSubmitting ? t('createTrip.creating') : t('createTrip.create')}
           </button>
         </div>
       </form>

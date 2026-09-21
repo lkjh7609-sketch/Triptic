@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CURRENCIES,
   EXPENSE_CATEGORY_LABELS,
@@ -12,6 +13,7 @@ import {
 } from './expenses';
 import { fetchDailyRate } from './fxRate';
 import { ExpenseChart } from './ExpenseChart';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
 import styles from './ExpenseModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -34,10 +36,6 @@ const CATEGORY_ICON: Record<ExpenseCategory, string> = {
   other: '📦',
 };
 
-function unconvertedNote(count: number): string {
-  return count > 0 ? ` (환산 불가 ${count}건 제외)` : '';
-}
-
 /**
  * 이 날의 경비 (index.html renderExpenseSection/addExpense/deleteExpense 이식 +
  * 02-screens.md §3.7 확장). 목록 자체는 이 시트를 여는 즉시 저장한다(add/delete
@@ -48,6 +46,7 @@ function unconvertedNote(count: number): string {
  * (네트워크 문제로 입력을 통째로 막는 게 더 나쁘다고 판단) 합계에서만 제외한다.
  */
 export function ExpenseModal({ currentDay, totalDays, currency, expensesData, onClose, onSave }: ExpenseModalProps) {
+  const { t, i18n } = useTranslation(['plan', 'common']);
   const [desc, setDesc] = useState('');
   const [amount, setAmount] = useState('');
   const [itemCurrency, setItemCurrency] = useState(currency);
@@ -56,11 +55,16 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const [saving, setSaving] = useState(false);
   const [fetchingRate, setFetchingRate] = useState(false);
   const [fxWarning, setFxWarning] = useState<string | null>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   const list = expensesData[currentDay] ?? [];
   const dayTotal = getDayExpenseTotal(list, currency);
   const grandTotal = getGrandExpenseTotal(expensesData, currency);
   const currSymbol = (CURRENCIES[itemCurrency] ?? CURRENCIES.KRW).symbol;
+
+  function unconvertedNote(count: number): string {
+    return count > 0 ? ` ${t('expense.unconvertedCount', { count })}` : '';
+  }
 
   async function handleAdd() {
     const amountNum = Number(amount);
@@ -74,7 +78,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
         fxRateToBase = await fetchDailyRate(itemCurrency, currency);
         setFetchingRate(false);
         if (fxRateToBase == null) {
-          setFxWarning('환율 조회에 실패했어요. 금액은 저장되지만 합계에는 반영되지 않아요.');
+          setFxWarning(t('expense.fxWarning'));
         }
       }
       const newItem: ExpenseItem = {
@@ -104,13 +108,20 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>💰 이 날의 경비</h2>
+      <div
+        ref={trapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('expense.title')}
+      >
+        <h2 className={modalStyles.title}>💰 {t('expense.title')}</h2>
 
         <div className={styles.addRow}>
           <input
             className={styles.descInput}
-            placeholder="사용처 (예: 점심 식사)"
+            placeholder={t('expense.descPlaceholder')}
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
           />
@@ -119,7 +130,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
           <input
             className={styles.amountInput}
             type="number"
-            placeholder={`금액 (${currSymbol})`}
+            placeholder={t('expense.amountPlaceholder', { symbol: currSymbol })}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
@@ -127,7 +138,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
             className={styles.smallSelect}
             value={itemCurrency}
             onChange={(e) => setItemCurrency(e.target.value)}
-            aria-label="통화"
+            aria-label={t('expense.currencyAria')}
           >
             {Object.keys(CURRENCIES).map((code) => (
               <option key={code} value={code}>
@@ -139,11 +150,11 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
             className={styles.smallSelect}
             value={category}
             onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-            aria-label="카테고리"
+            aria-label={t('expense.categoryAria')}
           >
             {(Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[]).map((cat) => (
               <option key={cat} value={cat}>
-                {EXPENSE_CATEGORY_LABELS[cat]}
+                {t(`expense.category.${cat}`)}
               </option>
             ))}
           </select>
@@ -151,24 +162,24 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
             className={styles.smallSelect}
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value as ExpensePaymentMethod | '')}
-            aria-label="결제수단"
+            aria-label={t('expense.paymentAria')}
           >
-            <option value="">결제수단</option>
+            <option value="">{t('expense.paymentPlaceholder')}</option>
             {(Object.keys(PAYMENT_METHOD_LABELS) as ExpensePaymentMethod[]).map((pm) => (
               <option key={pm} value={pm}>
-                {PAYMENT_METHOD_LABELS[pm]}
+                {t(`expense.payment.${pm}`)}
               </option>
             ))}
           </select>
           <button type="button" className={styles.addBtn} disabled={saving} onClick={handleAdd}>
-            {fetchingRate ? '환율 조회…' : '추가'}
+            {fetchingRate ? t('expense.fetchingRate') : t('action.add', { ns: 'common' })}
           </button>
         </div>
         {fxWarning ? <p className={styles.warning}>{fxWarning}</p> : null}
 
         <div className={styles.list}>
           {list.length === 0 ? (
-            <p className={styles.empty}>아직 등록된 경비가 없습니다.</p>
+            <p className={styles.empty}>{t('expense.empty')}</p>
           ) : (
             list.map((e, i) => {
               const itemCur = e.currency ?? currency;
@@ -179,19 +190,21 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
                   <span className={styles.itemDesc}>
                     {e.desc}
                     {e.paymentMethod ? (
-                      <span className={styles.itemMeta}> · {PAYMENT_METHOD_LABELS[e.paymentMethod]}</span>
+                      <span className={styles.itemMeta}> · {t(`expense.payment.${e.paymentMethod}`)}</span>
                     ) : null}
                   </span>
                   <span className={styles.itemAmount}>
-                    {formatMoney(e.amount, itemCur)}
+                    {formatMoney(e.amount, itemCur, i18n.language)}
                     {itemCur !== currency ? (
                       <span className={styles.itemConverted}>
-                        {converted != null ? ` ≈ ${formatMoney(converted, currency)}` : ' (환산 불가)'}
+                        {converted != null
+                          ? ` ≈ ${formatMoney(converted, currency, i18n.language)}`
+                          : ` (${t('expense.unconverted')})`}
                       </span>
                     ) : null}
                   </span>
                   <button type="button" className={styles.deleteBtn} disabled={saving} onClick={() => handleDelete(i)}>
-                    삭제
+                    {t('action.delete', { ns: 'common' })}
                   </button>
                 </div>
               );
@@ -200,26 +213,34 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
         </div>
 
         <div className={styles.totalRow}>
-          <span>이 날 합계</span>
+          <span>{t('expense.dayTotal')}</span>
           <span>
-            {formatMoney(dayTotal.total, currency)}
+            {formatMoney(dayTotal.total, currency, i18n.language)}
             {unconvertedNote(dayTotal.unconverted)}
           </span>
         </div>
         <div className={styles.grandTotalRow}>
-          <span>전체 여행 합계</span>
+          <span>{t('expense.grandTotal')}</span>
           <span>
-            {formatMoney(grandTotal.total, currency)}
+            {formatMoney(grandTotal.total, currency, i18n.language)}
             {unconvertedNote(grandTotal.unconverted)}
           </span>
         </div>
 
-        <ExpenseChart title="일자별 합계" data={getDayTotalsSeries(expensesData, totalDays, currency)} currency={currency} />
-        <ExpenseChart title="카테고리별 합계" data={getCategoryTotalsSeries(expensesData, currency)} currency={currency} />
+        <ExpenseChart
+          title={t('expense.chartByDay')}
+          data={getDayTotalsSeries(expensesData, totalDays, currency, (day) => t('day.header', { index: day }))}
+          currency={currency}
+        />
+        <ExpenseChart
+          title={t('expense.chartByCategory')}
+          data={getCategoryTotalsSeries(expensesData, currency, (cat) => t(`expense.category.${cat}`))}
+          currency={currency}
+        />
 
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.primary} onClick={onClose}>
-            닫기
+            {t('action.close', { ns: 'common' })}
           </button>
         </div>
       </div>

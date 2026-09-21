@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './ConfidenceField.module.css';
 
 interface ConfidenceFieldProps {
@@ -15,6 +16,7 @@ interface ConfidenceFieldProps {
  * 색만으로 정보를 전달하지 않는다(§ 접근성 체크리스트) — 항상 아이콘+문구를 같이 쓴다.
  */
 export function ConfidenceField({ label, value, confidence, onChange, onViewOriginal }: ConfidenceFieldProps) {
+  const { t } = useTranslation('documents');
   const low = confidence < 0.8;
   const medium = confidence >= 0.8 && confidence < 0.9;
 
@@ -22,8 +24,8 @@ export function ConfidenceField({ label, value, confidence, onChange, onViewOrig
     <div className={styles.field}>
       <label className={styles.label}>
         {label}
-        {medium ? <span className={styles.warningBadge}>⚠️ 확인해 주세요</span> : null}
-        {low ? <span className={styles.emptyBadge}>추출 실패 — 직접 입력</span> : null}
+        {medium ? <span className={styles.warningBadge}>{t('confidenceField.warning')}</span> : null}
+        {low ? <span className={styles.emptyBadge}>{t('confidenceField.empty')}</span> : null}
       </label>
       <input
         className={`${styles.input} ${medium ? styles.mediumConfidence : ''} ${low ? styles.lowConfidence : ''}`}
@@ -33,7 +35,7 @@ export function ConfidenceField({ label, value, confidence, onChange, onViewOrig
       />
       {low && onViewOriginal ? (
         <button type="button" className={styles.viewOriginal} onClick={onViewOriginal}>
-          원본 보기
+          {t('confidenceField.viewOriginal')}
         </button>
       ) : null}
     </div>

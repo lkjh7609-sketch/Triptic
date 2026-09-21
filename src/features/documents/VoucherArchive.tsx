@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDeleteDocument, useDocumentsList } from './useDocuments';
 import { getVoucherSignedUrlByDocumentId, type VoucherEntry } from './documentService';
 import { captureError } from '@/shared/monitoring';
@@ -37,12 +38,17 @@ function formatDate(iso: string): string {
 
 /**
  * 바우처 보관함 (02-screens.md §3.6)
- * 오프라인 우선 자동 다운로드 캐시는 IndexedDB가 없는 현재(Phase 6 미착수)
- * 스코프 밖 — 목록·뷰어·공유·Wallet 추가·삭제만 이번 라운드에서 구현한다.
- * "연결된 일정 항목으로 이동" 링크도 ADR-002에서 itinerary_items.booking_id
- * 역방향 링크를 의도적으로 안 만들기로 해서(부정확한 매칭 방지) 스코프 밖이다.
+ * 이 화면의 문서 목록 조회(useDocumentsList → useQuery)는 App.tsx의
+ * PersistQueryClientProvider가 전체 쿼리 캐시를 IndexedDB에 자동 영속화하므로
+ * "여행 시작 3일 전 자동 다운로드" 중 목록 데이터 자체는 이미 오프라인
+ * 캐시된다(src/shared/offline/persister.ts) — 실제 바우처 파일(PDF/이미지
+ * 바이너리) 프리페치는 스코프 밖(Phase 6 다국어/접근성 라운드에서는 문자열
+ * i18n 전환만 다룬다). "연결된 일정 항목으로 이동" 링크도 ADR-002에서
+ * itinerary_items.booking_id 역방향 링크를 의도적으로 안 만들기로 해서(부정확한
+ * 매칭 방지) 스코프 밖이다.
  */
 export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
+  const { t } = useTranslation(['documents', 'common']);
   const { data: documents, isLoading } = useDocumentsList(tripId);
   const deleteMutation = useDeleteDocument(tripId);
   const [viewerUrl, setViewerUrl] = useState<{ url: string; mimeType: string } | null>(null);
@@ -90,7 +96,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
   }
 
   async function handleDelete(entry: VoucherEntry) {
-    if (!window.confirm(`'${entry.original_name}'을(를) 삭제할까요? 되돌릴 수 없어요.`)) return;
+    if (!window.confirm(t('archive.deleteConfirm', { name: entry.original_name }))) return;
     setBusyId(entry.id);
     try {
       await deleteMutation.mutateAsync({ id: entry.id, storage_path: entry.storage_path });
@@ -104,12 +110,12 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
       <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>🎟 바우처 보관함</h2>
+        <h2 className={modalStyles.title}>{t('archive.title')}</h2>
 
         {isLoading ? (
-          <p className={modalStyles.hint}>불러오는 중…</p>
+          <p className={modalStyles.hint}>{t('state.loading', { ns: 'common' })}</p>
         ) : !documents || documents.length === 0 ? (
-          <p className={modalStyles.hint}>아직 등록된 바우처가 없어요. "📄 서류로 추가"로 올려보세요.</p>
+          <p className={modalStyles.hint}>{t('archive.empty')}</p>
         ) : (
           <ul className={styles.list}>
             {documents.map((entry) => (
@@ -135,7 +141,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
                       className={styles.actionBtn}
                       onClick={() => openViewer(entry)}
                       disabled={busyId === entry.id}
-                      title="Apple Wallet에 추가"
+                      title={t('archive.addToWallet')}
                     >
                       🎫
                     </button>
@@ -145,7 +151,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
                     className={styles.actionBtn}
                     onClick={() => handleShare(entry)}
                     disabled={busyId === entry.id}
-                    title="공유"
+                    title={t('action.share', { ns: 'common' })}
                   >
                     ↗
                   </button>
@@ -154,7 +160,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
                     className={styles.actionBtnDanger}
                     onClick={() => handleDelete(entry)}
                     disabled={busyId === entry.id}
-                    title="삭제"
+                    title={t('action.delete', { ns: 'common' })}
                   >
                     🗑
                   </button>
@@ -166,7 +172,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
 
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
-            닫기
+            {t('action.close', { ns: 'common' })}
           </button>
         </div>
       </div>
@@ -179,7 +185,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
             setViewerUrl(null);
           }}
         >
-          <img src={viewerUrl.url} alt="바우처 원본" className={styles.imageViewerImg} />
+          <img src={viewerUrl.url} alt={t('archive.voucherOriginalAlt')} className={styles.imageViewerImg} />
         </div>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -13,12 +14,13 @@ import {
   setCommentStatus,
   setPostStatus,
 } from './adminService';
-import { REPORT_REASON_LABELS, type Report } from './types';
+import type { Report } from './types';
 import styles from './AdminScreen.module.css';
 
 type Tab = 'reports' | 'pending';
 
 function ReportRow({ report, onResolved }: { report: Report; onResolved: () => void }) {
+  const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
   const { data: preview } = useQuery({
     queryKey: ['admin', 'report-preview', report.id],
@@ -51,18 +53,18 @@ function ReportRow({ report, onResolved }: { report: Report; onResolved: () => v
   return (
     <div className={styles.item}>
       <div className={styles.itemMeta}>
-        <span className={styles.badge}>{REPORT_REASON_LABELS[report.reason]}</span>
+        <span className={styles.badge}>{t(`report.reason.${report.reason}`)}</span>
         <span className={styles.itemType}>{report.target_type}</span>
         <span className={styles.itemTime}>{new Date(report.created_at).toLocaleString('ko-KR')}</span>
       </div>
       {preview ? <p className={styles.preview}>{preview.body}</p> : null}
-      {report.detail ? <p className={styles.detail}>신고 상세: {report.detail}</p> : null}
+      {report.detail ? <p className={styles.detail}>{t('admin.reportDetail', { detail: report.detail })}</p> : null}
       <div className={styles.actions}>
         <button type="button" className={styles.dangerBtn} disabled={busy} onClick={handleRemove}>
-          삭제
+          {t('action.delete', { ns: 'common' })}
         </button>
         <button type="button" className={styles.secondaryBtn} disabled={busy} onClick={handleDismiss}>
-          기각
+          {t('admin.dismiss')}
         </button>
       </div>
     </div>
@@ -70,6 +72,7 @@ function ReportRow({ report, onResolved }: { report: Report; onResolved: () => v
 }
 
 function PendingPostRow({ post, onResolved }: { post: { id: string; body: string; created_at: string }; onResolved: () => void }) {
+  const { t } = useTranslation(['community', 'common']);
   const [busy, setBusy] = useState(false);
 
   async function handleApprove() {
@@ -100,10 +103,10 @@ function PendingPostRow({ post, onResolved }: { post: { id: string; body: string
       <p className={styles.preview}>{post.body}</p>
       <div className={styles.actions}>
         <button type="button" className={styles.primaryBtn} disabled={busy} onClick={handleApprove}>
-          승인
+          {t('admin.approve')}
         </button>
         <button type="button" className={styles.dangerBtn} disabled={busy} onClick={handleRemove}>
-          삭제
+          {t('action.delete', { ns: 'common' })}
         </button>
       </div>
     </div>
@@ -115,6 +118,7 @@ function PendingPostRow({ post, onResolved }: { post: { id: string; body: string
  * 접근 제어: profiles.role='admin' (§9). AppShell 하단 탭 밖의 독립 라우트.
  */
 export function AdminScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>('reports');
@@ -149,26 +153,26 @@ export function AdminScreen() {
     );
   }
   if (!user || !admin) {
-    return <EmptyState icon="🔒" message="운영자 권한이 필요한 화면이에요." />;
+    return <EmptyState icon="🔒" message={t('admin.accessDenied')} />;
   }
 
   return (
     <div className={styles.wrap}>
-      <h1 className={styles.title}>운영 콘솔</h1>
+      <h1 className={styles.title}>{t('admin.title')}</h1>
       <div className={styles.tabs}>
         <button
           type="button"
           className={tab === 'reports' ? styles.tabActive : styles.tab}
           onClick={() => setTab('reports')}
         >
-          신고 큐 {reportsQuery.data ? `(${reportsQuery.data.length})` : ''}
+          {t('admin.tabs.reports')} {reportsQuery.data ? `(${reportsQuery.data.length})` : ''}
         </button>
         <button
           type="button"
           className={tab === 'pending' ? styles.tabActive : styles.tab}
           onClick={() => setTab('pending')}
         >
-          자동 플래그 큐 {pendingQuery.data ? `(${pendingQuery.data.length})` : ''}
+          {t('admin.tabs.pending')} {pendingQuery.data ? `(${pendingQuery.data.length})` : ''}
         </button>
       </div>
 
@@ -176,7 +180,7 @@ export function AdminScreen() {
         reportsQuery.isLoading ? (
           <Skeleton height="80px" />
         ) : !reportsQuery.data || reportsQuery.data.length === 0 ? (
-          <EmptyState icon="✅" message="처리할 신고가 없어요." />
+          <EmptyState icon="✅" message={t('admin.noReports')} />
         ) : (
           <div className={styles.list}>
             {reportsQuery.data.map((r) => (
@@ -187,7 +191,7 @@ export function AdminScreen() {
       ) : pendingQuery.isLoading ? (
         <Skeleton height="80px" />
       ) : !pendingQuery.data || pendingQuery.data.length === 0 ? (
-        <EmptyState icon="✅" message="검토 대기 중인 글이 없어요." />
+        <EmptyState icon="✅" message={t('admin.noPending')} />
       ) : (
         <div className={styles.list}>
           {pendingQuery.data.map((p) => (

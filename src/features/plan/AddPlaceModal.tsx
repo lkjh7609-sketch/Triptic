@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
-import { inferPlaceCategory, CATEGORY_LABEL } from './placeCategory';
+import { inferPlaceCategory } from './placeCategory';
 import { captureError } from '@/shared/monitoring';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { PlaceItem } from './types';
 import styles from './AddPlaceModal.module.css';
 
@@ -16,11 +18,13 @@ interface AddPlaceModalProps {
  * (index.html saveData/renderList), 3.0은 입력 단계에서 막는다(스펙 명시).
  */
 export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(null);
   const [time, setTime] = useState('');
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
   const { inputRef } = usePlaceAutocomplete(setSelected);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   const category = selected ? inferPlaceCategory(selected.types) : null;
 
@@ -49,31 +53,38 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={styles.title}>일정 추가</h2>
+      <div
+        ref={trapRef}
+        className={styles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('addPlace.title')}
+      >
+        <h2 className={styles.title}>{t('addPlace.title')}</h2>
 
         <input
           ref={inputRef}
           className={styles.input}
-          placeholder="장소 검색"
-          aria-label="장소 검색"
+          placeholder={t('addPlace.searchPlaceholder')}
+          aria-label={t('addPlace.searchPlaceholder')}
         />
 
         {selected ? (
           <div className={styles.selectedCard}>
             <div className={styles.selectedName}>
               {selected.name}
-              {category ? <span className={styles.categoryBadge}>{CATEGORY_LABEL[category]}</span> : null}
+              {category ? <span className={styles.categoryBadge}>{t(`placeCategory.${category}`)}</span> : null}
             </div>
             {selected.address ? <div className={styles.selectedAddress}>{selected.address}</div> : null}
           </div>
         ) : (
-          <p className={styles.hint}>검색 결과 목록에서 장소를 선택해 주세요.</p>
+          <p className={styles.hint}>{t('addPlace.selectHint')}</p>
         )}
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="place-time">
-            시간 (선택)
+            {t('addPlace.timeLabel')}
           </label>
           <input
             id="place-time"
@@ -86,20 +97,20 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor="place-memo">
-            메모 (선택)
+            {t('addPlace.memoLabel')}
           </label>
           <input
             id="place-memo"
             className={styles.input}
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
-            placeholder="체크인 후 짐 보관"
+            placeholder={t('addPlace.memoPlaceholder')}
           />
         </div>
 
         <div className={styles.actions}>
           <button type="button" className={styles.secondary} onClick={onClose}>
-            취소
+            {t('action.cancel', { ns: 'common' })}
           </button>
           <button
             type="button"
@@ -107,7 +118,7 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
             disabled={!selected || saving}
             onClick={handleSave}
           >
-            {saving ? '추가하는 중…' : '추가'}
+            {saving ? t('addPlace.adding') : t('action.add', { ns: 'common' })}
           </button>
         </div>
       </div>
