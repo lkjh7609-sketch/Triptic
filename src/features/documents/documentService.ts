@@ -3,6 +3,7 @@
  * (04-document-ai.md §2 클라이언트 단계 1~5, §10.1)
  */
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
+import { can } from '@/shared/entitlements';
 import type { ParsedBooking } from './parseBooking/schema';
 
 // §3.2 사전 검사
@@ -65,6 +66,13 @@ export async function uploadAndParseDocument(
   tripId: string,
   userId: string,
 ): Promise<ParseBookingResponse> {
+  if (!can('voucher.storage', { userId })) {
+    throw new Error('바우처 보관 용량 한도에 도달했습니다.');
+  }
+  if (!can('document.parse', { userId })) {
+    throw new Error('서류 자동 인식 한도에 도달했습니다.');
+  }
+
   const supabase = getSupabaseClient();
   const ext = file.name.split('.').pop() || 'bin';
   // documents.id는 uuid 컬럼(0002 마이그레이션) — Storage 경로를 업로드 전에

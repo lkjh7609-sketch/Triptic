@@ -14,6 +14,7 @@
 import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/utils/id.js';
 import { captureError } from '@/shared/monitoring';
+import { can } from '@/shared/entitlements';
 
 /** allProjects[name] 형태의 로컬 프로젝트 (2.x, snapshot 스키마) */
 export interface LocalProject {
@@ -86,6 +87,11 @@ export class TripService {
     const supabase = getSupabaseClient();
     const user = await this.getCurrentUser();
     if (!user) throw new Error('인증되지 않은 사용자입니다.');
+
+    const isNewTrip = !project.supabaseId;
+    if (isNewTrip && !can('trip.create', { userId: user.id })) {
+      throw new Error('여행 생성 한도에 도달했습니다.');
+    }
 
     const row: Record<string, unknown> = {
       owner_id: user.id,
@@ -186,6 +192,10 @@ export class TripService {
   /** 공유 링크 생성(또는 이미 있으면 재사용) */
   async createShareLink(tripId: string): Promise<string> {
     const supabase = getSupabaseClient();
+    const user = await this.getCurrentUser();
+    if (!can('trip.collaborate', { userId: user?.id ?? null })) {
+      throw new Error('동행자 공유 기능을 사용할 수 없습니다.');
+    }
 
     const { data: existing } = await supabase
       .from('shared_trips')
