@@ -429,6 +429,7 @@ export function TripDetailScreen() {
       {showExpenseModal ? (
         <ExpenseModal
           currentDay={currentDay}
+          totalDays={totalDays}
           currency={project?.currency ?? 'KRW'}
           expensesData={expensesData}
           onClose={() => setShowExpenseModal(false)}

@@ -351,13 +351,17 @@ Deno.serve(async (req) => {
     for (let day = 1; day <= totalDays; day++) {
       const dayId = dayIdByIndex.get(day)!;
       for (const exp of expensesData[day] ?? []) {
+        const baseCurrency = trip.base_currency ?? 'KRW';
+        const expCurrency = exp.currency ?? baseCurrency;
         expenseRows.push({
           trip_id: trip.id,
           day_id: dayId,
-          category: 'other',
+          category: exp.category ?? 'other',
           description: exp.desc,
           amount: exp.amount,
-          currency: trip.base_currency ?? 'KRW',
+          currency: expCurrency,
+          fx_rate_to_base: expCurrency !== baseCurrency ? (exp.fxRateToBase ?? null) : null,
+          payment_method: exp.paymentMethod ?? null,
         });
       }
     }
