@@ -1,20 +1,25 @@
 /**
  * Supabase 데이터베이스 서비스 (새 React 앱 전용 — src/services/supabaseService.js 이식)
  *
- * ⚠️ Plan 탭의 1차 데이터는 계속 **snapshot 기반 스키마**다(컬럼명은
- * supabase/migrations/0000_reconcile_legacy_schema.sql 적용 이후 기준 —
- * trips.owner_id/title/base_currency/city/snapshot, profiles) — 이미 Phase 2에서
- * 19/19 패리티까지 검증된 안정적인 읽기/쓰기 경로라 그대로 유지한다(ADR-002
- * 이관 시 Plan 탭 자체를 정규화 테이블로 바꾸지 않기로 한 결정, 03-data-model.md §6).
- * 대신 saveTrip()이 성공할 때마다 정규화 테이블(itinerary_items/trip_days/legs/
- * expenses)을 파생 프로젝션으로 재동기화한다(sync-trip-normalized Edge Function,
- * §6 M5) — 통계 RPC(get_user_travel_stats)·공유 링크(get_shared_trip)처럼
- * 정규화 테이블을 읽는 쪽이 이 프로젝션을 쓴다.
+ * ⚠️ ADR-002 M7 컷오버(2026-09-21): Plan 탭의 1차 데이터가 `trips.snapshot`
+ * (JSONB)에서 정규화 테이블(trip_days/itinerary_items/legs/expenses)로
+ * 바뀌었다. `LocalProject`/`TripRow.content`의 모양은 예전 snapshot과 완전히
+ * 동일하게 유지한다 — TripDetailScreen/모든 모달/PlanScreen/BackupModal/
+ * sampleTrip.ts는 전혀 안 바꿔도 되도록, 저장 방식만 이 파일 안에서 교체한
+ * 것이다("JSON 계약을 그대로 유지한 채 저장소만 교체", plan 참고).
+ * - 쓰기: `trip-itinerary-write` Edge Function(구 sync-trip-normalized)이
+ *   `replace_trip_itinerary()` RPC로 한 트립의 파생 테이블 전체를 원자적으로
+ *   교체한다. 예전엔 이게 fire-and-forget 파생 동기화였지만 지금은 유일한
+ *   쓰기 경로라 saveTrip()이 await하고 실패를 전파한다.
+ * - 읽기: `get_trip_itinerary_raw()` RPC로 정규화 테이블 원본을 받아
+ *   `itineraryTransform.ts`의 `reconstructTripContent()`로 예전 snapshot
+ *   모양으로 되돌린다.
  */
 import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/utils/id.js';
 import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
+import { reconstructTripContent, type TripItineraryRaw } from '@/features/plan/itineraryTransform';
 
 /** allProjects[name] 형태의 로컬 프로젝트 (2.x, snapshot 스키마) */
 export interface LocalProject {
@@ -35,7 +40,18 @@ export interface LocalProject {
   updatedAt?: number;
 }
 
-/** public.trips 행 (0000 정합화 이후 — snapshot 기반, 정규화 이전) */
+/** trips.snapshot이 갖던 것과 동일한 모양의 콘텐츠 — 이제 DB 컬럼이 아니라
+ * 정규화 테이블에서 매번 재구성된다(TripRow.content). */
+export interface TripContent {
+  data?: unknown;
+  hotels?: unknown;
+  meals?: unknown;
+  expenses?: unknown;
+  flights?: { outbound: unknown; return: unknown };
+  dayCities?: unknown;
+}
+
+/** public.trips 행 + 정규화 테이블에서 재구성한 콘텐츠 */
 export interface TripRow {
   id: string;
   owner_id: string;
@@ -48,14 +64,9 @@ export interface TripRow {
   total_days: number | null;
   base_currency: string | null;
   status: 'planning' | 'ongoing' | 'completed' | 'archived';
-  snapshot: {
-    data?: unknown;
-    hotels?: unknown;
-    meals?: unknown;
-    expenses?: unknown;
-    flights?: { outbound: unknown; return: unknown };
-    dayCities?: unknown;
-  };
+  /** 정규화 테이블에서 재구성한 콘텐츠. listTrips()처럼 상세 콘텐츠가
+   * 필요 없는 목록 조회에서는 채우지 않는다(비용이 드는 RPC라서). */
+  content?: TripContent;
   created_at: string;
   updated_at: string;
 }
@@ -93,6 +104,15 @@ export class TripService {
       throw new Error('여행 생성 한도에 도달했습니다.');
     }
 
+    const content: TripContent = {
+      data: project.data || {},
+      hotels: project.hotels || {},
+      meals: project.meals || {},
+      expenses: project.expenses || {},
+      flights: project.flights || { outbound: null, return: null },
+      dayCities: project.dayCities || {},
+    };
+
     const row: Record<string, unknown> = {
       owner_id: user.id,
       title: name,
@@ -103,34 +123,24 @@ export class TripService {
       end_date: project.endDate || null,
       total_days: project.totalDays || null,
       base_currency: project.currency || 'KRW',
-      snapshot: {
-        data: project.data || {},
-        hotels: project.hotels || {},
-        meals: project.meals || {},
-        expenses: project.expenses || {},
-        flights: project.flights || { outbound: null, return: null },
-        dayCities: project.dayCities || {},
-      },
     };
     if (project.supabaseId) row.id = project.supabaseId;
 
     const { data, error } = await supabase.from('trips').upsert(row).select().single();
     if (error) throw error;
+    const tripId = (data as { id: string }).id;
 
-    // ADR-002(03-data-model.md §6 M5) — snapshot 저장 직후 정규화 테이블을
-    // 파생 프로젝션으로 재동기화한다. 실패해도 snapshot(1차 데이터)은 이미
-    // 저장돼 있으므로 saveTrip() 자체는 실패시키지 않는다 — 다음 저장 때
-    // 전체 재계산되므로 자연 치유된다. invoke()는 함수 쪽 에러를 reject가
-    // 아니라 {error} 필드로 돌려주므로 둘 다 잡는다.
-    const tripId = (data as TripRow).id;
-    supabase.functions
-      .invoke('sync-trip-normalized', { body: { tripId } })
-      .then(({ error: fnErr }) => {
-        if (fnErr) captureError(fnErr, { context: 'syncTripNormalized', tripId });
-      })
-      .catch((err) => captureError(err, { context: 'syncTripNormalized', tripId }));
+    // ADR-002 M7 컷오버 — 정규화 테이블이 이제 1차 데이터라 이 호출이
+    // 실패하면 저장 자체가 실패해야 한다(예전 fire-and-forget과 다름).
+    const { error: fnErr } = await supabase.functions.invoke('trip-itinerary-write', {
+      body: { tripId, ...content },
+    });
+    if (fnErr) {
+      captureError(fnErr, { context: 'tripItineraryWrite', tripId });
+      throw fnErr;
+    }
 
-    return data as TripRow;
+    return { ...(data as Omit<TripRow, 'content'>), content };
   }
 
   /** 여행 삭제 */
@@ -157,17 +167,27 @@ export class TripService {
     return (data as TripRow[]) ?? [];
   }
 
-  /** 단일 여행 조회 (여행 상세 화면용) */
+  /** 단일 여행 조회 (여행 상세 화면용) — 정규화 테이블에서 콘텐츠를 재구성해 붙인다 */
   async getTrip(tripId: string): Promise<TripRow | null> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.from('trips').select('*').eq('id', tripId).maybeSingle();
     if (error) throw error;
-    return (data as TripRow | null) ?? null;
+    if (!data) return null;
+
+    const { data: raw, error: rawErr } = await supabase.rpc('get_trip_itinerary_raw', { p_trip_id: tripId });
+    if (rawErr) throw rawErr;
+
+    const content = reconstructTripContent(raw as TripItineraryRaw, {
+      name: data.city,
+      lat: data.city_lat,
+      lng: data.city_lng,
+    });
+    return { ...(data as Omit<TripRow, 'content'>), content };
   }
 
   /** Supabase trips 행을 로컬 프로젝트(allProjects[name]) 형식으로 변환 */
   toLocalProject(row: TripRow): LocalProject {
-    const snap = row.snapshot || {};
+    const content = row.content || {};
     return {
       supabaseId: row.id,
       city: row.city || '',
@@ -177,12 +197,12 @@ export class TripService {
       endDate: row.end_date || '',
       totalDays: row.total_days || 0,
       currency: row.base_currency || 'KRW',
-      data: snap.data || {},
-      hotels: snap.hotels || {},
-      meals: snap.meals || {},
-      expenses: snap.expenses || {},
-      flights: snap.flights || { outbound: null, return: null },
-      dayCities: snap.dayCities || {},
+      data: content.data || {},
+      hotels: content.hotels || {},
+      meals: content.meals || {},
+      expenses: content.expenses || {},
+      flights: content.flights || { outbound: null, return: null },
+      dayCities: content.dayCities || {},
       updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : Date.now(),
     };
   }
