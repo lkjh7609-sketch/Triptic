@@ -212,7 +212,7 @@ function buildSampleRow(): TripRow {
     total_days: 4,
     base_currency: 'JPY',
     status: 'planning',
-    snapshot: {
+    content: {
       data: structuredClone(SAMPLE_DATA),
       hotels: structuredClone(SAMPLE_HOTELS),
       meals: structuredClone(SAMPLE_MEALS),
@@ -239,10 +239,10 @@ export function getSampleTripRow(): TripRow {
 
 /** TripDetailScreen의 저장 훅이 호출한다 — Supabase에는 절대 쓰지 않고 메모리에만 반영한다
  * (legacy saveData의 `if (activeProjectName === SAMPLE_PROJECT_NAME) return;`과 동일한 효과). */
-export function updateSampleTripSnapshot(snapshot: TripRow['snapshot']): TripRow {
+export function updateSampleTripSnapshot(content: TripRow['content']): TripRow {
   sampleTripRow = {
     ...sampleTripRow,
-    snapshot,
+    content,
     updated_at: new Date().toISOString(),
   };
   return sampleTripRow;
