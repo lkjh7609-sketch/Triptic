@@ -1,20 +1,111 @@
-import { useEffect } from 'react';
-import { EmptyState } from '@/shared/ui/states/EmptyState';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
+import { EmptyState } from '@/shared/ui/states/EmptyState';
+import { ErrorState } from '@/shared/ui/states/ErrorState';
+import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { usePostsFeed } from './hooks/usePosts';
+import { useDestinations } from './hooks/useDestinations';
+import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
+import { PostCard } from './PostCard';
+import styles from './CommunityScreen.module.css';
+
+type Tab = 'all' | 'following';
 
 /**
- * 커뮤니티 탭 — 피드 (02-screens.md §4.1)
- * ⚠️ 06-community.md §5(모더레이션 안전장치)가 기능과 같은 PR에서 함께 머지되기
- * 전까지는 실제 피드/글쓰기를 열지 않는다 — Phase 5에서 함께 구현한다.
+ * 커뮤니티 탭 — 피드 (02-screens.md §4.1, 06-community.md §1)
+ * 06-community.md §5(모더레이션 안전장치)와 같은 커밋에서 함께 구현했다.
  */
 export function CommunityScreen() {
+  const { user } = useSession();
+  const [tab, setTab] = useState<Tab>('all');
+  const { data: destinations } = useDestinations();
+  const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
+
+  const feed = usePostsFeed({ tab, viewerId: user?.id ?? null });
+
   useEffect(() => {
     trackScreenView('community_feed');
   }, []);
 
+  const followedDestinations = (destinations ?? []).filter((d) => (followedIds ?? []).includes(d.id));
+  const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
+
   return (
-    <div>
-      <EmptyState icon="💬" message="커뮤니티는 준비 중이에요." />
+    <div className={styles.wrap}>
+      <div className={styles.topBar}>
+        <h1 className={styles.title}>커뮤니티</h1>
+        {user ? (
+          <Link to="/community/compose" className={styles.composeBtn}>
+            ✏️ 글쓰기
+          </Link>
+        ) : null}
+      </div>
+
+      {followedDestinations.length > 0 ? (
+        <div className={styles.chipRow}>
+          {followedDestinations.map((d) => (
+            <Link key={d.id} to={`/community/d/${d.slug}`} className={styles.chip}>
+              {d.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      <div className={styles.tabs}>
+        <button
+          type="button"
+          className={tab === 'all' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('all')}
+        >
+          전체
+        </button>
+        <button
+          type="button"
+          className={tab === 'following' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('following')}
+        >
+          구독
+        </button>
+      </div>
+
+      {tab === 'following' && !user ? (
+        <EmptyState icon="🔒" message="로그인하면 구독한 여행지의 글만 모아볼 수 있어요." />
+      ) : feed.isLoading ? (
+        <div style={{ padding: 16 }}>
+          <Skeleton height="80px" />
+          <div style={{ height: 12 }} />
+          <Skeleton height="80px" />
+        </div>
+      ) : feed.isError ? (
+        <ErrorState summary="피드를 불러오지 못했어요." onRetry={() => feed.refetch()} />
+      ) : posts.length === 0 ? (
+        <EmptyState
+          icon="💬"
+          message={tab === 'following' ? '구독한 여행지에 아직 글이 없어요.' : '아직 등록된 글이 없어요.'}
+        />
+      ) : (
+        <>
+          <div className={styles.list}>
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+          {feed.hasNextPage ? (
+            <div className={styles.loadMoreWrap}>
+              <button
+                type="button"
+                className={styles.loadMoreBtn}
+                onClick={() => feed.fetchNextPage()}
+                disabled={feed.isFetchingNextPage}
+              >
+                {feed.isFetchingNextPage ? '불러오는 중…' : '더 보기'}
+              </button>
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
