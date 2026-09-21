@@ -1,0 +1,32 @@
+{
+  "action": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "confirm": "确认",
+    "edit": "编辑",
+    "close": "关闭",
+    "back": "返回",
+    "retry": "重试",
+    "share": "分享",
+    "copy": "复制",
+    "add": "添加",
+    "remove": "移除",
+    "done": "完成"
+  },
+  "state": {
+    "loading": "加载中…",
+    "error": "出现了问题",
+    "empty": "暂无内容",
+    "offline": "您已离线"
+  },
+  "tab": {
+    "home": "首页",
+    "plan": "计划",
+    "community": "社区",
+    "settings": "设置"
+  },
+  "auth": {
+    "loginRequired": "需要登录"
+  }
+}

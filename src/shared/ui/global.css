@@ -2,8 +2,9 @@
 
 /*
  * 폰트 스택 (01-design-system.md §3.1)
- * ko/en: Pretendard Variable · zh-CN: Noto Sans SC (동적 로드, Phase 6 — 07-i18n.md §4.1)
+ * ko/en: Pretendard Variable · zh-CN: Noto Sans SC (동적 로드, src/shared/i18n/fonts.ts — 07-i18n.md §4.1)
  * Pretendard 자체는 index.html에서 CDN <link>로 로드한다 (레거시 앱과 동일 소스).
+ * 폰트 로드가 끝나기 전에도 시스템 한자 폰트로 즉시 보이도록 폴백을 같이 둔다.
  */
 :root {
   --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
@@ -12,6 +13,27 @@
 :root:lang(zh) {
   --font-sans:
     'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+}
+
+/*
+ * 로케일별 줄바꿈 규칙 (07-i18n.md §3.2)
+ * 한국어의 어절 단위 줄바꿈(keep-all)을 중국어에 그대로 적용하면 긴 문장이
+ * 줄바꿈되지 않고 넘친다 — 언어별로 분리한다. `<html lang>`은
+ * src/shared/i18n/index.ts가 i18next languageChanged 이벤트로 갱신한다.
+ */
+:root:lang(ko) {
+  word-break: keep-all;
+  line-break: strict;
+  overflow-wrap: break-word;
+}
+:root:lang(en) {
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+:root:lang(zh) {
+  word-break: normal;
+  line-break: normal;
 }
 
 *,

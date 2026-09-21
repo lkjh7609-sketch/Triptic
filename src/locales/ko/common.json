@@ -1,0 +1,32 @@
+{
+  "action": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "confirm": "확인",
+    "edit": "수정",
+    "close": "닫기",
+    "back": "뒤로",
+    "retry": "다시 시도",
+    "share": "공유",
+    "copy": "복사",
+    "add": "추가",
+    "remove": "제거",
+    "done": "완료"
+  },
+  "state": {
+    "loading": "불러오는 중…",
+    "error": "문제가 발생했어요",
+    "empty": "표시할 내용이 없어요",
+    "offline": "오프라인 상태예요"
+  },
+  "tab": {
+    "home": "홈",
+    "plan": "계획",
+    "community": "커뮤니티",
+    "settings": "설정"
+  },
+  "auth": {
+    "loginRequired": "로그인이 필요해요"
+  }
+}

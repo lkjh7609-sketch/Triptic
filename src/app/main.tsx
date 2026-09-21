@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/shared/ui/global.css';
+import '@/shared/i18n';
 import { initMonitoring } from '@/shared/monitoring';
 import { applyStoredTheme } from '@/shared/theme';
 import { App } from './App';
