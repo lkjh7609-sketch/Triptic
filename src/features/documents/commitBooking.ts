@@ -1,11 +1,12 @@
 /**
- * 확정된 예약을 실제 여행 스냅샷에 반영한다 (04-document-ai.md §9 "일정 반영 규칙")
+ * 확정된 예약을 실제 여행 콘텐츠(LocalProject)에 반영한다 (04-document-ai.md §9 "일정 반영 규칙")
  *
  * ⚠️ 스펙 §9 원문은 정규화 테이블(itinerary_items)에 항목을 만드는 걸 전제하지만,
- * 이 앱은 아직 trips.snapshot(JSONB) 기반이다(정규화 이관 M2~M4 미완료 —
- * supabase/migrations/README.md, Phase 3 홈 대시보드 임시 RPC와 같은 이유).
- * itinerary_items에 써봐야 실제 화면 어디에도 안 보이므로, 이미 있는 스냅샷
- * 슬롯(flights/hotels/data)에 맞춰 넣는다 — 정규화 이관 후 대체할 임시 로직.
+ * ADR-002 M7 컷오버(2026-09-21) 이후에도 화면의 편집 모델은 여전히 LocalProject
+ * 모양(data/hotels/meals/flights)이다(tripService.ts가 정규화 테이블을 이
+ * 모양으로 재구성해줄 뿐 — src/features/plan/itineraryTransform.ts 참고).
+ * itinerary_items에 직접 써봐야 이 화면 렌더링 경로엔 안 보이므로, 여전히
+ * LocalProject 슬롯(flights/hotels/data)에 맞춰 넣는다.
  *
  * 항공편은 공항 DB에서 좌표를 이미 채워뒀지만(validate.ts resolveFlightAirports),
  * 숙소/철도/렌터카/액티비티는 "장소명/주소" 텍스트만 있고 좌표가 없다(§7의
