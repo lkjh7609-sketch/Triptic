@@ -44,6 +44,7 @@ name/currency` 접근). 그래서 `0000`은 아래 코드 패치와 **같은 배
 | `0015_vouchers_bucket.sql` | `vouchers` Storage 버킷 + RLS(select/insert/delete, 본인 폴더만) | ✅ 적용됨 |
 | `0016_retire_snapshot_stats_rpc.sql` | ADR-002 RPC 컷오버 — `0014` 임시 함수 drop, `useHomeStats`가 `get_user_travel_stats()`(0009) 사용하도록 전환 | ✅ 적용됨 |
 | `0017_notification_prefs.sql` | `profiles.notification_prefs` 컬럼 추가(설정 탭 알림 섹션 저장용, 발송 로직은 아직 없음) | ✅ 적용됨 |
+| `0018_normalized_readwrite.sql` | ADR-002 M7 준비: `itinerary_items.extra`(무손실 보존용 jsonb) + `replace_trip_itinerary()`(원자적 전체 교체) + `get_trip_itinerary_raw()`(읽기). Plan 탭·레거시를 snapshot 대신 정규화 테이블로 컷오버하기 위한 것 | ✅ 적용됨, 인증 컨텍스트 시뮬레이션으로 두 함수 모두 실제 실행 검증 완료 |
 
 ### `0012`을 추가한 이유 (계획에 없던 후속 조치)
 
