@@ -22,7 +22,6 @@
     "distanceUnitHint": "距离单位暂未应用到地图或路线显示中。",
     "baseCurrency": "默认货币",
     "language": "语言",
-    "languageHint": "切换显示语言将在后续版本中支持，目前仅保存该设置。",
     "loginHint": "登录后可保存温度单位、距离单位、默认货币和语言设置。"
   },
   "notifications": {
