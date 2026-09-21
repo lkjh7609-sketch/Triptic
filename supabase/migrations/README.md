@@ -40,6 +40,10 @@ name/currency` 접근). 그래서 `0000`은 아래 코드 패치와 **같은 배
 | `0011_account_deletion_request.sql` | 계정 삭제 요청/취소 RPC (즉시 반영분만) | ✅ 적용됨 |
 | `0012_security_hardening.sql` | get_advisors 실측 기반 보안 정리 (아래 참고) | ✅ 적용됨 |
 | `0013_fix_get_shared_trip_columns.sql` | `get_shared_trip()`이 `0000`에서 rename된 옛 컬럼명(`t.name`/`t.currency`)을 여전히 참조해 공유 링크 조회 시 에러가 나던 프로덕션 버그 수정 | ✅ 적용됨 |
+| `0014_dashboard_stats_snapshot_rpc.sql` | 홈 대시보드 임시 RPC(`get_user_travel_stats_snapshot`, ADR-002 M4 완료 전 임시 데이터 소스) | ✅ 적용 후 `0016`에서 drop됨 |
+| `0015_vouchers_bucket.sql` | `vouchers` Storage 버킷 + RLS(select/insert/delete, 본인 폴더만) | ✅ 적용됨 |
+| `0016_retire_snapshot_stats_rpc.sql` | ADR-002 RPC 컷오버 — `0014` 임시 함수 drop, `useHomeStats`가 `get_user_travel_stats()`(0009) 사용하도록 전환 | ✅ 적용됨 |
+| `0017_notification_prefs.sql` | `profiles.notification_prefs` 컬럼 추가(설정 탭 알림 섹션 저장용, 발송 로직은 아직 없음) | ✅ 적용됨 |
 
 ### `0012`을 추가한 이유 (계획에 없던 후속 조치)
 

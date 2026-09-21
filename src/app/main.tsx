@@ -2,9 +2,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/shared/ui/global.css';
 import { initMonitoring } from '@/shared/monitoring';
+import { applyStoredTheme } from '@/shared/theme';
 import { App } from './App';
 
 initMonitoring();
+applyStoredTheme();
 
 /**
  * PWA 설치·오프라인 열람 (DEVELOPMENT_PLAN.md §10.3). legacy는 index.html에서
