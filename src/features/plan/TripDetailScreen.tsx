@@ -24,6 +24,7 @@ import { DayCityModal } from './DayCityModal';
 import { SuggestionsModal } from './SuggestionsModal';
 import { UploadModal } from '@/features/documents/UploadModal';
 import { ReviewSheet } from '@/features/documents/ReviewSheet';
+import { VoucherArchive } from '@/features/documents/VoucherArchive';
 import { usePendingBookings } from '@/features/documents/useDocuments';
 import type { ParseBookingResponse } from '@/features/documents/documentService';
 import { formatItineraryText } from './formatItineraryText';
@@ -36,6 +37,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { trackScreenView } from '@/shared/monitoring';
+import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import type {
   DayCitiesData,
   DayCityInfo,
@@ -77,6 +79,7 @@ export function TripDetailScreen() {
   const [showShare, setShowShare] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
+  const [showVoucherArchive, setShowVoucherArchive] = useState(false);
   const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
 
   useEffect(() => {
@@ -310,6 +313,19 @@ export function TripDetailScreen() {
         >
           💡{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
         </button>
+        {!isSample ? (
+          <button
+            type="button"
+            className={styles.toggleButton}
+            aria-label="바우처 보관함"
+            onClick={() => setShowVoucherArchive(true)}
+          >
+            🎟
+            {(pendingBookings.data?.length ?? 0) > 0 ? (
+              <span className={styles.badge}>{pendingBookings.data!.length}</span>
+            ) : null}
+          </button>
+        ) : null}
         <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
           ↗
         </button>
@@ -481,6 +497,10 @@ export function TripDetailScreen() {
           onClose={() => setShowReviewSheet(false)}
         />
       ) : null}
+
+      {showVoucherArchive && tripId ? (
+        <VoucherArchive tripId={tripId} onClose={() => setShowVoucherArchive(false)} />
+      ) : null}
     </div>
   );
 }
@@ -505,10 +525,11 @@ interface DayWeatherBadgeProps {
  * 구분한다(§5.1 "평년값을 예보처럼 보여주면 안 된다").
  */
 function DayWeatherBadge({ loading, entry }: DayWeatherBadgeProps) {
+  const tempUnit = useTempUnit();
   if (loading) return <span className={styles.weatherSkeleton} aria-hidden="true" />;
   if (!entry) return null;
-  const min = formatTemp(entry.tempMinC);
-  const max = formatTemp(entry.tempMaxC);
+  const min = formatTemp(entry.tempMinC, tempUnit);
+  const max = formatTemp(entry.tempMaxC, tempUnit);
   if (min == null && max == null) return null;
   const icon = entry.conditionCode ? weatherIcon(mapConditionCode(entry.conditionCode), true) : null;
   return (
