@@ -1,1 +1,40 @@
-{}
+{
+  "greeting": {
+    "guest": "你好 👋",
+    "user": "你好，{{name}} 👋",
+    "fallbackName": "旅行者"
+  },
+  "guest": {
+    "blurMessage": "登录后查看我的旅行记录"
+  },
+  "empty": {
+    "message": "还没有旅行记录，要记录第一次旅行吗？",
+    "createTrip": "+ 创建旅行",
+    "sampleTrip": "✨ 查看示例行程"
+  },
+  "stats": {
+    "sectionTitle": "我的旅行记录"
+  },
+  "past": {
+    "sectionTitle": "过往旅行"
+  },
+  "hero": {
+    "planNext": "计划一次新旅行吧 ✈️",
+    "createTrip": "创建旅行",
+    "firstItem": "· 首个行程 {{time}}",
+    "todayBadge": "今日行程",
+    "dayIndex": "第{{day}}天 · {{date}}",
+    "noItemsToday": "今天还没有安排行程"
+  },
+  "tile": {
+    "trips": "旅行",
+    "countries": "国家",
+    "days": "天数",
+    "cities": "城市",
+    "places": "地点",
+    "distanceKm": "里程(km)"
+  },
+  "worldMap": {
+    "caption_other": "{{count}}个国家"
+  }
+}

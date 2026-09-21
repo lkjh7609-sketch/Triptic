@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import type { TripRow } from '@/shared/api/tripService';
 import { tripService } from '@/shared/api/tripService';
 import { getDDay } from '@/features/plan/tripStatus';
@@ -27,19 +28,21 @@ interface HeroCardProps {
  * 이번 라운드는 빼고 오늘 일정 목록까지만 보여준다.
  */
 export function HeroCard({ upcoming, ongoing }: HeroCardProps) {
+  const { t } = useTranslation('home');
   if (ongoing) return <OngoingHero trip={ongoing} />;
   if (upcoming) return <UpcomingHero trip={upcoming} />;
   return (
     <div className={styles.card}>
-      <p className={styles.emptyMessage}>다음 여행을 계획해 보세요 ✈️</p>
+      <p className={styles.emptyMessage}>{t('hero.planNext')}</p>
       <Link to="/plan" className={styles.cta}>
-        여행 만들기
+        {t('hero.createTrip')}
       </Link>
     </div>
   );
 }
 
 function UpcomingHero({ trip }: { trip: TripRow }) {
+  const { t } = useTranslation('home');
   const dday = getDDay(trip.start_date);
   const project = tripService.toLocalProject(trip);
   const firstItem = ((project.data as PlannerData | undefined)?.[1] ?? [])[0];
@@ -66,7 +69,7 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
             {trip.city ? trip.city.split(',')[0].trim() : ''} {formatTemp(current.tempC, tempUnit)}
           </span>
         ) : null}
-        {firstItem?.time ? <span>· 첫 일정 {firstItem.time}</span> : null}
+        {firstItem?.time ? <span>{t('hero.firstItem', { time: firstItem.time })}</span> : null}
       </div>
       {outbound ? (
         <p className={styles.flightRow}>
@@ -78,6 +81,7 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
 }
 
 function OngoingHero({ trip }: { trip: TripRow }) {
+  const { t } = useTranslation('home');
   const project = tripService.toLocalProject(trip);
   const totalDays = project.totalDays || 1;
   const dayIndex = trip.start_date
@@ -94,11 +98,11 @@ function OngoingHero({ trip }: { trip: TripRow }) {
   return (
     <Link to={`/plan/${trip.id}`} className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.ongoingBadge}>오늘의 일정</span>
+        <span className={styles.ongoingBadge}>{t('hero.todayBadge')}</span>
         <h2 className={styles.title}>{trip.title}</h2>
       </div>
       <p className={styles.dates}>
-        {dayIndex}일차 · {format(new Date(), 'M/d (E)', { locale: ko })}
+        {t('hero.dayIndex', { day: dayIndex, date: format(new Date(), 'M/d (E)', { locale: ko }) })}
       </p>
       {todayItems.length > 0 ? (
         <ul className={styles.itemList}>
@@ -109,7 +113,7 @@ function OngoingHero({ trip }: { trip: TripRow }) {
           ))}
         </ul>
       ) : (
-        <p className={styles.emptyMessage}>오늘은 등록된 일정이 없어요</p>
+        <p className={styles.emptyMessage}>{t('hero.noItemsToday')}</p>
       )}
     </Link>
   );

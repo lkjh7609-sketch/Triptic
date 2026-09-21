@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { TravelStats } from './useHomeStats';
 import styles from './StatsTiles.module.css';
 
@@ -13,15 +14,16 @@ interface StatsTilesProps {
  * (useHomeStats.ts §5 coalesce 참고).
  */
 export function StatsTiles({ stats }: StatsTilesProps) {
+  const { t } = useTranslation('home');
   const km = stats.groundMeters != null ? Math.round(stats.groundMeters / 1000).toLocaleString() : '—';
   return (
     <div className={styles.grid}>
-      <Tile value={stats.tripCount} label="여행" />
-      <Tile value={stats.countryCount} label="국가" />
-      <Tile value={stats.dayCount} label="일수" />
-      <Tile value={stats.cityCount} label="도시" />
-      <Tile value={stats.placeCount} label="장소" />
-      <Tile value={km} label="이동 km" />
+      <Tile value={stats.tripCount} label={t('tile.trips')} />
+      <Tile value={stats.countryCount} label={t('tile.countries')} />
+      <Tile value={stats.dayCount} label={t('tile.days')} />
+      <Tile value={stats.cityCount} label={t('tile.cities')} />
+      <Tile value={stats.placeCount} label={t('tile.places')} />
+      <Tile value={km} label={t('tile.distanceKm')} />
     </div>
   );
 }

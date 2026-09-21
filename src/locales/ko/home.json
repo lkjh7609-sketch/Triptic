@@ -1,1 +1,40 @@
-{}
+{
+  "greeting": {
+    "guest": "안녕하세요 👋",
+    "user": "안녕하세요, {{name}}님 👋",
+    "fallbackName": "여행자"
+  },
+  "guest": {
+    "blurMessage": "로그인하고 내 기록을 확인해 보세요"
+  },
+  "empty": {
+    "message": "아직 떠난 여행이 없어요. 첫 여행을 기록해 볼까요?",
+    "createTrip": "+ 여행 만들기",
+    "sampleTrip": "✨ 샘플 여행 둘러보기"
+  },
+  "stats": {
+    "sectionTitle": "나의 여행 기록"
+  },
+  "past": {
+    "sectionTitle": "지난 여행"
+  },
+  "hero": {
+    "planNext": "다음 여행을 계획해 보세요 ✈️",
+    "createTrip": "여행 만들기",
+    "firstItem": "· 첫 일정 {{time}}",
+    "todayBadge": "오늘의 일정",
+    "dayIndex": "{{day}}일차 · {{date}}",
+    "noItemsToday": "오늘은 등록된 일정이 없어요"
+  },
+  "tile": {
+    "trips": "여행",
+    "countries": "국가",
+    "days": "일수",
+    "cities": "도시",
+    "places": "장소",
+    "distanceKm": "이동 km"
+  },
+  "worldMap": {
+    "caption_other": "{{count}}개국"
+  }
+}

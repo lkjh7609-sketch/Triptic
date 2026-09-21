@@ -1,1 +1,83 @@
-{}
+{
+  "section": {
+    "account": "Account",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "data": "Data",
+    "community": "Community",
+    "about": "About"
+  },
+  "account": {
+    "fallbackName": "My account",
+    "signOut": "Sign out",
+    "deleteAction": "Delete account"
+  },
+  "preferences": {
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "tempUnit": "Temperature unit",
+    "distanceUnit": "Distance unit",
+    "distanceUnitHint": "The distance unit isn't applied to maps or routes yet.",
+    "baseCurrency": "Default currency",
+    "language": "Language",
+    "languageHint": "Switching display language will be supported in a future update. For now, only the setting is saved.",
+    "loginHint": "Sign in to save your temperature and distance units, default currency, and language."
+  },
+  "notifications": {
+    "preDeparture": "Pre-departure reminder",
+    "flightChanges": "Flight changes",
+    "communityReplies": "Community replies",
+    "marketing": "Marketing updates",
+    "hint": "Actual notification delivery will be supported in a future update. For now, only the setting is saved."
+  },
+  "data": {
+    "offlineCache": "Offline cache",
+    "calculating": "Calculating…",
+    "clearCache": "Clear cache",
+    "clearingCache": "Clearing…",
+    "backup": "📤 Export / 📥 Import (JSON)",
+    "pdfHint": "You can export a per-trip PDF from the share (↗) button on the trip detail screen."
+  },
+  "about": {
+    "version": "Version {{version}}"
+  },
+  "licenses": {
+    "title": "Open source licenses"
+  },
+  "blocked": {
+    "empty": "No blocked users.",
+    "unknownUser": "Unknown user",
+    "unblock": "Unblock"
+  },
+  "delete": {
+    "stepIndicator": "Step {{current}} of {{total}}",
+    "warningTitle": "Delete your account?",
+    "warningBody": "Deleting your account removes all the data below. You can undo this by signing back in within 30 days.",
+    "impact": {
+      "tripsPending": "… trips",
+      "trips_one": "{{count}} trip",
+      "trips_other": "{{count}} trips",
+      "vouchersPending": "… vouchers",
+      "vouchers_one": "{{count}} voucher",
+      "vouchers_other": "{{count}} vouchers",
+      "postsPending": "… community posts",
+      "posts_one": "{{count}} community post",
+      "posts_other": "{{count}} community posts"
+    },
+    "continue": "Continue",
+    "reauthTitle": "Verify it's you",
+    "reauthBody": "To delete your account, please sign in again to verify your identity.",
+    "reauthSuccess": "Identity verified.",
+    "reauthButton": "Sign in again",
+    "reauthError": "Couldn't start re-authentication. Please try again shortly.",
+    "confirmTitle": "Final confirmation",
+    "confirmBody": "Type <strong>Delete</strong> in the field below to proceed with account deletion.",
+    "confirmInputAriaLabel": "Deletion confirmation input",
+    "processing": "Processing…",
+    "requestError": "Couldn't process the account deletion request. Please try again shortly.",
+    "doneTitle": "Deletion request received",
+    "doneBody": "You can restore your account by signing in again within 30 days. After that, it will be permanently deleted."
+  }
+}

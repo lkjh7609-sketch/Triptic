@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import WorldMap, { type CountryContext, type ISOCode } from 'react-svg-worldmap';
 import { countryNameToIso } from './countryLookup';
 import styles from './WorldMapCard.module.css';
@@ -17,6 +18,7 @@ interface WorldMapCardProps {
  * 아직 국가별 필터가 없어 이번 라운드는 계획 탭으로만 이동시킨다(후속 작업).
  */
 export function WorldMapCard({ countries }: WorldMapCardProps) {
+  const { t } = useTranslation('home');
   const navigate = useNavigate();
   const isoCodes = useMemo(
     () => Array.from(new Set(countries.map(countryNameToIso).filter((c): c is string => !!c))),
@@ -49,7 +51,7 @@ export function WorldMapCard({ countries }: WorldMapCardProps) {
         onClickFunction={() => navigate('/plan')}
         tooltipTextFunction={(context) => context.countryName}
       />
-      <p className={styles.caption}>{isoCodes.length}개국</p>
+      <p className={styles.caption}>{t('worldMap.caption', { count: isoCodes.length })}</p>
     </div>
   );
 }

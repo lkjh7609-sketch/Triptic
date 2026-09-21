@@ -1,1 +1,80 @@
-{}
+{
+  "section": {
+    "account": "账户",
+    "preferences": "偏好设置",
+    "notifications": "通知",
+    "data": "数据",
+    "community": "社区",
+    "about": "关于"
+  },
+  "account": {
+    "fallbackName": "我的账户",
+    "signOut": "退出登录",
+    "deleteAction": "删除账户"
+  },
+  "preferences": {
+    "theme": "主题",
+    "themeSystem": "跟随系统",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "tempUnit": "温度单位",
+    "distanceUnit": "距离单位",
+    "distanceUnitHint": "距离单位暂未应用到地图或路线显示中。",
+    "baseCurrency": "默认货币",
+    "language": "语言",
+    "languageHint": "切换显示语言将在后续版本中支持，目前仅保存该设置。",
+    "loginHint": "登录后可保存温度单位、距离单位、默认货币和语言设置。"
+  },
+  "notifications": {
+    "preDeparture": "出发前提醒",
+    "flightChanges": "航班变更",
+    "communityReplies": "社区回复",
+    "marketing": "营销资讯",
+    "hint": "实际通知推送将在后续版本中支持，目前仅保存该设置。"
+  },
+  "data": {
+    "offlineCache": "离线缓存",
+    "calculating": "计算中…",
+    "clearCache": "清除缓存",
+    "clearingCache": "清除中…",
+    "backup": "📤 导出 / 📥 导入（JSON）",
+    "pdfHint": "可在行程详情页的分享（↗）按钮中导出该行程的PDF。"
+  },
+  "about": {
+    "version": "版本 {{version}}"
+  },
+  "licenses": {
+    "title": "开源许可证"
+  },
+  "blocked": {
+    "empty": "暂无已屏蔽的用户。",
+    "unknownUser": "未知用户",
+    "unblock": "取消屏蔽"
+  },
+  "delete": {
+    "stepIndicator": "第 {{current}} / {{total}} 步",
+    "warningTitle": "确定要删除账户吗？",
+    "warningBody": "删除后，以下数据将全部消失。30天内重新登录可撤销此操作。",
+    "impact": {
+      "tripsPending": "…个行程",
+      "trips_other": "{{count}}个行程",
+      "vouchersPending": "…张凭证",
+      "vouchers_other": "{{count}}张凭证",
+      "postsPending": "…篇社区帖子",
+      "posts_other": "{{count}}篇社区帖子"
+    },
+    "continue": "继续",
+    "reauthTitle": "身份验证",
+    "reauthBody": "删除账户前，请重新登录以验证您的身份。",
+    "reauthSuccess": "身份验证已完成。",
+    "reauthButton": "重新登录",
+    "reauthError": "未能开始身份验证，请稍后再试。",
+    "confirmTitle": "最终确认",
+    "confirmBody": "在下方输入框中输入<strong>删除</strong>，即可继续注销账号。",
+    "confirmInputAriaLabel": "删除确认文字输入框",
+    "processing": "处理中…",
+    "requestError": "未能处理账户删除请求，请稍后再试。",
+    "doneTitle": "删除请求已提交",
+    "doneBody": "30天内重新登录可恢复账户，之后账户将被永久删除。"
+  }
+}

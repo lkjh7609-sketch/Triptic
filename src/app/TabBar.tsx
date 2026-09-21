@@ -1,18 +1,19 @@
 import { Link, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import styles from './TabBar.module.css';
 
 interface TabDef {
   to: string;
-  label: string;
+  labelKey: string;
   icon: string;
 }
 
 // 01-design-system.md §6.1: 홈 / 계획 / 커뮤니티 / 설정
 const TABS: TabDef[] = [
-  { to: '/', label: '홈', icon: '🏠' },
-  { to: '/plan', label: '계획', icon: '🗺️' },
-  { to: '/community', label: '커뮤니티', icon: '💬' },
-  { to: '/settings', label: '설정', icon: '⚙️' },
+  { to: '/', labelKey: 'tab.home', icon: '🏠' },
+  { to: '/plan', labelKey: 'tab.plan', icon: '🗺️' },
+  { to: '/community', labelKey: 'tab.community', icon: '💬' },
+  { to: '/settings', labelKey: 'tab.settings', icon: '⚙️' },
 ];
 
 function isTabActive(pathname: string, to: string): boolean {
@@ -28,9 +29,10 @@ function isTabActive(pathname: string, to: string): boolean {
  */
 export function TabBar() {
   const { pathname } = useLocation();
+  const { t } = useTranslation();
 
   return (
-    <nav className={`${styles.tabBar} tab-bar`} role="tablist" aria-label="주요 화면 전환">
+    <nav className={`${styles.tabBar} tab-bar`} role="tablist" aria-label={t('nav.primary')}>
       {TABS.map((tab) => {
         const active = isTabActive(pathname, tab.to);
         return (
@@ -44,7 +46,7 @@ export function TabBar() {
             <span className={styles.icon} aria-hidden="true">
               {tab.icon}
             </span>
-            <span className={styles.label}>{tab.label}</span>
+            <span className={styles.label}>{t(tab.labelKey)}</span>
           </Link>
         );
       })}

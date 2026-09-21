@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './ErrorState.module.css';
 
 interface ErrorStateProps {
@@ -11,24 +12,22 @@ interface ErrorStateProps {
 }
 
 /** 오류 상태 (01-design-system.md §6.7): 원인 요약 + "다시 시도" + (필요 시) 고객센터 링크 */
-export function ErrorState({
-  summary,
-  onRetry,
-  retryLabel = '다시 시도',
-  supportHref,
-  supportLabel = '문의하기',
-}: ErrorStateProps) {
+export function ErrorState({ summary, onRetry, retryLabel, supportHref, supportLabel }: ErrorStateProps) {
+  const { t } = useTranslation();
+  const resolvedRetryLabel = retryLabel ?? t('action.retry');
+  const resolvedSupportLabel = supportLabel ?? t('action.contact');
+
   return (
     <div className={styles.wrap} role="alert">
       <p className={styles.summary}>{summary}</p>
       {onRetry ? (
         <button type="button" className={styles.retry} onClick={onRetry}>
-          {retryLabel}
+          {resolvedRetryLabel}
         </button>
       ) : null}
       {supportHref ? (
         <a className={styles.supportLink} href={supportHref}>
-          {supportLabel}
+          {resolvedSupportLabel}
         </a>
       ) : null}
     </div>

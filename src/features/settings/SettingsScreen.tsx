@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { useTrips } from '@/features/plan/hooks/useTrips';
@@ -17,11 +18,11 @@ import styles from './SettingsScreen.module.css';
 const APP_VERSION = '3.0.0-dev';
 const CONTACT_EMAIL = 'lkjh7609@gmail.com';
 
-const NOTIFICATION_LABELS: Record<keyof NotificationPrefs, string> = {
-  preDeparture: '출발 전 리마인더',
-  flightChanges: '항공편 변경',
-  communityReplies: '커뮤니티 답글',
-  marketing: '마케팅 소식',
+const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
+  preDeparture: 'notifications.preDeparture',
+  flightChanges: 'notifications.flightChanges',
+  communityReplies: 'notifications.communityReplies',
+  marketing: 'notifications.marketing',
 };
 
 /**
@@ -33,6 +34,7 @@ const NOTIFICATION_LABELS: Record<keyof NotificationPrefs, string> = {
  * 정보(약관/개인정보처리방침/오픈소스 라이선스/문의하기) 섹션을 채운다.
  */
 export function SettingsScreen() {
+  const { t } = useTranslation(['settings', 'common']);
   const { user, loading } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -91,11 +93,11 @@ export function SettingsScreen() {
   return (
     <div>
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>계정</h2>
+        <h2 className={styles.sectionTitle}>{t('section.account')}</h2>
         {loading ? null : user ? (
           <>
             <div className={styles.userInfo}>
-              <span>{user.email ?? user.user_metadata?.name ?? '내 계정'}</span>
+              <span>{user.email ?? user.user_metadata?.name ?? t('account.fallbackName')}</span>
             </div>
             <div className={styles.row}>
               <button
@@ -103,7 +105,7 @@ export function SettingsScreen() {
                 className={styles.linkButton}
                 onClick={() => signOut().catch((err) => captureError(err, { context: 'signOut' }))}
               >
-                로그아웃
+                {t('account.signOut')}
               </button>
             </div>
             <div className={styles.row}>
@@ -112,7 +114,7 @@ export function SettingsScreen() {
                 className={styles.dangerLink}
                 onClick={() => setShowDeleteFlow(true)}
               >
-                계정 삭제
+                {t('account.deleteAction')}
               </button>
             </div>
           </>
@@ -122,24 +124,24 @@ export function SettingsScreen() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>환경설정</h2>
+        <h2 className={styles.sectionTitle}>{t('section.preferences')}</h2>
         <div className={styles.row}>
-          <span>테마</span>
+          <span>{t('preferences.theme')}</span>
           <select
             className={styles.select}
             value={theme}
             onChange={(e) => handleThemeChange(e.target.value as ThemePreference)}
           >
-            <option value="system">시스템</option>
-            <option value="light">라이트</option>
-            <option value="dark">다크</option>
+            <option value="system">{t('preferences.themeSystem')}</option>
+            <option value="light">{t('preferences.themeLight')}</option>
+            <option value="dark">{t('preferences.themeDark')}</option>
           </select>
         </div>
 
         {user ? (
           <>
             <div className={styles.row}>
-              <span>온도 단위</span>
+              <span>{t('preferences.tempUnit')}</span>
               <select
                 className={styles.select}
                 value={profile?.temp_unit ?? 'c'}
@@ -150,7 +152,7 @@ export function SettingsScreen() {
               </select>
             </div>
             <div className={styles.row}>
-              <span>거리 단위</span>
+              <span>{t('preferences.distanceUnit')}</span>
               <select
                 className={styles.select}
                 value={profile?.distance_unit ?? 'km'}
@@ -160,9 +162,9 @@ export function SettingsScreen() {
                 <option value="mi">mi</option>
               </select>
             </div>
-            <p className={styles.hint}>거리 단위는 지도·경로 표시에는 아직 반영되지 않아요.</p>
+            <p className={styles.hint}>{t('preferences.distanceUnitHint')}</p>
             <div className={styles.row}>
-              <span>기본 통화</span>
+              <span>{t('preferences.baseCurrency')}</span>
               <select
                 className={styles.select}
                 value={profile?.base_currency ?? 'KRW'}
@@ -176,30 +178,31 @@ export function SettingsScreen() {
               </select>
             </div>
             <div className={styles.row}>
-              <span>언어</span>
+              <span>{t('preferences.language')}</span>
               <select
                 className={styles.select}
                 value={profile?.locale ?? 'ko'}
                 onChange={(e) => updateProfile.mutate({ locale: e.target.value as Locale })}
               >
-                <option value="ko">한국어</option>
+                {/* 언어 선택지는 각 언어의 자체 표기(고유명사)로 표시한다 — UI 로케일에 따라 번역하지 않음 */}
+                <option value="ko">한국어</option> {/* i18n-exempt */}
                 <option value="en">English</option>
                 <option value="zh-CN">简体中文</option>
               </select>
             </div>
-            <p className={styles.hint}>표시 언어 전환은 다음 업데이트에서 지원돼요. 지금은 설정만 저장돼요.</p>
+            <p className={styles.hint}>{t('preferences.languageHint')}</p>
           </>
         ) : (
-          <p className={styles.hint}>로그인하면 온도·거리 단위, 기본 통화, 언어 설정을 저장할 수 있어요.</p>
+          <p className={styles.hint}>{t('preferences.loginHint')}</p>
         )}
       </section>
 
       {user ? (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>알림</h2>
-          {(Object.keys(NOTIFICATION_LABELS) as (keyof NotificationPrefs)[]).map((key) => (
+          <h2 className={styles.sectionTitle}>{t('section.notifications')}</h2>
+          {(Object.keys(NOTIFICATION_LABEL_KEYS) as (keyof NotificationPrefs)[]).map((key) => (
             <label className={styles.row} key={key}>
-              <span>{NOTIFICATION_LABELS[key]}</span>
+              <span>{t(NOTIFICATION_LABEL_KEYS[key])}</span>
               <input
                 type="checkbox"
                 checked={profile?.notification_prefs?.[key] ?? key !== 'marketing'}
@@ -207,59 +210,59 @@ export function SettingsScreen() {
               />
             </label>
           ))}
-          <p className={styles.hint}>실제 알림 발송은 다음 업데이트에서 지원돼요. 지금은 설정만 저장돼요.</p>
+          <p className={styles.hint}>{t('notifications.hint')}</p>
         </section>
       ) : null}
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>데이터</h2>
+        <h2 className={styles.sectionTitle}>{t('section.data')}</h2>
         <div className={styles.row}>
-          <span>오프라인 캐시</span>
-          <span>{cacheUsageMB == null ? '계산 중…' : `${cacheUsageMB.toFixed(1)}MB`}</span>
+          <span>{t('data.offlineCache')}</span>
+          <span>{cacheUsageMB == null ? t('data.calculating') : `${cacheUsageMB.toFixed(1)}MB`}</span>
         </div>
         <div className={styles.row}>
           <button type="button" className={styles.linkButton} onClick={handleClearCache} disabled={clearingCache}>
-            {clearingCache ? '지우는 중…' : '캐시 지우기'}
+            {clearingCache ? t('data.clearingCache') : t('data.clearCache')}
           </button>
         </div>
         <div className={styles.row}>
           <button type="button" className={styles.linkButton} onClick={() => setShowBackup(true)}>
-            📤 내보내기 / 📥 가져오기 (JSON)
+            {t('data.backup')}
           </button>
         </div>
-        <p className={styles.hint}>여행별 PDF 내보내기는 여행 상세의 공유(↗) 버튼에서 할 수 있어요.</p>
+        <p className={styles.hint}>{t('data.pdfHint')}</p>
       </section>
 
       {user ? (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>커뮤니티</h2>
+          <h2 className={styles.sectionTitle}>{t('section.community')}</h2>
           <BlockedUsersList userId={user.id} />
         </section>
       ) : null}
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>정보</h2>
+        <h2 className={styles.sectionTitle}>{t('section.about')}</h2>
         <div className={styles.row}>
           <a href="/terms.html" target="_blank" rel="noopener" className={styles.linkButton}>
-            이용약관
+            {t('legal.terms', { ns: 'common' })}
           </a>
         </div>
         <div className={styles.row}>
           <a href="/privacy.html" target="_blank" rel="noopener" className={styles.linkButton}>
-            개인정보처리방침
+            {t('legal.privacy', { ns: 'common' })}
           </a>
         </div>
         <div className={styles.row}>
           <button type="button" className={styles.linkButton} onClick={() => setShowLicenses(true)}>
-            오픈소스 라이선스
+            {t('licenses.title')}
           </button>
         </div>
         <div className={styles.row}>
           <a href={`mailto:${CONTACT_EMAIL}`} className={styles.linkButton}>
-            문의하기
+            {t('action.contact', { ns: 'common' })}
           </a>
         </div>
-        <p className={styles.row}>버전 {APP_VERSION}</p>
+        <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
       </section>
 
       {showBackup ? (
