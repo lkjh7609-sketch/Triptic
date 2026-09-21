@@ -11,6 +11,7 @@ import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import type { DistanceUnit, Locale, NotificationPrefs, TempUnit } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
+import { BlockedUsersList } from './BlockedUsersList';
 import styles from './SettingsScreen.module.css';
 
 const APP_VERSION = '3.0.0-dev';
@@ -228,6 +229,13 @@ export function SettingsScreen() {
         </div>
         <p className={styles.hint}>여행별 PDF 내보내기는 여행 상세의 공유(↗) 버튼에서 할 수 있어요.</p>
       </section>
+
+      {user ? (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>커뮤니티</h2>
+          <BlockedUsersList userId={user.id} />
+        </section>
+      ) : null}
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>정보</h2>
