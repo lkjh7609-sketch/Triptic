@@ -8,16 +8,9 @@
 import type { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { getSupabaseClient } from './supabaseClient';
 import { clearOfflineCache } from '@/shared/offline/persister';
+import { isNativeApp } from '@/shared/platform';
 
 export type AuthProvider = 'apple' | 'google' | 'kakao';
-
-function isNativeApp(): boolean {
-  if (typeof window === 'undefined') return false;
-  return (
-    window.location.protocol === 'capacitor:' ||
-    typeof (window as unknown as { Capacitor?: unknown }).Capacitor !== 'undefined'
-  );
-}
 
 function isLocalHost(): boolean {
   if (typeof window === 'undefined') return false;

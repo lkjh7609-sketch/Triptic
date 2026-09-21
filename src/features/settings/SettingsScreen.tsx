@@ -9,6 +9,7 @@ import { LoginButtons } from '@/features/auth/LoginButtons';
 import { BackupModal } from '@/features/plan/BackupModal';
 import { CURRENCIES } from '@/features/plan/expenses';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
+import { registerPushNotifications } from '@/shared/push/registerPush';
 import type { DistanceUnit, Locale, NotificationPrefs, TempUnit } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
@@ -88,6 +89,11 @@ export function SettingsScreen() {
       marketing: false,
     };
     updateProfile.mutate({ notification_prefs: { ...base, [key]: value } });
+    // 알림을 처음 켜는 순간 디바이스 토큰을 등록한다(네이티브 앱에서만 동작,
+    // 실제 발송 파이프라인은 아직 없다 — src/shared/push/registerPush.ts 참고).
+    if (value && user) {
+      registerPushNotifications(user.id).catch((err) => captureError(err, { context: 'registerPushNotifications' }));
+    }
   }
 
   return (
@@ -190,7 +196,6 @@ export function SettingsScreen() {
                 <option value="zh-CN">简体中文</option>
               </select>
             </div>
-            <p className={styles.hint}>{t('preferences.languageHint')}</p>
           </>
         ) : (
           <p className={styles.hint}>{t('preferences.loginHint')}</p>

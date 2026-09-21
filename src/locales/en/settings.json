@@ -22,7 +22,6 @@
     "distanceUnitHint": "The distance unit isn't applied to maps or routes yet.",
     "baseCurrency": "Default currency",
     "language": "Language",
-    "languageHint": "Switching display language will be supported in a future update. For now, only the setting is saved.",
     "loginHint": "Sign in to save your temperature and distance units, default currency, and language."
   },
   "notifications": {

@@ -22,7 +22,6 @@
     "distanceUnitHint": "거리 단위는 지도·경로 표시에는 아직 반영되지 않아요.",
     "baseCurrency": "기본 통화",
     "language": "언어",
-    "languageHint": "표시 언어 전환은 다음 업데이트에서 지원돼요. 지금은 설정만 저장돼요.",
     "loginHint": "로그인하면 온도·거리 단위, 기본 통화, 언어 설정을 저장할 수 있어요."
   },
   "notifications": {
