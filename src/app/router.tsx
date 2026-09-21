@@ -48,6 +48,34 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'community/compose',
+          lazy: async () => {
+            const { ComposePostScreen } = await import('@/features/community/ComposePostScreen');
+            return { Component: ComposePostScreen };
+          },
+        },
+        {
+          path: 'community/d/:slug',
+          lazy: async () => {
+            const { DestinationChannelScreen } = await import('@/features/community/DestinationChannelScreen');
+            return { Component: DestinationChannelScreen };
+          },
+        },
+        {
+          path: 'community/post/:postId',
+          lazy: async () => {
+            const { PostDetailScreen } = await import('@/features/community/PostDetailScreen');
+            return { Component: PostDetailScreen };
+          },
+        },
+        {
+          path: 'community/user/:userId',
+          lazy: async () => {
+            const { UserProfileScreen } = await import('@/features/community/UserProfileScreen');
+            return { Component: UserProfileScreen };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => {
             const { SettingsScreen } = await import('@/features/settings/SettingsScreen');
@@ -65,6 +93,14 @@ export const router = createBrowserRouter(
       lazy: async () => {
         const { SharedTripScreen } = await import('@/features/shared/SharedTripScreen');
         return { Component: SharedTripScreen };
+      },
+    },
+    {
+      // 운영 콘솔(06-community.md §9) — 하단 탭 셸 밖의 독립 화면, role='admin'만 실제 데이터를 본다
+      path: 'admin',
+      lazy: async () => {
+        const { AdminScreen } = await import('@/features/community/AdminScreen');
+        return { Component: AdminScreen };
       },
     },
   ],
