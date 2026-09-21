@@ -1,18 +1,20 @@
 /**
- * Supabase Edge Function: sync-trip-normalized (03-data-model.md §6 M2/M5)
+ * Supabase Edge Function: trip-itinerary-write (ADR-002 M7 준비, 구 sync-trip-normalized)
  *
- * POST { tripId: string }
- * Authorization: 호출한 사용자의 Supabase 세션 JWT — userClient로만 동작하므로
- * RLS(can_edit_trip)가 그대로 적용된다. 남의 트립은 애초에 조회조차 안 된다.
+ * POST { tripId, data, hotels, meals, expenses, flights, dayCities }
+ * Authorization: 호출한 사용자의 세션 JWT — userClient로만 동작하므로
+ * RLS(can_edit_trip)가 그대로 적용된다. 남의 트립은 애초에 쓰기가 안 된다.
  *
- * `trips.snapshot`(1차 데이터, 변경 없음)을 읽어 정규화 테이블
- * (trip_days/itinerary_items/legs/expenses)을 **멱등하게 완전히 재계산**한다 —
- * 매번 해당 trip_id의 파생 행을 지우고 새로 만든다. `bookings` 테이블은 Document
- * AI 파이프라인(parse-booking)의 소유이므로 이 함수는 절대 건드리지 않는다.
+ * 예전엔 trips.snapshot(1차 데이터)을 읽어 정규화 테이블을 파생 프로젝션으로
+ * fire-and-forget 재계산했지만(sync-trip-normalized), 지금은 **정규화
+ * 테이블이 1차 데이터**다 — 요청 본문으로 받은 콘텐츠(예전에 snapshot에
+ * 저장하던 것과 정확히 같은 모양)를 replace_trip_itinerary() RPC 한 번으로
+ * trip_days/itinerary_items/legs/expenses에 원자적으로 반영한다. `bookings`
+ * 테이블은 Document AI 파이프라인 소유이므로 여전히 건드리지 않는다.
  *
- * 호출 지점: src/shared/api/tripService.ts의 saveTrip() 성공 직후
- * (fire-and-forget) — 실제 트립을 만지는 모든 클라이언트 경로가 결국
- * saveTrip()을 거치므로 이 한 곳만으로 M5 "dual-write"를 만족한다.
+ * 호출 지점: src/shared/api/tripService.ts / src/services/supabaseService.js의
+ * saveTrip() — 둘 다 이 함수를 await로 호출하고 실패 시 에러를 전파한다
+ * (예전 fire-and-forget과 달리 이제 이 함수가 실패하면 저장 자체가 실패한다).
  */
 import { createClient } from '@supabase/supabase-js';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
@@ -98,6 +100,17 @@ interface TaggedItem {
   source: PlaceItem;
   kind: ItemKind;
   subtitle?: string | null;
+  extra?: Record<string, unknown> | null;
+}
+
+interface RequestBody {
+  tripId?: string;
+  data?: Record<number, PlaceItem[]>;
+  hotels?: HotelsData;
+  meals?: MealsData;
+  expenses?: ExpensesData;
+  flights?: FlightsData;
+  dayCities?: DayCitiesData;
 }
 
 Deno.serve(async (req) => {
@@ -119,7 +132,7 @@ Deno.serve(async (req) => {
   } = await userClient.auth.getUser();
   if (!user) return jsonResponse({ error: '인증이 유효하지 않습니다.' }, 401, headers);
 
-  let body: { tripId?: string };
+  let body: RequestBody;
   try {
     body = await req.json();
   } catch {
@@ -129,7 +142,7 @@ Deno.serve(async (req) => {
 
   const { data: trip, error: tripErr } = await userClient
     .from('trips')
-    .select('id, start_date, end_date, base_currency, city, city_lat, city_lng, snapshot')
+    .select('id, start_date, end_date, base_currency, city, city_lat, city_lng')
     .eq('id', body.tripId)
     .single();
   if (tripErr || !trip) return jsonResponse({ error: '여행을 찾을 수 없습니다.' }, 404, headers);
@@ -139,33 +152,28 @@ Deno.serve(async (req) => {
 
   try {
     const totalDays = differenceInCalendarDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1;
-    const snap = (trip.snapshot ?? {}) as {
-      data?: Record<number, PlaceItem[]>;
-      hotels?: HotelsData;
-      meals?: MealsData;
-      expenses?: ExpensesData;
-      dayCities?: DayCitiesData;
-      flights?: FlightsData;
-    };
-    const dataByDay = snap.data ?? {};
-    const hotels: HotelsData = snap.hotels ?? {};
-    const meals: MealsData = snap.meals ?? {};
-    const expensesData: ExpensesData = snap.expenses ?? {};
-    const dayCities: DayCitiesData = snap.dayCities ?? {};
-    const flights: FlightsData = snap.flights ?? { outbound: null, return: null };
+    const dataByDay = body.data ?? {};
+    const hotels: HotelsData = body.hotels ?? {};
+    const meals: MealsData = body.meals ?? {};
+    const expensesData: ExpensesData = body.expenses ?? {};
+    const dayCities: DayCitiesData = body.dayCities ?? {};
+    const flights: FlightsData = body.flights ?? { outbound: null, return: null };
 
     const tripCityRef = { name: trip.city, lat: trip.city_lat, lng: trip.city_lng };
 
     // 출발일 기준으로 항공편을 해당 일차에 배정 (04-document-ai.md dayIndexForDate 재사용)
-    const flightsByDay = new Map<number, FlightInfo[]>();
-    for (const flight of [flights.outbound, flights.return]) {
-      if (!flight) continue;
+    // leg를 같이 들고 다니는 이유: 읽기 재구성 시 outbound/return을 추측 없이
+    // extra.leg만 보고 정확히 복원하기 위해서(itinerary_readwrite.ts 참고).
+    const flightsByDay = new Map<number, { leg: 'outbound' | 'return'; flight: FlightInfo }[]>();
+    (['outbound', 'return'] as const).forEach((leg) => {
+      const flight = flights[leg];
+      if (!flight) return;
       const idx = dayIndexForDate(flight.date, trip.start_date, totalDays);
-      if (idx == null) continue;
+      if (idx == null) return;
       const list = flightsByDay.get(idx) ?? [];
-      list.push(flight);
+      list.push({ leg, flight });
       flightsByDay.set(idx, list);
-    }
+    });
 
     interface DayRow {
       day_index: number;
@@ -211,7 +219,7 @@ Deno.serve(async (req) => {
         subtitle: item.mealType ? MEAL_META[item.mealType].label : null,
       }));
 
-      for (const flight of flightsByDay.get(day) ?? []) {
+      for (const { leg, flight } of flightsByDay.get(day) ?? []) {
         tagged.push({
           source: {
             name: flight.flightNo,
@@ -221,6 +229,10 @@ Deno.serve(async (req) => {
           } as PlaceItem,
           kind: 'flight',
           subtitle: `${flight.dep.iata} → ${flight.arr.iata}`,
+          // FlightInfo 원본 전체를 그대로 보존 — 구조화 컬럼(도착 좌표 등)에
+          // 자리가 없는 필드까지 포함해 읽기 재구성이 outbound/return을
+          // 무손실로 복원하도록 한다(leg는 추측 없이 바로 판정하기 위한 태그).
+          extra: { leg, flight },
         });
       }
 
@@ -239,37 +251,21 @@ Deno.serve(async (req) => {
       itemsByDayIndex.set(day, tagged);
     }
 
-    // ── 멱등 재동기화: 기존 파생 행 삭제 (bookings는 손대지 않음) ──────────────
-    await userClient.from('expenses').delete().eq('trip_id', trip.id);
-    const { error: deleteDaysErr } = await userClient.from('trip_days').delete().eq('trip_id', trip.id);
-    if (deleteDaysErr) throw deleteDaysErr;
+    // ── RPC 페이로드 구성 (실제 DB 반영은 replace_trip_itinerary 한 번으로 원자화) ──
+    const daysPayload = dayRows.map((d) => ({
+      day_index: d.day_index,
+      date: d.date,
+      city_name: d.city_name,
+      city_lat: d.city_lat,
+      city_lng: d.city_lng,
+      timezone: d.timezone,
+    }));
 
-    if (totalDays <= 0) {
-      return jsonResponse({ tripId: trip.id, dayCount: 0, itemCount: 0, legCount: 0, expenseCount: 0 }, 200, headers);
-    }
-
-    const { data: insertedDays, error: daysErr } = await userClient
-      .from('trip_days')
-      .insert(
-        dayRows.map((d) => ({
-          trip_id: trip.id,
-          day_index: d.day_index,
-          date: d.date,
-          city_name: d.city_name,
-          city_lat: d.city_lat,
-          city_lng: d.city_lng,
-          timezone: d.timezone,
-        })),
-      )
-      .select('id, day_index');
-    if (daysErr) throw daysErr;
-
-    const dayIdByIndex = new Map<number, string>(insertedDays!.map((d) => [d.day_index, d.id]));
+    const itemsPayload: Record<string, unknown>[] = [];
+    const legsPayload: Record<string, unknown>[] = [];
     const dayMetaByIndex = new Map<number, DayRow>(dayRows.map((d) => [d.day_index, d]));
 
-    const itemRows: Record<string, unknown>[] = [];
     for (const [dayIndex, tagged] of itemsByDayIndex.entries()) {
-      const dayId = dayIdByIndex.get(dayIndex)!;
       const meta = dayMetaByIndex.get(dayIndex)!;
       tagged.forEach((t, position) => {
         const hasCoords = t.source.lat != null && t.source.lng != null;
@@ -282,9 +278,8 @@ Deno.serve(async (req) => {
             startAt = null;
           }
         }
-        itemRows.push({
-          trip_id: trip.id,
-          day_id: dayId,
+        itemsPayload.push({
+          day_index: dayIndex,
           position,
           type: hasCoords ? t.kind : 'note',
           title: t.source.name,
@@ -299,40 +294,20 @@ Deno.serve(async (req) => {
           timezone: meta.timezone,
           start_at: startAt,
           memo: t.source.memo || null,
-          created_by: user.id,
+          extra: t.extra ?? null,
         });
       });
-    }
 
-    let insertedItems: { id: string; day_id: string; position: number; lat: number | null; lng: number | null }[] = [];
-    if (itemRows.length > 0) {
-      const { data: itemsData, error: itemsErr } = await userClient
-        .from('itinerary_items')
-        .insert(itemRows)
-        .select('id, day_id, position, lat, lng');
-      if (itemsErr) throw itemsErr;
-      insertedItems = itemsData!;
-    }
-
-    // ── legs: 같은 날짜 안에서 연속된 두 항목의 대권거리(haversine) 추정치 ──────
-    const byDayId = new Map<string, typeof insertedItems>();
-    for (const it of insertedItems) {
-      const arr = byDayId.get(it.day_id) ?? [];
-      arr.push(it);
-      byDayId.set(it.day_id, arr);
-    }
-    const legRows: Record<string, unknown>[] = [];
-    for (const arr of byDayId.values()) {
-      arr.sort((a, b) => a.position - b.position);
-      for (let i = 0; i < arr.length - 1; i++) {
-        const from = arr[i];
-        const to = arr[i + 1];
+      // legs: 같은 날짜 안에서 좌표가 있는 연속 항목 사이의 대권거리(haversine) 추정치
+      for (let i = 0; i < tagged.length - 1; i++) {
+        const from = tagged[i].source;
+        const to = tagged[i + 1].source;
         if (from.lat == null || from.lng == null || to.lat == null || to.lng == null) continue;
         const km = haversineKm(from.lat, from.lng, to.lat, to.lng);
-        legRows.push({
-          trip_id: trip.id,
-          from_item_id: from.id,
-          to_item_id: to.id,
+        legsPayload.push({
+          day_index: dayIndex,
+          from_position: i,
+          to_position: i + 1,
           mode: 'unknown',
           distance_m: Math.round(km * 1000),
           duration_s: null,
@@ -341,21 +316,14 @@ Deno.serve(async (req) => {
         });
       }
     }
-    if (legRows.length > 0) {
-      const { error: legsErr } = await userClient.from('legs').insert(legRows);
-      if (legsErr) throw legsErr;
-    }
 
-    // ── expenses ────────────────────────────────────────────────────────────
-    const expenseRows: Record<string, unknown>[] = [];
+    const baseCurrency = trip.base_currency ?? 'KRW';
+    const expensesPayload: Record<string, unknown>[] = [];
     for (let day = 1; day <= totalDays; day++) {
-      const dayId = dayIdByIndex.get(day)!;
       for (const exp of expensesData[day] ?? []) {
-        const baseCurrency = trip.base_currency ?? 'KRW';
         const expCurrency = exp.currency ?? baseCurrency;
-        expenseRows.push({
-          trip_id: trip.id,
-          day_id: dayId,
+        expensesPayload.push({
+          day_index: day,
           category: exp.category ?? 'other',
           description: exp.desc,
           amount: exp.amount,
@@ -365,24 +333,29 @@ Deno.serve(async (req) => {
         });
       }
     }
-    if (expenseRows.length > 0) {
-      const { error: expErr } = await userClient.from('expenses').insert(expenseRows);
-      if (expErr) throw expErr;
-    }
+
+    const { error: rpcErr } = await userClient.rpc('replace_trip_itinerary', {
+      p_trip_id: trip.id,
+      p_days: daysPayload,
+      p_items: itemsPayload,
+      p_legs: legsPayload,
+      p_expenses: expensesPayload,
+    });
+    if (rpcErr) throw rpcErr;
 
     return jsonResponse(
       {
         tripId: trip.id,
-        dayCount: dayRows.length,
-        itemCount: insertedItems.length,
-        legCount: legRows.length,
-        expenseCount: expenseRows.length,
+        dayCount: daysPayload.length,
+        itemCount: itemsPayload.length,
+        legCount: legsPayload.length,
+        expenseCount: expensesPayload.length,
       },
       200,
       headers,
     );
   } catch (err) {
-    console.error('[sync-trip-normalized] failed:', err instanceof Error ? err.message : err);
-    return jsonResponse({ error: '정규화 테이블 동기화에 실패했습니다.' }, 500, headers);
+    console.error('[trip-itinerary-write] failed:', err instanceof Error ? err.message : err);
+    return jsonResponse({ error: '일정 저장에 실패했습니다.' }, 500, headers);
   }
 });
