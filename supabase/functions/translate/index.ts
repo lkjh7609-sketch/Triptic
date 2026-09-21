@@ -9,11 +9,16 @@
  * 읽을 수 있으므로 번역도 동일하게 열어둔다, 02-screens.md §6).
  *
  * ⚠️ 스펙 원문은 REST 경로를 `/api/translate`(Vercel 서버리스 함수 스타일)로
- * 표기하지만, 이 프로젝트는 Gemini 키를 쓰는 기능을 전부 Supabase Edge
- * Function으로 통일해왔다(parse-booking, moderate-content와 동일 이유 —
- * 키가 이미 Supabase secrets에 등록돼 있음). 계약({text,source,target} →
- * 번역문)은 스펙과 동일, 배포 위치만 다르다.
+ * 표기하지만, 이 프로젝트는 AI 키를 쓰는 기능을 전부 Supabase Edge Function으로
+ * 통일해왔다(parse-booking, moderate-content와 동일 이유 — 키가 이미
+ * Supabase secrets에 등록돼 있음). 계약({text,source,target} → 번역문)은
+ * 스펙과 동일, 배포 위치만 다르다.
+ *
+ * DeepSeek(deepseek-flash, OpenAI 호환 chat/completions) 사용.
  */
+
+const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
+const MODEL = 'deepseek-flash';
 
 function corsHeaders(origin: string | null) {
   const headers = new Headers({ 'Content-Type': 'application/json' });
@@ -41,8 +46,8 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   if (req.method !== 'POST') return jsonResponse({ error: 'Method Not Allowed' }, 405, headers);
 
-  const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-  if (!geminiApiKey) return jsonResponse({ error: '번역 기능을 사용할 수 없습니다.' }, 503, headers);
+  const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+  if (!deepseekApiKey) return jsonResponse({ error: '번역 기능을 사용할 수 없습니다.' }, 503, headers);
 
   let body: { text?: string; source?: string; target?: string };
   try {
@@ -67,21 +72,22 @@ Text:
 """
 ${text}
 """`;
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiApiKey },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.2 },
-        }),
-        signal: controller.signal,
-      },
-    );
-    if (!res.ok) return jsonResponse({ error: '번역에 실패했습니다.' }, 502, headers);
+    const res = await fetch(DEEPSEEK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${deepseekApiKey}` },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      console.error('[translate] non-ok response', res.status, await res.text());
+      return jsonResponse({ error: '번역에 실패했습니다.' }, 502, headers);
+    }
     const data = await res.json();
-    const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const translated = data?.choices?.[0]?.message?.content?.trim();
     if (!translated) return jsonResponse({ error: '번역에 실패했습니다.' }, 502, headers);
     return jsonResponse({ translated }, 200, headers);
   } catch (err) {
