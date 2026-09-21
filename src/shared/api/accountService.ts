@@ -8,15 +8,19 @@ import { tripService } from './tripService';
 
 export interface DeletionImpactSummary {
   tripCount: number;
-  /** documents/posts 테이블은 아직 운영에 없으므로(Phase 4/5) 항상 0 — 적용되면 실제 값으로 바뀐다 */
   voucherCount: number;
+  /** posts 테이블은 아직 운영에 없으므로(Phase 5 커뮤니티 미착수) 항상 0 */
   postCount: number;
 }
 
 /** 02-screens.md §5.1 경고 화면: "삭제되는 데이터 명시" */
 export async function getDeletionImpactSummary(): Promise<DeletionImpactSummary> {
-  const trips = await tripService.listTrips();
-  return { tripCount: trips.length, voucherCount: 0, postCount: 0 };
+  const supabase = getSupabaseClient();
+  const [trips, { count: voucherCount }] = await Promise.all([
+    tripService.listTrips(),
+    supabase.from('documents').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+  ]);
+  return { tripCount: trips.length, voucherCount: voucherCount ?? 0, postCount: 0 };
 }
 
 export async function requestAccountDeletion(): Promise<void> {
