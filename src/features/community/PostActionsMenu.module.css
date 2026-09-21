@@ -1,0 +1,48 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-body-size);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  min-width: 140px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-1);
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  appearance: none;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-body-size);
+  color: var(--text-body);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.item:hover {
+  background: var(--surface-subtle);
+}
+
+.danger {
+  composes: item;
+  color: var(--danger);
+}
