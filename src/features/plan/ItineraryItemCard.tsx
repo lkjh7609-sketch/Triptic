@@ -1,5 +1,6 @@
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
+import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import type { PlaceItem } from './types';
 import styles from './ItineraryItemCard.module.css';
 
@@ -19,7 +20,8 @@ interface ItineraryItemCardProps {
  * 탭 → 상세 시트. 우측에 항목 시각의 시간별 기온(05-weather.md §6.2)을 보여준다.
  */
 export function ItineraryItemCard({ index, item, onClick, weather }: ItineraryItemCardProps) {
-  const tempText = weather ? formatTemp(weather.tempC) : null;
+  const tempUnit = useTempUnit();
+  const tempText = weather ? formatTemp(weather.tempC, tempUnit) : null;
   return (
     <button type="button" className={styles.card} onClick={onClick}>
       <div className={styles.marker} aria-hidden="true">

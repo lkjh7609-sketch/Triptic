@@ -7,6 +7,7 @@ import { getDDay } from '@/features/plan/tripStatus';
 import { useWeather } from '@/features/weather/useWeather';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
+import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import type { FlightsData, PlannerData } from '@/features/plan/types';
 import styles from './HeroCard.module.css';
 
@@ -45,6 +46,7 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
   const outbound = (project.flights as FlightsData | undefined)?.outbound;
   const weather = useWeather(trip.city_lat, trip.city_lng, todayISO(), todayISO());
   const current = weather.data?.current;
+  const tempUnit = useTempUnit();
 
   return (
     <Link to={`/plan/${trip.id}`} className={styles.card}>
@@ -61,7 +63,7 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
         {current ? (
           <span>
             {weatherIcon(mapConditionCode(current.conditionCode), current.isDaylight)}{' '}
-            {trip.city ? trip.city.split(',')[0].trim() : ''} {formatTemp(current.tempC)}
+            {trip.city ? trip.city.split(',')[0].trim() : ''} {formatTemp(current.tempC, tempUnit)}
           </span>
         ) : null}
         {firstItem?.time ? <span>· 첫 일정 {firstItem.time}</span> : null}
