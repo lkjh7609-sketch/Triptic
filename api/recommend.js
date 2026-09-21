@@ -1,244 +1,74 @@
-// Vercel Serverless Function: Multi-Provider Free AI Nearby Recommendations
-// Providers Supported: Google Gemini API (Free 1,500/day), Groq API (Free 14,400/day), OpenRouter
+// Vercel Serverless Function: AI Nearby Recommendations (DeepSeek)
 // EndPoint: POST /api/recommend
 
-let cachedOpenRouterModels = null;
-let lastCacheTime = 0;
-
-// 전체 요청은 이 예산(ms) 안에서 상위 제공자들을 시도하고, 남은 시간이 없으면
-// 즉시 4번 큐레이션 폴백으로 넘어간다. 플랫폼의 함수 실행 시간 제한(Vercel Hobby
+// 전체 요청은 이 예산(ms) 안에서 DeepSeek를 시도하고, 남은 시간이 없으면
+// 즉시 2번 큐레이션 폴백으로 넘어간다. 플랫폼의 함수 실행 시간 제한(Vercel Hobby
 // 기본 10초)보다 확실히 짧게 잡아, 폴백에 항상 도달할 수 있도록 한다.
 const TOTAL_BUDGET_MS = 8000;
-const MIN_ATTEMPT_MS = 1500; // 이보다 적게 남으면 해당 제공자는 아예 시도하지 않음
+const MIN_ATTEMPT_MS = 1500; // 이보다 적게 남으면 아예 시도하지 않음
+const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
+const DEEPSEEK_MODEL = 'deepseek-flash';
 
 function remainingMs(deadline) {
     return deadline - Date.now();
 }
 
-// 1. Google Gemini API (가장 안정적 & 고성능: 하루 1,500회 완전 무료, 초고속, 구조화 JSON 지원)
-async function callGemini(apiKey, prompt, deadline) {
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
-    for (const model of models) {
-        const budget = remainingMs(deadline);
-        if (budget < MIN_ATTEMPT_MS) break;
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': apiKey  // 헤더로 이동 (URL 쿼리 대신)
-                },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        response_mime_type: 'application/json',
-                        temperature: 0.7
-                    }
-                }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            if (!res.ok) {
-                const err = await res.text();
-                console.warn(`[Gemini] ${model} 실패 (${res.status}):`, err);
-                continue;
-            }
-
-            const data = await res.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!text) continue;
-
-            let jsonStr = text.trim();
-            if (jsonStr.startsWith('```')) {
-                jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-            }
-
-            const parsed = JSON.parse(jsonStr);
-            if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
-                return {
-                    provider: 'Google Gemini',
-                    modelUsed: `google/${model}`,
-                    recommendations: parsed.recommendations
-                };
-            }
-        } catch (e) {
-            console.warn(`[Gemini] ${model} 에러:`, e.message);
-        }
-    }
-    return null;
-}
-
-// 2. Groq API (초고속 LPU: 하루 14,400회 무료, LLaMA 3.3 70B)
-async function callGroq(apiKey, prompt, deadline) {
-    const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
-    for (const model of models) {
-        const budget = remainingMs(deadline);
-        if (budget < MIN_ATTEMPT_MS) break;
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
-            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: [
-                        { role: 'system', content: 'You are a professional travel assistant. Always respond strictly in valid JSON without markdown formatting.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    response_format: { type: 'json_object' },
-                    temperature: 0.7
-                }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            if (!res.ok) continue;
-
-            const data = await res.json();
-            const text = data.choices?.[0]?.message?.content;
-            if (!text) continue;
-
-            let jsonStr = text.trim();
-            if (jsonStr.startsWith('```')) {
-                jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-            }
-
-            const parsed = JSON.parse(jsonStr);
-            if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
-                return {
-                    provider: 'Groq Cloud',
-                    modelUsed: `groq/${model}`,
-                    recommendations: parsed.recommendations
-                };
-            }
-        } catch (e) {
-            console.warn(`[Groq] ${model} 에러:`, e.message);
-        }
-    }
-    return null;
-}
-
-// 3. OpenRouter API
-async function getOpenRouterCandidateModels(apiKey, deadline) {
-    const now = Date.now();
-    if (cachedOpenRouterModels && (now - lastCacheTime < 10 * 60 * 1000)) {
-        return cachedOpenRouterModels;
-    }
-
-    const candidates = ['openrouter/free'];
+// 1. DeepSeek API
+async function callDeepSeek(apiKey, prompt, deadline) {
+    const budget = remainingMs(deadline);
+    if (budget < MIN_ATTEMPT_MS) return null;
     try {
-        const budget = remainingMs(deadline);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), Math.max(500, Math.min(4000, budget - 200)));
-        const res = await fetch('https://openrouter.ai/api/v1/models', {
-            headers: { 'Authorization': `Bearer ${apiKey}` },
+        const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
+        const res = await fetch(DEEPSEEK_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [
+                    { role: 'system', content: 'You are a professional travel assistant. Always respond strictly in valid JSON without markdown formatting.' },
+                    { role: 'user', content: prompt }
+                ],
+                response_format: { type: 'json_object' },
+                temperature: 0.7
+            }),
             signal: controller.signal
         });
         clearTimeout(timeoutId);
 
-        if (res.ok) {
-            const data = await res.json();
-            const models = data.data || [];
-            const dynamicFree = models
-                .filter(m => {
-                    const isFree = m.id.endsWith(':free') || (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0');
-                    const isSpecial = m.id.includes('safety') || m.id.includes('lyria') || m.id.includes('clip');
-                    return isFree && !isSpecial && m.id !== 'openrouter/free';
-                })
-                .map(m => m.id);
-
-            candidates.push(...dynamicFree.slice(0, 5));
+        if (!res.ok) {
+            const err = await res.text();
+            console.warn(`[DeepSeek] 실패 (${res.status}):`, err);
+            return null;
         }
-    } catch {
-        // 동적 후보 조회 실패 시 아래 폴백 목록을 그대로 사용한다.
+
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) return null;
+
+        let jsonStr = text.trim();
+        if (jsonStr.startsWith('```')) {
+            jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+        }
+
+        const parsed = JSON.parse(jsonStr);
+        if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
+            return {
+                provider: 'DeepSeek',
+                modelUsed: DEEPSEEK_MODEL,
+                recommendations: parsed.recommendations
+            };
+        }
+    } catch (e) {
+        console.warn('[DeepSeek] 에러:', e.message);
     }
-
-    const fallbacks = [
-        'google/gemma-4-31b-it:free',
-        'nvidia/nemotron-3-super-120b-a12b:free',
-        'liquid/lfm-2.5-2.6b:free'
-    ];
-    fallbacks.forEach(fb => {
-        if (!candidates.includes(fb)) candidates.push(fb);
-    });
-
-    cachedOpenRouterModels = candidates;
-    lastCacheTime = now;
-    return candidates;
+    return null;
 }
 
-async function callOpenRouter(apiKey, prompt, deadline) {
-    const candidateModels = await getOpenRouterCandidateModels(apiKey, deadline);
-    let lastError = null;
-
-    for (const model of candidateModels) {
-        const budget = remainingMs(deadline);
-        if (budget < MIN_ATTEMPT_MS) break;
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
-
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': 'https://triptic.my',
-                    'X-Title': 'Triptic Travel Planner',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: [
-                        { role: 'system', content: 'You are a professional travel assistant. Always respond strictly in valid JSON without any markdown formatting.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 1500
-                }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-                const errText = await response.text();
-                lastError = `Model ${model} (${response.status}): ${errText}`;
-                continue;
-            }
-
-            const data = await response.json();
-            const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-            if (!content) continue;
-
-            let jsonStr = content.trim();
-            if (jsonStr.startsWith('```')) {
-                jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-            }
-
-            const parsed = JSON.parse(jsonStr);
-            if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
-                return {
-                    provider: 'OpenRouter',
-                    modelUsed: model,
-                    recommendations: parsed.recommendations
-                };
-            }
-        } catch (err) {
-            lastError = err.message || String(err);
-        }
-    }
-    return { error: lastError };
-}
-
-// 4. 오프라인 & 무료 한도 초과(429) 대비 스마트 큐레이션 폴백 엔진
+// 2. 오프라인 & 호출 실패 대비 스마트 큐레이션 폴백 엔진
 function getCuratedFallbackRecommendations(placeName, city, category) {
     const pLower = (placeName || '').toLowerCase();
     const cLower = (city || '').toLowerCase();
@@ -602,9 +432,7 @@ export default async function handler(req, res) {
         return res.status(429).json({ error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' });
     }
 
-    const geminiKey = process.env.GEMINI_API_KEY;
-    const groqKey = process.env.GROQ_API_KEY;
-    const openrouterKey = process.env.OPENROUTER_API_KEY;
+    const deepseekKey = process.env.DEEPSEEK_API_KEY;
 
     const placeName = sanitizeInput(req.body?.placeName, 100);
     const city = sanitizeInput(req.body?.city, 60);
@@ -643,10 +471,10 @@ ${categoryFocus} 엄선해 주세요.
 }
 `.trim();
 
-    // 1. Google Gemini API (하루 1,500회 무료, 최고 품질)
-    if (geminiKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
+    // 1. DeepSeek API
+    if (deepseekKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
         try {
-            const result = await callGemini(geminiKey, prompt, deadline);
+            const result = await callDeepSeek(deepseekKey, prompt, deadline);
             if (result && result.recommendations && result.recommendations.length > 0) {
                 return res.status(200).json({
                     success: true,
@@ -657,47 +485,11 @@ ${categoryFocus} 엄선해 주세요.
                 });
             }
         } catch (e) {
-            console.warn('[Gemini Call Error]:', e);
+            console.warn('[DeepSeek Call Error]:', e);
         }
     }
 
-    // 2. Groq Cloud API (초고속 LPU)
-    if (groqKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
-        try {
-            const result = await callGroq(groqKey, prompt, deadline);
-            if (result && result.recommendations && result.recommendations.length > 0) {
-                return res.status(200).json({
-                    success: true,
-                    provider: result.provider,
-                    modelUsed: result.modelUsed,
-                    basePlace: placeName,
-                    recommendations: result.recommendations
-                });
-            }
-        } catch (e) {
-            console.warn('[Groq Call Error]:', e);
-        }
-    }
-
-    // 3. OpenRouter API
-    if (openrouterKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
-        try {
-            const result = await callOpenRouter(openrouterKey, prompt, deadline);
-            if (result && result.recommendations && result.recommendations.length > 0) {
-                return res.status(200).json({
-                    success: true,
-                    provider: result.provider,
-                    modelUsed: result.modelUsed,
-                    basePlace: placeName,
-                    recommendations: result.recommendations
-                });
-            }
-        } catch (e) {
-            console.warn('[OpenRouter Call Error]:', e);
-        }
-    }
-
-    // 4. 폴백: 스마트 큐레이션 엔진 (API 키 없거나 네트워크 오류 시 무중단 지원)
+    // 2. 폴백: 스마트 큐레이션 엔진 (API 키 없거나 네트워크 오류 시 무중단 지원)
     const curatedRecs = getCuratedFallbackRecommendations(placeName, city, category);
     return res.status(200).json({
         success: true,

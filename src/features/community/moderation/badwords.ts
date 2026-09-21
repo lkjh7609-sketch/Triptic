@@ -1,7 +1,7 @@
 /**
  * 금칙어 사전 (ko/en/zh, 06-community.md §5.1)
  * 완전한 사전은 아니다 — 명백한 심각 수준 표현 위주의 결정론적 백스톱이고,
- * 실제 판단은 Gemini 텍스트 분류기가 주로 담당한다(llm.ts). 이 목록은
+ * 실제 판단은 DeepSeek 텍스트 분류기가 주로 담당한다(deepseekClassifier.ts). 이 목록은
  * 분류기가 실패했을 때도(fail closed 이전에) 최소한의 즉시 차단을 보장한다.
  */
 import { normalizeForModeration } from './normalizeText.ts';

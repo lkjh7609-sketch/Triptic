@@ -114,7 +114,7 @@ export type ParsedBooking = z.infer<typeof ParsedBooking>;
 export const ParseResponse = z.object({
   documentId: z.string().uuid(),
   bookings: z.array(ParsedBooking),
-  /** 'flight/korean-air@1.2' 또는 'llm/gemini-2.5-flash' */
+  /** 'flight/korean-air@1.2' 또는 'llm/deepseek-flash' */
   parserUsed: z.string(),
   warnings: z.array(z.string()),
 });
