@@ -1,0 +1,32 @@
+{
+  "action": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "retry": "Retry",
+    "share": "Share",
+    "copy": "Copy",
+    "add": "Add",
+    "remove": "Remove",
+    "done": "Done"
+  },
+  "state": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "empty": "Nothing to show",
+    "offline": "You're offline"
+  },
+  "tab": {
+    "home": "Home",
+    "plan": "Plan",
+    "community": "Community",
+    "settings": "Settings"
+  },
+  "auth": {
+    "loginRequired": "Sign in required"
+  }
+}
