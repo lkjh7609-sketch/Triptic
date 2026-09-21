@@ -45,6 +45,7 @@ export interface BookingRow {
   trip_id: string;
   document_id: string | null;
   type: string;
+  reference_code: string | null;
   parsed: ParsedBooking;
   confirmed_by_user: boolean;
   parser_version: string | null;
@@ -147,4 +148,44 @@ export async function getVoucherSignedUrlByDocumentId(documentId: string): Promi
   const { data, error } = await supabase.storage.from('vouchers').createSignedUrl(doc.storage_path, 300);
   if (error) return null;
   return data.signedUrl;
+}
+
+/** 바우처 보관함 목록에 필요한 만큼만 붙인 문서+예약 요약 (02-screens.md §3.6) */
+export interface VoucherEntry extends DocumentRow {
+  /** 같은 문서에서 인식된 예약(있으면 첫 번째 것 기준으로 타입 아이콘·예약번호를 보여준다) */
+  booking: Pick<BookingRow, 'type' | 'reference_code' | 'confirmed_by_user'> | null;
+}
+
+/** 여행별 업로드 문서 목록(삭제되지 않은 것만) — 타입 아이콘·예약번호 표시를 위해 bookings와 합친다 */
+export async function listDocuments(tripId: string): Promise<VoucherEntry[]> {
+  const supabase = getSupabaseClient();
+  const { data: docs, error } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('trip_id', tripId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  const documents = (docs as DocumentRow[]) ?? [];
+  if (documents.length === 0) return [];
+
+  const { data: bookings } = await supabase
+    .from('bookings')
+    .select('document_id, type, reference_code, confirmed_by_user')
+    .in(
+      'document_id',
+      documents.map((d) => d.id),
+    );
+  const bookingByDocId = new Map((bookings ?? []).map((b) => [b.document_id as string, b]));
+
+  return documents.map((doc) => ({ ...doc, booking: bookingByDocId.get(doc.id) ?? null }));
+}
+
+/** 바우처 삭제 — Storage 원본 파일 + documents 행을 함께 지운다(연결된 bookings.document_id는 FK로 null 처리됨) */
+export async function deleteDocument(doc: Pick<DocumentRow, 'id' | 'storage_path'>): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error: storageErr } = await supabase.storage.from('vouchers').remove([doc.storage_path]);
+  if (storageErr) throw storageErr;
+  const { error: dbErr } = await supabase.from('documents').delete().eq('id', doc.id);
+  if (dbErr) throw dbErr;
 }

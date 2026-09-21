@@ -1,10 +1,40 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { confirmBooking, listPendingBookings, rejectBooking, uploadAndParseDocument } from './documentService';
+import {
+  confirmBooking,
+  deleteDocument,
+  listDocuments,
+  listPendingBookings,
+  rejectBooking,
+  uploadAndParseDocument,
+  type DocumentRow,
+} from './documentService';
 import type { ParsedBooking } from './parseBooking/schema';
 import { useSession } from '@/shared/hooks/useSession';
 
 export function pendingBookingsQueryKey(tripId: string) {
   return ['pendingBookings', tripId] as const;
+}
+
+export function documentsQueryKey(tripId: string) {
+  return ['documents', tripId] as const;
+}
+
+export function useDocumentsList(tripId: string | undefined) {
+  return useQuery({
+    queryKey: documentsQueryKey(tripId ?? ''),
+    queryFn: () => listDocuments(tripId!),
+    enabled: !!tripId,
+  });
+}
+
+export function useDeleteDocument(tripId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (doc: Pick<DocumentRow, 'id' | 'storage_path'>) => deleteDocument(doc),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: documentsQueryKey(tripId) });
+    },
+  });
 }
 
 export function usePendingBookings(tripId: string | undefined) {
@@ -25,6 +55,7 @@ export function useUploadDocument(tripId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: pendingBookingsQueryKey(tripId) });
+      queryClient.invalidateQueries({ queryKey: documentsQueryKey(tripId) });
     },
   });
 }
@@ -36,6 +67,7 @@ export function useConfirmBooking(tripId: string) {
       confirmBooking(bookingId, edited),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: pendingBookingsQueryKey(tripId) });
+      queryClient.invalidateQueries({ queryKey: documentsQueryKey(tripId) });
     },
   });
 }
