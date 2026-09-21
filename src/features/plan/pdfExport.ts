@@ -13,7 +13,7 @@ import { getDayCity } from './dayCities';
 import { MEAL_META } from './map/meals';
 import type { MealSlot } from './types';
 import { sharedDirectionsCache } from './map/useTripRoutes';
-import { formatMoney } from './expenses';
+import { convertToBase, formatMoney, getDayExpenseTotal } from './expenses';
 import type {
   DayCitiesData,
   ExpensesData,
@@ -612,7 +612,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     // 3. Render Section 3: Expenses (if any)
     if (dayExpenses.length > 0) {
       drawSectionHeader('3. 일자별 지출 경비 요약 (Daily Expenses)');
-      const sum = dayExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const { total: sum, unconverted } = getDayExpenseTotal(dayExpenses, input.currency);
 
       ensureSpace(16);
       pdf.setFillColor(...C_SEC_BG);
@@ -637,7 +637,13 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         pdf.setFontSize(8.2);
         pdf.setTextColor(...C_TEXT);
         pdf.text(cleanPdfText(e.desc || '-'), marginL + 4, y + 4.3);
-        pdf.text(cleanPdfText(formatMoney(e.amount, input.currency)), pageW - marginR - 4, y + 4.3, {
+        const itemCurrency = e.currency ?? input.currency;
+        let amountText = formatMoney(e.amount, itemCurrency);
+        if (itemCurrency !== input.currency) {
+          const converted = convertToBase(e, input.currency);
+          amountText += converted != null ? ` (≈${formatMoney(converted, input.currency)})` : ' (환산 불가)';
+        }
+        pdf.text(cleanPdfText(amountText), pageW - marginR - 4, y + 4.3, {
           align: 'right',
         });
         y += rowH;
@@ -652,7 +658,9 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       pdf.text('지출 합계', marginL + 4, y + 5.0);
       pdf.text('지출 합계', marginL + 4.1, y + 5.0);
 
-      const sumText = cleanPdfText(formatMoney(sum, input.currency));
+      const sumText = cleanPdfText(
+        formatMoney(sum, input.currency) + (unconverted > 0 ? ` (환산 불가 ${unconverted}건 제외)` : ''),
+      );
       pdf.text(sumText, pageW - marginR - 4, y + 5.0, { align: 'right' });
       pdf.text(sumText, pageW - marginR - 4.1, y + 5.0, { align: 'right' });
       y += totalH + 4.0;

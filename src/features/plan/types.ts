@@ -45,10 +45,30 @@ export interface MealSlotInfo {
 export type DayMeals = Partial<Record<MealSlot, MealSlotInfo>>;
 export type MealsData = Record<number, DayMeals>;
 
-/** 경비 항목 (index.html expensesData[day] 이식) */
+/** 가계부 카테고리 (02-screens.md §3.7, 0005_expenses.sql category check와 동일) */
+export type ExpenseCategory = 'food' | 'transport' | 'lodging' | 'shopping' | 'activity' | 'other';
+
+/** 결제수단 (0005_expenses.sql payment_method check와 동일) */
+export type ExpensePaymentMethod = 'cash' | 'card' | 'other';
+
+/**
+ * 경비 항목 (index.html expensesData[day] 이식 + 02-screens.md §3.7 확장:
+ * 카테고리·통화·결제수단·환율 자동 변환).
+ * `currency`/`category`가 없는 기존 데이터는 각각 여행 기본 통화·'other'로
+ * 간주한다(하위호환, expenses.ts convertToBase 참고).
+ */
 export interface ExpenseItem {
   desc: string;
   amount: number;
+  currency?: string;
+  category?: ExpenseCategory;
+  paymentMethod?: ExpensePaymentMethod;
+  /**
+   * currency가 여행 기본 통화와 다를 때만 의미 있는, 입력 시점 환율
+   * 스냅샷(1 currency = fxRateToBase 기본통화). 조회 실패 시 null —
+   * 이후 환율이 바뀌어도 이 값은 절대 재계산하지 않는다(스펙 원문 요구사항).
+   */
+  fxRateToBase?: number | null;
 }
 
 export type ExpensesData = Record<number, ExpenseItem[]>;
