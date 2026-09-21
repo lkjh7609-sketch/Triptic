@@ -10,7 +10,8 @@ export type Feature =
   | 'document.parse' // 서류 자동 인식
   | 'voucher.storage' // 바우처 보관 용량
   | 'offline.maps' // 오프라인 지도
-  | 'trip.collaborate'; // 동행자 공유
+  | 'trip.collaborate' // 동행자 공유
+  | 'community.post'; // 커뮤니티 글쓰기(06-community.md)
 
 export interface Ctx {
   userId: string | null;
