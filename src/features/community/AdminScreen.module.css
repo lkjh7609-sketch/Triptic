@@ -1,0 +1,117 @@
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0 0 var(--space-4);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-4);
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-body-size);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tabActive {
+  color: var(--text-body);
+  font-weight: 700;
+  border-bottom: 2px solid var(--brand);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.itemMeta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.badge {
+  background: var(--danger-tint);
+  color: var(--danger);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+.itemType {
+  text-transform: uppercase;
+}
+
+.itemTime {
+  margin-left: auto;
+}
+
+.preview {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-body-size);
+  color: var(--text-body);
+  white-space: pre-wrap;
+}
+
+.detail {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.primaryBtn,
+.dangerBtn,
+.secondaryBtn {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.dangerBtn {
+  background: var(--danger);
+  color: #fff;
+}
+
+.secondaryBtn {
+  background: var(--surface-subtle);
+  color: var(--text-body);
+}
