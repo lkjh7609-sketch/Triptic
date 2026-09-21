@@ -8,7 +8,7 @@ import { normalizeForModeration } from './normalizeText.ts';
 
 const BADWORDS = [
   // 한국어
-  '씨발', '씨팔', 'ㅅㅂ', 'ㅆㅂ', '병신', 'ㅂㅅ', '개새끼', '새끼야', '좆같',
+  '씨발', '씨팔', '시발', '시팔', 'ㅅㅂ', 'ㅆㅂ', '병신', 'ㅂㅅ', '개새끼', '새끼야', '좆같',
   '지랄', '느금마', '느그엄마', '창녀', '걸레같은', '죽여버', '자살해',
   // 영어
   'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'faggot', 'cunt', 'kill yourself',
