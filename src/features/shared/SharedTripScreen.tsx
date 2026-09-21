@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { parseISO } from 'date-fns';
 import { tripService } from '@/shared/api/tripService';
 import { DayChips } from '@/features/plan/DayChips';
 import { ItineraryItemCard } from '@/features/plan/ItineraryItemCard';
-import { FixedPointCard, FlightPointCard, LegBetween } from '@/features/plan/FixedPointCard';
+import { FixedPointCard, LegBetween } from '@/features/plan/FixedPointCard';
 import { useTripRoutes, type RouteWaypoint } from '@/features/plan/map/useTripRoutes';
-import { getDayHotels } from '@/features/plan/map/hotels';
-import { getDayCity } from '@/features/plan/dayCities';
+import { getDayHotels, type Hotel } from '@/features/plan/map/hotels';
 import { getGuestName, saveGuestName } from './guestName';
 import { GuestNameModal } from './GuestNameModal';
 import { SuggestPlaceModal } from './SuggestPlaceModal';
@@ -16,29 +14,59 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { trackScreenView } from '@/shared/monitoring';
-import type {
-  DayCitiesData,
-  FlightsData,
-  HotelsData,
-  PlannerData,
-} from '@/features/plan/types';
+import type { PlaceCategory } from '@/features/plan/placeCategory';
+import type { PlaceItem } from '@/features/plan/types';
 import styles from './SharedTripScreen.module.css';
 
-/** get_shared_trip() RPC(0013_fix_get_shared_trip_columns.sql)가 반환하는 형태 */
+/** get_shared_trip() RPC(0008_shared_trip_cutover.sql, 정규화 테이블 기반)가 반환하는 형태 */
+interface SharedDayRow {
+  id: string;
+  day_index: number;
+  date: string;
+  city_name: string | null;
+  city_lat: number | null;
+  city_lng: number | null;
+  timezone: string | null;
+}
+interface SharedItemRow {
+  id: string;
+  day_id: string;
+  position: number;
+  type: string;
+  title: string;
+  subtitle: string | null;
+  category: string | null;
+  google_place_id: string | null;
+  lat: number | null;
+  lng: number | null;
+  address: string | null;
+  start_local: string | null;
+  memo: string | null;
+}
 interface SharedTripPayload {
-  tripId: string;
-  projectName: string;
-  city: string | null;
-  cityLat: number | null;
-  cityLng: number | null;
-  startDate: string | null;
-  endDate: string | null;
-  currency: string;
-  data: PlannerData;
-  hotels: HotelsData;
-  flights: FlightsData;
-  dayCities: DayCitiesData;
-  updatedAt: number;
+  trip: { id: string; title: string; start_date: string; end_date: string; base_currency: string };
+  days: SharedDayRow[];
+  items: SharedItemRow[];
+  legs: unknown[];
+}
+
+/** items(정규화 행) → 화면이 이미 알고 있는 PlaceItem 형태로 되돌린다.
+ * ⚠️ 항공편(type='flight')은 이 정규화 행에 출발공항 좌표만 남아있어(도착공항
+ * 좌표는 이 테이블 스키마에 없음) FlightPointCard의 dep/arr 두 지점 렌더링을
+ * 재현할 수 없다 — 일반 항목처럼 dayItems 흐름에 그대로 흘려보낸다(간단하지만
+ * 정확한 절충, Plan 탭 자체 화면은 snapshot을 그대로 쓰므로 영향 없음). */
+function toPlaceItem(row: SharedItemRow): PlaceItem {
+  return {
+    name: row.title,
+    address: row.address ?? undefined,
+    lat: row.lat ?? 0,
+    lng: row.lng ?? 0,
+    placeId: row.google_place_id,
+    time: row.start_local ? row.start_local.split('T')[1] : undefined,
+    memo: row.memo ?? undefined,
+    category: (row.category as PlaceCategory) ?? undefined,
+    key: row.id,
+  };
 }
 
 /**
@@ -79,44 +107,39 @@ export function SharedTripScreen() {
     return <ErrorState summary="공유 링크가 만료되었거나 찾을 수 없어요." />;
   }
 
-  const totalDays =
-    payload.startDate && payload.endDate
-      ? Math.round((parseISO(payload.endDate).getTime() - parseISO(payload.startDate).getTime()) / 86_400_000) + 1
-      : 1;
-  const hotelsData = payload.hotels ?? {};
-  const flightsData = payload.flights ?? { outbound: null, return: null };
-  const dayCitiesData = payload.dayCities ?? {};
-  const plannerData = payload.data ?? {};
-  const dayItems = plannerData[currentDay] ?? [];
-  const { startHotel, endHotel } = getDayHotels(currentDay, totalDays, hotelsData);
-  const currentCity = getDayCity(currentDay, dayCitiesData, {
-    name: payload.city,
-    lat: payload.cityLat,
-    lng: payload.cityLng,
-  });
-  const isFirstDay = currentDay === 1;
-  const isLastDay = currentDay === totalDays;
-  const flightArrival =
-    isFirstDay && flightsData.outbound?.arr.lat != null && flightsData.outbound.arr.lng != null
-      ? flightsData.outbound
-      : null;
-  const flightDeparture =
-    isLastDay && flightsData.return?.dep.lat != null && flightsData.return.dep.lng != null
-      ? flightsData.return
-      : null;
+  const days = payload.days ?? [];
+  const totalDays = days.length || 1;
+  const dayRow = days.find((d) => d.day_index === currentDay) ?? null;
+
+  const hotelsByDay: Record<number, Hotel | undefined> = {};
+  for (const d of days) {
+    const hotelItem = payload.items.find((it) => it.day_id === d.id && it.type === 'lodging');
+    if (hotelItem && hotelItem.lat != null && hotelItem.lng != null) {
+      hotelsByDay[d.day_index] = { name: hotelItem.title, address: hotelItem.address ?? undefined, lat: hotelItem.lat, lng: hotelItem.lng };
+    }
+  }
+  const { startHotel, endHotel } = getDayHotels(currentDay, totalDays, hotelsByDay);
+
+  // 항공편(type='flight')도 도착공항 좌표가 없어 일반 항목으로 함께 흐른다(위 toPlaceItem 주석 참고)
+  const dayItems: PlaceItem[] = dayRow
+    ? payload.items
+        .filter((it) => it.day_id === dayRow.id && it.type !== 'lodging')
+        .sort((a, b) => a.position - b.position)
+        .map(toPlaceItem)
+    : [];
 
   async function handleSuggestSubmit(suggestion: Parameters<typeof tripService.addSuggestion>[1]) {
     if (!payload) return;
-    await tripService.addSuggestion(payload.tripId, suggestion);
+    await tripService.addSuggestion(payload.trip.id, suggestion);
     setSuggestSent(true);
   }
 
   return (
     <div className={styles.screen}>
       <header className={styles.header}>
-        <h1 className={styles.title}>✈️ {payload.projectName}</h1>
+        <h1 className={styles.title}>✈️ {payload.trip.title}</h1>
         <p className={styles.dates}>
-          {payload.startDate} ~ {payload.endDate} ({totalDays}일간)
+          {payload.trip.start_date} ~ {payload.trip.end_date} ({totalDays}일간)
         </p>
       </header>
 
@@ -124,16 +147,12 @@ export function SharedTripScreen() {
 
       <div className={styles.dayHeader}>
         <span>Day {currentDay}</span>
-        <span className={styles.cityBadge}>📍 {currentCity.name ? currentCity.name.split(',')[0].trim() : '도시 미설정'}</span>
+        <span className={styles.cityBadge}>
+          📍 {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : '도시 미설정'}
+        </span>
       </div>
 
-      <SharedTimeline
-        dayItems={dayItems}
-        startHotel={startHotel}
-        endHotel={endHotel}
-        flightArrival={flightArrival}
-        flightDeparture={flightDeparture}
-      />
+      <SharedTimeline dayItems={dayItems} startHotel={startHotel} endHotel={endHotel} />
 
       <div className={styles.suggestButtonWrap}>
         <button type="button" className={styles.suggestButton} onClick={() => setShowSuggest(true)}>
@@ -144,7 +163,7 @@ export function SharedTripScreen() {
 
       {!guestName ? (
         <GuestNameModal
-          projectName={payload.projectName}
+          projectName={payload.trip.title}
           onConfirm={(name) => {
             if (name.trim()) saveGuestName(name);
             setGuestName(name.trim() || ' ');
@@ -165,37 +184,29 @@ export function SharedTripScreen() {
 }
 
 interface SharedTimelineProps {
-  dayItems: PlannerData[number];
+  dayItems: PlaceItem[];
   startHotel: ReturnType<typeof getDayHotels>['startHotel'];
   endHotel: ReturnType<typeof getDayHotels>['endHotel'];
-  flightArrival: SharedTripPayload['flights']['outbound'];
-  flightDeparture: SharedTripPayload['flights']['return'];
 }
 
-/** 읽기 전용 타임라인 — TripDetailScreen의 TripTimeline과 동일한 시퀀스 순서를 따른다 */
-function SharedTimeline({ dayItems, startHotel, endHotel, flightArrival, flightDeparture }: SharedTimelineProps) {
+/** 읽기 전용 타임라인 — TripDetailScreen의 TripTimeline과 동일한 시퀀스 순서를 따른다.
+ * 항공편 고정 카드(FlightPointCard)는 정규화 테이블에 도착공항 좌표가 없어(위
+ * toPlaceItem 주석 참고) 재현하지 않는다 — dayItems 흐름에 일반 항목으로 포함된다. */
+function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps) {
   const legs = useTripRoutes({
     map: null,
     dayItems,
     startHotel,
     endHotel,
     activeZoneIndex: 0,
-    flightArrival:
-      flightArrival && flightArrival.arr.lat != null && flightArrival.arr.lng != null
-        ? { lat: flightArrival.arr.lat, lng: flightArrival.arr.lng }
-        : null,
-    flightDeparture:
-      flightDeparture && flightDeparture.dep.lat != null && flightDeparture.dep.lng != null
-        ? { lat: flightDeparture.dep.lat, lng: flightDeparture.dep.lng }
-        : null,
+    flightArrival: null,
+    flightDeparture: null,
   });
 
   const refs: RouteWaypoint['ref'][] = [];
-  if (flightArrival) refs.push('flight-arrival');
   if (startHotel) refs.push('start-hotel');
   dayItems.forEach((_, i) => refs.push(i));
   if (endHotel) refs.push('end-hotel');
-  if (flightDeparture) refs.push('flight-departure');
 
   function legAfter(ref: RouteWaypoint['ref']) {
     const idx = refs.indexOf(ref);
@@ -204,7 +215,7 @@ function SharedTimeline({ dayItems, startHotel, endHotel, flightArrival, flightD
     return legs.find((l) => l.from.ref === ref && l.to.ref === nextRef);
   }
 
-  const isEmpty = dayItems.length === 0 && !startHotel && !endHotel && !flightArrival && !flightDeparture;
+  const isEmpty = dayItems.length === 0 && !startHotel && !endHotel;
 
   if (isEmpty) {
     return <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />;
@@ -212,13 +223,6 @@ function SharedTimeline({ dayItems, startHotel, endHotel, flightArrival, flightD
 
   return (
     <div className={styles.timeline}>
-      {flightArrival ? (
-        <>
-          <FlightPointCard flight={flightArrival} />
-          <LegBetween leg={legAfter('flight-arrival')} />
-        </>
-      ) : null}
-
       {startHotel ? (
         <>
           <FixedPointCard icon="🏨" label="출발" name={startHotel.name} address={startHotel.address} />
@@ -234,7 +238,6 @@ function SharedTimeline({ dayItems, startHotel, endHotel, flightArrival, flightD
       ))}
 
       {endHotel ? <FixedPointCard icon="🏨" label="복귀" name={endHotel.name} address={endHotel.address} /> : null}
-      {flightDeparture ? <FlightPointCard flight={flightDeparture} /> : null}
     </div>
   );
 }
