@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { RouterProvider } from 'react-router';
 import { LocaleSync } from '@/shared/i18n/useSyncLocale';
+import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
 import { ErrorBoundary } from './ErrorBoundary';
 import { router } from './router';
 
@@ -17,12 +19,15 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: offlinePersister, maxAge: OFFLINE_CACHE_MAX_AGE_MS }}
+      >
         <Suspense fallback={null}>
           <LocaleSync />
           <RouterProvider router={router} />
         </Suspense>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </ErrorBoundary>
   );
 }

@@ -7,6 +7,7 @@
  */
 import type { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { getSupabaseClient } from './supabaseClient';
+import { clearOfflineCache } from '@/shared/offline/persister';
 
 export type AuthProvider = 'apple' | 'google' | 'kakao';
 
@@ -46,6 +47,9 @@ export async function signOut(): Promise<void> {
   if (error) {
     throw error;
   }
+  // 다음 로그인(다른 계정일 수 있음)에 이전 계정의 캐시된 여행이 잠깐
+  // 보이는 것을 막는다(§3.2 오프라인 캐시).
+  await clearOfflineCache();
 }
 
 export async function getCurrentUser(): Promise<User | null> {
