@@ -7,9 +7,10 @@ interface StatsTilesProps {
 
 /**
  * 나의 여행 기록 통계 타일 (02-screens.md §2.1, §2.2)
- * 값이 없는 지표(현재는 groundMeters — snapshot 스키마엔 구간 거리가 없다,
- * useHomeStats.ts 참고)는 "0"이 아니라 "—"로 표시한다 — 실제로 0이라는
- * 뜻이 아니라 아직 계산할 수 없다는 뜻이라서다.
+ * groundMeters가 null로 오는 경우(RPC 자체가 실패했거나 구형 응답)를 대비해
+ * "0"이 아니라 "—"로 표시하는 방어 코드를 남겨둔다 — ADR-002 이관 후
+ * get_user_travel_stats()는 실제로 항상 0 이상의 숫자를 반환한다
+ * (useHomeStats.ts §5 coalesce 참고).
  */
 export function StatsTiles({ stats }: StatsTilesProps) {
   const km = stats.groundMeters != null ? Math.round(stats.groundMeters / 1000).toLocaleString() : '—';

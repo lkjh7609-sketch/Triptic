@@ -1,8 +1,9 @@
 /**
  * 홈 대시보드 통계 (02-screens.md §2.2)
- * get_user_travel_stats_snapshot() RPC(supabase/migrations/0014) 호출 —
- * 정규화 이관(M2~M4) 완료 전까지 trips.snapshot 기반으로 같은 모양의 통계를
- * 낸다. 이관 후에는 이 훅의 rpc 이름만 get_user_travel_stats로 바꾸면 된다.
+ * get_user_travel_stats() RPC(03-data-model.md §5, supabase/migrations/0009) 호출.
+ * ADR-002 정규화 이관(M2/M5, sync-trip-normalized Edge Function)으로
+ * itinerary_items/trip_days/legs가 항상 최신 상태로 동기화되므로, 임시였던
+ * snapshot 기반 0014 RPC 대신 스펙 원본 RPC를 그대로 쓴다.
  */
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
@@ -14,14 +15,15 @@ export interface TravelStats {
   cityCount: number;
   dayCount: number;
   placeCount: number;
-  /** 스냅샷 스키마에는 구간 거리가 없어 항상 null — 정규화 이관 후 채워진다 */
+  /** legs.mode<>'flight' 구간의 haversine 추정 거리 합 — 값이 없으면(구간이
+   * 아예 없는 완료 여행) 0으로 돌아온다(§5 coalesce), null이 아니다 */
   groundMeters: number | null;
   countries: string[];
 }
 
 async function fetchHomeStats(): Promise<TravelStats> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('get_user_travel_stats_snapshot');
+  const { data, error } = await supabase.rpc('get_user_travel_stats');
   if (error) throw error;
   return data as TravelStats;
 }
