@@ -1,0 +1,91 @@
+.wrap {
+  padding-bottom: var(--space-8);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  margin: 0;
+}
+
+.composeBtn {
+  appearance: none;
+  border: none;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+}
+
+.chipRow {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.chip {
+  flex: 0 0 auto;
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  font-size: var(--font-caption-size);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--space-4);
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-body-size);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tabActive {
+  color: var(--text-body);
+  font-weight: 700;
+  border-bottom: 2px solid var(--brand);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.loadMoreBtn {
+  appearance: none;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-caption-size);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
