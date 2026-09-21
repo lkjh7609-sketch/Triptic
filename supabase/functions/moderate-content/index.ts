@@ -18,7 +18,7 @@ import { createClient } from '@supabase/supabase-js';
 import { badwordScore } from '../../../src/features/community/moderation/badwords.ts';
 import { spamScore } from '../../../src/features/community/moderation/spamHeuristics.ts';
 import { decideStatus } from '../../../src/features/community/moderation/decideStatus.ts';
-import { classifyText, classifyImageBytes } from '../../../src/features/community/moderation/geminiClassifier.ts';
+import { classifyText, classifyImageBytes } from '../../../src/features/community/moderation/deepseekClassifier.ts';
 import { detectLanguage } from '../../../src/features/community/languageDetect.ts';
 
 const CLASSIFIER_BUDGET_MS = 3000;
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-  const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+  const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
   });
@@ -123,12 +123,12 @@ Deno.serve(async (req) => {
     const images = kind === 'post' ? (payload.images ?? []) : [];
 
     const [textResult, ...imageResults] = await Promise.all([
-      geminiApiKey ? classifyText(geminiApiKey, text, remaining()) : Promise.resolve(null),
+      deepseekApiKey ? classifyText(deepseekApiKey, text, remaining()) : Promise.resolve(null),
       ...images.map(async (img) => {
-        if (!geminiApiKey) return null;
+        if (!deepseekApiKey) return null;
         const fetched = await fetchImageBytes(supabaseUrl, img.storagePath);
         if (!fetched) return null;
-        return classifyImageBytes(geminiApiKey, fetched.bytes, fetched.mimeType, remaining());
+        return classifyImageBytes(deepseekApiKey, fetched.bytes, fetched.mimeType, remaining());
       }),
     ]);
 
