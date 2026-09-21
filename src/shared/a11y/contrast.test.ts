@@ -25,6 +25,22 @@ describe('getContrastRatio', () => {
   });
 });
 
+// 다크 모드(01-design-system.md §2.2)도 라이트 모드와 동일하게 대비 검증을 통과해야 한다
+// ("다크 모드는 부가 기능이 아니다", §1 원칙 4).
+describe('getContrastRatio (다크 모드)', () => {
+  it('text-primary(#E8EAF0) vs surface-page(#0E1116) ≈ 15.72:1 (AAA)', () => {
+    expect(getContrastRatio('#E8EAF0', '#0E1116')).toBeCloseTo(15.72, 1);
+  });
+
+  it('text-body(#B3BAC7) vs surface-page(#0E1116) ≈ 9.69:1 (AAA)', () => {
+    expect(getContrastRatio('#B3BAC7', '#0E1116')).toBeCloseTo(9.69, 1);
+  });
+
+  it('brand(#8AA4FF) vs surface-page(#0E1116) ≈ 7.96:1 (AAA)', () => {
+    expect(getContrastRatio('#8AA4FF', '#0E1116')).toBeCloseTo(7.96, 1);
+  });
+});
+
 describe('meetsContrastRequirement', () => {
   it('본문 텍스트는 4.5:1 이상이어야 통과한다', () => {
     expect(meetsContrastRequirement('#FBFBF9', '#111827')).toBe(true);
