@@ -102,9 +102,15 @@ function checkKeyParityAndInterpolation() {
         }
       }
       for (const key of targetKeys) {
-        if (!(key in source)) {
-          fail(`[${locale}/${ns}] 고아 키(${SOURCE_LOCALE}에 없음): ${key}`);
+        if (key in source) continue;
+        // en 전용 `_one` 플러럴 키(07-i18n.md §9-4: en만 one/other 둘 다 필요)는
+        // ko/zh-CN 소스에 `_one`이 없는 게 정상이다 — 대응하는 `_other`가
+        // source에 있으면 고아 키가 아니라 의도된 비대칭이다.
+        if (locale === 'en' && key.endsWith('_one')) {
+          const base = key.slice(0, -'_one'.length);
+          if (`${base}_other` in source) continue;
         }
+        fail(`[${locale}/${ns}] 고아 키(${SOURCE_LOCALE}에 없음): ${key}`);
       }
 
       for (const key of sourceKeys) {
