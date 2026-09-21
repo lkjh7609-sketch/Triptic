@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import i18n from '@/shared/i18n';
 import { captureError } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 
@@ -25,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <ErrorState
-          summary="문제가 발생했어요. 화면을 새로고침해 주세요."
+          summary={i18n.t('error.boundary', { ns: 'common' })}
           onRetry={() => window.location.reload()}
         />
       );

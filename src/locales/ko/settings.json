@@ -1,1 +1,80 @@
-{}
+{
+  "section": {
+    "account": "계정",
+    "preferences": "환경설정",
+    "notifications": "알림",
+    "data": "데이터",
+    "community": "커뮤니티",
+    "about": "정보"
+  },
+  "account": {
+    "fallbackName": "내 계정",
+    "signOut": "로그아웃",
+    "deleteAction": "계정 삭제"
+  },
+  "preferences": {
+    "theme": "테마",
+    "themeSystem": "시스템",
+    "themeLight": "라이트",
+    "themeDark": "다크",
+    "tempUnit": "온도 단위",
+    "distanceUnit": "거리 단위",
+    "distanceUnitHint": "거리 단위는 지도·경로 표시에는 아직 반영되지 않아요.",
+    "baseCurrency": "기본 통화",
+    "language": "언어",
+    "languageHint": "표시 언어 전환은 다음 업데이트에서 지원돼요. 지금은 설정만 저장돼요.",
+    "loginHint": "로그인하면 온도·거리 단위, 기본 통화, 언어 설정을 저장할 수 있어요."
+  },
+  "notifications": {
+    "preDeparture": "출발 전 리마인더",
+    "flightChanges": "항공편 변경",
+    "communityReplies": "커뮤니티 답글",
+    "marketing": "마케팅 소식",
+    "hint": "실제 알림 발송은 다음 업데이트에서 지원돼요. 지금은 설정만 저장돼요."
+  },
+  "data": {
+    "offlineCache": "오프라인 캐시",
+    "calculating": "계산 중…",
+    "clearCache": "캐시 지우기",
+    "clearingCache": "지우는 중…",
+    "backup": "📤 내보내기 / 📥 가져오기 (JSON)",
+    "pdfHint": "여행별 PDF 내보내기는 여행 상세의 공유(↗) 버튼에서 할 수 있어요."
+  },
+  "about": {
+    "version": "버전 {{version}}"
+  },
+  "licenses": {
+    "title": "오픈소스 라이선스"
+  },
+  "blocked": {
+    "empty": "차단한 사용자가 없어요.",
+    "unknownUser": "알 수 없는 사용자",
+    "unblock": "차단 해제"
+  },
+  "delete": {
+    "stepIndicator": "단계 {{current}} / {{total}}",
+    "warningTitle": "계정을 삭제할까요?",
+    "warningBody": "삭제하면 아래 데이터가 모두 사라져요. 30일 안에는 재로그인으로 되돌릴 수 있어요.",
+    "impact": {
+      "tripsPending": "여행 …개",
+      "trips_other": "여행 {{count}}개",
+      "vouchersPending": "바우처 …건",
+      "vouchers_other": "바우처 {{count}}건",
+      "postsPending": "커뮤니티 글 …개",
+      "posts_other": "커뮤니티 글 {{count}}개"
+    },
+    "continue": "계속",
+    "reauthTitle": "본인 확인",
+    "reauthBody": "계정을 삭제하려면 다시 로그인해 본인임을 확인해 주세요.",
+    "reauthSuccess": "본인 확인이 완료됐어요.",
+    "reauthButton": "다시 로그인",
+    "reauthError": "재인증을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "confirmTitle": "마지막 확인",
+    "confirmBody": "아래 입력창에 <strong>삭제</strong>를 입력하면 계정 삭제가 진행돼요.",
+    "confirmInputAriaLabel": "삭제 확인 문구 입력",
+    "processing": "처리 중…",
+    "requestError": "계정 삭제 요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "doneTitle": "삭제 요청이 접수됐어요",
+    "doneBody": "30일 안에 다시 로그인하면 계정을 복구할 수 있어요. 그 뒤에는 완전히 삭제됩니다."
+  }
+}

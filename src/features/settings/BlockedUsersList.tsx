@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useMyBlocks, useUnblockUser } from '@/features/community/hooks/useCommunitySafety';
 import styles from './SettingsScreen.module.css';
 
@@ -7,21 +8,22 @@ import styles from './SettingsScreen.module.css';
  * 섹션으로 추가했다.
  */
 export function BlockedUsersList({ userId }: { userId: string }) {
+  const { t } = useTranslation('settings');
   const { data: blocked, isLoading } = useMyBlocks(userId);
   const unblock = useUnblockUser(userId);
 
   if (isLoading) return null;
   if (!blocked || blocked.length === 0) {
-    return <p className={styles.hint}>차단한 사용자가 없어요.</p>;
+    return <p className={styles.hint}>{t('blocked.empty')}</p>;
   }
 
   return (
     <div>
       {blocked.map((p) => (
         <div className={styles.row} key={p.id}>
-          <span>{p.display_name || '알 수 없는 사용자'}</span>
+          <span>{p.display_name || t('blocked.unknownUser')}</span>
           <button type="button" className={styles.linkButton} onClick={() => unblock.mutate(p.id)}>
-            차단 해제
+            {t('blocked.unblock')}
           </button>
         </div>
       ))}

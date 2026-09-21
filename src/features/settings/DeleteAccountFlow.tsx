@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import {
   getDeletionImpactSummary,
@@ -30,6 +31,7 @@ function isReauthFresh(lastSignInAt: string | undefined): boolean {
  * 마지막 단계에서 실제 RPC 호출이 실패한다 (예상된 동작 — supabase/migrations/README.md 참고).
  */
 export function DeleteAccountFlow() {
+  const { t } = useTranslation(['settings', 'common']);
   const { user } = useSession();
   const [step, setStep] = useState<Step>('warning');
   const [impact, setImpact] = useState<DeletionImpactSummary | null>(null);
@@ -43,8 +45,10 @@ export function DeleteAccountFlow() {
       .catch((err) => captureError(err, { context: 'getDeletionImpactSummary' }));
   }, []);
 
+  const deleteWord = t('action.delete', { ns: 'common' });
+
   if (!user) {
-    return <p className={styles.step}>로그인 후 이용할 수 있어요.</p>;
+    return <p className={styles.step}>{t('auth.loginRequired', { ns: 'common' })}</p>;
   }
 
   const provider = (user.app_metadata?.provider as AuthProvider | undefined) ?? 'google';
@@ -57,12 +61,12 @@ export function DeleteAccountFlow() {
       // OAuth 리다이렉트로 페이지를 벗어난다. 돌아오면 last_sign_in_at이 갱신되어 있다.
     } catch (err) {
       captureError(err, { context: 'reauth-for-deletion', provider });
-      setError('재인증을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setError(t('delete.reauthError'));
     }
   }
 
   async function handleFinalConfirm() {
-    if (confirmText !== '삭제') return;
+    if (confirmText !== deleteWord) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -71,7 +75,7 @@ export function DeleteAccountFlow() {
       setStep('done');
     } catch (err) {
       captureError(err, { context: 'requestAccountDeletion' });
-      setError('계정 삭제 요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setError(t('delete.requestError'));
     } finally {
       setSubmitting(false);
     }
@@ -79,39 +83,56 @@ export function DeleteAccountFlow() {
 
   return (
     <div className={styles.wrap}>
-      <p className={styles.step}>단계 {['warning', 'reauth', 'confirm', 'done'].indexOf(step) + 1} / 4</p>
+      <p className={styles.step}>
+        {t('delete.stepIndicator', {
+          current: ['warning', 'reauth', 'confirm', 'done'].indexOf(step) + 1,
+          total: 4,
+        })}
+      </p>
 
       {step === 'warning' && (
         <>
-          <h2 className={styles.title}>계정을 삭제할까요?</h2>
+          <h2 className={styles.title}>{t('delete.warningTitle')}</h2>
           <div className={styles.warningBox} role="alert">
-            <p>삭제하면 아래 데이터가 모두 사라져요. 30일 안에는 재로그인으로 되돌릴 수 있어요.</p>
+            <p>{t('delete.warningBody')}</p>
             <ul className={styles.list}>
-              <li>여행 {impact ? impact.tripCount : '…'}개</li>
-              <li>바우처 {impact ? impact.voucherCount : '…'}건</li>
-              <li>커뮤니티 글 {impact ? impact.postCount : '…'}개</li>
+              <li>
+                {impact
+                  ? t('delete.impact.trips', { count: impact.tripCount })
+                  : t('delete.impact.tripsPending')}
+              </li>
+              <li>
+                {impact
+                  ? t('delete.impact.vouchers', { count: impact.voucherCount })
+                  : t('delete.impact.vouchersPending')}
+              </li>
+              <li>
+                {impact
+                  ? t('delete.impact.posts', { count: impact.postCount })
+                  : t('delete.impact.postsPending')}
+              </li>
             </ul>
           </div>
           <button type="button" className={styles.primary} onClick={() => setStep('reauth')}>
-            계속
+            {t('delete.continue')}
           </button>
         </>
       )}
 
       {step === 'reauth' && (
         <>
-          <h2 className={styles.title}>본인 확인</h2>
-          <p>계정을 삭제하려면 다시 로그인해 본인임을 확인해 주세요.</p>
+          <h2 className={styles.title}>{t('delete.reauthTitle')}</h2>
+          <p>{t('delete.reauthBody')}</p>
           {reauthFresh ? (
             <>
-              <p className={styles.success}>본인 확인이 완료됐어요.</p>
+              <p className={styles.success}>{t('delete.reauthSuccess')}</p>
               <button type="button" className={styles.primary} onClick={() => setStep('confirm')}>
-                계속
+                {t('delete.continue')}
               </button>
             </>
           ) : (
             <button type="button" className={styles.secondary} onClick={handleReauth}>
-              다시 로그인
+              {t('delete.reauthButton')}
             </button>
           )}
         </>
@@ -119,32 +140,32 @@ export function DeleteAccountFlow() {
 
       {step === 'confirm' && (
         <>
-          <h2 className={styles.title}>마지막 확인</h2>
+          <h2 className={styles.title}>{t('delete.confirmTitle')}</h2>
           <p>
-            아래 입력창에 <strong>삭제</strong>를 입력하면 계정 삭제가 진행돼요.
+            <Trans t={t} i18nKey="delete.confirmBody" components={{ strong: <strong /> }} />
           </p>
           <input
             className={styles.input}
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            aria-label="삭제 확인 문구 입력"
-            placeholder="삭제"
+            aria-label={t('delete.confirmInputAriaLabel')}
+            placeholder={deleteWord}
           />
           <button
             type="button"
             className={styles.primary}
-            disabled={confirmText !== '삭제' || submitting}
+            disabled={confirmText !== deleteWord || submitting}
             onClick={handleFinalConfirm}
           >
-            {submitting ? '처리 중…' : '계정 삭제'}
+            {submitting ? t('delete.processing') : t('account.deleteAction')}
           </button>
         </>
       )}
 
       {step === 'done' && (
         <>
-          <h2 className={styles.title}>삭제 요청이 접수됐어요</h2>
-          <p>30일 안에 다시 로그인하면 계정을 복구할 수 있어요. 그 뒤에는 완전히 삭제됩니다.</p>
+          <h2 className={styles.title}>{t('delete.doneTitle')}</h2>
+          <p>{t('delete.doneBody')}</p>
         </>
       )}
 

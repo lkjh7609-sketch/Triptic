@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { getTripPhase } from '@/features/plan/tripStatus';
 import { TripCard } from '@/features/plan/TripCard';
@@ -33,6 +34,7 @@ const DEMO_STATS: TravelStats = {
  * 임시 RPC(get_user_travel_stats_snapshot, useHomeStats.ts 참고)로 계산한다.
  */
 export function HomeScreen() {
+  const { t } = useTranslation('home');
   const { user, loading: sessionLoading } = useSession();
   const { data: trips, isLoading: tripsLoading } = useTrips();
   const stats = useHomeStats();
@@ -59,13 +61,13 @@ export function HomeScreen() {
   if (!user) {
     return (
       <div className={styles.section}>
-        <h1 className={styles.greeting}>안녕하세요 👋</h1>
+        <h1 className={styles.greeting}>{t('greeting.guest')}</h1>
         <div className={styles.blurWrap}>
           <div className={styles.blurContent} aria-hidden="true">
             <StatsTiles stats={DEMO_STATS} />
           </div>
           <div className={styles.blurOverlay}>
-            <p className={styles.blurMessage}>로그인하고 내 기록을 확인해 보세요</p>
+            <p className={styles.blurMessage}>{t('guest.blurMessage')}</p>
           </div>
         </div>
         <LoginButtons />
@@ -83,24 +85,24 @@ export function HomeScreen() {
     );
   }
 
-  const displayName = user.user_metadata?.name ?? user.user_metadata?.full_name ?? '여행자';
+  const displayName = user.user_metadata?.name ?? user.user_metadata?.full_name ?? t('greeting.fallbackName');
   const hasAnyTrip = (trips?.length ?? 0) > 0;
 
   return (
     <div className={styles.section}>
-      <h1 className={styles.greeting}>안녕하세요, {displayName}님 👋</h1>
+      <h1 className={styles.greeting}>{t('greeting.user', { name: displayName })}</h1>
 
       {!hasAnyTrip ? (
         <EmptyState
           icon="🧳"
-          message="아직 떠난 여행이 없어요. 첫 여행을 기록해 볼까요?"
+          message={t('empty.message')}
           actions={
             <div className={styles.onboardingActions}>
               <Link to="/plan" className={styles.onboardingLink}>
-                + 여행 만들기
+                {t('empty.createTrip')}
               </Link>
               <Link to={`/plan/${SAMPLE_TRIP_ID}`} className={styles.onboardingLink}>
-                ✨ 샘플 여행 둘러보기
+                {t('empty.sampleTrip')}
               </Link>
             </div>
           }
@@ -111,7 +113,7 @@ export function HomeScreen() {
 
           {stats.data ? (
             <>
-              <h2 className={styles.sectionTitle}>나의 여행 기록</h2>
+              <h2 className={styles.sectionTitle}>{t('stats.sectionTitle')}</h2>
               <StatsTiles stats={stats.data} />
               <WorldMapCard countries={stats.data.countries} />
             </>
@@ -119,7 +121,7 @@ export function HomeScreen() {
 
           {grouped.past.length > 0 ? (
             <>
-              <h2 className={styles.sectionTitle}>지난 여행</h2>
+              <h2 className={styles.sectionTitle}>{t('past.sectionTitle')}</h2>
               <div className={styles.pastScroll}>
                 {grouped.past.map((t) => (
                   <div key={t.id} className={styles.pastCard}>

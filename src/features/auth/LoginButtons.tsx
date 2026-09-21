@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { signInWithProvider, type AuthProvider } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
 import styles from './LoginButtons.module.css';
@@ -11,6 +12,7 @@ import styles from './LoginButtons.module.css';
  * 공급자가 설정되기 전까지는 버튼을 눌러도 인증이 완료되지 않는다 (예상된 동작).
  */
 export function LoginButtons() {
+  const { t } = useTranslation();
   const [agreed, setAgreed] = useState(false);
   const [pending, setPending] = useState<AuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export function LoginButtons() {
       await signInWithProvider(provider);
     } catch (err) {
       captureError(err, { context: 'signInWithProvider', provider });
-      setError('로그인을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setError(t('auth.loginFailed'));
     } finally {
       setPending(null);
     }
@@ -38,14 +40,14 @@ export function LoginButtons() {
           onChange={(e) => setAgreed(e.target.checked)}
         />
         <span>
-          <a href="/terms.html" target="_blank" rel="noopener">
-            이용약관
-          </a>{' '}
-          및{' '}
-          <a href="/privacy.html" target="_blank" rel="noopener">
-            개인정보처리방침
-          </a>
-          에 동의합니다
+          <Trans
+            t={t}
+            i18nKey="auth.consent"
+            components={{
+              terms: <a href="/terms.html" target="_blank" rel="noopener" />,
+              privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
+            }}
+          />
         </span>
       </label>
 
@@ -55,7 +57,7 @@ export function LoginButtons() {
         disabled={!agreed || pending !== null}
         onClick={() => handleLogin('apple')}
       >
-        {pending === 'apple' ? '연결 중…' : ' Apple로 계속하기'}
+        {pending === 'apple' ? t('auth.connecting') : t('auth.continueApple')}
       </button>
       <button
         type="button"
@@ -63,7 +65,7 @@ export function LoginButtons() {
         disabled={!agreed || pending !== null}
         onClick={() => handleLogin('google')}
       >
-        {pending === 'google' ? '연결 중…' : 'Google로 계속하기'}
+        {pending === 'google' ? t('auth.connecting') : t('auth.continueGoogle')}
       </button>
       <button
         type="button"
@@ -71,7 +73,7 @@ export function LoginButtons() {
         disabled={!agreed || pending !== null}
         onClick={() => handleLogin('kakao')}
       >
-        {pending === 'kakao' ? '연결 중…' : '카카오로 계속하기'}
+        {pending === 'kakao' ? t('auth.connecting') : t('auth.continueKakao')}
       </button>
 
       {error ? (

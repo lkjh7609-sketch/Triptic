@@ -1,1 +1,41 @@
-{}
+{
+  "greeting": {
+    "guest": "Hello 👋",
+    "user": "Hello, {{name}} 👋",
+    "fallbackName": "Traveler"
+  },
+  "guest": {
+    "blurMessage": "Sign in to see your travel history"
+  },
+  "empty": {
+    "message": "No trips yet. Ready to log your first one?",
+    "createTrip": "+ Create a trip",
+    "sampleTrip": "✨ Explore a sample trip"
+  },
+  "stats": {
+    "sectionTitle": "My travel record"
+  },
+  "past": {
+    "sectionTitle": "Past trips"
+  },
+  "hero": {
+    "planNext": "Plan your next trip ✈️",
+    "createTrip": "Create a trip",
+    "firstItem": "· First stop {{time}}",
+    "todayBadge": "Today's schedule",
+    "dayIndex": "Day {{day}} · {{date}}",
+    "noItemsToday": "No plans scheduled for today"
+  },
+  "tile": {
+    "trips": "Trips",
+    "countries": "Countries",
+    "days": "Days",
+    "cities": "Cities",
+    "places": "Places",
+    "distanceKm": "Distance (km)"
+  },
+  "worldMap": {
+    "caption_one": "{{count}} country",
+    "caption_other": "{{count}} countries"
+  }
+}
