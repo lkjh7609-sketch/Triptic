@@ -16,6 +16,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import { ViteGlobBackend } from './backend';
 import { loadLocaleFont } from './fonts';
+import { PSEUDO_POST_PROCESSOR_NAME, isPseudoLocaleEnabled, pseudoPostProcessor } from './pseudoLocale';
 
 export const SUPPORTED_LOCALES = ['ko', 'en', 'zh-CN'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -32,23 +33,25 @@ export const NAMESPACES = [
 
 export const LOCALE_STORAGE_KEY = 'triptic-locale';
 
-void i18next
-  .use(ViteGlobBackend)
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    supportedLngs: SUPPORTED_LOCALES,
-    fallbackLng: 'ko',
-    ns: NAMESPACES,
-    defaultNS: 'common',
-    interpolation: { escapeValue: false }, // React가 이미 이스케이프함
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      lookupLocalStorage: LOCALE_STORAGE_KEY,
-    },
-    react: { useSuspense: true },
-  });
+const pseudoEnabled = isPseudoLocaleEnabled();
+
+const instance = i18next.use(ViteGlobBackend).use(LanguageDetector).use(initReactI18next);
+if (pseudoEnabled) instance.use(pseudoPostProcessor);
+
+void instance.init({
+  supportedLngs: SUPPORTED_LOCALES,
+  fallbackLng: 'ko',
+  ns: NAMESPACES,
+  defaultNS: 'common',
+  interpolation: { escapeValue: false }, // React가 이미 이스케이프함
+  detection: {
+    order: ['localStorage', 'navigator'],
+    caches: ['localStorage'],
+    lookupLocalStorage: LOCALE_STORAGE_KEY,
+  },
+  react: { useSuspense: true },
+  postProcess: pseudoEnabled ? [PSEUDO_POST_PROCESSOR_NAME] : undefined,
+});
 
 /** <html lang>은 스크린리더 발음에도 영향을 준다(07-i18n.md §3.2) — 항상 최신 로케일로 유지한다. */
 function syncDocumentLocale(locale: string) {
