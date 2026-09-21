@@ -9,13 +9,17 @@ import {
 } from './expenses';
 
 describe('formatMoney', () => {
-  it('통화 단위를 붙여 천단위 구분 표시한다', () => {
-    expect(formatMoney(12000, 'KRW')).toBe('12,000원');
-    expect(formatMoney(500, 'JPY')).toBe('500엔');
+  it('Intl.NumberFormat으로 통화 기호와 천단위 구분을 표시한다(07-i18n.md §5.2)', () => {
+    expect(formatMoney(12000, 'KRW')).toBe('₩12,000');
+    expect(formatMoney(500, 'JPY')).toBe('JP¥500');
   });
 
   it('알 수 없는 통화는 KRW로 폴백한다', () => {
-    expect(formatMoney(1000, 'XXX')).toBe('1,000원');
+    expect(formatMoney(1000, 'XXX')).toBe('₩1,000');
+  });
+
+  it('locale 인자로 로케일별 표기를 따른다', () => {
+    expect(formatMoney(9800, 'JPY', 'en')).toBe('¥9,800');
   });
 });
 

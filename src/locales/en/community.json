@@ -1,1 +1,142 @@
-{}
+{
+  "admin": {
+    "accessDenied": "You need admin access to view this screen.",
+    "title": "Admin console",
+    "tabs": {
+      "reports": "Report queue",
+      "pending": "Auto-flag queue"
+    },
+    "reportDetail": "Report detail: {{detail}}",
+    "dismiss": "Dismiss",
+    "approve": "Approve",
+    "noReports": "No reports to handle.",
+    "noPending": "No posts pending review."
+  },
+  "report": {
+    "title": "🚩 Report",
+    "dialogLabel": "Report",
+    "doneTitle": "🚩 Report submitted",
+    "doneDesc": "The content you reported is now hidden from your view. We'll let you know the outcome after reviewing it within 24 hours.",
+    "reasonPrompt": "Please choose a reason for reporting.",
+    "detailPlaceholder": "Details (optional)",
+    "submit": "Report",
+    "submitting": "Submitting…",
+    "submitError": "Couldn't submit the report.",
+    "reason": {
+      "spam": "Spam / advertising",
+      "harassment": "Harassment",
+      "hate": "Hate speech",
+      "sexual": "Sexual content",
+      "violence": "Violent content",
+      "illegal": "Illegal activity",
+      "misinformation": "Misinformation",
+      "impersonation": "Impersonation",
+      "other": "Other"
+    }
+  },
+  "feed": {
+    "title": "Community",
+    "compose": "✏️ Write",
+    "tabAll": "All",
+    "tabFollowing": "Following",
+    "loginToFollow": "Sign in to see posts from the destinations you follow.",
+    "loadError": "Couldn't load the feed.",
+    "emptyFollowing": "No posts yet from the destinations you follow.",
+    "emptyAll": "No posts yet.",
+    "loadMore": "Load more"
+  },
+  "destination": {
+    "loadError": "Couldn't load the destination.",
+    "postCount_one": "📝 {{count}} post",
+    "postCount_other": "📝 {{count}} posts",
+    "following": "Following ✓",
+    "follow": "+ Follow",
+    "createTripHere": "🗺 Plan a trip to this destination",
+    "emptyPosts": "No posts yet for this destination."
+  },
+  "post": {
+    "fallbackAuthor": "Traveler"
+  },
+  "menu": {
+    "ariaLabel": "More",
+    "report": "Report",
+    "blockUser": "Block user",
+    "blockConfirm": "Block this user? You won't see each other's posts or comments anymore."
+  },
+  "detail": {
+    "statusNotice": {
+      "pending_review": "⏳ This post is waiting for admin review. Other users will see it once the review is done.",
+      "hidden": "🙈 This post was reported and is hidden from other users.",
+      "removed": "🚫 Removed for violating the community guidelines."
+    },
+    "loadError": "Couldn't load the post.",
+    "deleteConfirm": "Delete this post?",
+    "translatedLabel": "Auto-translated",
+    "translating": "Translating…",
+    "translateView": "View translation",
+    "like_one": "{{count}} like",
+    "like_other": "{{count}} likes",
+    "comment_one": "{{count}} comment",
+    "comment_other": "{{count}} comments",
+    "commentPlaceholder": "Leave a comment",
+    "commentSubmit": "Post",
+    "noComments": "No comments yet."
+  },
+  "profile": {
+    "loadError": "Couldn't load the profile.",
+    "postsHeader": "Posts",
+    "noPosts": "No posts yet."
+  },
+  "compose": {
+    "loginRequired": "Sign in to write a post.",
+    "title": "Write",
+    "submitting": "Posting…",
+    "submit": "Post",
+    "destinationLabel": "Destination (required)",
+    "destinationPlaceholder": "Choose a destination",
+    "destinationRequiredError": "Please choose a destination.",
+    "bodyPlaceholder": "Tell us about your trip",
+    "bodyRequiredError": "Please enter some text.",
+    "tripLabel": "Attach a trip (optional)",
+    "tripNone": "No trip attached",
+    "photoLabel": "Photos (up to {{max}})",
+    "addPhoto": "+ Photo",
+    "processingPhoto": "Processing…",
+    "maxImagesError": "You can attach up to {{max}} photos.",
+    "uploadImageError": "Couldn't upload the photo.",
+    "moderationBlockedError": "Your post was blocked for containing content that violates the community guidelines.",
+    "submitError": "Couldn't publish the post. Please try again shortly."
+  },
+  "guestName": {
+    "dialogLabel": "Enter your name",
+    "promptLine1": "Let us know your name or nickname as a fellow traveler.",
+    "promptLine2": "It's shown as the author when you suggest a place.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "e.g. Alex",
+    "enter": "Continue"
+  },
+  "suggest": {
+    "title": "💡 Suggest a place",
+    "dialogLabel": "Suggest a place",
+    "searchLabel": "Search for a place to add",
+    "searchPlaceholder": "Search for a place",
+    "dayLabel": "Suggested day",
+    "dayOption": "Day {{day}}",
+    "memoLabel": "A short note (optional)",
+    "memoPlaceholder": "e.g. Great desserts here!",
+    "proposerLabel": "Your name",
+    "submitting": "Sending…",
+    "submit": "Send suggestion"
+  },
+  "shared": {
+    "loadError": "This share link has expired or doesn't exist.",
+    "daysCount_one": "{{count}} day",
+    "daysCount_other": "{{count}} days",
+    "dayLabel": "Day {{day}}",
+    "cityUnset": "No city set",
+    "departure": "Departure",
+    "return": "Return",
+    "suggestSent": "🎉 Your suggestion was sent to the trip owner!",
+    "emptyDay": "No plans for this day yet."
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -17,6 +18,7 @@ import styles from './DestinationChannelScreen.module.css';
  * 비어 있어(Phase 3 잔여 갭) 이번 라운드에서는 생략한다 — 위치·통화·시차만 표시.
  */
 export function DestinationChannelScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { user } = useSession();
@@ -40,13 +42,13 @@ export function DestinationChannelScreen() {
     );
   }
   if (isError || !destination) {
-    return <ErrorState summary="여행지 정보를 불러오지 못했어요." onRetry={() => refetch()} />;
+    return <ErrorState summary={t('destination.loadError')} onRetry={() => refetch()} />;
   }
 
   return (
     <div className={styles.wrap}>
       <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← 뒤로
+        ← {t('action.back', { ns: 'common' })}
       </button>
       <div className={styles.header}>
         <h1 className={styles.title}>{destination.name}</h1>
@@ -54,7 +56,7 @@ export function DestinationChannelScreen() {
           <span>🌏 {destination.country_code}</span>
           <span>🕐 {destination.timezone}</span>
           {destination.currency ? <span>💱 {destination.currency}</span> : null}
-          <span>📝 글 {destination.post_count}개</span>
+          <span>{t('destination.postCount', { count: destination.post_count })}</span>
         </div>
         <div className={styles.actions}>
           <button
@@ -63,10 +65,10 @@ export function DestinationChannelScreen() {
             disabled={!user || toggleFollow.isPending}
             onClick={() => toggleFollow.mutate({ destinationId: destination.id, following: isFollowing })}
           >
-            {isFollowing ? '구독 중 ✓' : '+ 구독'}
+            {isFollowing ? t('destination.following') : t('destination.follow')}
           </button>
           <button type="button" className={styles.tripBtn} onClick={() => navigate('/plan')}>
-            🗺 이 여행지로 여행 만들기
+            {t('destination.createTripHere')}
           </button>
         </div>
       </div>
@@ -76,7 +78,7 @@ export function DestinationChannelScreen() {
           <Skeleton height="80px" />
         </div>
       ) : posts.length === 0 ? (
-        <EmptyState icon="💬" message="아직 이 여행지에 등록된 글이 없어요." />
+        <EmptyState icon="💬" message={t('destination.emptyPosts')} />
       ) : (
         <>
           <div className={styles.list}>
@@ -92,7 +94,7 @@ export function DestinationChannelScreen() {
                 onClick={() => feed.fetchNextPage()}
                 disabled={feed.isFetchingNextPage}
               >
-                {feed.isFetchingNextPage ? '불러오는 중…' : '더 보기'}
+                {feed.isFetchingNextPage ? t('state.loading', { ns: 'common' }) : t('feed.loadMore')}
               </button>
             </div>
           ) : null}

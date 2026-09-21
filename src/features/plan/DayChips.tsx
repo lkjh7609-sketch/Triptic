@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './DayChips.module.css';
 
 interface DayChipsProps {
@@ -13,6 +14,7 @@ interface DayChipsProps {
  * 7일 초과 시에도 페이지네이션 없이 단순 가로 스크롤로 처리한다 (스펙 §6.4).
  */
 export function DayChips({ totalDays, currentDay, onChange }: DayChipsProps) {
+  const { t } = useTranslation('plan');
   const activeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export function DayChips({ totalDays, currentDay, onChange }: DayChipsProps) {
   }, [currentDay]);
 
   return (
-    <div className={styles.row} role="tablist" aria-label="일차 선택">
+    <div className={styles.row} role="tablist" aria-label={t('day.tablistLabel')}>
       {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => (
         <button
           key={day}
@@ -31,7 +33,7 @@ export function DayChips({ totalDays, currentDay, onChange }: DayChipsProps) {
           className={`${styles.chip} ${day === currentDay ? styles.active : ''}`}
           onClick={() => onChange(day)}
         >
-          Day {day}
+          {t('day.header', { index: day })}
         </button>
       ))}
     </div>

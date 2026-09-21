@@ -1,1 +1,226 @@
-{}
+{
+  "addPlace": {
+    "title": "Add to itinerary",
+    "searchPlaceholder": "Search for a place",
+    "selectHint": "Pick a place from the search results.",
+    "timeLabel": "Time (optional)",
+    "memoLabel": "Note (optional)",
+    "memoPlaceholder": "Store luggage after check-in",
+    "adding": "Adding…"
+  },
+  "placeCategory": {
+    "sight": "Sight",
+    "restaurant": "Restaurant",
+    "cafe": "Cafe",
+    "shopping": "Shopping",
+    "lodging": "Lodging",
+    "transport": "Transport",
+    "other": "Other"
+  },
+  "backup": {
+    "title": "Device sync & backup",
+    "fileNamePrefix": "Triptic_Backup",
+    "invalidFile": "That's not a valid backup JSON file.",
+    "conflictTitle": "Some trip names already exist",
+    "conflictDesc": "These trip names already exist:",
+    "conflictMore": " and {{count}} more",
+    "conflictQuestion": "How would you like to handle it?",
+    "keepBoth": "Keep both",
+    "overwrite": "Overwrite existing trip",
+    "desc": "Download all your trips as a JSON file, or restore them from a backup file.",
+    "exportBtn": "Export backup file",
+    "importBtn": "Import backup file",
+    "importedSuffix": "(imported)",
+    "importedSuffixN": "(imported {{n}})",
+    "importSuccess_one": "Imported {{count}} trip!",
+    "importSuccess_other": "Imported {{count}} trips!",
+    "importError": "Something went wrong while importing."
+  },
+  "createTrip": {
+    "title": "New trip",
+    "nameLabel": "Trip name",
+    "namePlaceholder": "Tokyo trip",
+    "cityLabel": "Destination city (search and select)",
+    "cityPlaceholderExample": "e.g. Kyoto, Japan",
+    "cityRequired": "Search for and select a destination city.",
+    "currencyLabel": "Currency",
+    "startLabel": "Start date",
+    "endLabel": "End date",
+    "creating": "Creating…",
+    "create": "Create",
+    "errors": {
+      "titleRequired": "Please enter a trip name",
+      "dateFormat": "That date format isn't valid",
+      "dateInvalid": "Please choose a valid date",
+      "startRequired": "Please choose a start date",
+      "endRequired": "Please choose an end date",
+      "endAfterStart": "End date must be after the start date"
+    }
+  },
+  "day": {
+    "header": "Day {{index}}",
+    "tablistLabel": "Select day"
+  },
+  "dayCity": {
+    "title": "Set city for day {{day}}",
+    "currentLabel": "Current city for day {{day}}",
+    "unset": "Not set",
+    "searchPlaceholder": "Search city (e.g. Kyoto, Japan)",
+    "scopeRestTitle": "Apply from this day to the end of the trip",
+    "scopeRestBadge": "Recommended",
+    "scopeRestDesc": "Changes the city for every itinerary from day {{from}} through day {{to}}.",
+    "scopeSingleTitle": "Apply to this day only (day {{day}})",
+    "scopeSingleDesc": "Sets this city for day {{day}} only.",
+    "applying": "Applying…",
+    "apply": "Apply city"
+  },
+  "expense": {
+    "title": "Expenses for this day",
+    "descPlaceholder": "What did you spend on (e.g. lunch)",
+    "amountPlaceholder": "Amount ({{symbol}})",
+    "currencyAria": "Currency",
+    "categoryAria": "Category",
+    "paymentAria": "Payment method",
+    "paymentPlaceholder": "Payment method",
+    "fetchingRate": "Fetching rate…",
+    "empty": "No expenses recorded yet.",
+    "fxWarning": "Couldn't fetch the exchange rate. The amount is saved but won't be included in totals.",
+    "unconverted": "not convertible",
+    "unconvertedCount_one": " (excludes {{count}} unconverted item)",
+    "unconvertedCount_other": " (excludes {{count}} unconverted items)",
+    "dayTotal": "Total for this day",
+    "grandTotal": "Total for the whole trip",
+    "chartByDay": "Totals by day",
+    "chartByCategory": "Totals by category",
+    "category": {
+      "food": "Food",
+      "transport": "Transport",
+      "lodging": "Lodging",
+      "shopping": "Shopping",
+      "activity": "Activity",
+      "other": "Other"
+    },
+    "payment": {
+      "cash": "Cash",
+      "card": "Card",
+      "other": "Other"
+    }
+  },
+  "flightCard": {
+    "schedule": "Depart {{depTime}} → Arrive {{arrTime}}"
+  },
+  "flight": {
+    "title": "Flights",
+    "outboundLabel": "Outbound",
+    "returnLabel": "Return",
+    "flightNoPlaceholder": "Flight number (e.g. OZ102)",
+    "lookupBtn": "Look up",
+    "lookingUp": "Looking up…",
+    "noResultHint": "If nothing turns up automatically, you can enter the details manually below.",
+    "manualToggle": "Enter flight manually",
+    "airlinePlaceholder": "Airline (e.g. Korean Air)",
+    "depPlaceholder": "Search departure airport (e.g. Incheon Intl)",
+    "arrPlaceholder": "Search arrival airport (e.g. Kansai Intl)",
+    "applyManual": "Apply this flight",
+    "saving": "Saving…"
+  },
+  "itemDetail": {
+    "mapLink": "View on Google Maps",
+    "timeLabel": "Time",
+    "memoLabel": "Note",
+    "moveToDay": "Move to another day"
+  },
+  "meals": {
+    "title": "Meals for this day",
+    "searchPlaceholder": "Search {{meal}} spot",
+    "skip": "Skip",
+    "saving": "Saving…"
+  },
+  "mealSlot": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner"
+  },
+  "planScreen": {
+    "myTrips": "My trips",
+    "createTripAria": "Create trip",
+    "loginMessage": "Log in to save your trips and pick up where you left off, anywhere.",
+    "browseFirst": "Take a look around first",
+    "listError": "Couldn't load your trip list.",
+    "firstTripMessage": "Create your first trip.",
+    "ongoing": "Ongoing",
+    "upcoming": "Upcoming",
+    "pastToggle_one": "{{count}} past trip {{state}}",
+    "pastToggle_other": "{{count}} past trips {{state}}",
+    "pastShow": "Show ▼",
+    "pastHide": "Hide ▲",
+    "backupFooter": "Device sync & backup"
+  },
+  "sampleTrip": {
+    "badge": "Recommended sample itinerary",
+    "duration": "{{nights}} nights, {{days}} days",
+    "placeCount_one": "{{count}} place",
+    "placeCount_other": "{{count}} places",
+    "openLink": "View itinerary"
+  },
+  "setHotel": {
+    "title": "Set lodging",
+    "searchPlaceholder": "Search for lodging",
+    "clear": "Remove lodging",
+    "saving": "Saving…"
+  },
+  "share": {
+    "title": "View-only share link",
+    "sampleMessage": "Sample trips can't be shared. Create your own trip to share it!",
+    "desc": "Send this link to your travel companions so they can view the itinerary without editing it.",
+    "generatingLink": "Generating…",
+    "revoke": "Stop sharing",
+    "revokeConfirm": "Stop sharing this trip? Others will no longer be able to view it.",
+    "copied": "Copied!",
+    "copyText": "Copy full itinerary as text",
+    "textCopied": "Text copied!",
+    "pdfAllBtn": "Full itinerary PDF ({{days}} days)",
+    "pdfCurrentBtn": "PDF for day {{day}} only",
+    "generatingPdf": "Generating…"
+  },
+  "suggestions": {
+    "title": "Suggestions from companions ({{count}})",
+    "empty": "No suggestions from your companions yet.",
+    "dayTag": "Suggested for day {{day}}",
+    "sentBy": "Sent by",
+    "reject": "Decline",
+    "addToItinerary": "Add to itinerary"
+  },
+  "tripCard": {
+    "periodUndecided": "Dates not set",
+    "menuAria": "Trip menu",
+    "rename": "Rename",
+    "renamePrompt": "Enter a new trip name",
+    "duplicate": "Duplicate",
+    "deleteConfirm": "Delete the trip '{{title}}'? This can't be undone."
+  },
+  "tripDetail": {
+    "backAria": "Back",
+    "sampleBadge": "Sample preview",
+    "mapViewAria": "Map view",
+    "listViewAria": "List view",
+    "suggestionsAria": "Received suggestions",
+    "suggestionsSampleTitle": "Sample trips can't use the suggestions feature.",
+    "voucherAria": "Voucher archive",
+    "shareAria": "Share",
+    "cityUnset": "City not set",
+    "hotelUnset": "Lodging",
+    "mealsLabel": "Meals",
+    "expenseLabel": "Expenses",
+    "addByDocument": "Add from a document",
+    "startLabel": "Depart",
+    "returnLabel": "Return",
+    "addItem": "Add to itinerary",
+    "emptyDay": "Nothing planned for this day yet.",
+    "notFound": "Couldn't load this trip.",
+    "climateBadge": "Avg."
+  },
+  "tripMap": {
+    "ariaLabel": "Itinerary map"
+  }
+}

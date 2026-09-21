@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { tripService, type LocalProject, type TripRow } from '@/shared/api/tripService';
 import { captureError } from '@/shared/monitoring';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import styles from './BackupModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
 
@@ -17,10 +19,12 @@ interface BackupModalProps {
  * 호환된다. 이름이 겹치면 무조건 덮어쓰지 않고 선택하게 하는 것도 원본과 동일하다.
  */
 export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const [importing, setImporting] = useState(false);
   const [pendingImport, setPendingImport] = useState<Record<string, LocalProject> | null>(null);
   const [conflicts, setConflicts] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   function handleExport() {
     try {
@@ -34,7 +38,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
       const a = document.createElement('a');
       const today = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `Triptic_백업_${today}.json`;
+      a.download = `${t('backup.fileNamePrefix')}_${today}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -66,7 +70,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
           void applyMerge(imported, 'keep');
         }
       } catch {
-        setMessage('올바른 백업 JSON 파일이 아닙니다.');
+        setMessage(t('backup.invalidFile'));
       }
     };
     reader.readAsText(file);
@@ -90,9 +94,9 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
         } else if (mode === 'overwrite') {
           await tripService.saveTrip({ ...project, supabaseId: existing.id }, name);
         } else {
-          let altName = `${name} (가져옴)`;
+          let altName = `${name} ${t('backup.importedSuffix')}`;
           let n = 1;
-          while (existingByTitle.has(altName)) altName = `${name} (가져옴 ${++n})`;
+          while (existingByTitle.has(altName)) altName = `${name} ${t('backup.importedSuffixN', { n: ++n })}`;
           await tripService.saveTrip({ ...project, supabaseId: undefined }, altName);
         }
         count++;
@@ -101,10 +105,10 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
       onImported();
       setPendingImport(null);
       setConflicts([]);
-      setMessage(`🎉 ${count}개의 여행을 불러왔습니다!`);
+      setMessage(`🎉 ${t('backup.importSuccess', { count })}`);
     } catch (err) {
       captureError(err, { context: 'importAllData' });
-      setMessage('가져오는 중 오류가 발생했습니다.');
+      setMessage(t('backup.importError'));
     } finally {
       setImporting(false);
     }
@@ -112,18 +116,26 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>☁️ 기기 동기화 & 백업</h2>
+      <div
+        ref={trapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('backup.title')}
+      >
+        <h2 className={modalStyles.title}>☁️ {t('backup.title')}</h2>
 
         {pendingImport ? (
           <div className={styles.conflictBox}>
-            <p className={styles.conflictTitle}>⚠️ 이름이 같은 여행이 있습니다</p>
+            <p className={styles.conflictTitle}>⚠️ {t('backup.conflictTitle')}</p>
             <p className={styles.conflictDesc}>
+              {t('backup.conflictDesc')}{' '}
               <b>
                 {conflicts.slice(0, 3).join(', ')}
-                {conflicts.length > 3 ? ` 외 ${conflicts.length - 3}개` : ''}
-              </b>
-              은(는) 이미 존재하는 여행 이름입니다. 어떻게 처리할까요?
+                {conflicts.length > 3 ? t('backup.conflictMore', { count: conflicts.length - 3 }) : ''}
+              </b>{' '}
+              {t('backup.conflictQuestion')}
             </p>
             <div className={styles.conflictActions}>
               <button
@@ -132,7 +144,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
                 disabled={importing}
                 onClick={() => applyMerge(pendingImport, 'keep')}
               >
-                둘 다 보관하기
+                {t('backup.keepBoth')}
               </button>
               <button
                 type="button"
@@ -140,7 +152,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
                 disabled={importing}
                 onClick={() => applyMerge(pendingImport, 'overwrite')}
               >
-                기존 여행 덮어쓰기
+                {t('backup.overwrite')}
               </button>
               <button
                 type="button"
@@ -150,19 +162,19 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
                   setConflicts([]);
                 }}
               >
-                취소
+                {t('action.cancel', { ns: 'common' })}
               </button>
             </div>
           </div>
         ) : (
           <>
-            <p className={styles.desc}>내 모든 여행을 JSON 파일로 내려받거나, 백업 파일에서 다시 불러올 수 있어요.</p>
+            <p className={styles.desc}>{t('backup.desc')}</p>
             {message ? <p className={styles.message}>{message}</p> : null}
             <button type="button" className={modalStyles.primary} onClick={handleExport}>
-              📤 백업 파일 내보내기
+              📤 {t('backup.exportBtn')}
             </button>
             <label className={styles.importLabel}>
-              📥 백업 파일 가져오기
+              📥 {t('backup.importBtn')}
               <input
                 type="file"
                 accept="application/json"
@@ -173,7 +185,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
             </label>
             <div className={modalStyles.actions}>
               <button type="button" className={modalStyles.secondary} onClick={onClose}>
-                닫기
+                {t('action.close', { ns: 'common' })}
               </button>
             </div>
           </>

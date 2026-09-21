@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -14,6 +15,7 @@ import styles from './UserProfileScreen.module.css';
 
 /** 사용자 프로필 (06-community.md §1, §2.5) — 다른 사용자 프로필에는 차단·신고 버튼 */
 export function UserProfileScreen() {
+  const { t } = useTranslation(['community', 'common']);
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user } = useSession();
@@ -42,7 +44,7 @@ export function UserProfileScreen() {
     );
   }
   if (isError || !profile) {
-    return <ErrorState summary="프로필을 불러오지 못했어요." onRetry={() => refetch()} />;
+    return <ErrorState summary={t('profile.loadError')} onRetry={() => refetch()} />;
   }
 
   const isOwn = user?.id === profile.id;
@@ -50,7 +52,7 @@ export function UserProfileScreen() {
   return (
     <div className={styles.wrap}>
       <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← 뒤로
+        ← {t('action.back', { ns: 'common' })}
       </button>
 
       <div className={styles.header}>
@@ -60,7 +62,7 @@ export function UserProfileScreen() {
           <span className={styles.avatarFallback}>🅤</span>
         )}
         <div className={styles.info}>
-          <h1 className={styles.name}>{profile.display_name || '여행자'}</h1>
+          <h1 className={styles.name}>{profile.display_name || t('post.fallbackAuthor')}</h1>
           {profile.handle ? <p className={styles.handle}>@{profile.handle}</p> : null}
           {profile.bio ? <p className={styles.bio}>{profile.bio}</p> : null}
         </div>
@@ -69,13 +71,13 @@ export function UserProfileScreen() {
         ) : null}
       </div>
 
-      <div className={styles.postsHeader}>작성한 글</div>
+      <div className={styles.postsHeader}>{t('profile.postsHeader')}</div>
       {postsLoading ? (
         <div style={{ padding: 16 }}>
           <Skeleton height="60px" />
         </div>
       ) : !posts || posts.length === 0 ? (
-        <EmptyState icon="✍️" message="아직 작성한 글이 없어요." />
+        <EmptyState icon="✍️" message={t('profile.noPosts')} />
       ) : (
         posts.map((post) => <PostCard key={post.id} post={post} />)
       )}

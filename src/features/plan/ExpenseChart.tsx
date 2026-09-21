@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { formatMoney } from './expenses';
 import styles from './ExpenseChart.module.css';
 
@@ -18,13 +19,15 @@ interface ExpenseChartProps {
  * memory 참고) 이후 이 프로젝트가 번들 크기에 민감하다는 판단.
  */
 export function ExpenseChart({ title, data, currency }: ExpenseChartProps) {
+  // defaultNS가 'common'이라(src/shared/i18n/index.ts) ns 지정 없이 바로 공용 상태 문구를 쓴다
+  const { t, i18n } = useTranslation();
   const max = Math.max(1, ...data.map((d) => d.value));
 
   return (
     <div className={styles.wrap}>
       <h3 className={styles.title}>{title}</h3>
       {data.length === 0 ? (
-        <p className={styles.empty}>표시할 데이터가 없습니다.</p>
+        <p className={styles.empty}>{t('state.empty')}</p>
       ) : (
         <div className={styles.rows}>
           {data.map((d) => (
@@ -33,7 +36,7 @@ export function ExpenseChart({ title, data, currency }: ExpenseChartProps) {
               <div className={styles.track}>
                 <div className={styles.fill} style={{ width: `${(d.value / max) * 100}%` }} />
               </div>
-              <span className={styles.value}>{formatMoney(d.value, currency)}</span>
+              <span className={styles.value}>{formatMoney(d.value, currency, i18n.language)}</span>
             </div>
           ))}
         </div>

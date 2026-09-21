@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
@@ -21,6 +22,8 @@ import styles from './PlanScreen.module.css';
  * 후속 작업(TripDetailScreen 등)에서 이어간다.
  */
 export function PlanScreen() {
+  const { t } = useTranslation(['plan', 'common']);
+  void t; // TODO(Phase6-C 재개): 이 화면 본문 문자열 i18n 전환 미완료 — WIP 중단 지점
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
   const { data: trips, isLoading, isError, refetch } = useTrips();

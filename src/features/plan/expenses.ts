@@ -32,10 +32,16 @@ export const PAYMENT_METHOD_LABELS: Record<ExpensePaymentMethod, string> = {
   other: '기타',
 };
 
-export function formatMoney(amount: number, currency: string): string {
+/**
+ * 금액을 통화 기호와 함께 표시한다 (07-i18n.md §5.2 — Intl.NumberFormat 경유,
+ * 직접 포매팅하지 않는다). locale은 i18n.language를 그대로 넘기면 된다
+ * (SupportedLocale 'ko'/'en'/'zh-CN' 모두 Intl.NumberFormat이 그대로 받아들이는
+ * 유효한 BCP47 태그다). 알 수 없는 통화 코드는 기존 동작과 동일하게 KRW로 폴백한다.
+ */
+export function formatMoney(amount: number, currency: string, locale: string = 'ko'): string {
   const num = Number(amount) || 0;
-  const meta = CURRENCIES[currency] || CURRENCIES.KRW;
-  return `${num.toLocaleString()}${meta.unit}`;
+  const validCurrency = CURRENCIES[currency] ? currency : 'KRW';
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: validCurrency }).format(num);
 }
 
 /**
@@ -85,10 +91,12 @@ export function getDayTotalsSeries(
   expensesData: ExpensesData,
   totalDays: number,
   baseCurrency: string,
+  /** 라벨 포맷터 — 호출부가 번역된 "Day N" 문구를 넘길 수 있게 한다(07-i18n.md §2.2). 기본값은 기존 동작 유지 */
+  dayLabel: (day: number) => string = (day) => `Day ${day}`,
 ): { label: string; value: number }[] {
   const series: { label: string; value: number }[] = [];
   for (let day = 1; day <= totalDays; day++) {
-    series.push({ label: `Day ${day}`, value: getDayExpenseTotal(expensesData[day] ?? [], baseCurrency).total });
+    series.push({ label: dayLabel(day), value: getDayExpenseTotal(expensesData[day] ?? [], baseCurrency).total });
   }
   return series;
 }
@@ -97,6 +105,8 @@ export function getDayTotalsSeries(
 export function getCategoryTotalsSeries(
   expensesData: ExpensesData,
   baseCurrency: string,
+  /** 라벨 포맷터 — 호출부가 번역된 카테고리명을 넘길 수 있게 한다. 기본값은 기존 동작(한국어 라벨) 유지 */
+  categoryLabel: (category: ExpenseCategory) => string = (category) => EXPENSE_CATEGORY_LABELS[category],
 ): { label: string; value: number }[] {
   const totals: Record<ExpenseCategory, number> = {
     food: 0,
@@ -116,5 +126,5 @@ export function getCategoryTotalsSeries(
   });
   return (Object.keys(totals) as ExpenseCategory[])
     .filter((cat) => totals[cat] > 0)
-    .map((cat) => ({ label: EXPENSE_CATEGORY_LABELS[cat], value: totals[cat] }));
+    .map((cat) => ({ label: categoryLabel(cat), value: totals[cat] }));
 }

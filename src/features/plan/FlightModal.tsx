@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { lookupFlight } from './flightApi';
 import { flightPreviewText } from './flights';
 import { captureError } from '@/shared/monitoring';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { FlightInfo, FlightsData } from './types';
 import styles from './FlightModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -22,9 +24,11 @@ interface FlightModalProps {
  * 반영된다(TripDetailScreen → useTripRoutes).
  */
 export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }: FlightModalProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const [outbound, setOutbound] = useState<FlightInfo | null>(flightsData.outbound);
   const [returnFlight, setReturnFlight] = useState<FlightInfo | null>(flightsData.return);
   const [saving, setSaving] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   async function handleSave() {
     setSaving(true);
@@ -40,17 +44,24 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>✈️ 항공편</h2>
+      <div
+        ref={trapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('flight.title')}
+      >
+        <h2 className={modalStyles.title}>✈️ {t('flight.title')}</h2>
 
         <FlightSlotEditor
-          label="출국"
+          label={t('flight.outboundLabel')}
           date={startDate}
           value={outbound}
           onChange={setOutbound}
         />
         <FlightSlotEditor
-          label="귀국"
+          label={t('flight.returnLabel')}
           date={endDate}
           value={returnFlight}
           onChange={setReturnFlight}
@@ -58,10 +69,10 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
 
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
-            취소
+            {t('action.cancel', { ns: 'common' })}
           </button>
           <button type="button" className={modalStyles.primary} disabled={saving} onClick={handleSave}>
-            {saving ? '저장 중…' : '저장'}
+            {saving ? t('flight.saving') : t('action.save', { ns: 'common' })}
           </button>
         </div>
       </div>
@@ -77,6 +88,7 @@ interface FlightSlotEditorProps {
 }
 
 function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProps) {
+  const { t } = useTranslation('plan');
   const [flightNo, setFlightNo] = useState(value?.flightNo ?? '');
   const [loading, setLoading] = useState(false);
   const [showManual, setShowManual] = useState(!!value?.manual);
@@ -131,36 +143,36 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
       <div className={styles.lookupRow}>
         <input
           className={styles.flightNoInput}
-          placeholder="편명 (예: OZ102)"
+          placeholder={t('flight.flightNoPlaceholder')}
           value={flightNo}
           onChange={(e) => setFlightNo(e.target.value)}
         />
         <button type="button" className={styles.lookupBtn} disabled={loading} onClick={handleLookup}>
-          {loading ? '조회 중…' : '조회'}
+          {loading ? t('flight.lookingUp') : t('flight.lookupBtn')}
         </button>
       </div>
 
       {value ? <p className={styles.preview}>{flightPreviewText(value)}</p> : null}
       {!value && !loading ? (
-        <p className={styles.hint}>ℹ️ 자동 조회 결과가 없으면 아래에서 직접 입력할 수 있어요.</p>
+        <p className={styles.hint}>ℹ️ {t('flight.noResultHint')}</p>
       ) : null}
 
       <button type="button" className={styles.manualToggle} onClick={() => setShowManual((v) => !v)}>
-        ✏️ 항공편 직접 입력 (수동 지정)
+        ✏️ {t('flight.manualToggle')}
       </button>
 
       {showManual ? (
         <div className={styles.manualFields}>
           <input
             className={modalStyles.input}
-            placeholder="항공사 (예: 대한항공)"
+            placeholder={t('flight.airlinePlaceholder')}
             value={airline}
             onChange={(e) => setAirline(e.target.value)}
           />
           <input
             ref={depInputRef}
             className={modalStyles.input}
-            placeholder="출발 공항 검색 (예: 인천국제공항)"
+            placeholder={t('flight.depPlaceholder')}
             defaultValue={depPlace?.name}
           />
           <input
@@ -172,7 +184,7 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
           <input
             ref={arrInputRef}
             className={modalStyles.input}
-            placeholder="도착 공항 검색 (예: 간사이 국제공항)"
+            placeholder={t('flight.arrPlaceholder')}
             defaultValue={arrPlace?.name}
           />
           <input
@@ -182,7 +194,7 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
             onChange={(e) => setArrTime(e.target.value)}
           />
           <button type="button" className={styles.applyManualBtn} onClick={handleApplyManual}>
-            이 항공편 정보 적용
+            {t('flight.applyManual')}
           </button>
         </div>
       ) : null}

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfidenceField } from './ConfidenceField';
 import { commitFlightBooking } from './commitBooking';
 import { getVoucherSignedUrlByDocumentId, type BookingRow } from './documentService';
@@ -34,14 +36,24 @@ export function ReviewSheet({
   onClose,
   onCommitFlight,
 }: ReviewSheetProps) {
+  const { t } = useTranslation(['documents', 'common']);
+  const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
+
   if (bookings.length === 0) {
     return (
       <div className={modalStyles.overlay} onClick={onClose}>
-        <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-          <h2 className={modalStyles.title}>검수할 예약이 없어요</h2>
+        <div
+          ref={focusTrapRef}
+          className={modalStyles.sheet}
+          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('review.dialogLabel')}
+        >
+          <h2 className={modalStyles.title}>{t('review.emptyTitle')}</h2>
           <div className={modalStyles.actions}>
             <button type="button" className={modalStyles.primary} onClick={onClose}>
-              닫기
+              {t('action.close', { ns: 'common' })}
             </button>
           </div>
         </div>
@@ -51,9 +63,16 @@ export function ReviewSheet({
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>📋 인식 결과 확인</h2>
-        <p className={styles.desc}>자동으로 읽은 내용이에요. 확인하고 일정에 반영해 주세요.</p>
+      <div
+        ref={focusTrapRef}
+        className={modalStyles.sheet}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('review.dialogLabel')}
+      >
+        <h2 className={modalStyles.title}>{t('review.title')}</h2>
+        <p className={styles.desc}>{t('review.desc')}</p>
         <div className={styles.list}>
           {bookings.map((booking) =>
             booking.parsed.kind === 'flight' ? (
@@ -74,7 +93,7 @@ export function ReviewSheet({
         </div>
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
-            닫기
+            {t('action.close', { ns: 'common' })}
           </button>
         </div>
       </div>
@@ -107,6 +126,7 @@ function FlightBookingCard({
   flightsData,
   onCommitFlight,
 }: FlightBookingCardProps) {
+  const { t } = useTranslation(['documents', 'common']);
   const confirmMutation = useConfirmBooking(tripId);
   const rejectMutation = useRejectBooking(tripId);
   const [saving, setSaving] = useState(false);
@@ -149,9 +169,9 @@ function FlightBookingCard({
 
   return (
     <div className={styles.card}>
-      <p className={styles.kindLabel}>✈️ 항공편</p>
+      <p className={styles.kindLabel}>{t('review.flightLabel')}</p>
       <ConfidenceField
-        label="편명"
+        label={t('review.flightNumberField')}
         value={edited.flightNumber.value}
         confidence={edited.flightNumber.confidence}
         onChange={(v) => updateField('flightNumber', v)}
@@ -159,13 +179,13 @@ function FlightBookingCard({
       />
       <div className={styles.row}>
         <ConfidenceField
-          label="출발 공항"
+          label={t('review.departureAirportField')}
           value={edited.departure.airportIata.value}
           confidence={edited.departure.airportIata.confidence}
           onChange={(v) => updateNested('departure', 'airportIata', v)}
         />
         <ConfidenceField
-          label="도착 공항"
+          label={t('review.arrivalAirportField')}
           value={edited.arrival.airportIata.value}
           confidence={edited.arrival.airportIata.confidence}
           onChange={(v) => updateNested('arrival', 'airportIata', v)}
@@ -173,13 +193,13 @@ function FlightBookingCard({
       </div>
       <div className={styles.row}>
         <ConfidenceField
-          label="출발 시각"
+          label={t('review.departureTimeField')}
           value={edited.departure.scheduledLocal.value}
           confidence={edited.departure.scheduledLocal.confidence}
           onChange={(v) => updateNested('departure', 'scheduledLocal', v)}
         />
         <ConfidenceField
-          label="도착 시각"
+          label={t('review.arrivalTimeField')}
           value={edited.arrival.scheduledLocal.value}
           confidence={edited.arrival.scheduledLocal.confidence}
           onChange={(v) => updateNested('arrival', 'scheduledLocal', v)}
@@ -187,10 +207,10 @@ function FlightBookingCard({
       </div>
       <div className={styles.cardActions}>
         <button type="button" className={modalStyles.secondary} onClick={handleReject} disabled={saving}>
-          무시
+          {t('review.ignore')}
         </button>
         <button type="button" className={modalStyles.primary} onClick={handleConfirm} disabled={saving}>
-          {saving ? '반영 중…' : '일정에 반영'}
+          {saving ? t('review.applying') : t('review.applyToItinerary')}
         </button>
       </div>
     </div>
@@ -208,6 +228,7 @@ interface GenericBookingCardProps {
  * (🏨 숙소 / + 일정 추가)으로 직접 추가하도록 안내한다(다음 라운드에서 자동화).
  */
 function GenericBookingCard({ tripId, booking }: GenericBookingCardProps) {
+  const { t } = useTranslation(['documents', 'common']);
   const rejectMutation = useRejectBooking(tripId);
 
   async function handleReject() {
@@ -225,19 +246,20 @@ function GenericBookingCard({ tripId, booking }: GenericBookingCardProps) {
   return (
     <div className={styles.card}>
       <p className={styles.kindLabel}>
-        {booking.type === 'lodging' ? '🏨 숙소' : booking.type === 'rail' ? '🚄 철도' : '📍 예약'}
+        {booking.type === 'lodging'
+          ? t('review.lodgingLabel')
+          : booking.type === 'rail'
+            ? t('review.railLabel')
+            : t('review.bookingLabel')}
       </p>
-      <p className={styles.name}>{name ?? '(이름을 인식하지 못했어요)'}</p>
-      <p className={styles.manualHint}>
-        이 예약 종류는 아직 자동 반영을 지원하지 않아요 — 위 내용을 참고해서 🏨 숙소 또는 + 일정 추가로 직접
-        등록해 주세요.
-      </p>
+      <p className={styles.name}>{name ?? t('review.nameUnrecognized')}</p>
+      <p className={styles.manualHint}>{t('review.manualHint')}</p>
       <div className={styles.cardActions}>
         <button type="button" className={modalStyles.secondary} onClick={() => openVoucher(booking.document_id)}>
-          원본 보기
+          {t('confidenceField.viewOriginal')}
         </button>
         <button type="button" className={modalStyles.primary} onClick={handleReject}>
-          닫기
+          {t('action.close', { ns: 'common' })}
         </button>
       </div>
     </div>
