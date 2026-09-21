@@ -4118,12 +4118,12 @@
 
                 rows.forEach(row => {
                     const cloudProject = cloud.toLocalProject(row);
-                    const existing = allProjects[row.name];
+                    const existing = allProjects[row.title];
                     if (!existing) {
-                        allProjects[row.name] = cloudProject;
+                        allProjects[row.title] = cloudProject;
                         updated = true;
                     } else if ((cloudProject.updatedAt || 0) > (existing.updatedAt || 0) + 3000) {
-                        allProjects[row.name] = { ...cloudProject, supabaseId: row.id };
+                        allProjects[row.title] = { ...cloudProject, supabaseId: row.id };
                         updated = true;
                     } else if (!existing.supabaseId) {
                         // 로컬이 더 최신이지만 아직 클라우드 행 ID를 모르는 경우 연결만 해 둠
