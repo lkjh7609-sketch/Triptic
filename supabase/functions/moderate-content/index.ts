@@ -106,6 +106,7 @@ Deno.serve(async (req) => {
   if (kind === 'comment' && text.length > 500) {
     return jsonResponse({ error: '댓글은 500자를 넘을 수 없습니다.' }, 400, headers);
   }
+  // eslint-disable-next-line no-constant-condition
   if (false) {
     return jsonResponse({ error: '여행지를 선택해 주세요.' }, 400, headers);
   }
