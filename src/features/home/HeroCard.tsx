@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import { Plane } from 'lucide-react';
 import type { TripRow } from '@/shared/api/tripService';
 import { tripService } from '@/shared/api/tripService';
 import { getDDay } from '@/features/plan/tripStatus';
@@ -10,6 +11,7 @@ import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import type { FlightsData, PlannerData } from '@/features/plan/types';
+import { useCityImage } from '@/shared/hooks/useCityImage';
 import styles from './HeroCard.module.css';
 
 const todayISO = () => format(new Date(), 'yyyy-MM-dd');
@@ -32,7 +34,7 @@ export function HeroCard({ upcoming, ongoing }: HeroCardProps) {
   if (ongoing) return <OngoingHero trip={ongoing} />;
   if (upcoming) return <UpcomingHero trip={upcoming} />;
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${styles.emptyCard}`}>
       <p className={styles.emptyMessage}>{t('hero.planNext')}</p>
       <Link to="/plan" className={styles.cta}>
         {t('hero.createTrip')}
@@ -50,9 +52,10 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
   const weather = useWeather(trip.city_lat, trip.city_lng, todayISO(), todayISO());
   const current = weather.data?.current;
   const tempUnit = useTempUnit();
+  const bgImage = useCityImage(trip.city);
 
   return (
-    <Link to={`/plan/${trip.id}`} className={styles.card}>
+    <Link to={`/plan/${trip.id}`} className={styles.card} style={{ backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%), url('${bgImage}')` }}>
       <div className={styles.header}>
         {dday != null ? <span className={styles.ddayBadge}>{dday === 0 ? 'D-DAY' : `D-${dday}`}</span> : null}
         <h2 className={styles.title}>{trip.title}</h2>
@@ -73,7 +76,10 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
       </div>
       {outbound ? (
         <p className={styles.flightRow}>
-          ✈️ {outbound.flightNo} {outbound.dep.iata || outbound.dep.name} → {outbound.arr.iata || outbound.arr.name}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Plane size={18} />
+          </span>{' '}
+          {outbound.flightNo} {outbound.dep.iata || outbound.dep.name} → {outbound.arr.iata || outbound.arr.name}
         </p>
       ) : null}
     </Link>
@@ -94,9 +100,10 @@ function OngoingHero({ trip }: { trip: TripRow }) {
       )
     : 1;
   const todayItems = ((project.data as PlannerData | undefined)?.[dayIndex] ?? []).slice(0, 3);
+  const bgImage = useCityImage(trip.city);
 
   return (
-    <Link to={`/plan/${trip.id}`} className={styles.card}>
+    <Link to={`/plan/${trip.id}`} className={`${styles.card} ${styles.ongoingCard}`} style={{ backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%), url('${bgImage}')` }}>
       <div className={styles.header}>
         <span className={styles.ongoingBadge}>{t('hero.todayBadge')}</span>
         <h2 className={styles.title}>{trip.title}</h2>

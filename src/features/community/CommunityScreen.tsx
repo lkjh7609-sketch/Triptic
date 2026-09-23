@@ -1,5 +1,6 @@
+import { Lock as LockIcon, PenLine } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
@@ -10,14 +11,11 @@ import { usePostsFeed } from './hooks/usePosts';
 import { useDestinations } from './hooks/useDestinations';
 import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
+import { DestinationSelector } from './DestinationSelector';
 import styles from './CommunityScreen.module.css';
 
 type Tab = 'all' | 'following';
 
-/**
- * 커뮤니티 탭 — 피드 (02-screens.md §4.1, 06-community.md §1)
- * 06-community.md §5(모더레이션 안전장치)와 같은 커밋에서 함께 구현했다.
- */
 export function CommunityScreen() {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
@@ -26,6 +24,18 @@ export function CommunityScreen() {
   const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
 
   const feed = usePostsFeed({ tab, viewerId: user?.id ?? null });
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const handleSearch = () => {
+    if (!searchQuery) return;
+    const dest = destinations?.find(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.slug.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (dest) {
+      navigate(`/community/d/${dest.slug}`);
+    } else {
+      alert('해당 도시 게시판을 찾을 수 없습니다.');
+    }
+  };
+
 
   useEffect(() => {
     trackScreenView('community_feed');
@@ -35,45 +45,64 @@ export function CommunityScreen() {
   const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.topBar}>
-        <h1 className={styles.title}>{t('feed.title')}</h1>
-        {user ? (
-          <Link to="/community/compose" className={styles.composeBtn}>
-            {t('feed.compose')}
-          </Link>
+    <div className={`${styles.wrap} ${styles.desktopWrap}`}>
+      {user ? (
+        <Link to="/community/compose" className={styles.fabBtnDesktop}>
+          <PenLine size={20} /> <span>{t('feed.writeBtn', { defaultValue: '글쓰기' })}</span>
+        </Link>
+      ) : null}
+
+      <div className={styles.headerSection}>
+        <div className={styles.subtitle}>{t('feed.subtitle', { defaultValue: '여행자들의 기록과 영감' })}</div>
+        <h1 className={styles.mainTitle}>{t('feed.title')}</h1>
+      </div>
+
+      <div className={styles.filterSection}>
+        <div className={styles.searchBarWrap}>
+          <input 
+            type="text" 
+            className={styles.searchInput} 
+            placeholder={t('feed.searchPlaceholder', { defaultValue: '지역, 키워드, 여행자 검색...' })} 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
+        </div>
+
+        <div className={styles.tabsDesktop}>
+          <button
+            type="button"
+            className={tab === 'all' ? styles.tabActive : styles.tab}
+            onClick={() => setTab('all')}
+          >
+            {t('feed.tabAll')}
+          </button>
+          <button
+            type="button"
+            className={tab === 'following' ? styles.tabActive : styles.tab}
+            onClick={() => setTab('following')}
+          >
+            {t('feed.tabFollowing')}
+          </button>
+        </div>
+
+        {destinations && destinations.length > 0 ? (
+          <DestinationSelector destinations={destinations} />
+        ) : null}
+
+        {followedDestinations.length > 0 ? (
+          <div className={styles.chipRow}>
+            {followedDestinations.map((d) => (
+              <Link key={d.id} to={`/community/d/${d.slug}`} className={styles.chip}>
+                {d.name}
+              </Link>
+            ))}
+          </div>
         ) : null}
       </div>
 
-      {followedDestinations.length > 0 ? (
-        <div className={styles.chipRow}>
-          {followedDestinations.map((d) => (
-            <Link key={d.id} to={`/community/d/${d.slug}`} className={styles.chip}>
-              {d.name}
-            </Link>
-          ))}
-        </div>
-      ) : null}
-
-      <div className={styles.tabs}>
-        <button
-          type="button"
-          className={tab === 'all' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('all')}
-        >
-          {t('feed.tabAll')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'following' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('following')}
-        >
-          {t('feed.tabFollowing')}
-        </button>
-      </div>
-
       {tab === 'following' && !user ? (
-        <EmptyState icon="🔒" message={t('feed.loginToFollow')} />
+        <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('feed.loginToFollow')} />
       ) : feed.isLoading ? (
         <div style={{ padding: 16 }}>
           <Skeleton height="80px" />
@@ -83,13 +112,17 @@ export function CommunityScreen() {
       ) : feed.isError ? (
         <ErrorState summary={t('feed.loadError')} onRetry={() => feed.refetch()} />
       ) : posts.length === 0 ? (
-        <EmptyState
-          icon="💬"
-          message={tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}
-        />
+        <div className={styles.emptyGrid}>
+          <div className={styles.emptyMainCard}>
+            <h3>{tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll', { defaultValue: '아직 등록된 글이 없어요.' })}</h3>
+            <p>{t('feed.emptySub', { defaultValue: '첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.' })}</p>
+            <Link to="/community/compose" className={styles.emptyCta}>{t('feed.writeFirst', { defaultValue: '첫 이야기 작성하기' })}</Link>
+          </div>
+          
+        </div>
       ) : (
         <>
-          <div className={styles.list}>
+          <div className={styles.desktopList}>
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
@@ -111,3 +144,4 @@ export function CommunityScreen() {
     </div>
   );
 }
+

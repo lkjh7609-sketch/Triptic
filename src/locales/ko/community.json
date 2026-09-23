@@ -13,9 +13,9 @@
     "noPending": "검토 대기 중인 글이 없어요."
   },
   "report": {
-    "title": "🚩 신고하기",
+    "title": "신고하기",
     "dialogLabel": "신고하기",
-    "doneTitle": "🚩 신고가 접수됐어요",
+    "doneTitle": "신고가 접수됐어요",
     "doneDesc": "신고해 주신 콘텐츠는 이제 회원님 화면에서 보이지 않아요. 24시간 이내에 검토 후 처리 결과를 알려드릴게요.",
     "reasonPrompt": "신고 사유를 선택해 주세요.",
     "detailPlaceholder": "상세 설명 (선택)",
@@ -36,21 +36,26 @@
   },
   "feed": {
     "title": "커뮤니티",
-    "compose": "✏️ 글쓰기",
+    "compose": "️ 글쓰기",
     "tabAll": "전체",
     "tabFollowing": "구독",
     "loginToFollow": "로그인하면 구독한 여행지의 글만 모아볼 수 있어요.",
     "loadError": "피드를 불러오지 못했어요.",
     "emptyFollowing": "구독한 여행지에 아직 글이 없어요.",
     "emptyAll": "아직 등록된 글이 없어요.",
-    "loadMore": "더 보기"
+    "loadMore": "더 보기",
+    "writeBtn": "글쓰기",
+    "subtitle": "여행자들의 기록과 영감",
+    "searchPlaceholder": "지역, 키워드, 여행자 검색...",
+    "emptySub": "첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.",
+    "writeFirst": "첫 이야기 작성하기"
   },
   "destination": {
     "loadError": "여행지 정보를 불러오지 못했어요.",
-    "postCount_other": "📝 글 {{count}}개",
-    "following": "구독 중 ✓",
+    "postCount_other": "글 {{count}}개",
+    "following": "구독 중 ",
     "follow": "+ 구독",
-    "createTripHere": "🗺 이 여행지로 여행 만들기",
+    "createTripHere": "이 여행지로 여행 만들기",
     "emptyPosts": "아직 이 여행지에 등록된 글이 없어요."
   },
   "post": {
@@ -64,9 +69,9 @@
   },
   "detail": {
     "statusNotice": {
-      "pending_review": "⏳ 이 글은 현재 운영자 검토를 기다리고 있어요. 검토가 끝나면 다른 사용자에게도 보여요.",
-      "hidden": "🙈 신고가 접수되어 다른 사용자에게는 보이지 않아요.",
-      "removed": "🚫 커뮤니티 가이드라인 위반으로 삭제됐어요."
+      "pending_review": "이 글은 현재 운영자 검토를 기다리고 있어요. 검토가 끝나면 다른 사용자에게도 보여요.",
+      "hidden": "신고가 접수되어 다른 사용자에게는 보이지 않아요.",
+      "removed": "커뮤니티 가이드라인 위반으로 삭제됐어요."
     },
     "loadError": "글을 불러오지 못했어요.",
     "deleteConfirm": "이 글을 삭제할까요?",
@@ -113,7 +118,7 @@
     "enter": "입장하기"
   },
   "suggest": {
-    "title": "💡 장소 추가 건의하기",
+    "title": "장소 추가 건의하기",
     "dialogLabel": "장소 추가 건의하기",
     "searchLabel": "추가할 장소 검색",
     "searchPlaceholder": "장소 이름을 검색하세요",
@@ -132,7 +137,49 @@
     "cityUnset": "도시 미설정",
     "departure": "출발",
     "return": "복귀",
-    "suggestSent": "🎉 제안이 여행 작성자에게 전송되었어요!",
+    "suggestSent": "제안이 여행 작성자에게 전송되었어요!",
     "emptyDay": "이 날에는 아직 일정이 없어요."
+  },
+  "continent": {
+    "AS": {
+      "name": "아시아",
+      "countries": {
+        "KR": "대한민국",
+        "JP": "일본",
+        "VN": "베트남",
+        "TH": "태국",
+        "PH": "필리핀",
+        "MY": "말레이시아",
+        "SG": "싱가포르",
+        "ID": "인도네시아",
+        "TW": "대만",
+        "HK": "홍콩",
+        "MO": "마카오",
+        "CN": "중국"
+      }
+    },
+    "EU": {
+      "name": "유럽",
+      "countries": {
+        "FR": "프랑스",
+        "GB": "영국",
+        "IT": "이탈리아",
+        "ES": "스페인",
+        "CZ": "체코",
+        "AT": "오스트리아",
+        "CH": "스위스",
+        "NL": "네덜란드",
+        "PT": "포르투갈",
+        "TR": "튀르키예"
+      }
+    },
+    "AM_OC": {
+      "name": "미주/오세아니아",
+      "countries": {
+        "US": "미국",
+        "CA": "캐나다",
+        "AU": "호주"
+      }
+    }
   }
 }

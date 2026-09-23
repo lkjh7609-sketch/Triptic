@@ -36,7 +36,7 @@
     "calculating": "계산 중…",
     "clearCache": "캐시 지우기",
     "clearingCache": "지우는 중…",
-    "backup": "📤 내보내기 / 📥 가져오기 (JSON)",
+    "backup": "내보내기 / 가져오기 (JSON)",
     "pdfHint": "여행별 PDF 내보내기는 여행 상세의 공유(↗) 버튼에서 할 수 있어요."
   },
   "about": {

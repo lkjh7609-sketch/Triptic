@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
   if (kind === 'comment' && text.length > 500) {
     return jsonResponse({ error: '댓글은 500자를 넘을 수 없습니다.' }, 400, headers);
   }
-  if (kind === 'post' && !payload.destinationId) {
+  if (false) {
     return jsonResponse({ error: '여행지를 선택해 주세요.' }, 400, headers);
   }
   if (kind === 'comment' && !payload.postId) {
@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
 
     if (kind === 'post') {
       const { data: newId, error: rpcErr } = await userClient.rpc('create_moderated_post', {
-        p_destination_id: payload.destinationId,
+        p_destination_id: payload.destinationId || null,
         p_trip_id: payload.tripId ?? null,
         p_body: text,
         p_language: detectLanguage(text),

@@ -12,9 +12,9 @@ describe('formatItineraryText', () => {
       plannerData: {},
       hotelsData: {},
     });
-    expect(text).toContain('✈️ [도쿄 여행]');
-    expect(text).toContain('📍 목적지: Tokyo');
-    expect(text).toContain('📅 기간: 2026-05-20 ~ 2026-05-21 (2일간)');
+    expect(text).toContain('[도쿄 여행]');
+    expect(text).toContain('목적지: Tokyo');
+    expect(text).toContain('기간: 2026-05-20 ~ 2026-05-21 (2일간)');
   });
 
   it('일정이 없는 날은 "자유 일정"으로 표시한다', () => {
@@ -45,7 +45,7 @@ describe('formatItineraryText', () => {
       hotelsData: {},
     });
     expect(text).toContain('1. 12:00 [점심] 라멘 타카하시');
-    expect(text).toContain('ㄴ 📝 웨이팅 있음');
+    expect(text).toContain('ㄴ - 웨이팅 있음');
   });
 
   it('전날 지정된 숙소를 상속해 표시한다', () => {
@@ -59,7 +59,7 @@ describe('formatItineraryText', () => {
       hotelsData: { 1: { name: '다이이치 호텔', lat: 0, lng: 0 } },
     });
     const day2Section = text.split('[2일차]')[1];
-    expect(day2Section).toContain('🏨 숙소: 다이이치 호텔');
+    expect(day2Section).toContain('숙소: 다이이치 호텔');
   });
 
   it('유효하지 않은 날짜 문자열이어도 크래시 없이 빈 날짜 라벨로 처리한다', () => {
@@ -87,7 +87,7 @@ describe('formatItineraryText', () => {
       outboundFlightLabel: 'KE801 (나리타)',
       returnFlightLabel: 'KE802 (인천)',
     });
-    expect(text).toContain('✈️ 도착: KE801 (나리타)');
-    expect(text).toContain('✈️ 귀국: KE802 (인천)');
+    expect(text).toContain('도착: KE801 (나리타)');
+    expect(text).toContain('귀국: KE802 (인천)');
   });
 });

@@ -1,0 +1,79 @@
+{
+  "section": {
+    "account": "アカウント",
+    "preferences": "環境設定",
+    "notifications": "通知",
+    "data": "データ",
+    "community": "コミュニティ",
+    "about": "情報"
+  },
+  "account": {
+    "fallbackName": "マイアカウント",
+    "signOut": "ログアウト",
+    "deleteAction": "アカウント削除"
+  },
+  "preferences": {
+    "theme": "テーマ",
+    "themeSystem": "システム",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "tempUnit": "温度単位",
+    "distanceUnit": "距離単位",
+    "distanceUnitHint": "距離単位は地図やルートの表示にはまだ反映されません。",
+    "baseCurrency": "基本通貨",
+    "language": "言語",
+    "loginHint": "ログインすると、温度・距離の単位、基本通貨、言語設定を保存できます。"
+  },
+  "notifications": {
+    "preDeparture": "出発前のリマインダー",
+    "flightChanges": "フライトの変更",
+    "communityReplies": "コミュニティの返信",
+    "marketing": "マーケティング情報",
+    "hint": "実際の通知は次回のアップデートでサポートされます。現在は設定のみ保存されます。"
+  },
+  "data": {
+    "offlineCache": "オフラインキャッシュ",
+    "calculating": "計算中…",
+    "clearCache": "キャッシュをクリア",
+    "clearingCache": "クリア中…",
+    "backup": "エクスポート / インポート (JSON)",
+    "pdfHint": "旅行ごとのPDFエクスポートは、旅行詳細の共有(↗)ボタンから行えます。"
+  },
+  "about": {
+    "version": "バージョン {{version}}"
+  },
+  "licenses": {
+    "title": "オープンソースライセンス"
+  },
+  "blocked": {
+    "empty": "ブロックしたユーザーはいません。",
+    "unknownUser": "不明なユーザー",
+    "unblock": "ブロック解除"
+  },
+  "delete": {
+    "stepIndicator": "ステップ {{current}} / {{total}}",
+    "warningTitle": "アカウントを削除しますか？",
+    "warningBody": "削除すると、以下のデータがすべて消去されます。30日以内であれば再ログインで復元できます。",
+    "impact": {
+      "tripsPending": "旅行 …件",
+      "trips_other": "旅行 {{count}}件",
+      "vouchersPending": "バウチャー …件",
+      "vouchers_other": "バウチャー {{count}}件",
+      "postsPending": "コミュニティ投稿 …件",
+      "posts_other": "コミュニティ投稿 {{count}}件"
+    },
+    "continue": "続ける",
+    "reauthTitle": "本人確認",
+    "reauthBody": "アカウントを削除するには、再度ログインして本人確認を行ってください。",
+    "reauthSuccess": "本人確認が完了しました。",
+    "reauthButton": "再ログイン",
+    "reauthError": "再認証を開始できませんでした。しばらくしてからもう一度お試しください。",
+    "confirmTitle": "最終確認",
+    "confirmBody": "下の入力欄に <strong>削除</strong> と入力すると、アカウントの削除が進行します。",
+    "confirmInputAriaLabel": "削除確認の入力",
+    "processing": "処理中…",
+    "requestError": "アカウントの削除リクエストを処理できませんでした。しばらくしてからもう一度お試しください。",
+    "doneTitle": "削除リクエストを受け付けました",
+    "doneBody": "30日以内に再度ログインするとアカウントを復元できます。その後、完全に削除されます。"
+  }
+}

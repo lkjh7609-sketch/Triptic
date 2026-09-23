@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import type { Suggestion } from '@/shared/api/tripService';
 import { useRejectSuggestion } from './hooks/useTrips';
+
 import { captureError } from '@/shared/monitoring';
 import styles from './SuggestionsModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
+import { Lightbulb, MapPin, MessageCircle } from 'lucide-react';
 
 interface SuggestionsModalProps {
   tripId: string;
@@ -17,6 +20,7 @@ interface SuggestionsModalProps {
  * 소유자가 검토해 일정에 추가하거나 거절한다.
  */
 export function SuggestionsModal({ tripId, suggestions, onClose, onAccept }: SuggestionsModalProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const rejectSuggestion = useRejectSuggestion(tripId);
 
   async function handleAccept(s: Suggestion) {
@@ -31,21 +35,21 @@ export function SuggestionsModal({ tripId, suggestions, onClose, onAccept }: Sug
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
       <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={modalStyles.title}>💡 동행자 추천 제안 ({suggestions.length}건)</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Lightbulb size={18} /> {t('suggestions.title', { count: suggestions.length })}</span></h2>
 
         <div className={styles.list}>
           {suggestions.length === 0 ? (
-            <p className={styles.empty}>아직 동행자가 보낸 제안이 없습니다.</p>
+            <p className={styles.empty}>{t('suggestions.empty')}</p>
           ) : (
             suggestions.map((s) => (
               <div key={s.id} className={styles.card}>
                 <div className={styles.name}>{s.name}</div>
                 {s.address ? <div className={styles.address}>{s.address}</div> : null}
-                <div className={styles.dayTag}>📍 {s.day}일차 추천</div>
-                {s.memo ? <div className={styles.memo}>💬 {s.memo}</div> : null}
+                <div className={styles.dayTag}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /> {t('suggestions.dayTag', { day: s.day })}</span></div>
+                {s.memo ? <div className={styles.memo}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /> {s.memo}</span></div> : null}
                 {s.proposer ? (
                   <div className={styles.proposer}>
-                    보낸 사람: <b>{s.proposer}</b>
+                    {t('suggestions.sentBy')}: <b>{s.proposer}</b>
                   </div>
                 ) : null}
                 <div className={styles.actions}>
@@ -55,7 +59,7 @@ export function SuggestionsModal({ tripId, suggestions, onClose, onAccept }: Sug
                     disabled={rejectSuggestion.isPending}
                     onClick={() => rejectSuggestion.mutate(s.id)}
                   >
-                    거절
+                    {t('suggestions.reject')}
                   </button>
                   <button
                     type="button"
@@ -63,7 +67,7 @@ export function SuggestionsModal({ tripId, suggestions, onClose, onAccept }: Sug
                     disabled={rejectSuggestion.isPending}
                     onClick={() => handleAccept(s)}
                   >
-                    일정에 추가
+                    {t('suggestions.addToItinerary')}
                   </button>
                 </div>
               </div>
@@ -73,7 +77,7 @@ export function SuggestionsModal({ tripId, suggestions, onClose, onAccept }: Sug
 
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
-            닫기
+            {t('common:action.close')}
           </button>
         </div>
       </div>

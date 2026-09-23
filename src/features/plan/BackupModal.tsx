@@ -5,6 +5,7 @@ import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import styles from './BackupModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
+import { Cloud, AlertTriangle, Upload, Download, PartyPopper } from 'lucide-react';
 
 interface BackupModalProps {
   trips: TripRow[];
@@ -23,7 +24,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
   const [importing, setImporting] = useState(false);
   const [pendingImport, setPendingImport] = useState<Record<string, LocalProject> | null>(null);
   const [conflicts, setConflicts] = useState<string[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<React.ReactNode | null>(null);
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   function handleExport() {
@@ -105,7 +106,7 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
       onImported();
       setPendingImport(null);
       setConflicts([]);
-      setMessage(`🎉 ${t('backup.importSuccess', { count })}`);
+      setMessage(<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><PartyPopper size={18} /> {t('backup.importSuccess', { count })}</span>);
     } catch (err) {
       captureError(err, { context: 'importAllData' });
       setMessage(t('backup.importError'));
@@ -124,11 +125,11 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
         aria-modal="true"
         aria-label={t('backup.title')}
       >
-        <h2 className={modalStyles.title}>☁️ {t('backup.title')}</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Cloud size={18} /> {t('backup.title')}</span></h2>
 
         {pendingImport ? (
           <div className={styles.conflictBox}>
-            <p className={styles.conflictTitle}>⚠️ {t('backup.conflictTitle')}</p>
+            <p className={styles.conflictTitle}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><AlertTriangle size={18} /> {t('backup.conflictTitle')}</span></p>
             <p className={styles.conflictDesc}>
               {t('backup.conflictDesc')}{' '}
               <b>
@@ -171,10 +172,10 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
             <p className={styles.desc}>{t('backup.desc')}</p>
             {message ? <p className={styles.message}>{message}</p> : null}
             <button type="button" className={modalStyles.primary} onClick={handleExport}>
-              📤 {t('backup.exportBtn')}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Upload size={18} /> {t('backup.exportBtn')}</span>
             </button>
             <label className={styles.importLabel}>
-              📥 {t('backup.importBtn')}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Download size={18} /> {t('backup.importBtn')}</span>
               <input
                 type="file"
                 accept="application/json"

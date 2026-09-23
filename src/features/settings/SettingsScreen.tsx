@@ -10,10 +10,15 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import { CURRENCIES } from '@/features/plan/expenses';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
-import type { DistanceUnit, Locale, NotificationPrefs, TempUnit } from '@/shared/api/profileService';
+import type { Locale, NotificationPrefs } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
+import { Thermometer, User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 'lucide-react';
+
+import { EditProfileModal } from './EditProfileModal';
+import { UnitSettingsModal } from './UnitSettingsModal';
+
 import styles from './SettingsScreen.module.css';
 
 const APP_VERSION = '3.0.0-dev';
@@ -43,6 +48,9 @@ export function SettingsScreen() {
   const [showDeleteFlow, setShowDeleteFlow] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
   const [showLicenses, setShowLicenses] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showUnitSettings, setShowUnitSettings] = useState(false);
+
   const [theme, setThemeState] = useState<ThemePreference>(() => getStoredTheme());
   const [cacheUsageMB, setCacheUsageMB] = useState<number | null>(null);
   const [clearingCache, setClearingCache] = useState(false);
@@ -97,13 +105,23 @@ export function SettingsScreen() {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('section.account')}</h2>
+        <h2 className={styles.sectionTitle}><User size={18}/> {t('section.account')}</h2>
+        <div className={styles.card}>
         {loading ? null : user ? (
           <>
-            <div className={styles.userInfo}>
-              <span>{user.email ?? user.user_metadata?.name ?? t('account.fallbackName')}</span>
+            <div className={styles.profileHeader}>
+              <img src={user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/notionists/svg?seed=' + user.email} alt="Profile" className={styles.avatar} />
+              <div className={styles.profileInfo}>
+                <span className={styles.profileName}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
+                <span className={styles.profileEmail}>{user.email}</span>
+              </div>
+            </div>
+            <div className={styles.row}>
+              <button type="button" className={styles.linkButton} onClick={() => setShowEditProfile(true)}>
+                내 정보 변경
+              </button>
             </div>
             <div className={styles.row}>
               <button
@@ -127,48 +145,26 @@ export function SettingsScreen() {
         ) : (
           <LoginButtons />
         )}
+        </div>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('section.preferences')}</h2>
+        <h2 className={styles.sectionTitle}><Palette size={18}/> {t('section.preferences')}</h2>
+        <div className={styles.card}>
         <div className={styles.row}>
           <span>{t('preferences.theme')}</span>
-          <select
-            className={styles.select}
-            value={theme}
-            onChange={(e) => handleThemeChange(e.target.value as ThemePreference)}
-          >
-            <option value="system">{t('preferences.themeSystem')}</option>
-            <option value="light">{t('preferences.themeLight')}</option>
-            <option value="dark">{t('preferences.themeDark')}</option>
-          </select>
+          <div className={styles.themeToggleGroup}>
+            <button type="button" className={theme === 'light' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('light')} aria-label="Light theme"><Sun size={18}/></button>
+            <button type="button" className={theme === 'dark' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('dark')} aria-label="Dark theme"><Moon size={18}/></button>
+            <button type="button" className={theme === 'system' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('system')} aria-label="System theme"><Monitor size={18}/></button>
+          </div>
         </div>
-
         {user ? (
           <>
-            <div className={styles.row}>
-              <span>{t('preferences.tempUnit')}</span>
-              <select
-                className={styles.select}
-                value={profile?.temp_unit ?? 'c'}
-                onChange={(e) => updateProfile.mutate({ temp_unit: e.target.value as TempUnit })}
-              >
-                <option value="c">°C</option>
-                <option value="f">°F</option>
-              </select>
+            <div className={styles.row} onClick={() => setShowUnitSettings(true)} style={{cursor: 'pointer'}}>
+              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}}/> 단위 설정 (온도/거리)</span>
+              <span style={{color: 'var(--text-secondary)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
             </div>
-            <div className={styles.row}>
-              <span>{t('preferences.distanceUnit')}</span>
-              <select
-                className={styles.select}
-                value={profile?.distance_unit ?? 'km'}
-                onChange={(e) => updateProfile.mutate({ distance_unit: e.target.value as DistanceUnit })}
-              >
-                <option value="km">km</option>
-                <option value="mi">mi</option>
-              </select>
-            </div>
-            <p className={styles.hint}>{t('preferences.distanceUnitHint')}</p>
             <div className={styles.row}>
               <span>{t('preferences.baseCurrency')}</span>
               <select
@@ -194,17 +190,20 @@ export function SettingsScreen() {
                 <option value="ko">한국어</option> {/* i18n-exempt */}
                 <option value="en">English</option>
                 <option value="zh-CN">简体中文</option>
+                <option value="ja">日本語</option>
               </select>
             </div>
           </>
         ) : (
           <p className={styles.hint}>{t('preferences.loginHint')}</p>
         )}
+        </div>
       </section>
 
       {user ? (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('section.notifications')}</h2>
+          <h2 className={styles.sectionTitle}><Bell size={18}/> {t('section.notifications')}</h2>
+        <div className={styles.card}>
           {(Object.keys(NOTIFICATION_LABEL_KEYS) as (keyof NotificationPrefs)[]).map((key) => (
             <label className={styles.row} key={key}>
               <span>{t(NOTIFICATION_LABEL_KEYS[key])}</span>
@@ -216,11 +215,13 @@ export function SettingsScreen() {
             </label>
           ))}
           <p className={styles.hint}>{t('notifications.hint')}</p>
+        </div>
         </section>
       ) : null}
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('section.data')}</h2>
+        <h2 className={styles.sectionTitle}><HardDrive size={18}/> {t('section.data')}</h2>
+        <div className={styles.card}>
         <div className={styles.row}>
           <span>{t('data.offlineCache')}</span>
           <span>{cacheUsageMB == null ? t('data.calculating') : `${cacheUsageMB.toFixed(1)}MB`}</span>
@@ -236,17 +237,21 @@ export function SettingsScreen() {
           </button>
         </div>
         <p className={styles.hint}>{t('data.pdfHint')}</p>
+        </div>
       </section>
 
       {user ? (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('section.community')}</h2>
+          <h2 className={styles.sectionTitle}><Globe size={18}/> {t('section.community')}</h2>
+        <div className={styles.card}>
           <BlockedUsersList userId={user.id} />
+        </div>
         </section>
       ) : null}
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('section.about')}</h2>
+        <h2 className={styles.sectionTitle}><Info size={18}/> {t('section.about')}</h2>
+        <div className={styles.card}>
         <div className={styles.row}>
           <a href="/terms.html" target="_blank" rel="noopener" className={styles.linkButton}>
             {t('legal.terms', { ns: 'common' })}
@@ -265,15 +270,19 @@ export function SettingsScreen() {
         <div className={styles.row}>
           <a href={`mailto:${CONTACT_EMAIL}`} className={styles.linkButton}>
             {t('action.contact', { ns: 'common' })}
+
           </a>
         </div>
         <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
+        </div>
       </section>
 
       {showBackup ? (
         <BackupModal trips={trips.data ?? []} onClose={() => setShowBackup(false)} onImported={() => trips.refetch()} />
       ) : null}
       {showLicenses ? <LicensesModal onClose={() => setShowLicenses(false)} /> : null}
+      {showEditProfile ? <EditProfileModal onClose={() => setShowEditProfile(false)} profile={profile} updateProfile={updateProfile} /> : null}
+      {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
     </div>
   );
 }

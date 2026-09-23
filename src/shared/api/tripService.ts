@@ -16,7 +16,7 @@
  *   모양으로 되돌린다.
  */
 import { getSupabaseClient } from './supabaseClient';
-import { generateShortId } from '@/utils/id.js';
+import { generateShortId } from '@/shared/utils/id';
 import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
 import { reconstructTripContent, type TripItineraryRaw } from '@/features/plan/itineraryTransform';

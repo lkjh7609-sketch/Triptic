@@ -46,3 +46,15 @@
   color: var(--danger);
   font-size: var(--font-caption-size);
 }
+
+.google {
+  background: #FFFFFF;
+  color: #3C4043;
+  border-color: #DADCE0;
+}
+
+.kakao {
+  background: #FEE500;
+  color: #191919;
+  border-color: #FEE500;
+}

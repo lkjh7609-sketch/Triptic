@@ -185,7 +185,8 @@
     "dayTag": "推荐用于第 {{day}} 天",
     "sentBy": "发送者",
     "reject": "拒绝",
-    "addToItinerary": "添加到行程"
+    "addToItinerary": "添加到行程",
+    "memoPrefix": "[{{name}} 推荐] "
   },
   "tripCard": {
     "periodUndecided": "日期未定",
@@ -214,9 +215,20 @@
     "addItem": "添加行程",
     "emptyDay": "这一天还没有安排行程。",
     "notFound": "无法加载该行程。",
-    "climateBadge": "常年值"
+    "climateBadge": "常年值",
+    "hotelStart": "出发酒店",
+    "hotelEnd": "到达酒店",
+    "addPlace": "添加地点"
   },
   "tripMap": {
     "ariaLabel": "行程地图"
+  },
+  "desktop": {
+    "activeJourneys": "进行中/即将开始的旅行",
+    "pastExpeditions": "过去的旅行",
+    "featuredJourney": "精选旅行",
+    "yourCollection": "我的旅行收藏",
+    "startPlanningDesc": "开始计划您的下一次伟大冒险。",
+    "openLiveItinerary": "打开实时行程 →"
   }
 }

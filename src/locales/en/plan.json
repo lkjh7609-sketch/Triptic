@@ -189,7 +189,8 @@
     "dayTag": "Suggested for day {{day}}",
     "sentBy": "Sent by",
     "reject": "Decline",
-    "addToItinerary": "Add to itinerary"
+    "addToItinerary": "Add to itinerary",
+    "memoPrefix": "[Recommended by {{name}}] "
   },
   "tripCard": {
     "periodUndecided": "Dates not set",
@@ -218,9 +219,22 @@
     "addItem": "Add to itinerary",
     "emptyDay": "Nothing planned for this day yet.",
     "notFound": "Couldn't load this trip.",
-    "climateBadge": "Avg."
+    "climateBadge": "Avg.",
+    "hotelStart": "Start Hotel",
+    "hotelEnd": "End Hotel",
+    "addPlace": "Add Place"
   },
   "tripMap": {
     "ariaLabel": "Itinerary map"
+  },
+  "desktop": {
+    "activeJourneys": "Active Journeys",
+    "pastExpeditions": "Past Expeditions",
+    "featuredJourney": "Featured Journey",
+    "yourCollection": "Your Collection",
+    "startPlanningDesc": "Start planning your next great adventure.",
+    "openLiveItinerary": "Open Live Itinerary →",
+    "noPastTripsTitle": "No past trips",
+    "noPastTripsDesc": "You haven't recorded any past trips yet."
   }
 }

@@ -1,0 +1,44 @@
+{
+  "confidenceField": {
+    "warning": "️ ご確認ください",
+    "empty": "抽出失敗 — 直接入力",
+    "viewOriginal": "元の画像を見る"
+  },
+  "review": {
+    "emptyTitle": "確認する予約がありません",
+    "title": "認識結果の確認",
+    "dialogLabel": "認識結果の確認",
+    "desc": "自動で読み取った内容です。確認してスケジュールに反映してください。",
+    "flightLabel": "️ 航空便",
+    "flightNumberField": "便名",
+    "departureAirportField": "出発空港",
+    "arrivalAirportField": "到着空港",
+    "departureTimeField": "出発時刻",
+    "arrivalTimeField": "到着時刻",
+    "ignore": "無視する",
+    "applying": "反映中…",
+    "applyToItinerary": "スケジュールに反映",
+    "lodgingLabel": "宿泊施設",
+    "railLabel": "鉄道",
+    "bookingLabel": "予約",
+    "nameUnrecognized": "(名前を認識できませんでした)",
+    "manualHint": "この予約の種類はまだ自動反映に対応していません — 上記の内容を参考に、手動で宿泊施設または+スケジュール追加から登録してください。"
+  },
+  "upload": {
+    "title": "予約書類からスケジュールを自動入力",
+    "dialogLabel": "予約書類からスケジュールを自動入力",
+    "consentText": "航空券や宿泊確認書のPDFまたは写真をアップロードすると、便名、時刻、宿泊施設などの情報を自動で読み取り、スケジュールの草案を作成します。パスポート番号やクレジットカード番号などの機密情報は、AIサーバーに送信する前に必ずマスクされます。認識された内容は、必ずご自身で確認した後にのみスケジュールに反映されます。",
+    "agreeAndContinue": "同意して続ける",
+    "uploadTitle": "予約書類をアップロード",
+    "fileHint": "PDF, JPG, PNG (最大 20MB)",
+    "processing": "書類を読み取っています…",
+    "uploadError": "アップロード中にエラーが発生しました。もう一度お試しください。"
+  },
+  "archive": {
+    "title": "バウチャー保管庫",
+    "empty": "まだ登録されたバウチャーがありません。「書類から追加」でアップロードしてみてください。",
+    "addToWallet": "Apple Walletに追加",
+    "deleteConfirm": "「{{name}}」を削除しますか？元に戻すことはできません。",
+    "voucherOriginalAlt": "バウチャー元の画像"
+  }
+}

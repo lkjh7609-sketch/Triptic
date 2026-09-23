@@ -1,7 +1,7 @@
 {
   "greeting": {
-    "guest": "Hello 👋",
-    "user": "Hello, {{name}} 👋",
+    "guest": "Hello ",
+    "user": "Hello, {{name}} ",
     "fallbackName": "Traveler"
   },
   "guest": {
@@ -10,7 +10,7 @@
   "empty": {
     "message": "No trips yet. Ready to log your first one?",
     "createTrip": "+ Create a trip",
-    "sampleTrip": "✨ Explore a sample trip"
+    "sampleTrip": "Explore a sample trip"
   },
   "stats": {
     "sectionTitle": "My travel record"
@@ -19,7 +19,7 @@
     "sectionTitle": "Past trips"
   },
   "hero": {
-    "planNext": "Plan your next trip ✈️",
+    "planNext": "Plan your next trip ️",
     "createTrip": "Create a trip",
     "firstItem": "· First stop {{time}}",
     "todayBadge": "Today's schedule",
@@ -37,5 +37,29 @@
   "worldMap": {
     "caption_one": "{{count}} country",
     "caption_other": "{{count}} countries"
+  },
+  "desktop": {
+    "heroTitle": "Your next great adventure starts here",
+    "searchPlaceholder": "Where do you want to go?",
+    "startPlanning": "Start Planning",
+    "featuredTitle": "Featured Destinations",
+    "destKyoto": "Kyoto, Japan",
+    "descKyoto": "Ancient temples and traditional tea houses",
+    "destParis": "Paris, France",
+    "descParis": "Art, fashion, gastronomy, and culture",
+    "destNY": "New York, USA",
+    "descNY": "The city that never sleeps",
+    "destLondon": "London, UK",
+    "descLondon": "A modern city with a rich history",
+    "destRome": "Rome, Italy",
+    "descRome": "The eternal city of ruins and romance",
+    "destTokyo": "Tokyo, Japan",
+    "descTokyo": "Neon lights and traditional culture",
+    "previewCancel": "Cancel",
+    "previewStart": "Plan a trip to this city",
+    "previewLoading": "✨ AI is loading city information...",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Support"
   }
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
+import { Plane } from 'lucide-react';
 
 interface GuestNameModalProps {
   projectName: string;
@@ -24,7 +25,7 @@ export function GuestNameModal({ projectName, onConfirm }: GuestNameModalProps) 
         aria-modal="true"
         aria-label={t('guestName.dialogLabel')}
       >
-        <h2 className={modalStyles.title}>✈️ {projectName}</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Plane size={24} /> {projectName}</span></h2>
         <p className={modalStyles.hint}>
           {t('guestName.promptLine1')}
           <br />

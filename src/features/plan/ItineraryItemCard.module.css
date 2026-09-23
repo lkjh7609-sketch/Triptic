@@ -10,13 +10,23 @@
   cursor: pointer;
   font: inherit;
   color: inherit;
+  position: relative;
+  overflow: visible;
 }
 .card:active {
   background: var(--surface-subtle);
 }
 
-.marker {
+.markerWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
   flex-shrink: 0;
+  width: 28px;
+}
+
+.marker {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -27,6 +37,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+}
+
+.connectingLine {
+  position: absolute;
+  top: 28px;
+  bottom: -24px;
+  width: 2px;
+  background: var(--border-strong);
+  z-index: 0;
 }
 
 .body {
@@ -83,4 +103,34 @@
 .weatherTemp {
   font-size: var(--font-caption-size);
   color: var(--text-muted);
+}
+
+.cardWrap {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.aiRecommendBtnInline {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--brand);
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s;
+}
+
+.aiRecommendBtnInline:hover {
+  background: var(--brand);
+  color: var(--text-on-brand);
 }

@@ -1,0 +1,3 @@
+- [한국어로만 응답](feedback_respond_in_korean.md) — 사용자가 명시적으로 요청, 예외 없이 한국어 유지
+- [Triptic 3.0 개편 진행상황](triptic_3_0_rewrite_progress.md) — Phase 2·3·4·5 완료+검증, AI 전부 Gemini→DeepSeek 전환(Vercel DEEPSEEK_API_KEY 미등록), 커밋 2건 미push, entitlements 배선 미병합(worktree), Phase 6/7 0%
+- [기능 단위 커밋 분리 + phase 경계 회귀 테스트](feedback_granular_commits_and_phase_regression.md) — 버그수정/기능추가 커밋 분리, phase 경계마다 이전 기능도 같이 회귀 확인

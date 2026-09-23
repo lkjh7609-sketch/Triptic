@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { inferPlaceCategory } from './placeCategory';
@@ -6,8 +6,10 @@ import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { PlaceItem } from './types';
 import styles from './AddPlaceModal.module.css';
+import { TimeWheelPicker } from '@/shared/ui/TimeWheelPicker';
 
 interface AddPlaceModalProps {
+  initialSearch?: string;
   onClose: () => void;
   onAdd: (item: PlaceItem) => Promise<void>;
 }
@@ -17,14 +19,23 @@ interface AddPlaceModalProps {
  * 좌표 없는 항목은 저장하지 않는다 — legacy 앱은 저장 시점에 조용히 삭제했지만
  * (index.html saveData/renderList), 3.0은 입력 단계에서 막는다(스펙 명시).
  */
-export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
+export function AddPlaceModal({ onClose, onAdd, initialSearch }: AddPlaceModalProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(null);
   const [time, setTime] = useState('');
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
-  const { inputRef } = usePlaceAutocomplete(setSelected);
+  const { inputRef, ready } = usePlaceAutocomplete(setSelected);
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+
+  // Use standard top-level useEffect
+  useEffect(() => {
+    if (initialSearch && inputRef.current && ready) {
+      inputRef.current.value = initialSearch;
+      inputRef.current.focus();
+      inputRef.current.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }, [initialSearch, ready, inputRef]);
 
   const category = selected ? inferPlaceCategory(selected.types) : null;
 
@@ -83,16 +94,11 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
         )}
 
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="place-time">
+          <label className={styles.label}>
             {t('addPlace.timeLabel')}
           </label>
-          <input
-            id="place-time"
-            type="time"
-            className={styles.input}
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+          <TimeWheelPicker value={time} onChange={setTime} />
+
         </div>
 
         <div className={styles.field}>
@@ -106,6 +112,7 @@ export function AddPlaceModal({ onClose, onAdd }: AddPlaceModalProps) {
             onChange={(e) => setMemo(e.target.value)}
             placeholder={t('addPlace.memoPlaceholder')}
           />
+
         </div>
 
         <div className={styles.actions}>

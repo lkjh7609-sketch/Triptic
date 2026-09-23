@@ -13,9 +13,9 @@
     "noPending": "暂无待审核的帖子。"
   },
   "report": {
-    "title": "🚩 举报",
+    "title": "举报",
     "dialogLabel": "举报",
-    "doneTitle": "🚩 举报已提交",
+    "doneTitle": "举报已提交",
     "doneDesc": "您举报的内容现在不会出现在您的页面中。我们会在24小时内完成审核并告知处理结果。",
     "reasonPrompt": "请选择举报原因。",
     "detailPlaceholder": "详细说明（可选）",
@@ -36,7 +36,7 @@
   },
   "feed": {
     "title": "社区",
-    "compose": "✏️ 发帖",
+    "compose": "️ 发帖",
     "tabAll": "全部",
     "tabFollowing": "关注",
     "loginToFollow": "登录后可查看关注的旅行地发布的帖子。",
@@ -47,10 +47,10 @@
   },
   "destination": {
     "loadError": "未能加载旅行地信息。",
-    "postCount_other": "📝 {{count}}篇帖子",
-    "following": "已关注 ✓",
+    "postCount_other": "{{count}}篇帖子",
+    "following": "已关注 ",
     "follow": "+ 关注",
-    "createTripHere": "🗺 创建前往此地的旅行",
+    "createTripHere": "创建前往此地的旅行",
     "emptyPosts": "此旅行地还没有帖子。"
   },
   "post": {
@@ -64,9 +64,9 @@
   },
   "detail": {
     "statusNotice": {
-      "pending_review": "⏳ 此帖子正在等待管理员审核，审核通过后其他用户才能看到。",
-      "hidden": "🙈 此帖子因被举报，其他用户无法看到。",
-      "removed": "🚫 因违反社区规范已被删除。"
+      "pending_review": "此帖子正在等待管理员审核，审核通过后其他用户才能看到。",
+      "hidden": "此帖子因被举报，其他用户无法看到。",
+      "removed": "因违反社区规范已被删除。"
     },
     "loadError": "未能加载帖子。",
     "deleteConfirm": "确定要删除此帖子吗？",
@@ -113,7 +113,7 @@
     "enter": "进入"
   },
   "suggest": {
-    "title": "💡 建议添加地点",
+    "title": "建议添加地点",
     "dialogLabel": "建议添加地点",
     "searchLabel": "搜索要添加的地点",
     "searchPlaceholder": "搜索地点名称",
@@ -132,7 +132,49 @@
     "cityUnset": "未设置城市",
     "departure": "出发",
     "return": "返回",
-    "suggestSent": "🎉 建议已发送给行程创建者！",
+    "suggestSent": "建议已发送给行程创建者！",
     "emptyDay": "这一天还没有安排行程。"
+  },
+  "continent": {
+    "AS": {
+      "name": "亚洲",
+      "countries": {
+        "KR": "韩国",
+        "JP": "日本",
+        "VN": "越南",
+        "TH": "泰国",
+        "PH": "菲律宾",
+        "MY": "马来西亚",
+        "SG": "新加坡",
+        "ID": "印度尼西亚",
+        "TW": "台湾",
+        "HK": "香港",
+        "MO": "澳门",
+        "CN": "中国"
+      }
+    },
+    "EU": {
+      "name": "欧洲",
+      "countries": {
+        "FR": "法国",
+        "GB": "英国",
+        "IT": "意大利",
+        "ES": "西班牙",
+        "CZ": "捷克",
+        "AT": "奥地利",
+        "CH": "瑞士",
+        "NL": "荷兰",
+        "PT": "葡萄牙",
+        "TR": "土耳其"
+      }
+    },
+    "AM_OC": {
+      "name": "美洲/大洋洲",
+      "countries": {
+        "US": "美国",
+        "CA": "加拿大",
+        "AU": "澳大利亚"
+      }
+    }
   }
 }

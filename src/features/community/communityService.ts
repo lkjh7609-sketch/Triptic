@@ -83,14 +83,14 @@ async function enrichPosts(rows: Post[], viewerId: string | null, locale = DEFAU
   if (rows.length === 0) return [];
   const [profileMap, nameMap, imageMap, likedSet] = await Promise.all([
     fetchProfilesByIds(rows.map((r) => r.author_id)),
-    fetchDestinationNamesByIds(rows.map((r) => r.destination_id), locale),
+    fetchDestinationNamesByIds(rows.map((r) => r.destination_id).filter((id): id is string => id !== null), locale),
     fetchImagesByPostIds(rows.map((r) => r.id)),
     fetchMyLikedPostIds(rows.map((r) => r.id), viewerId),
   ]);
   return rows.map((r) => ({
     ...r,
     author: profileMap.get(r.author_id),
-    destination: { id: r.destination_id, slug: '', name: nameMap.get(r.destination_id) ?? '' },
+    destination: r.destination_id ? { id: r.destination_id, slug: '', name: nameMap.get(r.destination_id) ?? '' } : undefined,
     images: imageMap.get(r.id) ?? [],
     likedByMe: likedSet.has(r.id),
   }));
@@ -203,7 +203,7 @@ export interface CreatePostResult {
 }
 
 export async function createPost(input: {
-  destinationId: string;
+  destinationId?: string | null;
   body: string;
   tripId?: string | null;
   images?: { storagePath: string; width?: number; height?: number }[];

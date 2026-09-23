@@ -1,0 +1,58 @@
+{
+  "greeting": {
+    "guest": "こんにちは ",
+    "user": "こんにちは、{{name}}さん ",
+    "fallbackName": "旅行者"
+  },
+  "guest": {
+    "blurMessage": "ログインして記録を確認してみましょう"
+  },
+  "empty": {
+    "message": "まだ旅行の記録がありません。最初の旅行を記録してみませんか？",
+    "createTrip": "+ 旅行を作成",
+    "sampleTrip": "サンプル旅行を見る"
+  },
+  "stats": {
+    "sectionTitle": "私の旅行記録"
+  },
+  "past": {
+    "sectionTitle": "過去の旅行"
+  },
+  "hero": {
+    "planNext": "次の旅行を計画しましょう ️",
+    "createTrip": "旅行を作成",
+    "firstItem": "· 最初の予定 {{time}}",
+    "todayBadge": "今日の予定",
+    "dayIndex": "{{day}}日目 · {{date}}",
+    "noItemsToday": "今日は登録された予定がありません"
+  },
+  "tile": {
+    "trips": "旅行数",
+    "countries": "訪問国",
+    "days": "日数",
+    "cities": "都市",
+    "places": "場所",
+    "distanceKm": "移動距離(km)"
+  },
+  "worldMap": {
+    "caption_other": "{{count}}カ国"
+  },
+  "desktop": {
+    "heroTitle": "次の素晴らしい冒険がここから始まります",
+    "searchPlaceholder": "どこへ行きたいですか？",
+    "startPlanning": "旅行を計画する",
+    "featuredTitle": "おすすめの目的地",
+    "destKyoto": "日本、京都",
+    "descKyoto": "古き良き寺院と伝統的な茶屋",
+    "destParis": "フランス、パリ",
+    "descParis": "芸術、ファッション、美食、そして文化",
+    "destNY": "アメリカ、ニューヨーク",
+    "descNY": "眠らない街",
+    "destLondon": "イギリス、ロンドン",
+    "descLondon": "豊かな歴史を持つ近代都市",
+    "destRome": "イタリア、ローマ",
+    "descRome": "遺跡とロマンスの永遠の都",
+    "destTokyo": "日本、東京",
+    "descTokyo": "ネオンの光と伝統文化"
+  }
+}

@@ -6,6 +6,7 @@ import { useWeather, type WeatherDailyEntry } from '@/features/weather/useWeathe
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { useTranslation } from 'react-i18next';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
 import { tripService, type LocalProject, type Suggestion } from '@/shared/api/tripService';
@@ -35,9 +36,12 @@ import { getDayCity } from './dayCities';
 import { FixedPointCard, FlightPointCard, LegBetween } from './FixedPointCard';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
+import { FloatingMapInspector } from './FloatingMapInspector';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { trackScreenView } from '@/shared/monitoring';
+import { trackScreenView, captureError } from '@/shared/monitoring';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
+import { useCityImage } from '@/shared/hooks/useCityImage';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import type {
   DayCitiesData,
   DayCityInfo,
@@ -46,13 +50,15 @@ import type {
   ExpensesData,
   FlightInfo,
   FlightsData,
-  HotelItem,
+
   HotelsData,
   MealsData,
   PlaceItem,
   PlannerData,
 } from './types';
 import styles from './TripDetailScreen.module.css';
+import { AiNextPlaceModal } from './AiNextPlaceModal';
+import { Lightbulb, Ticket, ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -60,6 +66,8 @@ import styles from './TripDetailScreen.module.css';
  * 계산해 LegLabel에 채운다 — 실제 폴리라인 렌더링만 지도가 있을 때 일어난다.
  */
 export function TripDetailScreen() {
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const { t } = useTranslation(['plan', 'common']);
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const isSample = tripId === SAMPLE_TRIP_ID;
@@ -68,14 +76,17 @@ export function TripDetailScreen() {
   const { data: suggestions } = useSuggestions(tripId);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const bgImage = useCityImage(trip?.city ?? '');
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<{index: number, type: "item" | "startHotel" | "endHotel"} | null>(null);
   const [showHotelModal, setShowHotelModal] = useState(false);
   const [showMealsModal, setShowMealsModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showDayCityModal, setShowDayCityModal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [aiSuggestBase, setAiSuggestBase] = useState<{ index: number, item: PlaceItem } | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
@@ -163,6 +174,16 @@ export function TripDetailScreen() {
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
+  async function handleInsertPlace(item: PlaceItem, insertIndex: number) {
+    try {
+      const next = [...dayItems];
+      next.splice(insertIndex + 1, 0, item);
+      await persistDayItems(next);
+    } catch (err) {
+      captureError(err, { context: "insertPlace" });
+    }
+  }
+
   async function handleAddPlace(item: PlaceItem) {
     await persistDayItems([...dayItems, item]);
   }
@@ -194,11 +215,8 @@ export function TripDetailScreen() {
   }
 
   /** 이 날짜의 숙소를 갱신한다 (hotelsData[currentDay], index.html clearHotel/renderHotelSection 이식) */
-  async function handleSetHotel(hotel: HotelItem | null) {
+  async function handleSetAllHotels(nextHotels: HotelsData) {
     if (!project || !trip) return;
-    const nextHotels = { ...((project.hotels ?? {}) as HotelsData) };
-    if (hotel) nextHotels[currentDay] = hotel;
-    else delete nextHotels[currentDay];
     const nextProject: LocalProject = { ...project, hotels: nextHotels };
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
@@ -275,124 +293,196 @@ export function TripDetailScreen() {
     return <ErrorState summary="여행을 불러오지 못했어요." onRetry={() => refetch()} />;
   }
 
+
   return (
-    <div>
-      <div className={styles.header}>
-        <button
-          type="button"
-          className={styles.backButton}
-          aria-label="뒤로가기"
-          onClick={() => navigate('/plan')}
-        >
-          ←
-        </button>
-        <div className={styles.headerInfo}>
-          <h1 className={styles.title}>
-            {trip.title}
-            {isSample ? <span className={styles.sampleBadge}>체험용 샘플</span> : null}
-          </h1>
-          <p className={styles.dates}>
-            {trip.start_date} ~ {trip.end_date}
-          </p>
-        </div>
-        <button
-          type="button"
-          className={styles.toggleButton}
-          aria-label={viewMode === 'list' ? '지도 보기' : '목록 보기'}
-          onClick={() => setViewMode((v) => (v === 'list' ? 'map' : 'list'))}
-        >
-          {viewMode === 'list' ? '🗺' : '📋'}
-        </button>
-        <button
-          type="button"
-          className={styles.toggleButton}
-          aria-label="받은 제안"
-          onClick={() => setShowSuggestions(true)}
-          disabled={isSample}
-          title={isSample ? '샘플 여행은 제안 기능을 이용할 수 없습니다.' : undefined}
-        >
-          💡{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
-        </button>
-        {!isSample ? (
-          <button
-            type="button"
-            className={styles.toggleButton}
-            aria-label="바우처 보관함"
-            onClick={() => setShowVoucherArchive(true)}
-          >
-            🎟
-            {(pendingBookings.data?.length ?? 0) > 0 ? (
-              <span className={styles.badge}>{pendingBookings.data!.length}</span>
-            ) : null}
-          </button>
-        ) : null}
-        <button type="button" className={styles.toggleButton} aria-label="공유" onClick={() => setShowShare(true)}>
-          ↗
-        </button>
-      </div>
-
-      <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
-
-      <div className={styles.dayHeader}>
-        <span className={styles.dayHeaderTitle}>
-          Day {currentDay}
-          {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
-          <DayWeatherBadge loading={weather.isLoading} entry={dayWeather} />
-        </span>
-        <div className={styles.dayHeaderActions}>
-          <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
-            📍 {currentCity.name ? currentCity.name.split(',')[0].trim() : '도시 미설정'}
-          </button>
-          <button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
-            🏨 {hotelsData[currentDay]?.name ?? '숙소'}
-          </button>
-          <button type="button" className={styles.hotelButton} onClick={() => setShowMealsModal(true)}>
-            🍽 식사
-          </button>
-          <button type="button" className={styles.hotelButton} onClick={() => setShowExpenseModal(true)}>
-            💰 경비
-          </button>
-          <button type="button" className={styles.hotelButton} onClick={() => setShowFlightModal(true)}>
-            ✈️ 항공편
-          </button>
-          {!isSample ? (
-            <button
-              type="button"
-              className={styles.hotelButton}
-              onClick={() =>
-                (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
-              }
-            >
-              📄 서류로 추가
-              {(pendingBookings.data?.length ?? 0) > 0 ? (
-                <span className={styles.inlineBadge}>{pendingBookings.data!.length}</span>
-              ) : null}
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      {viewMode === 'map' ? (
-        <div className={styles.mapWrap}>
+    <>
+    <div className={isDesktop ? styles.desktopContainer : undefined}>
+      {isDesktop && (
+        <div className={styles.desktopMapLeft}>
           <TripMapView
             dayItems={dayItems}
             startHotel={startHotel}
             endHotel={endHotel}
             activeZoneIndex={0}
+            cityLocation={currentCity.lat != null && currentCity.lng != null ? { lat: currentCity.lat, lng: currentCity.lng } : null}
+            onMarkerClick={(index, type) => setSelectedMarker({ index, type })}
           />
+          {(() => {
+            const item = selectedMarker?.type === 'item' ? dayItems[selectedMarker.index] 
+              : selectedMarker?.type === 'startHotel' ? startHotel 
+              : selectedMarker?.type === 'endHotel' ? endHotel 
+              : dayItems.length > 0 ? dayItems[0] : null;
+              
+            if (!item) return null;
+            return (
+              <FloatingMapInspector 
+                title={item.name || '선택된 장소'}
+                subtitle={'address' in item ? item.address || '주소 정보가 없습니다' : '주소 정보가 없습니다'}
+                image={bgImage}
+                recommendation="오전 9시 방문 추천"
+                crowdLevel="low"
+                onFocusMove={() => {
+                  if (selectedMarker?.type === 'item' || !selectedMarker) {
+                    const idx = selectedMarker?.index ?? 0;
+                    const listContainer = document.querySelector(`.${styles.desktopListRight}`);
+                    const elements = listContainer?.querySelectorAll('[data-timeline-item]');
+                    if (elements && elements[idx]) {
+                      elements[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      // highlight the item briefly if possible
+                      (elements[idx] as HTMLElement).style.backgroundColor = 'var(--surface-sunken)';
+                      setTimeout(() => {
+                        (elements[idx] as HTMLElement).style.backgroundColor = '';
+                      }, 1000);
+                    }
+                  }
+                }}
+              />
+            );
+          })()}
         </div>
-      ) : (
-        <TripTimeline
-          dayItems={dayItems}
-          startHotel={startHotel}
-          endHotel={endHotel}
-          flightArrival={flightArrival}
-          flightDeparture={flightDeparture}
-          onAddClick={() => setShowAddPlace(true)}
+      )}
+      <div className={isDesktop ? styles.desktopListRight : undefined}>
+        <div className={styles.heroHeader} style={{ backgroundImage: `linear-gradient(to top, var(--surface-page) 0%, rgba(0,0,0,0.5) 100%), url('${bgImage}')` }}>
+          <button
+            type="button"
+            className={styles.backButton}
+            aria-label={t('tripDetail.backAria')}
+            onClick={() => navigate('/plan')}
+          >
+            ←
+          </button>
+          <div className={styles.headerInfo}>
+            <h1 className={styles.title}>
+              {trip.title}
+              {isSample ? <span className={styles.sampleBadge}>{t('tripDetail.sampleBadge')}</span> : null}
+            </h1>
+            <p className={styles.dates}>
+              {trip.start_date} ~ {trip.end_date}
+            </p>
+          </div>
+        </div>
+        <div className={styles.toolbar}>
+          {!isDesktop && (
+            <button
+              type="button"
+              className={styles.toggleButton}
+              aria-label={viewMode === 'list' ? t('tripDetail.mapViewAria') : t('tripDetail.listViewAria')}
+              onClick={() => setViewMode((v) => (v === 'list' ? 'map' : 'list'))}
+            >
+              {viewMode === 'list' ? <Map size={18} /> : <List size={18} />}
+            </button>
+          )}
+          {!isSample ? (
+            <button
+              type="button"
+              className={styles.toggleButton}
+              aria-label={t('tripDetail.addByDocument')}
+              onClick={() =>
+                (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
+              }
+            >
+              <FileText size={18} />
+              {(pendingBookings.data?.length ?? 0) > 0 ? (
+                <span className={styles.badge}>{pendingBookings.data!.length}</span>
+              ) : null}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={styles.toggleButton}
+            aria-label={t('tripDetail.suggestionsAria')}
+            onClick={() => setShowSuggestions(true)}
+            disabled={isSample}
+            title={isSample ? t('tripDetail.suggestionsSampleTitle') : undefined}
+          >
+            <Lightbulb size={18} />{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
+          </button>
+          {!isSample ? (
+            <button
+              type="button"
+              className={styles.toggleButton}
+              aria-label={t('tripDetail.voucherAria')}
+              onClick={() => setShowVoucherArchive(true)}
+            >
+              <Ticket size={18} />
+              {(pendingBookings.data?.length ?? 0) > 0 ? (
+                <span className={styles.badge}>{pendingBookings.data!.length}</span>
+              ) : null}
+            </button>
+          ) : null}
+          <button type="button" className={styles.toggleButton} aria-label={t('tripDetail.shareAria')} onClick={() => setShowShare(true)}>
+            <ExternalLink size={18} />
+          </button>
+        </div>
+
+        <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
+
+        <div className={styles.dayHeader}>
+          <div className={styles.dayHeaderTopRow}>
+            <span className={styles.dayHeaderTitle}>
+              Day {currentDay}
+              {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
+              <DayWeatherBadge loading={weather.isLoading} entry={dayWeather} />
+            </span>
+
+          </div>
+          <div className={styles.dayHeaderActions}>
+            <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
+              <MapPin size={16} /> <span className={styles.buttonText}>{currentCity.name ? currentCity.name.split(',')[0].trim() : t('tripDetail.cityUnset')}</span>
+            </button>
+            {currentDay < totalDays ? (<button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
+              <HotelIcon size={16} /> <span className={styles.buttonText}>{hotelsData[currentDay]?.name ?? t('tripDetail.hotelUnset')}</span>
+            </button>) : null}
+            <button type="button" className={styles.hotelButton} onClick={() => setShowMealsModal(true)}>
+              <Utensils size={16} /> <span className={styles.buttonText}>{t('tripDetail.mealsLabel')}</span>
+            </button>
+            <button type="button" className={styles.hotelButton} onClick={() => setShowExpenseModal(true)}>
+              <Coins size={16} /> <span className={styles.buttonText}>{t('tripDetail.expenseLabel')}</span>
+            </button>
+            <button type="button" className={styles.hotelButton} onClick={() => setShowFlightModal(true)}>
+              <Plane size={16} /> <span className={styles.buttonText}>{t('flight.title')}</span>
+            </button>
+          </div>
+        </div>
+
+        {!isDesktop && viewMode === 'map' ? (
+          <div className={styles.mapWrap}>
+            <TripMapView
+            dayItems={dayItems}
+            startHotel={startHotel}
+            endHotel={endHotel}
+            activeZoneIndex={0}
+            cityLocation={currentCity.lat != null && currentCity.lng != null ? { lat: currentCity.lat, lng: currentCity.lng } : null}
+            onMarkerClick={(index, type) => setSelectedMarker({ index, type })}
+          />
+          </div>
+        ) : (
+          <TripTimeline
+            dayItems={dayItems}
+            startHotel={startHotel}
+            endHotel={endHotel}
+            flightArrival={flightArrival}
+            flightDeparture={flightDeparture}
+            onAddClick={() => setShowAddPlace(true)}
           onItemClick={setEditingIndex}
           onReorder={handleReorder}
+          onAiSuggest={() => setAiSuggestBase({ index: dayItems.length - 1, item: dayItems[dayItems.length - 1] })}
+          onAiSuggestItem={(index, item) => setAiSuggestBase({ index, item })}
         />
       )}
+      </div>
+    </div>
+
+      {aiSuggestBase !== null ? (
+        <AiNextPlaceModal
+          trip={trip}
+          currentDay={currentDay}
+          baseItem={aiSuggestBase.item}
+          insertIndex={aiSuggestBase.index}
+          onClose={() => setAiSuggestBase(null)}
+          onAddPlace={(item) => handleInsertPlace(item, aiSuggestBase.index)}
+        />
+      ) : null}
 
       {showAddPlace ? (
         <AddPlaceModal onClose={() => setShowAddPlace(false)} onAdd={handleAddPlace} />
@@ -412,9 +502,11 @@ export function TripDetailScreen() {
 
       {showHotelModal ? (
         <SetHotelModal
-          currentHotel={hotelsData[currentDay] ?? null}
+          currentDay={currentDay}
+          totalDays={totalDays}
+          hotelsData={hotelsData}
           onClose={() => setShowHotelModal(false)}
-          onSave={handleSetHotel}
+          onSave={handleSetAllHotels}
         />
       ) : null}
 
@@ -450,8 +542,6 @@ export function TripDetailScreen() {
       {showFlightModal && trip ? (
         <FlightModal
           flightsData={flightsData}
-          startDate={trip.start_date ?? ''}
-          endDate={trip.end_date ?? ''}
           onClose={() => setShowFlightModal(false)}
           onSave={handleSaveFlights}
         />
@@ -502,7 +592,7 @@ export function TripDetailScreen() {
       {showVoucherArchive && tripId ? (
         <VoucherArchive tripId={tripId} onClose={() => setShowVoucherArchive(false)} />
       ) : null}
-    </div>
+    </>
   );
 }
 
@@ -526,6 +616,7 @@ interface DayWeatherBadgeProps {
  * 구분한다(§5.1 "평년값을 예보처럼 보여주면 안 된다").
  */
 function DayWeatherBadge({ loading, entry }: DayWeatherBadgeProps) {
+  const { t } = useTranslation(['plan', 'common']);
   const tempUnit = useTempUnit();
   if (loading) return <span className={styles.weatherSkeleton} aria-hidden="true" />;
   if (!entry) return null;
@@ -537,12 +628,14 @@ function DayWeatherBadge({ loading, entry }: DayWeatherBadgeProps) {
     <span className={styles.dayWeather}>
       {icon ? <span aria-hidden="true">{icon}</span> : null}
       {min ?? '–'}/{max ?? '–'}
-      {entry.source === 'climate_normal' ? <span className={styles.climateBadge}>평년</span> : null}
+      {entry.source === 'climate_normal' ? <span className={styles.climateBadge}>{t('tripDetail.climateBadge')}</span> : null}
     </span>
   );
 }
 
 interface TripTimelineProps {
+  onAiSuggestItem: (index: number, item: PlaceItem) => void;
+  onAiSuggest?: () => void;
   dayItems: PlaceItem[];
   startHotel: Hotel | null;
   endHotel: Hotel | null;
@@ -562,6 +655,8 @@ interface TripTimelineProps {
  * 일정 항목 사이 구간만 dnd-kit로 순서를 바꿀 수 있다.
  */
 function TripTimeline({
+  onAiSuggestItem,
+
   dayItems,
   startHotel,
   endHotel,
@@ -571,6 +666,7 @@ function TripTimeline({
   onItemClick,
   onReorder,
 }: TripTimelineProps) {
+  const { t } = useTranslation(['plan', 'common']);
   // useTripRoutes의 effect 의존성 배열에 들어가는 객체다 — 매 렌더마다 새 리터럴을
   // 넘기면 참조가 달라져 effect가 끝없이 재실행되고(각 실행이 setLegs로 다시
   // 렌더를 유발) 무한 루프에 빠진다. flightArrival/flightDeparture(FlightInfo)
@@ -635,7 +731,7 @@ function TripTimeline({
   return (
     <div className={styles.timeline}>
       {isEmpty ? (
-        <EmptyState icon="📍" message="이 날에는 아직 일정이 없어요." />
+        <EmptyState icon={<MapPin size={48} />} message={t('tripDetail.emptyDay')} />
       ) : (
         <>
           {flightArrival ? (
@@ -647,7 +743,7 @@ function TripTimeline({
 
           {startHotel ? (
             <>
-              <FixedPointCard icon="🏨" label="출발" name={startHotel.name} address={startHotel.address} />
+              <FixedPointCard icon={<HotelIcon size={18} />} label={t('tripDetail.hotelStart')} name={startHotel.name} address={startHotel.address} />
               <LegBetween leg={legAfter('start-hotel')} />
             </>
           ) : null}
@@ -655,12 +751,13 @@ function TripTimeline({
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
               {dayItems.map((item, index) => (
-                <div key={itemIds[index]}>
+                <div key={itemIds[index]} data-timeline-item={index}>
                   <SortableItineraryItem
                     id={itemIds[index]}
                     index={index}
                     item={item}
                     onClick={() => onItemClick(index)}
+            onAiSuggest={() => onAiSuggestItem(index, item)}
                   />
                   <LegBetween leg={legAfter(index)} />
                 </div>
@@ -669,7 +766,7 @@ function TripTimeline({
           </DndContext>
 
           {endHotel ? (
-            <FixedPointCard icon="🏨" label="복귀" name={endHotel.name} address={endHotel.address} />
+            <FixedPointCard icon={<HotelIcon size={18} />} label={t('tripDetail.hotelEnd')} name={endHotel.name} address={endHotel.address} />
           ) : null}
 
           {flightDeparture ? <FlightPointCard flight={flightDeparture} /> : null}
@@ -677,7 +774,7 @@ function TripTimeline({
       )}
       <div className={styles.addButtonWrap}>
         <button type="button" className={styles.addButton} onClick={onAddClick}>
-          + 일정 추가
+          + {t('tripDetail.addPlace')}
         </button>
       </div>
     </div>

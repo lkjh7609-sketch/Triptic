@@ -13,9 +13,9 @@
     "noPending": "No posts pending review."
   },
   "report": {
-    "title": "🚩 Report",
+    "title": "Report",
     "dialogLabel": "Report",
-    "doneTitle": "🚩 Report submitted",
+    "doneTitle": "Report submitted",
     "doneDesc": "The content you reported is now hidden from your view. We'll let you know the outcome after reviewing it within 24 hours.",
     "reasonPrompt": "Please choose a reason for reporting.",
     "detailPlaceholder": "Details (optional)",
@@ -36,22 +36,27 @@
   },
   "feed": {
     "title": "Community",
-    "compose": "✏️ Write",
+    "compose": "️ Write",
     "tabAll": "All",
     "tabFollowing": "Following",
     "loginToFollow": "Sign in to see posts from the destinations you follow.",
     "loadError": "Couldn't load the feed.",
     "emptyFollowing": "No posts yet from the destinations you follow.",
     "emptyAll": "No posts yet.",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "writeBtn": "Write",
+    "subtitle": "Records and Inspiration from Travelers",
+    "searchPlaceholder": "Search regions, keywords, travelers...",
+    "emptySub": "Share the moments of your first trip and local insights.",
+    "writeFirst": "Write your first story"
   },
   "destination": {
     "loadError": "Couldn't load the destination.",
-    "postCount_one": "📝 {{count}} post",
-    "postCount_other": "📝 {{count}} posts",
-    "following": "Following ✓",
+    "postCount_one": "{{count}} post",
+    "postCount_other": "{{count}} posts",
+    "following": "Following ",
     "follow": "+ Follow",
-    "createTripHere": "🗺 Plan a trip to this destination",
+    "createTripHere": "Plan a trip to this destination",
     "emptyPosts": "No posts yet for this destination."
   },
   "post": {
@@ -65,9 +70,9 @@
   },
   "detail": {
     "statusNotice": {
-      "pending_review": "⏳ This post is waiting for admin review. Other users will see it once the review is done.",
-      "hidden": "🙈 This post was reported and is hidden from other users.",
-      "removed": "🚫 Removed for violating the community guidelines."
+      "pending_review": "This post is waiting for admin review. Other users will see it once the review is done.",
+      "hidden": "This post was reported and is hidden from other users.",
+      "removed": "Removed for violating the community guidelines."
     },
     "loadError": "Couldn't load the post.",
     "deleteConfirm": "Delete this post?",
@@ -116,7 +121,7 @@
     "enter": "Continue"
   },
   "suggest": {
-    "title": "💡 Suggest a place",
+    "title": "Suggest a place",
     "dialogLabel": "Suggest a place",
     "searchLabel": "Search for a place to add",
     "searchPlaceholder": "Search for a place",
@@ -136,7 +141,49 @@
     "cityUnset": "No city set",
     "departure": "Departure",
     "return": "Return",
-    "suggestSent": "🎉 Your suggestion was sent to the trip owner!",
+    "suggestSent": "Your suggestion was sent to the trip owner!",
     "emptyDay": "No plans for this day yet."
+  },
+  "continent": {
+    "AS": {
+      "name": "Asia",
+      "countries": {
+        "KR": "South Korea",
+        "JP": "Japan",
+        "VN": "Vietnam",
+        "TH": "Thailand",
+        "PH": "Philippines",
+        "MY": "Malaysia",
+        "SG": "Singapore",
+        "ID": "Indonesia",
+        "TW": "Taiwan",
+        "HK": "Hong Kong",
+        "MO": "Macau",
+        "CN": "China"
+      }
+    },
+    "EU": {
+      "name": "Europe",
+      "countries": {
+        "FR": "France",
+        "GB": "UK",
+        "IT": "Italy",
+        "ES": "Spain",
+        "CZ": "Czechia",
+        "AT": "Austria",
+        "CH": "Switzerland",
+        "NL": "Netherlands",
+        "PT": "Portugal",
+        "TR": "Turkey"
+      }
+    },
+    "AM_OC": {
+      "name": "Americas/Oceania",
+      "countries": {
+        "US": "United States",
+        "CA": "Canada",
+        "AU": "Australia"
+      }
+    }
   }
 }

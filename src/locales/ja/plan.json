@@ -1,0 +1,216 @@
+{
+  "backup": {
+    "title": "デバイス同期とバックアップ",
+    "fileNamePrefix": "Triptic_バックアップ",
+    "invalidFile": "有効なバックアップJSONファイルではありません。",
+    "conflictTitle": "同じ名前の旅行があります",
+    "conflictDesc": "すでに存在する旅行名です：",
+    "conflictMore": " ほか{{count}}件",
+    "conflictQuestion": "どう処理しますか？",
+    "keepBoth": "両方保存する",
+    "overwrite": "既存の旅行を上書きする",
+    "desc": "すべての旅行をJSONファイルでダウンロードしたり、バックアップファイルから復元できます。",
+    "exportBtn": "バックアップを出力",
+    "importBtn": "バックアップを読み込む",
+    "importedSuffix": "(インポート済)",
+    "importedSuffixN": "(インポート済 {{n}})",
+    "importSuccess_other": "{{count}}件の旅行を読み込みました！",
+    "importError": "読み込み中にエラーが発生しました。"
+  },
+  "createTrip": {
+    "title": "新しい旅行",
+    "nameLabel": "旅行の名前",
+    "namePlaceholder": "東京旅行",
+    "cityLabel": "目的地の都市 (検索して選択)",
+    "cityPlaceholderExample": "例：Kyoto, Japan",
+    "cityRequired": "目的地の都市を検索して選択してください。",
+    "currencyLabel": "通貨設定",
+    "startLabel": "開始日",
+    "endLabel": "終了日",
+    "creating": "作成中…",
+    "create": "作成",
+    "errors": {
+      "titleRequired": "旅行の名前を入力してください",
+      "dateFormat": "日付の形式が正しくありません",
+      "dateInvalid": "有効な日付を選択してください",
+      "startRequired": "開始日を選択してください",
+      "endRequired": "終了日を選択してください",
+      "endAfterStart": "終了日は開始日より後である必要があります"
+    }
+  },
+  "day": {
+    "header": "Day {{index}}",
+    "tablistLabel": "日を選択"
+  },
+  "dayCity": {
+    "title": "{{day}}日目の活動都市を設定",
+    "currentLabel": "{{day}}日目の現在の都市",
+    "unset": "未設定",
+    "searchPlaceholder": "都市を検索 (例: Kyoto, Japan)",
+    "scopeRestTitle": "この日から旅行終了まで一括適用",
+    "scopeRestBadge": "おすすめ",
+    "scopeRestDesc": "{{from}}日目から{{to}}日目まですべての予定の都市を変更します。",
+    "scopeSingleTitle": "この日({{day}}日目)のみ適用",
+    "scopeSingleDesc": "{{day}}日目のみこの都市に指定します。",
+    "applying": "適用中…",
+    "apply": "都市を適用"
+  },
+  "expense": {
+    "title": "この日の経費",
+    "descPlaceholder": "用途 (例: 昼食)",
+    "amountPlaceholder": "金額 ({{symbol}})",
+    "currencyAria": "通貨",
+    "categoryAria": "カテゴリー",
+    "paymentAria": "支払い方法",
+    "paymentPlaceholder": "支払い方法",
+    "fetchingRate": "為替レート照会…",
+    "empty": "まだ登録された経費はありません。",
+    "fxWarning": "為替レートの取得に失敗しました。金額は保存されますが、合計には反映されません。",
+    "unconverted": "換算不可",
+    "unconvertedCount_other": "(換算不可 {{count}}件を除く)",
+    "dayTotal": "この日の合計",
+    "grandTotal": "旅行全体の合計",
+    "chartByDay": "日別合計",
+    "chartByCategory": "カテゴリー別合計",
+    "category": {
+      "food": "食費",
+      "transport": "交通",
+      "lodging": "宿泊",
+      "shopping": "買い物",
+      "activity": "アクティビティ",
+      "other": "その他"
+    },
+    "payment": {
+      "cash": "現金",
+      "card": "カード",
+      "other": "その他"
+    }
+  },
+  "flightCard": {
+    "schedule": "{{depTime}} 出発 → {{arrTime}} 到着"
+  },
+  "flight": {
+    "title": "航空便",
+    "outboundLabel": "出国",
+    "returnLabel": "帰国",
+    "flightNoPlaceholder": "便名 (例: OZ102)",
+    "lookupBtn": "照会",
+    "lookingUp": "照会中…",
+    "noResultHint": "自動照会の結果がない場合は、以下で直接入力できます。",
+    "manualToggle": "航空便を直接入力 (手動指定)",
+    "airlinePlaceholder": "航空会社 (例: 大韓航空)",
+    "depPlaceholder": "出発空港を検索 (例: 成田国際空港)",
+    "arrPlaceholder": "到着空港を検索 (例: 関西国際空港)",
+    "applyManual": "このフライト情報を適用",
+    "saving": "保存中…"
+  },
+  "itemDetail": {
+    "mapLink": "Google Mapsで見る",
+    "timeLabel": "時間",
+    "memoLabel": "メモ",
+    "moveToDay": "別の日へ移動"
+  },
+  "meals": {
+    "title": "この日の食事",
+    "searchPlaceholder": "{{meal}}のレストランを検索",
+    "skip": "スキップ",
+    "saving": "保存中…"
+  },
+  "mealSlot": {
+    "breakfast": "朝食",
+    "lunch": "昼食",
+    "dinner": "夕食"
+  },
+  "planScreen": {
+    "myTrips": "私の旅行",
+    "createTripAria": "旅行を作成",
+    "loginMessage": "ログインすると旅行を保存して、どこからでも続きを作成できます。",
+    "browseFirst": "先に見る",
+    "listError": "旅行リストを読み込めませんでした。",
+    "firstTripMessage": "最初の旅行を作成してみましょう。",
+    "ongoing": "進行中",
+    "upcoming": "予定",
+    "pastToggle_other": "過去の旅行 {{count}}件 {{state}}",
+    "pastShow": "表示 ▼",
+    "pastHide": "非表示 ▲",
+    "backupFooter": "デバイス同期とバックアップ"
+  },
+  "sampleTrip": {
+    "badge": "おすすめサンプル日程",
+    "duration": "{{nights}}泊 {{days}}日",
+    "placeCount_other": "場所 {{count}}ヶ所",
+    "openLink": "日程を見る"
+  },
+  "setHotel": {
+    "title": "宿泊先を設定",
+    "searchPlaceholder": "宿泊先を検索",
+    "clear": "宿泊先を解除",
+    "saving": "保存中…"
+  },
+  "share": {
+    "title": "閲覧専用共有リンク",
+    "sampleMessage": "サンプル旅行は共有できません。自分だけの新しい旅行を作成して共有してみましょう！",
+    "desc": "同行者にこのリンクを送ると、編集なしでスケジュールを確認できます。",
+    "generatingLink": "作成中…",
+    "revoke": "共有を停止",
+    "revokeConfirm": "共有を停止しますか？相手はこの旅行を見ることができなくなります。",
+    "copied": "コピーしました！",
+    "copyText": "全日程をテキストでコピー",
+    "textCopied": "テキストをコピーしました！",
+    "pdfAllBtn": "全日程PDF ({{days}}日分)",
+    "pdfCurrentBtn": "{{day}}日目のみPDF",
+    "generatingPdf": "作成中…"
+  },
+  "suggestions": {
+    "title": "同行者の追加提案 ({{count}}件)",
+    "empty": "まだ同行者からの提案はありません。",
+    "dayTag": "{{day}}日目の提案",
+    "sentBy": "送信者",
+    "reject": "拒否",
+    "addToItinerary": "スケジュールに追加",
+    "memoPrefix": "[{{name}}さんのおすすめ] "
+  },
+  "tripCard": {
+    "periodUndecided": "期間未定",
+    "menuAria": "旅行メニュー",
+    "rename": "名前を変更",
+    "renamePrompt": "新しい旅行の名前を入力してください",
+    "duplicate": "複製",
+    "deleteConfirm": "「{{title}}」を削除しますか？元に戻すことはできません。"
+  },
+  "tripDetail": {
+    "backAria": "戻る",
+    "sampleBadge": "体験用サンプル",
+    "mapViewAria": "地図で見る",
+    "listViewAria": "リストで見る",
+    "suggestionsAria": "受け取った提案",
+    "suggestionsSampleTitle": "サンプル旅行では提案機能を利用できません。",
+    "voucherAria": "バウチャー保管庫",
+    "shareAria": "共有",
+    "cityUnset": "都市未設定",
+    "hotelUnset": "宿泊先",
+    "mealsLabel": "食事",
+    "expenseLabel": "経費",
+    "addByDocument": "書類から追加",
+    "startLabel": "出発",
+    "returnLabel": "帰国",
+    "addItem": "予定追加",
+    "emptyDay": "この日にはまだ予定がありません。",
+    "notFound": "旅行を読み込めませんでした。",
+    "climateBadge": "平年",
+    "hotelStart": "出発宿泊先",
+    "hotelEnd": "到着宿泊先",
+    "addPlace": "場所追加"
+  },
+  "tripMap": {
+    "ariaLabel": "スケジュール地図"
+  },
+  "desktop": {
+    "activeJourneys": "進行中 / 予定の旅行",
+    "pastExpeditions": "過去の旅行",
+    "featuredJourney": "注目の旅行",
+    "yourCollection": "旅行コレクション",
+    "startPlanningDesc": "次の素晴らしい冒険を計画しましょう。",
+    "openLiveItinerary": "旅程を見る →"
+  }
+}

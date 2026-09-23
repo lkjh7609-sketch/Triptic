@@ -18,7 +18,7 @@ import { ViteGlobBackend } from './backend';
 import { loadLocaleFont } from './fonts';
 import { PSEUDO_POST_PROCESSOR_NAME, isPseudoLocaleEnabled, pseudoPostProcessor } from './pseudoLocale';
 
-export const SUPPORTED_LOCALES = ['ko', 'en', 'zh-CN'] as const;
+export const SUPPORTED_LOCALES = ['ko', 'en', 'zh-CN', 'ja'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const NAMESPACES = [

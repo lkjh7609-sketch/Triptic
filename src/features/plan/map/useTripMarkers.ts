@@ -9,11 +9,14 @@ import { computeDayZones, nearestZoneIndexForPoint, type GeoPoint } from './geo'
 import type { Hotel } from './hotels';
 
 interface UseTripMarkersOptions<T extends GeoPoint> {
+  flightArrival?: GeoPoint | null;
+  flightDeparture?: GeoPoint | null;
   map: google.maps.Map | null;
   dayItems: T[];
   startHotel: Hotel | null;
   endHotel: Hotel | null;
   activeZoneIndex: number;
+  onMarkerClick?: (index: number, type: "item" | "startHotel" | "endHotel") => void;
 }
 
 export function useTripMarkers<T extends GeoPoint>({
@@ -22,6 +25,9 @@ export function useTripMarkers<T extends GeoPoint>({
   startHotel,
   endHotel,
   activeZoneIndex,
+  flightArrival,
+  flightDeparture,
+  onMarkerClick,
 }: UseTripMarkersOptions<T>) {
   const markersRef = useRef<google.maps.Marker[]>([]);
 
@@ -39,6 +45,29 @@ export function useTripMarkers<T extends GeoPoint>({
 
     const bounds = new google.maps.LatLngBounds();
     let hasBoundsPoint = false;
+    const addFlightMarker = (f?: GeoPoint | null, isArrival?: boolean) => {
+      if (!f) return;
+      const pos = { lat: f.lat, lng: f.lng };
+      const marker = new google.maps.Marker({
+        map,
+        position: pos,
+        title: isArrival ? '도착 공항' : '출발 공항',
+        icon: {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          scale: 6,
+          fillColor: '#2563EB',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+          rotation: isArrival ? 180 : 0,
+        },
+      });
+      markersRef.current.push(marker);
+      bounds.extend(pos);
+      hasBoundsPoint = true;
+    };
+    addFlightMarker(flightArrival, true);
+    addFlightMarker(flightDeparture, false);
     const placedHotelKeys = new Set<string>();
 
     [startHotel, endHotel].forEach((h) => {
@@ -61,6 +90,9 @@ export function useTripMarkers<T extends GeoPoint>({
           strokeWeight: 2,
         },
       });
+      marker.addListener('click', () => {
+        onMarkerClick?.(-1, h === startHotel ? "startHotel" : "endHotel");
+      });
       markersRef.current.push(marker);
       bounds.extend(pos);
       hasBoundsPoint = true;
@@ -76,6 +108,9 @@ export function useTripMarkers<T extends GeoPoint>({
         map,
         position: pos,
         label: { text: String(index + 1), color: '#ffffff', fontWeight: 'bold', fontSize: '12px' },
+      });
+      marker.addListener('click', () => {
+        onMarkerClick?.(index, "item");
       });
       markersRef.current.push(marker);
       bounds.extend(pos);
@@ -94,5 +129,5 @@ export function useTripMarkers<T extends GeoPoint>({
       markersRef.current.forEach((m) => m.setMap(null));
       markersRef.current = [];
     };
-  }, [map, dayItems, startHotel, endHotel, activeZoneIndex]);
+  }, [map, dayItems, startHotel, endHotel, activeZoneIndex, flightArrival, flightDeparture, onMarkerClick]);
 }

@@ -1,3 +1,4 @@
+import { MessageCircle, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -150,9 +151,9 @@ export function PostDetailScreen() {
             disabled={!user}
             onClick={() => toggleLike.mutate(!!post.likedByMe)}
           >
-            {post.likedByMe ? '♥' : '♡'} {t('detail.like', { count: post.like_count })}
+            {post.likedByMe ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span> : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span>} {t('detail.like', { count: post.like_count })}
           </button>
-          <span className={styles.commentCount}>💬 {t('detail.comment', { count: post.comment_count })}</span>
+          <span className={styles.commentCount}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> {t('detail.comment', { count: post.comment_count })}</span>
         </div>
       </div>
 
@@ -174,7 +175,7 @@ export function PostDetailScreen() {
             <p className={styles.commentBody}>{c.body}</p>
           </div>
         ))}
-        {(comments ?? []).length === 0 ? <EmptyState icon="💬" message={t('detail.noComments')} /> : null}
+        {(comments ?? []).length === 0 ? <EmptyState icon=<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> message={t('detail.noComments')} /> : null}
       </div>
 
       {user ? (

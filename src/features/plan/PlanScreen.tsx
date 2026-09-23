@@ -15,6 +15,9 @@ import { LoginButtons } from '@/features/auth/LoginButtons';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import styles from './PlanScreen.module.css';
+import { Luggage, Cloud} from 'lucide-react';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { PlanDesktop } from './PlanDesktop';
 
 /**
  * 계획 탭 — 여행 목록 (02-screens.md §3.1)
@@ -23,8 +26,8 @@ import styles from './PlanScreen.module.css';
  */
 export function PlanScreen() {
   const { t } = useTranslation(['plan', 'common']);
-  void t; // TODO(Phase6-C 재개): 이 화면 본문 문자열 i18n 전환 미완료 — WIP 중단 지점
   const { user, loading: sessionLoading } = useSession();
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
   const queryClient = useQueryClient();
   const { data: trips, isLoading, isError, refetch } = useTrips();
   const renameTrip = useRenameTrip();
@@ -56,20 +59,24 @@ export function PlanScreen() {
   const grouped = useMemo(() => {
     const list = trips ?? [];
     return {
-      ongoing: list.filter((t) => getTripPhase(t.start_date, t.end_date) === 'ongoing'),
-      upcoming: list.filter((t) => getTripPhase(t.start_date, t.end_date) === 'upcoming'),
-      past: list.filter((t) => getTripPhase(t.start_date, t.end_date) === 'past'),
+      ongoing: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'ongoing'),
+      upcoming: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'upcoming'),
+      past: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'past'),
     };
   }, [trips]);
 
   if (sessionLoading) return null;
 
+  if (isDesktop && user && !isLoading) {
+    return <PlanDesktop trips={trips ?? []} ongoing={grouped.ongoing} upcoming={grouped.upcoming} past={grouped.past} onRefetch={refetch} onRename={cardCallbacks.onRename} onDuplicate={cardCallbacks.onDuplicate} onDelete={cardCallbacks.onDelete} />;
+  }
+
   if (!user) {
     return (
       <div className={styles.section}>
-        <EmptyState icon="🧳" message="로그인하면 내 여행을 저장하고 어디서든 이어갈 수 있어요." />
+        <EmptyState icon={<Luggage size={48} />} message={t('planScreen.loginMessage')} />
         <LoginButtons />
-        <h2 className={styles.sectionTitle}>먼저 둘러보기</h2>
+        <h2 className={styles.sectionTitle}>{t('planScreen.browseFirst')}</h2>
         <div className={styles.list}>
           <SampleTripCard />
         </div>
@@ -80,11 +87,11 @@ export function PlanScreen() {
   return (
     <div>
       <div className={styles.header}>
-        <h1 className={styles.headerTitle}>내 여행</h1>
+        <h1 className={styles.headerTitle}>{t('planScreen.myTrips')}</h1>
         <button
           type="button"
           className={styles.addButton}
-          aria-label="여행 만들기"
+          aria-label={t('planScreen.createTripAria')}
           onClick={() => setShowCreate(true)}
         >
           +
@@ -98,12 +105,12 @@ export function PlanScreen() {
           <Skeleton height="88px" radius="var(--radius-lg)" />
         </div>
       ) : isError ? (
-        <ErrorState summary="여행 목록을 불러오지 못했어요." onRetry={() => refetch()} />
+        <ErrorState summary={t('planScreen.listError')} onRetry={() => refetch()} />
       ) : (trips?.length ?? 0) === 0 ? (
         <div className={styles.section}>
           <EmptyState
-            icon="🧳"
-            message="첫 여행을 만들어 보세요."
+            icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Luggage size={16} /></span>}
+            message={t('planScreen.firstTripMessage')}
             actions={
               <button type="button" className={styles.addButton} onClick={() => setShowCreate(true)}>
                 +
@@ -115,10 +122,10 @@ export function PlanScreen() {
         <>
           {grouped.ongoing.length > 0 && (
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>진행 중</h2>
+              <h2 className={styles.sectionTitle}>{t('planScreen.ongoing')}</h2>
               <div className={styles.list}>
-                {grouped.ongoing.map((t) => (
-                  <TripCard key={t.id} trip={t} {...cardCallbacks} />
+                {grouped.ongoing.map((trip) => (
+                  <TripCard key={trip.id} trip={trip} {...cardCallbacks} />
                 ))}
               </div>
             </section>
@@ -126,10 +133,10 @@ export function PlanScreen() {
 
           {grouped.upcoming.length > 0 && (
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>예정</h2>
+              <h2 className={styles.sectionTitle}>{t('planScreen.upcoming')}</h2>
               <div className={styles.list}>
-                {grouped.upcoming.map((t) => (
-                  <TripCard key={t.id} trip={t} {...cardCallbacks} />
+                {grouped.upcoming.map((trip) => (
+                  <TripCard key={trip.id} trip={trip} {...cardCallbacks} />
                 ))}
               </div>
             </section>
@@ -142,12 +149,12 @@ export function PlanScreen() {
                 className={styles.pastToggle}
                 onClick={() => setShowPast((v) => !v)}
               >
-                지난 여행 {grouped.past.length}건 {showPast ? '숨기기 ▲' : '보기 ▼'}
+                {t('planScreen.pastToggle_other', { count: grouped.past.length, state: showPast ? t('planScreen.pastHide') : t('planScreen.pastShow') })}
               </button>
               {showPast ? (
                 <div className={styles.list}>
-                  {grouped.past.map((t) => (
-                    <TripCard key={t.id} trip={t} {...cardCallbacks} />
+                  {grouped.past.map((trip) => (
+                    <TripCard key={trip.id} trip={trip} {...cardCallbacks} />
                   ))}
                 </div>
               ) : null}
@@ -159,7 +166,7 @@ export function PlanScreen() {
       {(trips?.length ?? 0) > 0 ? (
         <div className={styles.footer}>
           <button type="button" className={styles.footerButton} onClick={() => setShowBackup(true)}>
-            ☁️ 기기 동기화 & 백업
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Cloud size={16} /></span> {t('planScreen.backupFooter')}
           </button>
         </div>
       ) : null}

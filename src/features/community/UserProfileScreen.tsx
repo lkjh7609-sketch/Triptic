@@ -1,3 +1,4 @@
+import { PenTool } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -77,7 +78,7 @@ export function UserProfileScreen() {
           <Skeleton height="60px" />
         </div>
       ) : !posts || posts.length === 0 ? (
-        <EmptyState icon="✍️" message={t('profile.noPosts')} />
+        <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><PenTool size={16} /></span>} message={t('profile.noPosts')} />
       ) : (
         posts.map((post) => <PostCard key={post.id} post={post} />)
       )}

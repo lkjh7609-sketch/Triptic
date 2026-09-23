@@ -5,43 +5,43 @@
 
 /* ===== §2.1 라이트 모드 ===== */
 :root {
-  /* 표면 */
-  --surface-page: #fbfbf9; /* 웜 오프화이트 (기존 #F9F9F7 계승) */
-  --surface-card: #ffffff;
-  --surface-subtle: #f1f2ef; /* 칩·태그 배경 */
-  --surface-sunken: #e8eae5; /* 입력 비활성, 스켈레톤 */
-  --surface-overlay: rgba(17, 24, 39, 0.48);
+  /* 표면 (Beige/Ivory 톤) */
+  --surface-page: #FDFBF7;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #EBE8E0; /* 칩·태그 배경 */
+  --surface-sunken: #E2DFD6; /* 입력 비활성, 스켈레톤 */
+  --surface-overlay: rgba(28, 25, 23, 0.48);
 
-  /* 텍스트 — 모두 --surface-page 기준 */
-  --text-primary: #111827; /* 17.12:1  AAA */
-  --text-body: #334155; /*  9.99:1  AAA */
-  --text-muted: #64748b; /*  4.59:1  AA  */
-  --text-placeholder: #94a3b8; /* 플레이스홀더 전용. 본문 금지 */
-  --text-on-brand: #ffffff;
+  /* 텍스트 */
+  --text-primary: #1C1917; 
+  --text-body: #292524; 
+  --text-muted: #57534E; 
+  --text-placeholder: #A8A29E; 
+  --text-on-brand: #FFFFFF;
 
-  /* 브랜드 */
-  --brand: #2b4ee6; /*  6.08:1 on page / 흰 글자 6.30:1  AA */
-  --brand-pressed: #1e3bc4;
-  --brand-tint: #eef2ff; /* 선택된 칩 배경 */
+  /* 브랜드 (오렌지/핑크 대신 생동감 있는 Teal(청록) 사용) */
+  --brand: #0D9488; 
+  --brand-pressed: #0F766E;
+  --brand-tint: #CCFBF1; /* 선택된 칩 배경 */
 
-  /* 지도 마커 — 흰 숫자를 올리므로 4.5:1 이상 필요 */
-  --marker-fill: #15803d; /* 흰 글자 5.02:1  AA ✅ */
-  --marker-fill-active: #2b4ee6;
-  --route-transit: #2b4ee6; /* 대중교통 경로 폴리라인 */
-  --route-fallback: #64748b; /* 직선 점선 폴백 */
+  /* 지도 마커 */
+  --marker-fill: #16A34A; 
+  --marker-fill-active: #0D9488;
+  --route-transit: #0D9488; 
+  --route-fallback: #57534E; 
 
   /* 상태 */
-  --success: #0b7a55; /* 흰 글자 5.34:1  AA */
-  --success-tint: #e7f6f0;
-  --warning: #9a3412; /* 낮은 신뢰도 필드 강조 */
-  --warning-tint: #fff4e5;
-  --danger: #b91c1c; /*  6.24:1  AA */
-  --danger-tint: #feecec;
+  --success: #16A34A; 
+  --success-tint: #DCFCE7;
+  --warning: #D97706; 
+  --warning-tint: #FEF3C7;
+  --danger: #DC2626; 
+  --danger-tint: #FEE2E2;
 
   /* 경계 */
-  --border: #e2e5e1;
-  --border-strong: #cbd5e1;
-  --border-focus: #2b4ee6;
+  --border: #E7E5E4;
+  --border-strong: #D6D3D1;
+  --border-focus: #0D9488;
 
   /* ===== §4 간격·모서리·그림자 ===== */
   --space-1: 4px;
@@ -53,115 +53,113 @@
   --space-8: 32px;
   --space-10: 40px;
 
-  --radius-sm: 8px; /* 칩, 작은 버튼 */
-  --radius-md: 12px; /* 입력, 일정 카드 */
-  --radius-lg: 16px; /* 큰 카드, 모달 */
-  --radius-xl: 24px; /* 바텀시트 상단 */
+  --radius-sm: 8px; 
+  --radius-md: 12px; 
+  --radius-lg: 16px; 
+  --radius-xl: 24px; 
   --radius-pill: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.04);
-  --shadow-md: 0 4px 12px rgba(17, 24, 39, 0.08);
-  --shadow-lg: 0 12px 32px rgba(17, 24, 39, 0.14);
-  --shadow-sheet: 0 -8px 28px rgba(17, 24, 39, 0.12);
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05), 0 1px 3px rgba(28, 25, 23, 0.03);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.08);
+  --shadow-lg: 0 12px 32px rgba(28, 25, 23, 0.12);
+  --shadow-sheet: 0 -8px 28px rgba(28, 25, 23, 0.10);
 
   /* ===== §3.2 타이포그래피 스케일 (rem 기준 — Dynamic Type 대응) ===== */
-  --font-display-size: 1.75rem; /* 28px */
-  --font-display-line: 2.125rem; /* 34px */
+  --font-display-size: 1.75rem; 
+  --font-display-line: 2.125rem; 
   --font-display-weight: 800;
 
-  --font-title-size: 1.25rem; /* 20px */
-  --font-title-line: 1.75rem; /* 28px */
+  --font-title-size: 1.25rem; 
+  --font-title-line: 1.75rem; 
   --font-title-weight: 700;
 
-  --font-headline-size: 1.0625rem; /* 17px */
-  --font-headline-line: 1.5rem; /* 24px */
+  --font-headline-size: 1.0625rem; 
+  --font-headline-line: 1.5rem; 
   --font-headline-weight: 600;
 
-  --font-body-size: 0.9375rem; /* 15px */
-  --font-body-line: 1.375rem; /* 22px */
+  --font-body-size: 0.9375rem; 
+  --font-body-line: 1.375rem; 
   --font-body-weight: 400;
 
-  --font-label-size: 0.8125rem; /* 13px */
-  --font-label-line: 1.125rem; /* 18px */
+  --font-label-size: 0.8125rem; 
+  --font-label-line: 1.125rem; 
   --font-label-weight: 500;
 
-  --font-caption-size: 0.6875rem; /* 11px */
-  --font-caption-line: 0.875rem; /* 14px */
+  --font-caption-size: 0.6875rem; 
+  --font-caption-line: 0.875rem; 
   --font-caption-weight: 500;
 }
 
-/* ===== §2.2 다크 모드 ===== */
-/* 다크 모드에서 흰 글자를 브랜드색 위에 올리지 말 것. --brand가 밝아졌으므로
-   --text-on-brand는 어두운 색이다. */
+/* ===== §2.2 다크 모드 (Airplane Night Mode) ===== */
 :root[data-theme='dark'] {
-  --surface-page: #0e1116;
-  --surface-card: #171b22;
-  --surface-subtle: #1f242d;
-  --surface-sunken: #262c36;
-  --surface-overlay: rgba(0, 0, 0, 0.62);
+  --surface-page: #0B0F19; /* 눈이 편안한 딥 미드나잇/네이비 */
+  --surface-card: #182234;
+  --surface-subtle: #1E293B;
+  --surface-sunken: #283548;
+  --surface-overlay: rgba(0, 0, 0, 0.7);
 
-  --text-primary: #e8eaf0; /* 15.72:1 on page / 14.35:1 on card  AAA */
-  --text-body: #b3bac7; /*  9.69:1  AAA */
-  --text-muted: #8892a4;
-  --text-placeholder: #6b7486;
-  --text-on-brand: #0e1116;
+  --text-primary: #E2E8F0;
+  --text-body: #CBD5E1; 
+  --text-muted: #94A3B8;
+  --text-placeholder: #64748B;
+  --text-on-brand: #0B0F19;
 
-  --brand: #8aa4ff; /*  7.96:1  AAA */
-  --brand-pressed: #a7bbff;
-  --brand-tint: #1b2440;
+  --brand: #4FC3F7; /* 부드러운 스카이 블루 액센트 */
+  --brand-pressed: #38BDF8;
+  --brand-tint: rgba(79, 195, 247, 0.15);
 
-  --marker-fill: #34d399;
-  --marker-fill-active: #8aa4ff;
-  --route-transit: #8aa4ff;
-  --route-fallback: #8892a4;
+  --marker-fill: #34D399;
+  --marker-fill-active: #4FC3F7;
+  --route-transit: #4FC3F7;
+  --route-fallback: #94A3B8;
 
-  --success: #34d399;
-  --success-tint: #12301f;
-  --warning: #fbbf24;
-  --warning-tint: #3a2a0a;
-  --danger: #f87171;
-  --danger-tint: #3a1616;
+  --success: #34D399;
+  --success-tint: #12301F;
+  --warning: #FBBF24;
+  --warning-tint: #3A2A0A;
+  --danger: #F87171;
+  --danger-tint: #3A1616;
 
-  --border: #2a303b;
-  --border-strong: #3a424f;
-  --border-focus: #8aa4ff;
+  --border: #283548;
+  --border-strong: #334155;
+  --border-focus: #4FC3F7;
 }
 
 /* ===== §2.3 테마 적용 규칙 ===== */
 /* 시스템 설정 따름 (기본) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --surface-page: #0e1116;
-    --surface-card: #171b22;
-    --surface-subtle: #1f242d;
-    --surface-sunken: #262c36;
-    --surface-overlay: rgba(0, 0, 0, 0.62);
+    --surface-page: #0B0F19;
+    --surface-card: #182234;
+    --surface-subtle: #1E293B;
+    --surface-sunken: #283548;
+    --surface-overlay: rgba(0, 0, 0, 0.7);
 
-    --text-primary: #e8eaf0;
-    --text-body: #b3bac7;
-    --text-muted: #8892a4;
-    --text-placeholder: #6b7486;
-    --text-on-brand: #0e1116;
+    --text-primary: #E2E8F0;
+    --text-body: #CBD5E1; 
+    --text-muted: #94A3B8;
+    --text-placeholder: #64748B;
+    --text-on-brand: #0B0F19;
 
-    --brand: #8aa4ff;
-    --brand-pressed: #a7bbff;
-    --brand-tint: #1b2440;
+    --brand: #4FC3F7; 
+    --brand-pressed: #38BDF8;
+    --brand-tint: rgba(79, 195, 247, 0.15);
 
-    --marker-fill: #34d399;
-    --marker-fill-active: #8aa4ff;
-    --route-transit: #8aa4ff;
-    --route-fallback: #8892a4;
+    --marker-fill: #34D399;
+    --marker-fill-active: #4FC3F7;
+    --route-transit: #4FC3F7;
+    --route-fallback: #94A3B8;
 
-    --success: #34d399;
-    --success-tint: #12301f;
-    --warning: #fbbf24;
-    --warning-tint: #3a2a0a;
-    --danger: #f87171;
-    --danger-tint: #3a1616;
+    --success: #34D399;
+    --success-tint: #12301F;
+    --warning: #FBBF24;
+    --warning-tint: #3A2A0A;
+    --danger: #F87171;
+    --danger-tint: #3A1616;
 
-    --border: #2a303b;
-    --border-strong: #3a424f;
-    --border-focus: #8aa4ff;
+    --border: #283548;
+    --border-strong: #334155;
+    --border-focus: #4FC3F7;
   }
 }
 

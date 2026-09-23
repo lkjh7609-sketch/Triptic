@@ -5,7 +5,7 @@
  */
 import { getSupabaseClient } from './supabaseClient';
 
-export type Locale = 'ko' | 'en' | 'zh-CN';
+export type Locale = 'ko' | 'en' | 'zh-CN' | 'ja';
 export type TempUnit = 'c' | 'f';
 export type DistanceUnit = 'km' | 'mi';
 

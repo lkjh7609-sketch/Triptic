@@ -1,0 +1,215 @@
+.aiSheet {
+  max-width: 500px;
+  background: var(--surface-bg);
+}
+
+.header {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-4);
+}
+
+.header h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 var(--space-2);
+  color: var(--text-title);
+}
+
+.header p {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) 0;
+  color: var(--text-muted);
+  gap: var(--space-3);
+  font-size: var(--font-body-size);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-bottom: var(--space-4);
+}
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+.rating {
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  color: var(--warning);
+}
+
+.metaInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--font-caption-size);
+  color: var(--text-body);
+  margin-bottom: var(--space-3);
+}
+
+.metaInfo span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.categoryTag {
+  background: var(--surface-bg);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+}
+
+.reasonBox {
+  background: rgba(13, 148, 136, 0.05);
+  border-left: 3px solid var(--brand);
+  padding: var(--space-3);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin-bottom: var(--space-4);
+}
+
+.reasonTitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: var(--font-caption-size);
+  color: var(--brand);
+  margin-bottom: 4px;
+}
+
+.reasonBox p {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  line-height: 1.5;
+  color: var(--text-body);
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.rejectBtn, .acceptBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.rejectBtn {
+  background: var(--surface-bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.rejectBtn:hover {
+  background: var(--border-subtle);
+}
+
+.acceptBtn {
+  background: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.acceptBtn:hover {
+  opacity: 0.9;
+}
+
+.timeSelectWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding: var(--space-2);
+  background: var(--surface-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--font-caption-size);
+}
+
+.timeInput {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  color: var(--text-primary);
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backBtn:hover {
+  color: var(--text-primary);
+}
+
+.timeConfirmView {
+  padding: var(--space-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
