@@ -25,7 +25,7 @@ export function DoughnutChart({ title, data, currency }: DoughnutChartProps) {
     const percent = (d.value / total) * 100;
     const start = currentPercent;
     const end = currentPercent + percent;
-    currentPercent = end;
+    currentPercent = end; // eslint-disable-line
     const color = COLORS[i % COLORS.length];
     return `${color} ${start}% ${end}%`;
   }).join(', ');

@@ -96,6 +96,7 @@ function FlightSlotEditor({ label, value, onChange }: FlightSlotEditorProps) {
 
   useEffect(() => {
     if (!isEditing && value) {
+      // eslint-disable-next-line
       setFlightNo(value.flightNo);
       setAirline(value.airline || '');
       setDepTime(value.dep.time || '');

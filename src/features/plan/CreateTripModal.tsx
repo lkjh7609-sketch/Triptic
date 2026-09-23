@@ -161,7 +161,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
         ref={trapRef}
         className={styles.sheet}
         onClick={(e) => e.stopPropagation()}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={e => { e.preventDefault(); handleSubmit(onSubmit)(); }}
         role="dialog"
         aria-modal="true"
         aria-label={t('createTrip.title')}

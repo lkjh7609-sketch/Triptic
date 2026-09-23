@@ -53,6 +53,12 @@
     "destRome": "意大利罗马",
     "descRome": "废墟与浪漫的永恒之城",
     "destTokyo": "日本东京",
-    "descTokyo": "霓虹灯与传统文化"
+    "descTokyo": "霓虹灯与传统文化",
+    "previewCancel": "取消",
+    "previewStart": "去这座城市制定计划",
+    "previewLoading": "✨ AI 正在加载城市信息...",
+    "terms": "服务条款 (Terms)",
+    "privacy": "隐私政策 (Privacy)",
+    "contact": "客户服务 (Contact)"
   }
 }

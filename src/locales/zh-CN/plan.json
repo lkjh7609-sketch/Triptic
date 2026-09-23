@@ -229,6 +229,8 @@
     "featuredJourney": "精选旅行",
     "yourCollection": "我的旅行收藏",
     "startPlanningDesc": "开始计划您的下一次伟大冒险。",
-    "openLiveItinerary": "打开实时行程 →"
+    "openLiveItinerary": "打开实时行程 →",
+    "noPastTripsTitle": "没有过去的旅行",
+    "noPastTripsDesc": "还没有记录过去的旅行。"
   }
 }

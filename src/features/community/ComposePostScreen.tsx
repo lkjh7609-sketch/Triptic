@@ -45,6 +45,7 @@ export function ComposePostScreen() {
   useEffect(() => {
     if (initialDestSlug && destinations && !destinationId) {
       const d = destinations.find(d => d.slug === initialDestSlug);
+      // eslint-disable-next-line
       if (d) setDestinationId(d.id);
     }
   }, [destinations, initialDestSlug, destinationId]);

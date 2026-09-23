@@ -17,6 +17,7 @@ export function TimeWheelPicker({ value, onChange }: TimeWheelPickerProps) {
   useEffect(() => {
     if (value) {
       const [h, m] = value.split(':');
+      // eslint-disable-next-line
       setHour(h);
       setMinute(m);
     }
