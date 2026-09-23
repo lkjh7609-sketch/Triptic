@@ -1,0 +1,180 @@
+{
+  "admin": {
+    "accessDenied": "管理者権限が必要な画面です。",
+    "title": "管理コンソール",
+    "tabs": {
+      "reports": "通報キュー",
+      "pending": "自動フラグキュー"
+    },
+    "reportDetail": "通報の詳細: {{detail}}",
+    "dismiss": "却下",
+    "approve": "承認",
+    "noReports": "処理する通報はありません。",
+    "noPending": "審査待ちの投稿はありません。"
+  },
+  "report": {
+    "title": "通報する",
+    "dialogLabel": "通報する",
+    "doneTitle": "通報が受け付けられました",
+    "doneDesc": "通報されたコンテンツは、お客様の画面には表示されなくなりました。24時間以内に審査し、処理結果をお知らせします。",
+    "reasonPrompt": "通報理由を選択してください。",
+    "detailPlaceholder": "詳細説明 (任意)",
+    "submit": "通報",
+    "submitting": "通報しています…",
+    "submitError": "通報の送信に失敗しました。",
+    "reason": {
+      "spam": "スパム/広告",
+      "harassment": "嫌がらせ",
+      "hate": "ヘイトスピーチ",
+      "sexual": "性的なコンテンツ",
+      "violence": "暴力的なコンテンツ",
+      "illegal": "違法行為",
+      "misinformation": "誤情報",
+      "impersonation": "なりすまし",
+      "other": "その他"
+    }
+  },
+  "feed": {
+    "title": "コミュニティ",
+    "compose": "投稿する",
+    "tabAll": "すべて",
+    "tabFollowing": "フォロー中",
+    "loginToFollow": "ログインすると、フォローしている旅行先の投稿だけを集めて見ることができます。",
+    "loadError": "フィードを読み込めませんでした。",
+    "emptyFollowing": "フォローしている旅行先にはまだ投稿がありません。",
+    "emptyAll": "まだ投稿がありません。",
+    "loadMore": "もっと見る"
+  },
+  "destination": {
+    "loadError": "旅行先情報を読み込めませんでした。",
+    "postCount_other": "投稿 {{count}}件",
+    "following": "フォロー中 ",
+    "follow": "+ フォロー",
+    "createTripHere": "この旅行先で旅行を作成",
+    "emptyPosts": "まだこの旅行先に投稿がありません。"
+  },
+  "post": {
+    "fallbackAuthor": "旅行者"
+  },
+  "menu": {
+    "ariaLabel": "もっと見る",
+    "report": "通報",
+    "blockUser": "ユーザーをブロック",
+    "blockConfirm": "このユーザーをブロックしますか？ブロックすると、お互いの投稿・コメントが表示されなくなります。"
+  },
+  "detail": {
+    "statusNotice": {
+      "pending_review": "この投稿は現在、管理者による審査を待っています。審査が終わると他のユーザーにも表示されます。",
+      "hidden": "通報が受け付けられ、他のユーザーには表示されません。",
+      "removed": "コミュニティガイドライン違反により削除されました。"
+    },
+    "loadError": "投稿を読み込めませんでした。",
+    "deleteConfirm": "この投稿を削除しますか？",
+    "translatedLabel": "自動翻訳済み",
+    "translating": "翻訳中…",
+    "translateView": "翻訳を見る",
+    "like_other": "いいね {{count}}",
+    "comment_other": "コメント {{count}}",
+    "commentPlaceholder": "コメントを残してみましょう",
+    "commentSubmit": "登録",
+    "noComments": "まだコメントがありません。"
+  },
+  "profile": {
+    "loadError": "プロフィールを読み込めませんでした。",
+    "postsHeader": "作成した投稿",
+    "noPosts": "まだ作成した投稿がありません。"
+  },
+  "compose": {
+    "loginRequired": "ログイン後に投稿できます。",
+    "title": "投稿作成",
+    "submitting": "投稿中…",
+    "submit": "投稿",
+    "destinationLabel": "旅行先 (必須)",
+    "destinationPlaceholder": "旅行先を選択してください",
+    "destinationRequiredError": "旅行先を選択してください。",
+    "bodyPlaceholder": "旅行のお話を聞かせてください",
+    "bodyRequiredError": "内容を入力してください。",
+    "tripLabel": "旅行日程を添付 (任意)",
+    "tripNone": "添付しない",
+    "photoLabel": "写真 (最大 {{max}}枚)",
+    "addPhoto": "+ 写真",
+    "processingPhoto": "処理中…",
+    "maxImagesError": "画像は最大{{max}}枚まで添付できます。",
+    "uploadImageError": "画像のアップロードに失敗しました。",
+    "moderationBlockedError": "コミュニティガイドラインに違反する内容が含まれているため、投稿がブロックされました。",
+    "submitError": "投稿に失敗しました。しばらくしてからもう一度お試しください。"
+  },
+  "guestName": {
+    "dialogLabel": "名前を入力",
+    "promptLine1": "同行される方のお名前やニックネームを教えてください。",
+    "promptLine2": "場所を提案する際に作成者として表示されます。",
+    "nameLabel": "名前",
+    "namePlaceholder": "例: マコト",
+    "enter": "入場する"
+  },
+  "suggest": {
+    "title": "場所の追加を提案",
+    "dialogLabel": "場所の追加を提案",
+    "searchLabel": "追加する場所を検索",
+    "searchPlaceholder": "場所の名前を検索してください",
+    "dayLabel": "おすすめの日",
+    "dayOption": "{{day}}日目",
+    "memoLabel": "一言メモ (任意)",
+    "memoPlaceholder": "例: ここのデザートが有名だそうです！",
+    "proposerLabel": "作成者の名前",
+    "submitting": "送信中…",
+    "submit": "提案を送信"
+  },
+  "shared": {
+    "loadError": "共有リンクの有効期限が切れているか、見つかりません。",
+    "daysCount_other": "{{count}}日間",
+    "dayLabel": "{{day}}日目",
+    "cityUnset": "都市未設定",
+    "departure": "出発",
+    "return": "帰国",
+    "suggestSent": "提案が旅行の作成者に送信されました！",
+    "emptyDay": "この日にはまだ予定がありません。"
+  },
+  "continent": {
+    "AS": {
+      "name": "アジア",
+      "countries": {
+        "KR": "韓国",
+        "JP": "日本",
+        "VN": "ベトナム",
+        "TH": "タイ",
+        "PH": "フィリピン",
+        "MY": "マレーシア",
+        "SG": "シンガポール",
+        "ID": "インドネシア",
+        "TW": "台湾",
+        "HK": "香港",
+        "MO": "マカオ",
+        "CN": "中国"
+      }
+    },
+    "EU": {
+      "name": "ヨーロッパ",
+      "countries": {
+        "FR": "フランス",
+        "GB": "イギリス",
+        "IT": "イタリア",
+        "ES": "スペイン",
+        "CZ": "チェコ",
+        "AT": "オーストリア",
+        "CH": "スイス",
+        "NL": "オランダ",
+        "PT": "ポルトガル",
+        "TR": "トルコ"
+      }
+    },
+    "AM_OC": {
+      "name": "アメリカ/オセアニア",
+      "countries": {
+        "US": "アメリカ",
+        "CA": "カナダ",
+        "AU": "オーストラリア"
+      }
+    }
+  }
+}

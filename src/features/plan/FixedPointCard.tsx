@@ -3,6 +3,7 @@ import { LegLabel } from './LegLabel';
 import type { RouteLeg } from './map/useTripRoutes';
 import type { FlightInfo } from './types';
 import styles from './FixedPointCard.module.css';
+import { Plane, ExternalLink } from 'lucide-react';
 
 /**
  * 여정의 고정 지점(숙소·항공편) 카드 (index.html .fixed-item 이식 — ADR-001)
@@ -16,7 +17,7 @@ export function LegBetween({ leg }: { leg: RouteLeg | undefined }) {
 }
 
 interface FixedPointCardProps {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   name: string;
   address?: string;
@@ -41,9 +42,21 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
   const airlineTag = flight.airline ? ` (${flight.airline})` : '';
   return (
     <div className={styles.fixedItem}>
-      <span className={styles.fixedLabel}>✈️ {flight.flightNo}</span>
+      <span className={styles.fixedLabel}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Plane size={16} /> {flight.flightNo}</span></span>
       <span className={styles.fixedName}>
-        {flight.dep.name || flight.dep.iata || '?'} → {flight.arr.name || flight.arr.iata || '?'}
+        {flight.dep.name || flight.dep.iata || '?'}
+        {flight.dep.lat && flight.dep.lng ? (
+          <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+            <ExternalLink size={12} />
+          </a>
+        ) : null}
+        {" → "}
+        {flight.arr.name || flight.arr.iata || '?'}
+        {flight.arr.lat && flight.arr.lng ? (
+          <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+            <ExternalLink size={12} />
+          </a>
+        ) : null}
         {airlineTag}
       </span>
       <span className={styles.fixedAddress}>

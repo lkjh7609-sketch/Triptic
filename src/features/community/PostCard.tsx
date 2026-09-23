@@ -1,3 +1,4 @@
+import { MessageCircle, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -67,9 +68,9 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
 
       <div className={styles.footer}>
         <button type="button" className={styles.likeBtn} onClick={handleLikeClick} disabled={!user}>
-          {post.likedByMe ? '♥' : '♡'} {post.like_count}
+          {post.likedByMe ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span> : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span>} {post.like_count}
         </button>
-        <span className={styles.commentCount}>💬 {post.comment_count}</span>
+        <span className={styles.commentCount}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> {post.comment_count}</span>
       </div>
     </Link>
   );

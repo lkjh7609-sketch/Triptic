@@ -185,7 +185,8 @@
     "dayTag": "{{day}}일차 추천",
     "sentBy": "보낸 사람",
     "reject": "거절",
-    "addToItinerary": "일정에 추가"
+    "addToItinerary": "일정에 추가",
+    "memoPrefix": "[{{name}}님 추천] "
   },
   "tripCard": {
     "periodUndecided": "기간 미정",
@@ -214,9 +215,22 @@
     "addItem": "일정 추가",
     "emptyDay": "이 날에는 아직 일정이 없어요.",
     "notFound": "여행을 불러오지 못했어요.",
-    "climateBadge": "평년"
+    "climateBadge": "평년",
+    "hotelStart": "출발 숙소",
+    "hotelEnd": "도착 숙소",
+    "addPlace": "장소 추가"
   },
   "tripMap": {
     "ariaLabel": "일정 지도"
+  },
+  "desktop": {
+    "activeJourneys": "진행/예정된 여행",
+    "pastExpeditions": "지난 여행",
+    "featuredJourney": "다가오는 주요 여행",
+    "yourCollection": "내 여행 컬렉션",
+    "startPlanningDesc": "다음 멋진 모험을 계획해 보세요.",
+    "openLiveItinerary": "실시간 일정 보기 →",
+    "noPastTripsTitle": "지난 여행이 없어요",
+    "noPastTripsDesc": "아직 다녀온 여행이 기록되지 않았습니다."
   }
 }

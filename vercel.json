@@ -1,7 +1,8 @@
 {
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/preview/(.*)", "destination": "/preview/index.html" }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {

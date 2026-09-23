@@ -91,7 +91,7 @@ export interface Trip {
 export type AllProjects = Record<string, Trip>;
 
 // AI 추천 카테고리
-export type RecommendationCategory = 'all' | 'restaurant' | 'cafe' | 'hotel' | 'spot';
+export type RecommendationCategory = 'all' | 'restaurant' | 'cafe' | 'culture' | 'spot';
 
 // AI 추천 결과
 export interface Recommendation {

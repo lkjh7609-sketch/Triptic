@@ -1,15 +1,15 @@
 {
   "confidenceField": {
-    "warning": "⚠️ 请核对",
+    "warning": "️ 请核对",
     "empty": "识别失败——请手动输入",
     "viewOriginal": "查看原文件"
   },
   "review": {
     "emptyTitle": "暂无需要核对的预订",
-    "title": "📋 确认识别结果",
+    "title": "确认识别结果",
     "dialogLabel": "确认识别结果",
     "desc": "这是自动识别的内容，请核对后添加到行程中。",
-    "flightLabel": "✈️ 航班",
+    "flightLabel": "️ 航班",
     "flightNumberField": "航班号",
     "departureAirportField": "出发机场",
     "arrivalAirportField": "到达机场",
@@ -18,25 +18,25 @@
     "ignore": "忽略",
     "applying": "添加中…",
     "applyToItinerary": "添加到行程",
-    "lodgingLabel": "🏨 住宿",
-    "railLabel": "🚄 铁路",
-    "bookingLabel": "📍 预订",
+    "lodgingLabel": "住宿",
+    "railLabel": "铁路",
+    "bookingLabel": "预订",
     "nameUnrecognized": "（未能识别名称）",
-    "manualHint": "暂不支持自动添加此类预订——请参考以上内容，通过🏨住宿或+添加行程手动添加。"
+    "manualHint": "暂不支持自动添加此类预订——请参考以上内容，通过住宿或+添加行程手动添加。"
   },
   "upload": {
-    "title": "📄 上传预订单据填充行程",
+    "title": "上传预订单据填充行程",
     "dialogLabel": "上传预订单据填充行程",
     "consentText": "上传机票或酒店确认单（PDF或照片），我们会自动识别航班号、时间、酒店等信息并生成行程草稿。护照号、卡号等敏感信息在发送到识别（AI）服务器前会始终被遮盖。识别的内容必须经您确认后，才会添加到行程中。",
     "agreeAndContinue": "同意并继续",
-    "uploadTitle": "📄 上传预订单据",
+    "uploadTitle": "上传预订单据",
     "fileHint": "PDF、JPG、PNG（最大20MB）",
-    "processing": "⏳ 正在识别单据…",
+    "processing": "正在识别单据…",
     "uploadError": "上传时发生错误，请重试。"
   },
   "archive": {
-    "title": "🎟 凭证库",
-    "empty": "还没有凭证，点击“📄从单据添加”上传吧。",
+    "title": "凭证库",
+    "empty": "还没有凭证，点击“从单据添加”上传吧。",
     "addToWallet": "添加到Apple Wallet",
     "deleteConfirm": "确定删除“{{name}}”吗？此操作无法撤销。",
     "voucherOriginalAlt": "凭证原件"

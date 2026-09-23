@@ -1,379 +1,196 @@
-// Vercel Serverless Function: AI Nearby Recommendations (DeepSeek)
-// EndPoint: POST /api/recommend
+import fetch from 'node-fetch';
+import { createClient } from '@supabase/supabase-js';
 
-// 전체 요청은 이 예산(ms) 안에서 DeepSeek를 시도하고, 남은 시간이 없으면
-// 즉시 2번 큐레이션 폴백으로 넘어간다. 플랫폼의 함수 실행 시간 제한(Vercel Hobby
-// 기본 10초)보다 확실히 짧게 잡아, 폴백에 항상 도달할 수 있도록 한다.
 const TOTAL_BUDGET_MS = 8000;
-const MIN_ATTEMPT_MS = 1500; // 이보다 적게 남으면 아예 시도하지 않음
-const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
-const DEEPSEEK_MODEL = 'deepseek-flash';
+const MIN_ATTEMPT_MS = 2500;
 
-function remainingMs(deadline) {
-    return deadline - Date.now();
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+    supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// 1. DeepSeek API
+function remainingMs(deadline) {
+    return Math.max(0, deadline - Date.now());
+}
+
 async function callDeepSeek(apiKey, prompt, deadline) {
-    const budget = remainingMs(deadline);
-    if (budget < MIN_ATTEMPT_MS) return null;
+    const start = Date.now();
+    const timeout = remainingMs(deadline);
+    if (timeout < MIN_ATTEMPT_MS) throw new Error('Not enough time for DeepSeek attempt');
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+
     try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), Math.min(9500, budget - 200));
-        const res = await fetch(DEEPSEEK_ENDPOINT, {
+        const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: DEEPSEEK_MODEL,
+                model: 'deepseek-chat',
                 messages: [
-                    { role: 'system', content: 'You are a professional travel assistant. Always respond strictly in valid JSON without markdown formatting.' },
+                    { role: 'system', content: 'You are an expert travel assistant. Output ONLY valid JSON.' },
                     { role: 'user', content: prompt }
                 ],
-                response_format: { type: 'json_object' },
-                temperature: 0.7
+                temperature: 0.7,
+                response_format: { type: "json_object" }
             }),
             signal: controller.signal
         });
-        clearTimeout(timeoutId);
 
-        if (!res.ok) {
-            const err = await res.text();
-            console.warn(`[DeepSeek] 실패 (${res.status}):`, err);
-            return null;
-        }
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`DeepSeek HTTP error ${res.status}`);
 
         const data = await res.json();
-        const text = data.choices?.[0]?.message?.content;
-        if (!text) return null;
-
-        let jsonStr = text.trim();
-        if (jsonStr.startsWith('```')) {
-            jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+        const content = data.choices?.[0]?.message?.content || '';
+        let parsed;
+        try {
+            parsed = JSON.parse(content);
+        } catch {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
         }
 
-        const parsed = JSON.parse(jsonStr);
-        if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
+        if (parsed && Array.isArray(parsed.recommendations)) {
             return {
+                recommendations: parsed.recommendations,
                 provider: 'DeepSeek',
-                modelUsed: DEEPSEEK_MODEL,
-                recommendations: parsed.recommendations
+                modelUsed: data.model || 'deepseek-chat'
             };
         }
+        throw new Error('DeepSeek returned invalid JSON structure');
     } catch (e) {
-        console.warn('[DeepSeek] 에러:', e.message);
+        clearTimeout(timer);
+        throw e;
     }
-    return null;
 }
 
-// 2. 오프라인 & 호출 실패 대비 스마트 큐레이션 폴백 엔진
 function getCuratedFallbackRecommendations(placeName, city, category) {
-    const pLower = (placeName || '').toLowerCase();
-    const cLower = (city || '').toLowerCase();
+    // 1) 입력된 placeName/city 문자열 기반 매칭 로직 (이전과 동일하게 유지)
+    const text = (placeName + ' ' + city).toLowerCase();
+    let matchedCity = 'unknown';
+    
+    if (text.includes('오사카') || text.includes('osaka') || text.includes('도톤보리') || text.includes('우메다')) matchedCity = 'osaka';
+    else if (text.includes('도쿄') || text.includes('tokyo') || text.includes('시부야') || text.includes('신주쿠')) matchedCity = 'tokyo';
+    else if (text.includes('후쿠오카') || text.includes('fukuoka') || text.includes('하카타') || text.includes('텐진')) matchedCity = 'fukuoka';
+    else if (text.includes('교토') || text.includes('kyoto') || text.includes('청수사') || text.includes('아라시야마')) matchedCity = 'kyoto';
+    else if (text.includes('삿포로') || text.includes('sapporo') || text.includes('스스키노')) matchedCity = 'sapporo';
 
-    // 1) 오사카 (도톤보리, 난바, 우메다 등)
-    if (cLower.includes('osaka') || cLower.includes('오사카') || pLower.includes('dotonbori') || pLower.includes('도톤보리') || pLower.includes('namba') || pLower.includes('난바')) {
-        const pool = [
+    // 도시별 데이터가 없거나 unknown이면 공통 모듈 제공
+    if (matchedCity === 'unknown') {
+        const fallback = [
             {
-                name: '킨류 라멘 도톤보리 본점',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 3분 (220m)',
+                name: "현지 로컬 맛집",
+                category: "restaurant",
+                categoryLabel: "로컬 맛집",
+                distance: "도보 5분 (400m)",
+                estimatedRating: 4.5,
+                signatureMenu: "현지 특선 요리",
+                priceRange: "1,500~3,000엔",
+                reason: "구글 평점 4.5 이상의 현지인들이 자주 찾는 검증된 로컬 식당입니다.",
+                tip: "식사 시간에는 웨이팅이 있을 수 있으니 조금 서두르시는 것을 추천합니다."
+            },
+            {
+                name: "분위기 좋은 카페",
+                category: "cafe",
+                categoryLabel: "감성 카페",
+                distance: "도보 3분 (250m)",
+                estimatedRating: 4.7,
+                signatureMenu: "시그니처 디저트 & 커피",
+                priceRange: "800~1,500엔",
+                reason: "많이 걸은 후 잠시 쉬어가기 좋은 차분하고 예쁜 인테리어의 카페입니다.",
+                tip: "창가 자리에 앉아 여유로운 시간을 보내기 좋습니다."
+            },
+            {
+                name: "주변 산책 명소",
+                category: "spot",
+                categoryLabel: "주변 명소",
+                distance: "도보 10분 이내",
                 estimatedRating: 4.4,
-                signatureMenu: '차슈 라멘 (900엔)',
-                priceRange: '1인당 800~1,200엔',
-                reason: '거대한 입체 용 간판이 상징적인 24시간 라멘집. 진하고 담백한 돼지뼈 육수에 쫄깃한 생면이 일품입니다.',
-                tip: '셀프바에서 매콤한 부추무침과 김치를 무료로 듬뿍 얹어 칼칼하게 드셔보세요.'
-            },
-            {
-                name: '쿠시카츠 다루마 도톤보리점',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 4분 (300m)',
-                estimatedRating: 4.5,
-                signatureMenu: '도톤보리 모둠 쿠시카츠 세트 (9종 1,600엔)',
-                priceRange: '1인당 1,500~2,500엔',
-                reason: '1929년 창업한 오사카 명물 꼬치튀김 전문점. 얇고 바삭한 튀김옷과 비법 간장 소스가 조화를 이룹니다.',
-                tip: '양배추와 하이볼을 곁들이면 기름지지 않고 깔끔합니다. 소스는 뿌려 먹는 방식으로 위생적입니다.'
-            },
-            {
-                name: '이치란 라멘 도톤보리점',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 5분 (350m)',
-                estimatedRating: 4.6,
-                signatureMenu: '천연 돈코츠 라멘',
-                priceRange: '1인당 1,000~1,500엔',
-                reason: '칸막이 좌석에서 오롯이 맛에 집중할 수 있는 진하고 깊은 돈코츠 라멘 전문점입니다.',
-                tip: '비법 소스 3배, 면 익힘 보통, 마늘 1쪽 설정이 한국인 입맛에 가장 황금비율입니다.'
-            },
-            {
-                name: '아라비카 교토 도톤보리점',
-                category: 'cafe',
-                categoryLabel: '감성 카페',
-                distance: '도보 3분 (200m)',
-                estimatedRating: 4.6,
-                signatureMenu: '라떼 & 에스프레소',
-                priceRange: '1인당 600~900엔',
-                reason: '도톤보리 강변을 내려다보며 여유롭게 쉴 수 있는 스페셜티 커피 카페입니다.',
-                tip: '테이크아웃해서 도톤보리 강변을 산책하며 즐기기 좋습니다.'
-            },
-            {
-                name: '글리코 러닝맨 포토스팟',
-                category: 'spot',
-                categoryLabel: '주변 명소',
-                distance: '도보 1분 (80m)',
-                estimatedRating: 4.8,
-                signatureMenu: '글리코 러너 만세 포즈 인증샷',
-                priceRange: '무료',
-                reason: '오사카 여행의 상징적인 명소. 에비스바시 다리에서 글리코상을 배경으로 인생샷을 남겨보세요.',
-                tip: '해 질 녘 네온사인이 화려하게 켜지는 저녁 7~9시 사이에 방문하면 가장 활기차고 사진이 예쁩니다.'
-            },
-            {
-                name: '신사이바시스지 상점가',
-                category: 'spot',
-                categoryLabel: '주변 명소',
-                distance: '도보 3분 (250m)',
-                estimatedRating: 4.6,
-                signatureMenu: '아케이드 쇼핑 & 드럭스토어 투어',
-                priceRange: '무료 (쇼핑 자유)',
-                reason: '비가 와도 편안하게 걸을 수 있는 오사카 최대 길이의 지붕 덮인 아케이드 쇼핑 거리입니다.',
-                tip: '도톤보리에서 신사이바시역 방향으로 쭉 걸어가며 로컬 패션 매장과 기념품 숍을 둘러보세요.'
-            },
-            {
-                name: '크로스 호텔 오사카',
-                category: 'hotel',
-                categoryLabel: '숙소',
-                distance: '도보 2분 (160m)',
-                estimatedRating: 4.5,
-                signatureMenu: '모던 룸 & 독립 욕조',
-                priceRange: '1박 15~25만 원 선',
-                reason: '도톤보리 입구 바로 앞에 위치해 밤늦게까지 야경과 식사를 즐기고 도보로 복귀하기 완벽한 숙소입니다.',
-                tip: '짐 보관 서비스가 매우 친절하며, 돈키호테와 드럭스토어가 도보 1분 거리입니다.'
+                signatureMenu: "가벼운 산책 코스",
+                priceRange: "무료",
+                reason: "식사나 휴식 후 가볍게 걸으며 현지 풍경을 즐길 수 있는 산책로입니다.",
+                tip: "해 질 무렵 방문하면 멋진 노을을 볼 수 있습니다."
             }
         ];
-        return filterByCategory(pool, category, placeName, '오사카');
+        return fallback;
     }
 
-    // 2) 교토 (기온, 청수사, 아라시야마 등)
-    if (cLower.includes('kyoto') || cLower.includes('교토') || pLower.includes('gion') || pLower.includes('기온') || pLower.includes('kiyomizu') || pLower.includes('청수사')) {
-        const pool = [
-            {
-                name: '스타벅스 교토 니넨자카점',
-                category: 'cafe',
-                categoryLabel: '감성 카페',
-                distance: '도보 5분 (350m)',
-                estimatedRating: 4.7,
-                signatureMenu: '말차 라떼 & 에스프레소',
-                priceRange: '1인당 600~900엔',
-                reason: '100년이 넘은 전통 목조 가옥을 개조한 세계 유일 다다미 좌식 스타벅스입니다.',
-                tip: '2층 다다미방 좌석은 신발을 벗고 올라가 교토 고즈넉한 정취를 만끽하기에 좋습니다.'
-            },
-            {
-                name: '아라비카 교토 히가시야마점',
-                category: 'cafe',
-                categoryLabel: '감성 카페',
-                distance: '도보 4분 (300m)',
-                estimatedRating: 4.6,
-                signatureMenu: '교토 라떼',
-                priceRange: '1인당 600~800엔',
-                reason: '야사카 탑을 배경으로 커피 인증샷을 찍는 교토 최고의 스페셜티 커피 브랜드 본점입니다.',
-                tip: '연유가 살짝 들어간 달콤 쌉싸름한 교토 라떼를 테이크아웃해 골목을 산책해보세요.'
-            },
-            {
-                name: '멘야 이노이치',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 8분 (600m)',
-                estimatedRating: 4.7,
-                signatureMenu: '가쓰오 맑은 흑/백 쇼유 라멘',
-                priceRange: '1인당 1,200~1,800엔',
-                reason: '미슐랭 빕구르망에 등재된 최고급 가쓰오부시 맑은 육수의 담백하고 깊은 라멘 명가입니다.',
-                tip: '토치로 구운 소고기 차슈와 함께 제공되는 유자 껍질을 살짝 뿌려 먹으면 풍미가 극대화됩니다.'
-            },
-            {
-                name: '기온 탄토',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 6분 (450m)',
-                estimatedRating: 4.5,
-                signatureMenu: '특제 오코노미야키 & 야키소바',
-                priceRange: '1인당 1,500~2,500엔',
-                reason: '시라카와 운하가 보이는 창가에서 철판 요리를 맛볼 수 있는 기온 거리의 운치 있는 식당입니다.',
-                tip: '창가 자리를 요청하면 버드나무와 작은 개천이 흐르는 교토 특유의 감성을 즐길 수 있습니다.'
-            },
-            {
-                name: '산넨자카 & 니넨자카 거리',
-                category: 'spot',
-                categoryLabel: '주변 명소',
-                distance: '도보 3분 (200m)',
-                estimatedRating: 4.8,
-                signatureMenu: '전통 가옥 거리 산책 & 기념품 쇼핑',
-                priceRange: '무료',
-                reason: '기와지붕 전통 상점과 돌담길이 이어지는 교토 최고의 정취를 자랑하는 보행자 전용 거리입니다.',
-                tip: '오전 9시 이전이나 오후 5시 이후에 방문하면 붐비지 않고 고즈넉한 사진을 남길 수 있습니다.'
-            },
-            {
-                name: '기온 료칸 카라쿠',
-                category: 'hotel',
-                categoryLabel: '숙소',
-                distance: '도보 7분 (500m)',
-                estimatedRating: 4.6,
-                signatureMenu: '전통 다다미 객실 & 가이세키 석식',
-                priceRange: '1박 25~45만 원 선',
-                reason: '기온과 야사카 신사 인근에 위치해 교토의 전통 온천과 정갈한 일본식 환대를 경험할 수 있습니다.',
-                tip: '조용한 골목에 위치해 도심 속 휴식을 취하기 좋으며 청수사까지 아침 산책이 가능합니다.'
-            }
-        ];
-        return filterByCategory(pool, category, placeName, '교토');
-    }
-
-    // 3) 도쿄 (신주쿠, 시부야, 긴자, 아사쿠사 등)
-    if (cLower.includes('tokyo') || cLower.includes('도쿄') || pLower.includes('shibuya') || pLower.includes('shinjuku') || pLower.includes('ginza')) {
-        const pool = [
-            {
-                name: '이치란 라멘 시부야점',
-                category: 'restaurant',
-                categoryLabel: '로컬 맛집',
-                distance: '도보 4분 (300m)',
-                estimatedRating: 4.6,
-                signatureMenu: '천연 돈코츠 라멘',
-                priceRange: '1인당 1,000~1,500엔',
-                reason: '독서실 칸막이 좌석에서 오롯이 맛에 집중할 수 있는 진하고 깊은 돈코츠 라멘의 대명사입니다.',
-                tip: '비법 소스 3배, 면 익힘 보통, 마늘 1쪽 설정이 한국인 입맛에 가장 황금비율입니다.'
-            },
-            {
-                name: '블루보틀 커피 아오야마점',
-                category: 'cafe',
-                categoryLabel: '감성 카페',
-                distance: '도보 6분 (450m)',
-                estimatedRating: 4.5,
-                signatureMenu: '뉴올리언스 아이스 커피 & 와플',
-                priceRange: '1인당 700~1,200엔',
-                reason: '울창한 녹음이 우거진 테라스를 품은 감성적인 스페셜티 핸드드립 커피 매장입니다.',
-                tip: '바람 솔솔 부는 야외 발코니 테이블에서 갓 구운 따뜻한 리에주 와플을 꼭 드셔보세요.'
-            },
-            {
-                name: '시부야 스카이 전망대',
-                category: 'spot',
-                categoryLabel: '주변 명소',
-                distance: '도보 3분 (250m)',
-                estimatedRating: 4.8,
-                signatureMenu: '루프탑 야경 & 후지산 조망',
-                priceRange: '입장료 약 2,200엔',
-                reason: '지상 229m 옥상에서 시부야 스크램블 교차로와 도쿄 타워 전경을 360도 파노라마로 감상할 수 있습니다.',
-                tip: '일몰 30분 전 시간대로 사전 예매하면 노을과 화려한 도쿄 야경을 모두 담을 수 있습니다.'
-            },
-            {
-                name: '호텔 그레이서리 신주쿠',
-                category: 'hotel',
-                categoryLabel: '숙소',
-                distance: '도보 5분 (400m)',
-                estimatedRating: 4.5,
-                signatureMenu: '고질라 헤드 테라스 뷰 룸',
-                priceRange: '1박 18~28만 원 선',
-                reason: '신주쿠 카부키초 중심에 위치해 가부키초 타워와 교통이 편리하며 대형 고질라 조형물로 유명합니다.',
-                tip: '호텔 8층 로비 라운지 야외 테라스에서 거대한 고질라 두상을 눈앞에서 직관할 수 있습니다.'
-            }
-        ];
-        return filterByCategory(pool, category, placeName, '도쿄');
-    }
-
-    // 4) 일반 범용 스마트 추천 (모든 도시/국가 대상)
-    const baseCity = city || '현지';
-    const genericPool = [
-        {
-            name: `${placeName} 근처 인기 로컬 베이커리 & 브런치 카페`,
-            category: 'cafe',
-            categoryLabel: '감성 카페',
-            distance: '도보 3분 (220m)',
-            estimatedRating: 4.6,
-            signatureMenu: '핸드드립 커피 & 시그니처 디저트',
-            priceRange: '1인당 600~1,200엔 / 8,000~15,000원',
-            reason: `${placeName} 바로 인근에서 현지 여행객들에게 호평받는 감성적이고 조용한 휴식 공간입니다.`,
-            tip: '창가 테이블에서 당일 구워낸 신선한 빵과 시그니처 음료를 즐기며 여유를 만끽해 보세요.'
+    const cityData = {
+        osaka: {
+            restaurant: [
+                { name: "킨류 라멘 도톤보리 본점", category: "restaurant", categoryLabel: "로컬 맛집", distance: "도보 3분 (220m)", estimatedRating: 4.4, signatureMenu: "차슈 라멘 (900엔)", priceRange: "1인당 800~1,200엔", reason: "거대한 입체 용 간판이 인상적인 오사카의 상징적인 라멘집입니다. 야외 평상에 앉아 오사카의 밤공기를 마시며 먹는 라멘은 특별한 분위기를 자아냅니다.", tip: "셀프바에서 매콤한 부추무침과 다진 마늘, 김치를 듬뿍 얹어 먹는 것이 현지식 꿀팁입니다. 24시간 영업하여 야식으로 제격입니다." },
+                { name: "모토무라 규카츠 난바점", category: "restaurant", categoryLabel: "맛집", distance: "도보 5분 (400m)", estimatedRating: 4.8, signatureMenu: "규카츠 정식 (1,600엔~)", priceRange: "1,500~2,500엔", reason: "개인용 미니 화로에 원하는 굽기로 직접 구워 먹는 재미와 입에서 살살 녹는 부드러운 소고기의 맛이 일품입니다.", tip: "항상 웨이팅이 길기 때문에 식사 시간대를 피해서 (오후 3~4시경) 방문하는 것을 강력히 추천합니다." }
+            ],
+            cafe: [
+                { name: "오사카 나카자키초 카페거리", category: "cafe", categoryLabel: "감성 카페", distance: "전철 15분", estimatedRating: 4.6, signatureMenu: "핸드드립 커피 & 수제 디저트", priceRange: "1,000~2,000엔", reason: "도심 속에서 시간이 멈춘 듯한 낡은 목조 주택들을 개조한 레트로 감성의 작은 카페들이 모여있는 곳입니다.", tip: "특정 카페를 정해두기보다, 골목을 거닐다 마음에 드는 아담한 카페에 즉흥적으로 들어가보는 것이 좋습니다." }
+            ],
+            spot: [
+                { name: "우메다 스카이빌딩 공중정원", category: "spot", categoryLabel: "야경 명소", distance: "전철 10분 + 도보 10분", estimatedRating: 4.7, signatureMenu: "360도 파노라마 야경", priceRange: "입장료 1,500엔 (오사카 주유패스 무료/할인)", reason: "우주선 모양의 독특한 건축물 꼭대기에서 오사카 도심을 360도로 조망할 수 있는 최고의 야경 스팟입니다.", tip: "해 지기 30분 전에 올라가서 일몰과 화려한 야경을 모두 감상하는 것이 가장 좋습니다." },
+                { name: "아베노 하루카스 300", category: "spot", categoryLabel: "야경 명소", distance: "전철 15분", estimatedRating: 4.8, signatureMenu: "일본 최고층 빌딩 전망대", priceRange: "입장료 1,500엔", reason: "일본에서 가장 높은 빌딩으로, 통유리를 통해 발밑으로 펼쳐지는 압도적이고 탁 트인 오사카의 스카이라인을 볼 수 있습니다.", tip: "58층 야외 테라스 카페에서 오사카 시내를 내려다보며 여유롭게 맥주나 커피를 즐겨보세요." }
+            ]
         },
-        {
-            name: `${baseCity} 전통 명물 전문 식당`,
-            category: 'restaurant',
-            categoryLabel: '로컬 맛집',
-            distance: '도보 5분 (350m)',
-            estimatedRating: 4.7,
-            signatureMenu: '셰프 추천 대표 세트 메뉴',
-            priceRange: '1인당 1,200~2,500엔 / 15,000~25,000원',
-            reason: `${placeName} 방문 후 도보로 들르기 가장 좋은 ${baseCity} 정통 로컬 미식 전문점입니다.`,
-            tip: '점심 피크 타임(12:00~13:30)을 살짝 피해 방문하시면 웨이팅 없이 편안하게 식사할 수 있습니다.'
+        tokyo: {
+            restaurant: [
+                { name: "이치란 시부야점", category: "restaurant", categoryLabel: "로컬 맛집", distance: "도보 5분", estimatedRating: 4.5, signatureMenu: "천연 돈코츠 라멘 (980엔)", priceRange: "1,000~1,500엔", reason: "독서실 형태의 1인석에서 주변 시선 없이 오로지 라멘 맛에만 집중할 수 있는 독특한 경험을 제공합니다. 진하고 깊은 돼지뼈 육수가 일품입니다.", tip: "주문 용지에서 '비밀 소스(기본 3~5배 추천)', '마늘(1쪽)', '면 익힘 정도(질김)'를 취향껏 조절해 보세요." },
+                { name: "츠지한 니혼바시 본점", category: "restaurant", categoryLabel: "해산물 맛집", distance: "전철 15분", estimatedRating: 4.7, signatureMenu: "제이타쿠돈 (카이센돈, 1,250엔~)", priceRange: "1,500~3,000엔", reason: "산처럼 쌓아주는 신선한 해산물 덮밥의 압도적인 비주얼과 맛으로 유명합니다. 마지막에 부어주는 도미 육수(도미차즈케)가 화룡점정입니다.", tip: "식사 막바지에 밥이 조금 남았을 때 셰프에게 도미 육수를 요청하고, 남겨둔 참깨 소스 회 두 점을 곁들여 드세요." }
+            ],
+            cafe: [
+                { name: "푸글렌 도쿄 (Fuglen Tokyo)", category: "cafe", categoryLabel: "감성 카페", distance: "도보 10분 (요요기 공원 근처)", estimatedRating: 4.5, signatureMenu: "라떼 & 노르웨이식 페이스트리", priceRange: "600~1,200엔", reason: "노르웨이 오슬로의 유명 커피 브랜드의 도쿄 지점으로, 북유럽 특유의 빈티지한 인테리어와 산미 있는 수준 높은 커피를 제공합니다.", tip: "요요기 공원과 가까우니 날씨가 좋다면 커피를 테이크아웃하여 공원을 산책하는 것을 추천합니다." }
+            ],
+            spot: [
+                { name: "시부야 스카이 (Shibuya Sky)", category: "spot", categoryLabel: "주변 명소", distance: "도보 10분", estimatedRating: 4.8, signatureMenu: "루프탑 파노라마 뷰", priceRange: "입장료 2,200엔 (사전예약 2,000엔)", reason: "시부야 스크램블 교차로를 비롯해 도쿄 도심을 229m 높이의 탁 트인 야외 옥상에서 360도로 내려다볼 수 있는 현재 도쿄 최고의 핫플레이스입니다.", tip: "일몰 시간대는 티켓이 매우 빨리 매진되므로 최소 2주~1달 전 사전 온라인 예약이 필수입니다. 옥상 에스컬레이터 샷이 포토존입니다." }
+            ]
         },
-        {
-            name: `${placeName} 인근 역사 문화 산책로 & 포토존`,
-            category: 'spot',
-            categoryLabel: '주변 명소',
-            distance: '도보 4분 (300m)',
-            estimatedRating: 4.8,
-            signatureMenu: '도심 경관 전망 & 인생샷 스팟',
-            priceRange: '무료',
-            reason: `${placeName}과 함께 묶어서 도보로 산책하기 좋은 ${baseCity}의 낭만적인 포토 스팟입니다.`,
-            tip: '오후 해 질 녘 골든아워에 방문하면 빛이 좋아 가장 아름다운 사진을 담을 수 있습니다.'
+        fukuoka: {
+            restaurant: [
+                { name: "모츠나베 오오야마 본점", category: "restaurant", categoryLabel: "로컬 맛집", distance: "도보 10분", estimatedRating: 4.6, signatureMenu: "된장(미소) 모츠나베 (1,980엔~)", priceRange: "2,000~4,000엔", reason: "진하고 고소한 미소(된장) 베이스 국물과 입에서 녹는 쫄깃하고 통통한 곱창의 조화가 후쿠오카 최고 수준입니다.", tip: "국물이 진해질 무렵 짬뽕면을 추가해서 끓여 먹는 것이 필수 코스입니다." },
+                { name: "신신라멘 본점", category: "restaurant", categoryLabel: "현지 라멘", distance: "도보 5분 (텐진)", estimatedRating: 4.5, signatureMenu: "돈코츠 라멘 (760엔)", priceRange: "800~1,500엔", reason: "기존 돈코츠 라멘 특유의 돼지 냄새를 억제하여 깔끔하고 담백하면서도 깊은 감칠맛을 내어, 돈코츠 초심자도 맛있게 즐길 수 있습니다.", tip: "늦은 밤(새벽 3시까지 영업) 야식으로 볶음밥(야키메시)과 교자를 세트로 곁들여 먹는 것을 추천합니다." }
+            ],
+            spot: [
+                { name: "나카스 포장마차 거리", category: "spot", categoryLabel: "주변 명소", distance: "도보 15분", estimatedRating: 4.2, signatureMenu: "야키토리, 명란계란말이, 오뎅", priceRange: "1,500~3,000엔", reason: "강변을 따라 늘어선 야타이(포장마차)에서 강바람을 맞으며 현지인들과 어깨를 부딪히며 술잔을 기울이는 후쿠오카 특유의 낭만을 느낄 수 있습니다.", tip: "메뉴판 가격이 명확한 곳(명세서 제공 여부 등)을 미리 검색해보고 들어가시는 것이 좋으며, 현금 결제만 가능할 수 있습니다." }
+            ]
         },
-        {
-            name: `${placeName} 도보권 모던 부티크 호텔`,
-            category: 'hotel',
-            categoryLabel: '숙소',
-            distance: '도보 4분 (280m)',
-            estimatedRating: 4.5,
-            signatureMenu: '스탠다드 더블 & 프리미엄 조식',
-            priceRange: '1박 10~20만 원 선',
-            reason: `${placeName} 주변 대중교통 및 쇼핑가 접근성이 탁월하여 여행 피로를 최소화할 수 있습니다.`,
-            tip: '체크인 전/후 무료 짐 보관 서비스를 이용하면 가벼운 몸으로 주변을 탐방하기 좋습니다.'
+        kyoto: {
+            restaurant: [
+                { name: "카츠쿠라 본점", category: "restaurant", categoryLabel: "맛집", distance: "전철 15분 (가와라마치)", estimatedRating: 4.6, signatureMenu: "명품 흑돼지 돈카츠", priceRange: "2,000~3,000엔", reason: "교토에서 시작된 프리미엄 돈카츠 전문점으로, 두툼하고 육즙 가득한 고기와 바삭한 튀김옷의 밸런스가 훌륭합니다.", tip: "직접 깨를 갈아서 소스를 만들어 먹는 재미가 있으며, 밥, 장국, 양배추는 무한 리필이 가능합니다." }
+            ],
+            spot: [
+                { name: "기온 거리 (하나미코지)", category: "spot", categoryLabel: "주변 명소", distance: "도보 20분", estimatedRating: 4.5, signatureMenu: "전통 가옥 거리 산책", priceRange: "무료", reason: "수백 년 된 전통 목조 가옥들이 보존되어 있어 교토 특유의 고즈넉한 정취를 가장 잘 느낄 수 있는 거리입니다. 운이 좋으면 진짜 게이샤나 마이코를 볼 수도 있습니다.", tip: "해 질 무렵 가스등에 불이 켜질 때 방문하면 분위기가 가장 좋지만, 사유지 내 사진 촬영 금지 구역을 반드시 지켜야 합니다." }
+            ]
+        },
+        sapporo: {
+            restaurant: [
+                { name: "다루마 본점 (징기스칸)", category: "restaurant", categoryLabel: "로컬 맛집", distance: "도보 10분 (스스키노)", estimatedRating: 4.7, signatureMenu: "징기스칸 양고기 구이", priceRange: "3,000~5,000엔", reason: "양고기 특유의 누린내가 전혀 없는 신선한 생 양고기를 참숯 화로에 구워 먹는, 삿포로에 오면 무조건 먹어야 하는 소울 푸드입니다.", tip: "항상 대기가 길고 매장 내부가 좁아 옷에 고기 냄새가 많이 밸 수 있으니 유의하세요. 고기를 다 먹은 후 남은 소스에 자스민 차를 부어 마시는 것이 별미입니다." },
+                { name: "스아게 플러스 (Suage+)", category: "restaurant", categoryLabel: "맛집", distance: "도보 5분", estimatedRating: 4.6, signatureMenu: "스프카레 (1,200엔~)", priceRange: "1,500~2,500엔", reason: "걸쭉한 일본 카레와 달리 국물처럼 떠먹는 삿포로식 스프카레의 원조격 맛집입니다. 큼직하게 튀겨 넣은 홋카이도산 야채의 단맛이 환상적입니다.", tip: "브로콜리 튀김 토핑을 반드시 추가하세요. 고기보다 브로콜리가 더 맛있다고 극찬하는 사람들이 많습니다." }
+            ],
+            spot: [
+                { name: "오도리 공원 & TV타워", category: "spot", categoryLabel: "주변 명소", distance: "도보 5분", estimatedRating: 4.4, signatureMenu: "도심 속 공원 산책 & 옥수수 구이", priceRange: "공원 무료, 타워 전망대 1,000엔", reason: "삿포로 도심 한가운데를 길게 가로지르는 아름다운 공원으로, 계절마다 눈축제, 맥주축제 등 다양한 이벤트가 열립니다.", tip: "여름철에 방문한다면 공원 내 명물 포장마차에서 파는 구운 옥수수(야키토우키비)를 꼭 맛보세요." }
+            ]
         }
-    ];
-
-    return filterByCategory(genericPool, category, placeName, baseCity);
-}
-
-function filterByCategory(items, category, placeName, cityName) {
-    if (!category || category === 'all') {
-        return items.slice(0, 6);
-    }
-    const filtered = items.filter(it => it.category === category);
-    if (filtered.length >= 2) {
-        return filtered;
-    }
-    // 카테고리 항목이 적으면 보충
-    const categoryLabels = {
-        restaurant: '로컬 맛집',
-        cafe: '감성 카페',
-        hotel: '숙소',
-        spot: '주변 명소'
     };
-    const cLabel = categoryLabels[category] || '추천 스팟';
-    const supplement = [
-        ...filtered,
-        {
-            name: `${placeName} 인근 ${cLabel} 추천 1호점`,
-            category: category,
-            categoryLabel: cLabel,
-            distance: '도보 4분 (280m)',
-            estimatedRating: 4.6,
-            signatureMenu: `${cLabel} 시그니처 대표 메뉴`,
-            priceRange: '합리적인 로컬 가격대',
-            reason: `${cityName} ${placeName} 인근에서 현지인들과 여행자들의 만족도가 가장 높은 곳입니다.`,
-            tip: '사전 방문객 리뷰를 참고하시고 피크 시간대를 피해 여유롭게 방문해 보세요.'
-        },
-        {
-            name: `${placeName} 도보 5분거리 숨은 ${cLabel}`,
-            category: category,
-            categoryLabel: cLabel,
-            distance: '도보 6분 (420m)',
-            estimatedRating: 4.5,
-            signatureMenu: `특제 핸드메이드 메뉴 & 서비스`,
-            priceRange: '가성비 우수',
-            reason: `북적이지 않고 고즈넉한 분위기에서 편안하게 머무를 수 있는 히든 스팟입니다.`,
-            tip: '현지 통화 또는 모바일 결제가 원활하게 지원됩니다.'
-        }
-    ];
+
+    const target = cityData[matchedCity];
+    let supplement = [];
+    if (category && category !== 'all' && target[category]) {
+        supplement = target[category];
+    } else {
+        supplement = [
+            ...(target.restaurant || []),
+            ...(target.spot || []),
+            ...(target.cafe || [])
+        ];
+    }
+    
+    // Sort by rating
+    supplement.sort((a, b) => b.estimatedRating - a.estimatedRating);
+    if (supplement.length === 0) {
+        return getCuratedFallbackRecommendations('fallback', 'unknown', 'all');
+    }
     return supplement.slice(0, 5);
 }
 
@@ -386,8 +203,6 @@ const ALLOWED_ORIGINS = new Set([
     'capacitor://localhost'
 ]);
 
-// 인스턴스 단위 간이 레이트리밋 (콜드 스타트마다 초기화되어 완전한 방어는 아니지만,
-// 무료 LLM 쿼터를 타인이 스크립트로 순식간에 소진하는 것은 억제한다)
 const recommendHits = new Map();
 function isRateLimited(ip, limit = 20, windowMs = 60_000) {
     const now = Date.now();
@@ -400,12 +215,63 @@ function isRateLimited(ip, limit = 20, windowMs = 60_000) {
     return rec.count > limit;
 }
 
-const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'hotel', 'spot']);
+const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
 
-// 제어 문자를 제거하고 길이를 제한해, 프롬프트 인젝션 표면과 과도한 토큰 사용을 억제한다.
+async function enrichWithGoogleMaps(recs, apiKey, city) {
+    if (!apiKey) return recs;
+    const promises = recs.map(async (r) => {
+        try {
+            const query = `${city} ${r.name}`;
+            const queryKey = query.trim().toLowerCase();
+            
+            // Check cache first if supabase is available
+            if (supabase) {
+                const { data: cacheData } = await supabase
+                    .from('place_cache')
+                    .select('*')
+                    .eq('query_key', queryKey)
+                    .single();
+                
+                if (cacheData) {
+                    r.placeId = cacheData.place_id;
+                    r.lat = cacheData.lat;
+                    r.lng = cacheData.lng;
+                    r.address = cacheData.address;
+                    return r;
+                }
+            }
+            
+            const encodedQuery = encodeURIComponent(query);
+            const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodedQuery}&inputtype=textquery&fields=place_id,geometry,formatted_address&key=${apiKey}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if (data.status === "OK" && data.candidates && data.candidates.length > 0) {
+                const first = data.candidates[0];
+                r.placeId = first.place_id;
+                r.lat = first.geometry.location.lat;
+                r.lng = first.geometry.location.lng;
+                r.address = first.formatted_address;
+                
+                // Save to cache
+                if (supabase) {
+                    await supabase.from('place_cache').upsert({
+                        query_key: queryKey,
+                        place_id: r.placeId,
+                        lat: r.lat,
+                        lng: r.lng,
+                        address: r.address
+                    }).catch(e => console.warn('Cache insert error', e));
+                }
+            }
+        } catch (e) { console.warn("Google Maps Enrich Error", e); }
+        return r;
+    });
+    return await Promise.all(promises);
+}
+
 function sanitizeInput(value, maxLen) {
     if (typeof value !== 'string') return '';
-    // eslint-disable-next-line no-control-regex -- 의도적으로 제어 문자를 제거한다
     return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
 }
 
@@ -419,10 +285,8 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
-
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
@@ -442,11 +306,39 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: '기준 장소 이름(placeName)이 필요합니다.' });
     }
 
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY && supabase) {
+        try {
+            const { data: cacheHit } = await supabase
+                .from('ai_recommendation_cache')
+                .select('recommendations, provider, model_used')
+                .eq('city', city)
+                .eq('category', category)
+                .ilike('place_name', placeName)
+                .single();
+            
+            if (cacheHit && cacheHit.recommendations) {
+                const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+                const enrichedHit = await enrichWithGoogleMaps(cacheHit.recommendations, googleApiKey, city);
+                return res.status(200).json({
+                    success: true,
+                    recommendations: enrichedHit,
+                    provider: cacheHit.provider,
+                    modelUsed: cacheHit.model_used,
+                    cached: true
+                });
+            }
+        } catch (e) {
+            console.warn('[Cache] 읽기 실패:', e.message);
+        }
+    }
+
     const deadline = Date.now() + TOTAL_BUDGET_MS;
     const locationContext = city ? `${city}의 '${placeName}'` : `'${placeName}'`;
+    
+    // EXPLICITLY TELL DEEPSEEK NO HOTELS
     const categoryFocus = category && category !== 'all' 
         ? `특히 [${category}] 분야에 집중해서` 
-        : '로컬 맛집, 분위기 좋은 카페, 동선에 최적화된 숙소, 가볼 만한 인근 명소를 골고루';
+        : '식사, 감성 카페, 볼거리 명소를 골고루 추천하되, 숙소(호텔 등)는 절대로 제외하고';
 
     const prompt = `
 당신은 현지 지리에 정통한 전문 여행 가이드입니다.
@@ -458,8 +350,8 @@ ${categoryFocus} 엄선해 주세요.
   "recommendations": [
     {
       "name": "정확한 상호명 및 한국어 명칭 (예: 앗치치혼포 도톤보리 본점)",
-      "category": "restaurant | cafe | hotel | spot",
-      "categoryLabel": "로컬 맛집 | 감성 카페 | 숙소 | 주변 명소",
+      "category": "restaurant | cafe | spot",
+      "categoryLabel": "로컬 맛집 | 감성 카페 | 주변 명소",
       "distance": "도보 3분 (250m) 또는 이동 소요시간",
       "estimatedRating": 4.6,
       "signatureMenu": "대표 시그니처 메뉴 또는 특징 (예: 타코야키 9알 600엔)",
@@ -471,17 +363,18 @@ ${categoryFocus} 엄선해 주세요.
 }
 `.trim();
 
-    // 1. DeepSeek API
     if (deepseekKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
         try {
             const result = await callDeepSeek(deepseekKey, prompt, deadline);
             if (result && result.recommendations && result.recommendations.length > 0) {
+                const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+                const enrichedDeepseek = await enrichWithGoogleMaps(result.recommendations, googleApiKey, city);
                 return res.status(200).json({
                     success: true,
                     provider: result.provider,
                     modelUsed: result.modelUsed,
                     basePlace: placeName,
-                    recommendations: result.recommendations
+                    recommendations: enrichedDeepseek
                 });
             }
         } catch (e) {
@@ -489,14 +382,15 @@ ${categoryFocus} 엄선해 주세요.
         }
     }
 
-    // 2. 폴백: 스마트 큐레이션 엔진 (API 키 없거나 네트워크 오류 시 무중단 지원)
     const curatedRecs = getCuratedFallbackRecommendations(placeName, city, category);
+    const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    const enrichedCurated = await enrichWithGoogleMaps(curatedRecs, googleApiKey, city);
     return res.status(200).json({
         success: true,
         provider: 'Triptic Curated',
         modelUsed: 'curated-recommendations',
         isFallback: true,
         basePlace: placeName,
-        recommendations: curatedRecs
+        recommendations: enrichedCurated
     });
 }

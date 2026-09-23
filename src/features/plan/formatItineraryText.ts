@@ -30,9 +30,9 @@ export interface ItineraryTextInput {
 
 export function formatItineraryText(input: ItineraryTextInput): string {
   const { title, city, startDate, endDate, totalDays, plannerData, hotelsData } = input;
-  let text = `✈️ [${title}]\n`;
-  text += `📍 목적지: ${city ?? ''}\n`;
-  text += `📅 기간: ${startDate ?? ''} ~ ${endDate ?? ''} (${totalDays}일간)\n\n`;
+  let text = `[${title}]\n`;
+  text += `목적지: ${city ?? ''}\n`;
+  text += `기간: ${startDate ?? ''} ~ ${endDate ?? ''} (${totalDays}일간)\n\n`;
 
   for (let d = 1; d <= totalDays; d++) {
     const dateStr = startDate ? formatDayLabel(startDate, d) : '';
@@ -40,11 +40,11 @@ export function formatItineraryText(input: ItineraryTextInput): string {
     text += `[${d}일차] ${dateStr}\n`;
 
     if (d === 1 && input.outboundFlightLabel) {
-      text += `✈️ 도착: ${input.outboundFlightLabel}\n`;
+      text += `도착: ${input.outboundFlightLabel}\n`;
     }
 
     const hotel: Hotel | null = getEffectiveHotel(d, hotelsData);
-    if (hotel) text += `🏨 숙소: ${hotel.name}\n`;
+    if (hotel) text += `숙소: ${hotel.name}\n`;
 
     const items = plannerData[d] ?? [];
     if (items.length === 0) {
@@ -53,12 +53,12 @@ export function formatItineraryText(input: ItineraryTextInput): string {
       items.forEach((item, idx) => {
         const meal = item.mealType ? `[${MEAL_LABEL[item.mealType]}] ` : '';
         text += `  ${idx + 1}. ${item.time ?? ''} ${meal}${item.name}\n`;
-        if (item.memo) text += `     ㄴ 📝 ${item.memo}\n`;
+        if (item.memo) text += `     ㄴ - ${item.memo}\n`;
       });
     }
 
     if (d === totalDays && input.returnFlightLabel) {
-      text += `✈️ 귀국: ${input.returnFlightLabel}\n`;
+      text += `귀국: ${input.returnFlightLabel}\n`;
     }
     text += `\n`;
   }

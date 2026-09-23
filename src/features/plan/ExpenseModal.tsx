@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   CURRENCIES,
   EXPENSE_CATEGORY_LABELS,
-  PAYMENT_METHOD_LABELS,
+
   convertToBase,
   formatMoney,
   getCategoryTotalsSeries,
@@ -13,10 +13,12 @@ import {
 } from './expenses';
 import { fetchDailyRate } from './fxRate';
 import { ExpenseChart } from './ExpenseChart';
+import { DoughnutChart } from './DoughnutChart';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
 import styles from './ExpenseModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
+import { Utensils, Bus, Hotel, ShoppingBag, FerrisWheel, Package, Coins } from 'lucide-react';
 
 interface ExpenseModalProps {
   currentDay: number;
@@ -27,13 +29,13 @@ interface ExpenseModalProps {
   onSave: (dayExpenses: ExpenseItem[]) => Promise<void>;
 }
 
-const CATEGORY_ICON: Record<ExpenseCategory, string> = {
-  food: '🍽',
-  transport: '🚌',
-  lodging: '🏨',
-  shopping: '🛍',
-  activity: '🎢',
-  other: '📦',
+const CATEGORY_ICON: Record<ExpenseCategory, React.ReactNode> = {
+  food: <Utensils size={18} />,
+  transport: <Bus size={18} />,
+  lodging: <Hotel size={18} />,
+  shopping: <ShoppingBag size={18} />,
+  activity: <FerrisWheel size={18} />,
+  other: <Package size={18} />,
 };
 
 /**
@@ -51,7 +53,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const [amount, setAmount] = useState('');
   const [itemCurrency, setItemCurrency] = useState(currency);
   const [category, setCategory] = useState<ExpenseCategory>('other');
-  const [paymentMethod, setPaymentMethod] = useState<ExpensePaymentMethod | ''>('');
+  const [paymentMethod, _setPaymentMethod] = useState<ExpensePaymentMethod | ''>('');
   const [saving, setSaving] = useState(false);
   const [fetchingRate, setFetchingRate] = useState(false);
   const [fxWarning, setFxWarning] = useState<string | null>(null);
@@ -116,7 +118,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
         aria-modal="true"
         aria-label={t('expense.title')}
       >
-        <h2 className={modalStyles.title}>💰 {t('expense.title')}</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Coins size={18} /> {t('expense.title')}</span></h2>
 
         <div className={styles.addRow}>
           <input
@@ -126,54 +128,46 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
             onChange={(e) => setDesc(e.target.value)}
           />
         </div>
-        <div className={styles.detailsRow}>
-          <input
-            className={styles.amountInput}
-            type="number"
-            placeholder={t('expense.amountPlaceholder', { symbol: currSymbol })}
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-          <select
-            className={styles.smallSelect}
-            value={itemCurrency}
-            onChange={(e) => setItemCurrency(e.target.value)}
-            aria-label={t('expense.currencyAria')}
-          >
-            {Object.keys(CURRENCIES).map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
-          <select
-            className={styles.smallSelect}
-            value={category}
-            onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-            aria-label={t('expense.categoryAria')}
-          >
+        <div className={styles.inputSection}>
+          <div className={styles.categoryRow} role="radiogroup" aria-label={t('expense.categoryAria')}>
             {(Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[]).map((cat) => (
-              <option key={cat} value={cat}>
-                {t(`expense.category.${cat}`)}
-              </option>
+              <button
+                key={cat}
+                type="button"
+                role="radio"
+                aria-checked={category === cat}
+                className={category === cat ? styles.categoryBtnActive : styles.categoryBtn}
+                onClick={() => setCategory(cat)}
+                title={t(`expense.category.${cat}`)}
+              >
+                {CATEGORY_ICON[cat]}
+              </button>
             ))}
-          </select>
-          <select
-            className={styles.smallSelect}
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value as ExpensePaymentMethod | '')}
-            aria-label={t('expense.paymentAria')}
-          >
-            <option value="">{t('expense.paymentPlaceholder')}</option>
-            {(Object.keys(PAYMENT_METHOD_LABELS) as ExpensePaymentMethod[]).map((pm) => (
-              <option key={pm} value={pm}>
-                {t(`expense.payment.${pm}`)}
-              </option>
-            ))}
-          </select>
-          <button type="button" className={styles.addBtn} disabled={saving} onClick={handleAdd}>
-            {fetchingRate ? t('expense.fetchingRate') : t('action.add', { ns: 'common' })}
-          </button>
+          </div>
+          <div className={styles.detailsRow}>
+            <input
+              className={styles.amountInput}
+              type="number"
+              placeholder={t('expense.amountPlaceholder', { symbol: currSymbol })}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+            <select
+              className={styles.smallSelect}
+              value={itemCurrency}
+              onChange={(e) => setItemCurrency(e.target.value)}
+              aria-label={t('expense.currencyAria')}
+            >
+              {Object.keys(CURRENCIES).map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+            <button type="button" className={styles.addBtn} disabled={saving} onClick={handleAdd}>
+              {fetchingRate ? t('expense.fetchingRate') : t('action.add', { ns: 'common' })}
+            </button>
+          </div>
         </div>
         {fxWarning ? <p className={styles.warning}>{fxWarning}</p> : null}
 
@@ -189,9 +183,6 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
                   <span className={styles.itemIcon}>{CATEGORY_ICON[e.category ?? 'other']}</span>
                   <span className={styles.itemDesc}>
                     {e.desc}
-                    {e.paymentMethod ? (
-                      <span className={styles.itemMeta}> · {t(`expense.payment.${e.paymentMethod}`)}</span>
-                    ) : null}
                   </span>
                   <span className={styles.itemAmount}>
                     {formatMoney(e.amount, itemCur, i18n.language)}
@@ -232,7 +223,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
           data={getDayTotalsSeries(expensesData, totalDays, currency, (day) => t('day.header', { index: day }))}
           currency={currency}
         />
-        <ExpenseChart
+        <DoughnutChart
           title={t('expense.chartByCategory')}
           data={getCategoryTotalsSeries(expensesData, currency, (cat) => t(`expense.category.${cat}`))}
           currency={currency}

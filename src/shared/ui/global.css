@@ -67,3 +67,29 @@ body {
   outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
+
+/* 공통 모달 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 공통 버튼 애니메이션 (터치 디바이스에서 누를 때 부드러운 축소/투명도 효과) */
+button {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, background-color 0.2s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.96);
+  opacity: 0.8;
+}

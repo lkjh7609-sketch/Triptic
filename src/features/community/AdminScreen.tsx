@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { CheckCircle, Lock as LockIcon } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -153,7 +154,7 @@ export function AdminScreen() {
     );
   }
   if (!user || !admin) {
-    return <EmptyState icon="🔒" message={t('admin.accessDenied')} />;
+    return <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('admin.accessDenied')} />;
   }
 
   return (
@@ -180,7 +181,7 @@ export function AdminScreen() {
         reportsQuery.isLoading ? (
           <Skeleton height="80px" />
         ) : !reportsQuery.data || reportsQuery.data.length === 0 ? (
-          <EmptyState icon="✅" message={t('admin.noReports')} />
+          <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noReports')} />
         ) : (
           <div className={styles.list}>
             {reportsQuery.data.map((r) => (
@@ -191,7 +192,7 @@ export function AdminScreen() {
       ) : pendingQuery.isLoading ? (
         <Skeleton height="80px" />
       ) : !pendingQuery.data || pendingQuery.data.length === 0 ? (
-        <EmptyState icon="✅" message={t('admin.noPending')} />
+        <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noPending')} />
       ) : (
         <div className={styles.list}>
           {pendingQuery.data.map((p) => (

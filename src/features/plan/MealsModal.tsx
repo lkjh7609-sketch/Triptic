@@ -7,6 +7,7 @@ import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { DayMeals, MealSlot, MealSlotInfo } from './types';
 import styles from './MealsModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
+import { Utensils } from 'lucide-react';
 
 interface MealsModalProps {
   dayMeals: DayMeals;
@@ -69,15 +70,15 @@ export function MealsModal({ dayMeals, onClose, onSave }: MealsModalProps) {
         aria-modal="true"
         aria-label={t('meals.title')}
       >
-        <h2 className={modalStyles.title}>🍽 {t('meals.title')}</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Utensils size={18} /> {t('meals.title')}</span></h2>
         {(Object.keys(MEAL_META) as MealSlot[]).map((slot) => {
-          const meta = MEAL_META[slot];
+          
           const mealLabel = t(`mealSlot.${slot}`);
           const info = slots[slot] ?? { skip: false };
           return (
             <div key={slot} className={styles.mealRow}>
               <div className={styles.mealLabel}>
-                {meta.emoji} {mealLabel}
+                {mealLabel}
               </div>
               <input
                 ref={inputRefs[slot]}

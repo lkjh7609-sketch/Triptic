@@ -36,7 +36,7 @@
     "calculating": "Calculating…",
     "clearCache": "Clear cache",
     "clearingCache": "Clearing…",
-    "backup": "📤 Export / 📥 Import (JSON)",
+    "backup": "Export / Import (JSON)",
     "pdfHint": "You can export a per-trip PDF from the share (↗) button on the trip detail screen."
   },
   "about": {

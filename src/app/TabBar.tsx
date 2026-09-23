@@ -1,3 +1,5 @@
+import React from 'react';
+import { Home, Map, MessageCircle, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import styles from './TabBar.module.css';
@@ -5,15 +7,15 @@ import styles from './TabBar.module.css';
 interface TabDef {
   to: string;
   labelKey: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 // 01-design-system.md §6.1: 홈 / 계획 / 커뮤니티 / 설정
 const TABS: TabDef[] = [
-  { to: '/', labelKey: 'tab.home', icon: '🏠' },
-  { to: '/plan', labelKey: 'tab.plan', icon: '🗺️' },
-  { to: '/community', labelKey: 'tab.community', icon: '💬' },
-  { to: '/settings', labelKey: 'tab.settings', icon: '⚙️' },
+  { to: '/', labelKey: 'tab.home', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Home size={16} /></span> },
+  { to: '/plan', labelKey: 'tab.plan', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Map size={16} /></span> },
+  { to: '/community', labelKey: 'tab.community', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> },
+  { to: '/settings', labelKey: 'tab.settings', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Settings size={16} /></span> },
 ];
 
 function isTabActive(pathname: string, to: string): boolean {

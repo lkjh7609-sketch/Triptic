@@ -1,3 +1,5 @@
+import React from 'react';
+import { Plane, Hotel, Train, Car, Ticket, Utensils, Shield, MapPin, FileText, Calendar, Image, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDeleteDocument, useDocumentsList } from './useDocuments';
@@ -11,23 +13,23 @@ interface VoucherArchiveProps {
   onClose: () => void;
 }
 
-const TYPE_ICON: Record<string, string> = {
-  flight: '✈️',
-  lodging: '🏨',
-  rail: '🚄',
-  car_rental: '🚗',
-  activity: '🎟',
-  restaurant: '🍽',
-  insurance: '🛡',
-  other: '📍',
+const TYPE_ICON: Record<string, React.ReactNode> = {
+  flight: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Plane size={16} /></span>,
+  lodging: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Hotel size={16} /></span>,
+  rail: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Train size={16} /></span>,
+  car_rental: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Car size={16} /></span>,
+  activity: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Ticket size={16} /></span>,
+  restaurant: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Utensils size={16} /></span>,
+  insurance: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Shield size={16} /></span>,
+  other: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span>,
 };
 
-function iconFor(entry: VoucherEntry): string {
-  if (entry.booking) return TYPE_ICON[entry.booking.type] ?? '📄';
-  if (entry.mime_type === 'application/vnd.apple.pkpass') return '🎫';
-  if (entry.mime_type === 'text/calendar') return '📅';
-  if (entry.mime_type.startsWith('image/')) return '🖼';
-  return '📄';
+function iconFor(entry: VoucherEntry): React.ReactNode {
+  if (entry.booking) return TYPE_ICON[entry.booking.type] ?? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><FileText size={16} /></span>;
+  if (entry.mime_type === 'application/vnd.apple.pkpass') return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Ticket size={16} /></span>;
+  if (entry.mime_type === 'text/calendar') return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Calendar size={16} /></span>;
+  if (entry.mime_type.startsWith('image/')) return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Image size={16} /></span>;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><FileText size={16} /></span>;
 }
 
 function formatDate(iso: string): string {
@@ -143,7 +145,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
                       disabled={busyId === entry.id}
                       title={t('archive.addToWallet')}
                     >
-                      🎫
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Ticket size={16} /></span>
                     </button>
                   ) : null}
                   <button
@@ -162,7 +164,7 @@ export function VoucherArchive({ tripId, onClose }: VoucherArchiveProps) {
                     disabled={busyId === entry.id}
                     title={t('action.delete', { ns: 'common' })}
                   >
-                    🗑
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Trash2 size={16} /></span>
                   </button>
                 </div>
               </li>

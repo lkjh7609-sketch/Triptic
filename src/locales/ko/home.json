@@ -1,7 +1,7 @@
 {
   "greeting": {
-    "guest": "안녕하세요 👋",
-    "user": "안녕하세요, {{name}}님 👋",
+    "guest": "안녕하세요 ",
+    "user": "안녕하세요, {{name}}님 ",
     "fallbackName": "여행자"
   },
   "guest": {
@@ -10,7 +10,7 @@
   "empty": {
     "message": "아직 떠난 여행이 없어요. 첫 여행을 기록해 볼까요?",
     "createTrip": "+ 여행 만들기",
-    "sampleTrip": "✨ 샘플 여행 둘러보기"
+    "sampleTrip": "샘플 여행 둘러보기"
   },
   "stats": {
     "sectionTitle": "나의 여행 기록"
@@ -19,7 +19,7 @@
     "sectionTitle": "지난 여행"
   },
   "hero": {
-    "planNext": "다음 여행을 계획해 보세요 ✈️",
+    "planNext": "다음 여행을 계획해 보세요 ️",
     "createTrip": "여행 만들기",
     "firstItem": "· 첫 일정 {{time}}",
     "todayBadge": "오늘의 일정",
@@ -36,5 +36,29 @@
   },
   "worldMap": {
     "caption_other": "{{count}}개국"
+  },
+  "desktop": {
+    "heroTitle": "다음 멋진 모험이 시작되는 곳",
+    "searchPlaceholder": "어디로 떠나고 싶으신가요?",
+    "startPlanning": "여행 계획하기",
+    "featuredTitle": "추천 여행지",
+    "destKyoto": "일본 교토",
+    "descKyoto": "오래된 사찰과 전통 찻집",
+    "destParis": "프랑스 파리",
+    "descParis": "예술, 패션, 미식 그리고 문화",
+    "destNY": "미국 뉴욕",
+    "descNY": "잠들지 않는 도시",
+    "destLondon": "영국 런던",
+    "descLondon": "풍부한 역사를 지닌 현대적인 도시",
+    "destRome": "이탈리아 로마",
+    "descRome": "유적과 낭만의 영원한 도시",
+    "destTokyo": "일본 도쿄",
+    "descTokyo": "화려한 네온사인과 전통 문화",
+    "previewCancel": "취소",
+    "previewStart": "이 도시로 계획 만들기",
+    "previewLoading": "✨ AI가 도시 정보를 불러오고 있습니다...",
+    "terms": "이용약관",
+    "privacy": "개인정보처리방침",
+    "contact": "고객센터"
   }
 }

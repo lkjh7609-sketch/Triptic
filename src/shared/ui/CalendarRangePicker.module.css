@@ -1,0 +1,102 @@
+.container {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  user-select: none;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  font-weight: 700;
+  font-size: var(--font-h3-size);
+}
+
+.navButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navButton:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px 0;
+}
+
+.dayCell {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.dayBtn {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dayCell.disabled .dayBtn {
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.dayCell.inRange {
+  background: rgba(13, 148, 136, 0.1);
+}
+.dayCell.startRange {
+  background: linear-gradient(to right, transparent 50%, rgba(13, 148, 136, 0.1) 50%);
+}
+.dayCell.endRange {
+  background: linear-gradient(to right, rgba(13, 148, 136, 0.1) 50%, transparent 50%);
+}
+.dayCell.startRange.endRange {
+  background: transparent;
+}
+
+.dayCell.selected .dayBtn {
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-weight: 700;
+}
+
+.dayCell.today:not(.selected) .dayBtn {
+  color: var(--brand);
+}

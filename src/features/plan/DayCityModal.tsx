@@ -6,6 +6,7 @@ import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { DayCityInfo } from './types';
 import styles from './DayCityModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
+import { MapPin, Star } from 'lucide-react';
 
 interface DayCityModalProps {
   currentDay: number;
@@ -51,7 +52,7 @@ export function DayCityModal({ currentDay, totalDays, currentCity, onClose, onSa
         aria-modal="true"
         aria-label={t('dayCity.title', { day: currentDay })}
       >
-        <h2 className={modalStyles.title}>📍 {t('dayCity.title', { day: currentDay })}</h2>
+        <h2 className={modalStyles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><MapPin size={18} /> {t('dayCity.title', { day: currentDay })}</span></h2>
 
         <div className={styles.currentBanner}>
           <span className={styles.currentLabel}>{t('dayCity.currentLabel', { day: currentDay })}</span>
@@ -74,7 +75,7 @@ export function DayCityModal({ currentDay, totalDays, currentCity, onClose, onSa
             />
             <div>
               <div className={styles.scopeTitle}>
-                {t('dayCity.scopeRestTitle')} <span className={styles.scopeBadge}>{t('dayCity.scopeRestBadge')} ⭐️</span>
+                {t('dayCity.scopeRestTitle')} <span className={styles.scopeBadge}>{t('dayCity.scopeRestBadge')} <Star size={14} /></span>
               </div>
               <div className={styles.scopeDesc}>
                 {t('dayCity.scopeRestDesc', { from: currentDay, to: totalDays })}

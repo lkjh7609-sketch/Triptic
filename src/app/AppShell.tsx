@@ -1,6 +1,10 @@
 import { Outlet, useNavigation } from 'react-router';
 import { TabBar } from './TabBar';
+import { HeaderDesktop } from './HeaderDesktop';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { useSession } from '@/shared/hooks/useSession';
+import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import styles from './AppShell.module.css';
 
 /**
@@ -13,9 +17,16 @@ import styles from './AppShell.module.css';
 export function AppShell() {
   const navigation = useNavigation();
   const isLoadingRoute = navigation.state === 'loading';
+  const { user, loading } = useSession();
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
+  if (!loading && !user) {
+    return <GlobalAuthModal />;
+  }
 
   return (
     <div className={`app-shell ${styles.shell}`}>
+      {isDesktop && <HeaderDesktop />}
       <main className={styles.content}>
         {isLoadingRoute ? (
           <div style={{ padding: 16 }}>
@@ -27,7 +38,7 @@ export function AppShell() {
           <Outlet />
         )}
       </main>
-      <TabBar />
+      {!isDesktop && <TabBar />}
     </div>
   );
 }

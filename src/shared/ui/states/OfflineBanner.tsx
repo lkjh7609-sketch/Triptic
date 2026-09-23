@@ -2,6 +2,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import styles from './OfflineBanner.module.css';
+import { WifiOff } from 'lucide-react';
 
 interface OfflineBannerProps {
   /** 마지막으로 서버와 동기화된 시각. null이면 "동기화 이력 없음"으로 표시 */
@@ -21,7 +22,7 @@ export function OfflineBanner({ lastSyncedAt }: OfflineBannerProps) {
 
   return (
     <div className={styles.banner} role="status">
-      <span aria-hidden="true">📡</span>
+      <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "center" }}><WifiOff size={16} /></span>
       <span>{t('offline.banner', { label: syncedLabel })}</span>
     </div>
   );

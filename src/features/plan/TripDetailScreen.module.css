@@ -1,34 +1,55 @@
-.header {
+.heroHeader {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 120px;
+  background-size: cover;
+  background-position: center;
+  padding: var(--space-4);
+  color: #fff;
+}
+
+.toolbar {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-page);
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .backButton {
   appearance: none;
   border: none;
-  background: none;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
   font-size: 20px;
-  color: var(--text-primary);
+  color: #fff;
   cursor: pointer;
   min-width: 44px;
   min-height: 44px;
+  align-self: flex-start;
+  margin-bottom: var(--space-4);
+  backdrop-filter: blur(4px);
 }
 
 .headerInfo {
   flex: 1;
   min-width: 0;
+  margin-bottom: auto;
 }
 
 .title {
-  font-size: var(--font-title-size);
-  font-weight: var(--font-title-weight);
+  font-size: 2rem;
+  font-weight: 500;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .sampleBadge {
@@ -45,9 +66,10 @@
 }
 
 .dates {
-  font-size: var(--font-caption-size);
-  color: var(--text-muted);
-  margin: 2px 0 0;
+  font-size: var(--font-body-size);
+  color: rgba(255,255,255,0.9);
+  margin: 4px 0 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .toggleButton {
@@ -103,29 +125,36 @@
 .dayHeaderActions {
   display: flex;
   gap: var(--space-2);
-  overflow-x: auto;
+  flex-wrap: nowrap;
+  width: 100%;
+  min-width: 0;
 }
 
 .hotelButton {
   appearance: none;
+  flex-shrink: 1;
+  min-width: 0;
   border: 1px solid var(--border);
   background: var(--surface-card);
   border-radius: var(--radius-pill);
-  padding: 2px var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 var(--space-3);
   min-height: 32px;
   font-size: var(--font-caption-size);
   color: var(--text-body);
   cursor: pointer;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .dayHeader {
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   font-size: var(--font-label-size);
   color: var(--text-body);
@@ -136,6 +165,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .dayWeather {
@@ -186,4 +216,81 @@
 
 .mapWrap {
   height: calc(100vh - 220px);
+}
+
+.aiButton {
+  flex: 1;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-left: var(--space-2);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  transition: all 0.2s ease;
+}
+
+.aiButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+}
+
+/* Desktop Layout (Split View) */
+.desktopContainer {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+.desktopMapLeft {
+  flex: 6;
+  position: relative;
+  height: 100%;
+}
+
+.desktopListRight {
+  flex: 4;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background-color: var(--surface-page);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure map inside desktopMapLeft takes full height */
+.desktopMapLeft :global(.map-container) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.buttonText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hotelButton svg {
+  flex-shrink: 0;
+}
+
+.buttonText {
+  display: block;
+}
+
+.dayHeaderTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }

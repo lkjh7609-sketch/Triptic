@@ -1,5 +1,6 @@
+import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView, captureError } from '@/shared/monitoring';
@@ -30,8 +31,23 @@ export function ComposePostScreen() {
   const { data: trips } = useTrips();
   const createPost = useCreatePost();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchParams] = useSearchParams();
+  const initialDestSlug = searchParams.get('destination');
 
-  const [destinationId, setDestinationId] = useState('');
+  const [destinationId, setDestinationId] = useState(() => {
+    if (initialDestSlug && destinations) {
+      const d = destinations.find(d => d.slug === initialDestSlug);
+      if (d) return d.id;
+    }
+    return '';
+  });
+
+  useEffect(() => {
+    if (initialDestSlug && destinations && !destinationId) {
+      const d = destinations.find(d => d.slug === initialDestSlug);
+      if (d) setDestinationId(d.id);
+    }
+  }, [destinations, initialDestSlug, destinationId]);
   const [body, setBody] = useState('');
   const [tripId, setTripId] = useState('');
   const [images, setImages] = useState<PendingImage[]>([]);
@@ -79,10 +95,6 @@ export function ComposePostScreen() {
 
   async function handleSubmit() {
     setStatusMessage(null);
-    if (!destinationId) {
-      setStatusMessage({ type: 'error', text: t('compose.destinationRequiredError') });
-      return;
-    }
     if (!body.trim()) {
       setStatusMessage({ type: 'error', text: t('compose.bodyRequiredError') });
       return;
@@ -129,19 +141,6 @@ export function ComposePostScreen() {
           {createPost.isPending ? t('compose.submitting') : t('compose.submit')}
         </button>
       </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>{t('compose.destinationLabel')}</label>
-        <select className={styles.select} value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
-          <option value="">{t('compose.destinationPlaceholder')}</option>
-          {(destinations ?? []).map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className={styles.field}>
         <textarea
           className={styles.bodyInput}
@@ -174,7 +173,7 @@ export function ComposePostScreen() {
             <div key={img.storagePath} className={styles.imageThumbWrap}>
               <img src={img.previewUrl} alt="" className={styles.imageThumb} />
               <button type="button" className={styles.removeImageBtn} onClick={() => handleRemoveImage(i)}>
-                ✕
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><X size={16} /></span>
               </button>
             </div>
           ))}

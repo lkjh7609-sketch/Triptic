@@ -1,0 +1,1 @@
+export const a = import.meta.glob("./*.ts");

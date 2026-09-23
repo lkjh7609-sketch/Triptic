@@ -1,32 +1,25 @@
 import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { Briefcase, Plane, Tent } from 'lucide-react';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { getTripPhase } from '@/features/plan/tripStatus';
 import { TripCard } from '@/features/plan/TripCard';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useSession } from '@/shared/hooks/useSession';
-import { LoginButtons } from '@/features/auth/LoginButtons';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { HeroCard } from './HeroCard';
 import { StatsTiles } from './StatsTiles';
 import { WorldMapCard } from './WorldMapCard';
-import { useHomeStats, type TravelStats } from './useHomeStats';
+import { useHomeStats } from './useHomeStats';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { HomeDesktop } from './HomeDesktop';
 import styles from './HomeScreen.module.css';
 
 function noop() {}
 
-const DEMO_STATS: TravelStats = {
-  tripCount: 12,
-  countryCount: 7,
-  cityCount: 23,
-  dayCount: 48,
-  placeCount: 186,
-  groundMeters: 1_200_000,
-  countries: ['Japan', 'France', 'United States', 'Thailand', 'Italy', 'Spain', 'Vietnam'],
-};
 
 /**
  * 홈 탭 — 여행 대시보드 (02-screens.md §2)
@@ -34,6 +27,7 @@ const DEMO_STATS: TravelStats = {
  * 임시 RPC(get_user_travel_stats_snapshot, useHomeStats.ts 참고)로 계산한다.
  */
 export function HomeScreen() {
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
   const { t } = useTranslation('home');
   const { user, loading: sessionLoading } = useSession();
   const { data: trips, isLoading: tripsLoading } = useTrips();
@@ -55,25 +49,14 @@ export function HomeScreen() {
     return { ongoing, upcoming, past };
   }, [trips]);
 
+  if (isDesktop) {
+    return <HomeDesktop />;
+  }
+
   if (sessionLoading) return null;
 
-  // §2.3 "비로그인: 샘플 데이터로 통계 미리보기 + 흐림 처리 + 로그인하고 내 기록 보기"
-  if (!user) {
-    return (
-      <div className={styles.section}>
-        <h1 className={styles.greeting}>{t('greeting.guest')}</h1>
-        <div className={styles.blurWrap}>
-          <div className={styles.blurContent} aria-hidden="true">
-            <StatsTiles stats={DEMO_STATS} />
-          </div>
-          <div className={styles.blurOverlay}>
-            <p className={styles.blurMessage}>{t('guest.blurMessage')}</p>
-          </div>
-        </div>
-        <LoginButtons />
-      </div>
-    );
-  }
+  // AppShell의 GlobalAuthModal에서 비로그인 사용자를 차단하므로 user는 항상 존재한다.
+  if (!user) return null;
 
   if (tripsLoading) {
     return (
@@ -87,14 +70,27 @@ export function HomeScreen() {
 
   const displayName = user.user_metadata?.name ?? user.user_metadata?.full_name ?? t('greeting.fallbackName');
   const hasAnyTrip = (trips?.length ?? 0) > 0;
+  const avatarUrl = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D9488&color=fff`;
 
   return (
     <div className={styles.section}>
-      <h1 className={styles.greeting}>{t('greeting.user', { name: displayName })}</h1>
+      <header className={styles.headerRow}>
+        <div>
+          <h1 className={styles.greeting}>{t('greeting.user', { name: displayName })}</h1>
+          <p className={styles.subhead}>Where to next?</p>
+        </div>
+        <img src={avatarUrl} alt="User Avatar" className={styles.avatar} />
+      </header>
+
+      <div className={styles.quickCategories}>
+        <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Plane size={16}/> Flights</a>
+        <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Briefcase size={16}/> Stays</a>
+        <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Tent size={16}/> Activities</a>
+      </div>
 
       {!hasAnyTrip ? (
         <EmptyState
-          icon="🧳"
+          icon={<Briefcase size={48} />}
           message={t('empty.message')}
           actions={
             <div className={styles.onboardingActions}>

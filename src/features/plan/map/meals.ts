@@ -5,10 +5,10 @@
  */
 import type { DayMeals, MealSlot, PlaceItem } from '../types.ts';
 
-export const MEAL_META: Record<MealSlot, { label: string; time: string; emoji: string }> = {
-  breakfast: { label: '아침', time: '08:00', emoji: '🍳' },
-  lunch: { label: '점심', time: '12:30', emoji: '🍜' },
-  dinner: { label: '저녁', time: '18:30', emoji: '🍷' },
+export const MEAL_META: Record<MealSlot, { label: string; time: string }> = {
+  breakfast: { label: '아침', time: '08:00' },
+  lunch: { label: '점심', time: '12:30' },
+  dinner: { label: '저녁', time: '18:30' },
 };
 
 /**

@@ -189,14 +189,44 @@ export function useTripRoutes<T extends GeoPoint>({
         }
 
         directionsService.route(
-          { origin, destination, travelMode: google.maps.TravelMode.TRANSIT },
+          { 
+            origin, 
+            destination, 
+            travelMode: google.maps.TravelMode.TRANSIT,
+            provideRouteAlternatives: true
+          },
           (result, status) => {
-            if (status === 'OK' && result?.routes?.[0]) {
-              renderer?.setDirections(result);
-              const leg = result.routes[0].legs[0];
+            if (status === 'OK' && result?.routes && result.routes.length > 0) {
+              // 대중교통(TRANSIT) 스텝이 하나라도 포함된 경로들 먼저 필터링
+              const transitRoutes = result.routes.filter(route => 
+                route.legs.some(leg => 
+                  leg.steps.some(step => step.travel_mode === 'TRANSIT')
+                )
+              );
+
+              // 대중교통 경로가 하나도 없으면 전체 경로 중 선택 (보통 이 경우는 도보만 있는 경우임)
+              const candidateRoutes = transitRoutes.length > 0 ? transitRoutes : result.routes;
+
+              // 후보 경로들 중에서 최단 시간 경로 찾기
+              let bestRoute = candidateRoutes[0];
+              let minDuration = bestRoute.legs[0]?.duration?.value ?? Infinity;
+
+              for (const route of candidateRoutes) {
+                const duration = route.legs[0]?.duration?.value;
+                if (duration != null && duration < minDuration) {
+                  minDuration = duration;
+                  bestRoute = route;
+                }
+              }
+
+              // 렌더러가 여러 경로 중 우리가 선택한 하나만 그리도록 조작
+              const bestResult = { ...result, routes: [bestRoute] };
+
+              renderer?.setDirections(bestResult);
+              const leg = bestRoute.legs[0];
               const durationText = leg ? leg.duration!.text : '';
               const distanceText = leg ? leg.distance!.text : '';
-              sharedDirectionsCache.setHit(origin, destination, result, durationText, distanceText);
+              sharedDirectionsCache.setHit(origin, destination, bestResult, durationText, distanceText);
               patchLeg(i, { status: 'ok', distanceText, durationText });
             } else {
               renderer?.setMap(null);

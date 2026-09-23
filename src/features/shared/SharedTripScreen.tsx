@@ -18,6 +18,7 @@ import { trackScreenView } from '@/shared/monitoring';
 import type { PlaceCategory } from '@/features/plan/placeCategory';
 import type { PlaceItem } from '@/features/plan/types';
 import styles from './SharedTripScreen.module.css';
+import { Plane, MapPin, Hotel as HotelIcon } from 'lucide-react';
 
 /** get_shared_trip() RPC(0008_shared_trip_cutover.sql, 정규화 테이블 기반)가 반환하는 형태 */
 interface SharedDayRow {
@@ -139,7 +140,7 @@ export function SharedTripScreen() {
   return (
     <div className={styles.screen}>
       <header className={styles.header}>
-        <h1 className={styles.title}>✈️ {payload.trip.title}</h1>
+        <h1 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Plane size={24} /> {payload.trip.title}</span></h1>
         <p className={styles.dates}>
           {payload.trip.start_date} ~ {payload.trip.end_date} ({t('shared.daysCount', { count: totalDays })})
         </p>
@@ -150,7 +151,7 @@ export function SharedTripScreen() {
       <div className={styles.dayHeader}>
         <span>{t('shared.dayLabel', { day: currentDay })}</span>
         <span className={styles.cityBadge}>
-          📍 {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : t('shared.cityUnset')}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span> {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : t('shared.cityUnset')}
         </span>
       </div>
 
@@ -221,14 +222,14 @@ function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps)
   const isEmpty = dayItems.length === 0 && !startHotel && !endHotel;
 
   if (isEmpty) {
-    return <EmptyState icon="📍" message={t('shared.emptyDay')} />;
+    return <EmptyState icon={<MapPin size={48} />} message={t('shared.emptyDay')} />;
   }
 
   return (
     <div className={styles.timeline}>
       {startHotel ? (
         <>
-          <FixedPointCard icon="🏨" label={t('shared.departure')} name={startHotel.name} address={startHotel.address} />
+          <FixedPointCard icon={<HotelIcon size={18} /> as any} label={t('shared.departure')} name={startHotel.name} address={startHotel.address} />
           <LegBetween leg={legAfter('start-hotel')} />
         </>
       ) : null}
@@ -240,7 +241,7 @@ function SharedTimeline({ dayItems, startHotel, endHotel }: SharedTimelineProps)
         </div>
       ))}
 
-      {endHotel ? <FixedPointCard icon="🏨" label={t('shared.return')} name={endHotel.name} address={endHotel.address} /> : null}
+      {endHotel ? <FixedPointCard icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><HotelIcon size={16} /></span>} label={t('shared.return')} name={endHotel.name} address={endHotel.address} /> : null}
     </div>
   );
 }

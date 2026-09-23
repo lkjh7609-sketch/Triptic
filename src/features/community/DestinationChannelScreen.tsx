@@ -1,9 +1,10 @@
+import { DollarSign, PenLine } from "lucide-react";
+import { Link } from "react-router";
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
-import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useDestination } from './hooks/useDestinations';
@@ -46,19 +47,27 @@ export function DestinationChannelScreen() {
   }
 
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${styles.desktopWrap}`}>
+      {user ? (
+        <Link to={`/community/compose?destination=${destination.slug}`} className={styles.fabBtnDesktop}>
+          <PenLine size={20} /> <span>{t('feed.writeBtn', { defaultValue: '글쓰기' })}</span>
+        </Link>
+      ) : null}
+      
       <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
         ← {t('action.back', { ns: 'common' })}
       </button>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{destination.name}</h1>
-        <div className={styles.meta}>
-          <span>🌏 {destination.country_code}</span>
-          <span>🕐 {destination.timezone}</span>
-          {destination.currency ? <span>💱 {destination.currency}</span> : null}
+
+      <div className={styles.headerSection}>
+        <div className={styles.subtitle}>{destination.country_code} · {destination.timezone}</div>
+        <h1 className={styles.mainTitle}>{destination.name}</h1>
+        
+        <div className={styles.metaDesktop}>
+          {destination.currency ? <span><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><DollarSign size={16} /></span> {destination.currency}</span> : null}
           <span>{t('destination.postCount', { count: destination.post_count })}</span>
         </div>
-        <div className={styles.actions}>
+        
+        <div className={styles.actionsDesktop}>
           <button
             type="button"
             className={isFollowing ? styles.followingBtn : styles.followBtn}
@@ -78,10 +87,16 @@ export function DestinationChannelScreen() {
           <Skeleton height="80px" />
         </div>
       ) : posts.length === 0 ? (
-        <EmptyState icon="💬" message={t('destination.emptyPosts')} />
+        <div className={styles.emptyGrid}>
+          <div className={styles.emptyMainCard}>
+            <h3>{t('destination.emptyPosts', { defaultValue: '아직 등록된 글이 없어요.' })}</h3>
+            <p>{t('feed.emptySub', { defaultValue: '첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.' })}</p>
+            <Link to={`/community/compose?destination=${destination.slug}`} className={styles.emptyCta}>{t('feed.writeFirst', { defaultValue: '첫 이야기 작성하기' })}</Link>
+          </div>
+        </div>
       ) : (
         <>
-          <div className={styles.list}>
+          <div className={styles.desktopList}>
             {posts.map((post) => (
               <PostCard key={post.id} post={post} showDestination={false} />
             ))}

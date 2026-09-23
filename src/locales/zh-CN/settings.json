@@ -36,7 +36,7 @@
     "calculating": "计算中…",
     "clearCache": "清除缓存",
     "clearingCache": "清除中…",
-    "backup": "📤 导出 / 📥 导入（JSON）",
+    "backup": "导出 / 导入（JSON）",
     "pdfHint": "可在行程详情页的分享（↗）按钮中导出该行程的PDF。"
   },
   "about": {

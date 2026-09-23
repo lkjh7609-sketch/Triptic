@@ -3,14 +3,28 @@
 }
 
 .card {
-  display: block;
+  display: flex;
   background: var(--surface-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
   text-decoration: none;
   color: inherit;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.thumbnail {
+  width: 90px;
+  flex-shrink: 0;
+  background-position: center;
+  background-size: cover;
+  position: relative;
+}
+
+.content {
+  padding: var(--space-3);
+  flex: 1;
+  min-width: 0;
 }
 
 .header {
@@ -18,13 +32,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-shrink: 0;
 }
 
 .menuButton {
@@ -78,13 +85,16 @@
 }
 
 .dday {
-  flex-shrink: 0;
-  background: var(--brand-tint);
-  color: var(--brand);
-  font-size: var(--font-caption-size);
-  font-weight: 700;
-  padding: 2px var(--space-2);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
   border-radius: var(--radius-pill);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .dates {

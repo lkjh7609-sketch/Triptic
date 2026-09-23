@@ -14,7 +14,7 @@ export type ReportReason =
   | 'other';
 export type ReportTargetType = 'post' | 'comment' | 'user' | 'image';
 export type ReportStatus = 'open' | 'reviewing' | 'actioned' | 'dismissed';
-export type Locale = 'ko' | 'en' | 'zh-CN';
+export type Locale = 'ko' | 'en' | 'zh-CN' | 'ja';
 
 export interface Destination {
   id: string;
@@ -52,7 +52,7 @@ export interface PostImage {
 
 export interface Post {
   id: string;
-  destination_id: string;
+  destination_id: string | null;
   author_id: string;
   body: string;
   language: string | null;

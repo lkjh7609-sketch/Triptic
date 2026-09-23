@@ -19,8 +19,8 @@ function isLocalHost(): boolean {
 
 export async function signInWithProvider(provider: AuthProvider) {
   const client = getSupabaseClient();
-  // Vercel Preview URL의 Deployment Protection(SSO 로그인) 우회를 위해 프로덕션 도메인 우선 적용
-  const redirectUrl = isLocalHost() && !isNativeApp() ? window.location.origin : 'https://triptic.my';
+  const currentPath = window.location.pathname + window.location.search;
+  const redirectUrl = isLocalHost() && !isNativeApp() ? window.location.origin + currentPath : 'https://triptic.my' + currentPath;
 
   const result = await client.auth.signInWithOAuth({
     provider,
@@ -67,4 +67,27 @@ export function onAuthStateChange(
       subscription.unsubscribe();
     },
   };
+}
+
+export async function signInWithEmail(email: string, password: string) {
+  const client = getSupabaseClient();
+  const result = await client.auth.signInWithPassword({ email, password });
+  if (result.error) throw result.error;
+  return result.data;
+}
+
+export async function signUpWithEmail(email: string, password: string, displayName?: string) {
+  const client = getSupabaseClient();
+  const currentPath = window.location.pathname + window.location.search;
+  const redirectUrl = isLocalHost() && !isNativeApp() ? window.location.origin + currentPath : 'https://triptic.my' + currentPath;
+  const result = await client.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name: displayName },
+      emailRedirectTo: redirectUrl
+    }
+  });
+  if (result.error) throw result.error;
+  return result.data;
 }
