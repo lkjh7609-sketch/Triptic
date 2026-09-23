@@ -43,7 +43,12 @@
     "loadError": "未能加载动态。",
     "emptyFollowing": "关注的旅行地还没有帖子。",
     "emptyAll": "还没有帖子。",
-    "loadMore": "加载更多"
+    "loadMore": "加载更多",
+    "writeBtn": "写文章",
+    "subtitle": "旅行者的记录与灵感",
+    "searchPlaceholder": "搜索地区，关键词，旅行者...",
+    "emptySub": "分享您的第一次旅行瞬间与当地见解。",
+    "writeFirst": "写下第一个故事"
   },
   "destination": {
     "loadError": "未能加载旅行地信息。",

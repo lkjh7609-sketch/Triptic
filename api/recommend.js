@@ -16,7 +16,6 @@ function remainingMs(deadline) {
 }
 
 async function callDeepSeek(apiKey, prompt, deadline) {
-    const start = Date.now();
     const timeout = remainingMs(deadline);
     if (timeout < MIN_ATTEMPT_MS) throw new Error('Not enough time for DeepSeek attempt');
 
@@ -272,6 +271,7 @@ async function enrichWithGoogleMaps(recs, apiKey, city) {
 
 function sanitizeInput(value, maxLen) {
     if (typeof value !== 'string') return '';
+    // eslint-disable-next-line no-control-regex
     return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
 }
 

@@ -29,6 +29,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRefetch, onRenam
   const [filter, setFilter] = useState<'all' | 'active' | 'past'>('all');
   useEffect(() => {
     if (autoCreateCity) {
+      // eslint-disable-next-line
       setShowCreate(true);
     }
   }, [autoCreateCity]);

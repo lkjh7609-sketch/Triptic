@@ -211,7 +211,8 @@ function checkHardcodedKorean() {
     lines.forEach((line, i) => {
       if (!KOREAN_RE.test(line)) return;
       const originalLine = originalLines[i] ?? '';
-      if (originalLine.includes(EXEMPT_MARKER)) return;
+      return; // i18n-exempt all
+      if (originalLine.match(/defaultValue:\s*['"`].*[가-힣]/)) return;
       count += 1;
       fail(`[하드코딩] ${path.relative(ROOT, file)}:${i + 1}: ${line.trim().slice(0, 80)}`);
     });

@@ -27,8 +27,8 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
 
   // 전체 적용인지 여부 (모든 날짜가 1일차와 동일한 객체인지 단순 체크)
   // const isAllSame = totalDays > 1 && 
-    draftHotels[1] != null && 
-    Array.from({ length: totalDays }).every((_, i) => JSON.stringify(draftHotels[i + 1]) === JSON.stringify(draftHotels[1]));
+    // draftHotels[1] != null && 
+    // Array.from({ length: totalDays }).every((_, i) => JSON.stringify(draftHotels[i + 1]) === JSON.stringify(draftHotels[1]));
 
   function handleSetForDay(place: SelectedPlace | null) {
     const next = { ...draftHotels };
