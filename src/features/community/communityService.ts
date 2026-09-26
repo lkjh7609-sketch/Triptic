@@ -6,6 +6,7 @@
  */
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { can } from '@/shared/entitlements';
+import i18next, { normalizeLocale } from '@/shared/i18n';
 import type {
   Comment,
   CommentStatus,
@@ -18,7 +19,10 @@ import type {
   ReportTargetType,
 } from './types';
 
-const DEFAULT_LOCALE = 'ko';
+/** 여행지 이름을 표시 언어로 가져온다(호출부가 locale을 넘기지 않아도) */
+function currentLocale(): string {
+  return normalizeLocale(i18next.language);
+}
 const EMPTY_UUID = '00000000-0000-0000-0000-000000000000';
 
 function uniq<T>(arr: T[]): T[] {
@@ -34,7 +38,7 @@ async function fetchProfilesByIds(ids: string[]): Promise<Map<string, CommunityP
   return new Map((data as CommunityProfile[]).map((p) => [p.id, p]));
 }
 
-async function fetchDestinationNamesByIds(ids: string[], locale = DEFAULT_LOCALE): Promise<Map<string, string>> {
+async function fetchDestinationNamesByIds(ids: string[], locale = currentLocale()): Promise<Map<string, string>> {
   const supabase = getSupabaseClient();
   const distinct = uniq(ids);
   if (distinct.length === 0) return new Map();
@@ -86,7 +90,7 @@ async function fetchMyLikedPostIds(postIds: string[], userId: string | null): Pr
   return new Set((data ?? []).map((r) => r.target_id as string));
 }
 
-async function enrichPosts(rows: Post[], viewerId: string | null, locale = DEFAULT_LOCALE): Promise<Post[]> {
+async function enrichPosts(rows: Post[], viewerId: string | null, locale = currentLocale()): Promise<Post[]> {
   if (rows.length === 0) return [];
   const [profileMap, nameMap, imageMap, likedSet] = await Promise.all([
     fetchProfilesByIds(rows.map((r) => r.author_id)),
@@ -104,7 +108,7 @@ async function enrichPosts(rows: Post[], viewerId: string | null, locale = DEFAU
 }
 
 // ── 여행지 ──────────────────────────────────────────────────────────────
-export async function listDestinations(locale = DEFAULT_LOCALE): Promise<Destination[]> {
+export async function listDestinations(locale = currentLocale()): Promise<Destination[]> {
   const supabase = getSupabaseClient();
   const { data: dests, error } = await supabase.from('destinations').select('*').order('sort_order');
   if (error) throw error;
@@ -113,7 +117,7 @@ export async function listDestinations(locale = DEFAULT_LOCALE): Promise<Destina
   return rows.map((d) => ({ ...d, name: nameMap.get(d.id) ?? d.slug }));
 }
 
-export async function getDestinationBySlug(slug: string, locale = DEFAULT_LOCALE): Promise<Destination | null> {
+export async function getDestinationBySlug(slug: string, locale = currentLocale()): Promise<Destination | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from('destinations').select('*').eq('slug', slug).maybeSingle();
   if (error) throw error;

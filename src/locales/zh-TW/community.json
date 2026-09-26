@@ -44,7 +44,7 @@
     "emptyFollowing": "追蹤的旅行地還沒有貼文。",
     "emptyAll": "還沒有貼文。",
     "loadMore": "載入更多",
-    "writeBtn": "發帖",
+    "writeBtn": "發文",
     "subtitle": "旅行者的記錄與靈感",
     "searchPlaceholder": "搜尋地區、關鍵字、旅行者...",
     "emptySub": "分享您第一次旅行的瞬間和當地見解。",
@@ -60,7 +60,9 @@
     "emptyPosts": "目前沒有貼文。"
   },
   "post": {
-    "fallbackAuthor": "旅行者"
+    "fallbackAuthor": "旅行者",
+    "likeAria_other": "{{count}} 個喜歡",
+    "commentAria_other": "{{count}} 則留言"
   },
   "menu": {
     "ariaLabel": "更多",
@@ -182,5 +184,29 @@
         "AU": "澳大利亞"
       }
     }
+  },
+  "design": {
+    "badge": "旅人留言板",
+    "title": "旅人休息室",
+    "subtitle": "分享旅行紀錄、詢問在地資訊，和走同一條路的旅人交流。",
+    "newPost": "發文 · 提問",
+    "searchPlaceholder": "搜尋目的地看板（例如：東京、巴黎）",
+    "sortBy": "排序",
+    "sort": {
+      "latest": "最新",
+      "likes": "最多喜歡",
+      "comments": "最多留言"
+    },
+    "promptLabel": "本週話題",
+    "promptTitle": "「你家鄉最安靜的地方是哪裡？」",
+    "promptBody": "河邊的長椅、地下書店、清晨的麵包店——分享你喘口氣時會去的地方。",
+    "promptCta": "分享我的私房景點",
+    "activeAuthors": "活躍的旅人",
+    "authorPosts_other": "最近 {{count}} 篇貼文",
+    "viewProfile": "個人檔案",
+    "popularDestinations": "熱門目的地看板",
+    "ethosTitle": "Triptic 的理念",
+    "ethosBody": "比起趕行程的打卡清單，我們更珍惜從容的建議、對在地文化的尊重，以及真誠的旅行紀錄。",
+    "guidelines": "查看社群規範"
   }
 }

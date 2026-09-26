@@ -60,7 +60,9 @@
     "emptyPosts": "まだ投稿がありません。"
   },
   "post": {
-    "fallbackAuthor": "旅行者"
+    "fallbackAuthor": "旅行者",
+    "likeAria_other": "いいね {{count}}件",
+    "commentAria_other": "コメント {{count}}件"
   },
   "menu": {
     "ariaLabel": "もっと見る",
@@ -182,5 +184,29 @@
         "AU": "オーストラリア"
       }
     }
+  },
+  "design": {
+    "badge": "旅人の掲示板",
+    "title": "トラベラーラウンジ",
+    "subtitle": "旅の記録をシェアし、現地の情報を聞き、同じ道を行く旅人とつながりましょう。",
+    "newPost": "投稿・質問する",
+    "searchPlaceholder": "目的地の掲示板を探す（例：東京、パリ）",
+    "sortBy": "並べ替え",
+    "sort": {
+      "latest": "新着順",
+      "likes": "いいね順",
+      "comments": "コメント順"
+    },
+    "promptLabel": "今週のテーマ",
+    "promptTitle": "「地元でいちばん静かなお気に入りの場所は？」",
+    "promptBody": "川沿いのベンチ、地下の本屋、早朝のパン屋——ひと息つきに行く場所を教えてください。",
+    "promptCta": "お気に入りの場所をシェア",
+    "activeAuthors": "よく投稿している旅人",
+    "authorPosts_other": "最近の投稿 {{count}}件",
+    "viewProfile": "プロフィール",
+    "popularDestinations": "人気の目的地掲示板",
+    "ethosTitle": "Tripticが大切にしていること",
+    "ethosBody": "急ぎ足の観光リストより、落ち着いた案内、地域文化への敬意、正直な旅の記録を大切にしています。",
+    "guidelines": "コミュニティのルールを読む"
   }
 }

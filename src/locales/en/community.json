@@ -61,7 +61,11 @@
     "emptyPosts": "No posts yet."
   },
   "post": {
-    "fallbackAuthor": "Traveler"
+    "fallbackAuthor": "Traveler",
+    "likeAria_other": "{{count}} likes",
+    "likeAria_one": "{{count}} like",
+    "commentAria_other": "{{count}} comments",
+    "commentAria_one": "{{count}} comment"
   },
   "menu": {
     "ariaLabel": "More",
@@ -186,5 +190,30 @@
         "AU": "Australia"
       }
     }
+  },
+  "design": {
+    "badge": "Travelers' board",
+    "title": "Traveler Lounge & Community",
+    "subtitle": "Share field notes, ask for local tips, and connect with fellow travelers.",
+    "newPost": "New story / Ask a question",
+    "searchPlaceholder": "Find a destination board (e.g. Tokyo, Paris)",
+    "sortBy": "Sort by",
+    "sort": {
+      "latest": "Latest",
+      "likes": "Most liked",
+      "comments": "Most discussed"
+    },
+    "promptLabel": "Weekly prompt",
+    "promptTitle": "“What's your favorite quiet spot in your hometown?”",
+    "promptBody": "A riverside bench, a basement bookstore, an early-morning bakery — tell us where you go to breathe.",
+    "promptCta": "Share your spot",
+    "activeAuthors": "Active storytellers",
+    "authorPosts_other": "{{count}} recent posts",
+    "authorPosts_one": "{{count}} recent post",
+    "viewProfile": "Profile",
+    "popularDestinations": "Popular destination boards",
+    "ethosTitle": "The Triptic ethos",
+    "ethosBody": "We value calm guidance, respect for local cultures, and honest field notes over hurried bucket lists.",
+    "guidelines": "Read the community guidelines"
   }
 }

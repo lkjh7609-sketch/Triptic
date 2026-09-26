@@ -1574,3 +1574,10 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* 실제 데이터 연결 후 추가로 쓰는 유틸리티(미리 생성된 목록에 없던 것) */
+@layer utilities {
+  .community-root .text-left { text-align: left; }
+  .community-root .justify-start { justify-content: flex-start; }
+  .community-root .justify-end { justify-content: flex-end; }
+}
