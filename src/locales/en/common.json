@@ -37,7 +37,27 @@
     "connecting": "Connecting…",
     "continueApple": "Continue with Apple",
     "continueGoogle": "Continue with Google",
-    "continueKakao": "Continue with Kakao"
+    "continueKakao": "Continue with Kakao",
+    "signInSubtitle": "Sign in to continue",
+    "or": "or",
+    "sampleHint": "Want to look around first?",
+    "trySample": "Try a sample trip",
+    "email": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "logIn": "Log in",
+      "signUp": "Sign up",
+      "createAccount": "Create an account",
+      "haveAccount": "Already have an account? Log in",
+      "checkInbox": "We sent you a confirmation email. Open the link in it to finish signing up.",
+      "passwordHint": "Password must be at least {{count}} characters.",
+      "errorInvalidCredentials": "Incorrect email or password.",
+      "errorNotConfirmed": "Your email isn't confirmed yet. Please check your inbox.",
+      "errorAlreadyRegistered": "This email is already registered. Please log in.",
+      "errorWeakPassword": "That password is too weak. Try a longer, more complex one.",
+      "errorGeneric": "Something went wrong. Please try again shortly."
+    }
   },
   "legal": {
     "terms": "Terms of Service",
@@ -50,5 +70,9 @@
     "banner": "Offline — {{label}}",
     "lastSynced": "Last synced {{time}}",
     "noHistory": "No sync history yet"
+  },
+  "guest": {
+    "bannerText": "You're exploring a sample trip — changes won't be saved",
+    "bannerCta": "Sign in to plan your own trip"
   }
 }

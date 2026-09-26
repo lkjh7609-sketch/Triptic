@@ -37,7 +37,27 @@
     "connecting": "連線中…",
     "continueApple": "使用 Apple 繼續",
     "continueGoogle": "使用 Google 繼續",
-    "continueKakao": "使用 Kakao 繼續"
+    "continueKakao": "使用 Kakao 繼續",
+    "signInSubtitle": "登入以繼續",
+    "or": "或",
+    "sampleHint": "想先看看嗎？",
+    "trySample": "體驗範例行程",
+    "email": {
+      "name": "名稱",
+      "email": "電子郵件",
+      "password": "密碼",
+      "logIn": "登入",
+      "signUp": "註冊",
+      "createAccount": "用電子郵件註冊",
+      "haveAccount": "已有帳號？登入",
+      "checkInbox": "我們已寄出驗證信，點選信中的連結即可完成註冊。",
+      "passwordHint": "密碼至少需要 {{count}} 個字元。",
+      "errorInvalidCredentials": "電子郵件或密碼不正確。",
+      "errorNotConfirmed": "電子郵件尚未驗證，請查看收件匣。",
+      "errorAlreadyRegistered": "此電子郵件已註冊，請直接登入。",
+      "errorWeakPassword": "密碼強度不足，請設定更長、更複雜的密碼。",
+      "errorGeneric": "無法完成操作，請稍後再試。"
+    }
   },
   "legal": {
     "terms": "服務條款",
@@ -50,5 +70,9 @@
     "banner": "離線中 — {{label}}",
     "lastSynced": "上次同步：{{time}}",
     "noHistory": "目前沒有同步記錄"
+  },
+  "guest": {
+    "bannerText": "正在體驗範例行程 — 變更不會被儲存",
+    "bannerCta": "登入並建立我的行程"
   }
 }

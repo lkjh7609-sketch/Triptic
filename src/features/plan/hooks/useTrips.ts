@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tripService, type LocalProject, type TripRow } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
+import { useTranslation } from 'react-i18next';
 
 export const tripsQueryKey = ['trips'] as const;
 
@@ -37,8 +38,11 @@ export function tripQueryKey(tripId: string) {
 }
 
 export function useTrip(tripId: string | undefined) {
+  const { i18n } = useTranslation();
   return useQuery<TripRow | null>({
-    queryKey: tripQueryKey(tripId ?? ''),
+    // 샘플 여행은 표시 언어별로 내용이 달라서 언어를 키에 넣는다(tripQueryKey 접두사는 유지 —
+    // removeQueries/setQueryData(tripQueryKey(...))가 그대로 매칭된다)
+    queryKey: tripId === SAMPLE_TRIP_ID ? [...tripQueryKey(tripId), i18n.language] : tripQueryKey(tripId ?? ''),
     queryFn: () => (tripId === SAMPLE_TRIP_ID ? getSampleTripRow() : tripService.getTrip(tripId!)),
     enabled: !!tripId,
   });
@@ -66,6 +70,11 @@ export function useUpdateTripSnapshot(tripId: string | undefined) {
       return tripService.saveTrip({ ...project, supabaseId: tripId }, name);
     },
     onSuccess: (row) => {
+      if (row.id === SAMPLE_TRIP_ID) {
+        // 샘플은 [..., 언어] 키라 접두사로 매칭해 갱신한다(Supabase·목록과 무관)
+        queryClient.setQueriesData({ queryKey: tripQueryKey(row.id) }, row);
+        return;
+      }
       queryClient.setQueryData(tripQueryKey(row.id), row);
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
@@ -78,7 +87,7 @@ export function useRenameTrip() {
   return useMutation({
     mutationFn: async ({ tripId, newTitle }: { tripId: string; newTitle: string }) => {
       const trip = await tripService.getTrip(tripId);
-      if (!trip) throw new Error('여행을 찾을 수 없습니다.');
+      if (!trip) throw new Error('Trip not found');
       const project = tripService.toLocalProject(trip);
       return tripService.saveTrip({ ...project, supabaseId: tripId }, newTitle);
     },
@@ -95,7 +104,7 @@ export function useDuplicateTrip() {
   return useMutation({
     mutationFn: async (tripId: string) => {
       const trip = await tripService.getTrip(tripId);
-      if (!trip) throw new Error('여행을 찾을 수 없습니다.');
+      if (!trip) throw new Error('Trip not found');
       const project = tripService.toLocalProject(trip);
       const { supabaseId: _omit, ...withoutId } = project;
       return tripService.saveTrip(withoutId, `${trip.title} 사본`);

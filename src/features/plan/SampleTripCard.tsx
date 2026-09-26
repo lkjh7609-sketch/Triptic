@@ -1,13 +1,14 @@
 import { Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
+import { normalizeLocale } from '@/shared/i18n';
 import {
   SAMPLE_TRIP_CITY,
   SAMPLE_TRIP_END,
   SAMPLE_TRIP_ID,
   SAMPLE_TRIP_START,
-  SAMPLE_TRIP_TITLE,
   getSampleTripPlaceCount,
+  getSampleTripTitle,
 } from './sampleTrip';
 import cardStyles from './TripCard.module.css';
 import styles from './SampleTripCard.module.css';
@@ -19,12 +20,12 @@ import styles from './SampleTripCard.module.css';
  * 또는 그와 나란히 — 실제 편집 화면을 그대로 체험해볼 수 있게 한다.
  */
 export function SampleTripCard() {
-  const { t } = useTranslation(['plan']);
+  const { t, i18n } = useTranslation(['plan']);
   const placeCount = getSampleTripPlaceCount();
   return (
     <Link to={`/plan/${SAMPLE_TRIP_ID}`} className={`${cardStyles.card} ${styles.card}`}>
       <div className={cardStyles.header}>
-        <h3 className={cardStyles.title}>{SAMPLE_TRIP_TITLE}</h3>
+        <h3 className={cardStyles.title}>{getSampleTripTitle(normalizeLocale(i18n.language))}</h3>
         <span className={styles.badge}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Sparkles size={16} /></span> {t('sampleTrip.badge')}</span>
       </div>
       <p className={cardStyles.dates}>
