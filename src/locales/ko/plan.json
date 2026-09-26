@@ -227,6 +227,7 @@
     "shareAria": "공유",
     "cityUnset": "도시 미설정",
     "hotelUnset": "숙소",
+    "hotelChipLabel": "호텔",
     "mealsLabel": "식사",
     "expenseLabel": "경비",
     "addByDocument": "서류로 추가",

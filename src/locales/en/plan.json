@@ -231,6 +231,7 @@
     "shareAria": "Share",
     "cityUnset": "City not set",
     "hotelUnset": "Lodging",
+    "hotelChipLabel": "Hotel",
     "mealsLabel": "Meals",
     "expenseLabel": "Expenses",
     "addByDocument": "Add from a document",
