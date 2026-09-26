@@ -19,7 +19,7 @@
     "sectionTitle": "過去の旅行"
   },
   "hero": {
-    "planNext": "次の旅行を計画しましょう ️",
+    "planNext": "次の旅行を計画しましょう",
     "createTrip": "旅行を作成",
     "firstItem": "· 最初の予定 {{time}}",
     "todayBadge": "今日の予定",
@@ -57,6 +57,12 @@
     "descTokyo": "ネオンの光と伝統文化",
     "flights": "航空券",
     "stays": "宿泊",
-    "activities": "アクティビティ"
+    "activities": "アクティビティ",
+    "previewCancel": "キャンセル",
+    "previewStart": "この都市で旅行を計画",
+    "previewLoading": "AIが都市の情報を読み込んでいます…",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "contact": "お問い合わせ"
   }
 }

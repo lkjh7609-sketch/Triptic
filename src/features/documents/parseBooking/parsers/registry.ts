@@ -8,7 +8,7 @@ import type { ParsedBooking } from '../schema.ts';
 export interface ParseContext {
   tripStartDate: string;
   tripEndDate: string;
-  locale: 'ko' | 'en' | 'zh-CN';
+  locale: 'ko' | 'en' | 'zh-TW' | 'ja';
   airports: AirportIndex;
 }
 

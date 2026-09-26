@@ -14,7 +14,7 @@ export type ReportReason =
   | 'other';
 export type ReportTargetType = 'post' | 'comment' | 'user' | 'image';
 export type ReportStatus = 'open' | 'reviewing' | 'actioned' | 'dismissed';
-export type Locale = 'ko' | 'en' | 'zh-CN' | 'ja';
+export type Locale = 'ko' | 'en' | 'zh-TW' | 'ja';
 
 export interface Destination {
   id: string;

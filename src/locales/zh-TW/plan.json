@@ -1,0 +1,285 @@
+{
+  "addPlace": {
+    "title": "新增行程",
+    "searchPlaceholder": "搜尋地點",
+    "selectHint": "請從搜尋結果列表中選擇一個地點。",
+    "timeLabel": "時間（可選）",
+    "memoLabel": "備註（可選）",
+    "memoPlaceholder": "辦理入住後寄存行李",
+    "adding": "正在新增…"
+  },
+  "placeCategory": {
+    "sight": "景點",
+    "restaurant": "餐廳",
+    "cafe": "咖啡廳",
+    "shopping": "購物",
+    "lodging": "住宿",
+    "transport": "交通",
+    "other": "其他"
+  },
+  "backup": {
+    "title": "裝置同步與備份",
+    "fileNamePrefix": "Triptic_備份",
+    "invalidFile": "不是有效的備份 JSON 檔案。",
+    "conflictTitle": "存在同名行程",
+    "conflictDesc": "以下行程名稱已存在：",
+    "conflictMore": "，另外 {{count}} 個",
+    "conflictQuestion": "要如何處理？",
+    "keepBoth": "兩者都保留",
+    "overwrite": "覆蓋現有行程",
+    "desc": "可以將我的所有行程下載為 JSON 檔案，也可以從備份檔案中重新匯入。",
+    "exportBtn": "匯出備份檔案",
+    "importBtn": "匯入備份檔案",
+    "importedSuffix": "（已匯入）",
+    "importedSuffixN": "（已匯入 {{n}}）",
+    "importSuccess_other": "已匯入 {{count}} 個行程！",
+    "importError": "匯入過程中發生錯誤。"
+  },
+  "createTrip": {
+    "title": "建立行程",
+    "nameLabel": "行程名稱",
+    "namePlaceholder": "東京之旅",
+    "cityLabel": "目的地城市（搜尋後選擇）",
+    "cityPlaceholderExample": "例如：Kyoto, Japan",
+    "cityRequired": "請搜尋並選擇目的地城市。",
+    "currencyLabel": "貨幣設定",
+    "startLabel": "開始日期",
+    "endLabel": "結束日期",
+    "creating": "正在建立…",
+    "create": "建立",
+    "errors": {
+      "titleRequired": "請輸入行程名稱",
+      "dateFormat": "日期格式不正確",
+      "dateInvalid": "請選擇有效的日期",
+      "startRequired": "請選擇開始日期",
+      "endRequired": "請選擇結束日期",
+      "endAfterStart": "結束日期必須晚於開始日期"
+    },
+    "selectDate": "請選擇日期"
+  },
+  "day": {
+    "header": "第 {{index}} 天",
+    "tablistLabel": "選擇天數"
+  },
+  "dayCity": {
+    "title": "設定第 {{day}} 天的活動城市",
+    "currentLabel": "第 {{day}} 天當前城市",
+    "unset": "未設定",
+    "searchPlaceholder": "搜尋城市（例如：Kyoto, Japan）",
+    "scopeRestTitle": "從這一天到行程結束統一套用",
+    "scopeRestBadge": "推薦",
+    "scopeRestDesc": "將第 {{from}} 天到第 {{to}} 天的所有行程城市統一更改。",
+    "scopeSingleTitle": "僅套用於這一天（第 {{day}} 天）",
+    "scopeSingleDesc": "僅將第 {{day}} 天設定為該城市。",
+    "applying": "正在套用…",
+    "apply": "套用城市"
+  },
+  "expense": {
+    "title": "當天支出",
+    "descPlaceholder": "消費地點（例如：午餐）",
+    "amountPlaceholder": "金額（{{symbol}}）",
+    "currencyAria": "貨幣",
+    "categoryAria": "類別",
+    "paymentAria": "支付方式",
+    "paymentPlaceholder": "支付方式",
+    "empty": "還沒有記錄支出。",
+    "fxWarning": "目前還沒有這個貨幣的匯率。金額會儲存，但不會計入合計。",
+    "unconverted": "無法換算",
+    "unconvertedCount_other": "（不含 {{count}} 項無法換算的支出）",
+    "dayTotal": "當天合計",
+    "grandTotal": "全程合計",
+    "chartByDay": "按日期合計",
+    "chartByCategory": "按類別合計",
+    "category": {
+      "food": "餐飲",
+      "transport": "交通",
+      "lodging": "住宿",
+      "shopping": "購物",
+      "activity": "娛樂活動",
+      "other": "其他"
+    },
+    "payment": {
+      "cash": "現金",
+      "card": "刷卡",
+      "other": "其他"
+    },
+    "rateHint": "{{from}} = {{to}} · {{time}} 匯率"
+  },
+  "flightCard": {
+    "schedule": "{{depTime}} 出發 → {{arrTime}} 到達"
+  },
+  "flight": {
+    "title": "航班",
+    "outboundLabel": "去程",
+    "returnLabel": "返程",
+    "flightNoPlaceholder": "航班編號（例如：OZ102）",
+    "lookupBtn": "查詢",
+    "lookingUp": "正在查詢…",
+    "noResultHint": "如果自動查詢沒有結果，可以在下方手動輸入。",
+    "manualToggle": "手動輸入航班資訊",
+    "airlinePlaceholder": "航空公司（例如：大韓航空）",
+    "depPlaceholder": "搜尋出發機場（例如：仁川國際機場）",
+    "arrPlaceholder": "搜尋到達機場（例如：關西國際機場）",
+    "applyManual": "套用此航班資訊",
+    "saving": "正在儲存…"
+  },
+  "itemDetail": {
+    "mapLink": "在 Google 地圖中檢視",
+    "timeLabel": "時間",
+    "memoLabel": "備註",
+    "moveToDay": "移動到其他日期"
+  },
+  "meals": {
+    "title": "當天的用餐",
+    "searchPlaceholder": "搜尋{{meal}}餐廳",
+    "skip": "跳過",
+    "saving": "正在儲存…"
+  },
+  "mealSlot": {
+    "breakfast": "早餐",
+    "lunch": "午餐",
+    "dinner": "晚餐"
+  },
+  "planScreen": {
+    "myTrips": "我的行程",
+    "createTripAria": "建立行程",
+    "loginMessage": "登入後即可儲存我的行程，隨時隨地繼續檢視。",
+    "browseFirst": "先隨便看看",
+    "listError": "無法載入行程列表。",
+    "firstTripMessage": "建立你的第一個行程吧。",
+    "ongoing": "進行中",
+    "upcoming": "即將開始",
+    "pastToggle_other": "過往行程 {{count}} 個 {{state}}",
+    "pastShow": "顯示 ▼",
+    "pastHide": "隱藏 ▲",
+    "backupFooter": "裝置同步與備份"
+  },
+  "sampleTrip": {
+    "badge": "推薦樣例行程",
+    "duration": "{{nights}}晚{{days}}天",
+    "placeCount_other": "{{count}} 個地點",
+    "openLink": "檢視行程"
+  },
+  "setHotel": {
+    "title": "設定住宿",
+    "searchPlaceholder": "搜尋住宿",
+    "clear": "取消住宿",
+    "saving": "正在儲存…"
+  },
+  "share": {
+    "title": "僅檢視的分享連結",
+    "sampleMessage": "樣例行程無法分享。建立屬於自己的新行程後即可分享！",
+    "desc": "將此連結傳送給同行的朋友，對方即可在不編輯的情況下檢視行程。",
+    "generatingLink": "正在產生…",
+    "revoke": "停止分享",
+    "revokeConfirm": "要停止分享嗎？對方將無法再檢視此行程。",
+    "copied": "已複製！",
+    "copyText": "複製完整行程文本",
+    "textCopied": "文本已複製！",
+    "pdfAllBtn": "完整行程 PDF（共 {{days}} 天）",
+    "pdfCurrentBtn": "僅第 {{day}} 天 PDF",
+    "generatingPdf": "正在產生…"
+  },
+  "suggestions": {
+    "title": "同行者推薦的建議（{{count}} 條）",
+    "empty": "還沒有同行者發來的建議。",
+    "dayTag": "推薦用於第 {{day}} 天",
+    "sentBy": "傳送者",
+    "reject": "拒絕",
+    "addToItinerary": "新增到行程",
+    "memoPrefix": "[{{name}} 推薦] "
+  },
+  "tripCard": {
+    "periodUndecided": "日期未定",
+    "menuAria": "行程選單",
+    "rename": "重新命名",
+    "renamePrompt": "請輸入新的行程名稱",
+    "duplicate": "複製",
+    "deleteConfirm": "要刪除「{{title}}」嗎？此操作無法撤銷。"
+  },
+  "tripDetail": {
+    "backAria": "返回",
+    "sampleBadge": "體驗樣例",
+    "mapViewAria": "檢視地圖",
+    "listViewAria": "檢視列表",
+    "suggestionsAria": "收到的建議",
+    "suggestionsSampleTitle": "樣例行程無法使用建議功能。",
+    "voucherAria": "票券存檔",
+    "shareAria": "分享",
+    "cityUnset": "城市未設定",
+    "hotelUnset": "住宿",
+    "mealsLabel": "用餐",
+    "expenseLabel": "支出",
+    "addByDocument": "用預訂文件新增",
+    "startLabel": "出發",
+    "returnLabel": "返回",
+    "addItem": "新增行程",
+    "emptyDay": "這一天還沒有安排行程。",
+    "notFound": "無法載入該行程。",
+    "climateBadge": "常年值",
+    "hotelStart": "出發飯店",
+    "hotelEnd": "到達飯店",
+    "addPlace": "新增地點"
+  },
+  "tripMap": {
+    "ariaLabel": "行程地圖"
+  },
+  "desktop": {
+    "activeJourneys": "進行中/即將開始的旅行",
+    "pastExpeditions": "過去的旅行",
+    "featuredJourney": "精選旅行",
+    "yourCollection": "我的旅行收藏",
+    "startPlanningDesc": "開始計畫您的下一次偉大冒險。",
+    "openLiveItinerary": "開啟即時行程 →",
+    "noPastTripsTitle": "沒有過去的旅行",
+    "noPastTripsDesc": "您還沒有記錄任何過去的旅行。"
+  },
+  "inspector": {
+    "focusMove": "移動焦點",
+    "crowdLow": "空閒",
+    "crowdMedium": "一般",
+    "crowdHigh": "擁擠"
+  },
+  "currency": {
+    "KRW": "韓元",
+    "USD": "美元",
+    "JPY": "日元",
+    "EUR": "歐元",
+    "CNY": "人民幣",
+    "GBP": "英鎊",
+    "AUD": "澳元",
+    "CAD": "加元",
+    "HKD": "港元",
+    "SGD": "新加坡元",
+    "TWD": "新臺幣",
+    "THB": "泰銖",
+    "VND": "越南盾",
+    "PHP": "菲律賓比索",
+    "MYR": "馬來西亞林吉特",
+    "IDR": "印尼盧比",
+    "INR": "印度盧比",
+    "CHF": "瑞士法郎",
+    "NZD": "紐西蘭元",
+    "MXN": "墨西哥比索"
+  },
+  "aiNext": {
+    "title": "AI 下一站推薦",
+    "subtitle": "{{place}} 附近值得接著去的地方",
+    "subtitleCity": "{{city}} 值得一去的地方",
+    "loading": "正在尋找推薦地點…",
+    "error": "無法載入推薦，請稍後再試。",
+    "empty": "沒有更多推薦了",
+    "whyTitle": "推薦理由",
+    "tip": "小提示：{{tip}}",
+    "notInterested": "沒興趣",
+    "addToPlan": "加入行程",
+    "distanceFrom": "距 {{place}} {{distance}}",
+    "locating": "正在確認位置…",
+    "locationNotFound": "在地圖上找不到此地點",
+    "timeTitle": "預計什麼時候去？",
+    "timeSubtitle": "要加入行程的地點：{{name}}",
+    "timeLabel": "預計時間",
+    "confirmAdd": "加入行程",
+    "aiNotice": "以上為 AI 產生的推薦，出發前請再確認營業時間與價格。"
+  }
+}

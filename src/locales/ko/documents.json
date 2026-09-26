@@ -1,6 +1,6 @@
 {
   "confidenceField": {
-    "warning": "️ 확인해 주세요",
+    "warning": " 확인해 주세요",
     "empty": "추출 실패 — 직접 입력",
     "viewOriginal": "원본 보기"
   },
@@ -9,7 +9,7 @@
     "title": "인식 결과 확인",
     "dialogLabel": "인식 결과 확인",
     "desc": "자동으로 읽은 내용이에요. 확인하고 일정에 반영해 주세요.",
-    "flightLabel": "️ 항공편",
+    "flightLabel": " 항공편",
     "flightNumberField": "편명",
     "departureAirportField": "출발 공항",
     "arrivalAirportField": "도착 공항",

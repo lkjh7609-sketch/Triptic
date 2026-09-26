@@ -19,7 +19,7 @@
     "sectionTitle": "Past trips"
   },
   "hero": {
-    "planNext": "Plan your next trip ️",
+    "planNext": "Plan your next trip",
     "createTrip": "Create a trip",
     "firstItem": "· First stop {{time}}",
     "todayBadge": "Today's schedule",

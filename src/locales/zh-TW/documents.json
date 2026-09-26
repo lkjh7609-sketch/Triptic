@@ -1,0 +1,44 @@
+{
+  "confidenceField": {
+    "warning": " 請核對",
+    "empty": "辨識失敗——請手動輸入",
+    "viewOriginal": "檢視原檔案"
+  },
+  "review": {
+    "emptyTitle": "目前沒有需要核對的預訂",
+    "title": "確認辨識結果",
+    "dialogLabel": "確認辨識結果",
+    "desc": "這是自動辨識的內容，請核對後新增到行程中。",
+    "flightLabel": " 航班",
+    "flightNumberField": "航班編號",
+    "departureAirportField": "出發機場",
+    "arrivalAirportField": "到達機場",
+    "departureTimeField": "出發時間",
+    "arrivalTimeField": "到達時間",
+    "ignore": "忽略",
+    "applying": "新增中…",
+    "applyToItinerary": "新增到行程",
+    "lodgingLabel": "住宿",
+    "railLabel": "鐵路",
+    "bookingLabel": "預訂",
+    "nameUnrecognized": "（未能辨識名稱）",
+    "manualHint": "暫不支援自動新增此類預訂——請參考以上內容，透過住宿或+新增行程手動新增。"
+  },
+  "upload": {
+    "title": "上傳預訂單據填充行程",
+    "dialogLabel": "上傳預訂單據填充行程",
+    "consentText": "上傳機票或飯店確認單（PDF或照片），我們會自動辨識航班編號、時間、飯店等資訊並產生行程草稿。護照號、卡號等敏感資訊在傳送到辨識（AI）伺服器前會始終被遮蓋。辨識的內容必須經您確認後，才會新增到行程中。",
+    "agreeAndContinue": "同意並繼續",
+    "uploadTitle": "上傳預訂單據",
+    "fileHint": "PDF、JPG、PNG（最大20MB）",
+    "processing": "正在辨識單據…",
+    "uploadError": "上傳時發生錯誤，請重試。"
+  },
+  "archive": {
+    "title": "票券夾",
+    "empty": "還沒有票券，點選「從單據新增」上傳吧。",
+    "addToWallet": "新增到Apple Wallet",
+    "deleteConfirm": "確定刪除「{{name}}」嗎？此操作無法撤銷。",
+    "voucherOriginalAlt": "票券原件"
+  }
+}

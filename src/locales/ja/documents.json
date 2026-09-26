@@ -1,6 +1,6 @@
 {
   "confidenceField": {
-    "warning": "️ ご確認ください",
+    "warning": " ご確認ください",
     "empty": "抽出失敗 — 直接入力",
     "viewOriginal": "元の画像を見る"
   },
@@ -9,7 +9,7 @@
     "title": "認識結果の確認",
     "dialogLabel": "認識結果の確認",
     "desc": "自動で読み取った内容です。確認してスケジュールに反映してください。",
-    "flightLabel": "️ 航空便",
+    "flightLabel": " 航空便",
     "flightNumberField": "便名",
     "departureAirportField": "出発空港",
     "arrivalAirportField": "到着空港",

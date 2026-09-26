@@ -1,6 +1,6 @@
 {
   "confidenceField": {
-    "warning": "️ Please check this",
+    "warning": " Please check this",
     "empty": "Couldn't read this — enter manually",
     "viewOriginal": "View original"
   },
@@ -9,7 +9,7 @@
     "title": "Review extracted info",
     "dialogLabel": "Review extracted info",
     "desc": "Here's what we read automatically. Please check it before adding it to your itinerary.",
-    "flightLabel": "️ Flight",
+    "flightLabel": " Flight",
     "flightNumberField": "Flight number",
     "departureAirportField": "Departure airport",
     "arrivalAirportField": "Arrival airport",

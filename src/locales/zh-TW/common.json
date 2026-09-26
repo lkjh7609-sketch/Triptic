@@ -1,0 +1,54 @@
+{
+  "action": {
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "confirm": "確認",
+    "edit": "編輯",
+    "close": "關閉",
+    "back": "返回",
+    "retry": "重試",
+    "share": "分享",
+    "copy": "複製",
+    "add": "新增",
+    "remove": "移除",
+    "done": "完成",
+    "contact": "聯絡我們"
+  },
+  "state": {
+    "loading": "載入中…",
+    "error": "出現了問題",
+    "empty": "目前沒有內容",
+    "offline": "您已離線"
+  },
+  "tab": {
+    "home": "首頁",
+    "plan": "計畫",
+    "community": "社群",
+    "settings": "設定"
+  },
+  "nav": {
+    "primary": "主要導覽"
+  },
+  "auth": {
+    "loginRequired": "需要登入",
+    "consent": "我同意<terms>服務條款</terms>和<privacy>隱私政策</privacy>",
+    "loginFailed": "未能開始登入，請稍後再試。",
+    "connecting": "連線中…",
+    "continueApple": "使用 Apple 繼續",
+    "continueGoogle": "使用 Google 繼續",
+    "continueKakao": "使用 Kakao 繼續"
+  },
+  "legal": {
+    "terms": "服務條款",
+    "privacy": "隱私政策"
+  },
+  "error": {
+    "boundary": "出現了問題，請重新整理頁面重試。"
+  },
+  "offline": {
+    "banner": "離線中 — {{label}}",
+    "lastSynced": "上次同步：{{time}}",
+    "noHistory": "目前沒有同步記錄"
+  }
+}
