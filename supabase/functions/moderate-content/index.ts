@@ -4,11 +4,12 @@
  * POST { kind: 'post', destinationId, tripId?, body, images?: [{storagePath,width,height}] }
  * POST { kind: 'comment', postId, parentId?, body }
  *
- * 클라이언트는 이 함수를 거치지 않고는 게시물을 만들 수 없다 — 0023
- * 마이그레이션에서 posts/comments 직접 insert 정책을 안전한 값으로 좁혀
- * 놓았다(우회해도 최악이 "운영자 검토 대기"). 실제 게시 상태 결정과 행
- * 생성은 이 함수가 계산해서 security definer RPC(create_moderated_post/
- * create_moderated_comment)로 한 번에 처리한다.
+ * 클라이언트는 이 함수를 거치지 않고는 게시물을 만들 수 없다 — 0023에서
+ * posts/comments 직접 insert 정책을 안전한 값으로 좁혔고, 0029에서 게시 RPC
+ * (create_moderated_post/create_moderated_comment)를 service_role 전용으로
+ * 바꿨다. 이 함수가 사용자 JWT를 검증한 뒤 service_role 클라이언트로 작성자 id를
+ * 넘겨 RPC를 호출한다(예전엔 사용자 권한으로 RPC를 불러서, 사용자가 RPC를 직접
+ * 호출해 p_status='published'로 검열을 건너뛸 수 있었다).
  *
  * 응답 시간 예산 3초(§5.1) — 텍스트 분류 + 이미지 분류(있으면, 전부 병렬)를
  * 같은 데드라인으로 경합시킨다. 하나라도 실패/타임아웃하면 fail closed
@@ -22,6 +23,7 @@ import { classifyText, classifyImageBytes } from '../../../src/features/communit
 import { detectLanguage } from '../../../src/features/community/languageDetect.ts';
 
 const CLASSIFIER_BUDGET_MS = 3000;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function corsHeaders(origin: string | null) {
   const headers = new Headers({ 'Content-Type': 'application/json' });
@@ -77,6 +79,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
@@ -86,6 +89,7 @@ Deno.serve(async (req) => {
     data: { user },
   } = await userClient.auth.getUser();
   if (!user) return jsonResponse({ error: '인증이 유효하지 않습니다.' }, 401, headers);
+  const adminClient = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
   let payload: RequestBody;
   try {
@@ -106,9 +110,9 @@ Deno.serve(async (req) => {
   if (kind === 'comment' && text.length > 500) {
     return jsonResponse({ error: '댓글은 500자를 넘을 수 없습니다.' }, 400, headers);
   }
-  // eslint-disable-next-line no-constant-condition
-  if (false) {
-    return jsonResponse({ error: '여행지를 선택해 주세요.' }, 400, headers);
+  // 여행지는 선택 사항이다(0026에서 posts.destination_id nullable). 값이 오면 형식만 확인한다.
+  if (kind === 'post' && payload.destinationId && !UUID_RE.test(payload.destinationId)) {
+    return jsonResponse({ error: '여행지 값이 올바르지 않습니다.' }, 400, headers);
   }
   if (kind === 'comment' && !payload.postId) {
     return jsonResponse({ error: 'postId가 필요합니다.' }, 400, headers);
@@ -150,7 +154,8 @@ Deno.serve(async (req) => {
     });
 
     if (kind === 'post') {
-      const { data: newId, error: rpcErr } = await userClient.rpc('create_moderated_post', {
+      const { data: newId, error: rpcErr } = await adminClient.rpc('create_moderated_post', {
+        p_author_id: user.id,
         p_destination_id: payload.destinationId || null,
         p_trip_id: payload.tripId ?? null,
         p_body: text,
@@ -165,7 +170,8 @@ Deno.serve(async (req) => {
     }
 
     // comment: decideStatus never returns 'pending_review' for comments (see decideStatus.ts)
-    const { data: newId, error: rpcErr } = await userClient.rpc('create_moderated_comment', {
+    const { data: newId, error: rpcErr } = await adminClient.rpc('create_moderated_comment', {
+      p_author_id: user.id,
       p_post_id: payload.postId,
       p_parent_id: payload.parentId ?? null,
       p_body: text,

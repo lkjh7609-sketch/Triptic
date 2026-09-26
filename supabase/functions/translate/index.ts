@@ -38,6 +38,9 @@ function jsonResponse(body: unknown, status: number, headers: Headers) {
 const LOCALE_NAME: Record<string, string> = {
   ko: 'Korean',
   en: 'English',
+  'zh-TW': 'Traditional Chinese as used in Taiwan',
+  ja: 'Japanese',
+  // 0027 이전에 zh-CN으로 감지·저장된 글의 source 표기용
   'zh-CN': 'Simplified Chinese',
 };
 
