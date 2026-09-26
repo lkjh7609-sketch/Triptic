@@ -4,7 +4,7 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Heart, MessageCircle, PenLine, Search, Lightbulb, BookOpen, ArrowRight, ChevronDown, Lock } from 'lucide-react';
+import { Heart, MessageCircle, PenLine, Search, Lightbulb, BookOpen, ArrowRight, ChevronDown, Lock, Users } from 'lucide-react';
 import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useSession } from '@/shared/hooks/useSession';
@@ -99,13 +99,22 @@ export function CommunityDesignBody({
               <p className="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">{t('design.subtitle')}</p>
             </div>
 
-            <Link
-              to={tab === 'companion' ? '/community/companion/new' : '/community/compose'}
-              className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-container text-on-secondary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 self-start md:self-auto shrink-0"
-            >
-              <PenLine size={18} aria-hidden="true" />
-              <span>{tab === 'companion' ? t('companion.list.writeBtn') : t('design.newPost')}</span>
-            </Link>
+            <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+              <Link
+                to="/community/compose"
+                className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-container text-on-secondary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 shrink-0"
+              >
+                <PenLine size={18} aria-hidden="true" />
+                <span>{t('design.newPost')}</span>
+              </Link>
+              <Link
+                to="/community/companion/new"
+                className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 shrink-0"
+              >
+                <Users size={18} aria-hidden="true" />
+                <span>{t('companion.list.writeBtn')}</span>
+              </Link>
+            </div>
           </div>
 
           {tab !== 'companion' ? (

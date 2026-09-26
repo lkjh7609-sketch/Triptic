@@ -1,4 +1,4 @@
-import { Lock as LockIcon, PenLine } from 'lucide-react';
+import { Lock as LockIcon, PenLine, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -68,9 +68,14 @@ export function CommunityScreen() {
   return (
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
       {user ? (
-        <Link to={tab === 'companion' ? '/community/companion/new' : '/community/compose'} className={styles.fabBtnDesktop}>
-          <PenLine size={20} /> <span>{tab === 'companion' ? t('companion.list.writeBtn') : t('feed.writeBtn')}</span>
-        </Link>
+        <div className={styles.composeBtnRow}>
+          <Link to="/community/compose" className={styles.fabBtnDesktop}>
+            <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
+          </Link>
+          <Link to="/community/companion/new" className={styles.fabBtnDesktop}>
+            <Users size={20} /> <span>{t('companion.list.writeBtn')}</span>
+          </Link>
+        </div>
       ) : null}
 
       <div className={styles.headerSection}>
