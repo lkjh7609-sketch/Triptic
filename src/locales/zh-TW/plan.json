@@ -146,7 +146,8 @@
   "mealSlot": {
     "breakfast": "早餐",
     "lunch": "午餐",
-    "dinner": "晚餐"
+    "dinner": "晚餐",
+    "cafe": "咖啡廳"
   },
   "planScreen": {
     "myTrips": "我的行程",
@@ -186,7 +187,16 @@
     "textCopied": "文本已複製！",
     "pdfAllBtn": "完整行程 PDF（共 {{days}} 天）",
     "pdfCurrentBtn": "僅第 {{day}} 天 PDF",
-    "generatingPdf": "正在產生…"
+    "generatingPdf": "正在產生…",
+    "text": {
+      "destination": "目的地：{{city}}",
+      "period": "期間：{{start}} ~ {{end}}（共 {{total}} 天）",
+      "dayHeader": "[第 {{day}} 天] {{date}}",
+      "arrival": "抵達：{{label}}",
+      "hotel": "住宿：{{name}}",
+      "freeDay": "（自由行程）",
+      "departure": "回程：{{label}}"
+    }
   },
   "suggestions": {
     "title": "同行者推薦的建議（{{count}} 條）",

@@ -128,7 +128,8 @@
   "mealSlot": {
     "breakfast": "朝食",
     "lunch": "昼食",
-    "dinner": "夕食"
+    "dinner": "夕食",
+    "cafe": "カフェ"
   },
   "planScreen": {
     "myTrips": "私の旅行",
@@ -168,7 +169,16 @@
     "textCopied": "テキストをコピーしました！",
     "pdfAllBtn": "全日程PDF ({{days}}日分)",
     "pdfCurrentBtn": "{{day}}日目のみPDF",
-    "generatingPdf": "作成中…"
+    "generatingPdf": "作成中…",
+    "text": {
+      "destination": "目的地: {{city}}",
+      "period": "期間: {{start}}〜{{end}}（{{total}}日間）",
+      "dayHeader": "[{{day}}日目] {{date}}",
+      "arrival": "到着: {{label}}",
+      "hotel": "宿泊: {{name}}",
+      "freeDay": "（自由行動）",
+      "departure": "帰国: {{label}}"
+    }
   },
   "suggestions": {
     "title": "同行者の追加提案 ({{count}}件)",

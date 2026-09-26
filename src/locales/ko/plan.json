@@ -146,7 +146,8 @@
   "mealSlot": {
     "breakfast": "아침",
     "lunch": "점심",
-    "dinner": "저녁"
+    "dinner": "저녁",
+    "cafe": "카페"
   },
   "planScreen": {
     "myTrips": "내 여행",
@@ -186,7 +187,16 @@
     "textCopied": "텍스트 복사됨!",
     "pdfAllBtn": "전체 일정 PDF ({{days}}일치)",
     "pdfCurrentBtn": "{{day}}일차만 PDF",
-    "generatingPdf": "생성 중…"
+    "generatingPdf": "생성 중…",
+    "text": {
+      "destination": "목적지: {{city}}",
+      "period": "기간: {{start}} ~ {{end}} ({{total}}일간)",
+      "dayHeader": "[{{day}}일차] {{date}}",
+      "arrival": "도착: {{label}}",
+      "hotel": "숙소: {{name}}",
+      "freeDay": "(자유 일정)",
+      "departure": "귀국: {{label}}"
+    }
   },
   "suggestions": {
     "title": "동행자 추천 제안 ({{count}}건)",
