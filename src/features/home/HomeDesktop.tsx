@@ -113,12 +113,39 @@ export function HomeDesktop() {
   const { data: destinations } = useDestinations();
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const autoScrollPausedRef = useRef(false);
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth * 0.5;
       scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
     }
   };
+
+  // 여행지 카드가 끊김 없이 왼쪽으로 계속 흐르다 한 세트를 다 돌면 처음부터
+  // 이어지는 것처럼 보이도록 한다 — 카드 목록을 DOM에서 두 벌 이어 붙여두고
+  // (아래 JSX), 첫 벌의 너비만큼 스크롤되면 그만큼 즉시 되돌려서 두 벌째가
+  // 첫 벌과 완전히 겹치게 만드는 방식(사용자 눈엔 끊김이 안 보인다).
+  // prefers-reduced-motion이면 아예 안 돌린다(tokens.css의 접근성 원칙과 동일).
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let raf = 0;
+    const PIXELS_PER_FRAME = 0.6;
+    function step() {
+      if (!autoScrollPausedRef.current && el) {
+        const setWidth = el.scrollWidth / 2;
+        el.scrollLeft += PIXELS_PER_FRAME;
+        if (el.scrollLeft >= setWidth) {
+          el.scrollLeft -= setWidth;
+        }
+      }
+      raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const handleStartPlanning = (city?: string) => {
     const target = (city ?? searchQuery).trim();
@@ -209,9 +236,23 @@ export function HomeDesktop() {
           <button type="button" className={styles.sliderBtnLeft} onClick={() => scroll('left')} aria-label={t('desktop.scrollLeft')}>
             <ChevronLeft size={24} />
           </button>
-          <div className={styles.grid} ref={scrollRef}>
-            {FEATURED.map((dest) => (
-              <button type="button" key={dest.key} className={styles.card} onClick={() => setPreviewDest(dest)}>
+          <div
+            className={styles.grid}
+            ref={scrollRef}
+            onMouseEnter={() => { autoScrollPausedRef.current = true; }}
+            onMouseLeave={() => { autoScrollPausedRef.current = false; }}
+            onTouchStart={() => { autoScrollPausedRef.current = true; }}
+            onTouchEnd={() => { autoScrollPausedRef.current = false; }}
+          >
+            {[...FEATURED, ...FEATURED].map((dest, i) => (
+              <button
+                type="button"
+                key={`${dest.key}-${i < FEATURED.length ? 'a' : 'b'}`}
+                className={styles.card}
+                onClick={() => setPreviewDest(dest)}
+                tabIndex={i < FEATURED.length ? 0 : -1}
+                aria-hidden={i < FEATURED.length ? undefined : true}
+              >
                 <img src={dest.image} alt="" className={styles.cardImage} />
                 <div className={styles.cardBody}>
                   <h3 className={styles.cardTitle}>{t(`desktop.dest${dest.key}`)}</h3>
