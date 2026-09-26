@@ -1,75 +1,29 @@
-import fetch from 'node-fetch';
-import { createClient } from '@supabase/supabase-js';
+// Vercel Serverless Function: AI 주변 장소 추천
+// Endpoint: POST /api/recommend { placeName, city, category?, locale?, lat?, lng? }
+//
+// 1) ai_recommendation_cache(90일) 조회 → 2) LLM(OpenRouter 경유 DeepSeek, 없으면
+// DeepSeek 직접) → 3) locale이 ko면 큐레이션 폴백.
+//
+// 좌표: 앱의 Google Maps 키는 HTTP 리퍼러 제한이 걸린 브라우저 키라 서버에서 Places
+// 웹 서비스를 부를 수 없다("API keys with referer restrictions cannot be used"). 그래서
+// 기본적으로 좌표는 클라이언트(Maps JS PlacesService)가 붙인다. IP 제한 서버 키를
+// GOOGLE_PLACES_SERVER_KEY로 따로 등록하면 서버가 미리 붙이고 place_cache에 저장한다.
+import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
+import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
+import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 
-const TOTAL_BUDGET_MS = 8000;
-const MIN_ATTEMPT_MS = 2500;
+// DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
+// Google Places 보강 시간까지 남겨둔다.
+const LLM_TIMEOUT_MS = 22000;
+const CACHE_TTL_DAYS = 90;
+const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
+const isRateLimited = createRateLimiter(20);
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-let supabase = null;
-if (supabaseUrl && supabaseKey) {
-    supabase = createClient(supabaseUrl, supabaseKey);
-}
-
-function remainingMs(deadline) {
-    return Math.max(0, deadline - Date.now());
-}
-
-async function callDeepSeek(apiKey, prompt, deadline) {
-    const timeout = remainingMs(deadline);
-    if (timeout < MIN_ATTEMPT_MS) throw new Error('Not enough time for DeepSeek attempt');
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-
-    try {
-        const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: 'You are an expert travel assistant. Output ONLY valid JSON.' },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7,
-                response_format: { type: "json_object" }
-            }),
-            signal: controller.signal
-        });
-
-        clearTimeout(timer);
-        if (!res.ok) throw new Error(`DeepSeek HTTP error ${res.status}`);
-
-        const data = await res.json();
-        const content = data.choices?.[0]?.message?.content || '';
-        let parsed;
-        try {
-            parsed = JSON.parse(content);
-        } catch {
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-        }
-
-        if (parsed && Array.isArray(parsed.recommendations)) {
-            return {
-                recommendations: parsed.recommendations,
-                provider: 'DeepSeek',
-                modelUsed: data.model || 'deepseek-chat'
-            };
-        }
-        throw new Error('DeepSeek returned invalid JSON structure');
-    } catch (e) {
-        clearTimeout(timer);
-        throw e;
-    }
-}
-
+/**
+ * LLM을 쓸 수 없을 때의 한국어 큐레이션 폴백(주요 일본 5개 도시). 실제 존재하는 장소만
+ * 담는다. 한국어 데이터라 locale이 ko일 때만 쓴다.
+ */
 function getCuratedFallbackRecommendations(placeName, city, category) {
-    // 1) 입력된 placeName/city 문자열 기반 매칭 로직 (이전과 동일하게 유지)
     const text = (placeName + ' ' + city).toLowerCase();
     let matchedCity = 'unknown';
     
@@ -79,45 +33,9 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     else if (text.includes('교토') || text.includes('kyoto') || text.includes('청수사') || text.includes('아라시야마')) matchedCity = 'kyoto';
     else if (text.includes('삿포로') || text.includes('sapporo') || text.includes('스스키노')) matchedCity = 'sapporo';
 
-    // 도시별 데이터가 없거나 unknown이면 공통 모듈 제공
-    if (matchedCity === 'unknown') {
-        const fallback = [
-            {
-                name: "현지 로컬 맛집",
-                category: "restaurant",
-                categoryLabel: "로컬 맛집",
-                distance: "도보 5분 (400m)",
-                estimatedRating: 4.5,
-                signatureMenu: "현지 특선 요리",
-                priceRange: "1,500~3,000엔",
-                reason: "구글 평점 4.5 이상의 현지인들이 자주 찾는 검증된 로컬 식당입니다.",
-                tip: "식사 시간에는 웨이팅이 있을 수 있으니 조금 서두르시는 것을 추천합니다."
-            },
-            {
-                name: "분위기 좋은 카페",
-                category: "cafe",
-                categoryLabel: "감성 카페",
-                distance: "도보 3분 (250m)",
-                estimatedRating: 4.7,
-                signatureMenu: "시그니처 디저트 & 커피",
-                priceRange: "800~1,500엔",
-                reason: "많이 걸은 후 잠시 쉬어가기 좋은 차분하고 예쁜 인테리어의 카페입니다.",
-                tip: "창가 자리에 앉아 여유로운 시간을 보내기 좋습니다."
-            },
-            {
-                name: "주변 산책 명소",
-                category: "spot",
-                categoryLabel: "주변 명소",
-                distance: "도보 10분 이내",
-                estimatedRating: 4.4,
-                signatureMenu: "가벼운 산책 코스",
-                priceRange: "무료",
-                reason: "식사나 휴식 후 가볍게 걸으며 현지 풍경을 즐길 수 있는 산책로입니다.",
-                tip: "해 질 무렵 방문하면 멋진 노을을 볼 수 있습니다."
-            }
-        ];
-        return fallback;
-    }
+    // 매칭되는 도시가 없으면 폴백하지 않는다 — 존재하지 않는 가상의 장소("현지 로컬 맛집")를
+    // 보여주면 사용자가 실제 일정에 넣었을 때 엉뚱한 좌표가 붙는다.
+    if (matchedCity === 'unknown') return [];
 
     const cityData = {
         osaka: {
@@ -187,210 +105,215 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     
     // Sort by rating
     supplement.sort((a, b) => b.estimatedRating - a.estimatedRating);
-    if (supplement.length === 0) {
-        return getCuratedFallbackRecommendations('fallback', 'unknown', 'all');
-    }
-    return supplement.slice(0, 5);
-}
-
-const ALLOWED_ORIGINS = new Set([
-    'https://triptic.my',
-    'https://www.triptic.my',
-    'https://triptic-ten.vercel.app',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'capacitor://localhost'
-]);
-
-const recommendHits = new Map();
-function isRateLimited(ip, limit = 20, windowMs = 60_000) {
-    const now = Date.now();
-    const rec = recommendHits.get(ip);
-    if (!rec || now - rec.start > windowMs) {
-        recommendHits.set(ip, { start: now, count: 1 });
-        return false;
-    }
-    rec.count += 1;
-    return rec.count > limit;
-}
-
-const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
-
-async function enrichWithGoogleMaps(recs, apiKey, city) {
-    if (!apiKey) return recs;
-    const promises = recs.map(async (r) => {
-        try {
-            const query = `${city} ${r.name}`;
-            const queryKey = query.trim().toLowerCase();
-            
-            // Check cache first if supabase is available
-            if (supabase) {
-                const { data: cacheData } = await supabase
-                    .from('place_cache')
-                    .select('*')
-                    .eq('query_key', queryKey)
-                    .single();
-                
-                if (cacheData) {
-                    r.placeId = cacheData.place_id;
-                    r.lat = cacheData.lat;
-                    r.lng = cacheData.lng;
-                    r.address = cacheData.address;
-                    return r;
-                }
-            }
-            
-            const encodedQuery = encodeURIComponent(query);
-            const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodedQuery}&inputtype=textquery&fields=place_id,geometry,formatted_address&key=${apiKey}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            
-            if (data.status === "OK" && data.candidates && data.candidates.length > 0) {
-                const first = data.candidates[0];
-                r.placeId = first.place_id;
-                r.lat = first.geometry.location.lat;
-                r.lng = first.geometry.location.lng;
-                r.address = first.formatted_address;
-                
-                // Save to cache
-                if (supabase) {
-                    await supabase.from('place_cache').upsert({
-                        query_key: queryKey,
-                        place_id: r.placeId,
-                        lat: r.lat,
-                        lng: r.lng,
-                        address: r.address
-                    }).catch(e => console.warn('Cache insert error', e));
-                }
-            }
-        } catch (e) { console.warn("Google Maps Enrich Error", e); }
-        return r;
+    // distance/estimatedRating은 특정 기준점 없이 적어둔 값이라 내보내지 않는다 —
+    // 실제 거리는 클라이언트가 기준 장소와 Google 좌표로 계산한다.
+    return supplement.slice(0, 5).map((rec) => {
+        const rest = { ...rec };
+        delete rest.distance;
+        delete rest.estimatedRating;
+        return rest;
     });
-    return await Promise.all(promises);
 }
 
-function sanitizeInput(value, maxLen) {
-    if (typeof value !== 'string') return '';
-    // eslint-disable-next-line no-control-regex
-    return value.replace(/[\r\n\u0000-\u001f]/g, ' ').trim().slice(0, maxLen);
+function buildPrompt({ placeName, city, category, locale }) {
+    const locationContext = city ? `"${placeName}" in ${city}` : `"${placeName}"`;
+    const focus = category !== 'all'
+        ? `Focus on the "${category}" category.`
+        : 'Mix restaurants, cafes, and sights. Never include hotels or other lodging.';
+    return `You are a travel guide who knows the area well.
+Recommend 5 real places near ${locationContext} that a traveler can easily reach on foot or by public transit.
+${focus}
+Do not include "${placeName}" itself. Only recommend places that actually exist, using their exact official names so they can be found on Google Maps.
+Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.
+
+Respond with JSON only, in this shape:
+{
+  "recommendations": [
+    {
+      "name": "exact official place name",
+      "category": "restaurant | cafe | culture | spot",
+      "categoryLabel": "short category label",
+      "signatureMenu": "signature dish or highlight",
+      "priceRange": "typical price range",
+      "reason": "one or two short sentences on why it is worth visiting",
+      "tip": "one short practical visiting tip"
+    }
+  ]
+}`;
+}
+
+const VALID_REC_CATEGORIES = new Set(['restaurant', 'cafe', 'culture', 'spot']);
+
+function sanitizeRecommendations(list, placeName) {
+    if (!Array.isArray(list)) return [];
+    const baseKey = normalizeKey(placeName);
+    return list
+        .filter((r) => r && typeof r.name === 'string' && r.name.trim() && normalizeKey(r.name) !== baseKey)
+        .slice(0, 6)
+        .map((r) => ({
+            name: String(r.name).trim().slice(0, 120),
+            category: VALID_REC_CATEGORIES.has(r.category) ? r.category : 'spot',
+            categoryLabel: typeof r.categoryLabel === 'string' ? r.categoryLabel.slice(0, 40) : '',
+            signatureMenu: typeof r.signatureMenu === 'string' ? r.signatureMenu.slice(0, 120) : '',
+            priceRange: typeof r.priceRange === 'string' ? r.priceRange.slice(0, 60) : '',
+            reason: typeof r.reason === 'string' ? r.reason.slice(0, 400) : '',
+            tip: typeof r.tip === 'string' ? r.tip.slice(0, 300) : '',
+        }));
+}
+
+/** 추천 장소에 Google Places 실제 좌표/주소를 붙인다(place_cache로 중복 호출 절약) */
+async function enrichWithGoogleMaps(recs, city, bias) {
+    const apiKey = process.env.GOOGLE_PLACES_SERVER_KEY;
+    if (!apiKey) return recs;
+    const db = supabaseAdmin();
+
+    return Promise.all(recs.map(async (rec) => {
+        const r = { ...rec };
+        try {
+            const query = city ? `${r.name} ${city}` : r.name;
+            const queryKey = normalizeKey(query);
+
+            if (db) {
+                const { data: cached } = await db
+                    .from('place_cache')
+                    .select('place_id, lat, lng, address')
+                    .eq('query_key', queryKey)
+                    .maybeSingle();
+                if (cached && cached.lat != null && cached.lng != null) {
+                    return { ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address };
+                }
+            }
+
+            const params = new URLSearchParams({
+                input: query,
+                inputtype: 'textquery',
+                fields: 'place_id,geometry,formatted_address',
+                key: apiKey,
+            });
+            if (bias) params.set('locationbias', `circle:3000@${bias.lat},${bias.lng}`);
+            const res = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?${params}`);
+            const data = await res.json();
+            const first = data.status === 'OK' ? data.candidates?.[0] : null;
+            if (!first?.geometry?.location) return r;
+
+            const enriched = {
+                ...r,
+                placeId: first.place_id,
+                lat: first.geometry.location.lat,
+                lng: first.geometry.location.lng,
+                address: first.formatted_address,
+            };
+            if (db) {
+                const { error } = await db.from('place_cache').upsert({
+                    query_key: queryKey,
+                    place_id: enriched.placeId,
+                    lat: enriched.lat,
+                    lng: enriched.lng,
+                    address: enriched.address,
+                });
+                if (error) console.warn('[recommend] place_cache upsert failed:', error.message);
+            }
+            return enriched;
+        } catch (e) {
+            console.warn('[recommend] Google Places enrich failed:', e instanceof Error ? e.message : e);
+            return r;
+        }
+    }));
+}
+
+function parseBias(lat, lng) {
+    const la = Number(lat);
+    const ln = Number(lng);
+    if (!Number.isFinite(la) || !Number.isFinite(ln) || Math.abs(la) > 90 || Math.abs(ln) > 180) return null;
+    return { lat: la, lng: ln };
 }
 
 export default async function handler(req, res) {
-    const origin = req.headers.origin;
-    if (origin && ALLOWED_ORIGINS.has(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-
-    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
-    if (isRateLimited(ip)) {
-        return res.status(429).json({ error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' });
-    }
-
-    const deepseekKey = process.env.DEEPSEEK_API_KEY;
+    applyCors(req, res, 'POST,OPTIONS');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+    if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
 
     const placeName = sanitizeInput(req.body?.placeName, 100);
     const city = sanitizeInput(req.body?.city, 60);
     const category = CATEGORIES.has(req.body?.category) ? req.body.category : 'all';
+    const locale = parseLocale(req.body?.locale);
+    const bias = parseBias(req.body?.lat, req.body?.lng);
+    if (!placeName) return res.status(400).json({ error: 'place_required' });
 
-    if (!placeName) {
-        return res.status(400).json({ error: '기준 장소 이름(placeName)이 필요합니다.' });
-    }
+    const db = supabaseAdmin();
+    const cacheKey = {
+        kind: 'nearby',
+        city_key: normalizeKey(city),
+        place_key: normalizeKey(placeName),
+        category,
+        locale,
+    };
 
-    if (process.env.SUPABASE_SERVICE_ROLE_KEY && supabase) {
-        try {
-            const { data: cacheHit } = await supabase
-                .from('ai_recommendation_cache')
-                .select('recommendations, provider, model_used')
-                .eq('city', city)
-                .eq('category', category)
-                .ilike('place_name', placeName)
-                .single();
-            
-            if (cacheHit && cacheHit.recommendations) {
-                const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-                const enrichedHit = await enrichWithGoogleMaps(cacheHit.recommendations, googleApiKey, city);
-                return res.status(200).json({
-                    success: true,
-                    recommendations: enrichedHit,
-                    provider: cacheHit.provider,
-                    modelUsed: cacheHit.model_used,
-                    cached: true
-                });
-            }
-        } catch (e) {
-            console.warn('[Cache] 읽기 실패:', e.message);
+    if (db) {
+        const { data: hit, error } = await db
+            .from('ai_recommendation_cache')
+            .select('id, payload, provider, model_used, hit_count')
+            .match(cacheKey)
+            .gt('expires_at', new Date().toISOString())
+            .maybeSingle();
+        if (error) console.warn('[recommend] cache read failed:', error.message);
+        if (hit && Array.isArray(hit.payload?.recommendations)) {
+            void db.from('ai_recommendation_cache').update({ hit_count: (hit.hit_count ?? 0) + 1 }).eq('id', hit.id).then(() => {});
+            return res.status(200).json({
+                success: true,
+                cached: true,
+                provider: hit.provider,
+                modelUsed: hit.model_used,
+                basePlace: placeName,
+                recommendations: hit.payload.recommendations,
+            });
         }
     }
 
-    const deadline = Date.now() + TOTAL_BUDGET_MS;
-    const locationContext = city ? `${city}의 '${placeName}'` : `'${placeName}'`;
-    
-    // EXPLICITLY TELL DEEPSEEK NO HOTELS
-    const categoryFocus = category && category !== 'all' 
-        ? `특히 [${category}] 분야에 집중해서` 
-        : '식사, 감성 카페, 볼거리 명소를 골고루 추천하되, 숙소(호텔 등)는 절대로 제외하고';
-
-    const prompt = `
-당신은 현지 지리에 정통한 전문 여행 가이드입니다.
-${locationContext} 주변에서 여행객이 실제로 도보나 대중교통으로 가기 좋은 장소 4~6곳을 추천해주세요.
-${categoryFocus} 엄선해 주세요.
-
-반드시 아래 JSON 형식으로만 응답해야 하며, 마크다운 코드블록이나 다른 설명 없이 순수 JSON만 출력하세요:
-{
-  "recommendations": [
-    {
-      "name": "정확한 상호명 및 한국어 명칭 (예: 앗치치혼포 도톤보리 본점)",
-      "category": "restaurant | cafe | spot",
-      "categoryLabel": "로컬 맛집 | 감성 카페 | 주변 명소",
-      "distance": "도보 3분 (250m) 또는 이동 소요시간",
-      "estimatedRating": 4.6,
-      "signatureMenu": "대표 시그니처 메뉴 또는 특징 (예: 타코야키 9알 600엔)",
-      "priceRange": "예: 1인당 1,000~2,000엔",
-      "reason": "추천 이유 1~2문장 (현지 분위기, 맛의 특징 등)",
-      "tip": "실전 방문 꿀팁 (예: 웨이팅 팁, 브레이크타임, 추천 시간대)"
-    }
-  ]
-}
-`.trim();
-
-    if (deepseekKey && remainingMs(deadline) >= MIN_ATTEMPT_MS) {
+    if (hasLlmProvider()) {
         try {
-            const result = await callDeepSeek(deepseekKey, prompt, deadline);
-            if (result && result.recommendations && result.recommendations.length > 0) {
-                const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-                const enrichedDeepseek = await enrichWithGoogleMaps(result.recommendations, googleApiKey, city);
+            const result = await chatCompletion({
+                system: 'You are an expert travel assistant. Output ONLY valid JSON.',
+                user: buildPrompt({ placeName, city, category, locale }),
+                json: true,
+                timeoutMs: LLM_TIMEOUT_MS,
+            });
+            const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
+            if (recs.length > 0) {
+                const enriched = await enrichWithGoogleMaps(recs, city, bias);
+                if (db) {
+                    const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 86_400_000).toISOString();
+                    const { error } = await db.from('ai_recommendation_cache').upsert(
+                        { ...cacheKey, payload: { recommendations: enriched }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: expiresAt },
+                        { onConflict: 'kind,city_key,place_key,category,locale' },
+                    );
+                    if (error) console.warn('[recommend] cache write failed:', error.message);
+                }
                 return res.status(200).json({
                     success: true,
                     provider: result.provider,
-                    modelUsed: result.modelUsed,
+                    modelUsed: result.model,
                     basePlace: placeName,
-                    recommendations: enrichedDeepseek
+                    recommendations: enriched,
                 });
             }
         } catch (e) {
-            console.warn('[DeepSeek Call Error]:', e);
+            console.warn('[recommend] LLM call failed:', e instanceof Error ? e.message : e);
         }
     }
 
-    const curatedRecs = getCuratedFallbackRecommendations(placeName, city, category);
-    const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    const enrichedCurated = await enrichWithGoogleMaps(curatedRecs, googleApiKey, city);
+    const curated = locale === 'ko' ? getCuratedFallbackRecommendations(placeName, city, category) : [];
+    if (curated.length === 0) {
+        return res.status(503).json({ error: 'recommendation_unavailable' });
+    }
+    const enrichedCurated = await enrichWithGoogleMaps(curated, city, bias);
     return res.status(200).json({
         success: true,
         provider: 'Triptic Curated',
         modelUsed: 'curated-recommendations',
         isFallback: true,
         basePlace: placeName,
-        recommendations: enrichedCurated
+        recommendations: enrichedCurated,
     });
 }

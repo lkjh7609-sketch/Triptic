@@ -12,12 +12,14 @@ import styles from './HomeDesktop.module.css';
 function DestinationPreviewModal({ dest, onClose, onStart, t }: { dest: any, onClose: () => void, onStart: () => void, t: any }) {
   const [desc, setDesc] = useState(dest.desc);
   const [loading, setLoading] = useState(false);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
   useEffect(() => {
     async function loadDesc() {
       setLoading(true);
       try {
-        const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(dest.title)}`));
+        const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(dest.title)}&locale=${encodeURIComponent(locale)}`));
         const data = await res.json();
         if (data.success && data.description) {
           setDesc(data.description);
@@ -29,7 +31,7 @@ function DestinationPreviewModal({ dest, onClose, onStart, t }: { dest: any, onC
       }
     }
     loadDesc();
-  }, [dest.title]);
+  }, [dest.title, locale]);
 
   return createPortal(
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>

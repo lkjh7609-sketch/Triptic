@@ -89,3 +89,16 @@ export function nearestZoneIndexForPoint<T extends MaybeGeoPoint>(
   });
   return best;
 }
+
+/**
+ * 거리 표시 (profiles.distance_unit 반영). 1km/1mi 미만은 m/ft 대신 소수 한 자리로
+ * 보여준다 — 여행 동선 거리에서는 "0.3 km"가 "300 m"보다 비교하기 쉽다는 legacy 표기 유지.
+ */
+export function formatDistance(km: number, unit: 'km' | 'mi', locale: string): string {
+  const value = unit === 'mi' ? km * 0.621371 : km;
+  return new Intl.NumberFormat(locale, {
+    style: 'unit',
+    unit: unit === 'mi' ? 'mile' : 'kilometer',
+    maximumFractionDigits: value < 10 ? 1 : 0,
+  }).format(value);
+}

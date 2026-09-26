@@ -25,28 +25,43 @@
   color: var(--text-muted);
 }
 
-.loadingState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6) 0;
+.loadingText,
+.emptyText {
+  margin: 0;
   color: var(--text-muted);
-  gap: var(--space-3);
   font-size: var(--font-body-size);
 }
 
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border-subtle);
-  border-top-color: var(--brand);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.emptyText {
+  padding: var(--space-6) 0;
+  text-align: center;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.errorState button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tip {
+  margin-top: var(--space-2) !important;
+  color: var(--text-muted);
+}
+
+.aiNotice {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
 }
 
 .list {
@@ -212,4 +227,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+.acceptBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }

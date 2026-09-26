@@ -265,5 +265,25 @@
     "CHF": "Swiss Franc",
     "NZD": "New Zealand Dollar",
     "MXN": "Mexican Peso"
+  },
+  "aiNext": {
+    "title": "AI next-stop ideas",
+    "subtitle": "Places worth visiting next near {{place}}",
+    "subtitleCity": "Places worth visiting in {{city}}",
+    "loading": "Finding recommendations…",
+    "error": "Couldn't load recommendations. Please try again shortly.",
+    "empty": "No more recommendations",
+    "whyTitle": "Why we picked it",
+    "tip": "Tip: {{tip}}",
+    "notInterested": "Not interested",
+    "addToPlan": "Add to plan",
+    "distanceFrom": "{{distance}} from {{place}}",
+    "locating": "Finding location…",
+    "locationNotFound": "Couldn't find it on the map",
+    "timeTitle": "When will you visit?",
+    "timeSubtitle": "Adding to your plan: {{name}}",
+    "timeLabel": "Planned time",
+    "confirmAdd": "Add to plan",
+    "aiNotice": "These are AI-generated suggestions. Check opening hours and prices before you go."
   }
 }

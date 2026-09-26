@@ -1,101 +1,65 @@
-import fetch from 'node-fetch';
-import { createClient } from '@supabase/supabase-js';
+// Vercel Serverless Function: AI 도시 소개
+// Endpoint: GET /api/cityDesc?city=Kyoto&locale=ja
+//
+// ai_recommendation_cache(kind='city_desc', 180일)에 언어별로 캐시한다. 같은 도시·언어
+// 조합은 한 번만 LLM을 부른다.
+import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
+import { chatCompletion, hasLlmProvider } from './_lib/llm.js';
+import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-let supabase = null;
-if (supabaseUrl && supabaseKey) {
-    supabase = createClient(supabaseUrl, supabaseKey);
-}
+const CACHE_TTL_DAYS = 180;
+const isRateLimited = createRateLimiter(30);
 
 export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    applyCors(req, res, 'GET,OPTIONS');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
+    if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
 
-    const city = req.query.city;
-    if (!city) return res.status(400).json({ error: 'City is required' });
+    const city = sanitizeInput(req.query?.city, 60);
+    const locale = parseLocale(req.query?.locale);
+    if (!city) return res.status(400).json({ error: 'city_required' });
 
-    // 1. Check cache
-    if (supabase) {
-        try {
-            const { data: cacheHit } = await supabase
-                .from('ai_recommendation_cache')
-                .select('recommendations')
-                .eq('city', city)
-                .eq('category', 'city_desc')
-                .single();
-            
-            if (cacheHit && cacheHit.recommendations?.description) {
-                return res.status(200).json({
-                    success: true,
-                    description: cacheHit.recommendations.description,
-                    cached: true
-                });
-            }
-        } catch (e) {
-            console.warn('[Cache] 읽기 실패:', e.message);
+    const db = supabaseAdmin();
+    const cacheKey = { kind: 'city_desc', city_key: normalizeKey(city), place_key: '', category: 'all', locale };
+
+    if (db) {
+        const { data: hit, error } = await db
+            .from('ai_recommendation_cache')
+            .select('payload')
+            .match(cacheKey)
+            .gt('expires_at', new Date().toISOString())
+            .maybeSingle();
+        if (error) console.warn('[cityDesc] cache read failed:', error.message);
+        if (typeof hit?.payload?.description === 'string') {
+            res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+            return res.status(200).json({ success: true, description: hit.payload.description, cached: true });
         }
     }
 
-    // 2. Fetch from DeepSeek
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-    if (!openRouterApiKey) {
-        return res.status(500).json({ error: 'Missing OPENROUTER_API_KEY' });
-    }
-
-    const prompt = `여행자를 위해 '${city}'에 대한 매력적이고 유용한 소개를 300자 내외로 작성해주세요. 도시의 분위기, 대표적인 특징, 여행 포인트가 잘 드러나야 합니다.`;
+    if (!hasLlmProvider()) return res.status(503).json({ error: 'llm_unavailable' });
 
     try {
-        const aiRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${openRouterApiKey}`,
-                'HTTP-Referer': 'https://triptic.com',
-                'X-Title': 'Triptic'
-            },
-            body: JSON.stringify({
-                model: 'deepseek/deepseek-chat',
-                messages: [
-                    { role: 'system', content: 'You are an expert travel copywriter.' },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7
-            })
+        const result = await chatCompletion({
+            system: 'You are an expert travel copywriter. Reply with the description text only, no headings or markdown.',
+            user: `Write an inviting, useful introduction to "${city}" for travelers in about 3-4 sentences (roughly 300 characters for CJK languages, 80 words for English). Cover the atmosphere, what the city is known for, and what to look forward to. Write it in ${LOCALE_LANGUAGE_NAME[locale]}.`,
+            timeoutMs: 9000,
         });
+        const description = result.content.replace(/^["'“]|["'”]$/g, '').trim().slice(0, 1200);
 
-        const aiData = await aiRes.json();
-        const description = aiData.choices?.[0]?.message?.content?.trim();
-
-        if (description) {
-            // 3. Save to cache
-            if (supabase) {
-                try {
-                    await supabase.from('ai_recommendation_cache').insert({
-                        city,
-                        place_name: city,
-                        category: 'city_desc',
-                        recommendations: { description },
-                        provider: 'OpenRouter-DeepSeek',
-                        model_used: 'deepseek-chat',
-                        hit_count: 1
-                    });
-                } catch (e) {
-                    console.warn('[Cache] 저장 실패:', e.message);
-                }
-            }
-
-            return res.status(200).json({
-                success: true,
-                description,
-                cached: false
-            });
-        } else {
-            return res.status(500).json({ error: 'Failed to generate description' });
+        if (db) {
+            const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 86_400_000).toISOString();
+            const { error } = await db.from('ai_recommendation_cache').upsert(
+                { ...cacheKey, payload: { description }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: expiresAt },
+                { onConflict: 'kind,city_key,place_key,category,locale' },
+            );
+            if (error) console.warn('[cityDesc] cache write failed:', error.message);
         }
-    } catch (error) {
-        console.error('DeepSeek call failed:', error);
-        return res.status(500).json({ error: 'AI Error' });
+
+        res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+        return res.status(200).json({ success: true, description, cached: false });
+    } catch (e) {
+        console.warn('[cityDesc] LLM call failed:', e instanceof Error ? e.message : e);
+        return res.status(502).json({ error: 'llm_failed' });
     }
 }
