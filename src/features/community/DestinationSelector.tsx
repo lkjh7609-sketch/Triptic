@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import type { Destination } from './types';
 import { useTranslation } from 'react-i18next';
-import styles from './DestinationSelector.module.css';
+
 
 const CONTINENT_KEYS = ['AS', 'EU', 'AM_OC'];
 const COUNTRY_KEYS: Record<string, string[]> = {
@@ -12,10 +12,11 @@ const COUNTRY_KEYS: Record<string, string[]> = {
 };
 
 interface DestinationSelectorProps {
+  searchElement?: React.ReactNode;
   destinations: Destination[];
 }
 
-export function DestinationSelector({ destinations }: DestinationSelectorProps) {
+export function DestinationSelector({ destinations, searchElement }: DestinationSelectorProps) {
   const { t } = useTranslation('community');
   const navigate = useNavigate();
   const [continent, setContinent] = useState<string | null>(null);
@@ -36,26 +37,35 @@ export function DestinationSelector({ destinations }: DestinationSelectorProps) 
   }, [country, destinations]);
 
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col gap-3 w-full">
       
-      <div className={styles.row}>
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-start">
+
         {CONTINENT_KEYS.map((key) => (
           <button 
             key={key} 
-            className={`${styles.chip} ${continent === key ? styles.active : ''}`}
+            className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-all shrink-0 border ${continent === key ? 'bg-primary text-on-primary border-primary shadow-sm' : 'bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant'}`}
             onClick={() => { setContinent(key); setCountry(null); }}
           >
             {t(`continent.${key}.name`)}
           </button>
         ))}
+      
+        </div>
+        {searchElement && (
+          <div className="w-full lg:w-auto shrink-0">
+            {searchElement}
+          </div>
+        )}
       </div>
 
       {continent && availableCountries.length > 0 && (
-        <div className={styles.row}>
+        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-end">
           {availableCountries.map(code => (
             <button 
               key={code} 
-              className={`${styles.chip} ${styles.chipCountry} ${country === code ? styles.active : ''}`}
+              className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-all shrink-0 border ${country === code ? 'bg-primary text-on-primary border-primary shadow-sm' : 'bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant'}`}
               onClick={() => setCountry(code)}
             >
               {t(`continent.${continent}.countries.${code}`)}
@@ -65,11 +75,11 @@ export function DestinationSelector({ destinations }: DestinationSelectorProps) 
       )}
 
       {country && availableCities.length > 0 && (
-        <div className={styles.row}>
+        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-end">
           {availableCities.map(city => (
             <button 
               key={city.id} 
-              className={`${styles.chip} ${styles.chipCity}`}
+              className="px-4 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/50 text-primary font-label-md text-label-md transition-all shrink-0"
               onClick={() => navigate(`/community/d/${city.slug}`)}
             >
               {city.name}

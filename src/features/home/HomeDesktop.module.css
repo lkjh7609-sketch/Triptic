@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background-color: var(--bg-default, #FAF9F6);
+  background-color: var(--surface-page);
   color: var(--text-primary, #0F2942);
 }
 
@@ -34,7 +34,7 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  color: #fff;
+  color: var(--text-primary);
   max-width: 1000px;
   width: 100%;
 }
@@ -51,7 +51,7 @@
 .searchPill {
   display: flex;
   align-items: center;
-  background: #ffffff;
+  background: var(--surface-card);
   border-radius: 9999px;
   padding: 8px 8px 8px 24px;
   box-shadow: 0 20px 48px -8px rgba(15, 41, 66, 0.12), 0 2px 8px 0 rgba(15, 41, 66, 0.04);
@@ -70,7 +70,7 @@
 
 .searchBtn {
   background-color: var(--brand, #FF6B4A);
-  color: #fff;
+  color: var(--text-primary);
   border: none;
   border-radius: 9999px;
   padding: 12px 24px;
@@ -88,7 +88,7 @@
 .section {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 4rem 4rem;
   width: 100%;
 }
 
@@ -108,14 +108,11 @@
   scroll-snap-type: x mandatory;
 }
 .grid::-webkit-scrollbar {
-  height: 8px;
+  display: none;
 }
-.grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-.grid::-webkit-scrollbar-thumb {
-  background-color: rgba(15, 41, 66, 0.1);
-  border-radius: 4px;
+.grid {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .card {
@@ -123,7 +120,7 @@
   width: 320px;
   flex-shrink: 0;
   scroll-snap-align: start;
-  background: #ffffff;
+  background: var(--surface-card);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
@@ -153,7 +150,7 @@
 }
 .cardDesc {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .quickCategories {
@@ -167,22 +164,22 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--surface-card);
   padding: 10px 20px;
   border-radius: 9999px;
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--surface-subtle);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
 }
 
 .categoryPill:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--surface-subtle);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 
@@ -198,7 +195,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background: #ffffff;
+  background: var(--surface-card);
   border: 1px solid var(--border-subtle, #EFECE6);
   border-radius: 50%;
   width: 48px;
@@ -213,16 +210,16 @@
 }
 
 .sliderBtnLeft:hover, .sliderBtnRight:hover {
-  background: var(--surface-hover, #F8F7F4);
+  background: var(--surface-subtle);
   box-shadow: 0 6px 16px rgba(15, 41, 66, 0.12);
 }
 
 .sliderBtnLeft {
-  left: -24px;
+  left: -56px;
 }
 
 .sliderBtnRight {
-  right: -24px;
+  right: -56px;
 }
 
 .footer {
@@ -242,7 +239,7 @@
 }
 
 .footerLink {
-  color: var(--text-secondary, #4A5568);
+  color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
 }

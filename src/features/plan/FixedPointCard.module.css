@@ -23,3 +23,18 @@
   font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
+
+.fixedItemWrap {
+  position: relative;
+  display: flex;
+  margin: var(--space-3) var(--space-4);
+}
+.connectingLine {
+  position: absolute;
+  top: -12px;
+  left: 13px;
+  width: 2px;
+  height: calc(100% + 24px);
+  background: var(--border-subtle);
+  z-index: 0;
+}

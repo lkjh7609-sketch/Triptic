@@ -6,18 +6,22 @@
  * 여러 컴포넌트가 동시에 호출해도 실제 로드는 한 번만 일어나도록 Promise를 캐시한다.
  */
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import i18next from '@/shared/i18n';
 
 let optionsSet = false;
+let currentLanguage = '';
 const libraryPromises = new Map<string, Promise<unknown>>();
 
 function ensureOptions(): void {
-  if (optionsSet) return;
+  const language = i18next.language || 'ko';
+  if (optionsSet && currentLanguage === language) return;
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
     throw new Error('VITE_GOOGLE_MAPS_API_KEY가 설정되지 않았습니다.');
   }
-  setOptions({ key: apiKey });
+  setOptions({ key: apiKey, language });
   optionsSet = true;
+  currentLanguage = language;
 }
 
 /** maps 라이브러리(Map, DirectionsService 등)를 로드하고 window.google을 반환한다 */

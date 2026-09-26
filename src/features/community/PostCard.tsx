@@ -1,7 +1,7 @@
 import { MessageCircle, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useToggleLike } from './hooks/usePosts';
@@ -17,7 +17,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, showDestination = true }: PostCardProps) {
-  const { t } = useTranslation('community');
+  const { t, i18n } = useTranslation('community');
   const { user } = useSession();
   const navigate = useNavigate();
   const toggleLike = useToggleLike(post.id, user?.id ?? null);
@@ -47,7 +47,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
             <span className={styles.destinationBadge}>· {post.destination.name}</span>
           ) : null}
           <span className={styles.time}>
-            · {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: ko })}
+            · {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
           </span>
         </div>
         <div onClick={(e) => e.preventDefault()}>

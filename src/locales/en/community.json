@@ -45,10 +45,11 @@
     "emptyAll": "No posts yet.",
     "loadMore": "Load more",
     "writeBtn": "Write",
-    "subtitle": "Records and Inspiration from Travelers",
-    "searchPlaceholder": "Search regions, keywords, travelers...",
+    "subtitle": "Travelers' records and inspiration",
+    "searchPlaceholder": "Search region, keyword, traveler...",
     "emptySub": "Share the moments of your first trip and local insights.",
-    "writeFirst": "Write your first story"
+    "writeFirst": "Write your first story",
+    "searchError": "Could not find the board for this city."
   },
   "destination": {
     "loadError": "Couldn't load the destination.",
@@ -57,7 +58,7 @@
     "following": "Following ",
     "follow": "+ Follow",
     "createTripHere": "Plan a trip to this destination",
-    "emptyPosts": "No posts yet for this destination."
+    "emptyPosts": "No posts yet."
   },
   "post": {
     "fallbackAuthor": "Traveler"

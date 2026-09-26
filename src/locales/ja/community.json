@@ -43,7 +43,13 @@
     "loadError": "フィードを読み込めませんでした。",
     "emptyFollowing": "フォローしている旅行先にはまだ投稿がありません。",
     "emptyAll": "まだ投稿がありません。",
-    "loadMore": "もっと見る"
+    "loadMore": "もっと見る",
+    "searchError": "その都市の掲示板が見つかりません。",
+    "subtitle": "旅行者たちの記録とインスピレーション",
+    "searchPlaceholder": "地域、キーワード、旅行者を検索...",
+    "emptySub": "初めての旅行の瞬間やローカルなインサイトを共有してみましょう。",
+    "writeFirst": "初めてのストーリーを書く",
+    "writeBtn": "投稿する"
   },
   "destination": {
     "loadError": "旅行先情報を読み込めませんでした。",
@@ -51,7 +57,7 @@
     "following": "フォロー中 ",
     "follow": "+ フォロー",
     "createTripHere": "この旅行先で旅行を作成",
-    "emptyPosts": "まだこの旅行先に投稿がありません。"
+    "emptyPosts": "まだ投稿がありません。"
   },
   "post": {
     "fallbackAuthor": "旅行者"

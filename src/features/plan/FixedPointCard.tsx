@@ -26,12 +26,15 @@ interface FixedPointCardProps {
 /** 숙소 등 고정 지점 카드 (index.html .fixed-item 이식) */
 export function FixedPointCard({ icon, label, name, address }: FixedPointCardProps) {
   return (
-    <div className={styles.fixedItem}>
-      <span className={styles.fixedLabel}>
-        {icon} {label}
-      </span>
-      <span className={styles.fixedName}>{name}</span>
-      {address ? <span className={styles.fixedAddress}>{address}</span> : null}
+    <div className={styles.fixedItemWrap}>
+      <div className={styles.connectingLine} />
+      <div className={styles.fixedItem} style={{ margin: 0, flex: 1, zIndex: 1 }}>
+        <span className={styles.fixedLabel}>
+          {icon} {label}
+        </span>
+        <span className={styles.fixedName}>{name}</span>
+        {address ? <span className={styles.fixedAddress}>{address}</span> : null}
+      </div>
     </div>
   );
 }
@@ -41,27 +44,30 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
   const { t } = useTranslation('plan');
   const airlineTag = flight.airline ? ` (${flight.airline})` : '';
   return (
-    <div className={styles.fixedItem}>
-      <span className={styles.fixedLabel}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Plane size={16} /> {flight.flightNo}</span></span>
-      <span className={styles.fixedName}>
-        {flight.dep.name || flight.dep.iata || '?'}
-        {flight.dep.lat && flight.dep.lng ? (
-          <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
-            <ExternalLink size={12} />
-          </a>
-        ) : null}
-        {" → "}
-        {flight.arr.name || flight.arr.iata || '?'}
-        {flight.arr.lat && flight.arr.lng ? (
-          <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
-            <ExternalLink size={12} />
-          </a>
-        ) : null}
-        {airlineTag}
-      </span>
-      <span className={styles.fixedAddress}>
-        {t('flightCard.schedule', { depTime: flight.dep.time || '', arrTime: flight.arr.time || '' })}
-      </span>
+    <div className={styles.fixedItemWrap}>
+      <div className={styles.connectingLine} />
+      <div className={styles.fixedItem} style={{ margin: 0, flex: 1, zIndex: 1 }}>
+        <span className={styles.fixedLabel}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Plane size={16} /> {flight.flightNo}</span></span>
+        <span className={styles.fixedName}>
+          {flight.dep.name || flight.dep.iata || '?'}
+          {flight.dep.lat && flight.dep.lng ? (
+            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+              <ExternalLink size={12} />
+            </a>
+          ) : null}
+          {" → "}
+          {flight.arr.name || flight.arr.iata || '?'}
+          {flight.arr.lat && flight.arr.lng ? (
+            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+              <ExternalLink size={12} />
+            </a>
+          ) : null}
+          {airlineTag}
+        </span>
+        <span className={styles.fixedAddress}>
+          {t('flightCard.schedule', { depTime: flight.dep.time || '', arrTime: flight.arr.time || '' })}
+        </span>
+      </div>
     </div>
   );
 }

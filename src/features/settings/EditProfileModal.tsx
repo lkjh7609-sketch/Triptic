@@ -50,7 +50,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: any) {
               onChange={e => { setPhone(e.target.value); setVerified(false); }} 
               placeholder="010-0000-0000" 
             />
-            <button type="button" onClick={handleSendCode} style={{ padding: '0 12px', background: 'var(--surface-hover)', border: '1px solid var(--border)', borderRadius: 8 }}>
+            <button type="button" onClick={handleSendCode} style={{ padding: '0 12px', background: 'var(--surface-subtle)', border: '1px solid var(--border)', borderRadius: 8 }}>
               {verified ? '재인증' : '인증 요청'}
             </button>
           </div>

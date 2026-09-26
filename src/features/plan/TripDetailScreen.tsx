@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { addDays, format, parseISO } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { formatLocalizedDay } from './planDateFormat';
 import { useWeather, type WeatherDailyEntry } from '@/features/weather/useWeather';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
@@ -67,7 +67,7 @@ import { Lightbulb, Ticket, ExternalLink, MapPin, Hotel as HotelIcon, Utensils, 
  */
 export function TripDetailScreen() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const { t } = useTranslation(['plan', 'common']);
+  const { t, i18n } = useTranslation(['plan', 'common']);
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const isSample = tripId === SAMPLE_TRIP_ID;
@@ -376,6 +376,16 @@ export function TripDetailScreen() {
             <button
               type="button"
               className={styles.toggleButton}
+              aria-label={t('flight.title')}
+              onClick={() => setShowFlightModal(true)}
+            >
+              <Plane size={18} />
+            </button>
+          ) : null}
+          {!isSample ? (
+            <button
+              type="button"
+              className={styles.toggleButton}
               aria-label={t('tripDetail.addByDocument')}
               onClick={() =>
                 (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
@@ -421,7 +431,7 @@ export function TripDetailScreen() {
           <div className={styles.dayHeaderTopRow}>
             <span className={styles.dayHeaderTitle}>
               Day {currentDay}
-              {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay)}` : ''}
+              {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay, i18n.language)}` : ''}
               <DayWeatherBadge loading={weather.isLoading} entry={dayWeather} />
             </span>
 
@@ -439,9 +449,7 @@ export function TripDetailScreen() {
             <button type="button" className={styles.hotelButton} onClick={() => setShowExpenseModal(true)}>
               <Coins size={16} /> <span className={styles.buttonText}>{t('tripDetail.expenseLabel')}</span>
             </button>
-            <button type="button" className={styles.hotelButton} onClick={() => setShowFlightModal(true)}>
-              <Plane size={16} /> <span className={styles.buttonText}>{t('flight.title')}</span>
-            </button>
+
           </div>
         </div>
 
@@ -596,12 +604,12 @@ export function TripDetailScreen() {
   );
 }
 
-function formatDayDate(tripStartDate: string, dayIndex: number): string {
+function formatDayDate(tripStartDate: string, dayIndex: number, language: string): string {
   const start = parseISO(tripStartDate);
   if (Number.isNaN(start.getTime())) return '';
   const date = new Date(start.getTime() + (dayIndex - 1) * 86_400_000);
   if (Number.isNaN(date.getTime())) return '';
-  return format(date, 'M/d (E)', { locale: ko });
+  return formatLocalizedDay(date, language);
 }
 
 interface DayWeatherBadgeProps {

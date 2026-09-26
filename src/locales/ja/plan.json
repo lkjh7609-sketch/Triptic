@@ -36,7 +36,8 @@
       "startRequired": "開始日を選択してください",
       "endRequired": "終了日を選択してください",
       "endAfterStart": "終了日は開始日より後である必要があります"
-    }
+    },
+    "selectDate": "日付を選択してください"
   },
   "day": {
     "header": "Day {{index}}",
@@ -211,6 +212,36 @@
     "featuredJourney": "注目の旅行",
     "yourCollection": "旅行コレクション",
     "startPlanningDesc": "次の素晴らしい冒険を計画しましょう。",
-    "openLiveItinerary": "旅程を見る →"
+    "openLiveItinerary": "旅程を見る →",
+    "noPastTripsTitle": "過去の旅行はありません",
+    "noPastTripsDesc": "まだ記録された過去の旅行がありません。"
+  },
+  "inspector": {
+    "focusMove": "フォーカス移動",
+    "crowdLow": "空いている",
+    "crowdMedium": "普通",
+    "crowdHigh": "混雑"
+  },
+  "currency": {
+    "KRW": "韓国ウォン",
+    "USD": "アメリカドル",
+    "JPY": "日本円",
+    "EUR": "ユーロ",
+    "CNY": "中国人民元",
+    "GBP": "イギリスポンド",
+    "AUD": "オーストラリアドル",
+    "CAD": "カナダドル",
+    "HKD": "香港ドル",
+    "SGD": "シンガポールドル",
+    "TWD": "台湾ドル",
+    "THB": "タイバーツ",
+    "VND": "ベトナムドン",
+    "PHP": "フィリピンペソ",
+    "MYR": "マレーシアリンギット",
+    "IDR": "インドネシアルピア",
+    "INR": "インドルピー",
+    "CHF": "スイスフラン",
+    "NZD": "ニュージーランドドル",
+    "MXN": "メキシコペソ"
   }
 }

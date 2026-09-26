@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { trackScreenView } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
@@ -13,12 +14,14 @@ import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import { DestinationSelector } from './DestinationSelector';
 import styles from './CommunityScreen.module.css';
+import { CommunityDesignBody } from './CommunityDesign';
 
 type Tab = 'all' | 'following';
 
 export function CommunityScreen() {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [tab, setTab] = useState<Tab>('all');
   const { data: destinations } = useDestinations();
   const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
@@ -32,7 +35,7 @@ export function CommunityScreen() {
     if (dest) {
       navigate(`/community/d/${dest.slug}`);
     } else {
-      alert('해당 도시 게시판을 찾을 수 없습니다.');
+      alert(t('feed.searchError', { defaultValue: '해당 도시 게시판을 찾을 수 없습니다.' }));
     }
   };
 
@@ -43,6 +46,14 @@ export function CommunityScreen() {
 
   const followedDestinations = (destinations ?? []).filter((d) => (followedIds ?? []).includes(d.id));
   const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
+
+  if (isDesktop) {
+    return (
+      <div className={styles.desktopWrap} style={{ padding: 0 }}>
+        <CommunityDesignBody searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} destinations={destinations} />
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>

@@ -32,7 +32,8 @@
     "days": "Days",
     "cities": "Cities",
     "places": "Places",
-    "distanceKm": "Distance (km)"
+    "distanceKm": "Distance (km)",
+    "companions": "Companions"
   },
   "worldMap": {
     "caption_one": "{{count}} country",
@@ -60,6 +61,9 @@
     "previewLoading": "✨ AI is loading city information...",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "contact": "Contact Support"
+    "contact": "Contact Support",
+    "flights": "Flights",
+    "stays": "Stays",
+    "activities": "Activities"
   }
 }

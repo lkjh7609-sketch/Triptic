@@ -2,7 +2,7 @@ import { MessageCircle, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile } from '@/shared/hooks/useProfile';
@@ -19,7 +19,7 @@ import type { Locale } from './types';
 import styles from './PostDetailScreen.module.css';
 
 export function PostDetailScreen() {
-  const { t } = useTranslation(['community', 'common']);
+  const { t, i18n } = useTranslation(['community', 'common']);
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const { user } = useSession();
@@ -105,7 +105,7 @@ export function PostDetailScreen() {
               <div className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</div>
               <div className={styles.time}>
                 {post.destination?.name ? `${post.destination.name} · ` : ''}
-                {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: ko })}
+                {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@ export function PostDetailScreen() {
             <div className={styles.commentHeader}>
               <span className={styles.commentAuthor}>{c.author?.display_name || t('post.fallbackAuthor')}</span>
               <span className={styles.commentTime}>
-                {formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true, locale: ko })}
+                {formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
               </span>
               <PostActionsMenu
                 targetType="comment"

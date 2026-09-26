@@ -10,7 +10,8 @@
   "account": {
     "fallbackName": "My account",
     "signOut": "Sign out",
-    "deleteAction": "Delete account"
+    "deleteAction": "Delete account",
+    "editProfile": "Edit Profile"
   },
   "preferences": {
     "theme": "Theme",
@@ -22,7 +23,8 @@
     "distanceUnitHint": "The distance unit isn't applied to maps or routes yet.",
     "baseCurrency": "Default currency",
     "language": "Language",
-    "loginHint": "Sign in to save your temperature and distance units, default currency, and language."
+    "loginHint": "Sign in to save your temperature and distance units, default currency, and language.",
+    "unitSettings": "Unit Settings (Temp/Distance)"
   },
   "notifications": {
     "preDeparture": "Pre-departure reminder",

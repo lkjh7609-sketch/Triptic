@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { formatLocalizedDay } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { Plane } from 'lucide-react';
 import type { TripRow } from '@/shared/api/tripService';
@@ -87,7 +87,7 @@ function UpcomingHero({ trip }: { trip: TripRow }) {
 }
 
 function OngoingHero({ trip }: { trip: TripRow }) {
-  const { t } = useTranslation('home');
+  const { t, i18n } = useTranslation('home');
   const project = tripService.toLocalProject(trip);
   const totalDays = project.totalDays || 1;
   const dayIndex = trip.start_date
@@ -109,7 +109,7 @@ function OngoingHero({ trip }: { trip: TripRow }) {
         <h2 className={styles.title}>{trip.title}</h2>
       </div>
       <p className={styles.dates}>
-        {t('hero.dayIndex', { day: dayIndex, date: format(new Date(), 'M/d (E)', { locale: ko }) })}
+        {t('hero.dayIndex', { day: dayIndex, date: formatLocalizedDay(new Date(), i18n.language) })}
       </p>
       {todayItems.length > 0 ? (
         <ul className={styles.itemList}>

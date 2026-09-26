@@ -48,7 +48,8 @@
     "subtitle": "여행자들의 기록과 영감",
     "searchPlaceholder": "지역, 키워드, 여행자 검색...",
     "emptySub": "첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.",
-    "writeFirst": "첫 이야기 작성하기"
+    "writeFirst": "첫 이야기 작성하기",
+    "searchError": "해당 도시 게시판을 찾을 수 없습니다."
   },
   "destination": {
     "loadError": "여행지 정보를 불러오지 못했어요.",
@@ -56,7 +57,7 @@
     "following": "구독 중 ",
     "follow": "+ 구독",
     "createTripHere": "이 여행지로 여행 만들기",
-    "emptyPosts": "아직 이 여행지에 등록된 글이 없어요."
+    "emptyPosts": "아직 등록된 글이 없어요."
   },
   "post": {
     "fallbackAuthor": "여행자"

@@ -5,7 +5,8 @@ import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
-import { User, Settings, LogOut, Globe, HardDrive } from 'lucide-react';
+import { User, Settings, LogOut, Globe, HardDrive, Sun, Moon, Compass } from 'lucide-react';
+import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { EditProfileModal } from '@/features/settings/EditProfileModal';
 import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
 import { LanguageModal } from '@/features/settings/LanguageModal';
@@ -23,6 +24,14 @@ export function HeaderDesktop() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [activeModal, setActiveModal] = useState<'profile' | 'unit' | 'language' | 'backup' | null>(null);
+  const [currentTheme, setCurrentTheme] = useState<ThemePreference>(getStoredTheme());
+
+  const toggleTheme = () => {
+    const isCurrentlyDark = currentTheme === 'dark' || (currentTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const newTheme = isCurrentlyDark ? 'light' : 'dark';
+    setTheme(newTheme);
+    setCurrentTheme(newTheme);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -46,10 +55,15 @@ export function HeaderDesktop() {
     setDropdownOpen(false);
   };
 
+  const isDark = currentTheme === 'dark' || (currentTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
   return (
     <header className={styles.header}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
-        <Link to="/" className={styles.logo}>Triptic</Link>
+        <Link to="/" className={styles.logo} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Compass size={28} color="var(--brand)" strokeWidth={2} />
+          Triptic
+        </Link>
         
         <nav className={styles.nav}>
           <Link to="/" className={styles.navLink} aria-selected={pathname === '/'}>
@@ -74,6 +88,23 @@ export function HeaderDesktop() {
         </div>
 
         <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`}>
+          <button 
+            className={styles.dropdownItem} 
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleTheme();
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {isDark ? <Moon size={16} /> : <Sun size={16} />}
+              다크 모드
+            </div>
+            <div className={`${styles.toggleSwitch} ${isDark ? styles.toggleOn : ''}`}>
+              <div className={styles.toggleThumb} />
+            </div>
+          </button>
+          <div className={styles.dropdownDivider} />
           <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
             <User size={16} /> 내 정보 변경
           </button>

@@ -10,7 +10,7 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import { CURRENCIES } from '@/features/plan/expenses';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
-import type { Locale, NotificationPrefs } from '@/shared/api/profileService';
+import type { NotificationPrefs } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
@@ -18,6 +18,7 @@ import { Thermometer, User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Mo
 
 import { EditProfileModal } from './EditProfileModal';
 import { UnitSettingsModal } from './UnitSettingsModal';
+import { LanguageModal } from './LanguageModal';
 
 import styles from './SettingsScreen.module.css';
 
@@ -40,7 +41,7 @@ const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
  * 정보(약관/개인정보처리방침/오픈소스 라이선스/문의하기) 섹션을 채운다.
  */
 export function SettingsScreen() {
-  const { t } = useTranslation(['settings', 'common']);
+  const { t, i18n } = useTranslation(['settings', 'common']);
   const { user, loading } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -50,6 +51,7 @@ export function SettingsScreen() {
   const [showLicenses, setShowLicenses] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showUnitSettings, setShowUnitSettings] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   const [theme, setThemeState] = useState<ThemePreference>(() => getStoredTheme());
   const [cacheUsageMB, setCacheUsageMB] = useState<number | null>(null);
@@ -120,7 +122,7 @@ export function SettingsScreen() {
             </div>
             <div className={styles.row}>
               <button type="button" className={styles.linkButton} onClick={() => setShowEditProfile(true)}>
-                내 정보 변경
+                {t('account.editProfile', { defaultValue: '내 정보 변경' })}
               </button>
             </div>
             <div className={styles.row}>
@@ -162,8 +164,8 @@ export function SettingsScreen() {
         {user ? (
           <>
             <div className={styles.row} onClick={() => setShowUnitSettings(true)} style={{cursor: 'pointer'}}>
-              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}}/> 단위 설정 (온도/거리)</span>
-              <span style={{color: 'var(--text-secondary)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
+              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}}/> {t('preferences.unitSettings', { defaultValue: '단위 설정 (온도/거리)' })}</span>
+              <span style={{color: 'var(--text-muted)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
             </div>
             <div className={styles.row}>
               <span>{t('preferences.baseCurrency')}</span>
@@ -172,26 +174,21 @@ export function SettingsScreen() {
                 value={profile?.base_currency ?? 'KRW'}
                 onChange={(e) => updateProfile.mutate({ base_currency: e.target.value })}
               >
-                {Object.keys(CURRENCIES).map((code) => (
+                {Object.entries(CURRENCIES).map(([code, meta]) => (
                   <option key={code} value={code}>
-                    {code}
+                    {meta.unit} ({code}) - {meta.symbol}
                   </option>
                 ))}
               </select>
             </div>
-            <div className={styles.row}>
+            <div className={styles.row} onClick={() => setShowLanguageModal(true)} style={{cursor: 'pointer'}}>
               <span>{t('preferences.language')}</span>
-              <select
-                className={styles.select}
-                value={profile?.locale ?? 'ko'}
-                onChange={(e) => updateProfile.mutate({ locale: e.target.value as Locale })}
-              >
-                {/* 언어 선택지는 각 언어의 자체 표기(고유명사)로 표시한다 — UI 로케일에 따라 번역하지 않음 */}
-                <option value="ko">한국어</option> {/* i18n-exempt */}
-                <option value="en">English</option>
-                <option value="zh-CN">简体中文</option>
-                <option value="ja">日本語</option>
-              </select>
+              <span style={{color: 'var(--text-muted)'}}>{
+                i18n.language === 'ko' ? '한국어' :
+                i18n.language === 'en' ? 'English' :
+                i18n.language === 'ja' ? '日本語' :
+                i18n.language === 'zh-CN' ? '简体中文' : '한국어'
+              } &gt;</span>
             </div>
           </>
         ) : (
@@ -283,6 +280,7 @@ export function SettingsScreen() {
       {showLicenses ? <LicensesModal onClose={() => setShowLicenses(false)} /> : null}
       {showEditProfile ? <EditProfileModal onClose={() => setShowEditProfile(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
+      {showLanguageModal ? <LanguageModal onClose={() => setShowLanguageModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
     </div>
   );
 }

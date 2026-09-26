@@ -55,7 +55,8 @@
       "startRequired": "Please choose a start date",
       "endRequired": "Please choose an end date",
       "endAfterStart": "End date must be after the start date"
-    }
+    },
+    "selectDate": "Please select dates"
   },
   "day": {
     "header": "Day {{index}}",
@@ -236,5 +237,33 @@
     "openLiveItinerary": "Open Live Itinerary →",
     "noPastTripsTitle": "No past trips",
     "noPastTripsDesc": "You haven't recorded any past trips yet."
+  },
+  "inspector": {
+    "focusMove": "Move Focus",
+    "crowdLow": "Not crowded",
+    "crowdMedium": "Normal",
+    "crowdHigh": "Crowded"
+  },
+  "currency": {
+    "KRW": "South Korean Won",
+    "USD": "US Dollar",
+    "JPY": "Japanese Yen",
+    "EUR": "Euro",
+    "CNY": "Chinese Yuan",
+    "GBP": "British Pound",
+    "AUD": "Australian Dollar",
+    "CAD": "Canadian Dollar",
+    "HKD": "Hong Kong Dollar",
+    "SGD": "Singapore Dollar",
+    "TWD": "New Taiwan Dollar",
+    "THB": "Thai Baht",
+    "VND": "Vietnamese Dong",
+    "PHP": "Philippine Peso",
+    "MYR": "Malaysian Ringgit",
+    "IDR": "Indonesian Rupiah",
+    "INR": "Indian Rupee",
+    "CHF": "Swiss Franc",
+    "NZD": "New Zealand Dollar",
+    "MXN": "Mexican Peso"
   }
 }

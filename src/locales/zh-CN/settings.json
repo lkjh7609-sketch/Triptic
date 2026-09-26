@@ -10,7 +10,8 @@
   "account": {
     "fallbackName": "我的账户",
     "signOut": "退出登录",
-    "deleteAction": "删除账户"
+    "deleteAction": "删除账户",
+    "editProfile": "修改个人信息"
   },
   "preferences": {
     "theme": "主题",
@@ -22,7 +23,8 @@
     "distanceUnitHint": "距离单位暂未应用到地图或路线显示中。",
     "baseCurrency": "默认货币",
     "language": "语言",
-    "loginHint": "登录后可保存温度单位、距离单位、默认货币和语言设置。"
+    "loginHint": "登录后可保存温度单位、距离单位、默认货币和语言设置。",
+    "unitSettings": "单位设置 (温度/距离)"
   },
   "notifications": {
     "preDeparture": "出发前提醒",

@@ -195,7 +195,7 @@
 .backBtn {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   display: flex;

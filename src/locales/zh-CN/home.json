@@ -32,7 +32,8 @@
     "days": "天数",
     "cities": "城市",
     "places": "地点",
-    "distanceKm": "里程(km)"
+    "distanceKm": "里程(km)",
+    "companions": "同行"
   },
   "worldMap": {
     "caption_other": "{{count}}个国家"
@@ -59,6 +60,9 @@
     "previewLoading": "✨ AI 正在加载城市信息...",
     "terms": "服务条款 (Terms)",
     "privacy": "隐私政策 (Privacy)",
-    "contact": "客户服务 (Contact)"
+    "contact": "客户服务 (Contact)",
+    "flights": "机票",
+    "stays": "住宿",
+    "activities": "活动"
   }
 }

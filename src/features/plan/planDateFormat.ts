@@ -7,10 +7,10 @@
  * 표기만 바뀌면 되는" 날짜에만 쓴다.
  */
 import { format } from 'date-fns';
-import { ko, enUS, zhCN, type Locale } from 'date-fns/locale';
+import { ko, enUS, zhCN, ja, type Locale } from 'date-fns/locale';
 
-const DATE_FNS_LOCALE: Record<string, Locale> = { ko, en: enUS, 'zh-CN': zhCN };
-const DAY_FORMAT: Record<string, string> = { ko: 'M/d (E)', en: 'MMM d (EEE)', 'zh-CN': 'M月d日 (E)' };
+export const DATE_FNS_LOCALE: Record<string, Locale> = { ko, en: enUS, 'zh-CN': zhCN, ja };
+const DAY_FORMAT: Record<string, string> = { ko: 'M/d (E)', en: 'MMM d (EEE)', 'zh-CN': 'M月d日 (E)', ja: 'M/d (E)' };
 
 /** 유효하지 않은 날짜면 빈 문자열을 반환한다(크래시 방지 — CreateTripModal 비정상 입력 방어와 동일한 원칙) */
 export function formatLocalizedDay(date: Date, language: string): string {

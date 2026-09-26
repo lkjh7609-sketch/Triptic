@@ -144,11 +144,11 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample 
               >
                 {t('share.revoke')}
               </button>
-              <button type="button" className={styles.secondary} onClick={onClose}>
-                {t('common:action.close')}
-              </button>
               <button type="button" className={styles.primary} disabled={!shareCode || loading} onClick={handleCopy}>
                 {copied ? t('share.copied') : t('common:action.copy')}
+              </button>
+              <button type="button" className={styles.secondary} onClick={onClose}>
+                {t('common:action.close')}
               </button>
             </div>
           </>
