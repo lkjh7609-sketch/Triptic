@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import i18next from '@/shared/i18n';
 import {
   createPost,
   deleteOwnPost,
@@ -80,7 +81,7 @@ export function useToggleLike(postId: string, userId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (liked: boolean) => {
-      if (!userId) throw new Error('로그인이 필요합니다.');
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return liked ? unlikePost(postId, userId) : likePost(postId, userId);
     },
     onSuccess: () => {

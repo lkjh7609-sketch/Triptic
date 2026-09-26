@@ -10,6 +10,7 @@ import {
 } from './documentService';
 import type { ParsedBooking } from './parseBooking/schema';
 import { useSession } from '@/shared/hooks/useSession';
+import i18next from '@/shared/i18n';
 
 export function pendingBookingsQueryKey(tripId: string) {
   return ['pendingBookings', tripId] as const;
@@ -50,7 +51,7 @@ export function useUploadDocument(tripId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (file: File) => {
-      if (!user) throw new Error('로그인이 필요합니다.');
+      if (!user) throw new Error(i18next.t('common:auth.loginRequired'));
       return uploadAndParseDocument(file, tripId, user.id);
     },
     onSuccess: () => {
