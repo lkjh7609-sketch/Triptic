@@ -554,6 +554,117 @@
     --text-headline-sm--font-weight: 600;
   }
 }
+/* 이 디자인은 라이트 모드 색만 고정값으로 내보내져 있어 다크 모드가 전혀
+ * 반영되지 않았다 — M3 role 이름(*-fixed/*-fixed-dim/inverse-*)이 이미
+ * 라이트 스킴에 들어있어, 그 값들을 그대로 다크 스킴 값으로 재사용해 채웠다
+ * (예: inverse-primary가 곧 다크 모드의 primary, secondary-fixed-dim이 곧
+ * 다크 모드의 secondary — M3 스펙의 role 대응 규칙). error 계열만 M3
+ * 표준 다크 팔레트 상수를 그대로 썼다(브랜드 색과 무관하게 고정된 값).
+ * src/shared/ui/tokens.css의 라이트/다크 전환 규칙과 같은 패턴(속성 선택자 +
+ * prefers-color-scheme 폴백)을 따른다. */
+@layer theme {
+  :root[data-theme='dark'] {
+    --color-on-error: #690005;
+    --color-surface: #121412;
+    --color-primary: #b0c9e8;
+    --color-on-surface: #f2f1ee;
+    --color-surface-bright: #3a3c3a;
+    --color-secondary-container: #8c1900;
+    --color-on-secondary-container: #ffdad2;
+    --color-secondary: #ffb4a3;
+    --color-on-secondary-fixed-variant: #8c1900;
+    --color-secondary-fixed: #ffdad2;
+    --color-on-secondary: #3d0600;
+    --color-primary-fixed: #d1e4ff;
+    --color-error: #ffb4ab;
+    --color-surface-dim: #121412;
+    --color-tertiary-container: #264191;
+    --color-on-tertiary-fixed-variant: #264191;
+    --color-surface-container-low: #1c1e1c;
+    --color-surface-container: #202220;
+    --color-tertiary: #b6c4ff;
+    --color-on-primary-container: #d1e4ff;
+    --color-inverse-on-surface: #1a1c1a;
+    --color-on-error-container: #ffdad6;
+    --color-outline: #8d9199;
+    --color-surface-tint: #b0c9e8;
+    --color-surface-container-lowest: #0e0f0e;
+    --color-outline-variant: #43474d;
+    --color-on-primary: #0f2942;
+    --color-secondary-fixed-dim: #ffb4a3;
+    --color-on-tertiary: #00164e;
+    --color-on-secondary-fixed: #3d0600;
+    --color-on-primary-fixed-variant: #314863;
+    --color-on-primary-fixed: #011d35;
+    --color-on-tertiary-container: #dce1ff;
+    --color-inverse-primary: #001428;
+    --color-tertiary-fixed-dim: #b6c4ff;
+    --color-on-surface-variant: #c3c6ce;
+    --color-on-tertiary-fixed: #00164e;
+    --color-inverse-surface: #faf9f6;
+    --color-surface-container-highest: #363836;
+    --color-error-container: #93000a;
+    --color-background: #121412;
+    --color-primary-container: #26415e;
+    --color-surface-container-high: #2b2d2b;
+    --color-primary-fixed-dim: #b0c9e8;
+    --color-tertiary-fixed: #dce1ff;
+    --color-surface-variant: #43474d;
+    --color-on-background: #f2f1ee;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --color-on-error: #690005;
+      --color-surface: #121412;
+      --color-primary: #b0c9e8;
+      --color-on-surface: #f2f1ee;
+      --color-surface-bright: #3a3c3a;
+      --color-secondary-container: #8c1900;
+      --color-on-secondary-container: #ffdad2;
+      --color-secondary: #ffb4a3;
+      --color-on-secondary-fixed-variant: #8c1900;
+      --color-secondary-fixed: #ffdad2;
+      --color-on-secondary: #3d0600;
+      --color-primary-fixed: #d1e4ff;
+      --color-error: #ffb4ab;
+      --color-surface-dim: #121412;
+      --color-tertiary-container: #264191;
+      --color-on-tertiary-fixed-variant: #264191;
+      --color-surface-container-low: #1c1e1c;
+      --color-surface-container: #202220;
+      --color-tertiary: #b6c4ff;
+      --color-on-primary-container: #d1e4ff;
+      --color-inverse-on-surface: #1a1c1a;
+      --color-on-error-container: #ffdad6;
+      --color-outline: #8d9199;
+      --color-surface-tint: #b0c9e8;
+      --color-surface-container-lowest: #0e0f0e;
+      --color-outline-variant: #43474d;
+      --color-on-primary: #0f2942;
+      --color-secondary-fixed-dim: #ffb4a3;
+      --color-on-tertiary: #00164e;
+      --color-on-secondary-fixed: #3d0600;
+      --color-on-primary-fixed-variant: #314863;
+      --color-on-primary-fixed: #011d35;
+      --color-on-tertiary-container: #dce1ff;
+      --color-inverse-primary: #001428;
+      --color-tertiary-fixed-dim: #b6c4ff;
+      --color-on-surface-variant: #c3c6ce;
+      --color-on-tertiary-fixed: #00164e;
+      --color-inverse-surface: #faf9f6;
+      --color-surface-container-highest: #363836;
+      --color-error-container: #93000a;
+      --color-background: #121412;
+      --color-primary-container: #26415e;
+      --color-surface-container-high: #2b2d2b;
+      --color-primary-fixed-dim: #b0c9e8;
+      --color-tertiary-fixed: #dce1ff;
+      --color-surface-variant: #43474d;
+      --color-on-background: #f2f1ee;
+    }
+  }
+}
 @layer utilities {
   .pointer-events-none {
     pointer-events: none;

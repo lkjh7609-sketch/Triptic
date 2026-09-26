@@ -94,10 +94,6 @@ export function CommunityDesignBody({
         <section className="mb-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-surface-container-highest">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                {t('design.badge')}
-              </span>
               <h1 className="font-headline-lg text-headline-lg text-primary tracking-tight">{t('design.title')}</h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">{t('design.subtitle')}</p>
             </div>
