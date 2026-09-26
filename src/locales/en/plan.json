@@ -148,7 +148,8 @@
   "mealSlot": {
     "breakfast": "Breakfast",
     "lunch": "Lunch",
-    "dinner": "Dinner"
+    "dinner": "Dinner",
+    "cafe": "Cafe"
   },
   "planScreen": {
     "myTrips": "My trips",
@@ -190,7 +191,16 @@
     "textCopied": "Text copied!",
     "pdfAllBtn": "Full itinerary PDF ({{days}} days)",
     "pdfCurrentBtn": "PDF for day {{day}} only",
-    "generatingPdf": "Generating…"
+    "generatingPdf": "Generating…",
+    "text": {
+      "destination": "Destination: {{city}}",
+      "period": "Dates: {{start}} - {{end}} ({{total}} days)",
+      "dayHeader": "[Day {{day}}] {{date}}",
+      "arrival": "Arrival: {{label}}",
+      "hotel": "Hotel: {{name}}",
+      "freeDay": "(Free day)",
+      "departure": "Departure: {{label}}"
+    }
   },
   "suggestions": {
     "title": "Suggestions from companions ({{count}})",
