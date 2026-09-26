@@ -11,10 +11,26 @@ import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData }
 
 /** 원본 index.html CURRENCIES (2026-09-20 기준 라인 3615~3620)과 동일 */
 export const CURRENCIES: Record<string, { symbol: string; unit: string }> = {
-  KRW: { symbol: '₩', unit: '원' },
-  JPY: { symbol: '¥', unit: '엔' },
-  USD: { symbol: '$', unit: '달러' },
-  EUR: { symbol: '€', unit: '유로' },
+  KRW: { symbol: '₩', unit: '대한민국 원' },
+  USD: { symbol: '$', unit: '미국 달러' },
+  JPY: { symbol: '¥', unit: '일본 엔' },
+  EUR: { symbol: '€', unit: '유럽 유로' },
+  CNY: { symbol: '¥', unit: '중국 위안' },
+  GBP: { symbol: '£', unit: '영국 파운드' },
+  AUD: { symbol: 'A$', unit: '호주 달러' },
+  CAD: { symbol: 'C$', unit: '캐나다 달러' },
+  HKD: { symbol: 'HK$', unit: '홍콩 달러' },
+  SGD: { symbol: 'S$', unit: '싱가포르 달러' },
+  TWD: { symbol: 'NT$', unit: '대만 달러' },
+  THB: { symbol: '฿', unit: '태국 바트' },
+  VND: { symbol: '₫', unit: '베트남 동' },
+  PHP: { symbol: '₱', unit: '필리핀 페소' },
+  MYR: { symbol: 'RM', unit: '말레이시아 링깃' },
+  IDR: { symbol: 'Rp', unit: '인도네시아 루피아' },
+  INR: { symbol: '₹', unit: '인도 루피' },
+  CHF: { symbol: 'Fr', unit: '스위스 프랑' },
+  NZD: { symbol: 'NZ$', unit: '뉴질랜드 달러' },
+  MXN: { symbol: 'Mex$', unit: '멕시코 페소' },
 };
 
 export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {

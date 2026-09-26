@@ -83,9 +83,9 @@ export function HomeScreen() {
       </header>
 
       <div className={styles.quickCategories}>
-        <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Plane size={16}/> Flights</a>
-        <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Briefcase size={16}/> Stays</a>
-        <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Tent size={16}/> Activities</a>
+        <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Plane size={16}/> {t('desktop.flights', { defaultValue: 'Flights' })}</a>
+        <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Briefcase size={16}/> {t('desktop.stays', { defaultValue: 'Stays' })}</a>
+        <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Tent size={16}/> {t('desktop.activities', { defaultValue: 'Activities' })}</a>
       </div>
 
       {!hasAnyTrip ? (

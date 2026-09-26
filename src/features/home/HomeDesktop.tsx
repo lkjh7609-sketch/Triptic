@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CURATED_CITIES, COUNTRY_TO_CITIES, CONTINENT_TO_COUNTRIES } from '@/shared/hooks/useCityImage';
+import { useHomeStats } from './useHomeStats';
+import { StatsTiles } from './StatsTiles';
 import styles from './HomeDesktop.module.css';
 
 function DestinationPreviewModal({ dest, onClose, onStart, t }: { dest: any, onClose: () => void, onStart: () => void, t: any }) {
@@ -55,6 +58,8 @@ export function HomeDesktop() {
   const navigate = useNavigate();
   const [previewDest, setPreviewDest] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const stats = useHomeStats();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = (direction: 'left' | 'right') => {
@@ -74,6 +79,34 @@ export function HomeDesktop() {
     }
   };
 
+  let suggestions: { label: string, city: string }[] = [];
+  const query = searchQuery.toLowerCase().trim();
+  if (query) {
+    const matchedContinents = Object.keys(CONTINENT_TO_COUNTRIES).filter(cont => cont.includes(query));
+    for (const cont of matchedContinents) {
+      for (const country of CONTINENT_TO_COUNTRIES[cont]) {
+        for (const city of COUNTRY_TO_CITIES[country] || []) {
+          suggestions.push({ label: `${cont} > ${country} > ${city}`, city });
+        }
+      }
+    }
+    const matchedCountries = Object.keys(COUNTRY_TO_CITIES).filter(country => country.includes(query));
+    for (const country of matchedCountries) {
+      for (const city of COUNTRY_TO_CITIES[country]) {
+        if (!suggestions.some(s => s.city === city)) {
+          suggestions.push({ label: `${country} > ${city}`, city });
+        }
+      }
+    }
+    const matchedCities = Object.keys(CURATED_CITIES).filter(key => key.toLowerCase().includes(query));
+    for (const city of matchedCities) {
+      if (!suggestions.some(s => s.city === city)) {
+        suggestions.push({ label: city, city });
+      }
+    }
+    suggestions = suggestions.slice(0, 10);
+  }
+
   const featuredDestinations = [
     { title: t('desktop.destKyoto') || 'Kyoto, Japan', desc: t('desktop.descKyoto') || 'Ancient temples and traditional tea houses', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop' },
     { title: t('desktop.destParis') || 'Paris, France', desc: t('desktop.descParis') || 'Art, fashion, gastronomy, and culture', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop' },
@@ -85,14 +118,9 @@ export function HomeDesktop() {
 
   return (
     <div className={styles.container}>
-      <section className={styles.hero}>
-        <img 
-          src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2000&auto=format&fit=crop" 
-          alt="Travel background" 
-          className={styles.heroBg}
-        />
+      <section className={styles.hero} style={{ background: 'var(--surface-page)', minHeight: '60vh', height: 'auto', paddingTop: '12vh', paddingBottom: '6vh', justifyContent: 'flex-start' }}>
         <div className={styles.heroContent}>
-          <div className={styles.searchPill}>
+          <div className={styles.searchPill} style={{ position: 'relative' }}>
             <Search size={20} color="#0F2942" style={{ marginRight: '12px' }} />
             <input 
               type="text" 
@@ -100,17 +128,35 @@ export function HomeDesktop() {
               placeholder={t('desktop.searchPlaceholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
               onKeyDown={(e) => e.key === 'Enter' && handleStartPlanning()}
             />
             <button className={styles.searchBtn} onClick={() => handleStartPlanning()}>
               {t('desktop.startPlanning')}
             </button>
+            {isFocused && suggestions.length > 0 && (
+              <ul style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface-card)', borderRadius: '12px', boxShadow: 'var(--shadow-lg)', listStyle: 'none', padding: '8px 0', margin: '8px 0 0 0', zIndex: 10, textAlign: 'left', border: '1px solid var(--border)' }}>
+                {suggestions.map(s => (
+                  <li key={s.label} style={{ padding: '12px 24px', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '16px' }} onClick={() => handleStartPlanning(s.city)} onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface-subtle)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                    {s.label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          <div className={styles.quickCategories}>
-            <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Plane size={16}/> Flights</a>
-            <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Briefcase size={16}/> Stays</a>
-            <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Tent size={16}/> Activities</a>
+          
+          <div className={styles.quickCategories} style={{ marginTop: '24px' }}>
+            <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Plane size={16}/> {t('desktop.flights', { defaultValue: 'Flights' })}</a>
+            <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Briefcase size={16}/> {t('desktop.stays', { defaultValue: 'Stays' })}</a>
+            <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}><Tent size={16}/> {t('desktop.activities', { defaultValue: 'Activities' })}</a>
           </div>
+
+          {stats.data ? (
+            <div style={{ maxWidth: '900px', margin: '10vh auto 0 auto', width: '100%' }}>
+              <StatsTiles stats={stats.data} />
+            </div>
+          ) : null}
         </div>
       </section>
 

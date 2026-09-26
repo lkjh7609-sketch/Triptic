@@ -7,7 +7,7 @@
   justify-content: space-between;
   height: 64px;
   padding: 0 2rem;
-  background-color: #ffffff;
+  background-color: var(--surface-card);
   border-bottom: 1px solid var(--border-subtle, #EFECE6);
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
@@ -50,7 +50,7 @@
 }
 
 .profileContainer:hover {
-  background-color: var(--surface-hover, #F8F7F4);
+  background-color: var(--surface-subtle);
 }
 
 .avatar {
@@ -73,7 +73,7 @@
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: #ffffff;
+  background: var(--surface-card);
   border-radius: 12px;
   min-width: 200px;
   box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15);
@@ -110,11 +110,40 @@
 }
 
 .dropdownItem:hover {
-  background-color: var(--surface-hover, #F8F7F4);
+  background-color: var(--surface-subtle);
 }
 
 .dropdownDivider {
   height: 1px;
   background-color: var(--border-subtle);
   margin: 4px 0;
+}
+
+.toggleSwitch {
+  width: 40px;
+  height: 24px;
+  background-color: var(--surface-sunken, #E2DFD6);
+  border-radius: 9999px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.toggleOn {
+  background-color: var(--brand, #0D9488);
+}
+
+.toggleThumb {
+  width: 18px;
+  height: 18px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(16px);
 }

@@ -48,7 +48,7 @@
   scroll-snap-align: center;
   font-size: 1.125rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }

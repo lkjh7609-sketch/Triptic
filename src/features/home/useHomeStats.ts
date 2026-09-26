@@ -19,13 +19,30 @@ export interface TravelStats {
    * 아예 없는 완료 여행) 0으로 돌아온다(§5 coalesce), null이 아니다 */
   groundMeters: number | null;
   countries: string[];
+  companionCount?: number;
 }
 
 async function fetchHomeStats(): Promise<TravelStats> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('get_user_travel_stats');
-  if (error) throw error;
-  return data as TravelStats;
+  const [statsRes, membersRes, authRes] = await Promise.all([
+    supabase.rpc('get_user_travel_stats'),
+    supabase.from('trip_members').select('user_id'),
+    supabase.auth.getUser()
+  ]);
+  
+  if (statsRes.error) throw statsRes.error;
+  const stats = statsRes.data as TravelStats;
+  
+  let companionCount = 0;
+  if (!membersRes.error && membersRes.data && authRes.data.user) {
+    const myId = authRes.data.user.id;
+    const uniqueCompanions = new Set(
+      membersRes.data.map(m => m.user_id).filter(id => id !== myId)
+    );
+    companionCount = uniqueCompanions.size;
+  }
+  
+  return { ...stats, companionCount };
 }
 
 export function useHomeStats() {

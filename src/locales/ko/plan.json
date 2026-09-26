@@ -54,7 +54,8 @@
       "startRequired": "시작일을 선택해 주세요",
       "endRequired": "종료일을 선택해 주세요",
       "endAfterStart": "종료일은 시작일 이후여야 해요"
-    }
+    },
+    "selectDate": "날짜를 선택해주세요"
   },
   "day": {
     "header": "Day {{index}}",
@@ -232,5 +233,33 @@
     "openLiveItinerary": "실시간 일정 보기 →",
     "noPastTripsTitle": "지난 여행이 없어요",
     "noPastTripsDesc": "아직 다녀온 여행이 기록되지 않았습니다."
+  },
+  "inspector": {
+    "focusMove": "포커스 이동",
+    "crowdLow": "여유로움",
+    "crowdMedium": "보통",
+    "crowdHigh": "혼잡"
+  },
+  "currency": {
+    "KRW": "대한민국 원",
+    "USD": "미국 달러",
+    "JPY": "일본 엔",
+    "EUR": "유럽 유로",
+    "CNY": "중국 위안",
+    "GBP": "영국 파운드",
+    "AUD": "호주 달러",
+    "CAD": "캐나다 달러",
+    "HKD": "홍콩 달러",
+    "SGD": "싱가포르 달러",
+    "TWD": "대만 달러",
+    "THB": "태국 바트",
+    "VND": "베트남 동",
+    "PHP": "필리핀 페소",
+    "MYR": "말레이시아 링깃",
+    "IDR": "인도네시아 루피아",
+    "INR": "인도 루피",
+    "CHF": "스위스 프랑",
+    "NZD": "뉴질랜드 달러",
+    "MXN": "멕시코 페소"
   }
 }

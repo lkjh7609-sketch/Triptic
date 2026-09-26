@@ -14,9 +14,9 @@ export function getStoredTheme(): ThemePreference {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
   } catch {
-    // 프라이빗 모드 등으로 접근 불가 — 시스템 기본값으로 폴백
+    // 프라이빗 모드 등으로 접근 불가 — 기본값으로 폴백
   }
-  return 'system';
+  return 'light';
 }
 
 function apply(theme: ThemePreference) {

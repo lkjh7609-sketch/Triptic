@@ -202,7 +202,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
           <select id="trip-currency" className={styles.input} {...register('currency')}>
             {Object.entries(CURRENCIES).map(([code, meta]) => (
               <option key={code} value={code}>
-                {code} ({meta.symbol})
+                {t(`currency.${code}`, { defaultValue: meta.unit })} ({code}) - {meta.symbol}
               </option>
             ))}
           </select>
@@ -215,7 +215,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={() => setShowCalendar(true)}
           >
-             {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : '날짜를 선택해주세요'}
+             {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('createTrip.selectDate', { defaultValue: '날짜를 선택해주세요' })}
           </div>
           <input type="hidden" {...register('startDate')} value={startDateStr} />
           <input type="hidden" {...register('endDate')} value={endDateStr} />

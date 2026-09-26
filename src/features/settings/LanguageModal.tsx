@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Locale } from '@/shared/api/profileService';
 import modalStyles from '../plan/AddPlaceModal.module.css';
@@ -9,7 +10,18 @@ interface Props {
 }
 
 export function LanguageModal({ onClose, profile, updateProfile }: Props) {
-  const { t } = useTranslation('settings');
+  const { t, i18n } = useTranslation('settings');
+  const [selectedLocale, setSelectedLocale] = useState<string>(i18n.language || profile?.locale || 'ko');
+
+  const handleSave = () => {
+    if (selectedLocale !== i18n.language) {
+      void i18n.changeLanguage(selectedLocale);
+    }
+    if (profile && selectedLocale !== profile.locale) {
+      updateProfile.mutate({ locale: selectedLocale as Locale });
+    }
+    onClose();
+  };
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
@@ -20,11 +32,8 @@ export function LanguageModal({ onClose, profile, updateProfile }: Props) {
           <label className={modalStyles.label}>{t('preferences.language') || '언어'}</label>
           <select
             className={modalStyles.input}
-            value={profile?.locale ?? 'ko'}
-            onChange={(e) => {
-              updateProfile.mutate({ locale: e.target.value as Locale });
-              onClose();
-            }}
+            value={selectedLocale}
+            onChange={(e) => setSelectedLocale(e.target.value as Locale)}
           >
             <option value="ko">한국어</option>
             <option value="en">English</option>
@@ -34,7 +43,12 @@ export function LanguageModal({ onClose, profile, updateProfile }: Props) {
         </div>
 
         <div className={modalStyles.actions} style={{ marginTop: 24 }}>
-          <button type="button" className={modalStyles.primary} onClick={onClose} style={{ width: '100%' }}>닫기</button>
+          <button type="button" className={modalStyles.secondary} onClick={onClose}>
+            {t('common:cancel', { defaultValue: '취소' })}
+          </button>
+          <button type="button" className={modalStyles.primary} onClick={handleSave}>
+            {t('common:save', { defaultValue: '저장' })}
+          </button>
         </div>
       </div>
     </div>

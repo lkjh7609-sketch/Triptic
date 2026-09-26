@@ -54,7 +54,8 @@
       "startRequired": "请选择开始日期",
       "endRequired": "请选择结束日期",
       "endAfterStart": "结束日期必须晚于开始日期"
-    }
+    },
+    "selectDate": "请选择日期"
   },
   "day": {
     "header": "第 {{index}} 天",
@@ -231,6 +232,34 @@
     "startPlanningDesc": "开始计划您的下一次伟大冒险。",
     "openLiveItinerary": "打开实时行程 →",
     "noPastTripsTitle": "没有过去的旅行",
-    "noPastTripsDesc": "还没有记录过去的旅行。"
+    "noPastTripsDesc": "您还没有记录任何过去的旅行。"
+  },
+  "inspector": {
+    "focusMove": "移动焦点",
+    "crowdLow": "空闲",
+    "crowdMedium": "一般",
+    "crowdHigh": "拥挤"
+  },
+  "currency": {
+    "KRW": "韩元",
+    "USD": "美元",
+    "JPY": "日元",
+    "EUR": "欧元",
+    "CNY": "人民币",
+    "GBP": "英镑",
+    "AUD": "澳元",
+    "CAD": "加元",
+    "HKD": "港元",
+    "SGD": "新加坡元",
+    "TWD": "新台币",
+    "THB": "泰铢",
+    "VND": "越南盾",
+    "PHP": "菲律宾比索",
+    "MYR": "马来西亚林吉特",
+    "IDR": "印尼卢比",
+    "INR": "印度卢比",
+    "CHF": "瑞士法郎",
+    "NZD": "新西兰元",
+    "MXN": "墨西哥比索"
   }
 }

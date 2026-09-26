@@ -43,8 +43,8 @@ export function LegLabel({ leg }: LegLabelProps) {
 
   return (
     <div className={styles.wrap}>
-      <a href={url} target="_blank" rel="noopener" className={styles.link}>
-        {leg.distanceText}
+      <a href={url} target="_blank" rel="noopener" className={`${styles.link} ${styles.estimate}`}>
+        ≈ {leg.distanceText}
       </a>
     </div>
   );

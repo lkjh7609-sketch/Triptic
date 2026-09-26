@@ -44,11 +44,12 @@
     "emptyFollowing": "关注的旅行地还没有帖子。",
     "emptyAll": "还没有帖子。",
     "loadMore": "加载更多",
-    "writeBtn": "写文章",
+    "writeBtn": "发帖",
     "subtitle": "旅行者的记录与灵感",
-    "searchPlaceholder": "搜索地区，关键词，旅行者...",
-    "emptySub": "分享您的第一次旅行瞬间与当地见解。",
-    "writeFirst": "写下第一个故事"
+    "searchPlaceholder": "搜索地区、关键字、旅行者...",
+    "emptySub": "分享您第一次旅行的瞬间和当地见解。",
+    "writeFirst": "写下您的第一个故事",
+    "searchError": "找不到该城市的留言板。"
   },
   "destination": {
     "loadError": "未能加载旅行地信息。",
@@ -56,7 +57,7 @@
     "following": "已关注 ",
     "follow": "+ 关注",
     "createTripHere": "创建前往此地的旅行",
-    "emptyPosts": "此旅行地还没有帖子。"
+    "emptyPosts": "暂无帖子。"
   },
   "post": {
     "fallbackAuthor": "旅行者"

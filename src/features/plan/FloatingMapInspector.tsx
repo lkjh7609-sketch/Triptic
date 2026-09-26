@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Users, Sun, Navigation } from 'lucide-react';
 import styles from './FloatingMapInspector.module.css';
 
@@ -10,12 +11,10 @@ interface FloatingMapInspectorProps {
   onFocusMove?: () => void;
 }
 
-export function FloatingMapInspector({ title, subtitle, image, recommendation, crowdLevel, onFocusMove }: FloatingMapInspectorProps) {
+export function FloatingMapInspector({ title, subtitle, recommendation, crowdLevel, onFocusMove }: FloatingMapInspectorProps) {
+  const { t } = useTranslation('plan');
   return (
     <div className={styles.inspectorCard}>
-      {image && (
-        <div className={styles.imageWrap} style={{ backgroundImage: `url(${image})` }} />
-      )}
       <div className={styles.content}>
         <div className={styles.header}>
           <h4 className={styles.title}>{title}</h4>
@@ -32,13 +31,19 @@ export function FloatingMapInspector({ title, subtitle, image, recommendation, c
           {crowdLevel && (
             <div className={styles.detailItem}>
               <Users size={14} />
-              <span>{crowdLevel === 'low' ? '여유로움' : crowdLevel === 'medium' ? '보통' : '혼잡'}</span>
+              <span>
+                {crowdLevel === 'low'
+                  ? t('inspector.crowdLow', { defaultValue: '여유로움' })
+                  : crowdLevel === 'medium'
+                  ? t('inspector.crowdMedium', { defaultValue: '보통' })
+                  : t('inspector.crowdHigh', { defaultValue: '혼잡' })}
+              </span>
             </div>
           )}
         </div>
 
         <button className={styles.actionBtn} onClick={onFocusMove}>
-          <Navigation size={14} /> 포커스 이동
+          <Navigation size={14} /> {t('inspector.focusMove', { defaultValue: '포커스 이동', ns: 'plan' })}
         </button>
       </div>
     </div>

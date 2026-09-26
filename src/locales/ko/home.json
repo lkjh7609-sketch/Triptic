@@ -32,7 +32,8 @@
     "days": "일수",
     "cities": "도시",
     "places": "장소",
-    "distanceKm": "이동 km"
+    "distanceKm": "이동 km",
+    "companions": "동행"
   },
   "worldMap": {
     "caption_other": "{{count}}개국"
@@ -59,6 +60,9 @@
     "previewLoading": "✨ AI가 도시 정보를 불러오고 있습니다...",
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
-    "contact": "고객센터"
+    "contact": "고객센터",
+    "flights": "항공권",
+    "stays": "숙소",
+    "activities": "액티비티"
   }
 }

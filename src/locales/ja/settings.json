@@ -10,7 +10,8 @@
   "account": {
     "fallbackName": "マイアカウント",
     "signOut": "ログアウト",
-    "deleteAction": "アカウント削除"
+    "deleteAction": "アカウント削除",
+    "editProfile": "プロフィール編集"
   },
   "preferences": {
     "theme": "テーマ",
@@ -22,7 +23,8 @@
     "distanceUnitHint": "距離単位は地図やルートの表示にはまだ反映されません。",
     "baseCurrency": "基本通貨",
     "language": "言語",
-    "loginHint": "ログインすると、温度・距離の単位、基本通貨、言語設定を保存できます。"
+    "loginHint": "ログインすると、温度・距離の単位、基本通貨、言語設定を保存できます。",
+    "unitSettings": "単位設定 (温度/距離)"
   },
   "notifications": {
     "preDeparture": "出発前のリマインダー",
