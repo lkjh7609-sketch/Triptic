@@ -15,7 +15,7 @@
  * public/sw.js로 그대로 복사한다(→ dist/).
  */
 
-const CACHE_NAME = 'triptic-v3.0.0-dev.51';
+const CACHE_NAME = 'triptic-v3.0.0-dev.52';
 /** 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게 */
 const IMAGE_CACHE_NAME = 'triptic-images-v1';
 const IMAGE_CACHE_MAX_ENTRIES = 150;
@@ -33,7 +33,8 @@ const APP_SHELL = [
 
 // External CDN resources
 const CDN_ASSETS = [
-  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css'
+  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
+  'https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css'
 ];
 
 const PRECACHE_ASSETS = [...APP_SHELL, ...CDN_ASSETS];

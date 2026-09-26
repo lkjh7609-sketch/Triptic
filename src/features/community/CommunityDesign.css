@@ -554,6 +554,16 @@
     --text-headline-sm--font-weight: 600;
   }
 }
+/* 이 파일의 --font-sans는 global.css와 별개(Tailwind v4 생성 토큰, 독립
+ * :root 스코프)라 거기서 :lang(ko)에 SUIT를 넣어도 여기엔 안 먹는다 — 이
+ * 파일도 따로 오버라이드해야 --font-label-md 등(전부 var(--font-sans)로
+ * 한글 폴백) 데스크톱 커뮤니티 전체가 SUIT로 바뀐다. */
+@layer theme {
+  :root:lang(ko) {
+    --font-sans: 'SUIT Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+      system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+}
 /* 이 디자인은 라이트 모드 색만 고정값으로 내보내져 있어 다크 모드가 전혀
  * 반영되지 않았다 — M3 role 이름(*-fixed/*-fixed-dim/inverse-*)이 이미
  * 라이트 스킴에 들어있어, 그 값들을 그대로 다크 스킴 값으로 재사용해 채웠다
