@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import i18next from '@/shared/i18n';
 import {
   blockUser,
   followDestination,
@@ -33,7 +34,7 @@ export function useToggleFollow(userId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ destinationId, following }: { destinationId: string; following: boolean }) => {
-      if (!userId) throw new Error('로그인이 필요합니다.');
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return following ? unfollowDestination(destinationId, userId) : followDestination(destinationId, userId);
     },
     onSuccess: () => {
@@ -56,7 +57,7 @@ export function useBlockUser(userId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (blockedId: string) => {
-      if (!userId) throw new Error('로그인이 필요합니다.');
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return blockUser(blockedId, userId);
     },
     onSuccess: () => {
@@ -69,7 +70,7 @@ export function useUnblockUser(userId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (blockedId: string) => {
-      if (!userId) throw new Error('로그인이 필요합니다.');
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return unblockUser(blockedId, userId);
     },
     onSuccess: () => {
@@ -81,7 +82,7 @@ export function useUnblockUser(userId: string | null) {
 export function useReportContent(userId: string | null) {
   return useMutation({
     mutationFn: (input: ReportInput) => {
-      if (!userId) throw new Error('로그인이 필요합니다.');
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return reportContent({ ...input, userId });
     },
   });
