@@ -6,12 +6,14 @@ import {
 
   convertToBase,
   formatMoney,
+  formatRate,
   getCategoryTotalsSeries,
   getDayExpenseTotal,
   getDayTotalsSeries,
   getGrandExpenseTotal,
 } from './expenses';
-import { fetchDailyRate } from './fxRate';
+import { getRate } from './fxRates';
+import { useFxRates } from './useFxRates';
 import { ExpenseChart } from './ExpenseChart';
 import { DoughnutChart } from './DoughnutChart';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -43,9 +45,10 @@ const CATEGORY_ICON: Record<ExpenseCategory, React.ReactNode> = {
  * 02-screens.md §3.7 확장). 목록 자체는 이 시트를 여는 즉시 저장한다(add/delete
  * 각각 즉시 반영) — legacy와 동일하게 "저장" 버튼 없이 바로 서버에 쓴다.
  *
- * 여행 기본 통화와 다른 통화로 입력하면 fxRate.ts로 그날 환율을 조회해
- * fxRateToBase에 스냅샷으로 저장한다. 조회에 실패해도 저장 자체는 막지 않고
- * (네트워크 문제로 입력을 통째로 막는 게 더 나쁘다고 판단) 합계에서만 제외한다.
+ * 여행 기본 통화와 다른 통화로 입력하면 1시간마다 갱신되는 환율(fxRates.ts)로
+ * 환산 비율을 fxRateToBase에 스냅샷으로 저장한다. 환율이 없으면(첫 실행 전·오프라인
+ * 첫 사용 등) 저장 자체는 막지 않고(입력을 통째로 막는 게 더 나쁘다고 판단) 합계에서만
+ * 제외한다.
  */
 export function ExpenseModal({ currentDay, totalDays, currency, expensesData, onClose, onSave }: ExpenseModalProps) {
   const { t, i18n } = useTranslation(['plan', 'common']);
@@ -55,8 +58,9 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const [category, setCategory] = useState<ExpenseCategory>('other');
   const [paymentMethod, _setPaymentMethod] = useState<ExpensePaymentMethod | ''>('');
   const [saving, setSaving] = useState(false);
-  const [fetchingRate, setFetchingRate] = useState(false);
   const [fxWarning, setFxWarning] = useState<string | null>(null);
+  const fxRates = useFxRates();
+  const previewRate = itemCurrency !== currency ? getRate(fxRates.data, itemCurrency, currency) : null;
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   const list = expensesData[currentDay] ?? [];
@@ -76,9 +80,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
     try {
       let fxRateToBase: number | null = null;
       if (itemCurrency !== currency) {
-        setFetchingRate(true);
-        fxRateToBase = await fetchDailyRate(itemCurrency, currency);
-        setFetchingRate(false);
+        fxRateToBase = getRate(fxRates.data, itemCurrency, currency);
         if (fxRateToBase == null) {
           setFxWarning(t('expense.fxWarning'));
         }
@@ -165,10 +167,21 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
               ))}
             </select>
             <button type="button" className={styles.addBtn} disabled={saving} onClick={handleAdd}>
-              {fetchingRate ? t('expense.fetchingRate') : t('action.add', { ns: 'common' })}
+              {t('action.add', { ns: 'common' })}
             </button>
           </div>
         </div>
+        {previewRate != null ? (
+          <p className={styles.rateHint}>
+            {t('expense.rateHint', {
+              from: formatMoney(1, itemCurrency, i18n.language),
+              to: formatRate(previewRate, currency, i18n.language),
+              time: fxRates.data?.newestAt
+                ? new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(new Date(fxRates.data.newestAt))
+                : '',
+            })}
+          </p>
+        ) : null}
         {fxWarning ? <p className={styles.warning}>{fxWarning}</p> : null}
 
         <div className={styles.list}>

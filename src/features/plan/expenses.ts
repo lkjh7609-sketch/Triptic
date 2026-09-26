@@ -8,30 +8,21 @@
  * addExpense()엔 반영 안 됨) 이식이 아니라 신규 작성이다.
  */
 import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
+import { CURRENCY_SYMBOLS, SUPPORTED_CURRENCIES } from './currencies';
 
-/** 원본 index.html CURRENCIES (2026-09-20 기준 라인 3615~3620)과 동일 */
-export const CURRENCIES: Record<string, { symbol: string; unit: string }> = {
-  KRW: { symbol: '₩', unit: '대한민국 원' },
-  USD: { symbol: '$', unit: '미국 달러' },
-  JPY: { symbol: '¥', unit: '일본 엔' },
-  EUR: { symbol: '€', unit: '유럽 유로' },
-  CNY: { symbol: '¥', unit: '중국 위안' },
-  GBP: { symbol: '£', unit: '영국 파운드' },
-  AUD: { symbol: 'A$', unit: '호주 달러' },
-  CAD: { symbol: 'C$', unit: '캐나다 달러' },
-  HKD: { symbol: 'HK$', unit: '홍콩 달러' },
-  SGD: { symbol: 'S$', unit: '싱가포르 달러' },
-  TWD: { symbol: 'NT$', unit: '대만 달러' },
-  THB: { symbol: '฿', unit: '태국 바트' },
-  VND: { symbol: '₫', unit: '베트남 동' },
-  PHP: { symbol: '₱', unit: '필리핀 페소' },
-  MYR: { symbol: 'RM', unit: '말레이시아 링깃' },
-  IDR: { symbol: 'Rp', unit: '인도네시아 루피아' },
-  INR: { symbol: '₹', unit: '인도 루피' },
-  CHF: { symbol: 'Fr', unit: '스위스 프랑' },
-  NZD: { symbol: 'NZ$', unit: '뉴질랜드 달러' },
-  MXN: { symbol: 'Mex$', unit: '멕시코 페소' },
-};
+/** 지원 통화(currencies.ts) → { symbol }. 이름은 currencyName()으로 표시 언어에 맞춰 만든다 */
+export const CURRENCIES: Record<string, { symbol: string }> = Object.fromEntries(
+  SUPPORTED_CURRENCIES.map((code) => [code, { symbol: CURRENCY_SYMBOLS[code] }]),
+);
+
+/** 통화 이름 ("일본 엔", "Japanese Yen", "日圓", "日本円") — Intl.DisplayNames 사용 */
+export function currencyName(code: string, locale: string): string {
+  try {
+    return new Intl.DisplayNames([locale], { type: 'currency' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
 
 export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   food: '식비',
@@ -51,13 +42,24 @@ export const PAYMENT_METHOD_LABELS: Record<ExpensePaymentMethod, string> = {
 /**
  * 금액을 통화 기호와 함께 표시한다 (07-i18n.md §5.2 — Intl.NumberFormat 경유,
  * 직접 포매팅하지 않는다). locale은 i18n.language를 그대로 넘기면 된다
- * (SupportedLocale 'ko'/'en'/'zh-CN' 모두 Intl.NumberFormat이 그대로 받아들이는
+ * (SupportedLocale 'ko'/'en'/'zh-TW'/'ja' 모두 Intl.NumberFormat이 그대로 받아들이는
  * 유효한 BCP47 태그다). 알 수 없는 통화 코드는 기존 동작과 동일하게 KRW로 폴백한다.
  */
 export function formatMoney(amount: number, currency: string, locale: string = 'ko'): string {
   const num = Number(amount) || 0;
   const validCurrency = CURRENCIES[currency] ? currency : 'KRW';
   return new Intl.NumberFormat(locale, { style: 'currency', currency: validCurrency }).format(num);
+}
+
+/** 환율 표시용 — 1 JPY = ₩9.0123처럼 작은 값도 의미 있게 보이도록 소수점을 더 둔다 */
+export function formatRate(value: number, currency: string, locale: string = 'ko'): string {
+  const validCurrency = CURRENCIES[currency] ? currency : 'KRW';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: validCurrency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: value < 10 ? 4 : 2,
+  }).format(value);
 }
 
 /**

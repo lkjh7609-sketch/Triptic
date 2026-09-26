@@ -7,7 +7,7 @@ import { signOut } from '@/shared/api/authService';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { LoginButtons } from '@/features/auth/LoginButtons';
 import { BackupModal } from '@/features/plan/BackupModal';
-import { CURRENCIES } from '@/features/plan/expenses';
+import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
 import type { NotificationPrefs } from '@/shared/api/profileService';
@@ -176,7 +176,7 @@ export function SettingsScreen() {
               >
                 {Object.entries(CURRENCIES).map(([code, meta]) => (
                   <option key={code} value={code}>
-                    {meta.unit} ({code}) - {meta.symbol}
+                    {currencyName(code, i18n.language)} ({code}) - {meta.symbol}
                   </option>
                 ))}
               </select>
