@@ -4,7 +4,7 @@
  * Requirements:
  * 1. App shell caching: index.html, manifest.json, icons
  * 2. External CDN caching: Pretendard font
- * 3. Network-first strategy for API calls (Google Maps API, Supabase)
+ * 3. Network-first for Google Maps API calls; /api/* and Supabase (except public images) are network-only
  * 4. Cache-first strategy for static assets
  * 5. Offline fallback: serve cached index.html when offline
  * 6. Cache versioning (bump CACHE_NAME to force refresh)
@@ -12,10 +12,13 @@
  * 8. Graceful handling for Google Maps API script
  *
  * ⚠️ 이 파일이 원본이다 — scripts/build.js가 매 dev/build 실행 시 이 파일을
- * www/sw.js, public/sw.js로 그대로 복사한다.
+ * public/sw.js로 그대로 복사한다(→ dist/).
  */
 
-const CACHE_NAME = 'triptic-v3.0.0-dev.50';
+const CACHE_NAME = 'triptic-v3.0.0-dev.51';
+/** 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게 */
+const IMAGE_CACHE_NAME = 'triptic-images-v1';
+const IMAGE_CACHE_MAX_ENTRIES = 150;
 
 // App shell files
 const APP_SHELL = [
@@ -52,8 +55,35 @@ function isApiRequest(url) {
   if (url.hostname.includes('maps.gstatic.com')) return false;
   if (url.searchParams.has('access_key') || url.searchParams.has('key')) return false;
   if (url.hostname.includes('maps.googleapis.com')) return true;
-  if (url.hostname.endsWith('.supabase.co')) return true;
   return false;
+}
+
+/**
+ * 캐시하면 안 되는 요청 — 네트워크로만 보낸다.
+ * - 같은 오리진 /api/*: 날씨·AI 추천 등 매번 달라야 하는 응답(예전엔 정적 자산으로 분류돼
+ *   한 번 받은 응답이 SW 버전이 바뀔 때까지 계속 쓰였다)
+ * - Supabase REST/Auth/Functions/서명 URL: 사용자별 개인 데이터. URL만으로 캐시하면 로그아웃
+ *   후에도 남아 같은 기기의 다음 사용자에게 보일 수 있다. 오프라인 열람은 TanStack Query
+ *   영속 캐시(IndexedDB, 로그아웃 시 삭제)가 담당한다.
+ * - 공개 버킷 이미지(/storage/v1/object/public/)는 개인 데이터가 아니라 이미지 캐시로 보낸다.
+ */
+function isNetworkOnly(url) {
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return true;
+  if (url.hostname.endsWith('.supabase.co') && !url.pathname.startsWith('/storage/v1/object/public/')) return true;
+  return false;
+}
+
+function isImageRequest(request, url) {
+  return request.destination === 'image' && url.origin !== self.location.origin;
+}
+
+/** 오래된 항목부터 지워 개수를 제한한다(Cache API의 keys()는 삽입 순서) */
+async function trimCache(name, maxEntries) {
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  for (let i = 0; i < keys.length - maxEntries; i++) {
+    await cache.delete(keys[i]);
+  }
 }
 
 /** 오프라인 폴백 — 캐시된 index.html 반환 */
@@ -102,7 +132,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
+          .filter((name) => name !== CACHE_NAME && name !== IMAGE_CACHE_NAME)
           .map((name) => {
             console.log(`[SW] Deleting old cache: ${name}`);
             return caches.delete(name);
@@ -117,6 +147,9 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+
+  // 0. 개인 데이터·동적 API: 캐시 없이 네트워크로만
+  if (isNetworkOnly(url)) return;
 
   // 1. Google Maps API script: bypass cache
   if (isGoogleMapsScript(url)) {
@@ -169,7 +202,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. Static assets: Cache-first
+  // 4. 외부 이미지: 캐시 우선 + 개수 제한
+  if (isImageRequest(event.request, url)) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(IMAGE_CACHE_NAME);
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
+        const response = await fetch(event.request);
+        if (response.ok || response.type === 'opaque') {
+          await cache.put(event.request, response.clone());
+          event.waitUntil(trimCache(IMAGE_CACHE_NAME, IMAGE_CACHE_MAX_ENTRIES));
+        }
+        return response;
+      })()
+    );
+    return;
+  }
+
+  // 5. Static assets: Cache-first
   event.respondWith(
     (async () => {
       const cachedResponse = await caches.match(event.request);

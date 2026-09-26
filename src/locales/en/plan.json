@@ -229,10 +229,9 @@
     "ariaLabel": "Itinerary map"
   },
   "inspector": {
-    "focusMove": "Move Focus",
-    "crowdLow": "Not crowded",
-    "crowdMedium": "Normal",
-    "crowdHigh": "Crowded"
+    "focusMove": "Show in itinerary",
+    "unnamedPlace": "Unnamed place",
+    "noAddress": "No address"
   },
   "currency": {
     "KRW": "South Korean Won",

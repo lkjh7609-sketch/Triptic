@@ -34,12 +34,16 @@
   transition: color 0.2s ease;
 }
 
-.navLink:hover, .navLink[aria-selected="true"] {
+.navLink:hover, .navLink[aria-current="page"] {
   color: var(--brand, #FF6B4A);
 }
 
 .profileContainer {
   position: relative;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -146,4 +150,14 @@
 
 .toggleOn .toggleThumb {
   transform: translateX(16px);
+}
+
+.avatarInitial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
 }

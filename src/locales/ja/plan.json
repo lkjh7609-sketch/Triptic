@@ -207,10 +207,9 @@
     "ariaLabel": "スケジュール地図"
   },
   "inspector": {
-    "focusMove": "フォーカス移動",
-    "crowdLow": "空いている",
-    "crowdMedium": "普通",
-    "crowdHigh": "混雑"
+    "focusMove": "予定リストで見る",
+    "unnamedPlace": "名前のない場所",
+    "noAddress": "住所情報がありません"
   },
   "currency": {
     "KRW": "韓国ウォン",

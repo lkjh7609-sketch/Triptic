@@ -74,5 +74,13 @@
   "guest": {
     "bannerText": "正在體驗範例行程 — 變更不會被儲存",
     "bannerCta": "登入並建立我的行程"
+  },
+  "menu": {
+    "darkMode": "深色模式",
+    "editProfile": "編輯個人資料",
+    "units": "單位設定",
+    "language": "語言設定",
+    "backup": "備份與還原",
+    "signOut": "登出"
   }
 }

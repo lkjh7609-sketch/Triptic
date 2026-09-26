@@ -74,5 +74,13 @@
   "guest": {
     "bannerText": "You're exploring a sample trip — changes won't be saved",
     "bannerCta": "Sign in to plan your own trip"
+  },
+  "menu": {
+    "darkMode": "Dark mode",
+    "editProfile": "Edit profile",
+    "units": "Units",
+    "language": "Language",
+    "backup": "Backup & restore",
+    "signOut": "Sign out"
   }
 }
