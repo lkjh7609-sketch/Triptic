@@ -50,7 +50,16 @@ export function CommunityScreen() {
   if (isDesktop) {
     return (
       <div className={styles.desktopWrap} style={{ padding: 0 }}>
-        <CommunityDesignBody searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} destinations={destinations} />
+        <CommunityDesignBody
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
+          destinations={destinations}
+          tab={tab}
+          setTab={setTab}
+          followedCount={followedDestinations.length}
+          feed={feed}
+        />
       </div>
     );
   }

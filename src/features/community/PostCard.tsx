@@ -40,7 +40,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
           {post.author?.avatar_url ? (
             <img src={post.author.avatar_url} alt="" className={styles.avatar} />
           ) : (
-            <span className={styles.avatarFallback}>🅤</span>
+            <span className={styles.avatarFallback}>{(post.author?.display_name ?? '?').trim().slice(0, 1).toUpperCase()}</span>
           )}
           <span className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</span>
           {showDestination && post.destination?.name ? (
@@ -67,10 +67,19 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
       ) : null}
 
       <div className={styles.footer}>
-        <button type="button" className={styles.likeBtn} onClick={handleLikeClick} disabled={!user}>
-          {post.likedByMe ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span> : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span>} {post.like_count}
+        <button
+          type="button"
+          className={styles.likeBtn}
+          onClick={handleLikeClick}
+          disabled={!user}
+          aria-pressed={!!post.likedByMe}
+          aria-label={t('post.likeAria', { count: post.like_count })}
+        >
+          <Heart size={16} fill={post.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" /> {post.like_count}
         </button>
-        <span className={styles.commentCount}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> {post.comment_count}</span>
+        <span className={styles.commentCount} aria-label={t('post.commentAria', { count: post.comment_count })}>
+          <MessageCircle size={16} aria-hidden="true" /> {post.comment_count}
+        </span>
       </div>
     </Link>
   );

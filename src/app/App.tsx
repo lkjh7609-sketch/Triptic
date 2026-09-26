@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import i18next from '@/shared/i18n';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { RouterProvider } from 'react-router';
@@ -14,6 +15,11 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
+});
+
+// 여행지 이름·샘플 여행처럼 표시 언어로 가져오는 데이터는 언어가 바뀌면 다시 읽는다
+i18next.on('languageChanged', () => {
+  void queryClient.invalidateQueries({ queryKey: ['community'] });
 });
 
 export function App() {

@@ -60,7 +60,9 @@
     "emptyPosts": "아직 등록된 글이 없어요."
   },
   "post": {
-    "fallbackAuthor": "여행자"
+    "fallbackAuthor": "여행자",
+    "likeAria_other": "좋아요 {{count}}개",
+    "commentAria_other": "댓글 {{count}}개"
   },
   "menu": {
     "ariaLabel": "더보기",
@@ -182,5 +184,29 @@
         "AU": "호주"
       }
     }
+  },
+  "design": {
+    "badge": "여행자 게시판",
+    "title": "여행자 라운지",
+    "subtitle": "여행 기록을 나누고, 현지 정보를 묻고, 같은 길을 걷는 여행자들과 이어지세요.",
+    "newPost": "글쓰기 · 질문하기",
+    "searchPlaceholder": "여행지 게시판 찾기 (예: 도쿄, 파리)",
+    "sortBy": "정렬",
+    "sort": {
+      "latest": "최신순",
+      "likes": "좋아요순",
+      "comments": "댓글순"
+    },
+    "promptLabel": "이번 주 질문",
+    "promptTitle": "“우리 동네에서 가장 조용한 곳은 어디인가요?”",
+    "promptBody": "강가의 벤치, 지하 책방, 이른 아침 빵집 — 숨 돌리러 가는 곳을 나눠 주세요.",
+    "promptCta": "내 장소 공유하기",
+    "activeAuthors": "활발한 여행자",
+    "authorPosts_other": "최근 글 {{count}}개",
+    "viewProfile": "프로필",
+    "popularDestinations": "인기 여행지 게시판",
+    "ethosTitle": "Triptic이 지향하는 것",
+    "ethosBody": "서두르는 관광 명소 목록보다 차분한 안내, 현지 문화에 대한 존중, 솔직한 여행 기록을 아낍니다.",
+    "guidelines": "커뮤니티 이용 규칙 보기"
   }
 }
