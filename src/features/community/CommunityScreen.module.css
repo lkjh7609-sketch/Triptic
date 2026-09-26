@@ -319,20 +319,53 @@
     padding: 0;
   }
   .headerSection {
-    padding: var(--space-4);
+    padding: var(--space-4) var(--space-4) 0;
     text-align: left;
-    margin-bottom: 0;
+    margin-bottom: var(--space-4);
+  }
+  .subtitle {
+    font-size: 13px;
+    margin-bottom: var(--space-1);
+  }
+  .mainTitle {
+    /* 데스크톱용 40px을 모바일에도 그대로 쓰고 있어서 360~390px 화면에서
+       제목이 두 줄로 꺾이고 아래 요소와 시각적으로 빽빽해 보였다. */
+    font-size: 24px;
+    line-height: 1.25;
   }
   .searchBarWrap {
     padding: 0 var(--space-4);
   }
+  .filterSection {
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
   .tabsDesktop {
     justify-content: flex-start;
+    gap: var(--space-5);
+    padding: 0 var(--space-4);
+    margin-bottom: 0;
   }
   .desktopList {
     display: flex;
     flex-direction: column;
+    gap: var(--space-3);
     padding: 0 var(--space-4);
+  }
+  .emptyGrid {
+    margin-top: var(--space-4);
+    padding: 0 var(--space-4);
+  }
+  .emptyMainCard {
+    padding: var(--space-6) var(--space-4);
+  }
+  .emptyMainCard h3 {
+    font-size: 18px;
+    margin-bottom: var(--space-2);
+  }
+  .emptyMainCard p {
+    font-size: 14px;
+    margin-bottom: var(--space-4);
   }
   .composeBtnRow {
     bottom: calc(var(--space-8) + 72px);
