@@ -83,9 +83,8 @@
     "categoryAria": "Category",
     "paymentAria": "Payment method",
     "paymentPlaceholder": "Payment method",
-    "fetchingRate": "Fetching rate…",
     "empty": "No expenses recorded yet.",
-    "fxWarning": "Couldn't fetch the exchange rate. The amount is saved but won't be included in totals.",
+    "fxWarning": "No exchange rate for this currency yet. The amount is saved but won't be included in totals.",
     "unconverted": "not convertible",
     "unconvertedCount_one": " (excludes {{count}} unconverted item)",
     "unconvertedCount_other": " (excludes {{count}} unconverted items)",
@@ -105,7 +104,8 @@
       "cash": "Cash",
       "card": "Card",
       "other": "Other"
-    }
+    },
+    "rateHint": "{{from}} = {{to}} · rate as of {{time}}"
   },
   "flightCard": {
     "schedule": "Depart {{depTime}} → Arrive {{arrTime}}"

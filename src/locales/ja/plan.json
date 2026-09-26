@@ -64,9 +64,8 @@
     "categoryAria": "カテゴリー",
     "paymentAria": "支払い方法",
     "paymentPlaceholder": "支払い方法",
-    "fetchingRate": "為替レート照会…",
     "empty": "まだ登録された経費はありません。",
-    "fxWarning": "為替レートの取得に失敗しました。金額は保存されますが、合計には反映されません。",
+    "fxWarning": "この通貨の為替レートがまだありません。金額は保存されますが、合計には反映されません。",
     "unconverted": "換算不可",
     "unconvertedCount_other": "(換算不可 {{count}}件を除く)",
     "dayTotal": "この日の合計",
@@ -85,7 +84,8 @@
       "cash": "現金",
       "card": "カード",
       "other": "その他"
-    }
+    },
+    "rateHint": "{{from}} = {{to}} · {{time}}時点のレート"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出発 → {{arrTime}} 到着"

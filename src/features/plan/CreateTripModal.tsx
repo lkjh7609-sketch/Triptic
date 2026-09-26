@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCreateTrip } from './hooks/useTrips';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
-import { CURRENCIES } from './expenses';
+import { CURRENCIES, currencyName } from './expenses';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import styles from './CreateTripModal.module.css';
@@ -202,7 +202,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
           <select id="trip-currency" className={styles.input} {...register('currency')}>
             {Object.entries(CURRENCIES).map(([code, meta]) => (
               <option key={code} value={code}>
-                {t(`currency.${code}`, { defaultValue: meta.unit })} ({code}) - {meta.symbol}
+                {currencyName(code, i18n.language)} ({code}) - {meta.symbol}
               </option>
             ))}
           </select>

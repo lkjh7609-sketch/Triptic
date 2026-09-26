@@ -82,9 +82,8 @@
     "categoryAria": "카테고리",
     "paymentAria": "결제수단",
     "paymentPlaceholder": "결제수단",
-    "fetchingRate": "환율 조회…",
     "empty": "아직 등록된 경비가 없습니다.",
-    "fxWarning": "환율 조회에 실패했어요. 금액은 저장되지만 합계에는 반영되지 않아요.",
+    "fxWarning": "아직 이 통화의 환율이 없어요. 금액은 저장되지만 합계에는 반영되지 않아요.",
     "unconverted": "환산 불가",
     "unconvertedCount_other": "(환산 불가 {{count}}건 제외)",
     "dayTotal": "이 날 합계",
@@ -103,7 +102,8 @@
       "cash": "현금",
       "card": "카드",
       "other": "기타"
-    }
+    },
+    "rateHint": "{{from}} = {{to}} · {{time}} 기준 환율"
   },
   "flightCard": {
     "schedule": "{{depTime}} 출발 → {{arrTime}} 도착"

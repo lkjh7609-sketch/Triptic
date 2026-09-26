@@ -82,9 +82,8 @@
     "categoryAria": "类别",
     "paymentAria": "支付方式",
     "paymentPlaceholder": "支付方式",
-    "fetchingRate": "正在查询汇率…",
     "empty": "还没有记录支出。",
-    "fxWarning": "汇率查询失败。金额仍会保存，但不会计入合计。",
+    "fxWarning": "目前還沒有這個貨幣的匯率。金額會儲存，但不會計入合計。",
     "unconverted": "无法换算",
     "unconvertedCount_other": "（不含 {{count}} 项无法换算的支出）",
     "dayTotal": "当天合计",
@@ -103,7 +102,8 @@
       "cash": "现金",
       "card": "刷卡",
       "other": "其他"
-    }
+    },
+    "rateHint": "{{from}} = {{to}} · {{time}} 匯率"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出发 → {{arrTime}} 到达"
