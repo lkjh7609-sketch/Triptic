@@ -297,6 +297,15 @@
       "verified": "驗證成功！是同一組同行沒錯。",
       "verifyFailed": "無法驗證，請確認是同一組的 QR Code。",
       "retry": "重新掃描"
+    },
+    "chat": {
+      "title": "聊天室",
+      "memberCount_other": "{{count}} 位成員",
+      "loadError": "無法載入訊息。",
+      "empty": "還沒有訊息，傳送第一則訊息吧！",
+      "placeholder": "輸入訊息",
+      "sendError": "訊息傳送失敗。",
+      "badwordBlocked": "偵測到不當內容，請確認您的訊息。"
     }
   }
 }

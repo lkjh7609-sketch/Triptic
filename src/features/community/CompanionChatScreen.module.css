@@ -1,0 +1,89 @@
+.header {
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-headline-size);
+  font-weight: var(--font-headline-weight);
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  min-height: 200px;
+}
+
+.rowOwn,
+.rowOther {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+}
+.rowOwn {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.rowOther {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.senderName {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  padding: 0 var(--space-1);
+}
+
+.bubbleWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.bubbleOwn,
+.bubbleOther {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-body-size);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.bubbleOwn {
+  background: var(--brand);
+  color: var(--text-on-brand);
+  border-bottom-right-radius: var(--radius-xs);
+}
+.bubbleOther {
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  border-bottom-left-radius: var(--radius-xs);
+}
+
+.reportBtn {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--text-placeholder);
+  font-size: var(--font-caption-size);
+  padding: 0 var(--space-1);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.errorMessage {
+  margin: 0 var(--space-4) var(--space-2);
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}

@@ -12,7 +12,14 @@ export type ReportReason =
   | 'misinformation'
   | 'impersonation'
   | 'other';
-export type ReportTargetType = 'post' | 'comment' | 'user' | 'image' | 'companion_post' | 'companion_application';
+export type ReportTargetType =
+  | 'post'
+  | 'comment'
+  | 'user'
+  | 'image'
+  | 'companion_post'
+  | 'companion_application'
+  | 'companion_message';
 export type ReportStatus = 'open' | 'reviewing' | 'actioned' | 'dismissed';
 export type Locale = 'ko' | 'en' | 'zh-TW' | 'ja';
 
@@ -156,6 +163,20 @@ export interface CompanionMatchMember {
   user_id: string;
   role: 'organizer' | 'member';
   profile?: CommunityProfile;
+}
+
+/** 0033: 동행 채팅 — 별도 "방" 테이블 없이 post_id로 바로 묶인다 */
+export type CompanionMessageStatus = 'published' | 'hidden' | 'removed';
+
+export interface CompanionMessage {
+  id: string;
+  post_id: string;
+  sender_id: string;
+  body: string;
+  status: CompanionMessageStatus;
+  report_count: number;
+  created_at: string;
+  sender?: CommunityProfile;
 }
 
 /** 신고 사유 순서(표시 이름은 community:report.reason.* 번역 키) */

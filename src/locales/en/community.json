@@ -308,6 +308,16 @@
       "verified": "Verified! This person is in your match.",
       "verifyFailed": "Couldn't verify. Make sure it's a QR code from this match.",
       "retry": "Scan again"
+    },
+    "chat": {
+      "title": "Chat",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "loadError": "Couldn't load messages.",
+      "empty": "No messages yet. Send the first one!",
+      "placeholder": "Type a message",
+      "sendError": "Failed to send the message.",
+      "badwordBlocked": "Inappropriate content detected. Please check your message."
     }
   }
 }
