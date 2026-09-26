@@ -19,6 +19,7 @@ import {
   MapPinned,
   PenTool,
   BookOpen,
+  Cloud,
   Map as MapIcon,
 } from 'lucide-react';
 import { differenceInCalendarDays, parseISO, startOfDay } from 'date-fns';
@@ -32,6 +33,9 @@ import { useWeather } from '@/features/weather/useWeather';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { captureError } from '@/shared/monitoring';
+import { useHomeStats } from '@/features/home/useHomeStats';
+import { StatsTiles } from '@/features/home/StatsTiles';
+import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
@@ -49,6 +53,7 @@ interface PlanDesktopProps {
   onRename: (id: string, newTitle: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  onOpenBackup: () => void;
 }
 
 type StatusFilter = 'all' | 'active' | 'past';
@@ -79,10 +84,11 @@ function formatRange(trip: TripRow, locale: string): string | null {
  * 계획 탭 데스크톱 (사용자 디자인). 화면의 모든 숫자·문구는 로그인한 사용자의 실제
  * 여행 데이터에서 계산한다 — 여행이 없으면 빈 상태를 보여주고 예시 데이터를 채우지 않는다.
  */
-export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplicate, onDelete }: PlanDesktopProps) {
+export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplicate, onDelete, onOpenBackup }: PlanDesktopProps) {
   const { t } = useTranslation(['plan', 'common']);
   const { user } = useSession();
   const { data: profile } = useProfile();
+  const stats = useHomeStats();
   const [searchParams, setSearchParams] = useSearchParams();
   const autoCreateCity = searchParams.get('autoCreate');
   const [filter, setFilter] = useState<StatusFilter>('all');
@@ -123,6 +129,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
             </p>
           </div>
           <div className={styles.headerActions}>
+            <button type="button" className={styles.btnAi} onClick={onOpenBackup}>
+              <Cloud size={16} /> {t('planScreen.backupFooter')}
+            </button>
             <button type="button" className={styles.btnCreate} onClick={() => setShowCreate(true)}>
               <Plus size={20} /> {t('desktop.createTrip')}
             </button>
@@ -177,6 +186,13 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
           </div>
         </div>
       </section>
+
+      {stats.data ? (
+        <section className={styles.statsSection}>
+          <StatsTiles stats={stats.data} />
+          <WorldMapCard countries={stats.data.countries} />
+        </section>
+      ) : null}
 
       <div className={styles.pageLayout}>
         <div className={styles.mainColumn}>

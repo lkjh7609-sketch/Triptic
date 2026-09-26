@@ -24,13 +24,18 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 2.5rem 3rem;
+  /* 하단 탭바(56px) + 노치 세이프에어리어 — 이 화면은 이제 모바일에서도
+     쓰이므로(PostDetailScreen.module.css의 commentInputRow와 동일한 이유) */
+  padding: 1.5rem 1rem calc(56px + var(--space-6) + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2rem;
   background: var(--pd-bg);
   color: var(--pd-text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  /* 두 번째 폴백을 고정된 sans-serif가 아니라 --font-sans 토큰으로 둬야
+     :lang(ko)의 SUIT 오버라이드가 여기까지 적용된다(라틴 문자만 계속 Plus
+     Jakarta Sans). */
+  font-family: 'Plus Jakarta Sans', var(--font-sans);
 }
 
 /* Header Section */
@@ -65,20 +70,42 @@
 }
 .pageTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 40px;
-  line-height: 48px;
+  font-size: 26px;
+  line-height: 1.3;
   letter-spacing: -0.015em;
   color: var(--pd-ink);
   margin: 0.5rem 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 .pageSubtitle {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--pd-muted);
+}
+@media (min-width: 768px) {
+  .container {
+    gap: 2.5rem;
+  }
+  .pageTitle {
+    font-size: 40px;
+    line-height: 48px;
+  }
+  .pageSubtitle {
+    font-size: 16px;
+  }
+}
+@media (min-width: 1024px) {
+  /* 1024px부터 AppShell이 하단 탭바 대신 데스크톱 헤더를 쓴다
+     (useMediaQuery('(min-width: 1024px)')) — 그 아래는 탭바 여백이 필요하다 */
+  .container {
+    padding: 2.5rem 3rem;
+  }
 }
 .headerActions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 .btnAi {
   padding: 0.75rem 1.25rem;
@@ -203,6 +230,12 @@
   justify-content: center;
   border: none;
   cursor: pointer;
+}
+
+.statsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 /* Layout */
