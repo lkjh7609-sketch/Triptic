@@ -61,7 +61,7 @@ export function DestinationSelector({ destinations, searchElement }: Destination
       </div>
 
       {continent && availableCountries.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-end">
+        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-start">
           {availableCountries.map(code => (
             <button 
               key={code} 
@@ -75,7 +75,7 @@ export function DestinationSelector({ destinations, searchElement }: Destination
       )}
 
       {country && availableCities.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-end">
+        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-start">
           {availableCities.map(city => (
             <button 
               key={city.id} 
