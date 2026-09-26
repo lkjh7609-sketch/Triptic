@@ -1,17 +1,20 @@
 import { useTranslation } from 'react-i18next';
-import { Users, Sun, Navigation } from 'lucide-react';
+import { Clock, StickyNote, Navigation } from 'lucide-react';
 import styles from './FloatingMapInspector.module.css';
 
 interface FloatingMapInspectorProps {
   title: string;
   subtitle: string;
-  image?: string;
-  recommendation?: string;
-  crowdLevel?: 'low' | 'medium' | 'high';
+  /** 사용자가 정한 방문 시각 (없으면 표시 안 함) */
+  time?: string;
+  /** 사용자가 적은 메모 (없으면 표시 안 함) */
+  memo?: string;
+  /** 오른쪽 일정 목록에서 이 장소로 스크롤. 숙소처럼 목록 항목이 아니면 생략 */
   onFocusMove?: () => void;
 }
 
-export function FloatingMapInspector({ title, subtitle, recommendation, crowdLevel, onFocusMove }: FloatingMapInspectorProps) {
+/** 데스크톱 지도에서 선택한 장소 요약 — 사용자가 입력한 정보만 보여준다 */
+export function FloatingMapInspector({ title, subtitle, time, memo, onFocusMove }: FloatingMapInspectorProps) {
   const { t } = useTranslation('plan');
   return (
     <div className={styles.inspectorCard}>
@@ -20,31 +23,29 @@ export function FloatingMapInspector({ title, subtitle, recommendation, crowdLev
           <h4 className={styles.title}>{title}</h4>
           <span className={styles.subtitle}>{subtitle}</span>
         </div>
-        
-        <div className={styles.detailsRow}>
-          {recommendation && (
-            <div className={styles.detailItem}>
-              <Sun size={14} />
-              <span>{recommendation}</span>
-            </div>
-          )}
-          {crowdLevel && (
-            <div className={styles.detailItem}>
-              <Users size={14} />
-              <span>
-                {crowdLevel === 'low'
-                  ? t('inspector.crowdLow', { defaultValue: '여유로움' })
-                  : crowdLevel === 'medium'
-                  ? t('inspector.crowdMedium', { defaultValue: '보통' })
-                  : t('inspector.crowdHigh', { defaultValue: '혼잡' })}
-              </span>
-            </div>
-          )}
-        </div>
 
-        <button className={styles.actionBtn} onClick={onFocusMove}>
-          <Navigation size={14} /> {t('inspector.focusMove', { defaultValue: '포커스 이동', ns: 'plan' })}
-        </button>
+        {time || memo ? (
+          <div className={styles.detailsRow}>
+            {time ? (
+              <div className={styles.detailItem}>
+                <Clock size={14} aria-hidden="true" />
+                <span>{time}</span>
+              </div>
+            ) : null}
+            {memo ? (
+              <div className={styles.detailItem}>
+                <StickyNote size={14} aria-hidden="true" />
+                <span>{memo}</span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {onFocusMove ? (
+          <button type="button" className={styles.actionBtn} onClick={onFocusMove}>
+            <Navigation size={14} aria-hidden="true" /> {t('inspector.focusMove')}
+          </button>
+        ) : null}
       </div>
     </div>
   );

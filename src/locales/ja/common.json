@@ -74,5 +74,13 @@
   "guest": {
     "bannerText": "サンプル旅行を体験中 — 変更は保存されません",
     "bannerCta": "ログインして自分の旅行を作る"
+  },
+  "menu": {
+    "darkMode": "ダークモード",
+    "editProfile": "プロフィールを編集",
+    "units": "単位設定",
+    "language": "言語設定",
+    "backup": "バックアップと復元",
+    "signOut": "ログアウト"
   }
 }

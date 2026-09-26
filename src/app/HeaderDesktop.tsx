@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { useTrips } from '@/features/plan/hooks/useTrips';
-import { getSupabaseClient } from '@/shared/api/supabaseClient';
+import { signOut } from '@/shared/api/authService';
+import { captureError } from '@/shared/monitoring';
 import { User, Settings, LogOut, Globe, HardDrive, Sun, Moon, Compass } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { EditProfileModal } from '@/features/settings/EditProfileModal';
@@ -14,7 +15,7 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import styles from './HeaderDesktop.module.css';
 
 export function HeaderDesktop() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'settings']);
   const { user } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -43,11 +44,19 @@ export function HeaderDesktop() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const displayName = user?.user_metadata?.name ?? user?.user_metadata?.full_name ?? t('account.fallbackName', { ns: 'settings' });
-  const avatarUrl = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D9488&color=fff`;
+  const displayName =
+    profile?.display_name?.trim() ||
+    user?.user_metadata?.name ||
+    user?.user_metadata?.full_name ||
+    t('account.fallbackName', { ns: 'settings' });
+  // 소셜 로그인 아바타가 없으면 외부 서비스(이름을 URL로 전송) 대신 이니셜로 표시한다
+  const avatarUrl: string | undefined = user?.user_metadata?.avatar_url || undefined;
 
-  const handleSignOut = async () => {
-    await getSupabaseClient().auth.signOut();
+  // 설정 화면과 같은 경로로 로그아웃한다 — 오프라인 캐시(IndexedDB)까지 지워야 다음 사용자에게
+  // 이전 사용자의 여행 데이터가 남지 않는다
+  const handleSignOut = () => {
+    setDropdownOpen(false);
+    signOut().catch((err) => captureError(err, { context: 'signOut' }));
   };
 
   const openModal = (modal: typeof activeModal) => {
@@ -66,28 +75,37 @@ export function HeaderDesktop() {
         </Link>
         
         <nav className={styles.nav}>
-          <Link to="/" className={styles.navLink} aria-selected={pathname === '/'}>
+          <Link to="/" className={styles.navLink} aria-current={pathname === '/' ? 'page' : undefined}>
             {t('tab.home')}
           </Link>
-          <Link to="/plan" className={styles.navLink} aria-selected={pathname.startsWith('/plan')}>
+          <Link to="/plan" className={styles.navLink} aria-current={pathname.startsWith('/plan') ? 'page' : undefined}>
             {t('tab.plan')}
           </Link>
-          <Link to="/community" className={styles.navLink} aria-selected={pathname.startsWith('/community')}>
+          <Link to="/community" className={styles.navLink} aria-current={pathname.startsWith('/community') ? 'page' : undefined}>
             {t('tab.community')}
           </Link>
         </nav>
       </div>
 
       <div style={{ position: 'relative' }} ref={dropdownRef}>
-        <div 
+        <button
+          type="button"
           className={styles.profileContainer}
           onClick={() => setDropdownOpen(!dropdownOpen)}
+          aria-haspopup="menu"
+          aria-expanded={dropdownOpen}
         >
-          <img src={avatarUrl} alt="User Avatar" className={styles.avatar} />
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className={styles.avatar} />
+          ) : (
+            <span className={`${styles.avatar} ${styles.avatarInitial}`} aria-hidden="true">
+              {displayName.trim().slice(0, 1).toUpperCase()}
+            </span>
+          )}
           <span className={styles.userName}>{displayName}</span>
-        </div>
+        </button>
 
-        <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`}>
+        <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`} role="menu" hidden={!dropdownOpen}>
           <button 
             className={styles.dropdownItem} 
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -98,7 +116,7 @@ export function HeaderDesktop() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {isDark ? <Moon size={16} /> : <Sun size={16} />}
-              다크 모드
+              {t('menu.darkMode')}
             </div>
             <div className={`${styles.toggleSwitch} ${isDark ? styles.toggleOn : ''}`}>
               <div className={styles.toggleThumb} />
@@ -106,20 +124,20 @@ export function HeaderDesktop() {
           </button>
           <div className={styles.dropdownDivider} />
           <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
-            <User size={16} /> 내 정보 변경
+            <User size={16} /> {t('menu.editProfile')}
           </button>
           <button className={styles.dropdownItem} onClick={() => openModal('unit')}>
-            <Settings size={16} /> 단위 및 테마 설정
+            <Settings size={16} /> {t('menu.units')}
           </button>
           <button className={styles.dropdownItem} onClick={() => openModal('language')}>
-            <Globe size={16} /> 언어 설정
+            <Globe size={16} /> {t('menu.language')}
           </button>
           <button className={styles.dropdownItem} onClick={() => openModal('backup')}>
-            <HardDrive size={16} /> 백업 및 복원
+            <HardDrive size={16} /> {t('menu.backup')}
           </button>
           <div className={styles.dropdownDivider} />
           <button className={styles.dropdownItem} onClick={handleSignOut}>
-            <LogOut size={16} /> 로그아웃
+            <LogOut size={16} /> {t('menu.signOut')}
           </button>
         </div>
       </div>

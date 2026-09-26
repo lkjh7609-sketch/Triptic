@@ -225,10 +225,9 @@
     "ariaLabel": "行程地圖"
   },
   "inspector": {
-    "focusMove": "移動焦點",
-    "crowdLow": "空閒",
-    "crowdMedium": "一般",
-    "crowdHigh": "擁擠"
+    "focusMove": "在行程清單中查看",
+    "unnamedPlace": "未命名地點",
+    "noAddress": "沒有地址資訊"
   },
   "currency": {
     "KRW": "韓元",

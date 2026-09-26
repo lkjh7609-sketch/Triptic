@@ -298,3 +298,9 @@
   justify-content: space-between;
   width: 100%;
 }
+
+/* 지도 카드의 '목록에서 보기'로 스크롤한 항목을 잠깐 강조 */
+.timelineFlash {
+  background-color: var(--surface-sunken);
+  transition: background-color 0.3s;
+}

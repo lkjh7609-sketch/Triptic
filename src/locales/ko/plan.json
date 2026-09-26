@@ -225,10 +225,9 @@
     "ariaLabel": "일정 지도"
   },
   "inspector": {
-    "focusMove": "포커스 이동",
-    "crowdLow": "여유로움",
-    "crowdMedium": "보통",
-    "crowdHigh": "혼잡"
+    "focusMove": "일정 목록에서 보기",
+    "unnamedPlace": "이름 없는 장소",
+    "noAddress": "주소 정보가 없어요"
   },
   "currency": {
     "KRW": "대한민국 원",

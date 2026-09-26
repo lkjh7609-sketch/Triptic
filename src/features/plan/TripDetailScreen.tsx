@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { addDays, format, parseISO } from 'date-fns';
 import { formatLocalizedDay } from './planDateFormat';
@@ -279,6 +279,30 @@ export function TripDetailScreen() {
     setCurrentDay(s.day);
   }
 
+  // 지도 마커 클릭 핸들러는 참조가 바뀌면 useTripMarkers가 마커를 전부 다시 만들고 fitBounds로
+  // 사용자가 옮긴 지도를 되돌린다 — 반드시 고정된 함수로 넘긴다.
+  const handleMarkerClick = useCallback((index: number, type: 'item' | 'startHotel' | 'endHotel') => {
+    setSelectedMarker({ index, type });
+  }, []);
+
+  /** 데스크톱 지도 카드에 보여줄 장소(선택한 마커, 없으면 그날 첫 장소) */
+  const inspectedPlace = useMemo(() => {
+    if (selectedMarker?.type === 'startHotel' && startHotel) return { item: startHotel, listIndex: null };
+    if (selectedMarker?.type === 'endHotel' && endHotel) return { item: endHotel, listIndex: null };
+    const index = selectedMarker?.type === 'item' ? selectedMarker.index : 0;
+    const item = dayItems[index];
+    return item ? { item, listIndex: index } : null;
+  }, [selectedMarker, startHotel, endHotel, dayItems]);
+
+  const timelineRef = useRef<HTMLDivElement>(null);
+  function focusTimelineItem(index: number) {
+    const element = timelineRef.current?.querySelectorAll<HTMLElement>('[data-timeline-item]')[index];
+    if (!element) return;
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.classList.add(styles.timelineFlash);
+    window.setTimeout(() => element.classList.remove(styles.timelineFlash), 1000);
+  }
+
   if (isLoading) {
     return (
       <div style={{ padding: 16 }}>
@@ -305,43 +329,20 @@ export function TripDetailScreen() {
             endHotel={endHotel}
             activeZoneIndex={0}
             cityLocation={currentCity.lat != null && currentCity.lng != null ? { lat: currentCity.lat, lng: currentCity.lng } : null}
-            onMarkerClick={(index, type) => setSelectedMarker({ index, type })}
+            onMarkerClick={handleMarkerClick}
           />
-          {(() => {
-            const item = selectedMarker?.type === 'item' ? dayItems[selectedMarker.index] 
-              : selectedMarker?.type === 'startHotel' ? startHotel 
-              : selectedMarker?.type === 'endHotel' ? endHotel 
-              : dayItems.length > 0 ? dayItems[0] : null;
-              
-            if (!item) return null;
-            return (
-              <FloatingMapInspector 
-                title={item.name || '선택된 장소'}
-                subtitle={'address' in item ? item.address || '주소 정보가 없습니다' : '주소 정보가 없습니다'}
-                image={bgImage}
-                recommendation="오전 9시 방문 추천"
-                crowdLevel="low"
-                onFocusMove={() => {
-                  if (selectedMarker?.type === 'item' || !selectedMarker) {
-                    const idx = selectedMarker?.index ?? 0;
-                    const listContainer = document.querySelector(`.${styles.desktopListRight}`);
-                    const elements = listContainer?.querySelectorAll('[data-timeline-item]');
-                    if (elements && elements[idx]) {
-                      elements[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      // highlight the item briefly if possible
-                      (elements[idx] as HTMLElement).style.backgroundColor = 'var(--surface-sunken)';
-                      setTimeout(() => {
-                        (elements[idx] as HTMLElement).style.backgroundColor = '';
-                      }, 1000);
-                    }
-                  }
-                }}
-              />
-            );
-          })()}
+          {inspectedPlace ? (
+            <FloatingMapInspector
+              title={inspectedPlace.item.name || t('inspector.unnamedPlace')}
+              subtitle={inspectedPlace.item.address || t('inspector.noAddress')}
+              time={'time' in inspectedPlace.item ? inspectedPlace.item.time : undefined}
+              memo={'memo' in inspectedPlace.item ? inspectedPlace.item.memo : undefined}
+              onFocusMove={inspectedPlace.listIndex != null ? () => focusTimelineItem(inspectedPlace.listIndex!) : undefined}
+            />
+          ) : null}
         </div>
       )}
-      <div className={isDesktop ? styles.desktopListRight : undefined}>
+      <div ref={timelineRef} className={isDesktop ? styles.desktopListRight : undefined}>
         <div className={styles.heroHeader} style={{ backgroundImage: `linear-gradient(to top, var(--surface-page) 0%, rgba(0,0,0,0.5) 100%), url('${bgImage}')` }}>
           <button
             type="button"
@@ -461,7 +462,7 @@ export function TripDetailScreen() {
             endHotel={endHotel}
             activeZoneIndex={0}
             cityLocation={currentCity.lat != null && currentCity.lng != null ? { lat: currentCity.lat, lng: currentCity.lng } : null}
-            onMarkerClick={(index, type) => setSelectedMarker({ index, type })}
+            onMarkerClick={handleMarkerClick}
           />
           </div>
         ) : (

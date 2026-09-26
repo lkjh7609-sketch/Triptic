@@ -74,5 +74,13 @@
   "guest": {
     "bannerText": "샘플 여행 체험 중 — 변경 내용은 저장되지 않아요",
     "bannerCta": "로그인하고 내 여행 만들기"
+  },
+  "menu": {
+    "darkMode": "다크 모드",
+    "editProfile": "내 정보 변경",
+    "units": "단위 설정",
+    "language": "언어 설정",
+    "backup": "백업 및 복원",
+    "signOut": "로그아웃"
   }
 }
