@@ -45,17 +45,26 @@
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 500;
   margin: 0;
   color: #fff;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+@media (min-width: 640px) {
+  .title {
+    font-size: 2rem;
+  }
 }
 
 .sampleBadge {
-  display: inline-block;
-  margin-left: var(--space-2);
-  vertical-align: middle;
+  /* 제목이 길어 줄바꿈되는 좁은 화면에서 인라인 배지가 마지막 줄 텍스트와
+     겹쳐 보이던 문제 — 배지를 아예 별도 줄로 내려서 겹칠 여지를 없앤다. */
+  display: block;
+  margin-top: var(--space-1);
+  width: fit-content;
   background: var(--brand-tint);
   color: var(--brand);
   font-size: 11px;
@@ -132,12 +141,21 @@
   flex-wrap: nowrap;
   width: 100%;
   min-width: 0;
+  /* 4개 칩(도시/호텔/식사/경비)을 좁은 화면 폭에 강제로 눌러 담으면(flex-shrink)
+     "식사"/"경비"처럼 짧은 라벨까지 "M…"/"Exp…"로 잘렸다 — 셋 다 줄이지 않고
+     가로 스크롤로 넘기는 편이 실제 여행 앱들의 관례와도 맞다. */
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.dayHeaderActions::-webkit-scrollbar {
+  display: none;
 }
 
 .hotelButton {
   appearance: none;
-  flex-shrink: 1;
-  min-width: 0;
+  flex-shrink: 0;
+  max-width: 220px;
   border: 1px solid var(--border-strong);
   background: var(--surface-subtle);
   border-radius: var(--radius-pill);
