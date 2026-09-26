@@ -37,7 +37,27 @@
     "connecting": "接続中…",
     "continueApple": "Appleで続ける",
     "continueGoogle": "Googleで続ける",
-    "continueKakao": "Kakaoで続ける"
+    "continueKakao": "Kakaoで続ける",
+    "signInSubtitle": "ログインして続ける",
+    "or": "または",
+    "sampleHint": "まずは試してみたい方は",
+    "trySample": "サンプル旅行を体験する",
+    "email": {
+      "name": "名前",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "logIn": "ログイン",
+      "signUp": "新規登録",
+      "createAccount": "メールアドレスで登録",
+      "haveAccount": "アカウントをお持ちの方はログイン",
+      "checkInbox": "確認メールを送信しました。メール内のリンクを開くと登録が完了します。",
+      "passwordHint": "パスワードは{{count}}文字以上で入力してください。",
+      "errorInvalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
+      "errorNotConfirmed": "メールアドレスの確認がまだ完了していません。受信トレイをご確認ください。",
+      "errorAlreadyRegistered": "このメールアドレスは登録済みです。ログインしてください。",
+      "errorWeakPassword": "パスワードが弱すぎます。より長く複雑なものにしてください。",
+      "errorGeneric": "処理できませんでした。しばらくしてからもう一度お試しください。"
+    }
   },
   "legal": {
     "terms": "利用規約",
@@ -50,5 +70,9 @@
     "banner": "オフライン — {{label}}",
     "lastSynced": "最終同期 {{time}}",
     "noHistory": "同期履歴なし"
+  },
+  "guest": {
+    "bannerText": "サンプル旅行を体験中 — 変更は保存されません",
+    "bannerCta": "ログインして自分の旅行を作る"
   }
 }

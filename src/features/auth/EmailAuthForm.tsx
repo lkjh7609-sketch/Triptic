@@ -1,35 +1,56 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { signInWithEmail, signUpWithEmail } from '@/shared/api/authService';
+import { captureError } from '@/shared/monitoring';
 import styles from './EmailAuthForm.module.css';
 
+const MIN_PASSWORD_LENGTH = 6; // Supabase Auth 기본 최소 길이
+
+/** Supabase Auth 오류 → 사용자에게 보여줄 번역 키 */
+function authErrorKey(err: unknown): string {
+  const message = err instanceof Error ? err.message.toLowerCase() : '';
+  if (message.includes('invalid login credentials')) return 'auth.email.errorInvalidCredentials';
+  if (message.includes('email not confirmed')) return 'auth.email.errorNotConfirmed';
+  if (message.includes('already registered')) return 'auth.email.errorAlreadyRegistered';
+  if (message.includes('password')) return 'auth.email.errorWeakPassword';
+  return 'auth.email.errorGeneric';
+}
+
 export function EmailAuthForm() {
-  
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const isSignup = mode === 'signup';
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email || !password) return;
-    if (mode === 'signup' && !name) return;
+    if (isSignup && (!name.trim() || !agreed)) return;
+    if (isSignup && password.length < MIN_PASSWORD_LENGTH) {
+      setError(t('auth.email.passwordHint', { count: MIN_PASSWORD_LENGTH }));
+      return;
+    }
 
     setError(null);
     setMessage(null);
     setLoading(true);
-
     try {
-      if (mode === 'signup') {
-        await signUpWithEmail(email, password, name);
-        setMessage('Check your email to confirm your account.');
+      if (isSignup) {
+        await signUpWithEmail(email, password, name.trim());
+        setMessage(t('auth.email.checkInbox'));
       } else {
         await signInWithEmail(email, password);
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+    } catch (err) {
+      captureError(err, { context: isSignup ? 'signUpWithEmail' : 'signInWithEmail' });
+      setError(t(authErrorKey(err)));
     } finally {
       setLoading(false);
     }
@@ -37,12 +58,13 @@ export function EmailAuthForm() {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      {mode === 'signup' && (
+      {isSignup && (
         <div className={styles.inputGroup}>
-          <label htmlFor="name">Name</label>
+          <label htmlFor="auth-name">{t('auth.email.name')}</label>
           <input
-            id="name"
+            id="auth-name"
             type="text"
+            autoComplete="name"
             className={styles.input}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -52,10 +74,11 @@ export function EmailAuthForm() {
         </div>
       )}
       <div className={styles.inputGroup}>
-        <label htmlFor="email">Email</label>
+        <label htmlFor="auth-email">{t('auth.email.email')}</label>
         <input
-          id="email"
+          id="auth-email"
           type="email"
+          autoComplete="email"
           className={styles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -64,10 +87,12 @@ export function EmailAuthForm() {
         />
       </div>
       <div className={styles.inputGroup}>
-        <label htmlFor="password">Password</label>
+        <label htmlFor="auth-password">{t('auth.email.password')}</label>
         <input
-          id="password"
+          id="auth-password"
           type="password"
+          autoComplete={isSignup ? 'new-password' : 'current-password'}
+          minLength={isSignup ? MIN_PASSWORD_LENGTH : undefined}
           className={styles.input}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -75,25 +100,49 @@ export function EmailAuthForm() {
           required
         />
       </div>
-      
-      {error && <p className={styles.error}>{error}</p>}
-      {message && <p className={styles.message}>{message}</p>}
+
+      {isSignup ? (
+        <label className={styles.consent}>
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+          <span>
+            <Trans
+              t={t}
+              i18nKey="auth.consent"
+              components={{
+                terms: <a href="/terms.html" target="_blank" rel="noopener" />,
+                privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
+              }}
+            />
+          </span>
+        </label>
+      ) : null}
+
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p className={styles.message} role="status">
+          {message}
+        </p>
+      )}
 
       <div className={styles.actions}>
-        <button type="submit" className={styles.primaryButton} disabled={loading}>
-          {loading ? '...' : (mode === 'login' ? 'Log In' : 'Sign Up')}
+        <button type="submit" className={styles.primaryButton} disabled={loading || (isSignup && !agreed)}>
+          {loading ? t('auth.connecting') : isSignup ? t('auth.email.signUp') : t('auth.email.logIn')}
         </button>
         <button
           type="button"
           className={styles.secondaryButton}
           onClick={() => {
-            setMode(mode === 'login' ? 'signup' : 'login');
+            setMode(isSignup ? 'login' : 'signup');
             setError(null);
             setMessage(null);
           }}
           disabled={loading}
         >
-          {mode === 'login' ? 'Create an account' : 'Already have an account? Log In'}
+          {isSignup ? t('auth.email.haveAccount') : t('auth.email.createAccount')}
         </button>
       </div>
     </form>

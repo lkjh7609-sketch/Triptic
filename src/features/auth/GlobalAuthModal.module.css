@@ -1,38 +1,71 @@
 .overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background: var(--surface-page);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
+  overflow-y: auto;
 }
 
 .modal {
+  position: relative;
   width: 100%;
   max-width: 400px;
+  margin: auto;
   background: var(--surface-page);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
 }
 
 .header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
+.brandRow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .title {
-  font-size: var(--font-title-size);
-  font-weight: 700;
   margin: 0;
-  color: var(--text-primary);
+  font-family: 'Newsreader', var(--font-sans);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--brand);
 }
 
 .subtitle {
-  font-size: var(--font-body-size);
-  color: var(--text-muted);
-  margin-top: var(--space-2);
+  margin: var(--space-4) 0 0;
+  font-family: 'Newsreader', var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand);
 }
 
 .divider {
@@ -51,9 +84,37 @@
 }
 
 .divider:not(:empty)::before {
-  margin-right: .25em;
+  margin-right: 0.25em;
 }
 
 .divider:not(:empty)::after {
-  margin-left: .25em;
+  margin-left: 0.25em;
+}
+
+.sampleBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.sampleHint {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.sampleLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--brand);
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
 }
