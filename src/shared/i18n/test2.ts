@@ -1,1 +1,0 @@
-export const a = import.meta.glob("/src/locales/*/*.json");
