@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
+import { existsSync } from 'fs';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
@@ -11,70 +12,41 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
-        // 로컬 개발 서버에서 프로덕션 api/*.js 서버리스 함수와 동일한 동작을 흉내낸다.
+        // 로컬 개발 서버에서 api/*.js(Vercel 서버리스 함수)를 그대로 실행하는 어댑터.
+        // Vercel 런타임이 주는 req.query/req.body/res.status().json()만 흉내낸다.
+        // 키는 .env.local에서 읽는다(VITE_ 접두사 없는 서버 전용 키 포함).
         name: 'api-dev-server',
         configureServer(server) {
-          server.middlewares.use('/api/env', (req, res) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.end(JSON.stringify({
-              GOOGLE_MAPS_API_KEY: env.GOOGLE_MAPS_API_KEY || env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || '',
-              SUPABASE_URL: env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
-              SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '',
-              GEMINI_API_KEY_EXISTS: !!(env.GEMINI_API_KEY || process.env.GEMINI_API_KEY)
-            }));
-          });
-
-          server.middlewares.use('/api/flight', async (req, res) => {
-            const apiKey = env.AVIATIONSTACK_API_KEY || process.env.AVIATIONSTACK_API_KEY || '';
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            if (!apiKey) {
-              res.statusCode = 503;
-              res.end(JSON.stringify({ error: '항공편 조회 서비스가 설정되지 않았습니다.' }));
-              return;
-            }
+          for (const [key, value] of Object.entries(env)) {
+            if (!key.startsWith('VITE_') && process.env[key] === undefined) process.env[key] = value;
+          }
+          server.middlewares.use('/api', async (req, res, next) => {
             const url = new URL(req.url, 'http://localhost');
-            const type = url.searchParams.get('type');
+            const name = url.pathname.replace(/^\/+|\/+$/g, '');
+            if (!/^[A-Za-z0-9-]+$/.test(name) || !existsSync(resolve(__dirname, `api/${name}.js`))) return next();
             try {
-              let upstreamUrl;
-              if (type === 'airport') {
-                const iata = url.searchParams.get('iata') || '';
-                upstreamUrl = `https://api.aviationstack.com/v1/airports?access_key=${apiKey}&iata_code=${encodeURIComponent(iata)}`;
-              } else if (type === 'flight') {
-                const flightNo = url.searchParams.get('flightNo') || '';
-                const date = url.searchParams.get('date') || '';
-                upstreamUrl = `https://api.aviationstack.com/v1/flights?access_key=${apiKey}&flight_iata=${encodeURIComponent(flightNo)}&flight_date=${encodeURIComponent(date)}`;
-              } else {
-                res.statusCode = 400;
-                res.end(JSON.stringify({ error: 'type 파라미터는 airport 또는 flight 여야 합니다.' }));
-                return;
+              const mod = await server.ssrLoadModule(`/api/${name}.js`);
+              req.query = Object.fromEntries(url.searchParams);
+              if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+                const chunks = [];
+                for await (const chunk of req) chunks.push(chunk);
+                const raw = Buffer.concat(chunks).toString('utf8');
+                try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = raw; }
               }
-              const upstream = await fetch(upstreamUrl);
-              const data = await upstream.text();
-              res.statusCode = upstream.status;
-              res.end(data);
+              res.status = (code) => { res.statusCode = code; return res; };
+              res.json = (body) => {
+                if (!res.getHeader('Content-Type')) res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(body));
+                return res;
+              };
+              await mod.default(req, res);
             } catch (e) {
-              res.statusCode = 502;
-              res.end(JSON.stringify({ error: String(e) }));
+              server.config.logger.error(`[api-dev-server] /api/${name} failed: ${e instanceof Error ? e.stack : e}`);
+              if (!res.headersSent) {
+                res.statusCode = 500;
+                res.end(JSON.stringify({ error: 'dev_handler_failed' }));
+              }
             }
-          });
-
-          server.middlewares.use('/api/weather', (req, res) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            const configured = !!(
-              (env.WEATHERKIT_TEAM_ID || process.env.WEATHERKIT_TEAM_ID) &&
-              (env.WEATHERKIT_SERVICE_ID || process.env.WEATHERKIT_SERVICE_ID) &&
-              (env.WEATHERKIT_KEY_ID || process.env.WEATHERKIT_KEY_ID) &&
-              (env.WEATHERKIT_PRIVATE_KEY || process.env.WEATHERKIT_PRIVATE_KEY)
-            );
-            res.statusCode = configured ? 501 : 503;
-            res.end(JSON.stringify({
-              error: configured
-                ? 'WEATHERKIT_* 키는 설정됐지만 로컬 dev 미들웨어는 아직 실제 조회를 구현하지 않았습니다.'
-                : '날씨 조회 서비스가 아직 설정되지 않았습니다.',
-            }));
           });
         }
       }

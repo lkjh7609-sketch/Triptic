@@ -86,7 +86,7 @@ export function TripDetailScreen() {
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showDayCityModal, setShowDayCityModal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [aiSuggestBase, setAiSuggestBase] = useState<{ index: number, item: PlaceItem } | null>(null);
+  const [aiSuggestBase, setAiSuggestBase] = useState<{ index: number; item: PlaceItem | undefined } | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
@@ -486,7 +486,6 @@ export function TripDetailScreen() {
           trip={trip}
           currentDay={currentDay}
           baseItem={aiSuggestBase.item}
-          insertIndex={aiSuggestBase.index}
           onClose={() => setAiSuggestBase(null)}
           onAddPlace={(item) => handleInsertPlace(item, aiSuggestBase.index)}
         />

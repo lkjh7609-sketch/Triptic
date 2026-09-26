@@ -243,5 +243,25 @@
     "CHF": "スイスフラン",
     "NZD": "ニュージーランドドル",
     "MXN": "メキシコペソ"
+  },
+  "aiNext": {
+    "title": "AI 次の行き先提案",
+    "subtitle": "{{place}}の近くで次に行きたい場所",
+    "subtitleCity": "{{city}}で訪れたい場所",
+    "loading": "おすすめを探しています…",
+    "error": "おすすめを読み込めませんでした。しばらくしてからもう一度お試しください。",
+    "empty": "これ以上のおすすめはありません",
+    "whyTitle": "おすすめの理由",
+    "tip": "ヒント：{{tip}}",
+    "notInterested": "興味なし",
+    "addToPlan": "予定に追加",
+    "distanceFrom": "{{place}}から{{distance}}",
+    "locating": "位置を確認中…",
+    "locationNotFound": "地図上で見つかりませんでした",
+    "timeTitle": "いつ訪れますか？",
+    "timeSubtitle": "予定に追加する場所：{{name}}",
+    "timeLabel": "訪問予定時刻",
+    "confirmAdd": "予定に追加する",
+    "aiNotice": "AIによる提案です。営業時間や料金は訪問前にご確認ください。"
   }
 }

@@ -261,5 +261,25 @@
     "CHF": "스위스 프랑",
     "NZD": "뉴질랜드 달러",
     "MXN": "멕시코 페소"
+  },
+  "aiNext": {
+    "title": "AI 다음 장소 추천",
+    "subtitle": "{{place}} 근처에서 다음에 가볼 만한 곳이에요",
+    "subtitleCity": "{{city}}에서 가볼 만한 곳이에요",
+    "loading": "추천 장소를 찾고 있어요…",
+    "error": "추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "empty": "더 보여드릴 추천이 없어요",
+    "whyTitle": "추천 이유",
+    "tip": "팁: {{tip}}",
+    "notInterested": "관심 없음",
+    "addToPlan": "일정에 추가",
+    "distanceFrom": "{{place}}에서 {{distance}}",
+    "locating": "위치 확인 중…",
+    "locationNotFound": "지도에서 위치를 찾지 못했어요",
+    "timeTitle": "언제 방문할까요?",
+    "timeSubtitle": "일정에 추가할 장소: {{name}}",
+    "timeLabel": "방문 예정 시간",
+    "confirmAdd": "일정에 추가하기",
+    "aiNotice": "AI가 만든 추천이에요. 영업시간·가격은 방문 전에 확인해 주세요."
   }
 }

@@ -261,5 +261,25 @@
     "CHF": "瑞士法郎",
     "NZD": "新西兰元",
     "MXN": "墨西哥比索"
+  },
+  "aiNext": {
+    "title": "AI 下一站推薦",
+    "subtitle": "{{place}} 附近值得接著去的地方",
+    "subtitleCity": "{{city}} 值得一去的地方",
+    "loading": "正在尋找推薦地點…",
+    "error": "無法載入推薦，請稍後再試。",
+    "empty": "沒有更多推薦了",
+    "whyTitle": "推薦理由",
+    "tip": "小提示：{{tip}}",
+    "notInterested": "沒興趣",
+    "addToPlan": "加入行程",
+    "distanceFrom": "距 {{place}} {{distance}}",
+    "locating": "正在確認位置…",
+    "locationNotFound": "在地圖上找不到此地點",
+    "timeTitle": "預計什麼時候去？",
+    "timeSubtitle": "要加入行程的地點：{{name}}",
+    "timeLabel": "預計時間",
+    "confirmAdd": "加入行程",
+    "aiNotice": "以上為 AI 產生的推薦，出發前請再確認營業時間與價格。"
   }
 }

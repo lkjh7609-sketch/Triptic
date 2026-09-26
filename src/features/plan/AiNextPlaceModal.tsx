@@ -1,180 +1,282 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, MapPin, Clock, Info, Check, X, ArrowLeft } from 'lucide-react';
-import styles from './AiNextPlaceModal.module.css';
+import { Sparkles, MapPin, Wallet, Info, Check, X, ArrowLeft, RotateCcw } from 'lucide-react';
 import { TimeWheelPicker } from '@/shared/ui/TimeWheelPicker';
-import modalStyles from './AddPlaceModal.module.css';
-import { tripService } from '@/shared/api/tripService';
+import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { apiUrl } from '@/shared/api/apiUrl';
-import type { TripRow } from '@/shared/api/tripService';
+import { tripService, type TripRow } from '@/shared/api/tripService';
+import { useProfile } from '@/shared/hooks/useProfile';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { captureError } from '@/shared/monitoring';
+import { haversineKm, formatDistance } from './map/geo';
+import { resolvePlace } from './resolvePlace';
+import { inferPlaceCategory, type PlaceCategory } from './placeCategory';
+import type { DayCitiesData, PlaceItem } from './types';
+import modalStyles from './AddPlaceModal.module.css';
+import styles from './AiNextPlaceModal.module.css';
 
 interface AiNextPlaceModalProps {
   trip: TripRow;
   currentDay: number;
-  baseItem: any;
-  insertIndex: number;
+  /** 이 장소 "다음"에 갈 곳을 추천한다. 그날 일정이 비어 있으면 undefined(도시 기준 추천) */
+  baseItem: PlaceItem | undefined;
   onClose: () => void;
-  onAddPlace: (place: any) => void;
+  onAddPlace: (place: PlaceItem) => void;
 }
 
+/** /api/recommend 응답의 추천 1건 */
+interface ApiRecommendation {
+  name: string;
+  category?: string;
+  categoryLabel?: string;
+  signatureMenu?: string;
+  priceRange?: string;
+  reason?: string;
+  tip?: string;
+  placeId?: string;
+  lat?: number;
+  lng?: number;
+  address?: string;
+}
+
+type Located =
+  | { status: 'pending' }
+  | { status: 'found'; lat: number; lng: number; address: string; placeId: string | null; types: string[] }
+  | { status: 'notFound' };
+
+interface Recommendation {
+  id: string;
+  rec: ApiRecommendation;
+  located: Located;
+}
+
+type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready' };
+
+const REC_CATEGORY_TO_PLACE: Record<string, PlaceCategory> = {
+  restaurant: 'restaurant',
+  cafe: 'cafe',
+  culture: 'sight',
+  spot: 'sight',
+};
+
 export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPlace }: AiNextPlaceModalProps) {
-  const { t } = useTranslation(['plan', 'common']);
-  const [loading, setLoading] = useState(true);
-  const [recs, setRecs] = useState<any[]>([]);
-  const [confirmingRec, setConfirmingRec] = useState<any | null>(null);
+  const { t, i18n } = useTranslation(['plan', 'common']);
+  const { data: profile } = useProfile();
+  const distanceUnit = profile?.distance_unit === 'mi' ? 'mi' : 'km';
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+
+  const dayCities = (tripService.toLocalProject(trip).dayCities ?? {}) as DayCitiesData;
+  const dayCityName = dayCities[currentDay]?.name;
+  const city = (dayCityName ?? trip.city ?? '').split(',')[0].trim();
+  const placeName = baseItem?.name ?? city;
+  const baseLat = baseItem?.lat;
+  const baseLng = baseItem?.lng;
+  const locale = i18n.language;
+
+  const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' });
+  const [recs, setRecs] = useState<Recommendation[]>([]);
+  const [attempt, setAttempt] = useState(0);
+  const [confirming, setConfirming] = useState<Recommendation | null>(null);
   const [time, setTime] = useState('');
 
   useEffect(() => {
-    async function fetchRecommendations() {
-      try {
-        const project = tripService.toLocalProject(trip);
-        const dayCity = (project.dayCities as Record<number, any>)?.[currentDay]?.name;
-        const city = dayCity ? dayCity.split(',')[0].trim() : (trip.title || '현지');
-        const placeName = baseItem?.name || '도심 중심가';
+    const controller = new AbortController();
+    const bias = baseLat != null && baseLng != null ? { lat: baseLat, lng: baseLng } : null;
 
+    async function load() {
+      setLoadState({ status: 'loading' });
+      setRecs([]);
+      try {
         const res = await fetch(apiUrl('/api/recommend'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            placeName,
-            city,
-            category: 'all'
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ placeName, city, category: 'all', locale, lat: baseLat, lng: baseLng }),
+          signal: controller.signal,
         });
+        if (!res.ok) throw new Error(`recommend HTTP ${res.status}`);
+        const data = (await res.json()) as { recommendations?: ApiRecommendation[] };
+        const list: Recommendation[] = (data.recommendations ?? []).map((rec, i) => ({
+          id: `${i}-${rec.name}`,
+          rec,
+          located:
+            rec.lat != null && rec.lng != null
+              ? { status: 'found', lat: rec.lat, lng: rec.lng, address: rec.address ?? '', placeId: rec.placeId ?? null, types: [] }
+              : { status: 'pending' },
+        }));
+        if (controller.signal.aborted) return;
+        setRecs(list);
+        setLoadState({ status: 'ready' });
 
-        if (!res.ok) {
-          throw new Error('API Error');
-        }
-
-        const data = await res.json();
-        if (data.success && data.recommendations) {
-          const formatted = data.recommendations.map((r: any, i: number) => ({
-            id: `rec_${i}_${Date.now()}`,
-            name: r.name,
-            address: r.address || r.distance || '',
-            memo: r.tip || '',
-            category: r.categoryLabel || r.category,
-            distance: r.distance,
-            duration: r.priceRange || '예상 체류 60분',
-            reason: r.reason,
-            rating: r.estimatedRating || 4.5,
-            raw: r
-          }));
-          setRecs(formatted);
-        }
+        // 서버가 좌표를 못 붙인 항목은 브라우저에서 Google 좌표를 찾는다(병렬)
+        await Promise.all(
+          list
+            .filter((r) => r.located.status === 'pending')
+            .map(async (r) => {
+              let located: Located = { status: 'notFound' };
+              try {
+                const found = await resolvePlace(city ? `${r.rec.name} ${city}` : r.rec.name, bias);
+                if (found) located = { status: 'found', ...found };
+              } catch (err) {
+                captureError(err, { context: 'aiNextPlace.resolvePlace' });
+              }
+              if (controller.signal.aborted) return;
+              setRecs((prev) => prev.map((p) => (p.id === r.id ? { ...p, located } : p)));
+            }),
+        );
       } catch (err) {
-        console.error('AI Recommendation Error:', err);
-        setRecs([
-          {
-            id: 'error_fallback',
-            name: '추천 서버에 연결할 수 없습니다.',
-            category: '오류',
-            distance: '',
-            duration: '',
-            reason: '현재 AI 서버 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.',
-            rating: 0,
-            raw: {}
-          }
-        ]);
-      } finally {
-        setLoading(false);
+        if (controller.signal.aborted) return;
+        captureError(err, { context: 'aiNextPlace.fetch' });
+        setLoadState({ status: 'error' });
       }
     }
 
-    fetchRecommendations();
-  }, [trip, currentDay, baseItem]);
+    void load();
+    return () => controller.abort();
+  }, [placeName, city, locale, baseLat, baseLng, attempt]);
 
-  const handleFinalAdd = () => {
-    if (!confirmingRec) return;
-    if (!confirmingRec.raw?.lat || !confirmingRec.raw?.lng) {
-      alert("구글 맵스에서 이 장소의 정확한 좌표를 찾지 못했습니다. 앱 내 일반 검색창을 이용해 직접 추가해 주세요.");
-      return;
-    }
-    const newItem = {
+  function distanceLabel(located: Located): string | null {
+    if (located.status !== 'found' || baseLat == null || baseLng == null) return null;
+    const km = haversineKm(baseLat, baseLng, located.lat, located.lng);
+    return t('aiNext.distanceFrom', { place: placeName, distance: formatDistance(km, distanceUnit, locale) });
+  }
+
+  function handleFinalAdd() {
+    if (!confirming || confirming.located.status !== 'found') return;
+    const { rec, located } = confirming;
+    const typesCategory = inferPlaceCategory(located.types);
+    onAddPlace({
       key: crypto.randomUUID(),
-      type: 'place',
-      name: confirmingRec.name,
-      address: confirmingRec.raw?.address || confirmingRec.raw?.distance || '',
-      lat: confirmingRec.raw.lat,
-      lng: confirmingRec.raw.lng,
-      placeId: confirmingRec.raw.placeId,
-      time: time || undefined,
-      memo: confirmingRec.raw?.tip || '',
-      category: 'spot',
-      completed: false
-    };
-    onAddPlace(newItem);
+      name: rec.name,
+      address: located.address,
+      lat: located.lat,
+      lng: located.lng,
+      placeId: located.placeId,
+      ...(time ? { time } : {}),
+      memo: rec.tip ?? '',
+      category: typesCategory !== 'other' ? typesCategory : (REC_CATEGORY_TO_PLACE[rec.category ?? ''] ?? 'other'),
+    });
     onClose();
-  };
+  }
 
   return (
     <div className={modalStyles.overlay} onClick={onClose}>
-      <div className={`${modalStyles.sheet} ${styles.aiSheet}`} onClick={(e) => e.stopPropagation()}>
-        
-        {confirmingRec ? (
+      <div
+        ref={trapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-next-title"
+        className={`${modalStyles.sheet} ${styles.aiSheet}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {confirming ? (
           <>
             <div className={styles.header}>
-              <button className={styles.backBtn} onClick={() => setConfirmingRec(null)}><ArrowLeft size={20}/></button>
-              <h2>언제 방문하실 건가요?</h2>
-              <p>'{confirmingRec.name}' 일정을 추가합니다.</p>
+              <button type="button" className={styles.backBtn} onClick={() => setConfirming(null)} aria-label={t('common:action.back')}>
+                <ArrowLeft size={20} />
+              </button>
+              <h2 id="ai-next-title">{t('aiNext.timeTitle')}</h2>
+              <p>{t('aiNext.timeSubtitle', { name: confirming.rec.name })}</p>
             </div>
             <div className={styles.timeConfirmView}>
               <div className={modalStyles.field} style={{ marginBottom: 'var(--space-4)' }}>
-                <label className={modalStyles.label}>방문 예정 시간</label>
+                <span className={modalStyles.label}>{t('aiNext.timeLabel')}</span>
                 <TimeWheelPicker value={time} onChange={setTime} />
               </div>
               <div className={modalStyles.actions}>
-                <button type="button" className={modalStyles.secondary} onClick={() => setConfirmingRec(null)}>뒤로 가기</button>
-                <button type="button" className={modalStyles.primary} onClick={handleFinalAdd}>최종 추가하기</button>
+                <button type="button" className={modalStyles.secondary} onClick={() => setConfirming(null)}>
+                  {t('common:action.back')}
+                </button>
+                <button type="button" className={modalStyles.primary} onClick={handleFinalAdd}>
+                  {t('aiNext.confirmAdd')}
+                </button>
               </div>
             </div>
           </>
         ) : (
           <>
             <div className={styles.header}>
-              <h2><Sparkles size={18} color="#0D9488" /> AI Travel Assistant</h2>
-              <p>'{baseItem?.name || '현재 위치'}' 기준으로 다음 장소를 제안합니다.</p>
+              <h2 id="ai-next-title">
+                <Sparkles size={18} color="var(--brand)" /> {t('aiNext.title')}
+              </h2>
+              <p>{baseItem ? t('aiNext.subtitle', { place: placeName }) : t('aiNext.subtitleCity', { city })}</p>
             </div>
 
-            {loading ? (
-              <div className={styles.loadingState}>
-                <div className={styles.spinner} />
-                <p>현재 시간, 이동 거리, 오늘 일정을 분석 중입니다...</p>
+            {loadState.status === 'loading' ? (
+              <div className={styles.list} aria-busy="true" aria-label={t('aiNext.loading')}>
+                <p className={styles.loadingText}>{t('aiNext.loading')}</p>
+                {[0, 1, 2].map((i) => (
+                  <Skeleton key={i} height="120px" />
+                ))}
               </div>
+            ) : loadState.status === 'error' ? (
+              <div className={styles.errorState} role="alert">
+                <p>{t('aiNext.error')}</p>
+                <button type="button" className={modalStyles.secondary} onClick={() => setAttempt((n) => n + 1)}>
+                  <RotateCcw size={14} /> {t('common:action.retry')}
+                </button>
+              </div>
+            ) : recs.length === 0 ? (
+              <p className={styles.emptyText}>{t('aiNext.empty')}</p>
             ) : (
               <div className={styles.list}>
-                {recs.map(rec => (
-                  <div key={rec.id} className={styles.card}>
-                    <div className={styles.cardHeader}>
-                      <h3>{rec.name}</h3>
-                      {rec.rating > 0 && <span className={styles.rating}>⭐ {rec.rating}</span>}
-                    </div>
-                    <div className={styles.metaInfo}>
-                      {rec.distance && <span><MapPin size={14}/> {rec.distance}</span>}
-                      {rec.duration && <span><Clock size={14}/> {rec.duration}</span>}
-                      <span className={styles.categoryTag}>{rec.category}</span>
-                    </div>
-                    
-                    <div className={styles.reasonBox}>
-                      <div className={styles.reasonTitle}><Info size={14}/> 왜 추천했나요?</div>
-                      <p>{rec.reason}</p>
-                    </div>
+                {recs.map((r) => {
+                  const distance = distanceLabel(r.located);
+                  return (
+                    <div key={r.id} className={styles.card}>
+                      <div className={styles.cardHeader}>
+                        <h3>{r.rec.name}</h3>
+                        {r.rec.categoryLabel ? <span className={styles.categoryTag}>{r.rec.categoryLabel}</span> : null}
+                      </div>
+                      <div className={styles.metaInfo}>
+                        <span>
+                          <MapPin size={14} />{' '}
+                          {r.located.status === 'pending'
+                            ? t('aiNext.locating')
+                            : r.located.status === 'notFound'
+                              ? t('aiNext.locationNotFound')
+                              : (distance ?? r.located.address)}
+                        </span>
+                        {r.rec.priceRange ? (
+                          <span>
+                            <Wallet size={14} /> {r.rec.priceRange}
+                          </span>
+                        ) : null}
+                      </div>
 
-                    <div className={styles.actionButtons}>
-                      <button type="button" className={styles.rejectBtn} onClick={() => setRecs(recs.filter(r => r.id !== rec.id))}>
-                        <X size={16}/> 관심 없음
-                      </button>
-                      <button type="button" className={styles.acceptBtn} onClick={() => setConfirmingRec(rec)}>
-                        <Check size={16}/> 일정에 추가
-                      </button>
+                      {r.rec.reason ? (
+                        <div className={styles.reasonBox}>
+                          <div className={styles.reasonTitle}>
+                            <Info size={14} /> {t('aiNext.whyTitle')}
+                          </div>
+                          <p>{r.rec.reason}</p>
+                          {r.rec.tip ? <p className={styles.tip}>{t('aiNext.tip', { tip: r.rec.tip })}</p> : null}
+                        </div>
+                      ) : null}
+
+                      <div className={styles.actionButtons}>
+                        <button
+                          type="button"
+                          className={styles.rejectBtn}
+                          onClick={() => setRecs((prev) => prev.filter((p) => p.id !== r.id))}
+                        >
+                          <X size={16} /> {t('aiNext.notInterested')}
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.acceptBtn}
+                          disabled={r.located.status !== 'found'}
+                          onClick={() => setConfirming(r)}
+                        >
+                          <Check size={16} /> {t('aiNext.addToPlan')}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
+            <p className={styles.aiNotice}>{t('aiNext.aiNotice')}</p>
             <div className={modalStyles.actions}>
               <button type="button" className={modalStyles.secondary} onClick={onClose}>
                 {t('common:action.close')}
