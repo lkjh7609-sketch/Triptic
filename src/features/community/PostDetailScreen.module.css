@@ -1,5 +1,5 @@
 .wrap {
-  padding-bottom: 88px;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
 .backBtn {
@@ -175,7 +175,10 @@
 
 .commentInputRow {
   position: fixed;
-  bottom: 56px;
+  /* 하단 탭바 높이(56px) + 노치 기기 안전 영역 — 이 값 없이 56px만 쓰면
+     iPhone 홈 인디케이터가 있는 기기에서 입력창이 탭바 위에 겹쳐 보인다.
+     CompanionChatScreen도 이 클래스를 그대로 재사용한다. */
+  bottom: calc(56px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   display: flex;
