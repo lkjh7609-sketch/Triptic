@@ -4,7 +4,8 @@
     "title": "운영 콘솔",
     "tabs": {
       "reports": "신고 큐",
-      "pending": "자동 플래그 큐"
+      "pending": "자동 플래그 큐",
+      "companion": "동행찾기"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -214,5 +215,88 @@
     "imageUnsupported": "이 이미지는 처리할 수 없어요.",
     "imageConvertFailed": "이미지를 변환하지 못했어요.",
     "translateFailed": "번역하지 못했어요."
+  },
+  "companion": {
+    "list": {
+      "tab": "동행",
+      "writeBtn": "모집글 쓰기",
+      "writeFirst": "첫 모집글 올리기",
+      "empty": "아직 모집 중인 동행이 없어요."
+    },
+    "compose": {
+      "title": "동행 모집",
+      "titleLabel": "제목",
+      "titlePlaceholder": "예: 오사카 3박4일 같이 다니실 분",
+      "titleRequiredError": "제목을 입력해 주세요.",
+      "bodyPlaceholder": "여행 일정, 원하는 동행 스타일 등을 적어 주세요.",
+      "dateRequiredError": "여행 날짜를 선택해 주세요.",
+      "destinationLabel": "여행지",
+      "destinationAny": "어디든 상관없어요",
+      "dateLabel": "여행 날짜",
+      "datePlaceholder": "날짜를 선택하세요",
+      "groupSizeLabel": "모집 인원(나 포함)",
+      "groupSizeDecrease": "인원 줄이기",
+      "groupSizeIncrease": "인원 늘리기",
+      "groupSizeValue_other": "{{count}}명"
+    },
+    "detail": {
+      "anyDestination": "여행지 미정",
+      "dateRange": "{{start}} ~ {{end}}",
+      "groupSize_other": "{{count}}명 모집",
+      "statusNotice": {
+        "pending_review": "검토 중인 모집글이에요. 승인되면 다른 사용자에게 보여요.",
+        "closed": "마감된 모집글이에요.",
+        "cancelled": "취소된 모집글이에요.",
+        "hidden": "신고가 누적돼 숨김 처리된 모집글이에요.",
+        "removed": "운영 정책 위반으로 삭제된 모집글이에요."
+      },
+      "finalize_other": "매칭 확정 ({{count}}명 수락됨)",
+      "cancel": "모집 취소",
+      "goToMatch": "매칭 화면으로",
+      "myApplicationStatus": {
+        "pending": "지원 완료 · 응답 대기 중",
+        "accepted": "수락됨",
+        "rejected": "거절됨",
+        "withdrawn": "지원 취소함",
+        "removed": "신고로 삭제됨"
+      },
+      "withdraw": "지원 취소",
+      "apply": "지원하기",
+      "applicants_other": "지원자 {{count}}명",
+      "noApplicants": "아직 지원자가 없어요.",
+      "accept": "수락",
+      "reject": "거절",
+      "cancelConfirm": "이 모집글을 취소할까요? 지원자들에게는 알림이 가지 않아요.",
+      "finalizeConfirm": "지금까지 수락한 인원으로 매칭을 확정할까요? 확정 후에는 새 지원을 받을 수 없어요.",
+      "withdrawConfirm": "지원을 취소할까요?"
+    },
+    "apply": {
+      "dialogLabel": "동행 지원",
+      "doneTitle": "지원 완료",
+      "doneDesc": "지원이 접수됐어요. 주최자가 수락하면 알려드릴게요.",
+      "title": "동행 지원하기",
+      "messagePrompt": "간단한 소개나 하고 싶은 말을 남겨보세요(선택).",
+      "messagePlaceholder": "안녕하세요! 저는...",
+      "submit": "지원하기",
+      "submitError": "지원 중 문제가 발생했어요."
+    },
+    "match": {
+      "loadError": "매칭 정보를 불러오지 못했어요.",
+      "desc": "매칭된 동행을 만나면 서로의 QR 코드로 신원을 확인하세요.",
+      "organizer": "주최자",
+      "leaveConfirm": "이 그룹에서 나갈까요? 나가면 QR 코드가 즉시 무효화돼요.",
+      "leave": "그룹 나가기"
+    },
+    "qr": {
+      "showTitle": "내 QR 코드",
+      "showDesc": "상대방이 이 QR을 스캔하면 같은 매칭 멤버인지 확인할 수 있어요.",
+      "loadError": "QR 코드를 불러오지 못했어요.",
+      "scanTitle": "QR 스캔",
+      "cameraDenied": "카메라를 사용할 수 없어요. 아래에서 이미지를 업로드해 주세요.",
+      "uploadInstead": "대신 이미지로 업로드",
+      "verified": "확인됐어요! 같은 동행 멤버가 맞아요.",
+      "verifyFailed": "확인할 수 없어요. 같은 매칭의 QR인지 확인해 주세요.",
+      "retry": "다시 스캔"
+    }
   }
 }

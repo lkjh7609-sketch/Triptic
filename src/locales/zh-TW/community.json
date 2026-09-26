@@ -4,7 +4,8 @@
     "title": "運營控制台",
     "tabs": {
       "reports": "舉報佇列",
-      "pending": "自動標記佇列"
+      "pending": "自動標記佇列",
+      "companion": "找同行"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -214,5 +215,88 @@
     "imageUnsupported": "無法處理這張圖片。",
     "imageConvertFailed": "圖片轉換失敗。",
     "translateFailed": "翻譯失敗。"
+  },
+  "companion": {
+    "list": {
+      "tab": "找同行",
+      "writeBtn": "發布招募文",
+      "writeFirst": "發布第一篇招募文",
+      "empty": "目前還沒有招募中的同行。"
+    },
+    "compose": {
+      "title": "找同行",
+      "titleLabel": "標題",
+      "titlePlaceholder": "例：大阪三天兩夜找旅伴",
+      "titleRequiredError": "請輸入標題。",
+      "bodyPlaceholder": "分享你的行程安排和想找的同行類型。",
+      "dateRequiredError": "請選擇旅行日期。",
+      "destinationLabel": "旅遊地",
+      "destinationAny": "地點不拘",
+      "dateLabel": "旅行日期",
+      "datePlaceholder": "選擇日期",
+      "groupSizeLabel": "招募人數(含本人)",
+      "groupSizeDecrease": "減少人數",
+      "groupSizeIncrease": "增加人數",
+      "groupSizeValue_other": "{{count}} 人"
+    },
+    "detail": {
+      "anyDestination": "地點未定",
+      "dateRange": "{{start}} ~ {{end}}",
+      "groupSize_other": "招募 {{count}} 人",
+      "statusNotice": {
+        "pending_review": "這篇招募文正在審核中，通過後才會公開。",
+        "closed": "這篇招募文已截止。",
+        "cancelled": "這篇招募文已取消。",
+        "hidden": "因累積多次檢舉而被隱藏。",
+        "removed": "因違反社群規範已被移除。"
+      },
+      "finalize_other": "確定成團(已接受 {{count}} 人)",
+      "cancel": "取消招募",
+      "goToMatch": "前往同行群組",
+      "myApplicationStatus": {
+        "pending": "已申請 · 等待回覆",
+        "accepted": "已接受",
+        "rejected": "已拒絕",
+        "withdrawn": "已取消申請",
+        "removed": "因檢舉已移除"
+      },
+      "withdraw": "取消申請",
+      "apply": "申請加入",
+      "applicants_other": "{{count}} 位申請者",
+      "noApplicants": "目前還沒有申請者。",
+      "accept": "接受",
+      "reject": "拒絕",
+      "cancelConfirm": "要取消這篇招募文嗎？申請者不會收到通知。",
+      "finalizeConfirm": "要用目前已接受的人數確定成團嗎？確定後就無法再接受新的申請。",
+      "withdrawConfirm": "要取消申請嗎？"
+    },
+    "apply": {
+      "dialogLabel": "申請加入同行",
+      "doneTitle": "申請已送出",
+      "doneDesc": "申請已送出，主揪接受後會通知你。",
+      "title": "申請加入",
+      "messagePrompt": "簡單自我介紹或留言(選填)。",
+      "messagePlaceholder": "你好，我是...",
+      "submit": "申請",
+      "submitError": "申請時發生問題。"
+    },
+    "match": {
+      "loadError": "無法載入同行資訊。",
+      "desc": "見面時互相掃描 QR Code，確認彼此是同一組同行。",
+      "organizer": "主揪",
+      "leaveConfirm": "要離開這個群組嗎？離開後 QR Code 會立即失效。",
+      "leave": "離開群組"
+    },
+    "qr": {
+      "showTitle": "我的 QR Code",
+      "showDesc": "對方掃描這個 QR Code 就能確認你們是同一組同行。",
+      "loadError": "無法載入 QR Code。",
+      "scanTitle": "掃描 QR Code",
+      "cameraDenied": "無法使用相機，請改用下方上傳圖片。",
+      "uploadInstead": "改用圖片上傳",
+      "verified": "驗證成功！是同一組同行沒錯。",
+      "verifyFailed": "無法驗證，請確認是同一組的 QR Code。",
+      "retry": "重新掃描"
+    }
   }
 }

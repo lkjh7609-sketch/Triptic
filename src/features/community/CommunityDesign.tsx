@@ -11,12 +11,13 @@ import { useSession } from '@/shared/hooks/useSession';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { DestinationSelector } from './DestinationSelector';
+import { CompanionFeedList } from './CompanionFeedList';
 import { useToggleLike } from './hooks/usePosts';
 import { getPostImageUrl } from './imageProcessing';
 import type { PostsPage } from './communityService';
 import type { Destination, Post } from './types';
+import type { Tab } from './CommunityScreen';
 
-type Tab = 'all' | 'following';
 type Sort = 'latest' | 'likes' | 'comments';
 
 interface Props {
@@ -99,14 +100,15 @@ export function CommunityDesignBody({
             </div>
 
             <Link
-              to="/community/compose"
+              to={tab === 'companion' ? '/community/companion/new' : '/community/compose'}
               className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-container text-on-secondary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 self-start md:self-auto shrink-0"
             >
               <PenLine size={18} aria-hidden="true" />
-              <span>{t('design.newPost')}</span>
+              <span>{tab === 'companion' ? t('companion.list.writeBtn') : t('design.newPost')}</span>
             </Link>
           </div>
 
+          {tab !== 'companion' ? (
           <div className="mt-8 w-full">
             <DestinationSelector
               destinations={destinations || []}
@@ -128,6 +130,7 @@ export function CommunityDesignBody({
               }
             />
           </div>
+          ) : null}
 
           <div className="mt-6 pt-4 flex items-center justify-between border-t border-surface-container-high text-body-md">
             <div className="flex items-center gap-6" role="tablist">
@@ -162,8 +165,22 @@ export function CommunityDesignBody({
                   </span>
                 ) : null}
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === 'companion'}
+                onClick={() => setTab('companion')}
+                className={
+                  tab === 'companion'
+                    ? 'flex items-center gap-2 font-title-md text-title-md text-primary border-b-2 border-primary pb-2.5'
+                    : 'flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-primary pb-2.5 transition-colors'
+                }
+              >
+                <span>{t('companion.list.tab')}</span>
+              </button>
             </div>
 
+            {tab !== 'companion' ? (
             <div className="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant">
               <span className="text-outline">{t('design.sortBy')}</span>
               <div className="flex items-center gap-1 bg-surface-container-low p-1 rounded-full border border-outline-variant/30">
@@ -184,9 +201,13 @@ export function CommunityDesignBody({
                 ))}
               </div>
             </div>
+            ) : null}
           </div>
         </section>
 
+        {tab === 'companion' ? (
+          <CompanionFeedList destinations={destinations} />
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 flex flex-col gap-6">
             {tab === 'following' && !user ? (
@@ -327,6 +348,7 @@ export function CommunityDesignBody({
             </div>
           </aside>
         </div>
+        )}
       </main>
     </div>
   );

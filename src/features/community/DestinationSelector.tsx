@@ -14,9 +14,18 @@ const COUNTRY_KEYS: Record<string, string[]> = {
 interface DestinationSelectorProps {
   searchElement?: React.ReactNode;
   destinations: Destination[];
+  /** 있으면 도시 클릭 시 이 콜백만 호출하고 navigate하지 않는다(동행찾기 목록 필터용) */
+  onCitySelect?: (city: Destination) => void;
+  /** onCitySelect와 같이 써서 현재 필터 중인 도시를 강조 표시한다 */
+  selectedDestinationId?: string | null;
 }
 
-export function DestinationSelector({ destinations, searchElement }: DestinationSelectorProps) {
+export function DestinationSelector({
+  destinations,
+  searchElement,
+  onCitySelect,
+  selectedDestinationId,
+}: DestinationSelectorProps) {
   const { t } = useTranslation('community');
   const navigate = useNavigate();
   const [continent, setContinent] = useState<string | null>(null);
@@ -77,10 +86,10 @@ export function DestinationSelector({ destinations, searchElement }: Destination
       {country && availableCities.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar justify-start">
           {availableCities.map(city => (
-            <button 
-              key={city.id} 
-              className="px-4 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/50 text-primary font-label-md text-label-md transition-all shrink-0"
-              onClick={() => navigate(`/community/d/${city.slug}`)}
+            <button
+              key={city.id}
+              className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-all shrink-0 border ${selectedDestinationId === city.id ? 'bg-primary text-on-primary border-primary shadow-sm' : 'bg-surface-container-low hover:bg-surface-container-high border-outline-variant/50 text-primary'}`}
+              onClick={() => (onCitySelect ? onCitySelect(city) : navigate(`/community/d/${city.slug}`))}
             >
               {city.name}
             </button>

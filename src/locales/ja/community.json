@@ -4,7 +4,8 @@
     "title": "管理コンソール",
     "tabs": {
       "reports": "通報キュー",
-      "pending": "自動フラグキュー"
+      "pending": "自動フラグキュー",
+      "companion": "同行探し"
     },
     "reportDetail": "通報の詳細: {{detail}}",
     "dismiss": "却下",
@@ -214,5 +215,88 @@
     "imageUnsupported": "この画像は処理できません。",
     "imageConvertFailed": "画像を変換できませんでした。",
     "translateFailed": "翻訳できませんでした。"
+  },
+  "companion": {
+    "list": {
+      "tab": "同行探し",
+      "writeBtn": "募集を投稿",
+      "writeFirst": "最初の募集を投稿する",
+      "empty": "まだ募集中の同行がありません。"
+    },
+    "compose": {
+      "title": "同行募集",
+      "titleLabel": "タイトル",
+      "titlePlaceholder": "例：大阪3泊4日を一緒に回りませんか",
+      "titleRequiredError": "タイトルを入力してください。",
+      "bodyPlaceholder": "旅程や希望する同行スタイルなどを書いてください。",
+      "dateRequiredError": "旅行日程を選択してください。",
+      "destinationLabel": "旅行先",
+      "destinationAny": "どこでも構いません",
+      "dateLabel": "旅行日程",
+      "datePlaceholder": "日付を選択",
+      "groupSizeLabel": "募集人数(自分を含む)",
+      "groupSizeDecrease": "人数を減らす",
+      "groupSizeIncrease": "人数を増やす",
+      "groupSizeValue_other": "{{count}}人"
+    },
+    "detail": {
+      "anyDestination": "旅行先未定",
+      "dateRange": "{{start}} 〜 {{end}}",
+      "groupSize_other": "{{count}}人募集",
+      "statusNotice": {
+        "pending_review": "審査中の募集です。承認されると公開されます。",
+        "closed": "締め切られた募集です。",
+        "cancelled": "キャンセルされた募集です。",
+        "hidden": "通報が重なり非表示になった募集です。",
+        "removed": "コミュニティガイドライン違反により削除されました。"
+      },
+      "finalize_other": "マッチング確定(承認済み{{count}}人)",
+      "cancel": "募集を取り消す",
+      "goToMatch": "マッチング画面へ",
+      "myApplicationStatus": {
+        "pending": "応募済み · 返答待ち",
+        "accepted": "承認済み",
+        "rejected": "却下されました",
+        "withdrawn": "応募を取り消しました",
+        "removed": "通報により削除されました"
+      },
+      "withdraw": "応募を取り消す",
+      "apply": "応募する",
+      "applicants_other": "応募者{{count}}人",
+      "noApplicants": "まだ応募者がいません。",
+      "accept": "承認",
+      "reject": "却下",
+      "cancelConfirm": "この募集を取り消しますか？応募者には通知されません。",
+      "finalizeConfirm": "これまで承認した人数でマッチングを確定しますか？確定後は新しい応募を受け付けられません。",
+      "withdrawConfirm": "応募を取り消しますか？"
+    },
+    "apply": {
+      "dialogLabel": "同行に応募",
+      "doneTitle": "応募完了",
+      "doneDesc": "応募が送信されました。主催者が承認するとお知らせします。",
+      "title": "同行に応募する",
+      "messagePrompt": "簡単な自己紹介やメッセージを残してください(任意)。",
+      "messagePlaceholder": "こんにちは、私は...",
+      "submit": "応募する",
+      "submitError": "応募中に問題が発生しました。"
+    },
+    "match": {
+      "loadError": "マッチング情報を読み込めませんでした。",
+      "desc": "実際に会ったらお互いのQRコードをスキャンして、同じマッチングのメンバーか確認しましょう。",
+      "organizer": "主催者",
+      "leaveConfirm": "このグループから抜けますか？抜けるとQRコードはすぐに無効になります。",
+      "leave": "グループを抜ける"
+    },
+    "qr": {
+      "showTitle": "自分のQRコード",
+      "showDesc": "相手がこのQRコードをスキャンすると、同じマッチングのメンバーか確認できます。",
+      "loadError": "QRコードを読み込めませんでした。",
+      "scanTitle": "QRコードをスキャン",
+      "cameraDenied": "カメラが使用できません。下から画像をアップロードしてください。",
+      "uploadInstead": "代わりに画像をアップロード",
+      "verified": "確認できました！同じマッチングのメンバーです。",
+      "verifyFailed": "確認できませんでした。同じマッチングのQRコードか確認してください。",
+      "retry": "再スキャン"
+    }
   }
 }

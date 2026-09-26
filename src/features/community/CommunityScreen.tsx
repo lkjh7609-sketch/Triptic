@@ -13,10 +13,11 @@ import { useDestinations } from './hooks/useDestinations';
 import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import { DestinationSelector } from './DestinationSelector';
+import { CompanionFeedList } from './CompanionFeedList';
 import styles from './CommunityScreen.module.css';
 import { CommunityDesignBody } from './CommunityDesign';
 
-type Tab = 'all' | 'following';
+export type Tab = 'all' | 'following' | 'companion';
 
 export function CommunityScreen() {
   const { t } = useTranslation(['community', 'common']);
@@ -26,7 +27,7 @@ export function CommunityScreen() {
   const { data: destinations } = useDestinations();
   const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
 
-  const feed = usePostsFeed({ tab, viewerId: user?.id ?? null });
+  const feed = usePostsFeed({ tab: tab === 'following' ? 'following' : 'all', viewerId: user?.id ?? null });
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const handleSearch = () => {
@@ -67,8 +68,8 @@ export function CommunityScreen() {
   return (
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
       {user ? (
-        <Link to="/community/compose" className={styles.fabBtnDesktop}>
-          <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
+        <Link to={tab === 'companion' ? '/community/companion/new' : '/community/compose'} className={styles.fabBtnDesktop}>
+          <PenLine size={20} /> <span>{tab === 'companion' ? t('companion.list.writeBtn') : t('feed.writeBtn')}</span>
         </Link>
       ) : null}
 
@@ -104,13 +105,20 @@ export function CommunityScreen() {
           >
             {t('feed.tabFollowing')}
           </button>
+          <button
+            type="button"
+            className={tab === 'companion' ? styles.tabActive : styles.tab}
+            onClick={() => setTab('companion')}
+          >
+            {t('companion.list.tab')}
+          </button>
         </div>
 
-        {destinations && destinations.length > 0 ? (
+        {tab !== 'companion' && destinations && destinations.length > 0 ? (
           <DestinationSelector destinations={destinations} />
         ) : null}
 
-        {followedDestinations.length > 0 ? (
+        {tab !== 'companion' && followedDestinations.length > 0 ? (
           <div className={styles.chipRow}>
             {followedDestinations.map((d) => (
               <Link key={d.id} to={`/community/d/${d.slug}`} className={styles.chip}>
@@ -121,7 +129,9 @@ export function CommunityScreen() {
         ) : null}
       </div>
 
-      {tab === 'following' && !user ? (
+      {tab === 'companion' ? (
+        <CompanionFeedList destinations={destinations} />
+      ) : tab === 'following' && !user ? (
         <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('feed.loginToFollow')} />
       ) : feed.isLoading ? (
         <div style={{ padding: 16 }}>
