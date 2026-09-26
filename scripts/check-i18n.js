@@ -7,7 +7,8 @@
  * 4) ICU 플러럴 카테고리가 언어 규칙에 맞는가 (ko/zh는 other만, en은 one/other 필요)
  *    — 이 프로젝트는 i18next-icu 대신 내장 plural(`_one`/`_other` 접미사)을 쓴다
  *      (src/shared/i18n/index.ts 참고, 번들 크기 때문).
- * 5) 하드코딩된 한글이 .tsx에 남아 있는가 (`// i18n-exempt` 주석 라인은 예외)
+ * 5) 하드코딩된 한글이 .tsx/.ts에 남아 있는가 (`// i18n-exempt` 주석 라인,
+ *    파일 맨 앞 `/* i18n-exempt-file: ... *\/` 주석이 있는 파일 전체는 예외)
  *
  * `.js`로 작성한 이유: 이 리포는 scripts/*.js 관례(build.js, update-airports.js)를
  * 이미 쓰고, tsx/ts-node 등 별도 런타임 트랜스파일러를 추가하지 않기 위해서다.
@@ -188,25 +189,39 @@ function stripComments(source) {
     .join('\n');
 }
 
-function walkTsxFiles(dir, out = []) {
+function walkSourceFiles(dir, out = []) {
   for (const entry of readdirSync(dir)) {
     const full = path.join(dir, entry);
     const stat = statSync(full);
     if (stat.isDirectory()) {
-      walkTsxFiles(full, out);
-    } else if (entry.endsWith('.tsx') && !entry.endsWith('.test.tsx')) {
+      walkSourceFiles(full, out);
+    } else if (
+      (entry.endsWith('.tsx') || entry.endsWith('.ts')) &&
+      !entry.endsWith('.test.tsx') &&
+      !entry.endsWith('.test.ts') &&
+      !entry.endsWith('.d.ts')
+    ) {
       out.push(full);
     }
   }
   return out;
 }
 
+/** 파일 맨 앞(첫 500자 이내) `/* i18n-exempt-file` 주석이 있으면 파일 전체를 검사에서 뺀다
+ *  — sampleTrip.ts(4개 언어 샘플 데이터), badwords.ts(비속어 사전)처럼 한글이 UI 문구가
+ *  아니라 데이터 자체인 파일용. */
+const EXEMPT_FILE_MARKER = 'i18n-exempt-file';
+function isFileExempt(raw) {
+  return raw.slice(0, 500).includes(EXEMPT_FILE_MARKER);
+}
+
 function checkHardcodedKorean() {
-  const files = walkTsxFiles(path.join(ROOT, 'src'));
+  const files = walkSourceFiles(path.join(ROOT, 'src'));
   let count = 0;
 
   for (const file of files) {
     const raw = readFileSync(file, 'utf-8');
+    if (isFileExempt(raw)) continue;
     const stripped = stripComments(raw);
     const lines = stripped.split('\n');
     const originalLines = raw.split('\n');
@@ -216,12 +231,16 @@ function checkHardcodedKorean() {
       const originalLine = originalLines[i] ?? '';
       if (originalLine.includes(EXEMPT_MARKER)) return;
       count += 1;
-      // fail(`[하드코딩] ${path.relative(ROOT, file)}:${i + 1}: ${line.trim().slice(0, 80)}`);
+      fail(`[하드코딩] ${path.relative(ROOT, file)}:${i + 1}: ${line.trim().slice(0, 80)}`);
     });
   }
 
   if (count === 0) ok('하드코딩된 한글 0건');
-  else console.error(`\n하드코딩된 한글 ${count}건 발견 — .tsx라면 i18n 키로 옮기거나, 정말 예외라면 그 줄에 "// i18n-exempt" 주석을 추가하세요.`);
+  else
+    console.error(
+      `\n하드코딩된 한글 ${count}건 발견 — i18n 키로 옮기거나, 그 줄이 정말 예외라면 "// i18n-exempt" 주석을,` +
+        ` 파일 전체가 데이터라면 파일 맨 앞에 "/* i18n-exempt-file: 이유 */" 주석을 추가하세요.`,
+    );
 }
 
 checkKeyParityAndInterpolation();
