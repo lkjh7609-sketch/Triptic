@@ -442,7 +442,7 @@ export function TripDetailScreen() {
               <MapPin size={16} /> <span className={styles.buttonText}>{currentCity.name ? currentCity.name.split(',')[0].trim() : t('tripDetail.cityUnset')}</span>
             </button>
             {currentDay < totalDays ? (<button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
-              <HotelIcon size={16} /> <span className={styles.buttonText}>{hotelsData[currentDay]?.name ?? t('tripDetail.hotelUnset')}</span>
+              <HotelIcon size={16} /> <span className={styles.buttonText}>{t('tripDetail.hotelChipLabel')}</span>
             </button>) : null}
             <button type="button" className={styles.hotelButton} onClick={() => setShowMealsModal(true)}>
               <Utensils size={16} /> <span className={styles.buttonText}>{t('tripDetail.mealsLabel')}</span>

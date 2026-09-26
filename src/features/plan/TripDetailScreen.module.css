@@ -141,21 +141,15 @@
   flex-wrap: nowrap;
   width: 100%;
   min-width: 0;
-  /* 4개 칩(도시/호텔/식사/경비)을 좁은 화면 폭에 강제로 눌러 담으면(flex-shrink)
-     "식사"/"경비"처럼 짧은 라벨까지 "M…"/"Exp…"로 잘렸다 — 셋 다 줄이지 않고
-     가로 스크롤로 넘기는 편이 실제 여행 앱들의 관례와도 맞다. */
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.dayHeaderActions::-webkit-scrollbar {
-  display: none;
 }
 
 .hotelButton {
   appearance: none;
-  flex-shrink: 0;
-  max-width: 220px;
+  /* 호텔/식사/경비는 이제 실제 이름이 아니라 고정된 짧은 라벨만 보여주고
+     (도시만 가변) 4개를 균등한 폭으로 나눠 스크롤 없이 한 줄에 다 들어가게
+     한다. 도시 이름이 유난히 길 때만 buttonText의 ellipsis가 잘라준다. */
+  flex: 1 1 0;
+  min-width: 0;
   border: 1px solid var(--border-strong);
   background: var(--surface-subtle);
   border-radius: var(--radius-pill);
