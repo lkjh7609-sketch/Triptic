@@ -58,11 +58,13 @@
     "previewCancel": "取消",
     "previewStart": "用這座城市規劃行程",
     "previewLoading": "✨ AI 正在載入城市資訊...",
-    "terms": "服務條款 (Terms)",
-    "privacy": "隱私政策 (Privacy)",
-    "contact": "客戶服務 (Contact)",
+    "terms": "服務條款",
+    "privacy": "隱私政策",
+    "contact": "客戶服務",
     "flights": "機票",
     "stays": "住宿",
-    "activities": "活動"
+    "activities": "活動",
+    "scrollLeft": "向左捲動",
+    "scrollRight": "向右捲動"
   }
 }

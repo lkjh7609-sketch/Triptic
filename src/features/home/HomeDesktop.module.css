@@ -40,7 +40,7 @@
 }
 
 .heroTitle {
-  font-family: 'Newsreader', serif;
+  font-family: 'Newsreader', var(--font-sans);
   font-size: 56px;
   font-weight: 500;
   line-height: 1.1;
@@ -70,7 +70,7 @@
 
 .searchBtn {
   background-color: var(--brand, #FF6B4A);
-  color: var(--text-primary);
+  color: #fff;
   border: none;
   border-radius: 9999px;
   padding: 12px 24px;
@@ -81,7 +81,7 @@
   white-space: nowrap;
 }
 .searchBtn:hover {
-  background-color: #EA580C;
+  filter: brightness(0.92);
   transform: scale(0.98);
 }
 
@@ -93,7 +93,7 @@
 }
 
 .sectionTitle {
-  font-family: 'Newsreader', serif;
+  font-family: 'Newsreader', var(--font-sans);
   font-size: 32px;
   font-weight: 500;
   margin-bottom: 2rem;
@@ -246,4 +246,138 @@
 
 .footerLink:hover {
   color: var(--text-primary, #0F2942);
+}
+
+/* ── 인라인 스타일에서 옮긴 것 + 접근성(버튼/다이얼로그) ─────────────── */
+.heroPlain {
+  overflow: visible;
+  z-index: 2;
+  background: var(--surface-page);
+  min-height: 60vh;
+  height: auto;
+  padding-top: 12vh;
+  padding-bottom: 6vh;
+  justify-content: flex-start;
+}
+.searchPill {
+  position: relative;
+}
+.searchIcon {
+  color: var(--brand);
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.quickCategories {
+  margin-top: 24px;
+}
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 8px 0 0;
+  padding: 8px 0;
+  list-style: none;
+  text-align: left;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+}
+.suggestion {
+  padding: 12px 24px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+.suggestion:hover {
+  background: var(--surface-subtle);
+}
+.statsWrap {
+  max-width: 900px;
+  width: 100%;
+  margin: 10vh auto 0;
+}
+.card {
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+}
+.modalImage {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.modalBody {
+  padding: var(--space-6);
+}
+.modalTitle {
+  margin: 0 0 var(--space-2);
+  font-size: 24px;
+  color: var(--text-heading);
+}
+.modalDesc {
+  min-height: 60px;
+  margin-bottom: var(--space-6);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.modalLoading {
+  opacity: 0.6;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+.modalCancel {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.modalStart {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
 }

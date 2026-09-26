@@ -38,13 +38,20 @@ async function fetchDestinationNamesByIds(ids: string[], locale = DEFAULT_LOCALE
   const supabase = getSupabaseClient();
   const distinct = uniq(ids);
   if (distinct.length === 0) return new Map();
+  // 요청 언어 이름이 없으면(번역 누락) 영어 → 한국어 순으로 폴백한다 — slug가 그대로 보이지 않게
+  const fallbacks = [...new Set([locale, 'en', 'ko'])];
   const { data, error } = await supabase
     .from('destination_translations')
-    .select('destination_id, name')
-    .eq('locale', locale)
+    .select('destination_id, locale, name')
+    .in('locale', fallbacks)
     .in('destination_id', distinct);
   if (error) throw error;
-  return new Map((data as { destination_id: string; name: string }[]).map((d) => [d.destination_id, d.name]));
+  const names = new Map<string, string>();
+  const rows = (data as { destination_id: string; locale: string; name: string }[]) ?? [];
+  for (const loc of [...fallbacks].reverse()) {
+    for (const row of rows) if (row.locale === loc) names.set(row.destination_id, row.name);
+  }
+  return names;
 }
 
 async function fetchImagesByPostIds(postIds: string[]): Promise<Map<string, PostImage[]>> {

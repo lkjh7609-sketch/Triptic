@@ -63,6 +63,8 @@
     "contact": "고객센터",
     "flights": "항공권",
     "stays": "숙소",
-    "activities": "액티비티"
+    "activities": "액티비티",
+    "scrollLeft": "왼쪽으로 넘기기",
+    "scrollRight": "오른쪽으로 넘기기"
   }
 }

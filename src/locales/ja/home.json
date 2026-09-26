@@ -63,6 +63,8 @@
     "previewLoading": "AIが都市の情報を読み込んでいます…",
     "terms": "利用規約",
     "privacy": "プライバシーポリシー",
-    "contact": "お問い合わせ"
+    "contact": "お問い合わせ",
+    "scrollLeft": "左へスクロール",
+    "scrollRight": "右へスクロール"
   }
 }

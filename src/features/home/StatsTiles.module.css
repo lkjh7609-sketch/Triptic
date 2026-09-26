@@ -44,7 +44,7 @@
 }
 
 .value {
-  font-family: 'Newsreader', serif;
+  font-family: 'Newsreader', var(--font-sans);
   font-size: 28px;
   font-weight: 500;
   color: var(--text-primary);
