@@ -175,7 +175,10 @@ const EXEMPT_MARKER = 'i18n-exempt';
 function stripComments(source) {
   // 블록 주석(/** ... */, /* ... */)을 통째로 제거 — 문자열 리터럴 안의 `/*`는
   // 이 코드베이스 관례상 없다고 가정한다(완벽한 파서가 아닌 실용적 근사치).
-  const withoutBlocks = source.replace(/\/\*[\s\S]*?\*\//g, '');
+  // 제거하되 줄 수는 그대로 유지해야 한다 — 안 그러면 여러 줄짜리 블록 주석(흔한
+  // JSDoc 헤더) 아래의 모든 줄이 밀려서, 원본 줄과 대조하는 EXEMPT_MARKER 검사와
+  // 에러 메시지의 줄 번호가 둘 다 어긋난다.
+  const withoutBlocks = source.replace(/\/\*[\s\S]*?\*\//g, (match) => '\n'.repeat((match.match(/\n/g) || []).length));
   return withoutBlocks
     .split('\n')
     .map((line) => {
