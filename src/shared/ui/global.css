@@ -2,13 +2,18 @@
 
 /*
  * 폰트 스택 (01-design-system.md §3.1)
- * ko/en: Pretendard Variable · zh-TW: Noto Sans TC · ja: Noto Sans JP (동적 로드, src/shared/i18n/fonts.ts — 07-i18n.md §4.1)
+ * ko: SUIT Variable · en: Pretendard Variable · zh-TW: Noto Sans TC · ja: Noto Sans JP
+ * (ko/zh-TW/ja는 동적 로드, src/shared/i18n/fonts.ts — 07-i18n.md §4.1)
  * Pretendard 자체는 index.html에서 CDN <link>로 로드한다 (레거시 앱과 동일 소스).
  * 폰트 로드가 끝나기 전에도 시스템 한자 폰트로 즉시 보이도록 폴백을 같이 둔다.
  */
 :root {
   --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
     sans-serif;
+}
+:root:lang(ko) {
+  --font-sans:
+    'SUIT Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 :root:lang(zh) {
   --font-sans:
