@@ -294,11 +294,6 @@
 .suggestion:hover {
   background: var(--surface-subtle);
 }
-.statsWrap {
-  max-width: 900px;
-  width: 100%;
-  margin: 10vh auto 0;
-}
 .card {
   padding: 0;
   font: inherit;
@@ -380,4 +375,62 @@
   color: #fff;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* 이 파일은 원래 데스크톱 전용이라 반응형 규칙이 전혀 없었다 — 이제 모바일 홈도
+   같은 마크업(검색 → 카테고리 → 추천 여행지)을 그대로 쓰므로, 좁은 화면에서
+   4rem 패딩·56px 밖 화살표 버튼 등 데스크톱 전제 치수를 여기서 좁혀준다. */
+@media (max-width: 768px) {
+  .hero {
+    padding: 0 var(--space-4);
+  }
+  .heroPlain {
+    min-height: auto;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-2);
+  }
+  .searchPill {
+    padding: 6px 6px 6px 16px;
+    flex-wrap: wrap;
+  }
+  .searchBtn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+  .quickCategories {
+    margin-top: var(--space-4);
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+  .categoryPill {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .section {
+    padding: var(--space-6) var(--space-4);
+  }
+  .sectionTitle {
+    font-size: 20px;
+    margin-bottom: var(--space-4);
+  }
+  .grid {
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+  .card {
+    min-width: 240px;
+    width: 240px;
+  }
+  .cardBody {
+    padding: var(--space-4);
+  }
+  /* 화살표는 사이드바 밖(-56px)에 떠 있어 좁은 화면에서 그대로 두면 가로
+     스크롤을 만든다 — 터치 스와이프로 이미 넘길 수 있으니 숨긴다. */
+  .sliderBtnLeft,
+  .sliderBtnRight {
+    display: none;
+  }
+  .footer {
+    padding: var(--space-4);
+  }
 }

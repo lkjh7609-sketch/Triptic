@@ -8,8 +8,6 @@ import { apiUrl } from '@/shared/api/apiUrl';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { CONTACT_EMAIL } from '@/shared/config';
 import { captureError } from '@/shared/monitoring';
-import { useHomeStats } from './useHomeStats';
-import { StatsTiles } from './StatsTiles';
 import styles from './HomeDesktop.module.css';
 
 interface FeaturedDestination {
@@ -109,7 +107,6 @@ export function HomeDesktop() {
   const [previewDest, setPreviewDest] = useState<FeaturedDestination | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const stats = useHomeStats();
   const { data: destinations } = useDestinations();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -221,12 +218,6 @@ export function HomeDesktop() {
               <Tent size={16} aria-hidden="true" /> {t('desktop.activities')}
             </a>
           </div>
-
-          {stats.data ? (
-            <div className={styles.statsWrap}>
-              <StatsTiles stats={stats.data} />
-            </div>
-          ) : null}
         </div>
       </section>
 
