@@ -66,7 +66,8 @@ export function CompanionDetailScreen() {
     if (!window.confirm(t('companion.detail.finalizeConfirm'))) return;
     try {
       await finalizeMatch.mutateAsync();
-      navigate(`/community/companion/${post!.id}/match`);
+      // 매칭 확정 = 채팅방 개설 — 주최자는 확정하자마자 바로 새 채팅방으로 들어간다.
+      navigate(`/community/companion/${post!.id}/chat`);
     } catch (err) {
       captureError(err, { context: 'finalizeCompanionMatch' });
     }

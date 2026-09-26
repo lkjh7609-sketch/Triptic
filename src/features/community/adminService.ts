@@ -71,6 +71,12 @@ export async function setCompanionApplicationStatus(applicationId: string, statu
   if (error) throw error;
 }
 
+export async function setCompanionMessageStatus(messageId: string, status: 'removed'): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from('companion_messages').update({ status }).eq('id', messageId);
+  if (error) throw error;
+}
+
 export async function listPendingReviewCompanionPosts() {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -103,6 +109,10 @@ export async function getReportTargetPreview(
   if (targetType === 'companion_application') {
     const { data } = await supabase.from('companion_applications').select('message').eq('id', targetId).maybeSingle();
     return data ? { body: data.message ?? '' } : null;
+  }
+  if (targetType === 'companion_message') {
+    const { data } = await supabase.from('companion_messages').select('body').eq('id', targetId).maybeSingle();
+    return data ? { body: data.body } : null;
   }
   return null;
 }

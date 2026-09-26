@@ -297,6 +297,15 @@
       "verified": "확인됐어요! 같은 동행 멤버가 맞아요.",
       "verifyFailed": "확인할 수 없어요. 같은 매칭의 QR인지 확인해 주세요.",
       "retry": "다시 스캔"
+    },
+    "chat": {
+      "title": "채팅방",
+      "memberCount_other": "멤버 {{count}}명",
+      "loadError": "메시지를 불러오지 못했어요.",
+      "empty": "아직 메시지가 없어요. 첫 메시지를 보내보세요!",
+      "placeholder": "메시지를 입력하세요",
+      "sendError": "메시지 전송에 실패했어요.",
+      "badwordBlocked": "부적절한 내용이 감지됐어요. 메시지를 확인해 주세요."
     }
   }
 }

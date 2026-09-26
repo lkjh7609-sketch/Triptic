@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { QrCode, ScanLine } from 'lucide-react';
+import { MessageCircle, QrCode, ScanLine } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
@@ -82,6 +82,11 @@ export function CompanionMatchScreen() {
             ))
           )}
         </div>
+
+        <button type="button" className={styles.chatBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
+          <MessageCircle size={20} aria-hidden="true" />
+          <span>{t('companion.chat.title')}</span>
+        </button>
 
         <div className={styles.qrActions}>
           <button type="button" className={styles.qrActionBtn} onClick={() => setShowQr(true)}>

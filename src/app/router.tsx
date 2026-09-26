@@ -72,6 +72,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 매칭 확정 시 개설되는 채팅방(0033)
+          path: 'community/companion/:postId/chat',
+          lazy: async () => {
+            const { CompanionChatScreen } = await import('@/features/community/CompanionChatScreen');
+            return { Component: CompanionChatScreen };
+          },
+        },
+        {
           path: 'community/d/:slug',
           lazy: async () => {
             const { DestinationChannelScreen } = await import('@/features/community/DestinationChannelScreen');

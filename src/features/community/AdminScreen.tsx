@@ -15,6 +15,7 @@ import {
   resolveReport,
   setCommentStatus,
   setCompanionApplicationStatus,
+  setCompanionMessageStatus,
   setCompanionPostStatus,
   setPostStatus,
 } from './adminService';
@@ -39,6 +40,7 @@ function ReportRow({ report, onResolved }: { report: Report; onResolved: () => v
       else if (report.target_type === 'comment') await setCommentStatus(report.target_id, 'removed');
       else if (report.target_type === 'companion_post') await setCompanionPostStatus(report.target_id, 'removed');
       else if (report.target_type === 'companion_application') await setCompanionApplicationStatus(report.target_id, 'removed');
+      else if (report.target_type === 'companion_message') await setCompanionMessageStatus(report.target_id, 'removed');
       await resolveReport(report.id, 'actioned', user!.id);
       onResolved();
     } finally {
