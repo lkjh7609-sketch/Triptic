@@ -208,5 +208,12 @@
     "ethosTitle": "Triptic이 지향하는 것",
     "ethosBody": "서두르는 관광 명소 목록보다 차분한 안내, 현지 문화에 대한 존중, 솔직한 여행 기록을 아낍니다.",
     "guidelines": "커뮤니티 이용 규칙 보기"
+  },
+  "errors": {
+    "postingUnavailable": "지금은 커뮤니티 글쓰기를 사용할 수 없어요.",
+    "alreadyReported": "이미 신고한 콘텐츠예요.",
+    "imageUnsupported": "이 이미지는 처리할 수 없어요.",
+    "imageConvertFailed": "이미지를 변환하지 못했어요.",
+    "translateFailed": "번역하지 못했어요."
   }
 }

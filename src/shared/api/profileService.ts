@@ -46,7 +46,7 @@ export async function getMyProfile(userId: string): Promise<ProfileRow> {
 }
 
 export type ProfilePatch = Partial<
-  Pick<ProfileRow, 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs'>
+  Pick<ProfileRow, 'display_name' | 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs'>
 >;
 
 export async function updateMyProfile(userId: string, patch: ProfilePatch): Promise<void> {

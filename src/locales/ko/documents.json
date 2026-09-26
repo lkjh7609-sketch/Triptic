@@ -40,5 +40,12 @@
     "addToWallet": "Apple Wallet에 추가",
     "deleteConfirm": "'{{name}}' 삭제할까요? 되돌릴 수 없어요.",
     "voucherOriginalAlt": "바우처 원본"
+  },
+  "errors": {
+    "unsupportedType": "PDF, JPG, PNG, .pkpass, .ics 파일만 올릴 수 있어요.",
+    "tooLarge": "20MB를 넘는 파일은 올릴 수 없어요. 필요한 페이지만 잘라서 올려 주세요.",
+    "storageLimit": "바우처 보관 용량 한도에 도달했어요.",
+    "parseLimit": "서류 자동 인식 한도에 도달했어요.",
+    "registerFailed": "문서를 등록하지 못했어요."
   }
 }

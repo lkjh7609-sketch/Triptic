@@ -7,7 +7,7 @@
  * 실제 구현된 적이 없어(샘플 데이터에만 category/currency 필드가 있었을 뿐,
  * addExpense()엔 반영 안 됨) 이식이 아니라 신규 작성이다.
  */
-import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
+import type { ExpenseCategory, ExpenseItem, ExpensesData } from './types';
 import { CURRENCY_SYMBOLS, SUPPORTED_CURRENCIES } from './currencies';
 
 /** 지원 통화(currencies.ts) → { symbol }. 이름은 currencyName()으로 표시 언어에 맞춰 만든다 */
@@ -24,20 +24,8 @@ export function currencyName(code: string, locale: string): string {
   }
 }
 
-export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
-  food: '식비',
-  transport: '교통',
-  lodging: '숙박',
-  shopping: '쇼핑',
-  activity: '액티비티',
-  other: '기타',
-};
-
-export const PAYMENT_METHOD_LABELS: Record<ExpensePaymentMethod, string> = {
-  cash: '현금',
-  card: '카드',
-  other: '기타',
-};
+/** 경비 카테고리 순서(표시 이름은 plan:expense.category.* 번역 키) */
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['food', 'transport', 'lodging', 'shopping', 'activity', 'other'];
 
 /**
  * 금액을 통화 기호와 함께 표시한다 (07-i18n.md §5.2 — Intl.NumberFormat 경유,
@@ -123,8 +111,8 @@ export function getDayTotalsSeries(
 export function getCategoryTotalsSeries(
   expensesData: ExpensesData,
   baseCurrency: string,
-  /** 라벨 포맷터 — 호출부가 번역된 카테고리명을 넘길 수 있게 한다. 기본값은 기존 동작(한국어 라벨) 유지 */
-  categoryLabel: (category: ExpenseCategory) => string = (category) => EXPENSE_CATEGORY_LABELS[category],
+  /** 라벨 포맷터 — 호출부가 번역된 카테고리명을 넘긴다(plan:expense.category.*) */
+  categoryLabel: (category: ExpenseCategory) => string,
 ): { label: string; value: number }[] {
   const totals: Record<ExpenseCategory, number> = {
     food: 0,

@@ -16,7 +16,7 @@ interface SetHotelModalProps {
 }
 
 export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSave }: SetHotelModalProps) {
-  const { t: _t } = useTranslation(['plan', 'common']);
+  const { t } = useTranslation(['plan', 'common']);
   const [activeDay, setActiveDay] = useState(currentDay);
   const [draftHotels, setDraftHotels] = useState<HotelsData>(hotelsData);
   const [saving, setSaving] = useState(false);
@@ -74,7 +74,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div ref={sheetRef} className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-        <h2 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Hotel size={18} /> 숙소 설정</span></h2>
+        <h2 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Hotel size={18} aria-hidden="true" /> {t('hotel.title')}</span></h2>
         
         {totalDays > 1 && (
           <div className={styles.dayTabs}>
@@ -87,7 +87,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
                   className={`${styles.dayTab} ${activeDay === d ? styles.dayTabActive : ''} ${hasHotel ? styles.dayTabFilled : ''}`}
                   onClick={() => setActiveDay(d)}
                 >
-                  {d}일차
+                  {t('day.header', { index: d })}
                 </button>
               );
             })}
@@ -109,7 +109,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
                 disabled={!draftHotels[activeDay]} 
                 onClick={applyToAll}
               >
-                전체 일정 동일하게 적용
+                {t('hotel.applyAll')}
               </button>
               {activeDay > 1 && (
                 <button 
@@ -118,7 +118,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
                   disabled={!draftHotels[activeDay - 1]} 
                   onClick={copyFromPrevious}
                 >
-                  전날과 같음
+                  {t('hotel.sameAsPrevious')}
                 </button>
               )}
             </div>
@@ -127,10 +127,10 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
 
         <div className={styles.actions}>
           <button type="button" className={styles.secondary} onClick={onClose}>
-            취소
+            {t('common:action.cancel')}
           </button>
           <button type="button" className={styles.primary} disabled={saving} onClick={handleSave}>
-            {saving ? '저장 중...' : '저장'}
+            {saving ? t('flight.saving') : t('common:action.save')}
           </button>
         </div>
       </div>
@@ -139,7 +139,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
 }
 
 function HotelSearchInput({ currentHotel, onChange }: { currentHotel: HotelItem | null, onChange: (p: SelectedPlace | null) => void }) {
-  const { t: _t } = useTranslation('plan');
+  const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(
     currentHotel
       ? { name: currentHotel.name, address: currentHotel.address ?? '', lat: currentHotel.lat, lng: currentHotel.lng, placeId: null, types: [] }
@@ -156,7 +156,8 @@ function HotelSearchInput({ currentHotel, onChange }: { currentHotel: HotelItem 
       <input 
         ref={inputRef} 
         className={styles.input} 
-        placeholder="숙소 이름을 검색하세요" 
+        placeholder={t('hotel.searchPlaceholder')}
+        aria-label={t('hotel.searchPlaceholder')}
         defaultValue={currentHotel?.name} 
       />
       {selected ? (
@@ -164,7 +165,7 @@ function HotelSearchInput({ currentHotel, onChange }: { currentHotel: HotelItem 
           <div className={styles.selectedName}>{selected.name}</div>
           {selected.address ? <div className={styles.selectedAddress}>{selected.address}</div> : null}
           <button type="button" className={styles.clearBtn} onClick={() => { setSelected(null); onChange(null); }}>
-            삭제
+            {t('common:action.delete')}
           </button>
         </div>
       ) : null}

@@ -149,7 +149,7 @@ export function PlanScreen() {
                 className={styles.pastToggle}
                 onClick={() => setShowPast((v) => !v)}
               >
-                {t('planScreen.pastToggle_other', { count: grouped.past.length, state: showPast ? t('planScreen.pastHide') : t('planScreen.pastShow') })}
+                {t('planScreen.pastToggle', { count: grouped.past.length, state: showPast ? t('planScreen.pastHide') : t('planScreen.pastShow') })}
               </button>
               {showPast ? (
                 <div className={styles.list}>

@@ -77,5 +77,22 @@
     "requestError": "계정 삭제 요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.",
     "doneTitle": "삭제 요청이 접수됐어요",
     "doneBody": "30일 안에 다시 로그인하면 계정을 복구할 수 있어요. 그 뒤에는 완전히 삭제됩니다."
+  },
+  "profile": {
+    "title": "내 정보 변경",
+    "nameLabel": "표시 이름",
+    "namePlaceholder": "다른 여행자에게 보일 이름",
+    "nameHint": "커뮤니티 글과 동행자 목록에 표시돼요.",
+    "nameRequired": "이름을 입력해 주세요.",
+    "saveError": "저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+  },
+  "units": {
+    "title": "단위 설정",
+    "temperature": "온도 단위",
+    "celsius": "섭씨 (°C)",
+    "fahrenheit": "화씨 (°F)",
+    "distance": "거리 단위",
+    "kilometers": "킬로미터 (km)",
+    "miles": "마일 (mi)"
   }
 }

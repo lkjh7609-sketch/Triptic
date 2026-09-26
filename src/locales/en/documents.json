@@ -40,5 +40,12 @@
     "addToWallet": "Add to Apple Wallet",
     "deleteConfirm": "Delete '{{name}}'? This can't be undone.",
     "voucherOriginalAlt": "Original voucher"
+  },
+  "errors": {
+    "unsupportedType": "Only PDF, JPG, PNG, .pkpass and .ics files can be uploaded.",
+    "tooLarge": "Files over 20MB can't be uploaded. Try uploading only the pages you need.",
+    "storageLimit": "You've reached your voucher storage limit.",
+    "parseLimit": "You've reached the limit for automatic document reading.",
+    "registerFailed": "Couldn't save the document."
   }
 }

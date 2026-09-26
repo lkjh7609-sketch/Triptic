@@ -50,7 +50,7 @@ export function DestinationChannelScreen() {
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
       {user ? (
         <Link to={`/community/compose?destination=${destination.slug}`} className={styles.fabBtnDesktop}>
-          <PenLine size={20} /> <span>{t('feed.writeBtn', { defaultValue: '글쓰기' })}</span>
+          <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
         </Link>
       ) : null}
       
@@ -89,9 +89,9 @@ export function DestinationChannelScreen() {
       ) : posts.length === 0 ? (
         <div className={styles.emptyGrid}>
           <div className={styles.emptyMainCard}>
-            <h3>{t('destination.emptyPosts', { defaultValue: '아직 등록된 글이 없어요.' })}</h3>
-            <p>{t('feed.emptySub', { defaultValue: '첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.' })}</p>
-            <Link to={`/community/compose?destination=${destination.slug}`} className={styles.emptyCta}>{t('feed.writeFirst', { defaultValue: '첫 이야기 작성하기' })}</Link>
+            <h3>{t('destination.emptyPosts')}</h3>
+            <p>{t('feed.emptySub')}</p>
+            <Link to={`/community/compose?destination=${destination.slug}`} className={styles.emptyCta}>{t('feed.writeFirst')}</Link>
           </div>
         </div>
       ) : (

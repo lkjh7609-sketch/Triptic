@@ -40,5 +40,12 @@
     "addToWallet": "新增到Apple Wallet",
     "deleteConfirm": "確定刪除「{{name}}」嗎？此操作無法撤銷。",
     "voucherOriginalAlt": "票券原件"
+  },
+  "errors": {
+    "unsupportedType": "只能上傳 PDF、JPG、PNG、.pkpass、.ics 檔案。",
+    "tooLarge": "無法上傳超過 20MB 的檔案，請只擷取需要的頁面後上傳。",
+    "storageLimit": "已達票券儲存容量上限。",
+    "parseLimit": "已達文件自動辨識次數上限。",
+    "registerFailed": "無法登錄文件。"
   }
 }

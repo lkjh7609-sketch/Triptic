@@ -8,6 +8,7 @@
  * createImageBitmap이 EXIF orientation은 픽셀에 반영해 그려주므로(가로/세로
  * 뒤집힘 방지) 시각적 손실도 없다.
  */
+import i18next from '@/shared/i18n';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 
 const MAX_EDGE = 1600;
@@ -35,14 +36,14 @@ export async function processImageForUpload(file: File, maxEdge = MAX_EDGE): Pro
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     bitmap.close();
-    throw new Error('이미지를 처리할 수 없습니다.');
+    throw new Error(i18next.t('community:errors.imageUnsupported'));
   }
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error('이미지 변환에 실패했습니다.'))),
+      (b) => (b ? resolve(b) : reject(new Error(i18next.t('community:errors.imageConvertFailed')))),
       'image/webp',
       WEBP_QUALITY,
     );

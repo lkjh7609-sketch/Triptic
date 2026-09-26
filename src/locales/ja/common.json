@@ -82,5 +82,9 @@
     "language": "言語設定",
     "backup": "バックアップと復元",
     "signOut": "ログアウト"
+  },
+  "calendar": {
+    "prevMonth": "前の月",
+    "nextMonth": "次の月"
   }
 }

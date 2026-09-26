@@ -268,7 +268,7 @@ export function TripDetailScreen() {
     const dayList = plannerData[s.day] ?? [];
     const validList = dayList.filter(Boolean);
     const defaultTime = validList.length > 0 ? validList[validList.length - 1].time || '10:00' : '10:00';
-    let memo = s.proposer ? `[${s.proposer}님 추천] ` : '';
+    let memo = s.proposer ? `${t('suggestions.memoPrefix', { name: s.proposer })} ` : '';
     if (s.memo) memo += s.memo;
     plannerData[s.day] = [
       ...dayList,
@@ -314,7 +314,7 @@ export function TripDetailScreen() {
   }
 
   if (isError || !trip) {
-    return <ErrorState summary="여행을 불러오지 못했어요." onRetry={() => refetch()} />;
+    return <ErrorState summary={t('tripDetail.loadError')} onRetry={() => refetch()} />;
   }
 
 
@@ -431,7 +431,7 @@ export function TripDetailScreen() {
         <div className={styles.dayHeader}>
           <div className={styles.dayHeaderTopRow}>
             <span className={styles.dayHeaderTitle}>
-              Day {currentDay}
+              {t('day.header', { index: currentDay })}
               {trip.start_date ? ` · ${formatDayDate(trip.start_date, currentDay, i18n.language)}` : ''}
               <DayWeatherBadge loading={weather.isLoading} entry={dayWeather} />
             </span>
@@ -550,6 +550,8 @@ export function TripDetailScreen() {
       {showFlightModal && trip ? (
         <FlightModal
           flightsData={flightsData}
+          startDate={trip.start_date}
+          endDate={trip.end_date}
           onClose={() => setShowFlightModal(false)}
           onSave={handleSaveFlights}
         />

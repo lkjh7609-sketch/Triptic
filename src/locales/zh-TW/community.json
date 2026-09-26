@@ -208,5 +208,12 @@
     "ethosTitle": "Triptic 的理念",
     "ethosBody": "比起趕行程的打卡清單，我們更珍惜從容的建議、對在地文化的尊重，以及真誠的旅行紀錄。",
     "guidelines": "查看社群規範"
+  },
+  "errors": {
+    "postingUnavailable": "目前無法在社群發文。",
+    "alreadyReported": "你已經檢舉過此內容。",
+    "imageUnsupported": "無法處理這張圖片。",
+    "imageConvertFailed": "圖片轉換失敗。",
+    "translateFailed": "翻譯失敗。"
   }
 }

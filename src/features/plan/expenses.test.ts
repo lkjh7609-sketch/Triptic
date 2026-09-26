@@ -99,14 +99,14 @@ describe('getCategoryTotalsSeries', () => {
         { desc: '저녁', amount: 8000, category: 'food' as const },
       ],
     };
-    expect(getCategoryTotalsSeries(expensesData, 'KRW')).toEqual([
-      { label: '식비', value: 20000 },
-      { label: '교통', value: 3000 },
+    expect(getCategoryTotalsSeries(expensesData, 'KRW', (cat) => cat)).toEqual([
+      { label: 'food', value: 20000 },
+      { label: 'transport', value: 3000 },
     ]);
   });
 
   it('category가 없는 기존 데이터는 기타로 집계한다', () => {
     const expensesData = { 1: [{ desc: '기념품', amount: 5000 }] };
-    expect(getCategoryTotalsSeries(expensesData, 'KRW')).toEqual([{ label: '기타', value: 5000 }]);
+    expect(getCategoryTotalsSeries(expensesData, 'KRW', (cat) => cat)).toEqual([{ label: 'other', value: 5000 }]);
   });
 });

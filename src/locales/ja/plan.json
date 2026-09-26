@@ -85,7 +85,8 @@
       "card": "カード",
       "other": "その他"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}}時点のレート"
+    "rateHint": "{{from}} = {{to}} · {{time}}時点のレート",
+    "totalLabel": "合計"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出発 → {{arrTime}} 到着"
@@ -103,7 +104,14 @@
     "depPlaceholder": "出発空港を検索 (例: 成田国際空港)",
     "arrPlaceholder": "到着空港を検索 (例: 関西国際空港)",
     "applyManual": "このフライト情報を適用",
-    "saving": "保存中…"
+    "saving": "保存中…",
+    "preview": "{{dep}} {{depTime}} 発 → {{arr}} {{arrTime}} 着",
+    "manualSuffix": "（手動入力）",
+    "flightNoRequired": "便名を入力してください。",
+    "airportRequired": "出発・到着空港は検索結果から選んでください。",
+    "applyEdit": "変更を保存",
+    "depTimeAria": "出発時刻",
+    "arrTimeAria": "到着時刻"
   },
   "itemDetail": {
     "mapLink": "Google Mapsで見る",
@@ -169,7 +177,7 @@
     "sentBy": "送信者",
     "reject": "拒否",
     "addToItinerary": "スケジュールに追加",
-    "memoPrefix": "[{{name}}さんのおすすめ] "
+    "memoPrefix": "[{{name}}さんのおすすめ]"
   },
   "tripCard": {
     "periodUndecided": "期間未定",
@@ -177,7 +185,8 @@
     "rename": "名前を変更",
     "renamePrompt": "新しい旅行の名前を入力してください",
     "duplicate": "複製",
-    "deleteConfirm": "「{{title}}」を削除しますか？元に戻すことはできません。"
+    "deleteConfirm": "「{{title}}」を削除しますか？元に戻すことはできません。",
+    "copyTitle": "{{title}}のコピー"
   },
   "tripDetail": {
     "backAria": "戻る",
@@ -201,10 +210,15 @@
     "climateBadge": "平年",
     "hotelStart": "出発宿泊先",
     "hotelEnd": "到着宿泊先",
-    "addPlace": "場所追加"
+    "addPlace": "場所追加",
+    "loadError": "旅行を読み込めませんでした。"
   },
   "tripMap": {
-    "ariaLabel": "スケジュール地図"
+    "ariaLabel": "スケジュール地図",
+    "myLocation": "現在地へ移動",
+    "myLocationMarker": "現在地",
+    "arrivalAirport": "到着空港",
+    "departureAirport": "出発空港"
   },
   "inspector": {
     "focusMove": "予定リストで見る",
@@ -251,7 +265,9 @@
     "timeSubtitle": "予定に追加する場所：{{name}}",
     "timeLabel": "訪問予定時刻",
     "confirmAdd": "予定に追加する",
-    "aiNotice": "AIによる提案です。営業時間や料金は訪問前にご確認ください。"
+    "aiNotice": "AIによる提案です。営業時間や料金は訪問前にご確認ください。",
+    "button": "AI提案",
+    "buttonTitle": "この場所の次に行く場所をAIに提案してもらう"
   },
   "addPlace": {
     "title": "予定を追加",
@@ -339,5 +355,68 @@
     "flightMissingDesc": "往復の航空便を入れると、初日と最終日のルートに反映されます。",
     "pdfTitle": "旅行をPDFで保存",
     "pdfDesc": "地図と全日程入りの印刷用ガイド"
+  },
+  "hotel": {
+    "title": "宿泊先の設定",
+    "applyAll": "全日程に同じ宿泊先を適用",
+    "sameAsPrevious": "前日と同じ",
+    "searchPlaceholder": "宿泊先の名前を検索"
+  },
+  "errors": {
+    "tripLimit": "作成できる旅行の上限に達しました。",
+    "shareUnavailable": "現在、同行者との共有は利用できません。"
+  },
+  "pdf": {
+    "cityFallback": "旅行",
+    "continuationHeader": "{{city}} 旅程表 · {{day}}日目（続き）",
+    "colTime": "時間",
+    "colType": "区分",
+    "colPlace": "予定・場所",
+    "colNote": "移動・備考",
+    "addressLine": "[住所] {{text}}",
+    "memoLine": "[メモ] {{text}}",
+    "transitLine": "[移動案内] {{text}}",
+    "section1": "1. タイムライン概要",
+    "section2": "2. 場所ごとの詳細とメモ",
+    "section2Continued": "2. 場所ごとの詳細とメモ（続き）",
+    "section3": "3. 日ごとの支出",
+    "dayTitle": "{{city}} 旅程表 · {{day}}日目",
+    "period": "旅行期間：{{start}}〜{{end}}（全{{total}}日中{{day}}日目）  |  {{date}}",
+    "flightArrivalPoint": "{{flightNo}} 到着",
+    "flightDeparturePoint": "{{flightNo}} 出発",
+    "transitAbout": "移動 約{{duration}}",
+    "arrival": "到着",
+    "departure": "出発",
+    "return": "帰着",
+    "typeFlightArrival": "[航空 · 到着]",
+    "typeFlightDeparture": "[航空 · 出発]",
+    "airportArrival": "空港到着・入国",
+    "airportDeparture": "空港へ移動・出国",
+    "dayStart": "一日のスタート",
+    "typeStartHotel": "[出発する宿]",
+    "typeEndHotel": "[戻る宿]",
+    "checkInRest": "チェックイン・休憩",
+    "typeFree": "[自由行動]",
+    "noPlans": "予定はありません（自由行動）",
+    "typeMeal": "[食事 · {{meal}}]",
+    "typeSight": "[観光]",
+    "cardStartHotel": "出発する宿：{{name}}",
+    "cardEndHotel": "戻る宿：{{name}}",
+    "tagStartHotel": "宿 / 出発",
+    "tagEndHotel": "宿 / 休憩",
+    "tagMeal": "食事 · {{meal}}",
+    "tagSight": "観光 / 予定",
+    "plannedAt": "予定 {{time}}",
+    "transitToNext": "次の場所（{{name}}）まで公共交通機関で約{{duration}}",
+    "noDetails": "（この日に登録された場所はありません — 自由行動）",
+    "expenseItem": "支出項目",
+    "expenseAmount": "金額",
+    "notConvertible": "（換算不可）",
+    "expenseTotal": "支出合計",
+    "excludedCount_other": "（換算できない{{count}}件を除く）",
+    "footer": "Triptic 旅行プランナー · {{city}} 旅程表",
+    "pageOf": "{{page}} / {{total}} ページ",
+    "fileAll": "旅程表_{{city}}_全日程.pdf",
+    "fileDay": "旅程表_{{city}}_{{day}}日目.pdf"
   }
 }

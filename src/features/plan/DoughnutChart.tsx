@@ -16,7 +16,7 @@ interface DoughnutChartProps {
 const COLORS = ['#F28B82', '#FBBC04', '#34A853', '#4285F4', '#8E24AA', '#F48FB1', '#81C995', '#AECBFA'];
 
 export function DoughnutChart({ title, data, currency }: DoughnutChartProps) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['plan', 'common']);
   
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
   
@@ -36,7 +36,7 @@ export function DoughnutChart({ title, data, currency }: DoughnutChartProps) {
     <div className={styles.wrap}>
       <h3 className={styles.title}>{title}</h3>
       {!hasData ? (
-        <p className={styles.empty}>{t('state.empty')}</p>
+        <p className={styles.empty}>{t('common:state.empty')}</p>
       ) : (
         <div className={styles.content}>
           <div className={styles.chartContainer}>
@@ -45,7 +45,7 @@ export function DoughnutChart({ title, data, currency }: DoughnutChartProps) {
               style={{ background: `conic-gradient(${gradientStops})` }}
             >
               <div className={styles.hole}>
-                <span className={styles.totalText}>{t('expense.totalLabel', { defaultValue: 'Total' })}</span>
+                <span className={styles.totalText}>{t('expense.totalLabel')}</span>
                 <span className={styles.totalValue}>{formatMoney(total, currency, i18n.language)}</span>
               </div>
             </div>

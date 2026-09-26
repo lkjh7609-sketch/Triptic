@@ -5,6 +5,7 @@ import {
   isSameDay, isWithinInterval, isBefore, startOfDay 
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import styles from './CalendarRangePicker.module.css';
 
 interface CalendarRangePickerProps {
@@ -15,6 +16,8 @@ interface CalendarRangePickerProps {
 }
 
 export function CalendarRangePicker({ startDate, endDate, onChange, minDate = new Date() }: CalendarRangePickerProps) {
+  const { t, i18n } = useTranslation('common');
+  const locale = i18n.language;
   const [currentMonth, setCurrentMonth] = useState(startDate || new Date());
 
   const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
@@ -43,22 +46,25 @@ export function CalendarRangePicker({ startDate, endDate, onChange, minDate = ne
   const endDateOfWeek = endOfWeek(monthEnd);
 
   const days = eachDayOfInterval({ start: startDateOfWeek, end: endDateOfWeek });
-  const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+  // 요일 머리글과 월 제목은 표시 언어 형식으로(Intl) — 2026-09-27(일)부터 7일
+  const weekdayFormat = new Intl.DateTimeFormat(locale, { weekday: 'narrow' });
+  const weekDays = Array.from({ length: 7 }, (_, i) => weekdayFormat.format(new Date(2026, 8, 27 + i)));
+  const monthTitle = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(currentMonth);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button type="button" className={styles.navButton} onClick={handlePrevMonth}>
+        <button type="button" className={styles.navButton} onClick={handlePrevMonth} aria-label={t('calendar.prevMonth')}>
           <ChevronLeft size={20} />
         </button>
-        <span>{format(currentMonth, 'yyyy년 M월')}</span>
-        <button type="button" className={styles.navButton} onClick={handleNextMonth}>
+        <span aria-live="polite">{monthTitle}</span>
+        <button type="button" className={styles.navButton} onClick={handleNextMonth} aria-label={t('calendar.nextMonth')}>
           <ChevronRight size={20} />
         </button>
       </div>
 
       <div className={styles.weekdays}>
-        {weekDays.map(day => <div key={day}>{day}</div>)}
+        {weekDays.map((day, i) => <div key={i}>{day}</div>)}
       </div>
 
       <div className={styles.daysGrid}>

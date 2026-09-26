@@ -17,7 +17,7 @@ function ensureOptions(): void {
   if (optionsSet && currentLanguage === language) return;
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
-    throw new Error('VITE_GOOGLE_MAPS_API_KEY가 설정되지 않았습니다.');
+    throw new Error('VITE_GOOGLE_MAPS_API_KEY is not set.');
   }
   setOptions({ key: apiKey, language });
   optionsSet = true;

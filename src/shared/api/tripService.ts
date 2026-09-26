@@ -15,6 +15,7 @@
  *   `itineraryTransform.ts`의 `reconstructTripContent()`로 예전 snapshot
  *   모양으로 되돌린다.
  */
+import i18next from '@/shared/i18n';
 import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/shared/utils/id';
 import { captureError } from '@/shared/monitoring';
@@ -97,11 +98,11 @@ export class TripService {
   async saveTrip(project: LocalProject, name: string): Promise<TripRow> {
     const supabase = getSupabaseClient();
     const user = await this.getCurrentUser();
-    if (!user) throw new Error('인증되지 않은 사용자입니다.');
+    if (!user) throw new Error('Not signed in');
 
     const isNewTrip = !project.supabaseId;
     if (isNewTrip && !can('trip.create', { userId: user.id })) {
-      throw new Error('여행 생성 한도에 도달했습니다.');
+      throw new Error(i18next.t('plan:errors.tripLimit'));
     }
 
     const content: TripContent = {
@@ -214,7 +215,7 @@ export class TripService {
     const supabase = getSupabaseClient();
     const user = await this.getCurrentUser();
     if (!can('trip.collaborate', { userId: user?.id ?? null })) {
-      throw new Error('동행자 공유 기능을 사용할 수 없습니다.');
+      throw new Error(i18next.t('plan:errors.shareUnavailable'));
     }
 
     const { data: existing } = await supabase

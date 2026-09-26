@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tripService, type LocalProject, type TripRow } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
 import { useTranslation } from 'react-i18next';
+import i18next from '@/shared/i18n';
 
 export const tripsQueryKey = ['trips'] as const;
 
@@ -107,7 +108,7 @@ export function useDuplicateTrip() {
       if (!trip) throw new Error('Trip not found');
       const project = tripService.toLocalProject(trip);
       const { supabaseId: _omit, ...withoutId } = project;
-      return tripService.saveTrip(withoutId, `${trip.title} 사본`);
+      return tripService.saveTrip(withoutId, i18next.t('plan:tripCard.copyTitle', { title: trip.title }));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });

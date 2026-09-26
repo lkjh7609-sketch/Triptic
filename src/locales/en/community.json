@@ -215,5 +215,12 @@
     "ethosTitle": "The Triptic ethos",
     "ethosBody": "We value calm guidance, respect for local cultures, and honest field notes over hurried bucket lists.",
     "guidelines": "Read the community guidelines"
+  },
+  "errors": {
+    "postingUnavailable": "Posting to the community isn't available right now.",
+    "alreadyReported": "You've already reported this.",
+    "imageUnsupported": "This image can't be processed.",
+    "imageConvertFailed": "Couldn't convert the image.",
+    "translateFailed": "Couldn't translate this."
   }
 }

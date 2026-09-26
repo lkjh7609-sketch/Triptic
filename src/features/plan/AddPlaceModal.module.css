@@ -110,3 +110,9 @@
 .primary:disabled {
   opacity: 0.5;
 }
+
+.error {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}

@@ -1,6 +1,6 @@
 /**
  * PDF 일정표 내보내기 (index.html에서 이식 — ADR-001)
- * 원본: index.html exportToPDF/ensureKoreanFont/cleanPdfText/openPdfModal
+ * 원본: index.html exportToPDF/ensureKoreanFont/cleanPdfText/openPdfModal (문구는 plan:pdf.* 번역 키, 글꼴은 문자 종류별)
  * (2026-09-21 기준 라인 7623~8252). 표(타임라인 요약) + 장소별 상세 카드 +
  * 일자별 경비 요약을 A4 PDF로 그리는 알고리즘·레이아웃·색상을 그대로 옮겼다.
  * 전역 변수(plannerData, hotelsData, flightsData, expensesData, dayCities,
@@ -8,9 +8,9 @@
  * 외에는 legacy와 동일하다.
  */
 import { jsPDF } from 'jspdf';
+import i18next, { normalizeLocale } from '@/shared/i18n';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { getDayCity } from './dayCities';
-import { MEAL_META } from './map/meals';
 import type { MealSlot } from './types';
 import { sharedDirectionsCache } from './map/useTripRoutes';
 import { convertToBase, formatMoney, getDayExpenseTotal } from './expenses';
@@ -67,7 +67,35 @@ interface DetailCard {
   accentColor: [number, number, number];
 }
 
-let cachedKoreanFontBase64: string | null = null;
+/**
+ * PDF 글꼴 — jsPDF는 글자별 대체 글꼴이 없어서, 문자열마다 들어 있는 문자 종류를 보고
+ * 글꼴을 고른다. 각 글꼴은 그 문자열이 처음 필요할 때만 내려받고 세션 동안 재사용한다.
+ * (jsPDF는 Identity-H 인코딩에서 실제로 쓴 글리프만 PDF에 넣으므로 결과 파일은 작다.)
+ * - hangul: 나눔고딕 — 한글·라틴 (한자·가나는 없음)
+ * - jp: M PLUS 1p — 가나·일본어 한자·라틴
+ * - tc: LXGW WenKai TC — 번체 한자·가나·라틴 (정적 TTF 중 번체 커버리지가 완전한 것)
+ */
+type PdfFontKey = 'hangul' | 'jp' | 'tc';
+
+const PDF_FONTS: Record<PdfFontKey, { url: string; file: string; name: string }> = {
+  hangul: {
+    url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/nanumgothic/NanumGothic-Regular.ttf',
+    file: 'NanumGothic.ttf',
+    name: 'NanumGothic',
+  },
+  jp: {
+    url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/mplus1p/MPLUS1p-Regular.ttf',
+    file: 'MPLUS1p.ttf',
+    name: 'MPLUS1p',
+  },
+  tc: {
+    url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/lxgwwenkaitc/LXGWWenKaiTC-Regular.ttf',
+    file: 'LXGWWenKaiTC.ttf',
+    name: 'LXGWWenKaiTC',
+  },
+};
+
+const fontBase64Cache: Partial<Record<PdfFontKey, string>> = {};
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   let binary = '';
@@ -79,18 +107,63 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-async function ensureKoreanFont(pdf: jsPDF): Promise<void> {
-  if (!cachedKoreanFontBase64) {
-    const fontUrl =
-      'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/nanumgothic/NanumGothic-Regular.ttf';
-    const res = await fetch(fontUrl);
-    if (!res.ok) throw new Error('Font load failed');
-    const buffer = await res.arrayBuffer();
-    cachedKoreanFontBase64 = arrayBufferToBase64(buffer);
-  }
-  pdf.addFileToVFS('NanumGothic.ttf', cachedKoreanFontBase64);
-  pdf.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
-  pdf.setFont('NanumGothic', 'normal');
+const HANGUL_RE = /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]/;
+const KANA_RE = /[\u3040-\u30ff]/;
+const HAN_RE = /[\u3400-\u9fff\uf900-\ufaff]/;
+
+/** 표시 언어의 기본 글꼴(라틴·숫자만 있는 문자열에 쓴다) */
+function primaryFont(locale: string): PdfFontKey {
+  if (locale === 'ja') return 'jp';
+  if (locale === 'zh-TW') return 'tc';
+  return 'hangul';
+}
+
+export function pdfFontFor(text: string, locale: string): PdfFontKey {
+  if (HANGUL_RE.test(text)) return 'hangul';
+  if (KANA_RE.test(text)) return 'jp';
+  if (HAN_RE.test(text)) return locale === 'zh-TW' ? 'tc' : 'jp';
+  return primaryFont(locale);
+}
+
+async function registerPdfFonts(pdf: jsPDF, keys: Set<PdfFontKey>): Promise<void> {
+  await Promise.all(
+    [...keys].map(async (key) => {
+      const font = PDF_FONTS[key];
+      if (!fontBase64Cache[key]) {
+        const res = await fetch(font.url);
+        if (!res.ok) throw new Error(`PDF font load failed: ${font.name}`);
+        fontBase64Cache[key] = arrayBufferToBase64(await res.arrayBuffer());
+      }
+      pdf.addFileToVFS(font.file, fontBase64Cache[key]!);
+      pdf.addFont(font.file, font.name, 'normal');
+    }),
+  );
+}
+
+/**
+ * pdf.text / splitTextToSize를 감싸, 호출할 때마다 그 문자열에 맞는 글꼴로 바꾼다.
+ * (splitTextToSize도 현재 글꼴의 글자 폭으로 줄을 나누므로 같이 감싼다)
+ */
+function installFontSwitching(pdf: jsPDF, locale: string): void {
+  const pick = (text: unknown) => {
+    const joined = Array.isArray(text) ? text.join('') : String(text ?? '');
+    pdf.setFont(PDF_FONTS[pdfFontFor(joined, locale)].name, 'normal');
+  };
+  const originalText = pdf.text.bind(pdf);
+  const originalSplit = pdf.splitTextToSize.bind(pdf);
+  pdf.text = ((text: string | string[], ...rest: unknown[]) => {
+    pick(text);
+    return (originalText as (...args: unknown[]) => jsPDF)(text, ...rest);
+  }) as jsPDF['text'];
+  pdf.splitTextToSize = ((text: string, ...rest: unknown[]) => {
+    pick(text);
+    return (originalSplit as (...args: unknown[]) => string[])(text, ...rest);
+  }) as jsPDF['splitTextToSize'];
+}
+
+/** PDF 문구 번역 (plan:pdf.*) */
+function L(key: string, vars?: Record<string, unknown>): string {
+  return i18next.t(`plan:pdf.${key}`, vars);
 }
 
 /** PDF 폰트는 이모지 글리프가 없으므로 렌더링 전에 제거한다 (legacy cleanPdfText) */
@@ -108,11 +181,11 @@ function cleanPdfText(str: string | null | undefined): string {
     .trim();
 }
 
-/** MEAL_META는 정식 식사 슬롯(breakfast/lunch/dinner)만 정의한다 — 'cafe'는
- * PlaceItem.mealType에는 있지만 식사 슬롯이 아니므로 legacy와 동일하게 '관광'으로 취급한다. */
+/** 정식 식사 슬롯(breakfast/lunch/dinner)만 식사로 표시한다 — 'cafe'는
+ * PlaceItem.mealType에는 있지만 식사 슬롯이 아니므로 legacy와 동일하게 관광 일정으로 취급한다. */
 function mealSlotLabel(mealType: PlaceItem['mealType']): string | undefined {
   if (mealType === 'breakfast' || mealType === 'lunch' || mealType === 'dinner') {
-    return MEAL_META[mealType as MealSlot].label;
+    return i18next.t(`plan:mealSlot.${mealType as MealSlot}`);
   }
   return undefined;
 }
@@ -127,7 +200,16 @@ function dayDateOf(startDate: string, dayNum: number): Date | null {
 /** 여행 일정표 PDF를 생성해 즉시 다운로드한다 (legacy exportToPDF) */
 export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'): Promise<void> {
   const pdf = new jsPDF('p', 'mm', 'a4');
-  await ensureKoreanFont(pdf);
+  const locale = normalizeLocale(i18next.language);
+  // 입력 데이터 + 표시 언어로 필요한 글꼴만 미리 내려받는다
+  const neededFonts = new Set<PdfFontKey>([primaryFont(locale)]);
+  const allText = JSON.stringify(input);
+  if (HANGUL_RE.test(allText)) neededFonts.add('hangul');
+  if (KANA_RE.test(allText)) neededFonts.add('jp');
+  if (HAN_RE.test(allText)) neededFonts.add(locale === 'zh-TW' ? 'tc' : 'jp');
+  await registerPdfFonts(pdf, neededFonts);
+  installFontSwitching(pdf, locale);
+  const cityOrTrip = (name: string | null | undefined) => cleanPdfText(name) || L('cityFallback');
 
   const pageW = 210;
   const pageH = 297;
@@ -167,7 +249,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       const curCityName =
         getDayCity(currentDayNum, input.dayCitiesData, { name: input.city, lat: null, lng: null }).name ||
         input.city;
-      const headText = `${cleanPdfText(curCityName) || '여행'} 일정표 · ${currentDayNum}일차 (계속)`;
+      const headText = L('continuationHeader', { city: cityOrTrip(curCityName), day: currentDayNum });
       pdf.text(headText, marginL, y + 3);
       pdf.setDrawColor(...C_LINE);
       pdf.setLineWidth(0.2);
@@ -208,10 +290,10 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     pdf.setFontSize(8.5);
     pdf.setTextColor(255, 255, 255);
     const headers: { text: string; x: number; align: 'center' | 'left' }[] = [
-      { text: '시간', x: colX_time + colW_time / 2, align: 'center' },
-      { text: '구분', x: colX_type + colW_type / 2, align: 'center' },
-      { text: '일정 및 장소', x: colX_name + 3, align: 'left' },
-      { text: '이동 및 비고', x: colX_note + 3, align: 'left' },
+      { text: L('colTime'), x: colX_time + colW_time / 2, align: 'center' },
+      { text: L('colType'), x: colX_type + colW_type / 2, align: 'center' },
+      { text: L('colPlace'), x: colX_name + 3, align: 'left' },
+      { text: L('colNote'), x: colX_note + 3, align: 'left' },
     ];
     headers.forEach((hd) => {
       if (hd.align === 'center') {
@@ -298,9 +380,9 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     const textW = usableW - 10;
     pdf.setFontSize(8);
-    const addrLines: string[] = address ? pdf.splitTextToSize(`[주소] ${address}`, textW) : [];
-    const memoLines: string[] = memo ? pdf.splitTextToSize(`[메모] ${memo}`, textW) : [];
-    const transitLines: string[] = transit ? pdf.splitTextToSize(`[이동 안내] ${transit}`, textW) : [];
+    const addrLines: string[] = address ? pdf.splitTextToSize(L('addressLine', { text: address }), textW) : [];
+    const memoLines: string[] = memo ? pdf.splitTextToSize(L('memoLine', { text: memo }), textW) : [];
+    const transitLines: string[] = transit ? pdf.splitTextToSize(L('transitLine', { text: transit }), textW) : [];
 
     const lineH = 3.9;
     let innerH = 6.0;
@@ -311,7 +393,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     const cardH = innerH + 3.0;
 
     if (ensureSpace(cardH + 3.0)) {
-      drawSectionHeader('2. 장소별 상세 안내 & 메모 (계속)');
+      drawSectionHeader(L('section2Continued'));
     }
 
     pdf.setFillColor(...C_CARD);
@@ -382,7 +464,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     const dateObj = dayDateOf(input.startDate, dayNum);
     const dateStr = dateObj
-      ? dateObj.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })
+      ? dateObj.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })
       : '';
 
     pdf.setFontSize(8);
@@ -394,14 +476,20 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     pdf.setTextColor(...C_NAVY);
     const curCityName =
       getDayCity(dayNum, input.dayCitiesData, { name: input.city, lat: null, lng: null }).name || input.city;
-    const dayTitle = `${cleanPdfText(curCityName) || '여행'} 일정표 · ${dayNum}일차 (DAY ${dayNum})`;
+    const dayTitle = L('dayTitle', { city: cityOrTrip(curCityName), day: dayNum });
     pdf.text(dayTitle, marginL, y + 2);
     pdf.text(dayTitle, marginL + 0.15, y + 2);
 
     y += 6.5;
     pdf.setFontSize(8.5);
     pdf.setTextColor(...C_MUTED);
-    const periodText = `여행 기간: ${cleanPdfText(input.startDate)} ~ ${cleanPdfText(input.endDate)} (총 ${input.totalDays}일 중 ${dayNum}일차)  |  ${cleanPdfText(dateStr)}`;
+    const periodText = L('period', {
+      start: cleanPdfText(input.startDate),
+      end: cleanPdfText(input.endDate),
+      total: input.totalDays,
+      day: dayNum,
+      date: cleanPdfText(dateStr),
+    });
     pdf.text(periodText, marginL, y + 2);
 
     y += 5.0;
@@ -422,7 +510,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     const seq: SeqPoint[] = [];
     if (flightArrival?.arr) {
       seq.push({
-        name: `${flightArrival.flightNo} 도착`,
+        name: L('flightArrivalPoint', { flightNo: flightArrival.flightNo }),
         lat: flightArrival.arr.lat,
         lng: flightArrival.arr.lng,
         address: flightArrival.arr.name || '',
@@ -433,7 +521,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     if (endHotel) seq.push(endHotel);
     if (flightDeparture?.dep) {
       seq.push({
-        name: `${flightDeparture.flightNo} 출발`,
+        name: L('flightDeparturePoint', { flightNo: flightDeparture.flightNo }),
         lat: flightDeparture.dep.lat,
         lng: flightDeparture.dep.lng,
         address: flightDeparture.dep.name || '',
@@ -463,12 +551,12 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       const transitInfo = seq.length > 0 ? getTransitToNext(seq[0]) : null;
       const noteParts: string[] = [];
       if (flightArrival.airline) noteParts.push(flightArrival.airline);
-      if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
+      if (transitInfo) noteParts.push(L('transitAbout', { duration: transitInfo.duration }));
       tableRows.push({
-        time: fArr.time || '도착',
-        type: '[항공 · 도착]',
+        time: fArr.time || L('arrival'),
+        type: L('typeFlightArrival'),
         name: `${flightArrival.flightNo} (${fDep.iata || fDep.name || '?'} → ${fArr.iata || fArr.name || '?'})`,
-        note: noteParts.join(' | ') || '공항 도착 및 입국',
+        note: noteParts.join(' | ') || L('airportArrival'),
         isFlight: true,
         isBold: true,
       });
@@ -477,11 +565,11 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     if (startHotel) {
       const transitInfo = getTransitToNext(startHotel);
       const noteParts: string[] = [];
-      if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
-      else noteParts.push('일정 시작');
+      if (transitInfo) noteParts.push(L('transitAbout', { duration: transitInfo.duration }));
+      else noteParts.push(L('dayStart'));
       tableRows.push({
         time: '09:00',
-        type: '[출발 숙소]',
+        type: L('typeStartHotel'),
         name: startHotel.name,
         note: noteParts.join(' | '),
         isHotel: true,
@@ -492,18 +580,18 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     if (dayItems.length === 0 && !flightArrival && !startHotel && !endHotel && !flightDeparture) {
       tableRows.push({
         time: '-',
-        type: '[자유 일정]',
-        name: '등록된 일정이 없습니다 (자유 여행)',
+        type: L('typeFree'),
+        name: L('noPlans'),
         note: '-',
         isBold: false,
       });
     } else {
       dayItems.forEach((item, idx) => {
         const slotLabel = mealSlotLabel(item.mealType);
-        const mealLabel = slotLabel ? `[식사 · ${slotLabel}]` : '[관광]';
+        const mealLabel = slotLabel ? L('typeMeal', { meal: slotLabel }) : L('typeSight');
         const transitInfo = getTransitToNext(item);
         const noteParts: string[] = [];
-        if (transitInfo) noteParts.push(`이동 약 ${transitInfo.duration}`);
+        if (transitInfo) noteParts.push(L('transitAbout', { duration: transitInfo.duration }));
         if (item.memo) {
           const cleanM = cleanPdfText(item.memo);
           const excerpt = cleanM.length > 20 ? `${cleanM.substring(0, 18)}...` : cleanM;
@@ -522,10 +610,10 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     if (endHotel) {
       tableRows.push({
-        time: '복귀',
-        type: '[복귀 숙소]',
+        time: L('return'),
+        type: L('typeEndHotel'),
         name: endHotel.name,
-        note: '체크인 및 휴식',
+        note: L('checkInRest'),
         isHotel: true,
         isBold: true,
       });
@@ -535,16 +623,16 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       const gDep = flightDeparture.dep;
       const gArr = flightDeparture.arr;
       tableRows.push({
-        time: gDep.time || '출발',
-        type: '[항공 · 출발]',
+        time: gDep.time || L('departure'),
+        type: L('typeFlightDeparture'),
         name: `${flightDeparture.flightNo} (${gDep.iata || gDep.name || '?'} → ${gArr.iata || gArr.name || '?'})`,
-        note: flightDeparture.airline || '공항 이동 및 출국',
+        note: flightDeparture.airline || L('airportDeparture'),
         isFlight: true,
         isBold: true,
       });
     }
 
-    drawSectionHeader('1. 타임라인 전체 일정 요약 (Timeline Summary Table)');
+    drawSectionHeader(L('section1'));
     drawTableHeader();
     tableRows.forEach((row, rIdx) => {
       drawTableRow(row, rIdx % 2 === 1);
@@ -556,13 +644,13 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     if (startHotel && (startHotel.address || startHotel.name)) {
       const transitInfo = getTransitToNext(startHotel);
       detailCards.push({
-        name: `출발 숙소 : ${startHotel.name}`,
-        tag: '숙소 / 출발',
+        name: L('cardStartHotel', { name: startHotel.name }),
+        tag: L('tagStartHotel'),
         time: '09:00',
         address: startHotel.address,
         memo: '',
         transit: transitInfo
-          ? `다음 장소(${cleanPdfText(transitInfo.nextName)})까지 대중교통 약 ${transitInfo.duration} 소요`
+          ? L('transitToNext', { name: cleanPdfText(transitInfo.nextName), duration: transitInfo.duration })
           : '',
         accentColor: C_BLUE,
       });
@@ -571,15 +659,15 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     dayItems.forEach((item, idx) => {
       const transitInfo = getTransitToNext(item);
       const itemSlotLabel = mealSlotLabel(item.mealType);
-      const tag = itemSlotLabel ? `식사 · ${itemSlotLabel}` : '관광 / 일정';
+      const tag = itemSlotLabel ? L('tagMeal', { meal: itemSlotLabel }) : L('tagSight');
       detailCards.push({
         name: `${idx + 1}. ${item.name}`,
         tag,
-        time: item.time ? `예정 ${item.time}` : '',
+        time: item.time ? L('plannedAt', { time: item.time }) : '',
         address: item.address,
         memo: item.memo,
         transit: transitInfo
-          ? `다음 장소(${cleanPdfText(transitInfo.nextName)})까지 대중교통 약 ${transitInfo.duration} 소요`
+          ? L('transitToNext', { name: cleanPdfText(transitInfo.nextName), duration: transitInfo.duration })
           : '',
         accentColor: item.mealType ? [180, 83, 9] : C_NAVY,
       });
@@ -587,9 +675,9 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     if (endHotel && (endHotel.address || endHotel.name)) {
       detailCards.push({
-        name: `복귀 숙소 : ${endHotel.name}`,
-        tag: '숙소 / 휴식',
-        time: '복귀',
+        name: L('cardEndHotel', { name: endHotel.name }),
+        tag: L('tagEndHotel'),
+        time: L('return'),
         address: endHotel.address,
         memo: '',
         transit: '',
@@ -597,12 +685,12 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       });
     }
 
-    drawSectionHeader('2. 장소별 상세 안내 & 메모 (Place Details & Guide)');
+    drawSectionHeader(L('section2'));
     if (detailCards.length === 0) {
       ensureSpace(10);
       pdf.setFontSize(8.5);
       pdf.setTextColor(...C_MUTED);
-      pdf.text('(이 날짜에는 등록된 상세 장소가 없습니다 - 자유 일정)', marginL + 4, y + 4);
+      pdf.text(L('noDetails'), marginL + 4, y + 4);
       y += 8.0;
     } else {
       detailCards.forEach((card) => drawPlaceDetailCard(card));
@@ -611,7 +699,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     // 3. Render Section 3: Expenses (if any)
     if (dayExpenses.length > 0) {
-      drawSectionHeader('3. 일자별 지출 경비 요약 (Daily Expenses)');
+      drawSectionHeader(L('section3'));
       const { total: sum, unconverted } = getDayExpenseTotal(dayExpenses, input.currency);
 
       ensureSpace(16);
@@ -619,8 +707,8 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       pdf.rect(marginL, y, usableW, 6.5, 'F');
       pdf.setFontSize(8);
       pdf.setTextColor(...C_MUTED);
-      pdf.text('지출 항목 / 내용', marginL + 4, y + 4.4);
-      pdf.text('금액', pageW - marginR - 4, y + 4.4, { align: 'right' });
+      pdf.text(L('expenseItem'), marginL + 4, y + 4.4);
+      pdf.text(L('expenseAmount'), pageW - marginR - 4, y + 4.4, { align: 'right' });
       y += 6.5;
 
       dayExpenses.forEach((e, eIdx) => {
@@ -638,10 +726,10 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         pdf.setTextColor(...C_TEXT);
         pdf.text(cleanPdfText(e.desc || '-'), marginL + 4, y + 4.3);
         const itemCurrency = e.currency ?? input.currency;
-        let amountText = formatMoney(e.amount, itemCurrency);
+        let amountText = formatMoney(e.amount, itemCurrency, locale);
         if (itemCurrency !== input.currency) {
           const converted = convertToBase(e, input.currency);
-          amountText += converted != null ? ` (≈${formatMoney(converted, input.currency)})` : ' (환산 불가)';
+          amountText += converted != null ? ` (≈${formatMoney(converted, input.currency, locale)})` : ` ${L('notConvertible')}`;
         }
         pdf.text(cleanPdfText(amountText), pageW - marginR - 4, y + 4.3, {
           align: 'right',
@@ -655,11 +743,11 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       pdf.rect(marginL, y, usableW, totalH, 'F');
       pdf.setFontSize(9);
       pdf.setTextColor(...C_NAVY);
-      pdf.text('지출 합계', marginL + 4, y + 5.0);
-      pdf.text('지출 합계', marginL + 4.1, y + 5.0);
+      pdf.text(L('expenseTotal'), marginL + 4, y + 5.0);
+      pdf.text(L('expenseTotal'), marginL + 4.1, y + 5.0);
 
       const sumText = cleanPdfText(
-        formatMoney(sum, input.currency) + (unconverted > 0 ? ` (환산 불가 ${unconverted}건 제외)` : ''),
+        formatMoney(sum, input.currency, locale) + (unconverted > 0 ? ` ${L('excludedCount', { count: unconverted })}` : ''),
       );
       pdf.text(sumText, pageW - marginR - 4, y + 5.0, { align: 'right' });
       pdf.text(sumText, pageW - marginR - 4.1, y + 5.0, { align: 'right' });
@@ -677,14 +765,14 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
     pdf.setFontSize(8);
     pdf.setTextColor(...C_MUTED);
-    pdf.text(`Triptic 여행 플래너 · ${cleanPdfText(input.city) || '여행'} 일정표`, marginL, pageH - 6);
-    pdf.text(`${p} / ${totalPages} 페이지`, pageW - marginR, pageH - 6, { align: 'right' });
+    pdf.text(L('footer', { city: cityOrTrip(input.city) }), marginL, pageH - 6);
+    pdf.text(L('pageOf', { page: p, total: totalPages }), pageW - marginR, pageH - 6, { align: 'right' });
   }
 
   const filename =
     mode === 'all'
-      ? `여행일정표_${cleanPdfText(input.city) || '여행'}_전체일정.pdf`
-      : `여행일정표_${cleanPdfText(input.city) || '여행'}_${input.currentDay}일차.pdf`;
+      ? L('fileAll', { city: cityOrTrip(input.city) })
+      : L('fileDay', { city: cityOrTrip(input.city), day: input.currentDay });
 
   pdf.save(filename);
 }
