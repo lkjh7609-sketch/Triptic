@@ -73,6 +73,8 @@
     "lucide-react": "^1.47.0",
     "motion": "^12.0.0",
     "posthog-js": "^1.0.0",
+    "qr-scanner": "^1.4.2",
+    "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.0.0",

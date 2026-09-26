@@ -12,7 +12,7 @@ export type ReportReason =
   | 'misinformation'
   | 'impersonation'
   | 'other';
-export type ReportTargetType = 'post' | 'comment' | 'user' | 'image';
+export type ReportTargetType = 'post' | 'comment' | 'user' | 'image' | 'companion_post' | 'companion_application';
 export type ReportStatus = 'open' | 'reviewing' | 'actioned' | 'dismissed';
 export type Locale = 'ko' | 'en' | 'zh-TW' | 'ja';
 
@@ -106,6 +106,56 @@ export interface ModerationEvent {
   categories: Record<string, unknown> | null;
   actor_id: string | null;
   created_at: string;
+}
+
+/** 06-community.md 확장(0032) — 동행찾기(모집글/신청/매칭 멤버) */
+export type CompanionPostStatus =
+  | 'pending_review'
+  | 'recruiting'
+  | 'matched'
+  | 'closed'
+  | 'cancelled'
+  | 'hidden'
+  | 'removed';
+export type CompanionApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'withdrawn' | 'removed';
+
+export interface CompanionPost {
+  id: string;
+  author_id: string;
+  destination_id: string | null;
+  title: string;
+  body: string;
+  start_date: string;
+  end_date: string;
+  group_size: number;
+  status: CompanionPostStatus;
+  report_count: number;
+  matched_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  author?: CommunityProfile;
+  destination?: Pick<Destination, 'id' | 'slug' | 'name'>;
+  /** 내가 이 글에 낸 신청(없으면 아직 지원 안 함) */
+  myApplication?: CompanionApplication;
+}
+
+export interface CompanionApplication {
+  id: string;
+  post_id: string;
+  applicant_id: string;
+  message: string | null;
+  status: CompanionApplicationStatus;
+  created_at: string;
+  updated_at: string;
+  applicant?: CommunityProfile;
+}
+
+/** 매칭 멤버(주최자 + accepted 신청자) — 별도 테이블 없이 파생 데이터로 조합한다 */
+export interface CompanionMatchMember {
+  user_id: string;
+  role: 'organizer' | 'member';
+  profile?: CommunityProfile;
 }
 
 /** 신고 사유 순서(표시 이름은 community:report.reason.* 번역 키) */

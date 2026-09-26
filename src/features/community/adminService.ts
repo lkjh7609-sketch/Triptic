@@ -55,7 +55,34 @@ export async function listPendingReviewPosts() {
   return data ?? [];
 }
 
-/** 신고 대상 미리보기용 — post/comment 본문만 가져온다(user/image는 별도 처리) */
+/** 0032: 동행찾기 모집글 — status 값이 posts와 다르므로(recruiting 등) 별도 setter가 필요하다 */
+export async function setCompanionPostStatus(
+  postId: string,
+  status: 'recruiting' | 'hidden' | 'removed',
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from('companion_posts').update({ status }).eq('id', postId);
+  if (error) throw error;
+}
+
+export async function setCompanionApplicationStatus(applicationId: string, status: 'removed'): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from('companion_applications').update({ status }).eq('id', applicationId);
+  if (error) throw error;
+}
+
+export async function listPendingReviewCompanionPosts() {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('companion_posts')
+    .select('*')
+    .eq('status', 'pending_review')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** 신고 대상 미리보기용 — post/comment/동행찾기 본문만 가져온다(user/image는 별도 처리) */
 export async function getReportTargetPreview(
   targetType: Report['target_type'],
   targetId: string,
@@ -68,6 +95,14 @@ export async function getReportTargetPreview(
   if (targetType === 'comment') {
     const { data } = await supabase.from('comments').select('body').eq('id', targetId).maybeSingle();
     return data ? { body: data.body } : null;
+  }
+  if (targetType === 'companion_post') {
+    const { data } = await supabase.from('companion_posts').select('title, body').eq('id', targetId).maybeSingle();
+    return data ? { body: `${data.title}\n${data.body}` } : null;
+  }
+  if (targetType === 'companion_application') {
+    const { data } = await supabase.from('companion_applications').select('message').eq('id', targetId).maybeSingle();
+    return data ? { body: data.message ?? '' } : null;
   }
   return null;
 }

@@ -4,7 +4,8 @@
     "title": "Admin console",
     "tabs": {
       "reports": "Report queue",
-      "pending": "Auto-flag queue"
+      "pending": "Auto-flag queue",
+      "companion": "Companions"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -221,5 +222,92 @@
     "imageUnsupported": "This image can't be processed.",
     "imageConvertFailed": "Couldn't convert the image.",
     "translateFailed": "Couldn't translate this."
+  },
+  "companion": {
+    "list": {
+      "tab": "Companions",
+      "writeBtn": "New listing",
+      "writeFirst": "Post the first listing",
+      "empty": "No one is looking for a companion yet."
+    },
+    "compose": {
+      "title": "Find a companion",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Looking for company in Osaka, 3N4D",
+      "titleRequiredError": "Please enter a title.",
+      "bodyPlaceholder": "Share your itinerary and what kind of companion you're looking for.",
+      "dateRequiredError": "Please select your travel dates.",
+      "destinationLabel": "Destination",
+      "destinationAny": "Anywhere is fine",
+      "dateLabel": "Travel dates",
+      "datePlaceholder": "Select dates",
+      "groupSizeLabel": "Group size (including you)",
+      "groupSizeDecrease": "Decrease group size",
+      "groupSizeIncrease": "Increase group size",
+      "groupSizeValue_one": "{{count}} person",
+      "groupSizeValue_other": "{{count}} people"
+    },
+    "detail": {
+      "anyDestination": "Destination TBD",
+      "dateRange": "{{start}} – {{end}}",
+      "groupSize_one": "Looking for {{count}} person",
+      "groupSize_other": "Looking for {{count}} people",
+      "statusNotice": {
+        "pending_review": "This listing is under review. It'll be visible to others once approved.",
+        "closed": "This listing is closed.",
+        "cancelled": "This listing was cancelled.",
+        "hidden": "This listing was hidden after receiving multiple reports.",
+        "removed": "This listing was removed for violating community guidelines."
+      },
+      "finalize_one": "Finalize match ({{count}} accepted)",
+      "finalize_other": "Finalize match ({{count}} accepted)",
+      "cancel": "Cancel listing",
+      "goToMatch": "Go to match",
+      "myApplicationStatus": {
+        "pending": "Applied · awaiting response",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "removed": "Removed after a report"
+      },
+      "withdraw": "Withdraw",
+      "apply": "Apply",
+      "applicants_one": "{{count}} applicant",
+      "applicants_other": "{{count}} applicants",
+      "noApplicants": "No applicants yet.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "cancelConfirm": "Cancel this listing? Applicants won't be notified.",
+      "finalizeConfirm": "Finalize the match with everyone accepted so far? You can't accept new applicants after this.",
+      "withdrawConfirm": "Withdraw your application?"
+    },
+    "apply": {
+      "dialogLabel": "Apply to join",
+      "doneTitle": "Application sent",
+      "doneDesc": "Your application was submitted. We'll let you know if the organizer accepts.",
+      "title": "Apply to join",
+      "messagePrompt": "Add a short intro or note (optional).",
+      "messagePlaceholder": "Hi, I'm...",
+      "submit": "Apply",
+      "submitError": "Something went wrong while applying."
+    },
+    "match": {
+      "loadError": "Couldn't load this match.",
+      "desc": "When you meet, scan each other's QR code to confirm you're both in this match.",
+      "organizer": "Organizer",
+      "leaveConfirm": "Leave this group? Your QR code will be invalidated immediately.",
+      "leave": "Leave group"
+    },
+    "qr": {
+      "showTitle": "My QR code",
+      "showDesc": "When someone scans this, they can confirm you're in the same match.",
+      "loadError": "Couldn't load your QR code.",
+      "scanTitle": "Scan QR code",
+      "cameraDenied": "Camera isn't available. Upload an image below instead.",
+      "uploadInstead": "Upload an image instead",
+      "verified": "Verified! This person is in your match.",
+      "verifyFailed": "Couldn't verify. Make sure it's a QR code from this match.",
+      "retry": "Scan again"
+    }
   }
 }

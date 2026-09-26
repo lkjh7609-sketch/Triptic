@@ -49,6 +49,29 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 동행찾기(0032) — 목록은 CommunityScreen의 탭이라 별도 라우트가 없고,
+          // 글쓰기/상세/매칭 화면만 라우트로 분리한다(글 상세와 같은 패턴).
+          path: 'community/companion/new',
+          lazy: async () => {
+            const { CompanionComposeScreen } = await import('@/features/community/CompanionComposeScreen');
+            return { Component: CompanionComposeScreen };
+          },
+        },
+        {
+          path: 'community/companion/:postId',
+          lazy: async () => {
+            const { CompanionDetailScreen } = await import('@/features/community/CompanionDetailScreen');
+            return { Component: CompanionDetailScreen };
+          },
+        },
+        {
+          path: 'community/companion/:postId/match',
+          lazy: async () => {
+            const { CompanionMatchScreen } = await import('@/features/community/CompanionMatchScreen');
+            return { Component: CompanionMatchScreen };
+          },
+        },
+        {
           path: 'community/d/:slug',
           lazy: async () => {
             const { DestinationChannelScreen } = await import('@/features/community/DestinationChannelScreen');

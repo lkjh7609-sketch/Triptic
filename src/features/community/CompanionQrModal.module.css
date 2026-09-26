@@ -1,0 +1,15 @@
+.desc {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.qrWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  /* 다크 모드에서도 의도적으로 흰 배경 고정 — QR은 밝은 배경/어두운 모듈이어야
+     카메라 인식률이 안정적이다(테마 토큰을 쓰면 다크 모드에서 스캔이 깨진다). */
+  background: #ffffff;
+  border-radius: var(--radius-md);
+}

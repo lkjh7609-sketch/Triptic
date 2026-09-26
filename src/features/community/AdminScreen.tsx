@@ -10,9 +10,12 @@ import { isAdmin } from './communityService';
 import {
   getReportTargetPreview,
   listOpenReports,
+  listPendingReviewCompanionPosts,
   listPendingReviewPosts,
   resolveReport,
   setCommentStatus,
+  setCompanionApplicationStatus,
+  setCompanionPostStatus,
   setPostStatus,
 } from './adminService';
 import type { Report } from './types';
@@ -34,6 +37,8 @@ function ReportRow({ report, onResolved }: { report: Report; onResolved: () => v
     try {
       if (report.target_type === 'post') await setPostStatus(report.target_id, 'removed');
       else if (report.target_type === 'comment') await setCommentStatus(report.target_id, 'removed');
+      else if (report.target_type === 'companion_post') await setCompanionPostStatus(report.target_id, 'removed');
+      else if (report.target_type === 'companion_application') await setCompanionApplicationStatus(report.target_id, 'removed');
       await resolveReport(report.id, 'actioned', user!.id);
       onResolved();
     } finally {
@@ -72,14 +77,22 @@ function ReportRow({ report, onResolved }: { report: Report; onResolved: () => v
   );
 }
 
-function PendingPostRow({ post, onResolved }: { post: { id: string; body: string; created_at: string }; onResolved: () => void }) {
+interface PendingItem {
+  kind: 'post' | 'companion_post';
+  id: string;
+  preview: string;
+  created_at: string;
+}
+
+function PendingPostRow({ item, onResolved }: { item: PendingItem; onResolved: () => void }) {
   const { t } = useTranslation(['community', 'common']);
   const [busy, setBusy] = useState(false);
 
   async function handleApprove() {
     setBusy(true);
     try {
-      await setPostStatus(post.id, 'published');
+      if (item.kind === 'post') await setPostStatus(item.id, 'published');
+      else await setCompanionPostStatus(item.id, 'recruiting');
       onResolved();
     } finally {
       setBusy(false);
@@ -89,7 +102,8 @@ function PendingPostRow({ post, onResolved }: { post: { id: string; body: string
   async function handleRemove() {
     setBusy(true);
     try {
-      await setPostStatus(post.id, 'removed');
+      if (item.kind === 'post') await setPostStatus(item.id, 'removed');
+      else await setCompanionPostStatus(item.id, 'removed');
       onResolved();
     } finally {
       setBusy(false);
@@ -99,9 +113,10 @@ function PendingPostRow({ post, onResolved }: { post: { id: string; body: string
   return (
     <div className={styles.item}>
       <div className={styles.itemMeta}>
-        <span className={styles.itemTime}>{new Date(post.created_at).toLocaleString('ko-KR')}</span>
+        {item.kind === 'companion_post' ? <span className={styles.itemType}>{t('admin.tabs.companion')}</span> : null}
+        <span className={styles.itemTime}>{new Date(item.created_at).toLocaleString('ko-KR')}</span>
       </div>
-      <p className={styles.preview}>{post.body}</p>
+      <p className={styles.preview}>{item.preview}</p>
       <div className={styles.actions}>
         <button type="button" className={styles.primaryBtn} disabled={busy} onClick={handleApprove}>
           {t('admin.approve')}
@@ -133,7 +148,17 @@ export function AdminScreen() {
   const reportsQuery = useQuery({ queryKey: ['admin', 'reports'], queryFn: listOpenReports, enabled: !!admin });
   const pendingQuery = useQuery({
     queryKey: ['admin', 'pending'],
-    queryFn: listPendingReviewPosts,
+    queryFn: async (): Promise<PendingItem[]> => {
+      const [posts, companionPosts] = await Promise.all([listPendingReviewPosts(), listPendingReviewCompanionPosts()]);
+      const postItems: PendingItem[] = posts.map((p) => ({ kind: 'post', id: p.id, preview: p.body, created_at: p.created_at }));
+      const companionItems: PendingItem[] = companionPosts.map((p) => ({
+        kind: 'companion_post',
+        id: p.id,
+        preview: `${p.title}\n${p.body}`,
+        created_at: p.created_at,
+      }));
+      return [...postItems, ...companionItems].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    },
     enabled: !!admin,
   });
 
@@ -196,7 +221,7 @@ export function AdminScreen() {
       ) : (
         <div className={styles.list}>
           {pendingQuery.data.map((p) => (
-            <PendingPostRow key={p.id} post={p} onResolved={refetchAll} />
+            <PendingPostRow key={`${p.kind}-${p.id}`} item={p} onResolved={refetchAll} />
           ))}
         </div>
       )}
