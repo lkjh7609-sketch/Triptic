@@ -5,6 +5,7 @@ import styles from './AiNextPlaceModal.module.css';
 import { TimeWheelPicker } from '@/shared/ui/TimeWheelPicker';
 import modalStyles from './AddPlaceModal.module.css';
 import { tripService } from '@/shared/api/tripService';
+import { apiUrl } from '@/shared/api/apiUrl';
 import type { TripRow } from '@/shared/api/tripService';
 
 interface AiNextPlaceModalProps {
@@ -31,10 +32,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
         const city = dayCity ? dayCity.split(',')[0].trim() : (trip.title || '현지');
         const placeName = baseItem?.name || '도심 중심가';
 
-        const isNativeApp = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-        const apiUrl = import.meta.env.DEV ? 'https://triptic-ten.vercel.app/api/recommend' : (isNativeApp ? 'https://triptic-ten.vercel.app/api/recommend' : '/api/recommend');
-
-        const res = await fetch(apiUrl, {
+        const res = await fetch(apiUrl('/api/recommend'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
