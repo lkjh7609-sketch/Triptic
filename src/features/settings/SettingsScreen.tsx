@@ -187,7 +187,7 @@ export function SettingsScreen() {
                 i18n.language === 'ko' ? '한국어' :
                 i18n.language === 'en' ? 'English' :
                 i18n.language === 'ja' ? '日本語' :
-                i18n.language === 'zh-CN' ? '简体中文' : '한국어'
+                i18n.language === 'zh-TW' ? '繁體中文' : '한국어'
               } &gt;</span>
             </div>
           </>

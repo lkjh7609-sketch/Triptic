@@ -19,7 +19,7 @@
     "sectionTitle": "지난 여행"
   },
   "hero": {
-    "planNext": "다음 여행을 계획해 보세요 ️",
+    "planNext": "다음 여행을 계획해 보세요",
     "createTrip": "여행 만들기",
     "firstItem": "· 첫 일정 {{time}}",
     "todayBadge": "오늘의 일정",
@@ -57,7 +57,7 @@
     "descTokyo": "화려한 네온사인과 전통 문화",
     "previewCancel": "취소",
     "previewStart": "이 도시로 계획 만들기",
-    "previewLoading": "✨ AI가 도시 정보를 불러오고 있습니다...",
+    "previewLoading": "AI가 도시 정보를 불러오고 있어요…",
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
     "contact": "고객센터",

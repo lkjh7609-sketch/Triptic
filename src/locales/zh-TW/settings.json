@@ -1,0 +1,81 @@
+{
+  "section": {
+    "account": "帳戶",
+    "preferences": "偏好設定",
+    "notifications": "通知",
+    "data": "資料",
+    "community": "社群",
+    "about": "關於"
+  },
+  "account": {
+    "fallbackName": "我的帳戶",
+    "signOut": "登出",
+    "deleteAction": "刪除帳戶",
+    "editProfile": "修改個人資訊"
+  },
+  "preferences": {
+    "theme": "主題",
+    "themeSystem": "跟隨系統",
+    "themeLight": "淺色",
+    "themeDark": "深色",
+    "tempUnit": "溫度單位",
+    "distanceUnit": "距離單位",
+    "distanceUnitHint": "距離單位暫未套用到地圖或路線顯示中。",
+    "baseCurrency": "預設貨幣",
+    "language": "語言",
+    "loginHint": "登入後可儲存溫度單位、距離單位、預設貨幣和語言設定。",
+    "unitSettings": "單位設定 (溫度/距離)"
+  },
+  "notifications": {
+    "preDeparture": "出發前提醒",
+    "flightChanges": "航班變更",
+    "communityReplies": "社群回覆",
+    "marketing": "營銷資訊",
+    "hint": "實際通知推送將在後續版本中支援，目前僅儲存該設定。"
+  },
+  "data": {
+    "offlineCache": "離線快取",
+    "calculating": "計算中…",
+    "clearCache": "清除快取",
+    "clearingCache": "清除中…",
+    "backup": "匯出 / 匯入（JSON）",
+    "pdfHint": "可在行程詳情頁的分享（↗）按鈕中匯出該行程的PDF。"
+  },
+  "about": {
+    "version": "版本 {{version}}"
+  },
+  "licenses": {
+    "title": "開源許可證"
+  },
+  "blocked": {
+    "empty": "目前沒有已封鎖的使用者。",
+    "unknownUser": "未知使用者",
+    "unblock": "取消封鎖"
+  },
+  "delete": {
+    "stepIndicator": "第 {{current}} / {{total}} 步",
+    "warningTitle": "確定要刪除帳戶嗎？",
+    "warningBody": "刪除後，以下資料將全部消失。30天內重新登入可撤銷此操作。",
+    "impact": {
+      "tripsPending": "…個行程",
+      "trips_other": "{{count}}個行程",
+      "vouchersPending": "…張票券",
+      "vouchers_other": "{{count}}張票券",
+      "postsPending": "…篇社群貼文",
+      "posts_other": "{{count}}篇社群貼文"
+    },
+    "continue": "繼續",
+    "reauthTitle": "身分驗證",
+    "reauthBody": "刪除帳戶前，請重新登入以驗證您的身分。",
+    "reauthSuccess": "身分驗證已完成。",
+    "reauthButton": "重新登入",
+    "reauthError": "未能開始身分驗證，請稍後再試。",
+    "confirmTitle": "最終確認",
+    "confirmBody": "在下方輸入框中輸入<strong>刪除</strong>，即可繼續刪除帳號。",
+    "confirmInputAriaLabel": "刪除確認文字輸入框",
+    "processing": "處理中…",
+    "requestError": "未能處理帳戶刪除請求，請稍後再試。",
+    "doneTitle": "刪除請求已提交",
+    "doneBody": "30天內重新登入可恢復帳戶，之後帳戶將被永久刪除。"
+  }
+}

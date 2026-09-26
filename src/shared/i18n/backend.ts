@@ -1,6 +1,6 @@
 /**
  * i18next 커스텀 backend (07-i18n.md §2 "네임스페이스별 lazy load — 초기 번들에
- * 3개 언어 전부 넣지 않는다"). 별도 HTTP 서버나 i18next-http-backend 없이,
+ * 4개 언어 전부 넣지 않는다"). 별도 HTTP 서버나 i18next-http-backend 없이,
  * Vite의 청크 단위 동적 import로 등록해두고, i18next가 언어/네임스페이스를 요청할 때만
  * 그 청크를 불러온다.
  */
@@ -28,13 +28,13 @@ const localeModules: Record<string, () => Promise<any>> = {
   'ko/plan': () => import('../../locales/ko/plan.json'),
   'ko/settings': () => import('../../locales/ko/settings.json'),
   'ko/weather': () => import('../../locales/ko/weather.json'),
-  'zh-CN/common': () => import('../../locales/zh-CN/common.json'),
-  'zh-CN/community': () => import('../../locales/zh-CN/community.json'),
-  'zh-CN/documents': () => import('../../locales/zh-CN/documents.json'),
-  'zh-CN/home': () => import('../../locales/zh-CN/home.json'),
-  'zh-CN/plan': () => import('../../locales/zh-CN/plan.json'),
-  'zh-CN/settings': () => import('../../locales/zh-CN/settings.json'),
-  'zh-CN/weather': () => import('../../locales/zh-CN/weather.json'),
+  'zh-TW/common': () => import('../../locales/zh-TW/common.json'),
+  'zh-TW/community': () => import('../../locales/zh-TW/community.json'),
+  'zh-TW/documents': () => import('../../locales/zh-TW/documents.json'),
+  'zh-TW/home': () => import('../../locales/zh-TW/home.json'),
+  'zh-TW/plan': () => import('../../locales/zh-TW/plan.json'),
+  'zh-TW/settings': () => import('../../locales/zh-TW/settings.json'),
+  'zh-TW/weather': () => import('../../locales/zh-TW/weather.json'),
 };
 
 export const ViteGlobBackend: BackendModule = {

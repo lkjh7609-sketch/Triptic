@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * i18n CI 검사 (07-i18n.md §9)
- * 1) ko의 모든 키가 en, zh-CN에 존재하는가
+ * 1) ko의 모든 키가 en, zh-TW, ja에 존재하는가
  * 2) 각 언어에 ko에 없는 고아 키가 있는가
  * 3) 보간 변수({{name}})가 언어별로 일치하는가
  * 4) ICU 플러럴 카테고리가 언어 규칙에 맞는가 (ko/zh는 other만, en은 one/other 필요)
@@ -20,7 +20,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const LOCALES_DIR = path.join(ROOT, 'src/locales');
 const SOURCE_LOCALE = 'ko';
-const LOCALES = ['ko', 'en', 'zh-CN'];
+const LOCALES = ['ko', 'en', 'zh-TW', 'ja'];
 
 let hasError = false;
 function fail(message) {
@@ -104,7 +104,7 @@ function checkKeyParityAndInterpolation() {
       for (const key of targetKeys) {
         if (key in source) continue;
         // en 전용 `_one` 플러럴 키(07-i18n.md §9-4: en만 one/other 둘 다 필요)는
-        // ko/zh-CN 소스에 `_one`이 없는 게 정상이다 — 대응하는 `_other`가
+        // ko/zh-TW/ja 소스에 `_one`이 없는 게 정상이다 — 대응하는 `_other`가
         // source에 있으면 고아 키가 아니라 의도된 비대칭이다.
         if (locale === 'en' && key.endsWith('_one')) {
           const base = key.slice(0, -'_one'.length);
@@ -157,7 +157,7 @@ function checkPluralCategories() {
           }
         }
       } else {
-        // ko/zh-CN: Intl.PluralRules 카테고리가 'other' 하나뿐이라 `_one`을 두면 안 됨
+        // ko/zh-TW/ja: Intl.PluralRules 카테고리가 'other' 하나뿐이라 `_one`을 두면 안 됨
         for (const oneKey of oneKeys) {
           fail(`[${locale}/${ns}] ${locale}는 plural이 'other'만 필요한데 '_one' 키가 있음: ${oneKey}`);
           localHasError = true;

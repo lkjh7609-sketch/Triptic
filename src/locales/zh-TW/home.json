@@ -1,0 +1,68 @@
+{
+  "greeting": {
+    "guest": "你好 ",
+    "user": "你好，{{name}} ",
+    "fallbackName": "旅行者"
+  },
+  "guest": {
+    "blurMessage": "登入後檢視我的旅行記錄"
+  },
+  "empty": {
+    "message": "還沒有旅行記錄，要記錄第一次旅行嗎？",
+    "createTrip": "+ 建立旅行",
+    "sampleTrip": "檢視範例行程"
+  },
+  "stats": {
+    "sectionTitle": "我的旅行記錄"
+  },
+  "past": {
+    "sectionTitle": "過往旅行"
+  },
+  "hero": {
+    "planNext": "計畫一次新旅行吧",
+    "createTrip": "建立旅行",
+    "firstItem": "· 首個行程 {{time}}",
+    "todayBadge": "今日行程",
+    "dayIndex": "第{{day}}天 · {{date}}",
+    "noItemsToday": "今天還沒有安排行程"
+  },
+  "tile": {
+    "trips": "旅行",
+    "countries": "國家",
+    "days": "天數",
+    "cities": "城市",
+    "places": "地點",
+    "distanceKm": "里程(km)",
+    "companions": "同行"
+  },
+  "worldMap": {
+    "caption_other": "{{count}}個國家"
+  },
+  "desktop": {
+    "heroTitle": "下一次偉大的冒險從這裡開始",
+    "searchPlaceholder": "您想去哪裡？",
+    "startPlanning": "開始規劃",
+    "featuredTitle": "精選目的地",
+    "destKyoto": "日本京都",
+    "descKyoto": "古老的寺廟和傳統的茶館",
+    "destParis": "法國巴黎",
+    "descParis": "藝術、時尚、美食和文化",
+    "destNY": "美國紐約",
+    "descNY": "不夜城",
+    "destLondon": "英國倫敦",
+    "descLondon": "擁有豐富歷史的現代城市",
+    "destRome": "義大利羅馬",
+    "descRome": "廢墟與浪漫的永恆之城",
+    "destTokyo": "日本東京",
+    "descTokyo": "霓虹燈與傳統文化",
+    "previewCancel": "取消",
+    "previewStart": "用這座城市規劃行程",
+    "previewLoading": "✨ AI 正在載入城市資訊...",
+    "terms": "服務條款 (Terms)",
+    "privacy": "隱私政策 (Privacy)",
+    "contact": "客戶服務 (Contact)",
+    "flights": "機票",
+    "stays": "住宿",
+    "activities": "活動"
+  }
+}

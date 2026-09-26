@@ -263,5 +263,23 @@
     "timeLabel": "訪問予定時刻",
     "confirmAdd": "予定に追加する",
     "aiNotice": "AIによる提案です。営業時間や料金は訪問前にご確認ください。"
+  },
+  "addPlace": {
+    "title": "予定を追加",
+    "searchPlaceholder": "場所を検索",
+    "selectHint": "検索結果から場所を選んでください。",
+    "timeLabel": "時間（任意）",
+    "memoLabel": "メモ（任意）",
+    "memoPlaceholder": "チェックイン後に荷物を預ける",
+    "adding": "追加中…"
+  },
+  "placeCategory": {
+    "sight": "観光",
+    "restaurant": "レストラン",
+    "cafe": "カフェ",
+    "shopping": "ショッピング",
+    "lodging": "宿泊",
+    "transport": "交通",
+    "other": "その他"
   }
 }

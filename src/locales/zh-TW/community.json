@@ -1,0 +1,186 @@
+{
+  "admin": {
+    "accessDenied": "此頁面需要管理員許可權。",
+    "title": "運營控制台",
+    "tabs": {
+      "reports": "舉報佇列",
+      "pending": "自動標記佇列"
+    },
+    "reportDetail": "舉報詳情：{{detail}}",
+    "dismiss": "駁回",
+    "approve": "核准",
+    "noReports": "目前沒有待處理的舉報。",
+    "noPending": "目前沒有待審核的貼文。"
+  },
+  "report": {
+    "title": "舉報",
+    "dialogLabel": "舉報",
+    "doneTitle": "舉報已提交",
+    "doneDesc": "您舉報的內容現在不會出現在您的頁面中。我們會在24小時內完成審核並告知處理結果。",
+    "reasonPrompt": "請選擇舉報原因。",
+    "detailPlaceholder": "詳細說明（可選）",
+    "submit": "舉報",
+    "submitting": "舉報中…",
+    "submitError": "舉報提交失敗。",
+    "reason": {
+      "spam": "垃圾資訊/廣告",
+      "harassment": "騷擾",
+      "hate": "仇恨言論",
+      "sexual": "色情內容",
+      "violence": "暴力內容",
+      "illegal": "違法行為",
+      "misinformation": "虛假資訊",
+      "impersonation": "冒充他人",
+      "other": "其他"
+    }
+  },
+  "feed": {
+    "title": "社群",
+    "compose": " 發帖",
+    "tabAll": "全部",
+    "tabFollowing": "追蹤",
+    "loginToFollow": "登入後可檢視追蹤的旅行地發布的貼文。",
+    "loadError": "未能載入動態。",
+    "emptyFollowing": "追蹤的旅行地還沒有貼文。",
+    "emptyAll": "還沒有貼文。",
+    "loadMore": "載入更多",
+    "writeBtn": "發帖",
+    "subtitle": "旅行者的記錄與靈感",
+    "searchPlaceholder": "搜尋地區、關鍵字、旅行者...",
+    "emptySub": "分享您第一次旅行的瞬間和當地見解。",
+    "writeFirst": "寫下您的第一個故事",
+    "searchError": "找不到該城市的留言板。"
+  },
+  "destination": {
+    "loadError": "未能載入旅行地資訊。",
+    "postCount_other": "{{count}}篇貼文",
+    "following": "已追蹤 ",
+    "follow": "+ 追蹤",
+    "createTripHere": "建立前往此地的旅行",
+    "emptyPosts": "目前沒有貼文。"
+  },
+  "post": {
+    "fallbackAuthor": "旅行者"
+  },
+  "menu": {
+    "ariaLabel": "更多",
+    "report": "舉報",
+    "blockUser": "封鎖使用者",
+    "blockConfirm": "確定要封鎖此使用者嗎？封鎖後將互相看不到對方的貼文和留言。"
+  },
+  "detail": {
+    "statusNotice": {
+      "pending_review": "此貼文正在等待管理員審核，審核通過後其他使用者才能看到。",
+      "hidden": "此貼文因被舉報，其他使用者無法看到。",
+      "removed": "因違反社群規範已被刪除。"
+    },
+    "loadError": "未能載入貼文。",
+    "deleteConfirm": "確定要刪除此貼文嗎？",
+    "translatedLabel": "已自動翻譯",
+    "translating": "翻譯中…",
+    "translateView": "檢視翻譯",
+    "like_other": "贊 {{count}}",
+    "comment_other": "留言 {{count}}",
+    "commentPlaceholder": "寫下你的留言",
+    "commentSubmit": "發布",
+    "noComments": "還沒有留言。"
+  },
+  "profile": {
+    "loadError": "未能載入個人資料。",
+    "postsHeader": "發布的貼文",
+    "noPosts": "還沒有發布的貼文。"
+  },
+  "compose": {
+    "loginRequired": "登入後才能發帖。",
+    "title": "發帖",
+    "submitting": "發布中…",
+    "submit": "發布",
+    "destinationLabel": "旅行地（必填）",
+    "destinationPlaceholder": "請選擇旅行地",
+    "destinationRequiredError": "請選擇旅行地。",
+    "bodyPlaceholder": "分享你的旅行故事吧",
+    "bodyRequiredError": "請輸入內容。",
+    "tripLabel": "關聯我的行程（可選）",
+    "tripNone": "不關聯",
+    "photoLabel": "照片（最多{{max}}張）",
+    "addPhoto": "+ 照片",
+    "processingPhoto": "處理中…",
+    "maxImagesError": "最多隻能新增{{max}}張照片。",
+    "uploadImageError": "照片上傳失敗。",
+    "moderationBlockedError": "內容中包含違反社群規範的資訊，發布已被攔截。",
+    "submitError": "發布失敗，請稍後重試。"
+  },
+  "guestName": {
+    "dialogLabel": "輸入姓名",
+    "promptLine1": "請告訴我們同行者的姓名或暱稱。",
+    "promptLine2": "建議地點時將顯示為作者。",
+    "nameLabel": "我的姓名",
+    "namePlaceholder": "例如：小明",
+    "enter": "進入"
+  },
+  "suggest": {
+    "title": "建議新增地點",
+    "dialogLabel": "建議新增地點",
+    "searchLabel": "搜尋要新增的地點",
+    "searchPlaceholder": "搜尋地點名稱",
+    "dayLabel": "建議天數",
+    "dayOption": "第{{day}}天",
+    "memoLabel": "備註（可選）",
+    "memoPlaceholder": "例如：這裡的甜品很有名！",
+    "proposerLabel": "作者姓名",
+    "submitting": "傳送中…",
+    "submit": "傳送建議"
+  },
+  "shared": {
+    "loadError": "分享連結已過期或不存在。",
+    "daysCount_other": "{{count}}天行程",
+    "dayLabel": "第{{day}}天",
+    "cityUnset": "未設定城市",
+    "departure": "出發",
+    "return": "返回",
+    "suggestSent": "建議已傳送給行程建立者！",
+    "emptyDay": "這一天還沒有安排行程。"
+  },
+  "continent": {
+    "AS": {
+      "name": "亞洲",
+      "countries": {
+        "KR": "韓國",
+        "JP": "日本",
+        "VN": "越南",
+        "TH": "泰國",
+        "PH": "菲律賓",
+        "MY": "馬來西亞",
+        "SG": "新加坡",
+        "ID": "印尼",
+        "TW": "臺灣",
+        "HK": "香港",
+        "MO": "澳門",
+        "CN": "中國"
+      }
+    },
+    "EU": {
+      "name": "歐洲",
+      "countries": {
+        "FR": "法國",
+        "GB": "英國",
+        "IT": "義大利",
+        "ES": "西班牙",
+        "CZ": "捷克",
+        "AT": "奧地利",
+        "CH": "瑞士",
+        "NL": "荷蘭",
+        "PT": "葡萄牙",
+        "TR": "土耳其"
+      }
+    },
+    "AM_OC": {
+      "name": "美洲/大洋洲",
+      "countries": {
+        "US": "美國",
+        "CA": "加拿大",
+        "AU": "澳大利亞"
+      }
+    }
+  }
+}

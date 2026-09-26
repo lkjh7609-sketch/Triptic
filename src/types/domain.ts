@@ -5,7 +5,7 @@
  */
 import { z } from 'zod';
 
-export const Locale = z.enum(['ko', 'en', 'zh-CN', 'ja']);
+export const Locale = z.enum(['ko', 'en', 'zh-TW', 'ja']);
 export type Locale = z.infer<typeof Locale>;
 
 export const Currency = z.enum([
