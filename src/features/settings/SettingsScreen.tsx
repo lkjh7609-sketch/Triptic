@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { normalizeLocale } from '@/shared/i18n';
+import { LANGUAGE_AUTONYMS } from '@/shared/i18n/languageNames';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
@@ -122,7 +124,7 @@ export function SettingsScreen() {
             </div>
             <div className={styles.row}>
               <button type="button" className={styles.linkButton} onClick={() => setShowEditProfile(true)}>
-                {t('account.editProfile', { defaultValue: '내 정보 변경' })}
+                {t('account.editProfile')}
               </button>
             </div>
             <div className={styles.row}>
@@ -156,17 +158,17 @@ export function SettingsScreen() {
         <div className={styles.row}>
           <span>{t('preferences.theme')}</span>
           <div className={styles.themeToggleGroup}>
-            <button type="button" className={theme === 'light' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('light')} aria-label="Light theme"><Sun size={18}/></button>
-            <button type="button" className={theme === 'dark' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('dark')} aria-label="Dark theme"><Moon size={18}/></button>
-            <button type="button" className={theme === 'system' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('system')} aria-label="System theme"><Monitor size={18}/></button>
+            <button type="button" className={theme === 'light' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('light')} aria-label={t('preferences.themeLight')} aria-pressed={theme === 'light'}><Sun size={18}/></button>
+            <button type="button" className={theme === 'dark' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('dark')} aria-label={t('preferences.themeDark')} aria-pressed={theme === 'dark'}><Moon size={18}/></button>
+            <button type="button" className={theme === 'system' ? styles.themeToggleActive : styles.themeToggleBtn} onClick={() => handleThemeChange('system')} aria-label={t('preferences.themeSystem')} aria-pressed={theme === 'system'}><Monitor size={18}/></button>
           </div>
         </div>
         {user ? (
           <>
-            <div className={styles.row} onClick={() => setShowUnitSettings(true)} style={{cursor: 'pointer'}}>
-              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}}/> {t('preferences.unitSettings', { defaultValue: '단위 설정 (온도/거리)' })}</span>
+            <button type="button" className={`${styles.row} ${styles.rowButton}`} onClick={() => setShowUnitSettings(true)}>
+              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}} aria-hidden="true" /> {t('preferences.unitSettings')}</span>
               <span style={{color: 'var(--text-muted)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
-            </div>
+            </button>
             <div className={styles.row}>
               <span>{t('preferences.baseCurrency')}</span>
               <select
@@ -181,15 +183,10 @@ export function SettingsScreen() {
                 ))}
               </select>
             </div>
-            <div className={styles.row} onClick={() => setShowLanguageModal(true)} style={{cursor: 'pointer'}}>
+            <button type="button" className={`${styles.row} ${styles.rowButton}`} onClick={() => setShowLanguageModal(true)}>
               <span>{t('preferences.language')}</span>
-              <span style={{color: 'var(--text-muted)'}}>{
-                i18n.language === 'ko' ? '한국어' :
-                i18n.language === 'en' ? 'English' :
-                i18n.language === 'ja' ? '日本語' :
-                i18n.language === 'zh-TW' ? '繁體中文' : '한국어'
-              } &gt;</span>
-            </div>
+              <span style={{color: 'var(--text-muted)'}}>{LANGUAGE_AUTONYMS[normalizeLocale(i18n.language)]} &gt;</span>
+            </button>
           </>
         ) : (
           <p className={styles.hint}>{t('preferences.loginHint')}</p>

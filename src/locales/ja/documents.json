@@ -40,5 +40,12 @@
     "addToWallet": "Apple Walletに追加",
     "deleteConfirm": "「{{name}}」を削除しますか？元に戻すことはできません。",
     "voucherOriginalAlt": "バウチャー元の画像"
+  },
+  "errors": {
+    "unsupportedType": "アップロードできるのはPDF・JPG・PNG・.pkpass・.icsファイルのみです。",
+    "tooLarge": "20MBを超えるファイルはアップロードできません。必要なページだけにしてアップロードしてください。",
+    "storageLimit": "バウチャーの保存容量の上限に達しました。",
+    "parseLimit": "書類の自動読み取りの上限に達しました。",
+    "registerFailed": "書類を登録できませんでした。"
   }
 }

@@ -80,5 +80,22 @@
     "requestError": "Couldn't process the account deletion request. Please try again shortly.",
     "doneTitle": "Deletion request received",
     "doneBody": "You can restore your account by signing in again within 30 days. After that, it will be permanently deleted."
+  },
+  "profile": {
+    "title": "Edit profile",
+    "nameLabel": "Display name",
+    "namePlaceholder": "The name other travelers will see",
+    "nameHint": "Shown on your community posts and to travel companions.",
+    "nameRequired": "Please enter a name.",
+    "saveError": "Couldn't save. Please try again shortly."
+  },
+  "units": {
+    "title": "Units",
+    "temperature": "Temperature",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
+    "distance": "Distance",
+    "kilometers": "Kilometers (km)",
+    "miles": "Miles (mi)"
   }
 }

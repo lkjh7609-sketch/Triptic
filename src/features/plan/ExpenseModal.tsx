@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   CURRENCIES,
-  EXPENSE_CATEGORY_LABELS,
+  EXPENSE_CATEGORIES,
 
   convertToBase,
   formatMoney,
@@ -132,7 +132,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
         </div>
         <div className={styles.inputSection}>
           <div className={styles.categoryRow} role="radiogroup" aria-label={t('expense.categoryAria')}>
-            {(Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[]).map((cat) => (
+            {EXPENSE_CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 type="button"

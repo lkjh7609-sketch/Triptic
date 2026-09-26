@@ -208,5 +208,12 @@
     "ethosTitle": "Tripticが大切にしていること",
     "ethosBody": "急ぎ足の観光リストより、落ち着いた案内、地域文化への敬意、正直な旅の記録を大切にしています。",
     "guidelines": "コミュニティのルールを読む"
+  },
+  "errors": {
+    "postingUnavailable": "現在、コミュニティへの投稿は利用できません。",
+    "alreadyReported": "このコンテンツはすでに通報済みです。",
+    "imageUnsupported": "この画像は処理できません。",
+    "imageConvertFailed": "画像を変換できませんでした。",
+    "translateFailed": "翻訳できませんでした。"
   }
 }

@@ -82,5 +82,9 @@
     "language": "Language",
     "backup": "Backup & restore",
     "signOut": "Sign out"
+  },
+  "calendar": {
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   }
 }

@@ -215,7 +215,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={() => setShowCalendar(true)}
           >
-             {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('createTrip.selectDate', { defaultValue: '날짜를 선택해주세요' })}
+             {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('createTrip.selectDate')}
           </div>
           <input type="hidden" {...register('startDate')} value={startDateStr} />
           <input type="hidden" {...register('endDate')} value={endDateStr} />
@@ -240,7 +240,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
                  }}
                />
                <div style={{ marginTop: 'var(--space-4)', textAlign: 'right' }}>
-                 <button type="button" onClick={() => setShowCalendar(false)} style={{ padding: '8px 16px', background: 'var(--brand)', color: 'white', border: 'none', borderRadius: '8px' }}>확인</button>
+                 <button type="button" onClick={() => setShowCalendar(false)} style={{ padding: '8px 16px', background: 'var(--brand)', color: 'white', border: 'none', borderRadius: '8px' }}>{t('common:action.confirm')}</button>
                </div>
              </div>
            </div>

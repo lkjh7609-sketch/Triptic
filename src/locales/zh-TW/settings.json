@@ -77,5 +77,22 @@
     "requestError": "未能處理帳戶刪除請求，請稍後再試。",
     "doneTitle": "刪除請求已提交",
     "doneBody": "30天內重新登入可恢復帳戶，之後帳戶將被永久刪除。"
+  },
+  "profile": {
+    "title": "編輯個人資料",
+    "nameLabel": "顯示名稱",
+    "namePlaceholder": "其他旅人會看到的名稱",
+    "nameHint": "會顯示在社群貼文與同行者清單中。",
+    "nameRequired": "請輸入名稱。",
+    "saveError": "無法儲存，請稍後再試。"
+  },
+  "units": {
+    "title": "單位設定",
+    "temperature": "溫度單位",
+    "celsius": "攝氏 (°C)",
+    "fahrenheit": "華氏 (°F)",
+    "distance": "距離單位",
+    "kilometers": "公里 (km)",
+    "miles": "英里 (mi)"
   }
 }

@@ -103,7 +103,8 @@
       "card": "카드",
       "other": "기타"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}} 기준 환율"
+    "rateHint": "{{from}} = {{to}} · {{time}} 기준 환율",
+    "totalLabel": "합계"
   },
   "flightCard": {
     "schedule": "{{depTime}} 출발 → {{arrTime}} 도착"
@@ -121,7 +122,14 @@
     "depPlaceholder": "출발 공항 검색 (예: 인천국제공항)",
     "arrPlaceholder": "도착 공항 검색 (예: 간사이 국제공항)",
     "applyManual": "이 항공편 정보 적용",
-    "saving": "저장 중…"
+    "saving": "저장 중…",
+    "preview": "{{dep}} {{depTime}} 출발 → {{arr}} {{arrTime}} 도착",
+    "manualSuffix": "(직접 입력)",
+    "flightNoRequired": "편명을 입력해 주세요.",
+    "airportRequired": "출발·도착 공항은 검색 결과 목록에서 선택해 주세요.",
+    "applyEdit": "수정 완료",
+    "depTimeAria": "출발 시각",
+    "arrTimeAria": "도착 시각"
   },
   "itemDetail": {
     "mapLink": "Google Maps에서 보기",
@@ -187,7 +195,7 @@
     "sentBy": "보낸 사람",
     "reject": "거절",
     "addToItinerary": "일정에 추가",
-    "memoPrefix": "[{{name}}님 추천] "
+    "memoPrefix": "[{{name}}님 추천]"
   },
   "tripCard": {
     "periodUndecided": "기간 미정",
@@ -195,7 +203,8 @@
     "rename": "이름 변경",
     "renamePrompt": "새 여행 이름을 입력해 주세요",
     "duplicate": "복제",
-    "deleteConfirm": "'{{title}}' 여행을 삭제할까요? 되돌릴 수 없어요."
+    "deleteConfirm": "'{{title}}' 여행을 삭제할까요? 되돌릴 수 없어요.",
+    "copyTitle": "{{title}} 사본"
   },
   "tripDetail": {
     "backAria": "뒤로가기",
@@ -219,10 +228,15 @@
     "climateBadge": "평년",
     "hotelStart": "출발 숙소",
     "hotelEnd": "도착 숙소",
-    "addPlace": "장소 추가"
+    "addPlace": "장소 추가",
+    "loadError": "여행을 불러오지 못했어요."
   },
   "tripMap": {
-    "ariaLabel": "일정 지도"
+    "ariaLabel": "일정 지도",
+    "myLocation": "현재 위치로 이동",
+    "myLocationMarker": "현재 위치",
+    "arrivalAirport": "도착 공항",
+    "departureAirport": "출발 공항"
   },
   "inspector": {
     "focusMove": "일정 목록에서 보기",
@@ -269,7 +283,9 @@
     "timeSubtitle": "일정에 추가할 장소: {{name}}",
     "timeLabel": "방문 예정 시간",
     "confirmAdd": "일정에 추가하기",
-    "aiNotice": "AI가 만든 추천이에요. 영업시간·가격은 방문 전에 확인해 주세요."
+    "aiNotice": "AI가 만든 추천이에요. 영업시간·가격은 방문 전에 확인해 주세요.",
+    "button": "AI 추천",
+    "buttonTitle": "이 장소 다음에 갈 곳 AI 추천 받기"
   },
   "desktop": {
     "badge": "내 여행",
@@ -339,5 +355,68 @@
     "flightMissingDesc": "출국·귀국 항공편을 넣으면 첫날·마지막 날 동선에 반영돼요.",
     "pdfTitle": "여행 PDF 저장",
     "pdfDesc": "지도와 전체 일정을 담은 인쇄용 가이드"
+  },
+  "hotel": {
+    "title": "숙소 설정",
+    "applyAll": "전체 일정에 같은 숙소 적용",
+    "sameAsPrevious": "전날과 같음",
+    "searchPlaceholder": "숙소 이름을 검색하세요"
+  },
+  "errors": {
+    "tripLimit": "만들 수 있는 여행 수 한도에 도달했어요.",
+    "shareUnavailable": "지금은 동행자 공유를 사용할 수 없어요."
+  },
+  "pdf": {
+    "cityFallback": "여행",
+    "continuationHeader": "{{city}} 일정표 · {{day}}일차 (계속)",
+    "colTime": "시간",
+    "colType": "구분",
+    "colPlace": "일정 및 장소",
+    "colNote": "이동 및 비고",
+    "addressLine": "[주소] {{text}}",
+    "memoLine": "[메모] {{text}}",
+    "transitLine": "[이동 안내] {{text}}",
+    "section1": "1. 타임라인 전체 일정 요약",
+    "section2": "2. 장소별 상세 안내 & 메모",
+    "section2Continued": "2. 장소별 상세 안내 & 메모 (계속)",
+    "section3": "3. 일자별 지출 경비 요약",
+    "dayTitle": "{{city}} 일정표 · {{day}}일차",
+    "period": "여행 기간: {{start}} ~ {{end}} (총 {{total}}일 중 {{day}}일차)  |  {{date}}",
+    "flightArrivalPoint": "{{flightNo}} 도착",
+    "flightDeparturePoint": "{{flightNo}} 출발",
+    "transitAbout": "이동 약 {{duration}}",
+    "arrival": "도착",
+    "departure": "출발",
+    "return": "복귀",
+    "typeFlightArrival": "[항공 · 도착]",
+    "typeFlightDeparture": "[항공 · 출발]",
+    "airportArrival": "공항 도착 및 입국",
+    "airportDeparture": "공항 이동 및 출국",
+    "dayStart": "일정 시작",
+    "typeStartHotel": "[출발 숙소]",
+    "typeEndHotel": "[복귀 숙소]",
+    "checkInRest": "체크인 및 휴식",
+    "typeFree": "[자유 일정]",
+    "noPlans": "등록된 일정이 없습니다 (자유 여행)",
+    "typeMeal": "[식사 · {{meal}}]",
+    "typeSight": "[관광]",
+    "cardStartHotel": "출발 숙소 : {{name}}",
+    "cardEndHotel": "복귀 숙소 : {{name}}",
+    "tagStartHotel": "숙소 / 출발",
+    "tagEndHotel": "숙소 / 휴식",
+    "tagMeal": "식사 · {{meal}}",
+    "tagSight": "관광 / 일정",
+    "plannedAt": "예정 {{time}}",
+    "transitToNext": "다음 장소({{name}})까지 대중교통 약 {{duration}} 소요",
+    "noDetails": "(이 날짜에는 등록된 상세 장소가 없습니다 - 자유 일정)",
+    "expenseItem": "지출 항목 / 내용",
+    "expenseAmount": "금액",
+    "notConvertible": "(환산 불가)",
+    "expenseTotal": "지출 합계",
+    "excludedCount_other": "(환산 불가 {{count}}건 제외)",
+    "footer": "Triptic 여행 플래너 · {{city}} 일정표",
+    "pageOf": "{{page}} / {{total}} 페이지",
+    "fileAll": "여행일정표_{{city}}_전체일정.pdf",
+    "fileDay": "여행일정표_{{city}}_{{day}}일차.pdf"
   }
 }

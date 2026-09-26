@@ -105,7 +105,8 @@
       "card": "Card",
       "other": "Other"
     },
-    "rateHint": "{{from}} = {{to}} · rate as of {{time}}"
+    "rateHint": "{{from}} = {{to}} · rate as of {{time}}",
+    "totalLabel": "Total"
   },
   "flightCard": {
     "schedule": "Depart {{depTime}} → Arrive {{arrTime}}"
@@ -123,7 +124,14 @@
     "depPlaceholder": "Search departure airport (e.g. Incheon Intl)",
     "arrPlaceholder": "Search arrival airport (e.g. Kansai Intl)",
     "applyManual": "Apply this flight",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "preview": "{{dep}} {{depTime}} → {{arr}} {{arrTime}}",
+    "manualSuffix": "(entered manually)",
+    "flightNoRequired": "Please enter the flight number.",
+    "airportRequired": "Pick the departure and arrival airports from the search results.",
+    "applyEdit": "Save changes",
+    "depTimeAria": "Departure time",
+    "arrTimeAria": "Arrival time"
   },
   "itemDetail": {
     "mapLink": "View on Google Maps",
@@ -191,7 +199,7 @@
     "sentBy": "Sent by",
     "reject": "Decline",
     "addToItinerary": "Add to itinerary",
-    "memoPrefix": "[Recommended by {{name}}] "
+    "memoPrefix": "[Suggested by {{name}}]"
   },
   "tripCard": {
     "periodUndecided": "Dates not set",
@@ -199,7 +207,8 @@
     "rename": "Rename",
     "renamePrompt": "Enter a new trip name",
     "duplicate": "Duplicate",
-    "deleteConfirm": "Delete the trip '{{title}}'? This can't be undone."
+    "deleteConfirm": "Delete the trip '{{title}}'? This can't be undone.",
+    "copyTitle": "Copy of {{title}}"
   },
   "tripDetail": {
     "backAria": "Back",
@@ -223,10 +232,15 @@
     "climateBadge": "Avg.",
     "hotelStart": "Start Hotel",
     "hotelEnd": "End Hotel",
-    "addPlace": "Add Place"
+    "addPlace": "Add Place",
+    "loadError": "Couldn't load this trip."
   },
   "tripMap": {
-    "ariaLabel": "Itinerary map"
+    "ariaLabel": "Itinerary map",
+    "myLocation": "Go to my location",
+    "myLocationMarker": "My location",
+    "arrivalAirport": "Arrival airport",
+    "departureAirport": "Departure airport"
   },
   "inspector": {
     "focusMove": "Show in itinerary",
@@ -273,7 +287,9 @@
     "timeSubtitle": "Adding to your plan: {{name}}",
     "timeLabel": "Planned time",
     "confirmAdd": "Add to plan",
-    "aiNotice": "These are AI-generated suggestions. Check opening hours and prices before you go."
+    "aiNotice": "These are AI-generated suggestions. Check opening hours and prices before you go.",
+    "button": "AI ideas",
+    "buttonTitle": "Get AI ideas for where to go next"
   },
   "desktop": {
     "badge": "My journeys",
@@ -353,5 +369,69 @@
     "flightMissingDesc": "Adding your flights maps them onto the first and last days.",
     "pdfTitle": "Save trip as PDF",
     "pdfDesc": "A printable guide with maps and the full itinerary"
+  },
+  "hotel": {
+    "title": "Set your stay",
+    "applyAll": "Use this stay for every night",
+    "sameAsPrevious": "Same as previous night",
+    "searchPlaceholder": "Search for your hotel"
+  },
+  "errors": {
+    "tripLimit": "You've reached the limit on how many trips you can create.",
+    "shareUnavailable": "Sharing with companions isn't available right now."
+  },
+  "pdf": {
+    "cityFallback": "Trip",
+    "continuationHeader": "{{city}} itinerary · Day {{day}} (continued)",
+    "colTime": "Time",
+    "colType": "Type",
+    "colPlace": "Plan & place",
+    "colNote": "Transit & notes",
+    "addressLine": "[Address] {{text}}",
+    "memoLine": "[Note] {{text}}",
+    "transitLine": "[Getting there] {{text}}",
+    "section1": "1. Timeline summary",
+    "section2": "2. Place details & notes",
+    "section2Continued": "2. Place details & notes (continued)",
+    "section3": "3. Daily expenses",
+    "dayTitle": "{{city}} itinerary · Day {{day}}",
+    "period": "Trip dates: {{start}} – {{end}} (day {{day}} of {{total}})  |  {{date}}",
+    "flightArrivalPoint": "{{flightNo}} arrival",
+    "flightDeparturePoint": "{{flightNo}} departure",
+    "transitAbout": "~{{duration}} transit",
+    "arrival": "Arrive",
+    "departure": "Depart",
+    "return": "Return",
+    "typeFlightArrival": "[Flight · arrival]",
+    "typeFlightDeparture": "[Flight · departure]",
+    "airportArrival": "Arrive and clear immigration",
+    "airportDeparture": "Head to the airport and depart",
+    "dayStart": "Start of the day",
+    "typeStartHotel": "[Start: stay]",
+    "typeEndHotel": "[End: stay]",
+    "checkInRest": "Check in and rest",
+    "typeFree": "[Free day]",
+    "noPlans": "Nothing planned (free day)",
+    "typeMeal": "[Meal · {{meal}}]",
+    "typeSight": "[Sightseeing]",
+    "cardStartHotel": "Start from: {{name}}",
+    "cardEndHotel": "Return to: {{name}}",
+    "tagStartHotel": "Stay / start",
+    "tagEndHotel": "Stay / rest",
+    "tagMeal": "Meal · {{meal}}",
+    "tagSight": "Sightseeing",
+    "plannedAt": "Planned {{time}}",
+    "transitToNext": "About {{duration}} by public transit to the next stop ({{name}})",
+    "noDetails": "(No places planned for this day — free day)",
+    "expenseItem": "Expense",
+    "expenseAmount": "Amount",
+    "notConvertible": "(no exchange rate)",
+    "expenseTotal": "Total spent",
+    "excludedCount_other": "({{count}} items without a rate excluded)",
+    "excludedCount_one": "({{count}} item without a rate excluded)",
+    "footer": "Triptic travel planner · {{city}} itinerary",
+    "pageOf": "Page {{page}} of {{total}}",
+    "fileAll": "Itinerary_{{city}}_all-days.pdf",
+    "fileDay": "Itinerary_{{city}}_day-{{day}}.pdf"
   }
 }

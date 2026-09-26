@@ -82,5 +82,9 @@
     "language": "語言設定",
     "backup": "備份與還原",
     "signOut": "登出"
+  },
+  "calendar": {
+    "prevMonth": "上個月",
+    "nextMonth": "下個月"
   }
 }

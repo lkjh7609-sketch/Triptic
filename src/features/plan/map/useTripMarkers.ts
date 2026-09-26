@@ -5,6 +5,7 @@
  * 뷰포트에 들어오도록 지도를 자동으로 맞춘다(fitBounds).
  */
 import { useEffect, useRef } from 'react';
+import i18next from '@/shared/i18n';
 import { computeDayZones, nearestZoneIndexForPoint, type GeoPoint } from './geo';
 import type { Hotel } from './hotels';
 
@@ -51,7 +52,7 @@ export function useTripMarkers<T extends GeoPoint>({
       const marker = new google.maps.Marker({
         map,
         position: pos,
-        title: isArrival ? '도착 공항' : '출발 공항',
+        title: isArrival ? i18next.t('plan:tripMap.arrivalAirport') : i18next.t('plan:tripMap.departureAirport'),
         icon: {
           path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
           scale: 6,

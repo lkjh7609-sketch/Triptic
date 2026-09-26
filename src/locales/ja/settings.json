@@ -77,5 +77,22 @@
     "requestError": "アカウントの削除リクエストを処理できませんでした。しばらくしてからもう一度お試しください。",
     "doneTitle": "削除リクエストを受け付けました",
     "doneBody": "30日以内に再度ログインするとアカウントを復元できます。その後、完全に削除されます。"
+  },
+  "profile": {
+    "title": "プロフィールを編集",
+    "nameLabel": "表示名",
+    "namePlaceholder": "ほかの旅行者に表示される名前",
+    "nameHint": "コミュニティの投稿や同行者リストに表示されます。",
+    "nameRequired": "名前を入力してください。",
+    "saveError": "保存できませんでした。しばらくしてからもう一度お試しください。"
+  },
+  "units": {
+    "title": "単位設定",
+    "temperature": "温度の単位",
+    "celsius": "摂氏 (°C)",
+    "fahrenheit": "華氏 (°F)",
+    "distance": "距離の単位",
+    "kilometers": "キロメートル (km)",
+    "miles": "マイル (mi)"
   }
 }

@@ -20,7 +20,7 @@ export function useUpdateProfile() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (patch: ProfilePatch) => {
-      if (!user) throw new Error('로그인이 필요합니다.');
+      if (!user) throw new Error('Not signed in');
       return updateMyProfile(user.id, patch);
     },
     onSuccess: (_data, patch) => {

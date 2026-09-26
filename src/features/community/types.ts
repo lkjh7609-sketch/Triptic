@@ -108,14 +108,15 @@ export interface ModerationEvent {
   created_at: string;
 }
 
-export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
-  spam: '스팸/광고',
-  harassment: '괴롭힘',
-  hate: '혐오 발언',
-  sexual: '성적인 콘텐츠',
-  violence: '폭력적인 콘텐츠',
-  illegal: '불법 행위',
-  misinformation: '허위 정보',
-  impersonation: '사칭',
-  other: '기타',
-};
+/** 신고 사유 순서(표시 이름은 community:report.reason.* 번역 키) */
+export const REPORT_REASONS: ReportReason[] = [
+  'spam',
+  'harassment',
+  'hate',
+  'sexual',
+  'violence',
+  'illegal',
+  'misinformation',
+  'impersonation',
+  'other',
+];

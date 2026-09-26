@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
@@ -22,6 +23,7 @@ interface ItineraryItemCardProps {
  * 탭 → 상세 시트. 우측에 항목 시각의 시간별 기온(05-weather.md §6.2)을 보여준다.
  */
 export function ItineraryItemCard({ index, item, onClick, onAiSuggest, weather }: ItineraryItemCardProps) {
+  const { t } = useTranslation('plan');
   const tempUnit = useTempUnit();
   const tempText = weather ? formatTemp(weather.tempC, tempUnit) : null;
   return (
@@ -50,9 +52,10 @@ export function ItineraryItemCard({ index, item, onClick, onAiSuggest, weather }
           type="button" 
           className={styles.aiRecommendBtnInline} 
           onClick={(e) => { e.stopPropagation(); onAiSuggest(); }}
-          title="이 장소 기준 AI 추천 받기"
+          title={t('aiNext.buttonTitle')}
+          aria-label={t('aiNext.buttonTitle')}
         >
-          <Sparkles size={14} /> AI 추천
+          <Sparkles size={14} aria-hidden="true" /> {t('aiNext.button')}
         </button>
       )}
     </div>

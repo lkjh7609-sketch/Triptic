@@ -35,7 +35,7 @@ export function CommunityScreen() {
     if (dest) {
       navigate(`/community/d/${dest.slug}`);
     } else {
-      alert(t('feed.searchError', { defaultValue: '해당 도시 게시판을 찾을 수 없습니다.' }));
+      alert(t('feed.searchError'));
     }
   };
 
@@ -68,12 +68,12 @@ export function CommunityScreen() {
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
       {user ? (
         <Link to="/community/compose" className={styles.fabBtnDesktop}>
-          <PenLine size={20} /> <span>{t('feed.writeBtn', { defaultValue: '글쓰기' })}</span>
+          <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
         </Link>
       ) : null}
 
       <div className={styles.headerSection}>
-        <div className={styles.subtitle}>{t('feed.subtitle', { defaultValue: '여행자들의 기록과 영감' })}</div>
+        <div className={styles.subtitle}>{t('feed.subtitle')}</div>
         <h1 className={styles.mainTitle}>{t('feed.title')}</h1>
       </div>
 
@@ -82,7 +82,7 @@ export function CommunityScreen() {
           <input 
             type="text" 
             className={styles.searchInput} 
-            placeholder={t('feed.searchPlaceholder', { defaultValue: '지역, 키워드, 여행자 검색...' })} 
+            placeholder={t('feed.searchPlaceholder')} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -134,9 +134,9 @@ export function CommunityScreen() {
       ) : posts.length === 0 ? (
         <div className={styles.emptyGrid}>
           <div className={styles.emptyMainCard}>
-            <h3>{tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll', { defaultValue: '아직 등록된 글이 없어요.' })}</h3>
-            <p>{t('feed.emptySub', { defaultValue: '첫 번째 여행의 순간과 로컬 인사이트를 공유해보세요.' })}</p>
-            <Link to="/community/compose" className={styles.emptyCta}>{t('feed.writeFirst', { defaultValue: '첫 이야기 작성하기' })}</Link>
+            <h3>{tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}</h3>
+            <p>{t('feed.emptySub')}</p>
+            <Link to="/community/compose" className={styles.emptyCta}>{t('feed.writeFirst')}</Link>
           </div>
           
         </div>

@@ -221,7 +221,7 @@ export async function createPost(input: {
   userId: string;
 }): Promise<CreatePostResult> {
   if (!can('community.post', { userId: input.userId })) {
-    throw new Error('커뮤니티 글쓰기를 사용할 수 없습니다.');
+    throw new Error(i18next.t('community:errors.postingUnavailable'));
   }
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.functions.invoke('moderate-content', {
@@ -368,7 +368,7 @@ export async function reportContent(input: {
     detail: input.detail || null,
   });
   if (error) {
-    if (error.code === '23505') throw new Error('이미 신고한 콘텐츠예요.');
+    if (error.code === '23505') throw new Error(i18next.t('community:errors.alreadyReported'));
     throw error;
   }
 }

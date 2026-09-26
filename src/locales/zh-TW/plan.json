@@ -103,7 +103,8 @@
       "card": "刷卡",
       "other": "其他"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}} 匯率"
+    "rateHint": "{{from}} = {{to}} · {{time}} 匯率",
+    "totalLabel": "合計"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出發 → {{arrTime}} 到達"
@@ -121,7 +122,14 @@
     "depPlaceholder": "搜尋出發機場（例如：仁川國際機場）",
     "arrPlaceholder": "搜尋到達機場（例如：關西國際機場）",
     "applyManual": "套用此航班資訊",
-    "saving": "正在儲存…"
+    "saving": "正在儲存…",
+    "preview": "{{dep}} {{depTime}} 出發 → {{arr}} {{arrTime}} 抵達",
+    "manualSuffix": "（手動輸入）",
+    "flightNoRequired": "請輸入航班編號。",
+    "airportRequired": "請從搜尋結果中選擇出發與抵達機場。",
+    "applyEdit": "完成修改",
+    "depTimeAria": "出發時間",
+    "arrTimeAria": "抵達時間"
   },
   "itemDetail": {
     "mapLink": "在 Google 地圖中檢視",
@@ -187,7 +195,7 @@
     "sentBy": "傳送者",
     "reject": "拒絕",
     "addToItinerary": "新增到行程",
-    "memoPrefix": "[{{name}} 推薦] "
+    "memoPrefix": "[{{name}} 推薦]"
   },
   "tripCard": {
     "periodUndecided": "日期未定",
@@ -195,7 +203,8 @@
     "rename": "重新命名",
     "renamePrompt": "請輸入新的行程名稱",
     "duplicate": "複製",
-    "deleteConfirm": "要刪除「{{title}}」嗎？此操作無法撤銷。"
+    "deleteConfirm": "要刪除「{{title}}」嗎？此操作無法撤銷。",
+    "copyTitle": "{{title}} 副本"
   },
   "tripDetail": {
     "backAria": "返回",
@@ -219,10 +228,15 @@
     "climateBadge": "常年值",
     "hotelStart": "出發飯店",
     "hotelEnd": "到達飯店",
-    "addPlace": "新增地點"
+    "addPlace": "新增地點",
+    "loadError": "無法載入此行程。"
   },
   "tripMap": {
-    "ariaLabel": "行程地圖"
+    "ariaLabel": "行程地圖",
+    "myLocation": "移至目前位置",
+    "myLocationMarker": "目前位置",
+    "arrivalAirport": "抵達機場",
+    "departureAirport": "出發機場"
   },
   "inspector": {
     "focusMove": "在行程清單中查看",
@@ -269,7 +283,9 @@
     "timeSubtitle": "要加入行程的地點：{{name}}",
     "timeLabel": "預計時間",
     "confirmAdd": "加入行程",
-    "aiNotice": "以上為 AI 產生的推薦，出發前請再確認營業時間與價格。"
+    "aiNotice": "以上為 AI 產生的推薦，出發前請再確認營業時間與價格。",
+    "button": "AI 推薦",
+    "buttonTitle": "取得此地點之後的 AI 推薦"
   },
   "desktop": {
     "badge": "我的行程",
@@ -339,5 +355,68 @@
     "flightMissingDesc": "加入去回程航班後，會反映在第一天與最後一天的路線上。",
     "pdfTitle": "儲存行程 PDF",
     "pdfDesc": "包含地圖與完整行程的列印版指南"
+  },
+  "hotel": {
+    "title": "設定住宿",
+    "applyAll": "整趟行程套用同一住宿",
+    "sameAsPrevious": "與前一天相同",
+    "searchPlaceholder": "搜尋住宿名稱"
+  },
+  "errors": {
+    "tripLimit": "已達可建立的行程數量上限。",
+    "shareUnavailable": "目前無法使用同行者分享。"
+  },
+  "pdf": {
+    "cityFallback": "旅行",
+    "continuationHeader": "{{city}} 行程表 · 第 {{day}} 天（續）",
+    "colTime": "時間",
+    "colType": "類別",
+    "colPlace": "行程與地點",
+    "colNote": "交通與備註",
+    "addressLine": "[地址] {{text}}",
+    "memoLine": "[備註] {{text}}",
+    "transitLine": "[交通指引] {{text}}",
+    "section1": "1. 行程時間軸總覽",
+    "section2": "2. 各地點詳細資訊與備註",
+    "section2Continued": "2. 各地點詳細資訊與備註（續）",
+    "section3": "3. 每日花費摘要",
+    "dayTitle": "{{city}} 行程表 · 第 {{day}} 天",
+    "period": "旅行期間：{{start}} ~ {{end}}（共 {{total}} 天，第 {{day}} 天）  |  {{date}}",
+    "flightArrivalPoint": "{{flightNo}} 抵達",
+    "flightDeparturePoint": "{{flightNo}} 出發",
+    "transitAbout": "交通約 {{duration}}",
+    "arrival": "抵達",
+    "departure": "出發",
+    "return": "返回",
+    "typeFlightArrival": "[航班 · 抵達]",
+    "typeFlightDeparture": "[航班 · 出發]",
+    "airportArrival": "抵達機場並入境",
+    "airportDeparture": "前往機場並出境",
+    "dayStart": "行程開始",
+    "typeStartHotel": "[出發住宿]",
+    "typeEndHotel": "[返回住宿]",
+    "checkInRest": "入住並休息",
+    "typeFree": "[自由行程]",
+    "noPlans": "沒有安排行程（自由行）",
+    "typeMeal": "[用餐 · {{meal}}]",
+    "typeSight": "[觀光]",
+    "cardStartHotel": "出發住宿：{{name}}",
+    "cardEndHotel": "返回住宿：{{name}}",
+    "tagStartHotel": "住宿／出發",
+    "tagEndHotel": "住宿／休息",
+    "tagMeal": "用餐 · {{meal}}",
+    "tagSight": "觀光／行程",
+    "plannedAt": "預計 {{time}}",
+    "transitToNext": "搭乘大眾運輸到下一個地點（{{name}}）約需 {{duration}}",
+    "noDetails": "（這天沒有安排地點 — 自由行程）",
+    "expenseItem": "支出項目",
+    "expenseAmount": "金額",
+    "notConvertible": "（無法換算）",
+    "expenseTotal": "支出合計",
+    "excludedCount_other": "（不含 {{count}} 筆無法換算的項目）",
+    "footer": "Triptic 旅行規劃 · {{city}} 行程表",
+    "pageOf": "第 {{page}} / {{total}} 頁",
+    "fileAll": "行程表_{{city}}_全部.pdf",
+    "fileDay": "行程表_{{city}}_第{{day}}天.pdf"
   }
 }

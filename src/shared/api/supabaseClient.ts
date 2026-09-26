@@ -20,7 +20,7 @@ export function getSupabaseClient(): SupabaseClient {
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
     throw new Error(
-      'Supabase 환경 변수(VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY)를 불러오지 못했습니다.',
+      'Supabase env vars (VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY) are missing.',
     );
   }
 

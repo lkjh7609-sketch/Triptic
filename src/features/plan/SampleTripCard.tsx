@@ -33,7 +33,7 @@ export function SampleTripCard() {
       </p>
       <div className={cardStyles.chips}>
         <span className={cardStyles.chip}>{SAMPLE_TRIP_CITY}</span>
-        <span className={cardStyles.chip}>{t('sampleTrip.placeCount_other', { count: placeCount })}</span>
+        <span className={cardStyles.chip}>{t('sampleTrip.placeCount', { count: placeCount })}</span>
       </div>
       <span className={styles.openLink}>{t('sampleTrip.openLink')} →</span>
     </Link>

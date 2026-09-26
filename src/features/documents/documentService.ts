@@ -2,6 +2,7 @@
  * 서류 업로드 · 파싱 요청 · 바우처/예약 조회 서비스 계층
  * (04-document-ai.md §2 클라이언트 단계 1~5, §10.1)
  */
+import i18next from '@/shared/i18n';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { can } from '@/shared/entitlements';
 import type { ParsedBooking } from './parseBooking/schema';
@@ -18,10 +19,10 @@ export const ACCEPTED_MIME_TYPES = [
 
 export function validateFile(file: File): string | null {
   if (!ACCEPTED_MIME_TYPES.includes(file.type as (typeof ACCEPTED_MIME_TYPES)[number])) {
-    return 'PDF, JPG, PNG, .pkpass, .ics 파일만 올릴 수 있어요.';
+    return i18next.t('documents:errors.unsupportedType');
   }
   if (file.size > MAX_BYTES) {
-    return '20MB를 넘는 파일은 올릴 수 없어요. 필요한 페이지만 잘라서 올려 주세요.';
+    return i18next.t('documents:errors.tooLarge');
   }
   return null;
 }
@@ -68,10 +69,10 @@ export async function uploadAndParseDocument(
   userId: string,
 ): Promise<ParseBookingResponse> {
   if (!can('voucher.storage', { userId })) {
-    throw new Error('바우처 보관 용량 한도에 도달했습니다.');
+    throw new Error(i18next.t('documents:errors.storageLimit'));
   }
   if (!can('document.parse', { userId })) {
-    throw new Error('서류 자동 인식 한도에 도달했습니다.');
+    throw new Error(i18next.t('documents:errors.parseLimit'));
   }
 
   const supabase = getSupabaseClient();
@@ -101,7 +102,7 @@ export async function uploadAndParseDocument(
     })
     .select()
     .single();
-  if (insertErr || !doc) throw insertErr ?? new Error('문서 등록에 실패했습니다.');
+  if (insertErr || !doc) throw insertErr ?? new Error(i18next.t('documents:errors.registerFailed'));
 
   const { data, error: fnErr } = await supabase.functions.invoke<ParseBookingResponse>('parse-booking', {
     body: { documentId: doc.id },

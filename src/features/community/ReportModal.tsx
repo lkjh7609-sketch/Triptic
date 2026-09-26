@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { useSession } from '@/shared/hooks/useSession';
 import { useReportContent } from './hooks/useCommunitySafety';
-import { REPORT_REASON_LABELS, type ReportReason, type ReportTargetType } from './types';
+import { REPORT_REASONS, type ReportReason, type ReportTargetType } from './types';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
 import styles from './ReportModal.module.css';
 
@@ -14,7 +14,7 @@ interface ReportModalProps {
   onReported?: () => void;
 }
 
-const REASONS = Object.keys(REPORT_REASON_LABELS) as ReportReason[];
+const REASONS = REPORT_REASONS;
 
 /** 신고 모달 (06-community.md §5.2) — 모든 글·댓글·이미지·사용자에서 재사용 */
 export function ReportModal({ targetType, targetId, onClose, onReported }: ReportModalProps) {

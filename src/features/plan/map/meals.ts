@@ -5,10 +5,15 @@
  */
 import type { DayMeals, MealSlot, PlaceItem } from '../types.ts';
 
+/**
+ * label은 화면 표시용이 아니라 legacy 데이터 호환용이다 — 예전 앱이 식사 항목 이름/메모에
+ * '아침'·'점심'·'저녁'을 그대로 저장해서 itineraryTransform이 이 문자열로 슬롯을 역추적한다.
+ * 화면·PDF의 식사 이름은 plan:meals.* 번역 키를 쓴다.
+ */
 export const MEAL_META: Record<MealSlot, { label: string; time: string }> = {
-  breakfast: { label: '아침', time: '08:00' },
-  lunch: { label: '점심', time: '12:30' },
-  dinner: { label: '저녁', time: '18:30' },
+  breakfast: { label: '아침', time: '08:00' }, // i18n-exempt: legacy 데이터 키
+  lunch: { label: '점심', time: '12:30' }, // i18n-exempt: legacy 데이터 키
+  dinner: { label: '저녁', time: '18:30' }, // i18n-exempt: legacy 데이터 키
 };
 
 /**
