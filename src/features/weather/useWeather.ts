@@ -6,6 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { gridKey } from './gridKey';
+import { apiUrl } from '@/shared/api/apiUrl';
 
 export interface WeatherDailyEntry {
   date: string;
@@ -47,7 +48,7 @@ async function fetchWeather(
   end: string,
 ): Promise<WeatherResponse | null> {
   const params = new URLSearchParams({ lat: String(lat), lng: String(lng), start, end, lang: 'ko' });
-  const res = await fetch(`/api/weather?${params.toString()}`);
+  const res = await fetch(apiUrl(`/api/weather?${params.toString()}`));
   // §6.3 "실패: 아무것도 표시하지 않는다. 에러 토스트도 띄우지 않는다" — throw하지 않고
   // null을 돌려줘서 UI가 조용히 날씨 영역을 생략하게 한다(WEATHERKIT_* 미설정 시의
   // 503도 이 경로로 처리된다 — 지금 이 프로젝트의 기본 상태).

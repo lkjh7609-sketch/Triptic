@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CURATED_CITIES, COUNTRY_TO_CITIES, CONTINENT_TO_COUNTRIES } from '@/shared/hooks/useCityImage';
 import { useHomeStats } from './useHomeStats';
+import { apiUrl } from '@/shared/api/apiUrl';
 import { StatsTiles } from './StatsTiles';
 import styles from './HomeDesktop.module.css';
 
@@ -16,10 +17,7 @@ function DestinationPreviewModal({ dest, onClose, onStart, t }: { dest: any, onC
     async function loadDesc() {
       setLoading(true);
       try {
-        const isNativeApp = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-        const apiUrl = import.meta.env.DEV ? `https://triptic-ten.vercel.app/api/cityDesc?city=${encodeURIComponent(dest.title)}` : (isNativeApp ? `https://triptic-ten.vercel.app/api/cityDesc?city=${encodeURIComponent(dest.title)}` : `/api/cityDesc?city=${encodeURIComponent(dest.title)}`);
-        
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(dest.title)}`));
         const data = await res.json();
         if (data.success && data.description) {
           setDesc(data.description);

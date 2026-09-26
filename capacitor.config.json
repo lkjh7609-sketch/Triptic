@@ -1,7 +1,7 @@
 {
   "appId": "com.triptic.travel",
   "appName": "Triptic",
-  "webDir": "www",
+  "webDir": "dist",
   "bundledWebRuntime": false,
   "ios": {
     "contentInset": "automatic",
