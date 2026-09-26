@@ -22,26 +22,24 @@ export interface TravelStats {
   companionCount?: number;
 }
 
-async function fetchHomeStats(): Promise<TravelStats> {
+/**
+ * 통계 RPC + 동행자 수. 동행자 = 내가 접근할 수 있는 여행(RLS: can_access_trip)의
+ * 멤버 중 나를 뺀 서로 다른 사람 수. 사용자 id는 세션에서 받는다(auth.getUser()는
+ * 매번 Auth 서버 왕복이라 쓰지 않는다).
+ */
+async function fetchHomeStats(userId: string): Promise<TravelStats> {
   const supabase = getSupabaseClient();
-  const [statsRes, membersRes, authRes] = await Promise.all([
+  const [statsRes, membersRes] = await Promise.all([
     supabase.rpc('get_user_travel_stats'),
-    supabase.from('trip_members').select('user_id'),
-    supabase.auth.getUser()
+    supabase.from('trip_members').select('user_id').neq('user_id', userId),
   ]);
-  
+
   if (statsRes.error) throw statsRes.error;
   const stats = statsRes.data as TravelStats;
-  
-  let companionCount = 0;
-  if (!membersRes.error && membersRes.data && authRes.data.user) {
-    const myId = authRes.data.user.id;
-    const uniqueCompanions = new Set(
-      membersRes.data.map(m => m.user_id).filter(id => id !== myId)
-    );
-    companionCount = uniqueCompanions.size;
-  }
-  
+  const companionCount = membersRes.error
+    ? 0
+    : new Set((membersRes.data ?? []).map((m) => m.user_id as string)).size;
+
   return { ...stats, companionCount };
 }
 
@@ -49,7 +47,7 @@ export function useHomeStats() {
   const { user } = useSession();
   return useQuery({
     queryKey: ['homeStats', user?.id ?? null],
-    queryFn: fetchHomeStats,
+    queryFn: () => fetchHomeStats(user!.id),
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // §2.2 "결과를 5분 캐시한다"
   });

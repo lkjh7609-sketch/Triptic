@@ -21,9 +21,9 @@ import { UnitSettingsModal } from './UnitSettingsModal';
 import { LanguageModal } from './LanguageModal';
 
 import styles from './SettingsScreen.module.css';
+import { CONTACT_EMAIL } from '@/shared/config';
 
 const APP_VERSION = '3.0.0-dev';
-const CONTACT_EMAIL = 'lkjh7609@gmail.com';
 
 const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
   preDeparture: 'notifications.preDeparture',

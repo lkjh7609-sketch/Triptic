@@ -64,6 +64,8 @@
     "contact": "Contact Support",
     "flights": "Flights",
     "stays": "Stays",
-    "activities": "Activities"
+    "activities": "Activities",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right"
   }
 }

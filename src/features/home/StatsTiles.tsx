@@ -16,7 +16,7 @@ export function StatsTiles({ stats }: StatsTilesProps) {
       <Tile icon={<Calendar size={20} />} value={stats.dayCount} label={t('tile.days')} />
       <Tile icon={<MapPin size={20} />} value={stats.cityCount} label={t('tile.cities')} />
       <Tile icon={<Navigation2 size={20} />} value={stats.placeCount} label={t('tile.places')} />
-      <Tile icon={<Users size={20} />} value={stats.companionCount ?? 0} label={t('tile.companions', { defaultValue: '동행' })} />
+      <Tile icon={<Users size={20} />} value={stats.companionCount ?? 0} label={t('tile.companions')} />
     </div>
   );
 }

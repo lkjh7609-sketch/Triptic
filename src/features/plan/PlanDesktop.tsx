@@ -1,11 +1,43 @@
-import { useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router';
-import { Plus, Calendar, Plane, Search, Filter, Sun, Navigation, Shield, Lightbulb, Download } from 'lucide-react';
+import {
+  Plus,
+  Calendar,
+  Plane,
+  Search,
+  Navigation,
+  Lightbulb,
+  Download,
+  MoreVertical,
+  Hotel,
+  MapPin,
+  Users,
+  ArrowRight,
+  ChevronRight,
+  BadgeCheck,
+  MapPinned,
+  PenTool,
+  BookOpen,
+  Map as MapIcon,
+} from 'lucide-react';
+import { differenceInCalendarDays, parseISO, startOfDay } from 'date-fns';
 import type { TripRow } from '@/shared/api/tripService';
+import { tripService } from '@/shared/api/tripService';
 import { useCityImage } from '@/shared/hooks/useCityImage';
-import { getDDay } from './tripStatus';
+import { useSession } from '@/shared/hooks/useSession';
+import { useProfile } from '@/shared/hooks/useProfile';
+import { useTempUnit } from '@/shared/hooks/useTempUnit';
+import { useWeather } from '@/features/weather/useWeather';
+import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
+import { formatTemp } from '@/features/weather/weatherRules';
+import { captureError } from '@/shared/monitoring';
+import { getDDay, getTripPhase } from './tripStatus';
+import { summarizeTrip, type TripSummary } from './tripSummary';
+import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
+import { formatLocalizedDay } from './planDateFormat';
 import { CreateTripModal } from './CreateTripModal';
+import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
 
 interface PlanDesktopProps {
@@ -19,28 +51,62 @@ interface PlanDesktopProps {
   onDelete: (id: string) => void;
 }
 
-export function PlanDesktop({ trips, ongoing, upcoming, past }: PlanDesktopProps) {
-  useTranslation(['plan', 'common']);
+type StatusFilter = 'all' | 'active' | 'past';
+type PastView = 'grid' | 'list';
+
+interface TripActions {
+  onRename: (id: string, newTitle: string) => void;
+  onDuplicate: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
+const byStartDate = (a: TripRow, b: TripRow) => (a.start_date ?? '9999').localeCompare(b.start_date ?? '9999');
+
+function matchesQuery(trip: TripRow, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return (trip.title ?? '').toLowerCase().includes(q) || (trip.city ?? '').toLowerCase().includes(q);
+}
+
+function formatRange(trip: TripRow, locale: string): string | null {
+  if (!trip.start_date || !trip.end_date) return null;
+  const start = formatLocalizedDay(parseISO(trip.start_date), locale);
+  const end = formatLocalizedDay(parseISO(trip.end_date), locale);
+  return `${start} – ${end}`;
+}
+
+/**
+ * 계획 탭 데스크톱 (사용자 디자인). 화면의 모든 숫자·문구는 로그인한 사용자의 실제
+ * 여행 데이터에서 계산한다 — 여행이 없으면 빈 상태를 보여주고 예시 데이터를 채우지 않는다.
+ */
+export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplicate, onDelete }: PlanDesktopProps) {
+  const { t } = useTranslation(['plan', 'common']);
+  const { user } = useSession();
+  const { data: profile } = useProfile();
   const [searchParams, setSearchParams] = useSearchParams();
   const autoCreateCity = searchParams.get('autoCreate');
-  const [filter] = useState<'all' | 'active' | 'past'>('all');
+  const [filter, setFilter] = useState<StatusFilter>('all');
+  const [query, setQuery] = useState('');
+  const [pastView, setPastView] = useState<PastView>('grid');
   const [showCreate, setShowCreate] = useState(false);
+  const actions: TripActions = { onRename, onDuplicate, onDelete };
 
-  const activeTrips = ongoing.length + upcoming.length;
+  const activeTrips = useMemo(() => [...ongoing, ...[...upcoming].sort(byStartDate)], [ongoing, upcoming]);
+  const nextTrip = activeTrips[0] ?? null;
+  const summaries = useMemo(() => new Map(trips.map((trip) => [trip.id, summarizeTrip(trip)])), [trips]);
+  const members = useTripMembers(activeTrips.map((trip) => trip.id));
 
-  let displayUpcoming: TripRow[] = [];
-  let displayPast: TripRow[] = [];
+  const displayName =
+    profile?.display_name?.trim() ||
+    (user?.user_metadata?.name as string | undefined) ||
+    (user?.user_metadata?.full_name as string | undefined) ||
+    user?.email?.split('@')[0] ||
+    t('desktop.fallbackName');
 
-  if (filter === 'all') {
-    displayUpcoming = [...ongoing, ...upcoming];
-    displayPast = past;
-  } else if (filter === 'active') {
-    displayUpcoming = [...ongoing, ...upcoming];
-    displayPast = [];
-  } else if (filter === 'past') {
-    displayUpcoming = [];
-    displayPast = past;
-  }
+  const plannedDaysTotal = activeTrips.reduce((sum, trip) => sum + (summaries.get(trip.id)?.totalDays ?? 0), 0);
+  const shownActive = filter === 'past' ? [] : activeTrips.filter((trip) => matchesQuery(trip, query));
+  const shownPast = filter === 'active' ? [] : past.filter((trip) => matchesQuery(trip, query));
+  const isFiltering = query.trim() !== '' || filter !== 'all';
 
   return (
     <main className={styles.container}>
@@ -48,21 +114,17 @@ export function PlanDesktop({ trips, ongoing, upcoming, past }: PlanDesktopProps
         <div className={styles.headerTop}>
           <div>
             <div className={styles.greetingBadge}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>verified</span>
-              <span>Member Edition • Slow Curations</span>
+              <BadgeCheck size={16} aria-hidden="true" />
+              <span>{t('desktop.badge')}</span>
             </div>
-            <h1 className={styles.pageTitle}>Your Journeys & Field Notes</h1>
+            <h1 className={styles.pageTitle}>{t('desktop.welcome', { name: displayName })}</h1>
             <p className={styles.pageSubtitle}>
-              Welcome back, Julian. Your autumn expedition departs in <span style={{ color: '#001428', fontWeight: 600, textDecoration: 'underline', textDecorationColor: '#ae3115', textUnderlineOffset: 4 }}>18 days</span>.
+              <CountdownText nextTrip={nextTrip} isOngoing={ongoing.length > 0} />
             </p>
           </div>
           <div className={styles.headerActions}>
-            <button className={styles.btnAi}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>auto_awesome</span>
-              Start with AI Concierge
-            </button>
-            <button className={styles.btnCreate} onClick={() => setShowCreate(true)}>
-              <Plus size={20} /> Create New Journey
+            <button type="button" className={styles.btnCreate} onClick={() => setShowCreate(true)}>
+              <Plus size={20} /> {t('desktop.createTrip')}
             </button>
           </div>
         </div>
@@ -70,175 +132,153 @@ export function PlanDesktop({ trips, ongoing, upcoming, past }: PlanDesktopProps
         <div className={styles.metricsBar}>
           <div className={styles.metricsLeft}>
             <div className={styles.metricBadge}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#fd6a49' }}></div>
+              <span className={`${styles.statusDot} ${styles.statusDotUpcoming}`} aria-hidden="true" />
               <div>
-                <span className={styles.metricValue}>{activeTrips}</span>
-                <span className={styles.metricLabel}>Active Journeys</span>
+                <span className={styles.metricValue}>{activeTrips.length}</span>
+                <span className={styles.metricLabel}>{t('desktop.metricActive')}</span>
               </div>
             </div>
             <div className={styles.metricBadge}>
-              <Calendar size={16} color="#74777e" />
+              <Calendar size={16} color="var(--pd-subtle)" aria-hidden="true" />
               <div>
-                <span className={styles.metricValue}>12</span>
-                <span className={styles.metricLabel}>Curated Days</span>
+                <span className={styles.metricValue}>{plannedDaysTotal}</span>
+                <span className={styles.metricLabel}>{t('desktop.metricDays')}</span>
+              </div>
+            </div>
+            <div className={styles.metricBadge}>
+              <MapIcon size={16} color="var(--pd-subtle)" aria-hidden="true" />
+              <div>
+                <span className={styles.metricValue}>{past.length}</span>
+                <span className={styles.metricLabel}>{t('desktop.metricPast')}</span>
               </div>
             </div>
           </div>
           <div className={styles.searchCapsule}>
-            <Search size={20} color="#74777e" />
-            <input className={styles.searchInput} placeholder="Search itinerary, place, tag..." type="text" />
-            <div className={styles.searchDivider}></div>
-            <button className={styles.filterBtn}>Season & Region <span className="material-symbols-outlined" style={{ fontSize: 16 }}>expand_more</span></button>
-            <div className={styles.searchDivider}></div>
-            <button className={styles.filterBtn}>Status: All <Filter size={16} /></button>
-            <button className={styles.tuneBtn}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>tune</span></button>
+            <Search size={20} color="var(--pd-subtle)" aria-hidden="true" />
+            <input
+              className={styles.searchInput}
+              placeholder={t('desktop.searchPlaceholder')}
+              aria-label={t('desktop.searchPlaceholder')}
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <div className={styles.searchDivider} />
+            <select
+              className={styles.statusSelect}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as StatusFilter)}
+              aria-label={t('desktop.statusFilterAria')}
+            >
+              <option value="all">{t('desktop.filterAll')}</option>
+              <option value="active">{t('desktop.filterActive')}</option>
+              <option value="past">{t('desktop.filterPast')}</option>
+            </select>
           </div>
         </div>
       </section>
 
       <div className={styles.pageLayout}>
         <div className={styles.mainColumn}>
-          {displayUpcoming.length > 0 && (
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {shownActive.length > 0 && (
+            <section className={styles.sectionStack}>
               <div className={styles.sectionHeader}>
                 <div className={styles.sectionTitleRow}>
-                  <h2 className={styles.sectionTitle}>Upcoming & In-Progress</h2>
-                  <span className={styles.sectionBadge}>{displayUpcoming.length} Active</span>
+                  <h2 className={styles.sectionTitle}>{t('desktop.activeSection')}</h2>
+                  <span className={styles.sectionBadge}>{t('desktop.activeCount', { count: shownActive.length })}</span>
                 </div>
-                <a href="#calendar" className={styles.sectionLink}>
-                  Route Calendar <Calendar size={16} />
-                </a>
               </div>
               <div className={styles.compactGrid}>
-                {displayUpcoming.map(trip => (
-                  <CompactTripCard key={trip.id} trip={trip} />
+                {shownActive.map((trip) => (
+                  <CompactTripCard
+                    key={trip.id}
+                    trip={trip}
+                    summary={summaries.get(trip.id) ?? summarizeTrip(trip)}
+                    members={members.data?.[trip.id] ?? []}
+                    actions={actions}
+                  />
                 ))}
               </div>
             </section>
           )}
 
-          {displayPast.length > 0 && (
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {shownPast.length > 0 && (
+            <section className={styles.sectionStack}>
               <div className={styles.tabsRow}>
-                <div className={styles.tabsList}>
-                  <button className={`${styles.tabBtn} ${styles.active}`}>All Journeys ({trips.length})</button>
-                  <button className={styles.tabBtn}>Upcoming ({activeTrips})</button>
-                  <button className={styles.tabBtn}>Past Expeditions ({past.length})</button>
+                <div className={styles.tabsList} role="tablist">
+                  {(['all', 'active', 'past'] as const).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      role="tab"
+                      aria-selected={filter === key}
+                      className={`${styles.tabBtn} ${filter === key ? styles.active : ''}`}
+                      onClick={() => setFilter(key)}
+                    >
+                      {key === 'all'
+                        ? t('desktop.tabAll', { count: trips.length })
+                        : key === 'active'
+                          ? t('desktop.tabActive', { count: activeTrips.length })
+                          : t('desktop.tabPast', { count: past.length })}
+                    </button>
+                  ))}
                 </div>
                 <div className={styles.viewToggles}>
-                  <button className={`${styles.viewToggle} ${styles.active}`}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>grid_view</span> Editorial</button>
-                  <button className={styles.viewToggle}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>view_list</span> List</button>
+                  <button
+                    type="button"
+                    className={`${styles.viewToggle} ${pastView === 'grid' ? styles.active : ''}`}
+                    aria-pressed={pastView === 'grid'}
+                    onClick={() => setPastView('grid')}
+                  >
+                    {t('desktop.viewGrid')}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.viewToggle} ${pastView === 'list' ? styles.active : ''}`}
+                    aria-pressed={pastView === 'list'}
+                    onClick={() => setPastView('list')}
+                  >
+                    {t('desktop.viewList')}
+                  </button>
                 </div>
               </div>
-              <div className={styles.pastGrid}>
-                {displayPast.map(trip => (
-                  <PastTripCard key={trip.id} trip={trip} />
+              <div className={pastView === 'grid' ? styles.pastGrid : styles.pastList}>
+                {shownPast.map((trip) => (
+                  <PastTripCard
+                    key={trip.id}
+                    trip={trip}
+                    summary={summaries.get(trip.id) ?? summarizeTrip(trip)}
+                    actions={actions}
+                    list={pastView === 'list'}
+                  />
                 ))}
               </div>
             </section>
           )}
 
-          {displayUpcoming.length === 0 && displayPast.length === 0 && (
+          {shownActive.length === 0 && shownPast.length === 0 && (
             <div className={styles.emptyState}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#ffffff', border: '1px solid #e3e2df', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ae3115' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 22 }}>add_location_alt</span>
+              <div className={styles.emptyBody}>
+                <div className={styles.emptyIcon}>
+                  <MapPinned size={22} aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: 16, fontWeight: 600, color: '#001428', margin: '0 0 4px 0' }}>Begin a Blank Slate Itinerary</h4>
-                  <p style={{ fontSize: 13, color: '#43474d', margin: 0 }}>Curate day-by-day routes, pin curated stays, and synchronize transport schedules.</p>
+                  <h4 className={styles.emptyTitle}>{isFiltering ? t('desktop.noResultsTitle') : t('desktop.emptyTitle')}</h4>
+                  <p className={styles.emptyText}>{isFiltering ? t('desktop.noResultsDesc') : t('desktop.emptyDesc')}</p>
                 </div>
               </div>
-              <button className={styles.btnCreate} style={{ padding: '0.375rem 1rem', fontSize: 13 }} onClick={() => setShowCreate(true)}>
-                Start Canvas
+              <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={() => setShowCreate(true)}>
+                {t('desktop.emptyCta')}
               </button>
             </div>
           )}
         </div>
 
-        <aside className={styles.rightRail}>
-          <div className={styles.toolkitWidget}>
-            <div className={styles.toolkitHeader}>
-              <div className={styles.toolkitTitleRow}>
-                <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#ae3115' }}>design_services</span>
-                <h3 className={styles.toolkitTitle}>Curator’s Toolkit</h3>
-              </div>
-              <span className={styles.syncBadge}>Sync Active</span>
-            </div>
-            
-            <div className={styles.toolkitBox}>
-              <div className={styles.toolkitBoxHeader}>
-                <span>Next Destination Climate</span>
-                <span style={{ color: '#ae3115' }}>Kyoto, Japan</span>
-              </div>
-              <div className={styles.toolkitBoxContent}>
-                <div className={styles.toolkitBoxLeft}>
-                  <Sun size={32} color="#ae3115" />
-                  <div>
-                    <div className={styles.toolkitValue}>19°C</div>
-                    <div className={styles.toolkitSub}>Mild Autumn Crisp</div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: 12, color: '#74777e' }}>
-                  <div>Precip: 10%</div>
-                  <div>Foliage: Peak Amber</div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.toolkitAlert}>
-              <Plane size={22} color="#ae3115" style={{ marginTop: 2 }} />
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 16, fontWeight: 600, color: '#8c1900' }}>ANA NH0846</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 9999, background: '#ae3115', color: '#ffffff', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>On Time</span>
-                </div>
-                <p style={{ fontSize: 12, color: '#8c1900', margin: 0 }}>
-                  Departing SFO → HND in 18 days. Seat 2A & 2B confirmed. Automated boarding alerts synced.
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.toolkitLink}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div className={styles.toolkitLinkIcon}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>menu_book</span>
-                </div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#001428' }}>Printable Pocket Guide</div>
-                  <div style={{ fontSize: 12, color: '#74777e' }}>Export tailored PDF folio with maps</div>
-                </div>
-              </div>
-              <Download size={18} color="#74777e" />
-            </div>
-
-            <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #e3e2df', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h4 style={{ fontSize: 16, fontWeight: 600, color: '#001428', margin: 0 }}>Co-Curators</h4>
-                <button style={{ background: 'none', border: 'none', color: '#ae3115', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}><Plus size={14} /> Invite New</button>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem', borderRadius: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#0f2942', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>JC</div>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: '#001428' }}>Julian Cole (You)</div>
-                    <div style={{ fontSize: 11, color: '#74777e' }}>Primary Curator • Full Access</div>
-                  </div>
-                </div>
-                <Shield size={16} color="#74777e" />
-              </div>
-            </div>
-            
-            <div style={{ background: '#efeeeb', padding: '1rem', borderRadius: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#ae3115', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                <Lightbulb size={16} /> Curator Note
-              </div>
-              <p style={{ fontSize: 12, color: '#43474d', fontStyle: 'italic', margin: 0 }}>
-                "Leave at least two mornings per week unscripted. The most memorable encounters happen when the itinerary is temporarily folded."
-              </p>
-            </div>
-          </div>
-        </aside>
+        <NextTripRail
+          trip={nextTrip}
+          members={nextTrip ? (members.data?.[nextTrip.id] ?? []) : []}
+          onCreate={() => setShowCreate(true)}
+        />
       </div>
 
       {(showCreate || autoCreateCity) && (
@@ -257,94 +297,414 @@ export function PlanDesktop({ trips, ongoing, upcoming, past }: PlanDesktopProps
   );
 }
 
-function CompactTripCard({ trip }: { trip: TripRow }) {
+/** "다음 여행까지 N일 남았어요" — 진행 중 / 오늘 출발 / N일 후 / 날짜 미정 / 예정 없음 */
+function CountdownText({ nextTrip, isOngoing }: { nextTrip: TripRow | null; isOngoing: boolean }) {
+  const { t } = useTranslation('plan');
+  if (!nextTrip) return <>{t('desktop.subtitleNone')}</>;
+  if (isOngoing && nextTrip.start_date) {
+    const day = differenceInCalendarDays(startOfDay(new Date()), startOfDay(parseISO(nextTrip.start_date))) + 1;
+    return <>{t('desktop.subtitleOngoing', { title: nextTrip.title, day })}</>;
+  }
+  const dday = getDDay(nextTrip.start_date);
+  if (dday == null) return <>{t('desktop.subtitleUndated', { title: nextTrip.title })}</>;
+  if (dday === 0) return <>{t('desktop.subtitleToday', { title: nextTrip.title })}</>;
+  return (
+    <>
+      {t('desktop.subtitleCountdownBefore', { title: nextTrip.title })}
+      <span className={styles.countdownDays}>{t('desktop.subtitleCountdownDays', { count: dday })}</span>
+      {t('desktop.subtitleCountdownAfter')}
+    </>
+  );
+}
+
+function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
+  const { t } = useTranslation(['plan', 'common']);
+  const [open, setOpen] = useState(false);
+
+  function stop(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  return (
+    <div className={styles.cardMenuWrap}>
+      <button
+        type="button"
+        className={styles.cardMenuButton}
+        aria-label={t('tripCard.menuAria')}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={(e) => {
+          stop(e);
+          setOpen((v) => !v);
+        }}
+      >
+        <MoreVertical size={16} />
+      </button>
+      {open ? (
+        <div className={styles.cardMenu} role="menu" onMouseLeave={() => setOpen(false)}>
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.cardMenuItem}
+            onClick={(e) => {
+              stop(e);
+              setOpen(false);
+              const next = window.prompt(t('tripCard.renamePrompt'), trip.title);
+              if (next && next.trim()) actions.onRename(trip.id, next.trim());
+            }}
+          >
+            {t('tripCard.rename')}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.cardMenuItem}
+            onClick={(e) => {
+              stop(e);
+              setOpen(false);
+              actions.onDuplicate(trip.id);
+            }}
+          >
+            {t('tripCard.duplicate')}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className={`${styles.cardMenuItem} ${styles.cardMenuDanger}`}
+            onClick={(e) => {
+              stop(e);
+              setOpen(false);
+              if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
+            }}
+          >
+            {t('common:action.delete')}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function CompactTripCard({
+  trip,
+  summary,
+  members,
+  actions,
+}: {
+  trip: TripRow;
+  summary: TripSummary;
+  members: TripMember[];
+  actions: TripActions;
+}) {
+  const { t, i18n } = useTranslation('plan');
   const bgImage = useCityImage(trip.city);
   const dday = getDDay(trip.start_date);
-  const progress = trip.status === 'ongoing' ? 90 : 44;
+  const isOngoing = getTripPhase(trip.start_date, trip.end_date) === 'ongoing';
+  const range = formatRange(trip, i18n.language);
+  const travelerCount = Math.max(1, members.length);
 
   return (
     <Link to={`/plan/${trip.id}`} className={styles.compactCard}>
       <div className={styles.cardTop}>
         <div className={styles.cardImageWrap}>
-          <img src={bgImage} className={styles.cardImage} alt={trip.title} />
-          {dday !== null && (
-            <span className={styles.dateBadge}>{dday === 0 ? 'D-DAY' : (dday < 30 ? `In ${dday}D` : 'Upcoming')}</span>
-          )}
+          <img src={bgImage} className={styles.cardImage} alt="" />
+          {dday !== null && !isOngoing ? (
+            <span className={styles.dateBadge}>{dday === 0 ? t('desktop.dday0') : t('desktop.ddayN', { count: dday })}</span>
+          ) : null}
         </div>
         <div className={styles.cardInfo}>
           <div className={styles.cardStatusRow}>
             <div className={styles.statusIndicator}>
-              <div className={styles.statusDot} style={{ background: trip.status === 'ongoing' ? '#10b981' : '#fd6a49' }}></div>
-              <span style={{ color: trip.status === 'ongoing' ? '#74777e' : '#ae3115' }}>
-                {trip.status === 'ongoing' ? 'In Progress' : 'Drafting'} · {trip.total_days || 0}D
+              <span className={`${styles.statusDot} ${isOngoing ? styles.statusDotOngoing : styles.statusDotUpcoming}`} />
+              <span className={isOngoing ? styles.statusTextOngoing : styles.statusTextUpcoming}>
+                {isOngoing ? t('desktop.statusOngoing') : t('desktop.statusUpcoming')} ·{' '}
+                {t('desktop.daysCount', { count: summary.totalDays })}
               </span>
             </div>
-            <span className={styles.travelersBadge}>2 Travelers</span>
+            <div className={styles.cardStatusRight}>
+              <span className={styles.travelersBadge}>{t('desktop.travelers', { count: travelerCount })}</span>
+              <TripMenu trip={trip} actions={actions} />
+            </div>
           </div>
           <h3 className={styles.cardTitle}>{trip.title}</h3>
-          <p className={styles.cardDesc}>Curated journey through {trip.city || 'multiple destinations'}.</p>
+          <p className={styles.cardDesc}>{range ?? t('tripCard.periodUndecided')}</p>
           <div className={styles.cardRoute}>
-            <Navigation size={14} color="#ae3115" /> {trip.city || 'Unknown Location'}
+            <Navigation size={14} color="var(--pd-accent)" aria-hidden="true" /> {trip.city || t('desktop.cityUnset')}
           </div>
         </div>
       </div>
 
       <div className={styles.cardProgressArea}>
         <div className={styles.progressRow}>
-          <span style={{ color: '#43474d' }}>Itinerary Completeness</span>
-          <span style={{ color: '#001428', fontWeight: 700 }}>{progress}% Planned</span>
+          <span className={styles.progressLabel}>{t('desktop.completeness')}</span>
+          <span className={styles.progressValue}>
+            {t('desktop.completenessValue', { planned: summary.plannedDays, total: summary.totalDays })}
+          </span>
         </div>
-        <div className={styles.progressBar}>
-          <div className={styles.progressFill} style={{ width: `${progress}%`, background: trip.status === 'ongoing' ? '#fd6a49' : '#ae3115' }}></div>
+        <div
+          className={styles.progressBar}
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={summary.completeness}
+          aria-label={t('desktop.completeness')}
+        >
+          <div
+            className={`${styles.progressFill} ${isOngoing ? styles.progressOngoing : ''}`}
+            style={{ width: `${summary.completeness}%` }}
+          />
         </div>
         <div className={styles.logisticsChips}>
-          <span className={styles.logisticsChip}><span className="material-symbols-outlined" style={{ fontSize: 13, color: '#ae3115' }}>hotel</span> Hotel</span>
-          <span className={styles.logisticsChip}><span className="material-symbols-outlined" style={{ fontSize: 13, color: '#ae3115' }}>flight_takeoff</span> Flight</span>
-          <span className={styles.logisticsChip}><span className="material-symbols-outlined" style={{ fontSize: 13, color: '#ae3115' }}>train</span> Transport</span>
+          <span className={`${styles.logisticsChip} ${summary.hasHotel ? '' : styles.chipOff}`}>
+            <Hotel size={13} aria-hidden="true" /> {summary.hasHotel ? t('desktop.chipHotel') : t('desktop.chipHotelMissing')}
+          </span>
+          <span className={`${styles.logisticsChip} ${summary.hasFlight ? '' : styles.chipOff}`}>
+            <Plane size={13} aria-hidden="true" /> {summary.hasFlight ? t('desktop.chipFlight') : t('desktop.chipFlightMissing')}
+          </span>
+          <span className={styles.logisticsChip}>
+            <MapPin size={13} aria-hidden="true" /> {t('desktop.chipPlaces', { count: summary.placeCount })}
+          </span>
         </div>
       </div>
 
       <div className={styles.cardBottom}>
         <div className={styles.avatars}>
-          <div className={styles.avatar} style={{ background: '#0f2942', color: '#ffffff' }}>JC</div>
-          <div className={styles.avatar} style={{ background: '#e3e2df', color: '#43474d' }}>ES</div>
+          {members.slice(0, 4).map((m, i) => (
+            <div key={m.userId} className={`${styles.avatar} ${i === 0 ? styles.avatarPrimary : ''}`} title={m.name ?? undefined}>
+              {initialsOf(m.name)}
+            </div>
+          ))}
         </div>
-        <div className={styles.btnOpen} style={{ background: trip.status === 'ongoing' ? '#0f2942' : 'transparent', color: trip.status === 'ongoing' ? '#ffffff' : '#001428', border: trip.status === 'ongoing' ? 'none' : '1px solid #c3c6ce' }}>
-          Open Itinerary <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+        <div className={`${styles.btnOpen} ${isOngoing ? styles.btnOpenActive : ''}`}>
+          {t('desktop.openItinerary')} <ArrowRight size={14} aria-hidden="true" />
         </div>
       </div>
     </Link>
   );
 }
 
-function PastTripCard({ trip }: { trip: TripRow }) {
+function PastTripCard({ trip, summary, actions, list }: { trip: TripRow; summary: TripSummary; actions: TripActions; list: boolean }) {
+  const { t, i18n } = useTranslation('plan');
   const bgImage = useCityImage(trip.city);
+  const range = formatRange(trip, i18n.language);
+
   return (
-    <Link to={`/plan/${trip.id}`} className={styles.pastCard}>
+    <Link to={`/plan/${trip.id}`} className={`${styles.pastCard} ${list ? styles.pastCardList : ''}`}>
       <div className={styles.pastImageWrap}>
-        <img src={bgImage} className={styles.pastImage} alt={trip.title} />
-        <div style={{ position: 'absolute', top: 10, left: 10, padding: '2px 8px', borderRadius: 9999, fontSize: 11, background: 'rgba(0, 20, 40, 0.7)', backdropFilter: 'blur(12px)', color: '#ffffff' }}>
-          Completed · {trip.total_days || 0} Days
-        </div>
+        <img src={bgImage} className={styles.pastImage} alt="" />
+        <div className={styles.pastBadge}>{t('desktop.pastBadge', { count: summary.totalDays })}</div>
       </div>
       <div className={styles.pastBody}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: '#74777e', textTransform: 'uppercase', marginBottom: 4 }}>
-            <span>{trip.city || 'Unknown Location'}</span>
-            <span>Confirmed</span>
+          <div className={styles.pastMeta}>
+            <span>{trip.city || t('desktop.cityUnset')}</span>
+            <TripMenu trip={trip} actions={actions} />
           </div>
-          <h4 style={{ fontFamily: 'Newsreader', fontSize: 18, color: '#001428', margin: '0 0 4px 0' }}>{trip.title}</h4>
-          <p style={{ fontSize: 13, color: '#43474d', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Recorded field notes and complete itineraries from past expeditions.</p>
+          <h4 className={styles.pastTitle}>{trip.title}</h4>
+          <p className={styles.pastDesc}>{range ?? t('tripCard.periodUndecided')}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 10, borderTop: '1px solid #e3e2df' }}>
-          <div style={{ fontSize: 12, color: '#43474d', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#ae3115' }}>near_me</span> Total Track
+        <div className={styles.pastFooter}>
+          <div className={styles.pastStat}>
+            <MapPin size={15} color="var(--pd-accent)" aria-hidden="true" /> {t('desktop.chipPlaces', { count: summary.placeCount })}
           </div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#ae3115', display: 'flex', alignItems: 'center' }}>
-            Inspect <span className="material-symbols-outlined" style={{ fontSize: 15 }}>chevron_right</span>
+          <div className={styles.pastOpen}>
+            {t('desktop.view')} <ChevronRight size={15} aria-hidden="true" />
           </div>
         </div>
       </div>
     </Link>
+  );
+}
+
+/** 오른쪽 레일 — 다음 여행 준비 상황(날씨·항공편·PDF·동행자). 전부 그 여행의 실제 데이터만 쓴다 */
+function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; members: TripMember[]; onCreate: () => void }) {
+  const { t } = useTranslation('plan');
+
+  return (
+    <aside className={styles.rightRail}>
+      <div className={styles.toolkitWidget}>
+        <div className={styles.toolkitHeader}>
+          <div className={styles.toolkitTitleRow}>
+            <PenTool size={22} color="var(--pd-accent)" aria-hidden="true" />
+            <h3 className={styles.toolkitTitle}>{t('desktop.toolkitTitle')}</h3>
+          </div>
+          {trip ? (
+            <Link to={`/plan/${trip.id}`} className={styles.syncBadge}>
+              {trip.title}
+            </Link>
+          ) : null}
+        </div>
+
+        {trip ? (
+          <>
+            <WeatherBox trip={trip} />
+            <FlightBox trip={trip} />
+            <PdfBox trip={trip} />
+            <div className={styles.membersBlock}>
+              <h4 className={styles.membersTitle}>
+                <Users size={16} aria-hidden="true" /> {t('desktop.membersTitle')}
+              </h4>
+              {members.length <= 1 ? (
+                <p className={styles.toolkitEmpty}>{t('desktop.membersSolo')}</p>
+              ) : (
+                members.map((m) => (
+                  <div key={m.userId} className={styles.memberRow}>
+                    <div className={styles.memberAvatar}>{initialsOf(m.name)}</div>
+                    <div>
+                      <div className={styles.memberName}>{m.name ?? t('desktop.memberUnknown')}</div>
+                      <div className={styles.memberRole}>{t(`desktop.role.${m.role}`, { defaultValue: m.role })}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <p className={styles.toolkitEmpty}>{t('desktop.toolkitEmpty')}</p>
+            <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={onCreate}>
+              <Plus size={16} /> {t('desktop.createTrip')}
+            </button>
+          </>
+        )}
+
+        <div className={styles.tipBox}>
+          <div className={styles.tipLabel}>
+            <Lightbulb size={16} aria-hidden="true" /> {t('desktop.tipLabel')}
+          </div>
+          <p className={styles.tipText}>{t('desktop.tipText')}</p>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function WeatherBox({ trip }: { trip: TripRow }) {
+  const { t } = useTranslation('plan');
+  const tempUnit = useTempUnit();
+  const weather = useWeather(trip.city_lat, trip.city_lng, trip.start_date, trip.end_date);
+  const first = weather.data?.daily?.[0];
+  // 날씨 서비스가 없거나(503) 예보가 없으면 칸 자체를 숨긴다 — 가짜 값을 채우지 않는다(05-weather.md §6.3)
+  if (!first) return null;
+  const min = formatTemp(first.tempMinC, tempUnit);
+  const max = formatTemp(first.tempMaxC, tempUnit);
+  const icon = first.conditionCode ? weatherIcon(mapConditionCode(first.conditionCode), true) : null;
+
+  return (
+    <div className={styles.toolkitBox}>
+      <div className={styles.toolkitBoxHeader}>
+        <span>{t('desktop.weatherTitle')}</span>
+        <span className={styles.accentText}>{(trip.city ?? '').split(',')[0]}</span>
+      </div>
+      <div className={styles.toolkitBoxContent}>
+        <div className={styles.toolkitBoxLeft}>
+          {icon ? (
+            <span className={styles.weatherIcon} aria-hidden="true">
+              {icon}
+            </span>
+          ) : null}
+          <div>
+            <div className={styles.toolkitValue}>
+              {min ?? '–'} / {max ?? '–'}
+            </div>
+            <div className={styles.toolkitSub}>
+              {first.source === 'climate_normal' ? t('tripDetail.climateBadge') : t('desktop.weatherFirstDay')}
+            </div>
+          </div>
+        </div>
+        {first.precipChance != null ? (
+          <div className={styles.weatherPrecip}>{t('desktop.precip', { value: Math.round(first.precipChance * 100) })}</div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function FlightBox({ trip }: { trip: TripRow }) {
+  const { t } = useTranslation('plan');
+  const flights = (tripService.toLocalProject(trip).flights ?? { outbound: null, return: null }) as FlightsData;
+  const outbound = flights.outbound;
+
+  if (!outbound) {
+    return (
+      <Link to={`/plan/${trip.id}`} className={styles.toolkitLink}>
+        <div className={styles.toolkitLinkBody}>
+          <div className={styles.toolkitLinkIcon}>
+            <Plane size={18} aria-hidden="true" />
+          </div>
+          <div>
+            <div className={styles.toolkitLinkTitle}>{t('desktop.flightMissingTitle')}</div>
+            <div className={styles.toolkitLinkSub}>{t('desktop.flightMissingDesc')}</div>
+          </div>
+        </div>
+        <ChevronRight size={18} color="var(--pd-subtle)" aria-hidden="true" />
+      </Link>
+    );
+  }
+
+  const route = [outbound.dep?.iata || outbound.dep?.name, outbound.arr?.iata || outbound.arr?.name].filter(Boolean).join(' → ');
+  const times = [outbound.dep?.time, outbound.arr?.time].filter(Boolean).join(' → ');
+  return (
+    <div className={styles.toolkitAlert}>
+      <Plane size={22} color="var(--pd-accent)" className={styles.flightIcon} aria-hidden="true" />
+      <div>
+        <div className={styles.flightNo}>{[outbound.airline, outbound.flightNo].filter(Boolean).join(' ')}</div>
+        <p className={styles.flightMeta}>
+          {route}
+          {times ? ` · ${times}` : ''}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PdfBox({ trip }: { trip: TripRow }) {
+  const { t } = useTranslation('plan');
+  const [busy, setBusy] = useState(false);
+
+  async function handleExport() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const project = tripService.toLocalProject(trip);
+      const { exportToPdf } = await import('./pdfExport');
+      await exportToPdf(
+        {
+          title: trip.title,
+          city: trip.city ?? '',
+          startDate: trip.start_date ?? '',
+          endDate: trip.end_date ?? '',
+          totalDays: Math.max(1, Number(project.totalDays ?? trip.total_days ?? 1) || 1),
+          currency: project.currency ?? 'KRW',
+          currentDay: 1,
+          plannerData: (project.data ?? {}) as PlannerData,
+          hotelsData: (project.hotels ?? {}) as HotelsData,
+          flightsData: (project.flights ?? { outbound: null, return: null }) as FlightsData,
+          expensesData: (project.expenses ?? {}) as ExpensesData,
+          dayCitiesData: (project.dayCities ?? {}) as DayCitiesData,
+        },
+        'all',
+      );
+    } catch (err) {
+      captureError(err, { context: 'planDesktop.pdfExport' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <button type="button" className={styles.toolkitLink} onClick={handleExport} disabled={busy}>
+      <div className={styles.toolkitLinkBody}>
+        <div className={styles.toolkitLinkIcon}>
+          <BookOpen size={18} aria-hidden="true" />
+        </div>
+        <div>
+          <div className={styles.toolkitLinkTitle}>{busy ? t('share.generatingPdf') : t('desktop.pdfTitle')}</div>
+          <div className={styles.toolkitLinkSub}>{t('desktop.pdfDesc')}</div>
+        </div>
+      </div>
+      <Download size={18} color="var(--pd-subtle)" aria-hidden="true" />
+    </button>
   );
 }
