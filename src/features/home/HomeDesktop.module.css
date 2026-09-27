@@ -105,7 +105,7 @@
 .section {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 4rem;
+  padding: 1.5rem 4rem 4rem;
   width: 100%;
 }
 
@@ -270,10 +270,9 @@
   overflow: visible;
   z-index: 2;
   background: var(--surface-page);
-  min-height: 60vh;
   height: auto;
-  padding-top: 12vh;
-  padding-bottom: 6vh;
+  padding-top: 8vh;
+  padding-bottom: 2vh;
   justify-content: flex-start;
 }
 .searchPill {
