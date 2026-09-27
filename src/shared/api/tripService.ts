@@ -20,7 +20,7 @@ import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/shared/utils/id';
 import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
-import { reconstructTripContent, type TripItineraryRaw } from '@/features/plan/itineraryTransform';
+import { reconstructTripContent, type TripItineraryRaw, type TripDayRow, type ItineraryItemRow } from '@/features/plan/itineraryTransform';
 
 /** allProjects[name] 형태의 로컬 프로젝트 (2.x, snapshot 스키마) */
 export interface LocalProject {
@@ -68,8 +68,29 @@ export interface TripRow {
   /** 정규화 테이블에서 재구성한 콘텐츠. listTrips()처럼 상세 콘텐츠가
    * 필요 없는 목록 조회에서는 채우지 않는다(비용이 드는 RPC라서). */
   content?: TripContent;
+  /** 커뮤니티 글에서 복제(포크)해 만든 여행이면 원본 trip id (0036) */
+  forked_from_trip_id?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/** get_post_trip() RPC(0036_post_trip_view.sql)가 반환하는 형태 —
+ * get_shared_trip과 같은 최소 노출 원칙(경비/서류/예약확정서 제외) */
+export interface PostTripPayload {
+  trip: {
+    id: string;
+    title: string;
+    city: string | null;
+    city_lat: number | null;
+    city_lng: number | null;
+    start_date: string;
+    end_date: string;
+    total_days: number | null;
+    base_currency: string;
+  };
+  days: TripDayRow[];
+  items: ItineraryItemRow[];
+  legs: unknown[];
 }
 
 export interface Suggestion {
@@ -272,6 +293,48 @@ export class TripService {
     const { data, error } = await supabase.rpc('get_shared_trip', { p_share_code: shareCode });
     if (error) throw error;
     return data ?? null;
+  }
+
+  /** 커뮤니티 글에 첨부된 일정 읽기 전용 조회 — get_post_trip RPC가 글이
+   * published 상태일 때만 반환한다(0036_post_trip_view.sql) */
+  async getPostTrip(postId: string): Promise<PostTripPayload | null> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('get_post_trip', { p_post_id: postId });
+    if (error) throw error;
+    return (data as PostTripPayload | null) ?? null;
+  }
+
+  /** 다른 사람의 공개 일정을 내 계정으로 복제 — 경비/서류/예약확정서는 복사하지
+   * 않는다(원래 get_shared_trip과 같은 최소 노출 원칙, days/items/hotels/
+   * flights만). forked_from_trip_id에 원본을 남겨 둔다. */
+  async forkPostTrip(postId: string, newTitle: string): Promise<TripRow> {
+    const payload = await this.getPostTrip(postId);
+    if (!payload) throw new Error('Trip not found or not published');
+    const content = reconstructTripContent(
+      { days: payload.days, items: payload.items, expenses: [] },
+      { name: payload.trip.city, lat: payload.trip.city_lat, lng: payload.trip.city_lng },
+    );
+    const project: LocalProject = {
+      city: payload.trip.city,
+      cityLat: payload.trip.city_lat,
+      cityLng: payload.trip.city_lng,
+      startDate: payload.trip.start_date,
+      endDate: payload.trip.end_date,
+      totalDays: payload.trip.total_days,
+      currency: payload.trip.base_currency,
+      data: content.data,
+      hotels: content.hotels,
+      meals: content.meals,
+      flights: content.flights,
+      dayCities: content.dayCities,
+    };
+    const row = await this.saveTrip(project, newTitle);
+    const { error } = await getSupabaseClient()
+      .from('trips')
+      .update({ forked_from_trip_id: payload.trip.id })
+      .eq('id', row.id);
+    if (error) throw error;
+    return { ...row, forked_from_trip_id: payload.trip.id } as TripRow;
   }
 
   // ── 동행자 제안 ────────────────────────────────────────────────

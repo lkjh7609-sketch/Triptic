@@ -1,5 +1,7 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import i18next from '@/shared/i18n';
+import { tripService } from '@/shared/api/tripService';
+import { tripsQueryKey } from '@/features/plan/hooks/useTrips';
 import {
   createPost,
   deleteOwnPost,
@@ -86,6 +88,26 @@ export function useToggleLike(postId: string, userId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postQueryKey(postId) });
+    },
+  });
+}
+
+/** 글에 첨부된 일정 읽기 전용 조회(0036) */
+export function usePostTrip(postId: string | undefined) {
+  return useQuery({
+    queryKey: ['community', 'post-trip', postId ?? ''],
+    queryFn: () => tripService.getPostTrip(postId!),
+    enabled: !!postId,
+  });
+}
+
+/** 다른 사람의 공개 일정을 내 계정으로 복제 */
+export function useForkPostTrip() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ postId, title }: { postId: string; title: string }) => tripService.forkPostTrip(postId, title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
   });
 }

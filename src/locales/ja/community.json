@@ -145,6 +145,18 @@
     "suggestSent": "提案が旅行の作成者に送信されました！",
     "emptyDay": "この日にはまだ予定がありません。"
   },
+  "postTrip": {
+    "viewLink": "旅程を見る",
+    "header": "添付された旅程",
+    "loadError": "この旅程を読み込めませんでした。",
+    "forkButton": "この旅程を自分の計画にコピー",
+    "forkConfirm": "この旅程を自分の計画にコピーしますか？日程・場所・ホテル・フライトだけコピーされ、後から自由に編集できます。",
+    "forkKeep": "見るだけにする",
+    "forkProceed": "コピーする",
+    "forkTitleSuffix": "（コピー）",
+    "forkSuccess": "自分の計画に保存しました！",
+    "forkError": "コピーに失敗しました。"
+  },
   "continent": {
     "AS": { "name": "アジア" },
     "EU": { "name": "ヨーロッパ" },

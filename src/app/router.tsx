@@ -98,6 +98,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 글에 첨부된 일정 읽기 전용 뷰 + 복제(0036)
+          path: 'community/post/:postId/trip',
+          lazy: async () => {
+            const { PostTripViewScreen } = await retryChunkLoad(() => import('@/features/community/PostTripViewScreen'));
+            return { Component: PostTripViewScreen };
+          },
+        },
+        {
           path: 'community/user/:userId',
           lazy: async () => {
             const { UserProfileScreen } = await retryChunkLoad(() => import('@/features/community/UserProfileScreen'));
