@@ -25,7 +25,7 @@ import { FeedbackModal } from './FeedbackModal';
 
 import styles from './SettingsScreen.module.css';
 
-const APP_VERSION = '3.0.0-dev';
+const APP_VERSION = '1.0.2';
 
 const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
   preDeparture: 'notifications.preDeparture',
