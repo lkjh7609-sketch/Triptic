@@ -30,6 +30,18 @@ STATIC_ASSETS.forEach(file => {
         console.warn(`  ⚠️ File not found: ${file}`);
         return;
     }
+
+    if (file === 'sw.js') {
+        // CACHE_NAME을 사람이 수동으로 올리는 걸 깜빡하면(실제로 이번 세션에 여러 번
+        // 그랬다) 배포마다 새로 생기는 해시된 청크가 이전 배포분과 함께 캐시에 영원히
+        // 쌓인다 — 매 빌드마다 이름 자체를 자동으로 새로 만들어 그 문제를 원천 차단한다.
+        const buildId = `triptic-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+        const content = fs.readFileSync(src, 'utf8').replace('__BUILD_ID__', buildId);
+        fs.writeFileSync(path.join(publicDir, file), content);
+        console.log(`  ✓ Synced ${file} → public/ (CACHE_NAME=${buildId})`);
+        return;
+    }
+
     fs.copyFileSync(src, path.join(publicDir, file));
     console.log(`  ✓ Synced ${file} → public/`);
 });
