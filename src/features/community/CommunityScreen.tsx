@@ -79,8 +79,15 @@ export function CommunityScreen() {
       ) : null}
 
       <div className={styles.headerSection}>
-        <div className={styles.subtitle}>{t('feed.subtitle')}</div>
-        <h1 className={styles.mainTitle}>{t('feed.title')}</h1>
+        <div>
+          <div className={styles.subtitle}>{t('feed.subtitle')}</div>
+          <h1 className={styles.mainTitle}>{t('feed.title')}</h1>
+        </div>
+        {user ? (
+          <Link to={`/community/user/${user.id}`} className={styles.myPostsLink}>
+            {t('feed.myPostsBtn')}
+          </Link>
+        ) : null}
       </div>
 
       <div className={styles.filterSection}>
@@ -118,14 +125,6 @@ export function CommunityScreen() {
             {t('companion.list.tab')}
           </button>
         </div>
-
-        {user ? (
-          <div className={styles.myPostsRow}>
-            <Link to={`/community/user/${user.id}`} className={styles.chip}>
-              {t('feed.myPostsBtn')}
-            </Link>
-          </div>
-        ) : null}
 
         {tab !== 'companion' && destinations && destinations.length > 0 ? (
           <DestinationSelector destinations={destinations} />
