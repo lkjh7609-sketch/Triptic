@@ -14,7 +14,7 @@ export function BlockedUsersList({ userId }: { userId: string }) {
 
   if (isLoading) return null;
   if (!blocked || blocked.length === 0) {
-    return <p className={styles.hint}>{t('blocked.empty')}</p>;
+    return <p className={styles.emptyState}>{t('blocked.empty')}</p>;
   }
 
   return (
