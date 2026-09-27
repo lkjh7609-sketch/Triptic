@@ -100,6 +100,14 @@ export function CommunityDesignBody({
             </div>
 
             <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+              {user ? (
+                <Link
+                  to={`/community/user/${user.id}`}
+                  className="inline-flex items-center justify-center gap-2 border border-outline-variant/40 hover:bg-surface-container-lowest text-on-surface px-5 py-3 rounded-full font-label-md text-label-md transition-all duration-200 shrink-0"
+                >
+                  <span>{t('feed.myPostsBtn')}</span>
+                </Link>
+              ) : null}
               <Link
                 to="/community/compose"
                 className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-container text-on-secondary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 shrink-0"

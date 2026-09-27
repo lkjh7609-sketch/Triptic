@@ -45,6 +45,11 @@
   white-space: nowrap;
 }
 
+.myPostsRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .tabs {
   display: flex;
   padding: 0 var(--space-4);
@@ -345,6 +350,9 @@
     gap: var(--space-5);
     padding: 0 var(--space-4);
     margin-bottom: 0;
+  }
+  .myPostsRow {
+    padding: 0 var(--space-4);
   }
   .desktopList {
     display: flex;
