@@ -87,6 +87,13 @@
     "namePlaceholder": "The name other travelers will see",
     "nameHint": "Shown on your community posts and to travel companions.",
     "nameRequired": "Please enter a name.",
+    "nameFormatError": "Nickname must be 2-7 Korean characters (no numbers or symbols).",
+    "nameCheckRequired": "Please check availability first.",
+    "nameTaken": "This nickname is already taken.",
+    "nameAvailable": "This nickname is available.",
+    "nameReserved": "This nickname can't be used.",
+    "checkDuplicate": "Check availability",
+    "checking": "Checking…",
     "saveError": "Couldn't save. Please try again shortly."
   },
   "units": {

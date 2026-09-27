@@ -84,6 +84,13 @@
     "namePlaceholder": "ほかの旅行者に表示される名前",
     "nameHint": "コミュニティの投稿や同行者リストに表示されます。",
     "nameRequired": "名前を入力してください。",
+    "nameFormatError": "ニックネームはハングル2〜7文字のみ使用できます（記号・数字不可）。",
+    "nameCheckRequired": "先に重複確認をしてください。",
+    "nameTaken": "このニックネームは既に使われています。",
+    "nameAvailable": "このニックネームは使用できます。",
+    "nameReserved": "このニックネームは使用できません。",
+    "checkDuplicate": "重複確認",
+    "checking": "確認中…",
     "saveError": "保存できませんでした。しばらくしてからもう一度お試しください。"
   },
   "units": {

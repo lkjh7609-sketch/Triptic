@@ -84,6 +84,13 @@
     "namePlaceholder": "다른 여행자에게 보일 이름",
     "nameHint": "커뮤니티 글과 동행자 목록에 표시돼요.",
     "nameRequired": "이름을 입력해 주세요.",
+    "nameFormatError": "닉네임은 한글 2~7자만 가능해요(특수문자·숫자 불가).",
+    "nameCheckRequired": "중복 확인을 먼저 해주세요.",
+    "nameTaken": "이미 사용 중인 닉네임이에요.",
+    "nameAvailable": "사용할 수 있는 닉네임이에요.",
+    "nameReserved": "사용할 수 없는 닉네임이에요.",
+    "checkDuplicate": "중복 확인",
+    "checking": "확인 중…",
     "saveError": "저장하지 못했어요. 잠시 후 다시 시도해 주세요."
   },
   "units": {
