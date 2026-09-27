@@ -236,6 +236,11 @@
       "writeFirst": "發布第一篇招募文",
       "empty": "目前還沒有招募中的同行。"
     },
+    "mine": {
+      "title": "我的旅伴",
+      "hosting": "我發起的招募",
+      "matched": "已確定 · 進入聊天室"
+    },
     "compose": {
       "title": "找同行",
       "titleLabel": "標題",

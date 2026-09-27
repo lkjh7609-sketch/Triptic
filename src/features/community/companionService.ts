@@ -136,16 +136,31 @@ export async function getCompanionPost(postId: string, viewerId: string | null):
   return enriched;
 }
 
-export async function listMyCompanionPosts(authorId: string): Promise<CompanionPost[]> {
+/** 내 동행 — 내가 주최 중이거나(모집중/확정) 지원해 진행 중인(대기/수락) 모집글.
+ * 확정(matched)되면 공개 목록(recruiting)에서 빠지므로, 지원자가 확정된 모임
+ * 채팅방으로 돌아올 수 있는 유일한 진입점이다. 확정 모임은 "read companion
+ * posts as member"(0032) 정책으로 수락된 지원자에게도 읽힌다. */
+export async function listMyActiveCompanionPosts(userId: string): Promise<CompanionPost[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
+  const { data: apps, error: appErr } = await supabase
+    .from('companion_applications')
+    .select('post_id')
+    .eq('applicant_id', userId)
+    .in('status', ['pending', 'accepted']);
+  if (appErr) throw appErr;
+  const appliedIds = uniq(((apps ?? []) as { post_id: string }[]).map((a) => a.post_id));
+
+  let query = supabase
     .from('companion_posts')
     .select('*')
-    .eq('author_id', authorId)
+    .in('status', ['recruiting', 'matched'])
     .is('deleted_at', null)
-    .order('created_at', { ascending: false });
+    .order('start_date', { ascending: true });
+  query = appliedIds.length > 0 ? query.or(`author_id.eq.${userId},id.in.(${appliedIds.join(',')})`) : query.eq('author_id', userId);
+
+  const { data, error } = await query;
   if (error) throw error;
-  return enrichCompanionPosts((data as CompanionPost[]) ?? [], authorId);
+  return enrichCompanionPosts((data as CompanionPost[]) ?? [], userId);
 }
 
 // ── 모집글 작성(모더레이션 게이트) ──────────────────────────────────────────

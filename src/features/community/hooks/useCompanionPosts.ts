@@ -10,7 +10,7 @@ import {
   listApplicationsForPost,
   listCompanionMatchMembers,
   listCompanionPosts,
-  listMyCompanionPosts,
+  listMyActiveCompanionPosts,
   respondToApplication,
   verifyCompanionQrToken,
   withdrawApplication,
@@ -44,11 +44,11 @@ export function useCompanionPost(postId: string | undefined, viewerId: string | 
   });
 }
 
-export function useMyCompanionPosts(authorId: string | undefined) {
+export function useMyActiveCompanionPosts(userId: string | undefined) {
   return useQuery({
-    queryKey: ['community', 'companion', 'my-posts', authorId ?? ''],
-    queryFn: () => listMyCompanionPosts(authorId!),
-    enabled: !!authorId,
+    queryKey: ['community', 'companion', 'mine', userId ?? ''],
+    queryFn: () => listMyActiveCompanionPosts(userId!),
+    enabled: !!userId,
   });
 }
 

@@ -236,6 +236,11 @@
       "writeFirst": "첫 모집글 올리기",
       "empty": "아직 모집 중인 동행이 없어요."
     },
+    "mine": {
+      "title": "내 동행",
+      "hosting": "내가 모집 중",
+      "matched": "확정 · 채팅방 입장"
+    },
     "compose": {
       "title": "동행 모집",
       "titleLabel": "제목",

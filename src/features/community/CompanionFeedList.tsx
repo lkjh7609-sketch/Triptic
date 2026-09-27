@@ -7,8 +7,8 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { DestinationSelector } from './DestinationSelector';
-import { useCompanionPostsFeed } from './hooks/useCompanionPosts';
-import type { Destination } from './types';
+import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
+import type { CompanionPost, Destination } from './types';
 import styles from './CompanionFeedList.module.css';
 
 interface CompanionFeedListProps {
@@ -26,6 +26,8 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
 
   return (
     <div className={styles.wrap}>
+      {user ? <MyCompanionsSection userId={user.id} /> : null}
+
       {destinations && destinations.length > 0 ? (
         <DestinationSelector
           destinations={destinations}
@@ -81,5 +83,40 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
         </>
       )}
     </div>
+  );
+}
+
+/** 내 동행 — 확정되면 공개 목록에서 빠지므로 지원자가 채팅방으로 돌아올 곳이 여기뿐이다 */
+function MyCompanionsSection({ userId }: { userId: string }) {
+  const { t } = useTranslation(['community', 'common']);
+  const { data: posts } = useMyActiveCompanionPosts(userId);
+  if (!posts || posts.length === 0) return null;
+
+  function statusLabel(post: CompanionPost) {
+    if (post.status === 'matched') return t('companion.mine.matched');
+    if (post.author_id === userId) return t('companion.mine.hosting');
+    return post.myApplication ? t(`companion.detail.myApplicationStatus.${post.myApplication.status}`) : '';
+  }
+
+  return (
+    <section className={styles.mineSection} aria-labelledby="my-companions-title">
+      <h2 id="my-companions-title" className={styles.mineTitle}>{t('companion.mine.title')}</h2>
+      <div className={styles.list}>
+        {posts.map((post) => (
+          <Link
+            key={post.id}
+            to={post.status === 'matched' ? `/community/companion/${post.id}/chat` : `/community/companion/${post.id}`}
+            className={styles.card}
+          >
+            <span className={post.status === 'matched' ? styles.mineBadgeActive : styles.mineBadge}>{statusLabel(post)}</span>
+            <h3 className={styles.cardTitle}>{post.title}</h3>
+            <div className={styles.cardMeta}>
+              <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
+              <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
