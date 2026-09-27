@@ -19,6 +19,8 @@ export interface NotificationPrefs {
 export interface ProfileRow {
   id: string;
   display_name: string;
+  /** 가입 시 서버가 발급하는 닉네임과 무관한 5자리 식별자 — 본인만 확인 가능(0041) */
+  handle: string | null;
   locale: Locale;
   temp_unit: TempUnit;
   distance_unit: DistanceUnit;
@@ -33,7 +35,7 @@ const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   marketing: false,
 };
 
-const SELECT_COLUMNS = 'id, display_name, locale, temp_unit, distance_unit, base_currency, notification_prefs';
+const SELECT_COLUMNS = 'id, display_name, handle, locale, temp_unit, distance_unit, base_currency, notification_prefs';
 
 export async function getMyProfile(userId: string): Promise<ProfileRow> {
   const supabase = getSupabaseClient();
@@ -53,4 +55,12 @@ export async function updateMyProfile(userId: string, patch: ProfilePatch): Prom
   const supabase = getSupabaseClient();
   const { error } = await supabase.from('profiles').update(patch).eq('id', userId);
   if (error) throw error;
+}
+
+/** 닉네임 중복확인(저장 전 미리 물어보기 — 실제 경계는 서버 트리거, 0041) */
+export async function checkDisplayNameAvailable(name: string, excludeId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('is_display_name_available', { p_name: name, p_exclude_id: excludeId });
+  if (error) throw error;
+  return data as boolean;
 }
