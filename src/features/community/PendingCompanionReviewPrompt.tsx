@@ -32,6 +32,7 @@ export function PendingCompanionReviewPrompt({ userId }: { userId: string }) {
 
   return (
     <CompanionReviewModal
+      key={target.id}
       post={target}
       onClose={() => {
         const next = [...dismissed, target.id];

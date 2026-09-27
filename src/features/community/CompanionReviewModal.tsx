@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Star } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
@@ -20,7 +21,10 @@ interface CompanionReviewModalProps {
 export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProps) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
-  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+  const queryClient = useQueryClient();
+  // useFocusTrap은 첫 렌더의 콜백을 계속 쓰므로(Escape) 완료 여부는 ref로 읽는다
+  const doneRef = useRef(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(handleClose);
   const membersQuery = useCompanionMatchMembers(post);
   const submitReview = useSubmitCompanionReview(post.id);
   const [wentWell, setWentWell] = useState<boolean | null>(null);
@@ -31,6 +35,14 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
   const others = (membersQuery.data ?? []).filter((m) => m.user_id !== user?.id);
   const canSubmit = wentWell !== null && others.every((m) => (ratings[m.user_id] ?? 0) > 0) && !membersQuery.isLoading;
 
+  // 별점은 커뮤니티 전역 닉네임 옆에 뜨므로 ['community'] 전체를 다시 불러온다. 제출 직후가
+  // 아니라 닫을 때 해야, 후기 여부가 바뀌며 이 모달(채팅 배너/자동 요청)이 감사 화면을
+  // 보여주기도 전에 사라지는 일이 없다 — ReportModal과 같은 이유.
+  function handleClose() {
+    if (doneRef.current) queryClient.invalidateQueries({ queryKey: ['community'] });
+    onClose();
+  }
+
   async function handleSubmit() {
     if (!canSubmit || wentWell === null) return;
     setErrorMessage(null);
@@ -39,10 +51,12 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
         wentWell,
         ratings: others.map((m) => ({ userId: m.user_id, rating: ratings[m.user_id] })),
       });
+      doneRef.current = true;
       setDone(true);
     } catch (err) {
       // 다른 기기에서 이미 남겼으면 완료로 본다
       if (err instanceof Error && err.message.includes('already reviewed')) {
+        doneRef.current = true;
         setDone(true);
         return;
       }
@@ -52,7 +66,7 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay} onClick={handleClose}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}
@@ -66,7 +80,7 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
             <h2 id="companion-review-title" className={modalStyles.title}>{t('companion.review.doneTitle')}</h2>
             <p className={styles.desc}>{t('companion.review.doneDesc')}</p>
             <div className={modalStyles.actions}>
-              <button type="button" className={modalStyles.primary} onClick={onClose}>
+              <button type="button" className={modalStyles.primary} onClick={handleClose}>
                 {t('action.close', { ns: 'common' })}
               </button>
             </div>
@@ -133,7 +147,7 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
             {errorMessage ? <p className={styles.error}>{errorMessage}</p> : null}
 
             <div className={modalStyles.actions}>
-              <button type="button" className={modalStyles.secondary} onClick={onClose}>
+              <button type="button" className={modalStyles.secondary} onClick={handleClose}>
                 {t('companion.review.later')}
               </button>
               <button

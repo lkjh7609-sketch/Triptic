@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
 import type { CompanionPost } from './types';
 
@@ -25,8 +26,15 @@ const { CompanionReviewModal } = await import('./CompanionReviewModal');
 const post = { id: 'p1', title: '오사카 1박2일', author_id: 'host', status: 'closed' } as CompanionPost;
 
 describe('CompanionReviewModal', () => {
-  it('마무리 여부와 나를 뺀 멤버 전원 별점을 모두 골라야 제출된다', async () => {
-    render(<CompanionReviewModal post={post} onClose={vi.fn()} />);
+  it('마무리 여부와 나를 뺀 멤버 전원 별점을 모두 골라야 제출되고, 닫을 때 커뮤니티 캐시를 갱신한다', async () => {
+    const client = new QueryClient();
+    const invalidate = vi.spyOn(client, 'invalidateQueries');
+    const onClose = vi.fn();
+    render(
+      <QueryClientProvider client={client}>
+        <CompanionReviewModal post={post} onClose={onClose} />
+      </QueryClientProvider>,
+    );
 
     expect(screen.queryByText('나')).toBeNull();
     const submit = screen.getByRole('button', { name: '제출' });
@@ -50,5 +58,10 @@ describe('CompanionReviewModal', () => {
       }),
     );
     expect(await screen.findByText('후기를 남겨주셔서 고마워요')).toBeInTheDocument();
+    // 제출 직후 무효화하면 모달을 품은 화면이 먼저 바뀌어 감사 화면이 사라진다 — 닫을 때만
+    expect(invalidate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '닫기' }));
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['community'] });
+    expect(onClose).toHaveBeenCalled();
   });
 });
