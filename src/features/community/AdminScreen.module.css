@@ -77,6 +77,20 @@
   white-space: pre-wrap;
 }
 
+.screenshotThumbLink {
+  display: block;
+  width: fit-content;
+  margin-top: var(--space-2);
+}
+
+.screenshotThumb {
+  max-width: 160px;
+  max-height: 120px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: block;
+}
+
 .detail {
   margin: var(--space-1) 0 0;
   font-size: var(--font-caption-size);
