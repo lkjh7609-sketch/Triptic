@@ -106,7 +106,14 @@ export function CompanionDetailScreen() {
               <div className={postDetailStyles.time}>{post.destination?.name ?? t('companion.detail.anyDestination')}</div>
             </div>
           </div>
-          {!isOwn ? <PostActionsMenu targetType="companion_post" targetId={post.id} authorId={post.author_id} /> : null}
+          {!isOwn ? (
+            <PostActionsMenu
+              targetType="companion_post"
+              targetId={post.id}
+              authorId={post.author_id}
+              onReported={() => navigate('/community', { replace: true })}
+            />
+          ) : null}
         </div>
 
         <h2 className={styles.title}>{post.title}</h2>

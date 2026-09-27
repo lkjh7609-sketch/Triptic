@@ -38,6 +38,7 @@
     "dialogLabel": "舉報",
     "doneTitle": "舉報已提交",
     "doneDesc": "您舉報的內容現在不會出現在您的頁面中。我們會在24小時內完成審核並告知處理結果。",
+    "doneDescUser": "我們會在24小時內完成審核並告知處理結果。",
     "reasonPrompt": "請選擇舉報原因。",
     "detailPlaceholder": "詳細說明（可選）",
     "submit": "舉報",
