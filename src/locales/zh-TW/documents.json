@@ -44,7 +44,9 @@
     "title": "票券夾",
     "empty": "還沒有票券，點選「從單據新增」上傳吧。",
     "addToWallet": "新增到Apple Wallet",
+    "deleteConfirmTitle": "刪除憑證",
     "deleteConfirm": "確定刪除「{{name}}」嗎？此操作無法撤銷。",
+    "deleteKeep": "保留",
     "voucherOriginalAlt": "票券原件"
   },
   "errors": {

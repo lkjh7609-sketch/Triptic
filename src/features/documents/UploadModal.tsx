@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plane, Hotel, Ticket, Calendar, Image, FileText, Trash2 } from 'lucide-react';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { hasDocumentUploadConsent, setDocumentUploadConsent } from './consent';
 import {
   validateFile,
@@ -15,6 +16,9 @@ import { useUploadDocument, useDocumentsList, useDeleteDocument } from './useDoc
 import { captureError } from '@/shared/monitoring';
 import modalStyles from '../plan/AddPlaceModal.module.css';
 import styles from './UploadModal.module.css';
+
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_MOVE_TOLERANCE = 10;
 
 interface UploadModalProps {
   tripId: string;
@@ -66,6 +70,10 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
   const deleteMutation = useDeleteDocument(tripId);
   const [viewerUrl, setViewerUrl] = useState<{ url: string; mimeType: string } | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmDeleteEntry, setConfirmDeleteEntry] = useState<VoucherEntry | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressStartRef = useRef<{ x: number; y: number } | null>(null);
+  const longPressFiredRef = useRef(false);
 
   function handleAgree() {
     setDocumentUploadConsent(true);
@@ -128,7 +136,6 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
   }
 
   async function handleDelete(entry: VoucherEntry) {
-    if (!window.confirm(t('archive.deleteConfirm', { name: entry.original_name }))) return;
     setBusyId(entry.id);
     try {
       await deleteMutation.mutateAsync({ id: entry.id, storage_path: entry.storage_path });
@@ -137,6 +144,45 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
     } finally {
       setBusyId(null);
     }
+  }
+
+  function clearLongPressTimer() {
+    if (longPressTimerRef.current !== null) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }
+
+  function handleItemPointerDown(e: React.PointerEvent, entry: VoucherEntry) {
+    longPressStartRef.current = { x: e.clientX, y: e.clientY };
+    longPressFiredRef.current = false;
+    clearLongPressTimer();
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressFiredRef.current = true;
+      setConfirmDeleteEntry(entry);
+    }, LONG_PRESS_MS);
+  }
+
+  function handleItemPointerMove(e: React.PointerEvent) {
+    const start = longPressStartRef.current;
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (Math.sqrt(dx * dx + dy * dy) > LONG_PRESS_MOVE_TOLERANCE) {
+      clearLongPressTimer();
+    }
+  }
+
+  function handleItemPointerEnd() {
+    clearLongPressTimer();
+  }
+
+  function handleItemClick(entry: VoucherEntry) {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+    openViewer(entry);
   }
 
   if (!consented) {
@@ -218,7 +264,13 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
                 <button
                   type="button"
                   className={styles.itemMain}
-                  onClick={() => openViewer(entry)}
+                  onClick={() => handleItemClick(entry)}
+                  onPointerDown={(e) => handleItemPointerDown(e, entry)}
+                  onPointerMove={handleItemPointerMove}
+                  onPointerUp={handleItemPointerEnd}
+                  onPointerLeave={handleItemPointerEnd}
+                  onPointerCancel={handleItemPointerEnd}
+                  onContextMenu={(e) => e.preventDefault()}
                   disabled={busyId === entry.id}
                 >
                   <span className={styles.icon} aria-hidden="true">
@@ -253,7 +305,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
                   <button
                     type="button"
                     className={styles.actionBtnDanger}
-                    onClick={() => handleDelete(entry)}
+                    onClick={() => setConfirmDeleteEntry(entry)}
                     disabled={busyId === entry.id}
                     title={t('action.delete', { ns: 'common' })}
                   >
@@ -282,6 +334,18 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
         >
           <img src={viewerUrl.url} alt={t('archive.voucherOriginalAlt')} className={styles.imageViewerImg} />
         </div>
+      ) : null}
+
+      {confirmDeleteEntry ? (
+        <ConfirmDialog
+          title={t('archive.deleteConfirmTitle')}
+          message={t('archive.deleteConfirm', { name: confirmDeleteEntry.original_name })}
+          cancelLabel={t('archive.deleteKeep')}
+          confirmLabel={t('action.delete', { ns: 'common' })}
+          danger
+          onClose={() => setConfirmDeleteEntry(null)}
+          onConfirm={() => handleDelete(confirmDeleteEntry)}
+        />
       ) : null}
     </div>
   );

@@ -44,7 +44,9 @@
     "title": "Voucher archive",
     "empty": "No vouchers yet. Add one with \"Add from document.\"",
     "addToWallet": "Add to Apple Wallet",
+    "deleteConfirmTitle": "Delete voucher",
     "deleteConfirm": "Delete '{{name}}'? This can't be undone.",
+    "deleteKeep": "Keep",
     "voucherOriginalAlt": "Original voucher"
   },
   "errors": {

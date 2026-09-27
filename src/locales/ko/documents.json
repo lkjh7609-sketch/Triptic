@@ -44,7 +44,9 @@
     "title": "바우처 보관함",
     "empty": "아직 등록된 바우처가 없어요. \"서류로 추가\"로 올려보세요.",
     "addToWallet": "Apple Wallet에 추가",
+    "deleteConfirmTitle": "바우처 삭제",
     "deleteConfirm": "'{{name}}' 삭제할까요? 되돌릴 수 없어요.",
+    "deleteKeep": "취소",
     "voucherOriginalAlt": "바우처 원본"
   },
   "errors": {

@@ -44,7 +44,9 @@
     "title": "バウチャー保管庫",
     "empty": "まだ登録されたバウチャーがありません。「書類から追加」でアップロードしてみてください。",
     "addToWallet": "Apple Walletに追加",
+    "deleteConfirmTitle": "バウチャーを削除",
     "deleteConfirm": "「{{name}}」を削除しますか？元に戻すことはできません。",
+    "deleteKeep": "保持",
     "voucherOriginalAlt": "バウチャー元の画像"
   },
   "errors": {
