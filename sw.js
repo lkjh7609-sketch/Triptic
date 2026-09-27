@@ -15,7 +15,13 @@
  * public/sw.js로 그대로 복사한다(→ dist/).
  */
 
-const CACHE_NAME = 'triptic-v3.0.0-dev.52';
+// scripts/build.js가 매 빌드마다 이 자리를 실제 값으로 치환한다(빌드 시각 기반) —
+// 사람이 수동으로 버전 문자열을 올리는 걸 깜빡하면, 배포마다 새로 생기는 해시된
+// JS/CSS 청크가 "5. Static assets: Cache-first" 규칙으로 옛 배포분과 함께 이
+// 캐시에 영원히 쌓인다(청크는 개수 제한이 없다 — IMAGE_CACHE_NAME과 다름).
+// 매 빌드마다 이름 자체가 달라지면 activate 핸들러가 이전 이름의 캐시를 통째로
+// 지워서 이 문제가 구조적으로 재발하지 않는다.
+const CACHE_NAME = '__BUILD_ID__';
 /** 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게 */
 const IMAGE_CACHE_NAME = 'triptic-images-v1';
 const IMAGE_CACHE_MAX_ENTRIES = 150;
