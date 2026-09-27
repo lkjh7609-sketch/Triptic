@@ -107,7 +107,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
       new Map(
         trips.map((trip) => {
           const base = summarizeTrip(trip);
-          const real = tripSummaries.data?.get(trip.id);
+          const real = tripSummaries.data?.[trip.id];
           if (!real) return [trip.id, base] as const;
           return [
             trip.id,

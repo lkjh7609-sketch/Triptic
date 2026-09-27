@@ -170,21 +170,24 @@ export class TripService {
 
   /** 여행 목록 카드용 경량 요약(완성도/장소 수/호텔·항공 여부) — listTrips()가
    * 채우지 않는 content 대신, 정규화 테이블을 집계만 하는 RPC로 가져온다
-   * (0034_trip_summary_rpc.sql). trip_id로 바로 찾아 쓰도록 Map으로 반환한다. */
-  async listTripSummaries(): Promise<Map<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }>> {
+   * (0034_trip_summary_rpc.sql). 이 앱은 쿼리 캐시 전체를 IndexedDB에
+   * JSON으로 영속화하므로(offline/persister.ts) Map을 반환하면 안 된다 —
+   * 직렬화되며 Map이 빈 객체 `{}`가 돼 다음 실행에서 `.get is not a
+   * function`으로 죽는다. trip_id를 키로 쓰는 평범한 객체로 반환한다. */
+  async listTripSummaries(): Promise<Record<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }>> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.rpc('get_trip_summaries');
     if (error) throw error;
-    const map = new Map<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }>();
+    const result: Record<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }> = {};
     for (const row of (data ?? []) as { trip_id: string; planned_days: number; place_count: number; has_hotel: boolean; has_flight: boolean }[]) {
-      map.set(row.trip_id, {
+      result[row.trip_id] = {
         plannedDays: row.planned_days,
         placeCount: row.place_count,
         hasHotel: row.has_hotel,
         hasFlight: row.has_flight,
-      });
+      };
     }
-    return map;
+    return result;
   }
 
   /** 단일 여행 조회 (여행 상세 화면용) — 정규화 테이블에서 콘텐츠를 재구성해 붙인다 */
