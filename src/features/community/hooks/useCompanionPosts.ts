@@ -3,6 +3,7 @@ import i18next from '@/shared/i18n';
 import {
   applyToCompanionPost,
   cancelCompanionPost,
+  completeCompanionTrip,
   createCompanionPost,
   finalizeCompanionMatch,
   getCompanionPost,
@@ -102,13 +103,23 @@ export function useRespondToApplication(postId: string) {
   });
 }
 
-export function useWithdrawApplication(postId: string) {
+export function useWithdrawApplication() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: withdrawApplication,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: companionPostQueryKey(postId) });
-      queryClient.invalidateQueries({ queryKey: ['community', 'companion', 'match-members', postId] });
+      // 상세/멤버뿐 아니라 "내 동행" 목록도 같이 갱신돼야 나간 모임이 남지 않는다
+      queryClient.invalidateQueries({ queryKey: ['community', 'companion'] });
+    },
+  });
+}
+
+export function useCompleteCompanionTrip(postId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => completeCompanionTrip(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community', 'companion'] });
     },
   });
 }

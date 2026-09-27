@@ -22,7 +22,7 @@ export function CompanionMatchScreen() {
   const { user } = useSession();
   const { data: post, isLoading, isError, refetch } = useCompanionPost(postId, user?.id ?? null);
   const membersQuery = useCompanionMatchMembers(post);
-  const withdrawApplication = useWithdrawApplication(postId ?? '');
+  const withdrawApplication = useWithdrawApplication();
   const cancelPost = useCancelCompanionPost();
   const [showQr, setShowQr] = useState(false);
   const [showScan, setShowScan] = useState(false);

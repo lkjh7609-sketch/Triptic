@@ -335,7 +335,14 @@
       "empty": "還沒有訊息，傳送第一則訊息吧！",
       "placeholder": "輸入訊息",
       "sendError": "訊息傳送失敗。",
-      "badwordBlocked": "偵測到不當內容，請確認您的訊息。"
+      "badwordBlocked": "偵測到不當內容，請確認您的訊息。",
+      "qrCheck": "確認 QR",
+      "complete": "完成行程",
+      "completeConfirm": "要完成這趟行程嗎?完成後聊天室將變為唯讀,成員之間可以互相評分。",
+      "completeKeep": "繼續進行",
+      "completeProceed": "完成",
+      "completeError": "無法完成行程。",
+      "closedBanner": "行程已結束,聊天室為唯讀。"
     }
   }
 }

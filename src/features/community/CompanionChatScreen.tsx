@@ -1,15 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Send } from 'lucide-react';
+import { format } from 'date-fns';
+import { CheckCircle2, LogOut, QrCode, Send } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { captureError, trackScreenView } from '@/shared/monitoring';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { showToast } from '@/shared/ui/toast';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { AuthorName } from './AuthorName';
 import { ReportModal } from './ReportModal';
-import { useCompanionMatchMembers, useCompanionPost } from './hooks/useCompanionPosts';
+import {
+  useCancelCompanionPost,
+  useCompanionMatchMembers,
+  useCompanionPost,
+  useCompleteCompanionTrip,
+  useWithdrawApplication,
+} from './hooks/useCompanionPosts';
 import { useCompanionMessages, useSendCompanionMessage } from './hooks/useCompanionChat';
 import type { CompanionMessage } from './types';
 import postDetailStyles from './PostDetailScreen.module.css';
@@ -27,6 +36,10 @@ export function CompanionChatScreen() {
   const membersQuery = useCompanionMatchMembers(post);
   const messagesQuery = useCompanionMessages(postId);
   const sendMessage = useSendCompanionMessage(postId ?? '', user?.id ?? null);
+  const completeTrip = useCompleteCompanionTrip(postId ?? '');
+  const withdrawApplication = useWithdrawApplication();
+  const cancelPost = useCancelCompanionPost();
+  const [confirmAction, setConfirmAction] = useState<'complete' | 'leave' | 'cancel' | null>(null);
 
   const [body, setBody] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -48,11 +61,39 @@ export function CompanionChatScreen() {
       </div>
     );
   }
-  if (postError || !post || post.status !== 'matched') {
+  // closed(일정 완료, 0046)도 읽기 전용으로 연다 — 지난 대화를 다시 볼 수 있어야 한다
+  if (postError || !post || (post.status !== 'matched' && post.status !== 'closed')) {
     return <ErrorState summary={t('companion.match.loadError')} onRetry={() => refetch()} />;
   }
 
   const membersById = new Map((membersQuery.data ?? []).map((m) => [m.user_id, m.profile]));
+  const isOrganizer = !!user && user.id === post.author_id;
+  const isOpen = post.status === 'matched';
+  // 시작 전 종료는 완료가 아니라 모임 취소(서버도 막는다)
+  const canComplete = isOpen && isOrganizer && post.start_date <= format(new Date(), 'yyyy-MM-dd');
+  const canLeave = isOpen && (isOrganizer || post.myApplication?.status === 'accepted');
+
+  async function handleComplete() {
+    try {
+      await completeTrip.mutateAsync();
+    } catch (err) {
+      captureError(err, { context: 'completeCompanionTrip' });
+      showToast(t('companion.chat.completeError'));
+    }
+  }
+
+  async function handleLeave() {
+    try {
+      if (isOrganizer) {
+        await cancelPost.mutateAsync(post!.id);
+      } else if (post!.myApplication) {
+        await withdrawApplication.mutateAsync(post!.myApplication.id);
+      }
+      navigate('/community', { replace: true });
+    } catch (err) {
+      captureError(err, { context: isOrganizer ? 'cancelCompanionMatch' : 'leaveCompanionMatch' });
+    }
+  }
 
   async function handleSend() {
     if (!body.trim() || sendMessage.isPending) return;
@@ -79,6 +120,30 @@ export function CompanionChatScreen() {
       <div className={styles.header}>
         <h2 className={styles.title}>{post.title}</h2>
         <p className={styles.subtitle}>{t('companion.chat.memberCount', { count: membersQuery.data?.length ?? 0 })}</p>
+        {isOpen ? (
+          <div className={styles.actions}>
+            <button type="button" className={styles.actionBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
+              <QrCode size={16} aria-hidden="true" /> {t('companion.chat.qrCheck')}
+            </button>
+            {canComplete ? (
+              <button type="button" className={styles.actionBtn} disabled={completeTrip.isPending} onClick={() => setConfirmAction('complete')}>
+                <CheckCircle2 size={16} aria-hidden="true" /> {t('companion.chat.complete')}
+              </button>
+            ) : null}
+            {canLeave ? (
+              <button
+                type="button"
+                className={styles.actionBtnDanger}
+                disabled={withdrawApplication.isPending || cancelPost.isPending}
+                onClick={() => setConfirmAction(isOrganizer ? 'cancel' : 'leave')}
+              >
+                <LogOut size={16} aria-hidden="true" /> {isOrganizer ? t('companion.match.cancel') : t('companion.match.leave')}
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <p className={styles.closedBanner}>{t('companion.chat.closedBanner')}</p>
+        )}
       </div>
 
       <div className={styles.messageList}>
@@ -119,6 +184,7 @@ export function CompanionChatScreen() {
 
       {errorMessage ? <p className={styles.errorMessage}>{errorMessage}</p> : null}
 
+      {isOpen ? (
       <div className={postDetailStyles.commentInputRow}>
         <input
           className={postDetailStyles.commentInput}
@@ -139,9 +205,32 @@ export function CompanionChatScreen() {
           <Send size={16} aria-hidden="true" />
         </button>
       </div>
+      ) : null}
 
       {reportTarget ? (
         <ReportModal targetType="companion_message" targetId={reportTarget} onClose={() => setReportTarget(null)} />
+      ) : null}
+
+      {confirmAction === 'complete' ? (
+        <ConfirmDialog
+          title={t('companion.chat.complete')}
+          message={t('companion.chat.completeConfirm')}
+          cancelLabel={t('companion.chat.completeKeep')}
+          confirmLabel={t('companion.chat.completeProceed')}
+          onConfirm={handleComplete}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
+      {confirmAction === 'leave' || confirmAction === 'cancel' ? (
+        <ConfirmDialog
+          title={t(`companion.match.${confirmAction}`)}
+          message={t(`companion.match.${confirmAction}Confirm`)}
+          cancelLabel={t(`companion.match.${confirmAction}Keep`)}
+          confirmLabel={t(`companion.match.${confirmAction}Proceed`)}
+          danger
+          onConfirm={handleLeave}
+          onClose={() => setConfirmAction(null)}
+        />
       ) : null}
     </div>
   );

@@ -335,7 +335,14 @@
       "empty": "まだメッセージがありません。最初のメッセージを送ってみましょう！",
       "placeholder": "メッセージを入力",
       "sendError": "メッセージの送信に失敗しました。",
-      "badwordBlocked": "不適切な内容が検出されました。メッセージを確認してください。"
+      "badwordBlocked": "不適切な内容が検出されました。メッセージを確認してください。",
+      "qrCheck": "QR確認",
+      "complete": "日程を完了",
+      "completeConfirm": "日程を完了しますか?完了するとチャットは閲覧専用になり、メンバー同士で評価できます。",
+      "completeKeep": "続ける",
+      "completeProceed": "完了する",
+      "completeError": "日程を完了できませんでした。",
+      "closedBanner": "日程が終了しました。チャットは閲覧専用です。"
     }
   }
 }

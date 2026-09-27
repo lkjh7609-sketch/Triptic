@@ -335,7 +335,14 @@
       "empty": "아직 메시지가 없어요. 첫 메시지를 보내보세요!",
       "placeholder": "메시지를 입력하세요",
       "sendError": "메시지 전송에 실패했어요.",
-      "badwordBlocked": "부적절한 내용이 감지됐어요. 메시지를 확인해 주세요."
+      "badwordBlocked": "부적절한 내용이 감지됐어요. 메시지를 확인해 주세요.",
+      "qrCheck": "QR 확인",
+      "complete": "일정 완료",
+      "completeConfirm": "일정을 완료할까요? 완료하면 채팅방은 읽기 전용이 되고, 멤버끼리 서로 별점을 남길 수 있어요.",
+      "completeKeep": "계속 진행",
+      "completeProceed": "완료하기",
+      "completeError": "일정 완료에 실패했어요.",
+      "closedBanner": "일정이 끝났어요. 채팅방은 읽기 전용이에요."
     }
   }
 }

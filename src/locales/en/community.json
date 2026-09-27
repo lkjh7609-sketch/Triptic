@@ -347,7 +347,14 @@
       "empty": "No messages yet. Send the first one!",
       "placeholder": "Type a message",
       "sendError": "Failed to send the message.",
-      "badwordBlocked": "Inappropriate content detected. Please check your message."
+      "badwordBlocked": "Inappropriate content detected. Please check your message.",
+      "qrCheck": "Check QR",
+      "complete": "Finish trip",
+      "completeConfirm": "Finish this trip? The chat becomes read-only and members can rate each other.",
+      "completeKeep": "Keep going",
+      "completeProceed": "Finish",
+      "completeError": "Couldn't finish the trip.",
+      "closedBanner": "This trip has ended. The chat is read-only."
     }
   }
 }
