@@ -171,14 +171,10 @@ export function useMyCompanionCheckin(postId: string | undefined, userId: string
   });
 }
 
+/** 캐시 무효화는 CompanionReviewModal이 닫힐 때 한다(제출 직후 하면 모달이 먼저 사라짐) */
 export function useSubmitCompanionReview(postId: string) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { wentWell: boolean; ratings: { userId: string; rating: number }[] }) =>
       submitCompanionReview({ postId, ...input }),
-    onSuccess: () => {
-      // 별점은 커뮤니티 전역 닉네임 옆에 뜨므로 companion 하위만이 아니라 전부
-      queryClient.invalidateQueries({ queryKey: ['community'] });
-    },
   });
 }
