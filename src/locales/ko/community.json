@@ -86,7 +86,8 @@
     "fallbackAuthor": "여행자",
     "adminBadge": "관리자",
     "likeAria_other": "좋아요 {{count}}개",
-    "commentAria_other": "댓글 {{count}}개"
+    "commentAria_other": "댓글 {{count}}개",
+    "ratingLabel": "평점 {{avg}} (후기 {{count}}개)"
   },
   "menu": {
     "ariaLabel": "더보기",
@@ -239,7 +240,8 @@
     "mine": {
       "title": "내 동행",
       "hosting": "내가 모집 중",
-      "matched": "확정 · 채팅방 입장"
+      "matched": "확정 · 채팅방 입장",
+      "needsReview": "일정 종료 · 후기 남기기"
     },
     "compose": {
       "title": "동행 모집",
@@ -343,6 +345,22 @@
       "completeProceed": "완료하기",
       "completeError": "일정 완료에 실패했어요.",
       "closedBanner": "일정이 끝났어요. 채팅방은 읽기 전용이에요."
+    },
+    "review": {
+      "cta": "후기 남기기",
+      "title": "동행은 어땠나요?",
+      "wentWellQuestion": "일정이 잘 마무리됐나요?",
+      "wentWellYes": "네, 잘 마무리됐어요",
+      "wentWellNo": "아니요, 문제가 있었어요",
+      "problemHint": "불편한 일이 있었다면 채팅방 메시지나 프로필에서 신고해 주세요.",
+      "rateMembers": "함께한 동행에게 별점을 남겨주세요",
+      "starLabel_other": "{{count}}점",
+      "later": "나중에",
+      "submit": "제출",
+      "submitting": "제출하는 중…",
+      "submitError": "후기 저장에 실패했어요. 잠시 후 다시 시도해 주세요.",
+      "doneTitle": "후기를 남겨주셔서 고마워요",
+      "doneDesc": "별점은 상대방 닉네임 옆에 평균으로만 표시돼요."
     }
   }
 }

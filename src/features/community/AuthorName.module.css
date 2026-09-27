@@ -4,3 +4,19 @@
   color: var(--brand);
   vertical-align: -2px;
 }
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted);
+  vertical-align: 0;
+}
+
+.ratingStar {
+  color: var(--warning);
+  fill: var(--warning);
+}

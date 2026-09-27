@@ -1,0 +1,105 @@
+.desc {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.question {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.choiceRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.choice,
+.choiceActive {
+  appearance: none;
+  flex: 1;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.choiceActive {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.memberName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stars {
+  display: flex;
+}
+
+.starBtn {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 4px;
+  min-width: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.starOn {
+  color: var(--warning);
+  fill: var(--warning);
+}
+
+.starOff {
+  color: var(--border-strong);
+}
+
+.error {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}

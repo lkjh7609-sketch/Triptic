@@ -8,7 +8,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { DestinationSelector } from './DestinationSelector';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
-import type { CompanionPost, Destination } from './types';
+import type { Destination, MyCompanionPost } from './types';
 import styles from './CompanionFeedList.module.css';
 
 interface CompanionFeedListProps {
@@ -92,7 +92,8 @@ function MyCompanionsSection({ userId }: { userId: string }) {
   const { data: posts } = useMyActiveCompanionPosts(userId);
   if (!posts || posts.length === 0) return null;
 
-  function statusLabel(post: CompanionPost) {
+  function statusLabel(post: MyCompanionPost) {
+    if (post.needsReview) return t('companion.mine.needsReview');
     if (post.status === 'matched') return t('companion.mine.matched');
     if (post.author_id === userId) return t('companion.mine.hosting');
     return post.myApplication ? t(`companion.detail.myApplicationStatus.${post.myApplication.status}`) : '';
@@ -105,10 +106,16 @@ function MyCompanionsSection({ userId }: { userId: string }) {
         {posts.map((post) => (
           <Link
             key={post.id}
-            to={post.status === 'matched' ? `/community/companion/${post.id}/chat` : `/community/companion/${post.id}`}
+            to={
+              post.needsReview
+                ? `/community/companion/${post.id}/chat?review=1`
+                : post.status === 'matched'
+                  ? `/community/companion/${post.id}/chat`
+                  : `/community/companion/${post.id}`
+            }
             className={styles.card}
           >
-            <span className={post.status === 'matched' ? styles.mineBadgeActive : styles.mineBadge}>{statusLabel(post)}</span>
+            <span className={post.status === 'recruiting' ? styles.mineBadge : styles.mineBadgeActive}>{statusLabel(post)}</span>
             <h3 className={styles.cardTitle}>{post.title}</h3>
             <div className={styles.cardMeta}>
               <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
