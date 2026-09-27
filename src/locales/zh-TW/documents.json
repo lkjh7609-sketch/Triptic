@@ -30,6 +30,12 @@
     "consentText": "上傳機票或飯店確認單（PDF或照片），我們會自動辨識航班編號、時間、飯店等資訊並產生行程草稿。護照號、卡號等敏感資訊在傳送到辨識（AI）伺服器前會始終被遮蓋。辨識的內容必須經您確認後，才會新增到行程中。",
     "agreeAndContinue": "同意並繼續",
     "uploadTitle": "上傳預訂單據",
+    "categoryPrompt": "這是哪種預訂？",
+    "category": {
+      "flight": "機票",
+      "lodging": "住宿",
+      "other": "其他預訂"
+    },
     "fileHint": "PDF、JPG、PNG（最大20MB）",
     "processing": "正在辨識單據…",
     "uploadError": "上傳時發生錯誤，請重試。"

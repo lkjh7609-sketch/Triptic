@@ -22,10 +22,8 @@ import { MealsModal } from './MealsModal';
 import { ExpenseModal } from './ExpenseModal';
 import { FlightModal } from './FlightModal';
 import { DayCityModal } from './DayCityModal';
-import { SuggestionsModal } from './SuggestionsModal';
 import { UploadModal } from '@/features/documents/UploadModal';
 import { ReviewSheet } from '@/features/documents/ReviewSheet';
-import { VoucherArchive } from '@/features/documents/VoucherArchive';
 import { usePendingBookings } from '@/features/documents/useDocuments';
 import type { ParseBookingResponse } from '@/features/documents/documentService';
 import { formatItineraryText } from './formatItineraryText';
@@ -61,7 +59,7 @@ import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
-import { Lightbulb, Ticket, ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
+import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -90,12 +88,10 @@ export function TripDetailScreen() {
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showDayCityModal, setShowDayCityModal] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiSuggestBase, setAiSuggestBase] = useState<{ index: number; item: PlaceItem | undefined } | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
-  const [showVoucherArchive, setShowVoucherArchive] = useState(false);
   const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
 
   useEffect(() => {
@@ -415,31 +411,9 @@ export function TripDetailScreen() {
               ) : null}
             </button>
           ) : null}
-          <button
-            type="button"
-            className={styles.toggleButton}
-            aria-label={t('tripDetail.suggestionsAria')}
-            onClick={() => setShowSuggestions(true)}
-            disabled={isSample}
-            title={isSample ? t('tripDetail.suggestionsSampleTitle') : undefined}
-          >
-            <Lightbulb size={18} />{(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
-          </button>
-          {!isSample ? (
-            <button
-              type="button"
-              className={styles.toggleButton}
-              aria-label={t('tripDetail.voucherAria')}
-              onClick={() => setShowVoucherArchive(true)}
-            >
-              <Ticket size={18} />
-              {(pendingBookings.data?.length ?? 0) > 0 ? (
-                <span className={styles.badge}>{pendingBookings.data!.length}</span>
-              ) : null}
-            </button>
-          ) : null}
           <button type="button" className={styles.toggleButton} aria-label={t('tripDetail.shareAria')} onClick={() => setShowShare(true)}>
             <ExternalLink size={18} />
+            {(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
           </button>
         </div>
 
@@ -582,21 +556,14 @@ export function TripDetailScreen() {
         />
       ) : null}
 
-      {showSuggestions && tripId ? (
-        <SuggestionsModal
-          tripId={tripId}
-          suggestions={suggestions ?? []}
-          onClose={() => setShowSuggestions(false)}
-          onAccept={handleAcceptSuggestion}
-        />
-      ) : null}
-
       {showShare && tripId ? (
         <ShareSheet
           tripId={tripId}
           itineraryText={itineraryText}
           pdfInput={pdfInput}
           isSample={isSample}
+          suggestions={suggestions ?? []}
+          onAcceptSuggestion={handleAcceptSuggestion}
           onClose={() => setShowShare(false)}
         />
       ) : null}
@@ -622,10 +589,6 @@ export function TripDetailScreen() {
           onCommitFlight={handleSaveFlights}
           onClose={() => setShowReviewSheet(false)}
         />
-      ) : null}
-
-      {showVoucherArchive && tripId ? (
-        <VoucherArchive tripId={tripId} onClose={() => setShowVoucherArchive(false)} />
       ) : null}
 
       {confirmFinalize ? (

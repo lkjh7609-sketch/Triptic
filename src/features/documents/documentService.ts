@@ -27,6 +27,8 @@ export function validateFile(file: File): string | null {
   return null;
 }
 
+export type DocumentCategory = 'flight' | 'lodging' | 'other';
+
 export interface DocumentRow {
   id: string;
   trip_id: string;
@@ -38,6 +40,8 @@ export interface DocumentRow {
   page_count: number | null;
   parse_status: 'pending' | 'processing' | 'parsed' | 'failed' | 'skipped';
   parse_error: string | null;
+  /** 업로드 시 사용자가 직접 고른 분류(0040) — 예전 문서는 null일 수 있다 */
+  category: DocumentCategory | null;
   created_at: string;
 }
 
@@ -67,6 +71,7 @@ export async function uploadAndParseDocument(
   file: File,
   tripId: string,
   userId: string,
+  category: DocumentCategory,
 ): Promise<ParseBookingResponse> {
   if (!can('voucher.storage', { userId })) {
     throw new Error(i18next.t('documents:errors.storageLimit'));
@@ -99,6 +104,7 @@ export async function uploadAndParseDocument(
       original_name: file.name,
       mime_type: file.type,
       size_bytes: file.size,
+      category,
     })
     .select()
     .single();

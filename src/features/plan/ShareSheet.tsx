@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { tripService } from '@/shared/api/tripService';
+import { tripService, type Suggestion } from '@/shared/api/tripService';
 import { captureError } from '@/shared/monitoring';
 import type { PdfExportInput } from './pdfExport';
+import { SuggestionsModal } from './SuggestionsModal';
 import styles from './ShareSheet.module.css';
-import { Link, Clipboard, BookOpen, FileText } from 'lucide-react';
+import { Link, Clipboard, BookOpen, FileText, Lightbulb } from 'lucide-react';
 
 interface ShareSheetProps {
   tripId: string;
@@ -17,6 +18,11 @@ interface ShareSheetProps {
    * (index.html openShareModal만 SAMPLE_PROJECT_NAME을 검사하고, openExportModal/
    * copyItineraryText/openPdfModal은 검사하지 않는다) */
   isSample?: boolean;
+  /** 공유 링크로 받은 동행자 제안 — 원래 툴바에 따로 있던 전구 아이콘을 여기로
+   * 옮겼다(공유 흐름과 같은 맥락이라 별도 아이콘 없이 여기 얹는 게 자연스럽다는
+   * 이 파일의 기존 방침을 그대로 따름). 샘플 여행이면 숨긴다. */
+  suggestions?: Suggestion[];
+  onAcceptSuggestion?: (suggestion: Suggestion) => Promise<void>;
 }
 
 /**
@@ -27,13 +33,14 @@ interface ShareSheetProps {
  * 전체 일정 텍스트 복사(legacy copyItineraryText)도 같은 시트에 얹었다 — 헤더가
  * 이미 버튼 3개로 빽빽해서 별도 아이콘 대신 공유 흐름 안에 자연스럽게 포함시켰다.
  */
-export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample }: ShareSheetProps) {
+export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample, suggestions, onAcceptSuggestion }: ShareSheetProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [textCopied, setTextCopied] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState<'all' | 'current' | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   async function handleCreate() {
     setLoading(true);
@@ -180,7 +187,24 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample 
             </button>
           </div>
         ) : null}
+
+        {!isSample && suggestions && onAcceptSuggestion ? (
+          <button type="button" className={styles.secondary} onClick={() => setShowSuggestions(true)}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Lightbulb size={16} /> {t('share.suggestionsBtn', { count: suggestions.length })}
+            </span>
+          </button>
+        ) : null}
       </div>
+
+      {showSuggestions && onAcceptSuggestion ? (
+        <SuggestionsModal
+          tripId={tripId}
+          suggestions={suggestions ?? []}
+          onClose={() => setShowSuggestions(false)}
+          onAccept={onAcceptSuggestion}
+        />
+      ) : null}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   listPendingBookings,
   rejectBooking,
   uploadAndParseDocument,
+  type DocumentCategory,
   type DocumentRow,
 } from './documentService';
 import type { ParsedBooking } from './parseBooking/schema';
@@ -50,9 +51,9 @@ export function useUploadDocument(tripId: string) {
   const { user } = useSession();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: ({ file, category }: { file: File; category: DocumentCategory }) => {
       if (!user) throw new Error(i18next.t('common:auth.loginRequired'));
-      return uploadAndParseDocument(file, tripId, user.id);
+      return uploadAndParseDocument(file, tripId, user.id, category);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: pendingBookingsQueryKey(tripId) });
