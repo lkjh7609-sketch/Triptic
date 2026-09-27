@@ -206,7 +206,8 @@ export async function applyToCompanionPost(input: {
   const { data, error } = await supabase.functions.invoke('moderate-content', {
     body: { kind: 'companion_application', companionPostId: input.postId, body: input.message ?? '' },
   });
-  if (error) throw error;
+  // 원문("Edge Function returned a non-2xx status code")이 그대로 모달에 뜨던 것 방지
+  if (error) throw new Error(i18next.t('community:companion.apply.submitError'), { cause: error });
   return data as CreateCompanionApplicationResult;
 }
 
