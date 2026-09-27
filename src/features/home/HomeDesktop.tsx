@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -170,6 +170,10 @@ export function HomeDesktop() {
     <div className={styles.container}>
       <section className={`${styles.hero} ${styles.heroPlain}`}>
         <div className={styles.heroContent}>
+          <div className={styles.wordmark} aria-hidden="true">
+            <Compass size={22} className={styles.wordmarkIcon} />
+            <span>Triptic</span>
+          </div>
           <div className={styles.searchPill}>
             <Search size={20} className={styles.searchIcon} aria-hidden="true" />
             <input
