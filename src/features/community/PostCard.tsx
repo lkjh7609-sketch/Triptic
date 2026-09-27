@@ -5,6 +5,7 @@ import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useToggleLike } from './hooks/usePosts';
+import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
 import { getPostImageUrl } from './imageProcessing';
 import type { Post } from './types';
@@ -42,7 +43,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
           ) : (
             <span className={styles.avatarFallback}>{(post.author?.display_name ?? '?').trim().slice(0, 1).toUpperCase()}</span>
           )}
-          <span className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</span>
+          <span className={styles.authorName}><AuthorName profile={post.author} /></span>
           {showDestination && post.destination?.name ? (
             <span className={styles.destinationBadge}>· {post.destination.name}</span>
           ) : null}

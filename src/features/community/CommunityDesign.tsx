@@ -13,6 +13,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { DestinationSelector } from './DestinationSelector';
 import { CompanionFeedList } from './CompanionFeedList';
 import { useToggleLike } from './hooks/usePosts';
+import { AuthorName } from './AuthorName';
 import { getPostImageUrl } from './imageProcessing';
 import type { PostsPage } from './communityService';
 import type { Destination, Post } from './types';
@@ -313,7 +314,7 @@ export function CommunityDesignBody({
                         )}
                         <div>
                           <h4 className="font-title-md text-title-md text-primary text-sm leading-tight">
-                            {post.author?.display_name || t('post.fallbackAuthor')}
+                            <AuthorName profile={post.author} />
                           </h4>
                           <p className="font-body-sm text-body-sm text-outline">{t('design.authorPosts', { count })}</p>
                         </div>
@@ -450,7 +451,7 @@ function PostArticle({ post }: { post: Post }) {
               </span>
             )}
             <div>
-              <span className="font-title-md text-title-md text-primary text-sm">{post.author?.display_name || t('post.fallbackAuthor')}</span>
+              <span className="font-title-md text-title-md text-primary text-sm"><AuthorName profile={post.author} /></span>
               <span className="block font-body-sm text-body-sm text-outline">
                 {formatDistanceToNowStrict(new Date(post.created_at), {
                   addSuffix: true,

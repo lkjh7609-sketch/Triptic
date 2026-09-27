@@ -41,10 +41,11 @@ export interface Destination {
 
 export interface CommunityProfile {
   id: string;
-  handle: string | null;
   display_name: string;
   avatar_url: string | null;
   bio: string | null;
+  /** "관리자" 배지 표시용(community_profiles 뷰, 0041) */
+  is_admin: boolean;
 }
 
 export interface PostImage {

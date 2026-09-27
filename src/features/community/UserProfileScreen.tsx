@@ -10,6 +10,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { getCommunityProfile } from './communityService';
 import { useUserPosts } from './hooks/usePosts';
+import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
 import { PostCard } from './PostCard';
 import styles from './UserProfileScreen.module.css';
@@ -63,8 +64,9 @@ export function UserProfileScreen() {
           <span className={styles.avatarFallback}>🅤</span>
         )}
         <div className={styles.info}>
-          <h1 className={styles.name}>{profile.display_name || t('post.fallbackAuthor')}</h1>
-          {profile.handle ? <p className={styles.handle}>@{profile.handle}</p> : null}
+          <h1 className={styles.name}>
+            <AuthorName profile={profile} />
+          </h1>
           {profile.bio ? <p className={styles.bio}>{profile.bio}</p> : null}
         </div>
         {!isOwn ? (

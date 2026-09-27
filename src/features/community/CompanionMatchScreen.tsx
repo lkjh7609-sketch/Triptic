@@ -7,6 +7,7 @@ import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { AuthorName } from './AuthorName';
 import { CompanionQrModal } from './CompanionQrModal';
 import { CompanionScanModal } from './CompanionScanModal';
 import { useCancelCompanionPost, useCompanionMatchMembers, useCompanionPost, useWithdrawApplication } from './hooks/useCompanionPosts';
@@ -86,7 +87,7 @@ export function CompanionMatchScreen() {
                   <span className={postDetailStyles.avatarFallback}>{(member.profile?.display_name ?? '?').slice(0, 1)}</span>
                 )}
                 <div>
-                  <div className={postDetailStyles.authorName}>{member.profile?.display_name || t('post.fallbackAuthor')}</div>
+                  <div className={postDetailStyles.authorName}><AuthorName profile={member.profile} /></div>
                   {member.role === 'organizer' ? <span className={styles.organizerBadge}>{t('companion.match.organizer')}</span> : null}
                 </div>
               </div>

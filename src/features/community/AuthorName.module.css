@@ -1,0 +1,11 @@
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  background: var(--brand-tint);
+  color: var(--brand);
+  border-radius: var(--radius-pill);
+  font-size: 0.7em;
+  font-weight: 700;
+  vertical-align: middle;
+}

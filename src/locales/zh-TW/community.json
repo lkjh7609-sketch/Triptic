@@ -77,6 +77,7 @@
   },
   "post": {
     "fallbackAuthor": "旅行者",
+    "adminBadge": "管理員",
     "likeAria_other": "{{count}} 個喜歡",
     "commentAria_other": "{{count}} 則留言"
   },
@@ -172,12 +173,24 @@
     "forkError": "複製失敗了。"
   },
   "continent": {
-    "AS": { "name": "亞洲" },
-    "EU": { "name": "歐洲" },
-    "NA": { "name": "北美洲" },
-    "SA": { "name": "南美洲" },
-    "AF": { "name": "非洲" },
-    "OC": { "name": "大洋洲" }
+    "AS": {
+      "name": "亞洲"
+    },
+    "EU": {
+      "name": "歐洲"
+    },
+    "NA": {
+      "name": "北美洲"
+    },
+    "SA": {
+      "name": "南美洲"
+    },
+    "AF": {
+      "name": "非洲"
+    },
+    "OC": {
+      "name": "大洋洲"
+    }
   },
   "design": {
     "title": "旅人休息室",
