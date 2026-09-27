@@ -119,6 +119,14 @@ export function CommunityScreen() {
           </button>
         </div>
 
+        {user ? (
+          <div className={styles.myPostsRow}>
+            <Link to={`/community/user/${user.id}`} className={styles.chip}>
+              {t('feed.myPostsBtn')}
+            </Link>
+          </div>
+        ) : null}
+
         {tab !== 'companion' && destinations && destinations.length > 0 ? (
           <DestinationSelector destinations={destinations} />
         ) : null}

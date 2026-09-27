@@ -50,7 +50,8 @@
     "searchPlaceholder": "地域、キーワード、旅行者を検索...",
     "emptySub": "初めての旅行の瞬間やローカルなインサイトを共有してみましょう。",
     "writeFirst": "初めてのストーリーを書く",
-    "writeBtn": "投稿する"
+    "writeBtn": "投稿する",
+    "myPostsBtn": "自分の投稿"
   },
   "destination": {
     "loadError": "旅行先情報を読み込めませんでした。",
