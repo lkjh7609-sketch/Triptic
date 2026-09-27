@@ -23,15 +23,11 @@ alter table public.user_feedback enable row level security;
 create policy "insert own feedback" on public.user_feedback for insert
   with check (user_id = (select auth.uid()));
 
--- INSERT ... RETURNING(클라이언트 라이브러리 대부분이 select()를 체이닝)은
--- SELECT 정책이 하나도 없으면 실패한다(시뮬레이션으로 확인) — 본인 글은
--- 볼 수 있게 한다. update 권한은 일반 사용자에게 아예 안 준다 — 관리자
--- 조회/처리는 admin_list_feedback()/admin_mark_feedback_reviewed()로만
--- 가능하다.
-create policy "select own feedback" on public.user_feedback for select
-  using (user_id = (select auth.uid()));
-
 grant insert on public.user_feedback to authenticated;
+-- select/update 권한은 일반 사용자에게 아예 안 준다 — 관리자 조회/처리는
+-- admin_list_feedback()/admin_mark_feedback_reviewed()로만 가능하다.
+-- (본인 글 select 정책은 0042b — INSERT ... RETURNING이 select 정책 없이
+-- 실패하는 걸 뒤늦게 발견해서 별도 파일로 추가했다.)
 
 create or replace function public.admin_list_feedback(p_offset int default 0, p_limit int default 20)
 returns table (
