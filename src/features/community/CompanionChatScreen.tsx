@@ -7,6 +7,7 @@ import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
+import { AuthorName } from './AuthorName';
 import { ReportModal } from './ReportModal';
 import { useCompanionMatchMembers, useCompanionPost } from './hooks/useCompanionPosts';
 import { useCompanionMessages, useSendCompanionMessage } from './hooks/useCompanionChat';
@@ -94,7 +95,7 @@ export function CompanionChatScreen() {
             return (
               <div key={message.id} className={isOwn ? styles.rowOwn : styles.rowOther}>
                 {!isOwn ? (
-                  <div className={styles.senderName}>{profile?.display_name || t('post.fallbackAuthor')}</div>
+                  <div className={styles.senderName}><AuthorName profile={profile} /></div>
                 ) : null}
                 <div className={styles.bubbleWrap}>
                   <div className={isOwn ? styles.bubbleOwn : styles.bubbleOther}>{message.body}</div>

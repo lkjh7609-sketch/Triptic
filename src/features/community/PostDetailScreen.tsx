@@ -12,6 +12,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { usePost, useDeletePost, useToggleLike } from './hooks/usePosts';
 import { useComments, useCreateComment, useDeleteComment } from './hooks/useComments';
+import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
 import { getPostImageUrl } from './imageProcessing';
 import { translateText } from './translateClient';
@@ -102,7 +103,7 @@ export function PostDetailScreen() {
               <span className={styles.avatarFallback}>🅤</span>
             )}
             <div>
-              <div className={styles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</div>
+              <div className={styles.authorName}><AuthorName profile={post.author} /></div>
               <div className={styles.time}>
                 {post.destination?.name ? `${post.destination.name} · ` : ''}
                 {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
@@ -169,7 +170,7 @@ export function PostDetailScreen() {
         {(comments ?? []).map((c) => (
           <div key={c.id} className={styles.commentRow}>
             <div className={styles.commentHeader}>
-              <span className={styles.commentAuthor}>{c.author?.display_name || t('post.fallbackAuthor')}</span>
+              <span className={styles.commentAuthor}><AuthorName profile={c.author} /></span>
               <span className={styles.commentTime}>
                 {formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
               </span>

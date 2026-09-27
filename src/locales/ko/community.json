@@ -77,6 +77,7 @@
   },
   "post": {
     "fallbackAuthor": "여행자",
+    "adminBadge": "관리자",
     "likeAria_other": "좋아요 {{count}}개",
     "commentAria_other": "댓글 {{count}}개"
   },
@@ -172,12 +173,24 @@
     "forkError": "복제에 실패했어요."
   },
   "continent": {
-    "AS": { "name": "아시아" },
-    "EU": { "name": "유럽" },
-    "NA": { "name": "북아메리카" },
-    "SA": { "name": "남아메리카" },
-    "AF": { "name": "아프리카" },
-    "OC": { "name": "오세아니아" }
+    "AS": {
+      "name": "아시아"
+    },
+    "EU": {
+      "name": "유럽"
+    },
+    "NA": {
+      "name": "북아메리카"
+    },
+    "SA": {
+      "name": "남아메리카"
+    },
+    "AF": {
+      "name": "아프리카"
+    },
+    "OC": {
+      "name": "오세아니아"
+    }
   },
   "design": {
     "title": "여행자 라운지",

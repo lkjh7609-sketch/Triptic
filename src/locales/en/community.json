@@ -78,6 +78,7 @@
   },
   "post": {
     "fallbackAuthor": "Traveler",
+    "adminBadge": "Admin",
     "likeAria_other": "{{count}} likes",
     "likeAria_one": "{{count}} like",
     "commentAria_other": "{{count}} comments",
@@ -178,12 +179,24 @@
     "forkError": "Couldn't copy this itinerary."
   },
   "continent": {
-    "AS": { "name": "Asia" },
-    "EU": { "name": "Europe" },
-    "NA": { "name": "North America" },
-    "SA": { "name": "South America" },
-    "AF": { "name": "Africa" },
-    "OC": { "name": "Oceania" }
+    "AS": {
+      "name": "Asia"
+    },
+    "EU": {
+      "name": "Europe"
+    },
+    "NA": {
+      "name": "North America"
+    },
+    "SA": {
+      "name": "South America"
+    },
+    "AF": {
+      "name": "Africa"
+    },
+    "OC": {
+      "name": "Oceania"
+    }
   },
   "design": {
     "title": "Traveler Lounge & Community",

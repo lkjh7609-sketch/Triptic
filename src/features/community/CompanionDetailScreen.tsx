@@ -8,6 +8,7 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
 import { CompanionApplyModal } from './CompanionApplyModal';
 import {
@@ -101,7 +102,7 @@ export function CompanionDetailScreen() {
               <span className={postDetailStyles.avatarFallback}>{(post.author?.display_name ?? '?').slice(0, 1)}</span>
             )}
             <div>
-              <div className={postDetailStyles.authorName}>{post.author?.display_name || t('post.fallbackAuthor')}</div>
+              <div className={postDetailStyles.authorName}><AuthorName profile={post.author} /></div>
               <div className={postDetailStyles.time}>{post.destination?.name ?? t('companion.detail.anyDestination')}</div>
             </div>
           </div>
@@ -177,7 +178,7 @@ export function CompanionDetailScreen() {
                     <span className={postDetailStyles.avatarFallback}>{(app.applicant?.display_name ?? '?').slice(0, 1)}</span>
                   )}
                   <div>
-                    <div className={postDetailStyles.authorName}>{app.applicant?.display_name || t('post.fallbackAuthor')}</div>
+                    <div className={postDetailStyles.authorName}><AuthorName profile={app.applicant} /></div>
                     {app.message ? <p className={styles.applicantMessage}>{app.message}</p> : null}
                   </div>
                 </div>
