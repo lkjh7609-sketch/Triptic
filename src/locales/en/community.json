@@ -152,46 +152,12 @@
     "emptyDay": "No plans for this day yet."
   },
   "continent": {
-    "AS": {
-      "name": "Asia",
-      "countries": {
-        "KR": "South Korea",
-        "JP": "Japan",
-        "VN": "Vietnam",
-        "TH": "Thailand",
-        "PH": "Philippines",
-        "MY": "Malaysia",
-        "SG": "Singapore",
-        "ID": "Indonesia",
-        "TW": "Taiwan",
-        "HK": "Hong Kong",
-        "MO": "Macau",
-        "CN": "China"
-      }
-    },
-    "EU": {
-      "name": "Europe",
-      "countries": {
-        "FR": "France",
-        "GB": "UK",
-        "IT": "Italy",
-        "ES": "Spain",
-        "CZ": "Czechia",
-        "AT": "Austria",
-        "CH": "Switzerland",
-        "NL": "Netherlands",
-        "PT": "Portugal",
-        "TR": "Turkey"
-      }
-    },
-    "AM_OC": {
-      "name": "Americas/Oceania",
-      "countries": {
-        "US": "United States",
-        "CA": "Canada",
-        "AU": "Australia"
-      }
-    }
+    "AS": { "name": "Asia" },
+    "EU": { "name": "Europe" },
+    "NA": { "name": "North America" },
+    "SA": { "name": "South America" },
+    "AF": { "name": "Africa" },
+    "OC": { "name": "Oceania" }
   },
   "design": {
     "title": "Traveler Lounge & Community",
