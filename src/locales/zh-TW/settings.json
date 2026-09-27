@@ -84,6 +84,13 @@
     "namePlaceholder": "其他旅人會看到的名稱",
     "nameHint": "會顯示在社群貼文與同行者清單中。",
     "nameRequired": "請輸入名稱。",
+    "nameFormatError": "暱稱僅限韓文 2-7 個字（不可使用符號或數字）。",
+    "nameCheckRequired": "請先確認是否重複。",
+    "nameTaken": "此暱稱已被使用。",
+    "nameAvailable": "此暱稱可以使用。",
+    "nameReserved": "此暱稱無法使用。",
+    "checkDuplicate": "確認重複",
+    "checking": "確認中…",
     "saveError": "無法儲存，請稍後再試。"
   },
   "units": {
