@@ -179,7 +179,7 @@ export async function adminMarkFeedbackReviewed(id: string): Promise<void> {
 
 export async function getFeedbackScreenshotSignedUrl(path: string): Promise<string | null> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.storage.from('feedback-screenshots').createSignedUrl(path, 60);
+  const { data, error } = await supabase.storage.from('feedback-screenshots').createSignedUrl(path, 600);
   if (error) throw error;
   return data?.signedUrl ?? null;
 }

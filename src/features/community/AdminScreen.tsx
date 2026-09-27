@@ -144,18 +144,14 @@ function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (
   const { t } = useTranslation(['community', 'common']);
   const [busy, setBusy] = useState(false);
 
-  async function handleViewScreenshot() {
-    if (!item.screenshot_path) return;
-    setBusy(true);
-    try {
-      const url = await getFeedbackScreenshotSignedUrl(item.screenshot_path);
-      if (url) window.open(url, '_blank', 'noopener');
-    } catch (err) {
-      captureError(err, { context: 'getFeedbackScreenshotSignedUrl' });
-    } finally {
-      setBusy(false);
-    }
-  }
+  // iOS Safari는 await 뒤에 여는 window.open()을 팝업으로 막는다 — 클릭
+  // 즉시 반응하는 실제 <a href>가 되도록 signed URL을 미리 받아둔다.
+  const screenshotQuery = useQuery({
+    queryKey: ['admin', 'feedback-screenshot', item.screenshot_path],
+    queryFn: () => getFeedbackScreenshotSignedUrl(item.screenshot_path!),
+    enabled: !!item.screenshot_path,
+    staleTime: 5 * 60 * 1000,
+  });
 
   async function handleMarkReviewed() {
     setBusy(true);
@@ -178,12 +174,12 @@ function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (
         {item.status === 'new' ? <span className={styles.badge}>{t('admin.feedbackStatusNew')}</span> : null}
       </div>
       <p className={styles.preview}>{item.body}</p>
+      {item.screenshot_path && screenshotQuery.data ? (
+        <a href={screenshotQuery.data} target="_blank" rel="noopener noreferrer" className={styles.screenshotThumbLink}>
+          <img src={screenshotQuery.data} alt={t('admin.viewScreenshot')} className={styles.screenshotThumb} />
+        </a>
+      ) : null}
       <div className={styles.actions}>
-        {item.screenshot_path ? (
-          <button type="button" className={styles.secondaryBtn} disabled={busy} onClick={handleViewScreenshot}>
-            {t('admin.viewScreenshot')}
-          </button>
-        ) : null}
         {item.status === 'new' ? (
           <button type="button" className={styles.primaryBtn} disabled={busy} onClick={handleMarkReviewed}>
             {t('admin.markReviewed')}
