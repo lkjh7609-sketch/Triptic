@@ -127,11 +127,22 @@ export interface AdminUserRow {
   plan: 'free' | 'pro';
 }
 
-export async function adminSearchUsers(query: string): Promise<AdminUserRow[]> {
+/** query가 빈 문자열이면 전체 사용자를 표시 이름순으로 페이지네이션한다.
+ * hasMore를 별도 COUNT 없이 알아내려고 limit보다 1개 더 요청해서 잘라낸다. */
+export async function adminSearchUsers(
+  query: string,
+  page: number,
+  pageSize: number,
+): Promise<{ rows: AdminUserRow[]; hasMore: boolean }> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('admin_search_users', { p_query: query });
+  const { data, error } = await supabase.rpc('admin_search_users', {
+    p_query: query,
+    p_offset: page * pageSize,
+    p_limit: pageSize + 1,
+  });
   if (error) throw error;
-  return (data as AdminUserRow[]) ?? [];
+  const rows = (data as AdminUserRow[]) ?? [];
+  return { rows: rows.slice(0, pageSize), hasMore: rows.length > pageSize };
 }
 
 export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Promise<void> {
