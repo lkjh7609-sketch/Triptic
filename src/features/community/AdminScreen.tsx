@@ -63,21 +63,24 @@ function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user
   );
 }
 
+const USER_PAGE_SIZE = 20;
+
 function UserPlanTab() {
   const { t } = useTranslation(['community', 'common']);
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
+  const [page, setPage] = useState(0);
   const usersQuery = useQuery({
-    queryKey: ['admin', 'user-search', submittedQuery],
-    queryFn: () => adminSearchUsers(submittedQuery),
-    enabled: submittedQuery.trim().length > 0,
+    queryKey: ['admin', 'user-search', submittedQuery, page],
+    queryFn: () => adminSearchUsers(submittedQuery, page, USER_PAGE_SIZE),
   });
-  const [rows, setRows] = useState<AdminUserRow[] | null>(null);
+  const [overrides, setOverrides] = useState<Record<string, AdminUserRow>>({});
 
-  const displayedRows = rows ?? usersQuery.data ?? [];
+  const displayedRows = (usersQuery.data?.rows ?? []).map((r) => overrides[r.id] ?? r);
 
   function handleSearch() {
-    setRows(null);
+    setOverrides({});
+    setPage(0);
     setSubmittedQuery(query.trim());
   }
 
@@ -100,20 +103,34 @@ function UserPlanTab() {
 
       {usersQuery.isLoading ? (
         <Skeleton height="60px" />
-      ) : !submittedQuery ? (
-        <EmptyState message={t('admin.userSearchHint')} />
       ) : displayedRows.length === 0 ? (
         <EmptyState message={t('admin.userSearchEmpty')} />
       ) : (
-        <div className={styles.list}>
-          {displayedRows.map((u) => (
-            <UserPlanRow
-              key={u.id}
-              user={u}
-              onChanged={(updated) => setRows(displayedRows.map((r) => (r.id === updated.id ? updated : r)))}
-            />
-          ))}
-        </div>
+        <>
+          <div className={styles.list}>
+            {displayedRows.map((u) => (
+              <UserPlanRow
+                key={u.id}
+                user={u}
+                onChanged={(updated) => setOverrides((prev) => ({ ...prev, [updated.id]: updated }))}
+              />
+            ))}
+          </div>
+          <div className={styles.pagerRow}>
+            <button type="button" className={styles.secondaryBtn} disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>
+              {t('admin.prevPage')}
+            </button>
+            <span className={styles.pagerLabel}>{t('admin.pageLabel', { page: page + 1 })}</span>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              disabled={!usersQuery.data?.hasMore}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              {t('admin.nextPage')}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
