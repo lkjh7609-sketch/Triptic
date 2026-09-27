@@ -5,13 +5,25 @@
     "tabs": {
       "reports": "신고 큐",
       "pending": "자동 플래그 큐",
-      "companion": "동행찾기"
+      "companion": "동행찾기",
+      "users": "사용자 등급"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
     "approve": "승인",
     "noReports": "처리할 신고가 없어요.",
-    "noPending": "검토 대기 중인 글이 없어요."
+    "noPending": "검토 대기 중인 글이 없어요.",
+    "userSearchPlaceholder": "아이디(핸들) 또는 이름으로 검색",
+    "userSearchButton": "검색",
+    "userSearchEmpty": "검색 결과가 없어요.",
+    "userSearchHint": "핸들이나 이름 일부를 입력하고 검색해 주세요.",
+    "userNoHandle": "핸들 없음",
+    "userNoName": "이름 없음",
+    "planFree": "무료",
+    "planPro": "유료",
+    "grantPro": "유료 등급 부여",
+    "revokePro": "무료로 전환",
+    "planChangeError": "등급 변경에 실패했어요."
   },
   "report": {
     "title": "신고하기",

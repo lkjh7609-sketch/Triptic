@@ -116,3 +116,26 @@ export async function getReportTargetPreview(
   }
   return null;
 }
+
+// ── 사용자 등급 관리(0038) — 검색/변경 둘 다 SECURITY DEFINER RPC라
+// 클라이언트는 그냥 호출만 한다(관리자 확인은 함수 내부에서). ────────────
+export interface AdminUserRow {
+  id: string;
+  handle: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  plan: 'free' | 'pro';
+}
+
+export async function adminSearchUsers(query: string): Promise<AdminUserRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_search_users', { p_query: query });
+  if (error) throw error;
+  return (data as AdminUserRow[]) ?? [];
+}
+
+export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc('admin_set_user_plan', { p_user_id: userId, p_plan: plan });
+  if (error) throw error;
+}
