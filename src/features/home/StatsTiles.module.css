@@ -18,10 +18,13 @@
 .tile {
   background: var(--surface-card, #FFFFFF);
   border: 1px solid var(--border-subtle, #EFECE6);
-  padding: 12px 10px;
+  padding: 14px 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  text-align: center;
+  justify-content: center;
+  gap: 4px;
   min-width: 0;
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(15, 41, 66, 0.04);
@@ -30,7 +33,7 @@
 @media (min-width: 640px) {
   .tile {
     padding: 20px;
-    gap: 16px;
+    gap: 6px;
     border-radius: 16px;
   }
 }
@@ -44,33 +47,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--surface-subtle, #F7FAFC);
   color: var(--brand, #0D9488);
+  margin-bottom: 2px;
 }
 @media (min-width: 640px) {
   .iconWrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
   }
-}
-
-.infoWrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 2px;
-  min-width: 0;
 }
 
 .value {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1;
@@ -82,7 +77,7 @@
 }
 
 .label {
-  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
