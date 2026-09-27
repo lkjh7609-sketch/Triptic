@@ -391,11 +391,14 @@
   }
   .searchPill {
     padding: 6px 6px 6px 16px;
-    flex-wrap: wrap;
+  }
+  .searchInput {
+    min-width: 0;
   }
   .searchBtn {
-    padding: 10px 18px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 13px;
+    white-space: nowrap;
   }
   .quickCategories {
     margin-top: var(--space-4);
