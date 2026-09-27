@@ -38,6 +38,7 @@
     "dialogLabel": "Report",
     "doneTitle": "Report submitted",
     "doneDesc": "The content you reported is now hidden from your view. We'll let you know the outcome after reviewing it within 24 hours.",
+    "doneDescUser": "We'll review it within 24 hours and let you know the outcome.",
     "reasonPrompt": "Please choose a reason for reporting.",
     "detailPlaceholder": "Details (optional)",
     "submit": "Report",

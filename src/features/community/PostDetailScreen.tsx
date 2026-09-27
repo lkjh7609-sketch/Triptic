@@ -115,6 +115,7 @@ export function PostDetailScreen() {
             targetId={post.id}
             authorId={post.author_id}
             onDelete={isOwn ? handleDeletePost : undefined}
+            onReported={() => navigate('/community', { replace: true })}
           />
         </div>
 

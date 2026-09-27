@@ -11,10 +11,11 @@ interface PostActionsMenuProps {
   targetId: string;
   authorId: string;
   onDelete?: () => void;
+  onReported?: () => void;
 }
 
 /** 글/댓글 공용 ⋮ 메뉴 — 신고 / (타인) 차단 / (본인) 삭제 (06-community.md §1, §5.2, §5.3) */
-export function PostActionsMenu({ targetType, targetId, authorId, onDelete }: PostActionsMenuProps) {
+export function PostActionsMenu({ targetType, targetId, authorId, onDelete, onReported }: PostActionsMenuProps) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
   const blockMutation = useBlockUser(user?.id ?? null);
@@ -76,7 +77,7 @@ export function PostActionsMenu({ targetType, targetId, authorId, onDelete }: Po
         </div>
       ) : null}
       {showReport ? (
-        <ReportModal targetType={targetType} targetId={targetId} onClose={() => setShowReport(false)} />
+        <ReportModal targetType={targetType} targetId={targetId} onClose={() => setShowReport(false)} onReported={onReported} />
       ) : null}
     </div>
   );

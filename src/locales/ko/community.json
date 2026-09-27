@@ -38,6 +38,7 @@
     "dialogLabel": "신고하기",
     "doneTitle": "신고가 접수됐어요",
     "doneDesc": "신고해 주신 콘텐츠는 이제 회원님 화면에서 보이지 않아요. 24시간 이내에 검토 후 처리 결과를 알려드릴게요.",
+    "doneDescUser": "24시간 이내에 검토 후 처리 결과를 알려드릴게요.",
     "reasonPrompt": "신고 사유를 선택해 주세요.",
     "detailPlaceholder": "상세 설명 (선택)",
     "submit": "신고",
