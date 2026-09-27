@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { Minus, Plus } from 'lucide-react';
+import { Calendar, Minus, Plus } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView, captureError } from '@/shared/monitoring';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { useDestinations } from './hooks/useDestinations';
 import { useCreateCompanionPost } from './hooks/useCompanionPosts';
-import composeStyles from './ComposePostScreen.module.css';
 import styles from './CompanionComposeScreen.module.css';
 
 const MAX_TITLE_LENGTH = 100;
@@ -39,8 +38,8 @@ export function CompanionComposeScreen() {
 
   if (!user) {
     return (
-      <div className={composeStyles.wrap}>
-        <p className={composeStyles.hint}>{t('compose.loginRequired')}</p>
+      <div className={styles.wrap}>
+        <p className={styles.hint}>{t('compose.loginRequired')}</p>
       </div>
     );
   }
@@ -81,88 +80,93 @@ export function CompanionComposeScreen() {
   }
 
   return (
-    <div className={composeStyles.wrap}>
-      <div className={composeStyles.topBar}>
-        <button type="button" className={composeStyles.cancelBtn} onClick={() => navigate(-1)}>
+    <div className={styles.wrap}>
+      <div className={styles.topBar}>
+        <button type="button" className={styles.cancelBtn} onClick={() => navigate(-1)}>
           {t('action.cancel', { ns: 'common' })}
         </button>
-        <h1 className={composeStyles.title}>{t('companion.compose.title')}</h1>
-        <button type="button" className={composeStyles.submitBtn} disabled={createCompanionPost.isPending} onClick={handleSubmit}>
+        <h1 className={styles.title}>{t('companion.compose.title')}</h1>
+        <button type="button" className={styles.submitBtn} disabled={createCompanionPost.isPending} onClick={handleSubmit}>
           {createCompanionPost.isPending ? t('compose.submitting') : t('compose.submit')}
         </button>
       </div>
 
-      <div className={composeStyles.field}>
-        <label className={composeStyles.label}>{t('companion.compose.titleLabel')}</label>
-        <input
-          type="text"
-          className={styles.titleInput}
-          placeholder={t('companion.compose.titlePlaceholder')}
-          value={title}
-          maxLength={MAX_TITLE_LENGTH}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <div className={styles.card}>
+        <div className={styles.field}>
+          <label className={styles.label}>{t('companion.compose.titleLabel')}</label>
+          <input
+            type="text"
+            className={styles.titleInput}
+            placeholder={t('companion.compose.titlePlaceholder')}
+            value={title}
+            maxLength={MAX_TITLE_LENGTH}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <textarea
+            className={styles.bodyInput}
+            placeholder={t('companion.compose.bodyPlaceholder')}
+            value={body}
+            maxLength={MAX_BODY_LENGTH}
+            onChange={(e) => setBody(e.target.value)}
+          />
+          <span className={styles.counter}>
+            {body.length}/{MAX_BODY_LENGTH}
+          </span>
+        </div>
       </div>
 
-      <div className={composeStyles.field}>
-        <textarea
-          className={composeStyles.bodyInput}
-          placeholder={t('companion.compose.bodyPlaceholder')}
-          value={body}
-          maxLength={MAX_BODY_LENGTH}
-          onChange={(e) => setBody(e.target.value)}
-        />
-        <span className={composeStyles.counter}>
-          {body.length}/{MAX_BODY_LENGTH}
-        </span>
-      </div>
+      <div className={styles.card}>
+        <div className={styles.field}>
+          <label className={styles.label}>{t('companion.compose.destinationLabel')}</label>
+          <select className={styles.select} value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
+            <option value="">{t('companion.compose.destinationAny')}</option>
+            {(destinations ?? []).map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className={composeStyles.field}>
-        <label className={composeStyles.label}>{t('companion.compose.destinationLabel')}</label>
-        <select className={composeStyles.select} value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
-          <option value="">{t('companion.compose.destinationAny')}</option>
-          {(destinations ?? []).map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={composeStyles.field}>
-        <label className={composeStyles.label}>{t('companion.compose.dateLabel')}</label>
-        <button type="button" className={composeStyles.select} onClick={() => setShowCalendar(true)}>
-          {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('companion.compose.datePlaceholder')}
-        </button>
-      </div>
-
-      <div className={composeStyles.field}>
-        <label className={composeStyles.label}>{t('companion.compose.groupSizeLabel')}</label>
-        <div className={styles.stepper}>
-          <button
-            type="button"
-            className={styles.stepperBtn}
-            disabled={groupSize <= MIN_GROUP_SIZE}
-            onClick={() => setGroupSize((n) => Math.max(MIN_GROUP_SIZE, n - 1))}
-            aria-label={t('companion.compose.groupSizeDecrease')}
-          >
-            <Minus size={16} aria-hidden="true" />
+        <div className={styles.field}>
+          <label className={styles.label}>{t('companion.compose.dateLabel')}</label>
+          <button type="button" className={styles.dateButton} onClick={() => setShowCalendar(true)}>
+            <Calendar size={18} className={styles.dateIcon} aria-hidden="true" />
+            {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('companion.compose.datePlaceholder')}
           </button>
-          <span className={styles.stepperValue}>{t('companion.compose.groupSizeValue', { count: groupSize })}</span>
-          <button
-            type="button"
-            className={styles.stepperBtn}
-            disabled={groupSize >= MAX_GROUP_SIZE}
-            onClick={() => setGroupSize((n) => Math.min(MAX_GROUP_SIZE, n + 1))}
-            aria-label={t('companion.compose.groupSizeIncrease')}
-          >
-            <Plus size={16} aria-hidden="true" />
-          </button>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label}>{t('companion.compose.groupSizeLabel')}</label>
+          <div className={styles.stepper}>
+            <button
+              type="button"
+              className={styles.stepperBtn}
+              disabled={groupSize <= MIN_GROUP_SIZE}
+              onClick={() => setGroupSize((n) => Math.max(MIN_GROUP_SIZE, n - 1))}
+              aria-label={t('companion.compose.groupSizeDecrease')}
+            >
+              <Minus size={16} aria-hidden="true" />
+            </button>
+            <span className={styles.stepperValue}>{t('companion.compose.groupSizeValue', { count: groupSize })}</span>
+            <button
+              type="button"
+              className={styles.stepperBtn}
+              disabled={groupSize >= MAX_GROUP_SIZE}
+              onClick={() => setGroupSize((n) => Math.min(MAX_GROUP_SIZE, n + 1))}
+              aria-label={t('companion.compose.groupSizeIncrease')}
+            >
+              <Plus size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
 
       {statusMessage ? (
-        <p className={statusMessage.type === 'error' ? composeStyles.errorMessage : composeStyles.infoMessage}>
+        <p className={statusMessage.type === 'error' ? styles.errorMessage : styles.infoMessage}>
           {statusMessage.text}
         </p>
       ) : null}
@@ -180,7 +184,7 @@ export function CompanionComposeScreen() {
               }}
             />
             <div className={styles.calendarActions}>
-              <button type="button" className={composeStyles.submitBtn} onClick={() => setShowCalendar(false)}>
+              <button type="button" className={styles.submitBtn} onClick={() => setShowCalendar(false)}>
                 {t('action.confirm', { ns: 'common' })}
               </button>
             </div>
