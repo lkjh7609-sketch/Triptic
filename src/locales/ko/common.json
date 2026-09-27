@@ -77,6 +77,7 @@
   },
   "menu": {
     "darkMode": "다크 모드",
+    "settingsPage": "전체 설정",
     "editProfile": "내 정보 변경",
     "units": "단위 설정",
     "language": "언어 설정",
