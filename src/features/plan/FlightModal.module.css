@@ -1,77 +1,106 @@
-.slot {
+.card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .slotLabel {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-title);
 }
 
-.lookupRow {
+.preview {
+  font-size: var(--font-body-size);
+  color: var(--text-body);
+  margin: 0;
   display: flex;
+  align-items: center;
   gap: var(--space-2);
 }
 
-.flightNoInput {
-  flex: 1;
+.previewActions {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.manualToggle {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--brand);
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+
+.manualToggleDanger {
+  composes: manualToggle;
+  color: var(--danger);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.fieldInput {
   min-height: 44px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
   font-size: var(--font-body-size);
+  width: 100%;
   min-width: 0;
 }
 
-.lookupBtn {
-  flex: 0 0 auto;
-  min-height: 44px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--brand);
-  color: var(--text-on-brand);
-  font-weight: 600;
-}
-.lookupBtn:disabled {
-  opacity: 0.5;
-}
-
-.preview {
+.error {
+  grid-column: 1 / -1;
   font-size: var(--font-caption-size);
-  color: var(--text-body);
+  color: var(--danger);
   margin: 0;
 }
 
-.hint {
-  font-size: var(--font-caption-size);
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.manualToggle {
-  align-self: flex-start;
-  border: none;
-  background: none;
-  color: var(--brand);
-  font-size: var(--font-caption-size);
-  padding: 0;
-}
-
-.manualFields {
+.formActions {
   display: flex;
-  flex-direction: column;
   gap: var(--space-2);
 }
 
 .applyManualBtn {
-  min-height: 40px;
+  flex: 1;
+  min-height: 44px;
   border-radius: var(--radius-md);
   border: none;
   background: var(--brand);
   color: var(--text-on-brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelManualBtn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-body);
   font-weight: 600;
+  cursor: pointer;
 }

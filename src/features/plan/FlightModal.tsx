@@ -91,14 +91,14 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
   const [airline, setAirline] = useState(value?.airline ?? '');
   const [depTime, setDepTime] = useState(value?.dep.time ?? '');
   const [arrTime, setArrTime] = useState(value?.arr.time ?? '');
-  
+
   const [depPlace, setDepPlace] = useState<SelectedPlace | null>(
     value?.dep.name ? { name: value.dep.name, address: '', lat: value.dep.lat ?? 0, lng: value.dep.lng ?? 0, placeId: null, types: [] } : null,
   );
   const [arrPlace, setArrPlace] = useState<SelectedPlace | null>(
     value?.arr.name ? { name: value.arr.name, address: '', lat: value.arr.lat ?? 0, lng: value.arr.lng ?? 0, placeId: null, types: [] } : null,
   );
-  
+
   const { inputRef: depInputRef } = usePlaceAutocomplete(setDepPlace, { types: ['airport'] });
   const { inputRef: arrInputRef } = usePlaceAutocomplete(setArrPlace, { types: ['airport'] });
 
@@ -149,84 +149,102 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
   }
 
   return (
-    <div className={styles.slot}>
+    <div className={styles.card}>
       <div className={styles.slotLabel}>{label}</div>
 
       {!isEditing && value ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <>
           <p className={styles.preview}>
             <CheckCircle size={14} aria-hidden="true" /> {flightPreviewText(value, t)}
           </p>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className={styles.previewActions}>
             <button type="button" className={styles.manualToggle} onClick={() => setIsEditing(true)}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Pencil size={16} aria-hidden="true" /> {t('common:action.edit')}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Pencil size={14} aria-hidden="true" /> {t('common:action.edit')}</span>
             </button>
-            <button type="button" className={styles.manualToggle} style={{ color: 'var(--danger)' }} onClick={handleRemove}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Trash2 size={16} aria-hidden="true" /> {t('common:action.delete')}</span>
+            <button type="button" className={styles.manualToggleDanger} onClick={handleRemove}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Trash2 size={14} aria-hidden="true" /> {t('common:action.delete')}</span>
             </button>
           </div>
-        </div>
-      ) : null}
+        </>
+      ) : (
+        <>
+          <div className={styles.fieldGrid}>
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.flightNoLabel')}</span>
+              <input
+                className={styles.fieldInput}
+                placeholder={t('flight.flightNoPlaceholder')}
+                value={flightNo}
+                onChange={(e) => setFlightNo(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+              />
+            </label>
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.airlineLabel')}</span>
+              <input
+                className={styles.fieldInput}
+                placeholder={t('flight.airlinePlaceholder')}
+                value={airline}
+                onChange={(e) => setAirline(e.target.value.toUpperCase())}
+              />
+            </label>
 
-      <div className={styles.manualFields} style={{ display: isEditing ? 'flex' : 'none', marginTop: value ? '12px' : '0' }}>
-        <input
-          className={modalStyles.input}
-          placeholder={t('flight.flightNoPlaceholder')}
-          aria-label={t('flight.flightNoPlaceholder')}
-          value={flightNo}
-          onChange={(e) => setFlightNo(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-        />
-        <input
-          className={modalStyles.input}
-          placeholder={t('flight.airlinePlaceholder')}
-          aria-label={t('flight.airlinePlaceholder')}
-          value={airline}
-          onChange={(e) => setAirline(e.target.value.toUpperCase())}
-        />
-        <input
-          ref={depInputRef}
-          className={modalStyles.input}
-          placeholder={t('flight.depPlaceholder')}
-          aria-label={t('flight.depPlaceholder')}
-          defaultValue={depPlace?.name}
-        />
-        <input
-          type="time"
-          className={modalStyles.input}
-          aria-label={t('flight.depTimeAria')}
-          value={depTime}
-          onChange={(e) => setDepTime(e.target.value)}
-        />
-        <input
-          ref={arrInputRef}
-          className={modalStyles.input}
-          placeholder={t('flight.arrPlaceholder')}
-          aria-label={t('flight.arrPlaceholder')}
-          defaultValue={arrPlace?.name}
-        />
-        <input
-          type="time"
-          className={modalStyles.input}
-          aria-label={t('flight.arrTimeAria')}
-          value={arrTime}
-          onChange={(e) => setArrTime(e.target.value)}
-        />
-        {error ? (
-          <p className={modalStyles.error} role="alert">
-            {error}
-          </p>
-        ) : null}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {value && (
-            <button type="button" className={modalStyles.secondary} style={{ flex: 1 }} onClick={() => setIsEditing(false)}>
-              {t('common:action.cancel')}
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.depLabel')}</span>
+              <input
+                ref={depInputRef}
+                className={styles.fieldInput}
+                placeholder={t('flight.depPlaceholder')}
+                defaultValue={depPlace?.name}
+              />
+            </label>
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.depTimeAria')}</span>
+              <input
+                type="time"
+                className={styles.fieldInput}
+                value={depTime}
+                onChange={(e) => setDepTime(e.target.value)}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.arrLabel')}</span>
+              <input
+                ref={arrInputRef}
+                className={styles.fieldInput}
+                placeholder={t('flight.arrPlaceholder')}
+                defaultValue={arrPlace?.name}
+              />
+            </label>
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.arrTimeAria')}</span>
+              <input
+                type="time"
+                className={styles.fieldInput}
+                value={arrTime}
+                onChange={(e) => setArrTime(e.target.value)}
+              />
+            </label>
+
+            {error ? (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            ) : null}
+          </div>
+
+          <div className={styles.formActions}>
+            {value ? (
+              <button type="button" className={styles.cancelManualBtn} onClick={() => setIsEditing(false)}>
+                {t('common:action.cancel')}
+              </button>
+            ) : null}
+            <button type="button" className={styles.applyManualBtn} onClick={handleApply}>
+              {value ? t('flight.applyEdit') : t('flight.applyManual')}
             </button>
-          )}
-          <button type="button" className={styles.applyManualBtn} style={{ flex: value ? 2 : 1 }} onClick={handleApply}>
-            {value ? t('flight.applyEdit') : t('flight.applyManual')}
-          </button>
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
