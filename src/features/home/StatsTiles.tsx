@@ -25,8 +25,10 @@ function Tile({ icon, value, label }: { icon: React.ReactNode, value: number | s
   return (
     <div className={styles.tile}>
       <div className={styles.iconWrap}>{icon}</div>
-      <span className={styles.value}>{typeof value === 'number' ? value.toLocaleString() : value}</span>
-      <span className={styles.label}>{label}</span>
+      <div className={styles.infoWrap}>
+        <span className={styles.value}>{typeof value === 'number' ? value.toLocaleString() : value}</span>
+        <span className={styles.label}>{label}</span>
+      </div>
     </div>
   );
 }
