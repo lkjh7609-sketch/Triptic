@@ -169,12 +169,14 @@ export function SettingsScreen() {
               <span>{t('preferences.unitSettings')}</span>
               <span style={{color: 'var(--text-muted)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
             </button>
-            <div className={styles.row}>
+            <div className={`${styles.row} ${styles.rowRelative}`}>
               <span>{t('preferences.baseCurrency')}</span>
+              <span style={{color: 'var(--text-muted)'}}>{profile?.base_currency ?? 'KRW'} &gt;</span>
               <select
-                className={styles.select}
+                className={styles.selectOverlay}
                 value={profile?.base_currency ?? 'KRW'}
                 onChange={(e) => updateProfile.mutate({ base_currency: e.target.value })}
+                aria-label={t('preferences.baseCurrency')}
               >
                 {Object.entries(CURRENCIES).map(([code, meta]) => (
                   <option key={code} value={code}>
