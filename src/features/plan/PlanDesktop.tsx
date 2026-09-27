@@ -37,6 +37,7 @@ import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
+import { useTrip, useTripSummaries } from './hooks/useTrips';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
 import { formatLocalizedDay } from './planDateFormat';
 import { CreateTripModal } from './CreateTripModal';
@@ -97,8 +98,36 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
 
   const activeTrips = useMemo(() => [...ongoing, ...[...upcoming].sort(byStartDate)], [ongoing, upcoming]);
   const nextTrip = activeTrips[0] ?? null;
-  const summaries = useMemo(() => new Map(trips.map((trip) => [trip.id, summarizeTrip(trip)])), [trips]);
+  // listTrips()는 비용이 드는 정규화 테이블 재구성을 건너뛰어 trip.content가
+  // 비어 있다 — summarizeTrip(trip)만으로는 완성도/장소/호텔/항공이 전부
+  // 0/미정으로 보이므로, 집계 전용 RPC(get_trip_summaries) 결과로 덮어쓴다.
+  const tripSummaries = useTripSummaries();
+  const summaries = useMemo(
+    () =>
+      new Map(
+        trips.map((trip) => {
+          const base = summarizeTrip(trip);
+          const real = tripSummaries.data?.get(trip.id);
+          if (!real) return [trip.id, base] as const;
+          return [
+            trip.id,
+            {
+              ...base,
+              plannedDays: real.plannedDays,
+              placeCount: real.placeCount,
+              hasHotel: real.hasHotel,
+              hasFlight: real.hasFlight,
+              completeness: Math.round((real.plannedDays / base.totalDays) * 100),
+            },
+          ] as const;
+        }),
+      ),
+    [trips, tripSummaries.data],
+  );
   const members = useTripMembers(activeTrips.map((trip) => trip.id));
+  // NextTripRail의 날씨/항공편/PDF는 실제 콘텐츠가 필요하다 — nextTrip은
+  // listTrips() 결과라 content가 비어 있으므로 단일 여행 조회로 다시 채운다.
+  const nextTripDetail = useTrip(nextTrip?.id);
 
   const displayName =
     profile?.display_name?.trim() ||
@@ -286,7 +315,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         </div>
 
         <NextTripRail
-          trip={nextTrip}
+          trip={nextTripDetail.data ?? nextTrip}
           members={nextTrip ? (members.data?.[nextTrip.id] ?? []) : []}
           onCreate={() => setShowCreate(true)}
         />

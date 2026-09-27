@@ -168,6 +168,25 @@ export class TripService {
     return (data as TripRow[]) ?? [];
   }
 
+  /** 여행 목록 카드용 경량 요약(완성도/장소 수/호텔·항공 여부) — listTrips()가
+   * 채우지 않는 content 대신, 정규화 테이블을 집계만 하는 RPC로 가져온다
+   * (0034_trip_summary_rpc.sql). trip_id로 바로 찾아 쓰도록 Map으로 반환한다. */
+  async listTripSummaries(): Promise<Map<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }>> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('get_trip_summaries');
+    if (error) throw error;
+    const map = new Map<string, { plannedDays: number; placeCount: number; hasHotel: boolean; hasFlight: boolean }>();
+    for (const row of (data ?? []) as { trip_id: string; planned_days: number; place_count: number; has_hotel: boolean; has_flight: boolean }[]) {
+      map.set(row.trip_id, {
+        plannedDays: row.planned_days,
+        placeCount: row.place_count,
+        hasHotel: row.has_hotel,
+        hasFlight: row.has_flight,
+      });
+    }
+    return map;
+  }
+
   /** 단일 여행 조회 (여행 상세 화면용) — 정규화 테이블에서 콘텐츠를 재구성해 붙인다 */
   async getTrip(tripId: string): Promise<TripRow | null> {
     const supabase = getSupabaseClient();
