@@ -914,6 +914,18 @@
   color: #fff;
   border-color: var(--pd-navy);
 }
+.btnOpen:is(button) {
+  cursor: pointer;
+  font-family: inherit;
+}
+.btnOpen:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.btnFinalized {
+  color: var(--pd-subtle);
+  border-style: dashed;
+}
 .emptyBody {
   display: flex;
   align-items: center;

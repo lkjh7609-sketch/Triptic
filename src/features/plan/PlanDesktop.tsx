@@ -13,7 +13,6 @@ import {
   Hotel,
   MapPin,
   Users,
-  ArrowRight,
   ChevronRight,
   BadgeCheck,
   MapPinned,
@@ -32,12 +31,14 @@ import { useWeather } from '@/features/weather/useWeather';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { captureError } from '@/shared/monitoring';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { showToast } from '@/shared/ui/toast';
 import { useHomeStats } from '@/features/home/useHomeStats';
 import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
-import { useTrip, useTripSummaries } from './hooks/useTrips';
+import { useFinalizeTrip, useTrip, useTripSummaries } from './hooks/useTrips';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
 import { formatLocalizedDay } from './planDateFormat';
 import { CreateTripModal } from './CreateTripModal';
@@ -443,8 +444,23 @@ function CompactTripCard({
   const isOngoing = getTripPhase(trip.start_date, trip.end_date) === 'ongoing';
   const range = formatRange(trip, i18n.language);
   const travelerCount = Math.max(1, members.length);
+  const { user } = useSession();
+  const finalizeMutation = useFinalizeTrip(trip.id);
+  const [confirmFinalize, setConfirmFinalize] = useState(false);
+  // finalize_trip RPC는 소유자만 통과한다(0037) — 공유받은 여행엔 버튼을 안 보여준다
+  const canFinalize = !trip.finalized_at && user?.id === trip.owner_id;
+
+  async function handleFinalize() {
+    try {
+      await finalizeMutation.mutateAsync();
+    } catch (err) {
+      captureError(err, { context: 'finalizeTrip' });
+      showToast(err instanceof Error ? err.message : t('tripDetail.loadError'));
+    }
+  }
 
   return (
+    <>
     <Link to={`/plan/${trip.id}`} className={styles.compactCard}>
       <div className={styles.cardTop}>
         <div className={styles.cardImageWrap}>
@@ -516,11 +532,35 @@ function CompactTripCard({
             </div>
           ))}
         </div>
-        <div className={`${styles.btnOpen} ${isOngoing ? styles.btnOpenActive : ''}`}>
-          {t('desktop.openItinerary')} <ArrowRight size={14} aria-hidden="true" />
-        </div>
+        {trip.finalized_at ? (
+          <span className={`${styles.btnOpen} ${styles.btnFinalized}`}>{t('quota.finalizedBadge')}</span>
+        ) : canFinalize ? (
+          <button
+            type="button"
+            className={`${styles.btnOpen} ${isOngoing ? styles.btnOpenActive : ''}`}
+            disabled={finalizeMutation.isPending}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setConfirmFinalize(true);
+            }}
+          >
+            {t('quota.finalizeButton')}
+          </button>
+        ) : null}
       </div>
     </Link>
+    {confirmFinalize ? (
+      <ConfirmDialog
+        title={t('quota.finalizeButton')}
+        message={t('quota.finalizeConfirm')}
+        cancelLabel={t('quota.finalizeKeep')}
+        confirmLabel={t('quota.finalizeProceed')}
+        onConfirm={handleFinalize}
+        onClose={() => setConfirmFinalize(false)}
+      />
+    ) : null}
+    </>
   );
 }
 
