@@ -104,5 +104,17 @@
     "distance": "Distance",
     "kilometers": "Kilometers (km)",
     "miles": "Miles (mi)"
+  },
+  "feedback": {
+    "menuLabel": "Suggest a feature",
+    "title": "Suggest a feature",
+    "bodyLabel": "Details",
+    "bodyPlaceholder": "Tell us what's bothering you or what you'd like to see.",
+    "bodyRequired": "Please enter some details.",
+    "screenshotLabel": "Screenshot (optional)",
+    "submit": "Send",
+    "submitting": "Sending…",
+    "submitError": "Couldn't send it. Please try again later.",
+    "submitSuccess": "Thanks for the feedback!"
   }
 }

@@ -8,8 +8,11 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { isAdmin } from './communityService';
 import {
+  adminListFeedback,
+  adminMarkFeedbackReviewed,
   adminSearchUsers,
   adminSetUserPlan,
+  getFeedbackScreenshotSignedUrl,
   getReportTargetPreview,
   listOpenReports,
   listPendingReviewCompanionPosts,
@@ -20,12 +23,13 @@ import {
   setCompanionMessageStatus,
   setCompanionPostStatus,
   setPostStatus,
+  type AdminFeedbackRow,
   type AdminUserRow,
 } from './adminService';
 import type { Report } from './types';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending' | 'users';
+type Tab = 'reports' | 'pending' | 'users' | 'feedback';
 
 function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user: AdminUserRow) => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -133,6 +137,108 @@ function UserPlanTab() {
         </>
       )}
     </div>
+  );
+}
+
+function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (item: AdminFeedbackRow) => void }) {
+  const { t } = useTranslation(['community', 'common']);
+  const [busy, setBusy] = useState(false);
+
+  async function handleViewScreenshot() {
+    if (!item.screenshot_path) return;
+    setBusy(true);
+    try {
+      const url = await getFeedbackScreenshotSignedUrl(item.screenshot_path);
+      if (url) window.open(url, '_blank', 'noopener');
+    } catch (err) {
+      captureError(err, { context: 'getFeedbackScreenshotSignedUrl' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleMarkReviewed() {
+    setBusy(true);
+    try {
+      await adminMarkFeedbackReviewed(item.id);
+      onChanged({ ...item, status: 'reviewed' });
+    } catch (err) {
+      captureError(err, { context: 'adminMarkFeedbackReviewed' });
+      window.alert(t('admin.markReviewedError'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className={styles.item}>
+      <div className={styles.itemMeta}>
+        <span className={styles.userName}>{item.display_name || t('admin.userNoName')}</span>
+        <span className={styles.itemTime}>{new Date(item.created_at).toLocaleString('ko-KR')}</span>
+        {item.status === 'new' ? <span className={styles.badge}>{t('admin.feedbackStatusNew')}</span> : null}
+      </div>
+      <p className={styles.preview}>{item.body}</p>
+      <div className={styles.actions}>
+        {item.screenshot_path ? (
+          <button type="button" className={styles.secondaryBtn} disabled={busy} onClick={handleViewScreenshot}>
+            {t('admin.viewScreenshot')}
+          </button>
+        ) : null}
+        {item.status === 'new' ? (
+          <button type="button" className={styles.primaryBtn} disabled={busy} onClick={handleMarkReviewed}>
+            {t('admin.markReviewed')}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+const FEEDBACK_PAGE_SIZE = 20;
+
+function FeedbackTab() {
+  const { t } = useTranslation(['community', 'common']);
+  const [page, setPage] = useState(0);
+  const feedbackQuery = useQuery({
+    queryKey: ['admin', 'feedback', page],
+    queryFn: () => adminListFeedback(page, FEEDBACK_PAGE_SIZE),
+  });
+  const [overrides, setOverrides] = useState<Record<string, AdminFeedbackRow>>({});
+
+  const displayedRows = (feedbackQuery.data?.rows ?? []).map((r) => overrides[r.id] ?? r);
+
+  if (feedbackQuery.isLoading) {
+    return <Skeleton height="60px" />;
+  }
+  if (displayedRows.length === 0) {
+    return <EmptyState message={t('admin.feedbackEmpty')} />;
+  }
+  return (
+    <>
+      <div className={styles.list}>
+        {displayedRows.map((item) => (
+          <FeedbackRow
+            key={item.id}
+            item={item}
+            onChanged={(updated) => setOverrides((prev) => ({ ...prev, [updated.id]: updated }))}
+          />
+        ))}
+      </div>
+      <div className={styles.pagerRow}>
+        <button type="button" className={styles.secondaryBtn} disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>
+          {t('admin.prevPage')}
+        </button>
+        <span className={styles.pagerLabel}>{t('admin.pageLabel', { page: page + 1 })}</span>
+        <button
+          type="button"
+          className={styles.secondaryBtn}
+          disabled={!feedbackQuery.data?.hasMore}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          {t('admin.nextPage')}
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -321,10 +427,19 @@ export function AdminScreen() {
         >
           {t('admin.tabs.users')}
         </button>
+        <button
+          type="button"
+          className={tab === 'feedback' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('feedback')}
+        >
+          {t('admin.tabs.feedback')}
+        </button>
       </div>
 
       {tab === 'users' ? (
         <UserPlanTab />
+      ) : tab === 'feedback' ? (
+        <FeedbackTab />
       ) : tab === 'reports' ? (
         reportsQuery.isLoading ? (
           <Skeleton height="80px" />

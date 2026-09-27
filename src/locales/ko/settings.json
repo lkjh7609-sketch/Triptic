@@ -101,5 +101,17 @@
     "distance": "거리 단위",
     "kilometers": "킬로미터 (km)",
     "miles": "마일 (mi)"
+  },
+  "feedback": {
+    "menuLabel": "건의하기",
+    "title": "건의하기",
+    "bodyLabel": "내용",
+    "bodyPlaceholder": "불편한 점이나 제안하고 싶은 내용을 적어주세요.",
+    "bodyRequired": "내용을 입력해 주세요.",
+    "screenshotLabel": "스크린샷 (선택)",
+    "submit": "보내기",
+    "submitting": "보내는 중…",
+    "submitError": "보내지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "submitSuccess": "건의사항이 전달됐어요. 소중한 의견 감사합니다!"
   }
 }

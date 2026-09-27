@@ -101,5 +101,17 @@
     "distance": "距離の単位",
     "kilometers": "キロメートル (km)",
     "miles": "マイル (mi)"
+  },
+  "feedback": {
+    "menuLabel": "ご意見・ご要望",
+    "title": "ご意見・ご要望",
+    "bodyLabel": "内容",
+    "bodyPlaceholder": "不便な点やご要望を書いてください。",
+    "bodyRequired": "内容を入力してください。",
+    "screenshotLabel": "スクリーンショット（任意）",
+    "submit": "送信",
+    "submitting": "送信中…",
+    "submitError": "送信できませんでした。しばらくしてからもう一度お試しください。",
+    "submitSuccess": "ご意見ありがとうございました！"
   }
 }

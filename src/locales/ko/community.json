@@ -6,7 +6,8 @@
       "reports": "신고 큐",
       "pending": "자동 플래그 큐",
       "companion": "동행찾기",
-      "users": "사용자 등급"
+      "users": "사용자 등급",
+      "feedback": "건의함"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -25,7 +26,12 @@
     "planPro": "유료",
     "grantPro": "유료 등급 부여",
     "revokePro": "무료로 전환",
-    "planChangeError": "등급 변경에 실패했어요."
+    "planChangeError": "등급 변경에 실패했어요.",
+    "feedbackEmpty": "접수된 건의사항이 없어요.",
+    "feedbackStatusNew": "미확인",
+    "viewScreenshot": "스크린샷 보기",
+    "markReviewed": "확인 완료",
+    "markReviewedError": "처리에 실패했어요."
   },
   "report": {
     "title": "신고하기",

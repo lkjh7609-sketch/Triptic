@@ -150,3 +150,36 @@ export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Pr
   const { error } = await supabase.rpc('admin_set_user_plan', { p_user_id: userId, p_plan: plan });
   if (error) throw error;
 }
+
+// ── 건의하기(0042) — 목록/상태변경 둘 다 SECURITY DEFINER RPC. ──────────────
+export interface AdminFeedbackRow {
+  id: string;
+  user_id: string;
+  display_name: string | null;
+  handle: string | null;
+  body: string;
+  screenshot_path: string | null;
+  status: 'new' | 'reviewed';
+  created_at: string;
+}
+
+export async function adminListFeedback(page: number, pageSize: number): Promise<{ rows: AdminFeedbackRow[]; hasMore: boolean }> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_list_feedback', { p_offset: page * pageSize, p_limit: pageSize + 1 });
+  if (error) throw error;
+  const rows = (data as AdminFeedbackRow[]) ?? [];
+  return { rows: rows.slice(0, pageSize), hasMore: rows.length > pageSize };
+}
+
+export async function adminMarkFeedbackReviewed(id: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc('admin_mark_feedback_reviewed', { p_id: id });
+  if (error) throw error;
+}
+
+export async function getFeedbackScreenshotSignedUrl(path: string): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.storage.from('feedback-screenshots').createSignedUrl(path, 60);
+  if (error) throw error;
+  return data?.signedUrl ?? null;
+}

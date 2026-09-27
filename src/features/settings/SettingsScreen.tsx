@@ -21,9 +21,9 @@ import { User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 
 import { EditProfileModal } from './EditProfileModal';
 import { UnitSettingsModal } from './UnitSettingsModal';
 import { LanguageModal } from './LanguageModal';
+import { FeedbackModal } from './FeedbackModal';
 
 import styles from './SettingsScreen.module.css';
-import { CONTACT_EMAIL } from '@/shared/config';
 
 const APP_VERSION = '3.0.0-dev';
 
@@ -54,6 +54,7 @@ export function SettingsScreen() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showUnitSettings, setShowUnitSettings] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const [theme, setThemeState] = useState<ThemePreference>(() => getStoredTheme());
   const [cacheUsageMB, setCacheUsageMB] = useState<number | null>(null);
@@ -265,10 +266,9 @@ export function SettingsScreen() {
           </button>
         </div>
         <div className={styles.row}>
-          <a href={`mailto:${CONTACT_EMAIL}`} className={styles.linkButton}>
-            {t('action.contact', { ns: 'common' })}
-
-          </a>
+          <button type="button" className={styles.linkButton} onClick={() => setShowFeedback(true)}>
+            {t('feedback.menuLabel')}
+          </button>
         </div>
         <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
         </div>
@@ -281,6 +281,7 @@ export function SettingsScreen() {
       {showEditProfile ? <EditProfileModal onClose={() => setShowEditProfile(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showLanguageModal ? <LanguageModal onClose={() => setShowLanguageModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
+      {showFeedback ? <FeedbackModal onClose={() => setShowFeedback(false)} /> : null}
     </div>
   );
 }
