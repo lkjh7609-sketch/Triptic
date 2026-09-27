@@ -153,6 +153,20 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
     }
   }
 
+  /** 롱프레스가 끝나는 mouseup 시점엔 이미 ConfirmDialog가 그 자리를 덮고
+   * 있어서, 브라우저가 만드는 합성 click의 target이 mousedown 지점(itemMain
+   * 버튼)과 mouseup 지점(다이얼로그)의 공통 조상 — 즉 이 모달의 최상위
+   * overlay div — 가 돼버린다. 그 click을 캡처 단계에서 가로채 삼킨다. */
+  function swallowNextClick() {
+    function handler(e: MouseEvent) {
+      e.stopPropagation();
+      e.preventDefault();
+      window.removeEventListener('click', handler, true);
+    }
+    window.addEventListener('click', handler, true);
+    window.setTimeout(() => window.removeEventListener('click', handler, true), 300);
+  }
+
   function handleItemPointerDown(e: React.PointerEvent, entry: VoucherEntry) {
     longPressStartRef.current = { x: e.clientX, y: e.clientY };
     longPressFiredRef.current = false;
@@ -160,6 +174,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
     longPressTimerRef.current = window.setTimeout(() => {
       longPressFiredRef.current = true;
       setConfirmDeleteEntry(entry);
+      swallowNextClick();
     }, LONG_PRESS_MS);
   }
 
@@ -337,15 +352,20 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
       ) : null}
 
       {confirmDeleteEntry ? (
-        <ConfirmDialog
-          title={t('archive.deleteConfirmTitle')}
-          message={t('archive.deleteConfirm', { name: confirmDeleteEntry.original_name })}
-          cancelLabel={t('archive.deleteKeep')}
-          confirmLabel={t('action.delete', { ns: 'common' })}
-          danger
-          onClose={() => setConfirmDeleteEntry(null)}
-          onConfirm={() => handleDelete(confirmDeleteEntry)}
-        />
+        // ConfirmDialog가 이 모달의 overlay(onClick={onClose}) 안에 중첩돼
+        // 있어서, 다이얼로그 자체 배경을 탭해도 클릭이 계속 올라가 이 모달까지
+        // 같이 닫혔다 — 여기서 막는다.
+        <div onClick={(e) => e.stopPropagation()}>
+          <ConfirmDialog
+            title={t('archive.deleteConfirmTitle')}
+            message={t('archive.deleteConfirm', { name: confirmDeleteEntry.original_name })}
+            cancelLabel={t('archive.deleteKeep')}
+            confirmLabel={t('action.delete', { ns: 'common' })}
+            danger
+            onClose={() => setConfirmDeleteEntry(null)}
+            onConfirm={() => handleDelete(confirmDeleteEntry)}
+          />
+        </div>
       ) : null}
     </div>
   );
