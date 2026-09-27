@@ -278,8 +278,14 @@
       "accept": "Accept",
       "reject": "Reject",
       "cancelConfirm": "Cancel this listing? Applicants won't be notified.",
+      "cancelKeep": "Keep recruiting",
+      "cancelProceed": "Cancel listing",
       "finalizeConfirm": "Finalize the match with everyone accepted so far? You can't accept new applicants after this.",
-      "withdrawConfirm": "Withdraw your application?"
+      "finalizeKeep": "Wait longer",
+      "finalizeProceed": "Confirm match",
+      "withdrawConfirm": "Withdraw your application?",
+      "withdrawKeep": "Keep my application",
+      "withdrawProceed": "Withdraw application"
     },
     "apply": {
       "dialogLabel": "Apply to join",
@@ -297,8 +303,12 @@
       "organizer": "Organizer",
       "leaveConfirm": "Leave this group? Your QR code will be invalidated immediately.",
       "leave": "Leave group",
+      "leaveKeep": "Stay in group",
+      "leaveProceed": "Leave group",
       "cancelConfirm": "Cancel this group? Everyone's QR code will be invalidated immediately, and no one will be able to send new chat messages.",
-      "cancel": "Cancel group"
+      "cancel": "Cancel group",
+      "cancelKeep": "Keep it going",
+      "cancelProceed": "Cancel group"
     },
     "qr": {
       "showTitle": "My QR code",

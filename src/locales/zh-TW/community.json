@@ -267,8 +267,14 @@
       "accept": "接受",
       "reject": "拒絕",
       "cancelConfirm": "要取消這篇招募文嗎？申請者不會收到通知。",
+      "cancelKeep": "繼續招募",
+      "cancelProceed": "取消招募",
       "finalizeConfirm": "要用目前已接受的人數確定成團嗎？確定後就無法再接受新的申請。",
-      "withdrawConfirm": "要取消申請嗎？"
+      "finalizeKeep": "再等等",
+      "finalizeProceed": "確定配對",
+      "withdrawConfirm": "要取消申請嗎？",
+      "withdrawKeep": "保留我的申請",
+      "withdrawProceed": "撤回申請"
     },
     "apply": {
       "dialogLabel": "申請加入同行",
@@ -286,8 +292,12 @@
       "organizer": "主揪",
       "leaveConfirm": "要離開這個群組嗎？離開後 QR Code 會立即失效。",
       "leave": "離開群組",
+      "leaveKeep": "留在群組",
+      "leaveProceed": "離開群組",
       "cancelConfirm": "要取消這個聚會嗎？所有成員的 QR Code 會立即失效，聊天室也無法再傳送新訊息。",
-      "cancel": "取消聚會"
+      "cancel": "取消聚會",
+      "cancelKeep": "繼續進行",
+      "cancelProceed": "取消聚會"
     },
     "qr": {
       "showTitle": "我的 QR Code",

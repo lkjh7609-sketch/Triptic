@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageCircle, QrCode, ScanLine } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { captureError, trackScreenView } from '@/shared/monitoring';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { CompanionQrModal } from './CompanionQrModal';
@@ -24,6 +25,7 @@ export function CompanionMatchScreen() {
   const cancelPost = useCancelCompanionPost();
   const [showQr, setShowQr] = useState(false);
   const [showScan, setShowScan] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'leave' | 'cancel' | null>(null);
 
   useEffect(() => {
     trackScreenView('community_companion_match');
@@ -45,7 +47,6 @@ export function CompanionMatchScreen() {
 
   async function handleLeave() {
     if (!post!.myApplication) return;
-    if (!window.confirm(t('companion.match.leaveConfirm'))) return;
     try {
       await withdrawApplication.mutateAsync(post!.myApplication.id);
       navigate('/community');
@@ -55,7 +56,6 @@ export function CompanionMatchScreen() {
   }
 
   async function handleCancel() {
-    if (!window.confirm(t('companion.match.cancelConfirm'))) return;
     try {
       await cancelPost.mutateAsync(post!.id);
       navigate('/community');
@@ -111,12 +111,12 @@ export function CompanionMatchScreen() {
         </div>
 
         {canLeave ? (
-          <button type="button" className={styles.leaveBtn} disabled={withdrawApplication.isPending} onClick={handleLeave}>
+          <button type="button" className={styles.leaveBtn} disabled={withdrawApplication.isPending} onClick={() => setConfirmAction('leave')}>
             {t('companion.match.leave')}
           </button>
         ) : null}
         {isOrganizer ? (
-          <button type="button" className={styles.leaveBtn} disabled={cancelPost.isPending} onClick={handleCancel}>
+          <button type="button" className={styles.leaveBtn} disabled={cancelPost.isPending} onClick={() => setConfirmAction('cancel')}>
             {t('companion.match.cancel')}
           </button>
         ) : null}
@@ -124,6 +124,29 @@ export function CompanionMatchScreen() {
 
       {showQr ? <CompanionQrModal postId={post.id} onClose={() => setShowQr(false)} /> : null}
       {showScan ? <CompanionScanModal onClose={() => setShowScan(false)} /> : null}
+
+      {confirmAction === 'leave' ? (
+        <ConfirmDialog
+          title={t('companion.match.leave')}
+          message={t('companion.match.leaveConfirm')}
+          cancelLabel={t('companion.match.leaveKeep')}
+          confirmLabel={t('companion.match.leaveProceed')}
+          danger
+          onConfirm={handleLeave}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
+      {confirmAction === 'cancel' ? (
+        <ConfirmDialog
+          title={t('companion.match.cancel')}
+          message={t('companion.match.cancelConfirm')}
+          cancelLabel={t('companion.match.cancelKeep')}
+          confirmLabel={t('companion.match.cancelProceed')}
+          danger
+          onConfirm={handleCancel}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
     </div>
   );
 }
