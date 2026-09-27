@@ -64,7 +64,7 @@
   align-items: center;
   gap: 8px;
   max-width: 800px;
-  margin: 0 auto 16px;
+  margin: 0 auto 28px;
   font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
@@ -271,8 +271,9 @@
   z-index: 2;
   background: var(--surface-page);
   height: auto;
-  padding-top: 8vh;
-  padding-bottom: 2vh;
+  min-height: 0;
+  padding-top: 4vh;
+  padding-bottom: 1rem;
   justify-content: flex-start;
 }
 .searchPill {
