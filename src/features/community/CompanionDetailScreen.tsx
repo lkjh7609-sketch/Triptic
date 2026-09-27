@@ -32,7 +32,7 @@ export function CompanionDetailScreen() {
   const isOwn = !!user && !!post && user.id === post.author_id;
   const applicationsQuery = useApplicationsForPost(isOwn ? postId : undefined);
   const respondToApplication = useRespondToApplication(postId ?? '');
-  const withdrawApplication = useWithdrawApplication(postId ?? '');
+  const withdrawApplication = useWithdrawApplication();
   const finalizeMatch = useFinalizeCompanionMatch(postId ?? '');
   const cancelPost = useCancelCompanionPost();
   const [showApplyModal, setShowApplyModal] = useState(false);
@@ -148,6 +148,10 @@ export function CompanionDetailScreen() {
                   {t('companion.detail.goToMatch')}
                 </button>
               </>
+            ) : post.status === 'closed' ? (
+              <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
+                {t('companion.chat.title')}
+              </button>
             ) : null}
           </div>
         ) : post.myApplication ? (
@@ -167,6 +171,11 @@ export function CompanionDetailScreen() {
                   {t('companion.detail.goToMatch')}
                 </button>
               </>
+            ) : null}
+            {post.myApplication.status === 'accepted' && post.status === 'closed' ? (
+              <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
+                {t('companion.chat.title')}
+              </button>
             ) : null}
             {/* 자동 검열로 막힌 지원은 문구를 고쳐 다시 지원할 수 있다(0044) */}
             {post.myApplication.status === 'removed' && post.status === 'recruiting' ? (

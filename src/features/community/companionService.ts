@@ -254,6 +254,14 @@ export async function withdrawApplication(applicationId: string): Promise<void> 
   if (error) throw error;
 }
 
+// ── 일정 완료(0046) ─────────────────────────────────────────────────────
+/** 주최자만, 시작일 이후에만. 종료일이 지나면 서버 크론이 자동으로 완료한다. */
+export async function completeCompanionTrip(postId: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc('complete_companion_trip', { p_post_id: postId });
+  if (error) throw error;
+}
+
 // ── 매칭 확정/멤버 ──────────────────────────────────────────────────────
 export async function finalizeCompanionMatch(postId: string): Promise<void> {
   const supabase = getSupabaseClient();
