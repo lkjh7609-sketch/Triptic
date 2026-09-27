@@ -8,7 +8,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { CompanionQrModal } from './CompanionQrModal';
 import { CompanionScanModal } from './CompanionScanModal';
-import { useCompanionMatchMembers, useCompanionPost, useWithdrawApplication } from './hooks/useCompanionPosts';
+import { useCancelCompanionPost, useCompanionMatchMembers, useCompanionPost, useWithdrawApplication } from './hooks/useCompanionPosts';
 import postDetailStyles from './PostDetailScreen.module.css';
 import styles from './CompanionMatchScreen.module.css';
 
@@ -21,6 +21,7 @@ export function CompanionMatchScreen() {
   const { data: post, isLoading, isError, refetch } = useCompanionPost(postId, user?.id ?? null);
   const membersQuery = useCompanionMatchMembers(post);
   const withdrawApplication = useWithdrawApplication(postId ?? '');
+  const cancelPost = useCancelCompanionPost();
   const [showQr, setShowQr] = useState(false);
   const [showScan, setShowScan] = useState(false);
 
@@ -50,6 +51,16 @@ export function CompanionMatchScreen() {
       navigate('/community');
     } catch (err) {
       captureError(err, { context: 'leaveCompanionMatch' });
+    }
+  }
+
+  async function handleCancel() {
+    if (!window.confirm(t('companion.match.cancelConfirm'))) return;
+    try {
+      await cancelPost.mutateAsync(post!.id);
+      navigate('/community');
+    } catch (err) {
+      captureError(err, { context: 'cancelCompanionMatch' });
     }
   }
 
@@ -102,6 +113,11 @@ export function CompanionMatchScreen() {
         {canLeave ? (
           <button type="button" className={styles.leaveBtn} disabled={withdrawApplication.isPending} onClick={handleLeave}>
             {t('companion.match.leave')}
+          </button>
+        ) : null}
+        {isOrganizer ? (
+          <button type="button" className={styles.leaveBtn} disabled={cancelPost.isPending} onClick={handleCancel}>
+            {t('companion.match.cancel')}
           </button>
         ) : null}
       </div>

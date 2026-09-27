@@ -296,7 +296,9 @@
       "desc": "When you meet, scan each other's QR code to confirm you're both in this match.",
       "organizer": "Organizer",
       "leaveConfirm": "Leave this group? Your QR code will be invalidated immediately.",
-      "leave": "Leave group"
+      "leave": "Leave group",
+      "cancelConfirm": "Cancel this group? Everyone's QR code will be invalidated immediately, and no one will be able to send new chat messages.",
+      "cancel": "Cancel group"
     },
     "qr": {
       "showTitle": "My QR code",

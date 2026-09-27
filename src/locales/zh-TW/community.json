@@ -285,7 +285,9 @@
       "desc": "見面時互相掃描 QR Code，確認彼此是同一組同行。",
       "organizer": "主揪",
       "leaveConfirm": "要離開這個群組嗎？離開後 QR Code 會立即失效。",
-      "leave": "離開群組"
+      "leave": "離開群組",
+      "cancelConfirm": "要取消這個聚會嗎？所有成員的 QR Code 會立即失效，聊天室也無法再傳送新訊息。",
+      "cancel": "取消聚會"
     },
     "qr": {
       "showTitle": "我的 QR Code",
