@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { CheckCircle2, LogOut, QrCode, Send } from 'lucide-react';
@@ -12,11 +12,13 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { AuthorName } from './AuthorName';
 import { ReportModal } from './ReportModal';
+import { CompanionReviewModal } from './CompanionReviewModal';
 import {
   useCancelCompanionPost,
   useCompanionMatchMembers,
   useCompanionPost,
   useCompleteCompanionTrip,
+  useMyCompanionCheckin,
   useWithdrawApplication,
 } from './hooks/useCompanionPosts';
 import { useCompanionMessages, useSendCompanionMessage } from './hooks/useCompanionChat';
@@ -40,6 +42,11 @@ export function CompanionChatScreen() {
   const withdrawApplication = useWithdrawApplication();
   const cancelPost = useCancelCompanionPost();
   const [confirmAction, setConfirmAction] = useState<'complete' | 'leave' | 'cancel' | null>(null);
+  const [searchParams] = useSearchParams();
+  // "내 동행"의 후기 남기기 카드는 ?review=1로 들어와 모달을 바로 연다
+  const [showReview, setShowReview] = useState(searchParams.get('review') === '1');
+  const checkinQuery = useMyCompanionCheckin(postId, user?.id, post?.status === 'closed');
+  const needsReview = post?.status === 'closed' && checkinQuery.data === false;
 
   const [body, setBody] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -142,7 +149,14 @@ export function CompanionChatScreen() {
             ) : null}
           </div>
         ) : (
-          <p className={styles.closedBanner}>{t('companion.chat.closedBanner')}</p>
+          <div className={styles.closedBanner}>
+            <p className={styles.closedText}>{t('companion.chat.closedBanner')}</p>
+            {needsReview ? (
+              <button type="button" className={styles.actionBtn} onClick={() => setShowReview(true)}>
+                {t('companion.review.cta')}
+              </button>
+            ) : null}
+          </div>
         )}
       </div>
 
@@ -210,6 +224,8 @@ export function CompanionChatScreen() {
       {reportTarget ? (
         <ReportModal targetType="companion_message" targetId={reportTarget} onClose={() => setReportTarget(null)} />
       ) : null}
+
+      {showReview && needsReview ? <CompanionReviewModal post={post} onClose={() => setShowReview(false)} /> : null}
 
       {confirmAction === 'complete' ? (
         <ConfirmDialog

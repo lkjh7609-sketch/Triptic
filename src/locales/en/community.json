@@ -89,7 +89,8 @@
     "likeAria_other": "{{count}} likes",
     "likeAria_one": "{{count}} like",
     "commentAria_other": "{{count}} comments",
-    "commentAria_one": "{{count}} comment"
+    "commentAria_one": "{{count}} comment",
+    "ratingLabel": "Rating {{avg}} ({{count}} reviews)"
   },
   "menu": {
     "ariaLabel": "More",
@@ -246,7 +247,8 @@
     "mine": {
       "title": "My companions",
       "hosting": "You're hosting",
-      "matched": "Confirmed · open chat"
+      "matched": "Confirmed · open chat",
+      "needsReview": "Trip ended · leave a review"
     },
     "compose": {
       "title": "Find a companion",
@@ -355,6 +357,23 @@
       "completeProceed": "Finish",
       "completeError": "Couldn't finish the trip.",
       "closedBanner": "This trip has ended. The chat is read-only."
+    },
+    "review": {
+      "cta": "Leave a review",
+      "title": "How was your trip?",
+      "wentWellQuestion": "Did the trip wrap up well?",
+      "wentWellYes": "Yes, it went well",
+      "wentWellNo": "No, there was a problem",
+      "problemHint": "If something went wrong, please report it from a chat message or the profile.",
+      "rateMembers": "Rate your travel companions",
+      "starLabel_one": "{{count}} star",
+      "starLabel_other": "{{count}} stars",
+      "later": "Later",
+      "submit": "Submit",
+      "submitting": "Submitting…",
+      "submitError": "Couldn't save your review. Please try again shortly.",
+      "doneTitle": "Thanks for your review",
+      "doneDesc": "Ratings only show up as an average next to each nickname."
     }
   }
 }

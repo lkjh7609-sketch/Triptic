@@ -86,7 +86,8 @@
     "fallbackAuthor": "旅行者",
     "adminBadge": "管理員",
     "likeAria_other": "{{count}} 個喜歡",
-    "commentAria_other": "{{count}} 則留言"
+    "commentAria_other": "{{count}} 則留言",
+    "ratingLabel": "評分 {{avg}}({{count}} 則評價)"
   },
   "menu": {
     "ariaLabel": "更多",
@@ -239,7 +240,8 @@
     "mine": {
       "title": "我的旅伴",
       "hosting": "我發起的招募",
-      "matched": "已確定 · 進入聊天室"
+      "matched": "已確定 · 進入聊天室",
+      "needsReview": "行程已結束 · 留下評價"
     },
     "compose": {
       "title": "找同行",
@@ -343,6 +345,22 @@
       "completeProceed": "完成",
       "completeError": "無法完成行程。",
       "closedBanner": "行程已結束,聊天室為唯讀。"
+    },
+    "review": {
+      "cta": "留下評價",
+      "title": "這趟旅伴體驗如何?",
+      "wentWellQuestion": "行程順利結束了嗎?",
+      "wentWellYes": "是的,很順利",
+      "wentWellNo": "不,有發生問題",
+      "problemHint": "如果有不愉快的情況,請從聊天訊息或個人檔案檢舉。",
+      "rateMembers": "為同行的旅伴評分",
+      "starLabel_other": "{{count}} 分",
+      "later": "稍後",
+      "submit": "送出",
+      "submitting": "送出中…",
+      "submitError": "無法儲存評價,請稍後再試。",
+      "doneTitle": "感謝您的評價",
+      "doneDesc": "評分只會以平均值顯示在暱稱旁。"
     }
   }
 }

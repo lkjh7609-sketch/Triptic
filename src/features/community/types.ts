@@ -46,6 +46,9 @@ export interface CommunityProfile {
   bio: string | null;
   /** "관리자" 배지 표시용(community_profiles 뷰, 0041) */
   is_admin: boolean;
+  /** 동행 별점 평균/개수(community_profiles 뷰, 0047) — 받은 후기가 없으면 null/0 */
+  rating_avg?: number | string | null;
+  rating_count?: number | null;
 }
 
 export interface PostImage {
@@ -160,6 +163,9 @@ export interface CompanionApplication {
 }
 
 /** 매칭 멤버(주최자 + accepted 신청자) — 별도 테이블 없이 파생 데이터로 조합한다 */
+/** 내 동행 목록 항목 — closed인데 아직 후기를 안 남겼으면 needsReview */
+export type MyCompanionPost = CompanionPost & { needsReview: boolean };
+
 export interface CompanionMatchMember {
   user_id: string;
   role: 'organizer' | 'member';

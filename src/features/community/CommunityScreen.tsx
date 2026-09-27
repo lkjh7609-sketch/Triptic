@@ -14,6 +14,7 @@ import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import { DestinationSelector } from './DestinationSelector';
 import { CompanionFeedList } from './CompanionFeedList';
+import { PendingCompanionReviewPrompt } from './PendingCompanionReviewPrompt';
 import styles from './CommunityScreen.module.css';
 import { CommunityDesignBody } from './CommunityDesign';
 
@@ -51,6 +52,7 @@ export function CommunityScreen() {
   if (isDesktop) {
     return (
       <div className={styles.desktopWrap} style={{ padding: 0 }}>
+        {user ? <PendingCompanionReviewPrompt userId={user.id} /> : null}
         <CommunityDesignBody
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -67,6 +69,7 @@ export function CommunityScreen() {
 
   return (
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
+      {user ? <PendingCompanionReviewPrompt userId={user.id} /> : null}
       {user ? (
         <div className={styles.composeBtnRow}>
           <Link to="/community/compose" className={styles.fabBtnDesktop}>

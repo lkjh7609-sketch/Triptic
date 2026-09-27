@@ -13,6 +13,7 @@ import type {
   CompanionMatchMember,
   CompanionPost,
   CompanionPostStatus,
+  MyCompanionPost,
 } from './types';
 
 function currentLocale(): string {
@@ -136,11 +137,12 @@ export async function getCompanionPost(postId: string, viewerId: string | null):
   return enriched;
 }
 
-/** 내 동행 — 내가 주최 중이거나(모집중/확정) 지원해 진행 중인(대기/수락) 모집글.
+/** 내 동행 — 내가 주최 중이거나(모집중/확정) 지원해 진행 중인(대기/수락) 모집글,
+ * 그리고 끝났지만(closed, 0046) 아직 후기를 안 남긴 모집글.
  * 확정(matched)되면 공개 목록(recruiting)에서 빠지므로, 지원자가 확정된 모임
- * 채팅방으로 돌아올 수 있는 유일한 진입점이다. 확정 모임은 "read companion
+ * 채팅방으로 돌아올 수 있는 유일한 진입점이다. 확정/종료 모임은 "read companion
  * posts as member"(0032) 정책으로 수락된 지원자에게도 읽힌다. */
-export async function listMyActiveCompanionPosts(userId: string): Promise<CompanionPost[]> {
+export async function listMyActiveCompanionPosts(userId: string): Promise<MyCompanionPost[]> {
   const supabase = getSupabaseClient();
   const { data: apps, error: appErr } = await supabase
     .from('companion_applications')
@@ -153,14 +155,30 @@ export async function listMyActiveCompanionPosts(userId: string): Promise<Compan
   let query = supabase
     .from('companion_posts')
     .select('*')
-    .in('status', ['recruiting', 'matched'])
+    .in('status', ['recruiting', 'matched', 'closed'])
     .is('deleted_at', null)
     .order('start_date', { ascending: true });
   query = appliedIds.length > 0 ? query.or(`author_id.eq.${userId},id.in.(${appliedIds.join(',')})`) : query.eq('author_id', userId);
 
   const { data, error } = await query;
   if (error) throw error;
-  return enrichCompanionPosts((data as CompanionPost[]) ?? [], userId);
+  const rows = (data as CompanionPost[]) ?? [];
+
+  // 후기 여부 조회가 실패해도 진행 중 모임(채팅방 진입점)은 계속 보여야 한다 —
+  // 그때는 종료된 모임만 빼고 돌려준다.
+  const closedIds = rows.filter((r) => r.status === 'closed').map((r) => r.id);
+  let reviewedIds: Set<string> | null = new Set();
+  if (closedIds.length > 0) {
+    const { data: checkins, error: checkinErr } = await supabase
+      .from('companion_trip_checkins')
+      .select('post_id')
+      .eq('user_id', userId)
+      .in('post_id', closedIds);
+    reviewedIds = checkinErr ? null : new Set(((checkins ?? []) as { post_id: string }[]).map((c) => c.post_id));
+  }
+  const visible = rows.filter((r) => r.status !== 'closed' || (reviewedIds !== null && !reviewedIds.has(r.id)));
+  const enriched = await enrichCompanionPosts(visible, userId);
+  return enriched.map((p) => ({ ...p, needsReview: p.status === 'closed' }));
 }
 
 // ── 모집글 작성(모더레이션 게이트) ──────────────────────────────────────────
@@ -259,6 +277,34 @@ export async function withdrawApplication(applicationId: string): Promise<void> 
 export async function completeCompanionTrip(postId: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase.rpc('complete_companion_trip', { p_post_id: postId });
+  if (error) throw error;
+}
+
+// ── 일정 종료 후기(0047) ─────────────────────────────────────────────────
+export async function hasMyCompanionCheckin(postId: string, userId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('companion_trip_checkins')
+    .select('post_id')
+    .eq('post_id', postId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+/** 나머지 멤버 전원을 한 번에 평가해야 서버가 받는다(0047) */
+export async function submitCompanionReview(input: {
+  postId: string;
+  wentWell: boolean;
+  ratings: { userId: string; rating: number }[];
+}): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc('submit_companion_review', {
+    p_post_id: input.postId,
+    p_went_well: input.wentWell,
+    p_ratings: input.ratings.map((r) => ({ user_id: r.userId, rating: r.rating })),
+  });
   if (error) throw error;
 }
 

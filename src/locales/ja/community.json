@@ -86,7 +86,8 @@
     "fallbackAuthor": "旅行者",
     "adminBadge": "管理者",
     "likeAria_other": "いいね {{count}}件",
-    "commentAria_other": "コメント {{count}}件"
+    "commentAria_other": "コメント {{count}}件",
+    "ratingLabel": "評価 {{avg}}(レビュー{{count}}件)"
   },
   "menu": {
     "ariaLabel": "もっと見る",
@@ -239,7 +240,8 @@
     "mine": {
       "title": "自分の同行",
       "hosting": "主催・募集中",
-      "matched": "確定 · チャットへ"
+      "matched": "確定 · チャットへ",
+      "needsReview": "日程終了 · レビューを書く"
     },
     "compose": {
       "title": "同行募集",
@@ -343,6 +345,22 @@
       "completeProceed": "完了する",
       "completeError": "日程を完了できませんでした。",
       "closedBanner": "日程が終了しました。チャットは閲覧専用です。"
+    },
+    "review": {
+      "cta": "レビューを書く",
+      "title": "同行はいかがでしたか?",
+      "wentWellQuestion": "日程は無事に終わりましたか?",
+      "wentWellYes": "はい、無事に終わりました",
+      "wentWellNo": "いいえ、問題がありました",
+      "problemHint": "困ったことがあった場合は、チャットのメッセージやプロフィールから通報してください。",
+      "rateMembers": "一緒に旅したメンバーを評価してください",
+      "starLabel_other": "{{count}}点",
+      "later": "あとで",
+      "submit": "送信",
+      "submitting": "送信中…",
+      "submitError": "レビューを保存できませんでした。しばらくしてからもう一度お試しください。",
+      "doneTitle": "レビューありがとうございます",
+      "doneDesc": "評価はニックネームの横に平均としてのみ表示されます。"
     }
   }
 }

@@ -8,11 +8,13 @@ import {
   finalizeCompanionMatch,
   getCompanionPost,
   getMyCompanionQrToken,
+  hasMyCompanionCheckin,
   listApplicationsForPost,
   listCompanionMatchMembers,
   listCompanionPosts,
   listMyActiveCompanionPosts,
   respondToApplication,
+  submitCompanionReview,
   verifyCompanionQrToken,
   withdrawApplication,
 } from '../companionService';
@@ -157,6 +159,26 @@ export function useVerifyCompanionQrToken(userId: string | null) {
     mutationFn: (token: string) => {
       if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
       return verifyCompanionQrToken(token);
+    },
+  });
+}
+
+export function useMyCompanionCheckin(postId: string | undefined, userId: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: ['community', 'companion', 'checkin', postId ?? '', userId ?? ''],
+    queryFn: () => hasMyCompanionCheckin(postId!, userId!),
+    enabled: enabled && !!postId && !!userId,
+  });
+}
+
+export function useSubmitCompanionReview(postId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { wentWell: boolean; ratings: { userId: string; rating: number }[] }) =>
+      submitCompanionReview({ postId, ...input }),
+    onSuccess: () => {
+      // 별점은 커뮤니티 전역 닉네임 옆에 뜨므로 companion 하위만이 아니라 전부
+      queryClient.invalidateQueries({ queryKey: ['community'] });
     },
   });
 }
