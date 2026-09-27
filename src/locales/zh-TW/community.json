@@ -145,6 +145,18 @@
     "suggestSent": "建議已傳送給行程建立者！",
     "emptyDay": "這一天還沒有安排行程。"
   },
+  "postTrip": {
+    "viewLink": "查看行程",
+    "header": "附加的行程",
+    "loadError": "無法載入這個行程。",
+    "forkButton": "複製這個行程到我的計畫",
+    "forkConfirm": "要把這個行程複製到你自己的計畫嗎？只會複製日期、地點、住宿和航班，之後可以自由編輯。",
+    "forkKeep": "先看看就好",
+    "forkProceed": "複製",
+    "forkTitleSuffix": "（複製）",
+    "forkSuccess": "已儲存到你的計畫！",
+    "forkError": "複製失敗了。"
+  },
   "continent": {
     "AS": { "name": "亞洲" },
     "EU": { "name": "歐洲" },

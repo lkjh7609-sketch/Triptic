@@ -1,6 +1,6 @@
 import { MessageCircle, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
@@ -118,6 +118,14 @@ export function PostDetailScreen() {
         </div>
 
         <p className={styles.body}>{post.body}</p>
+
+        {post.trip_id ? (
+          <p style={{ margin: 'var(--space-2) 0 0' }}>
+            <Link to={`/community/post/${post.id}/trip`} className={styles.translateBtn}>
+              {t('postTrip.viewLink')} →
+            </Link>
+          </p>
+        ) : null}
 
         {showTranslateButton ? (
           <div className={styles.translateBlock}>

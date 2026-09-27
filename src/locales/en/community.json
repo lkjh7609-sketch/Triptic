@@ -151,6 +151,18 @@
     "suggestSent": "Your suggestion was sent to the trip owner!",
     "emptyDay": "No plans for this day yet."
   },
+  "postTrip": {
+    "viewLink": "View itinerary",
+    "header": "Attached itinerary",
+    "loadError": "Couldn't load this itinerary.",
+    "forkButton": "Copy this itinerary to my plans",
+    "forkConfirm": "Copy this itinerary to your own plans? Only dates, places, hotels and flights are copied — you can freely edit it afterward.",
+    "forkKeep": "Just browsing",
+    "forkProceed": "Copy it",
+    "forkTitleSuffix": " (copy)",
+    "forkSuccess": "Saved to your plans!",
+    "forkError": "Couldn't copy this itinerary."
+  },
   "continent": {
     "AS": { "name": "Asia" },
     "EU": { "name": "Europe" },

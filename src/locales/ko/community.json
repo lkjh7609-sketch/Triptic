@@ -145,6 +145,18 @@
     "suggestSent": "제안이 여행 작성자에게 전송되었어요!",
     "emptyDay": "이 날에는 아직 일정이 없어요."
   },
+  "postTrip": {
+    "viewLink": "일정 보기",
+    "header": "첨부된 일정",
+    "loadError": "이 일정을 불러올 수 없어요.",
+    "forkButton": "이 일정 복제해서 내 계획에 담기",
+    "forkConfirm": "이 일정을 복제해서 내 계획에 담을까요? 날짜·장소·숙소·항공편만 복사되고, 이후엔 자유롭게 수정할 수 있어요.",
+    "forkKeep": "그냥 둘러보기",
+    "forkProceed": "복제하기",
+    "forkTitleSuffix": " (사본)",
+    "forkSuccess": "내 계획에 저장했어요!",
+    "forkError": "복제에 실패했어요."
+  },
   "continent": {
     "AS": { "name": "아시아" },
     "EU": { "name": "유럽" },

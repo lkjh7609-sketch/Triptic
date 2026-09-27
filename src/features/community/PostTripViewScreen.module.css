@@ -1,0 +1,30 @@
+.forkButtonWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.forkButton {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font-weight: 700;
+  padding: var(--space-3) var(--space-6);
+  min-height: 44px;
+  width: 100%;
+  cursor: pointer;
+}
+.forkButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.forkedNotice {
+  font-size: var(--font-caption-size);
+  color: var(--brand);
+  margin: 0;
+}
