@@ -77,6 +77,11 @@ body {
   outline-offset: 2px;
 }
 
+/* 포커스 트랩 컨테이너(모달 시트 자체)는 조작 요소가 아니라 링을 그리지 않는다 */
+[data-focus-trap]:focus {
+  outline: none;
+}
+
 /* 공통 모달 애니메이션 */
 @keyframes fadeIn {
   from { opacity: 0; }

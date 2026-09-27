@@ -12,8 +12,10 @@ const FOCUSABLE_SELECTOR = [
 /**
  * 모달/시트용 포커스 트랩 (01-design-system.md §8 접근성 체크리스트,
  * DEVELOPMENT_PLAN.md §9 Phase 6 완료 기준 "VoiceOver로 완주 가능").
- * 열리는 순간 컨테이너 안 첫 포커스 가능 요소로 이동하고, Tab/Shift+Tab이
+ * 열리는 순간 컨테이너 자체로 포커스를 옮기고, Tab/Shift+Tab이
  * 컨테이너 밖으로 나가지 않게 가두며, Escape로 닫을 수 있게 한다.
+ * 첫 요소가 아니라 컨테이너에 포커스를 주는 이유: 첫 요소가 <select>면
+ * 모바일(iOS)에서 포커스만으로 선택 휠이 자동으로 펼쳐졌다.
  *
  * 사용: `const ref = useFocusTrap<HTMLDivElement>(onClose); return <div ref={ref}>...`
  */
@@ -25,8 +27,9 @@ export function useFocusTrap<T extends HTMLElement>(onClose?: () => void) {
     if (!container) return;
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const focusables = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
-    (focusables[0] ?? container).focus();
+    if (!container.hasAttribute('tabindex')) container.tabIndex = -1;
+    container.dataset.focusTrap = '';
+    container.focus();
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && onClose) {
