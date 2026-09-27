@@ -59,13 +59,15 @@
   }
 }
 
-/* 아이콘과 나란히 놓이는 값+라벨 묶음 — .tile의 align-items:center로 이
-   블록 전체가 아이콘 높이 가운데에 오도록 정렬한다. */
+/* 아이콘과 나란히 놓이는 값+라벨 묶음 — 타일 전체 중앙이 아니라 아이콘을
+   뺀 나머지 공간(flex:1) 안에서 가로 중앙, .tile의 align-items:center로
+   세로도 아이콘 높이 가운데에 오도록 정렬한다. */
 .infoWrap {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
+  align-items: center;
+  text-align: center;
   justify-content: center;
   gap: 2px;
   min-width: 0;
