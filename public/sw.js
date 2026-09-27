@@ -21,7 +21,7 @@
 // 캐시에 영원히 쌓인다(청크는 개수 제한이 없다 — IMAGE_CACHE_NAME과 다름).
 // 매 빌드마다 이름 자체가 달라지면 activate 핸들러가 이전 이름의 캐시를 통째로
 // 지워서 이 문제가 구조적으로 재발하지 않는다.
-const CACHE_NAME = 'triptic-2026-09-27T11-53-12-260Z';
+const CACHE_NAME = 'triptic-2026-09-27T12-07-48-596Z';
 /** 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게 */
 const IMAGE_CACHE_NAME = 'triptic-images-v1';
 const IMAGE_CACHE_MAX_ENTRIES = 150;
