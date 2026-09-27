@@ -41,7 +41,11 @@ export function useFocusTrap<T extends HTMLElement>(onClose?: () => void) {
       if (current.length === 0) return;
       const first = current[0];
       const last = current[current.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
+      // 열린 직후엔 컨테이너 자체에 포커스가 있어 first/last 비교로는 밖으로 샌다
+      if (document.activeElement === container) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      } else if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
         last.focus();
       } else if (!e.shiftKey && document.activeElement === last) {
