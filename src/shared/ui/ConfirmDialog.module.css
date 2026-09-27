@@ -1,0 +1,10 @@
+.message {
+  margin: 0;
+  font-size: var(--font-body-size);
+  color: var(--text-body);
+  white-space: pre-wrap;
+}
+
+.dangerBtn {
+  background: var(--danger);
+}

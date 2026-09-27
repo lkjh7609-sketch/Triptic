@@ -267,8 +267,14 @@
       "accept": "수락",
       "reject": "거절",
       "cancelConfirm": "이 모집글을 취소할까요? 지원자들에게는 알림이 가지 않아요.",
+      "cancelKeep": "계속 모집하기",
+      "cancelProceed": "모집 취소하기",
       "finalizeConfirm": "지금까지 수락한 인원으로 매칭을 확정할까요? 확정 후에는 새 지원을 받을 수 없어요.",
-      "withdrawConfirm": "지원을 취소할까요?"
+      "finalizeKeep": "더 기다리기",
+      "finalizeProceed": "매칭 확정하기",
+      "withdrawConfirm": "지원을 취소할까요?",
+      "withdrawKeep": "계속 지원 유지하기",
+      "withdrawProceed": "지원 취소하기"
     },
     "apply": {
       "dialogLabel": "동행 지원",
@@ -286,8 +292,12 @@
       "organizer": "주최자",
       "leaveConfirm": "이 그룹에서 나갈까요? 나가면 QR 코드가 즉시 무효화돼요.",
       "leave": "그룹 나가기",
+      "leaveKeep": "계속 남아있기",
+      "leaveProceed": "그룹 나가기",
       "cancelConfirm": "이 모임을 취소할까요? 모든 멤버의 QR 코드가 즉시 무효화되고, 채팅방에는 더 이상 메시지를 보낼 수 없어요.",
-      "cancel": "모임 취소"
+      "cancel": "모임 취소",
+      "cancelKeep": "계속 진행하기",
+      "cancelProceed": "모임 취소하기"
     },
     "qr": {
       "showTitle": "내 QR 코드",

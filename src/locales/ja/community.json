@@ -267,8 +267,14 @@
       "accept": "承認",
       "reject": "却下",
       "cancelConfirm": "この募集を取り消しますか？応募者には通知されません。",
+      "cancelKeep": "募集を続ける",
+      "cancelProceed": "募集をキャンセル",
       "finalizeConfirm": "これまで承認した人数でマッチングを確定しますか？確定後は新しい応募を受け付けられません。",
-      "withdrawConfirm": "応募を取り消しますか？"
+      "finalizeKeep": "もう少し待つ",
+      "finalizeProceed": "マッチングを確定",
+      "withdrawConfirm": "応募を取り消しますか？",
+      "withdrawKeep": "応募を続ける",
+      "withdrawProceed": "応募を取り消す"
     },
     "apply": {
       "dialogLabel": "同行に応募",
@@ -286,8 +292,12 @@
       "organizer": "主催者",
       "leaveConfirm": "このグループから抜けますか？抜けるとQRコードはすぐに無効になります。",
       "leave": "グループを抜ける",
+      "leaveKeep": "グループに残る",
+      "leaveProceed": "グループを抜ける",
       "cancelConfirm": "この集まりをキャンセルしますか？全員のQRコードがすぐに無効になり、チャットに新しいメッセージも送れなくなります。",
-      "cancel": "集まりをキャンセル"
+      "cancel": "集まりをキャンセル",
+      "cancelKeep": "そのまま続ける",
+      "cancelProceed": "集まりをキャンセル"
     },
     "qr": {
       "showTitle": "自分のQRコード",

@@ -7,6 +7,7 @@ import { trackScreenView, captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PostActionsMenu } from './PostActionsMenu';
 import { CompanionApplyModal } from './CompanionApplyModal';
 import {
@@ -34,6 +35,7 @@ export function CompanionDetailScreen() {
   const finalizeMatch = useFinalizeCompanionMatch(postId ?? '');
   const cancelPost = useCancelCompanionPost();
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'cancel' | 'finalize' | 'withdraw' | null>(null);
 
   useEffect(() => {
     trackScreenView('community_companion_detail');
@@ -54,7 +56,6 @@ export function CompanionDetailScreen() {
   const pendingApplications = (applicationsQuery.data ?? []).filter((a) => a.status === 'pending');
 
   async function handleCancel() {
-    if (!window.confirm(t('companion.detail.cancelConfirm'))) return;
     try {
       await cancelPost.mutateAsync(post!.id);
     } catch (err) {
@@ -63,7 +64,6 @@ export function CompanionDetailScreen() {
   }
 
   async function handleFinalize() {
-    if (!window.confirm(t('companion.detail.finalizeConfirm'))) return;
     try {
       await finalizeMatch.mutateAsync();
       // 매칭 확정 = 채팅방 개설 — 주최자는 확정하자마자 바로 새 채팅방으로 들어간다.
@@ -75,7 +75,6 @@ export function CompanionDetailScreen() {
 
   async function handleWithdraw() {
     if (!post!.myApplication) return;
-    if (!window.confirm(t('companion.detail.withdrawConfirm'))) return;
     try {
       await withdrawApplication.mutateAsync(post!.myApplication.id);
     } catch (err) {
@@ -124,11 +123,11 @@ export function CompanionDetailScreen() {
                   type="button"
                   className={styles.primaryBtn}
                   disabled={acceptedCount === 0 || finalizeMatch.isPending}
-                  onClick={handleFinalize}
+                  onClick={() => setConfirmAction('finalize')}
                 >
                   {t('companion.detail.finalize', { count: acceptedCount })}
                 </button>
-                <button type="button" className={styles.dangerBtn} disabled={cancelPost.isPending} onClick={handleCancel}>
+                <button type="button" className={styles.dangerBtn} disabled={cancelPost.isPending} onClick={() => setConfirmAction('cancel')}>
                   {t('companion.detail.cancel')}
                 </button>
               </>
@@ -142,7 +141,7 @@ export function CompanionDetailScreen() {
           <div className={styles.ownerActions}>
             <span className={styles.applicationStatus}>{t(`companion.detail.myApplicationStatus.${post.myApplication.status}`)}</span>
             {post.myApplication.status === 'pending' || post.myApplication.status === 'accepted' ? (
-              <button type="button" className={styles.dangerBtn} disabled={withdrawApplication.isPending} onClick={handleWithdraw}>
+              <button type="button" className={styles.dangerBtn} disabled={withdrawApplication.isPending} onClick={() => setConfirmAction('withdraw')}>
                 {t('companion.detail.withdraw')}
               </button>
             ) : null}
@@ -209,6 +208,39 @@ export function CompanionDetailScreen() {
       ) : null}
 
       {showApplyModal ? <CompanionApplyModal postId={post.id} onClose={() => setShowApplyModal(false)} /> : null}
+
+      {confirmAction === 'cancel' ? (
+        <ConfirmDialog
+          title={t('companion.detail.cancel')}
+          message={t('companion.detail.cancelConfirm')}
+          cancelLabel={t('companion.detail.cancelKeep')}
+          confirmLabel={t('companion.detail.cancelProceed')}
+          danger
+          onConfirm={handleCancel}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
+      {confirmAction === 'finalize' ? (
+        <ConfirmDialog
+          title={t('companion.detail.finalize', { count: acceptedCount })}
+          message={t('companion.detail.finalizeConfirm')}
+          cancelLabel={t('companion.detail.finalizeKeep')}
+          confirmLabel={t('companion.detail.finalizeProceed')}
+          onConfirm={handleFinalize}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
+      {confirmAction === 'withdraw' ? (
+        <ConfirmDialog
+          title={t('companion.detail.withdraw')}
+          message={t('companion.detail.withdrawConfirm')}
+          cancelLabel={t('companion.detail.withdrawKeep')}
+          confirmLabel={t('companion.detail.withdrawProceed')}
+          danger
+          onConfirm={handleWithdraw}
+          onClose={() => setConfirmAction(null)}
+        />
+      ) : null}
     </div>
   );
 }
