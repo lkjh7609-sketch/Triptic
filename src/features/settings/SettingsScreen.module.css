@@ -93,23 +93,6 @@
   color: var(--danger);
 }
 
-.rowRelative {
-  position: relative;
-}
-
-/* 언어 설정 행처럼 "KRW >" 짧은 텍스트만 보이게 하고, 실제 <select>는
-   투명하게 행 전체 위에 덮어서 탭하면 네이티브 선택 UI가 뜨게 한다 —
-   appearance:none으로 select 자체를 스타일링하면 화살표까지 없어지고
-   선택된 통화 전체 이름("대한민국 원 (KRW) - ₩")이 그대로 보였다. */
-.selectOverlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
 .hint {
   font-size: var(--font-caption-size);
   color: var(--text-placeholder);

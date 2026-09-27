@@ -9,7 +9,6 @@ import { signOut } from '@/shared/api/authService';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { LoginButtons } from '@/features/auth/LoginButtons';
 import { BackupModal } from '@/features/plan/BackupModal';
-import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
 import type { NotificationPrefs } from '@/shared/api/profileService';
@@ -21,6 +20,7 @@ import { User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 
 import { EditProfileModal } from './EditProfileModal';
 import { UnitSettingsModal } from './UnitSettingsModal';
 import { LanguageModal } from './LanguageModal';
+import { CurrencyModal } from './CurrencyModal';
 import { FeedbackModal } from './FeedbackModal';
 
 import styles from './SettingsScreen.module.css';
@@ -54,6 +54,7 @@ export function SettingsScreen() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showUnitSettings, setShowUnitSettings] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
   const [theme, setThemeState] = useState<ThemePreference>(() => getStoredTheme());
@@ -171,22 +172,10 @@ export function SettingsScreen() {
               <span>{t('preferences.unitSettings')}</span>
               <span style={{color: 'var(--text-muted)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
             </button>
-            <div className={`${styles.row} ${styles.rowRelative}`}>
+            <button type="button" className={`${styles.row} ${styles.rowButton}`} onClick={() => setShowCurrencyModal(true)}>
               <span>{t('preferences.baseCurrency')}</span>
               <span style={{color: 'var(--text-muted)'}}>{profile?.base_currency ?? 'KRW'} &gt;</span>
-              <select
-                className={styles.selectOverlay}
-                value={profile?.base_currency ?? 'KRW'}
-                onChange={(e) => updateProfile.mutate({ base_currency: e.target.value })}
-                aria-label={t('preferences.baseCurrency')}
-              >
-                {Object.entries(CURRENCIES).map(([code, meta]) => (
-                  <option key={code} value={code}>
-                    {currencyName(code, i18n.language)} ({code}) - {meta.symbol}
-                  </option>
-                ))}
-              </select>
-            </div>
+            </button>
             <button type="button" className={`${styles.row} ${styles.rowButton}`} onClick={() => setShowLanguageModal(true)}>
               <span>{t('preferences.language')}</span>
               <span style={{color: 'var(--text-muted)'}}>{LANGUAGE_AUTONYMS[normalizeLocale(i18n.language)]} &gt;</span>
@@ -280,6 +269,7 @@ export function SettingsScreen() {
       {showLicenses ? <LicensesModal onClose={() => setShowLicenses(false)} /> : null}
       {showEditProfile ? <EditProfileModal onClose={() => setShowEditProfile(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
+      {showCurrencyModal ? <CurrencyModal onClose={() => setShowCurrencyModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showLanguageModal ? <LanguageModal onClose={() => setShowLanguageModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showFeedback ? <FeedbackModal onClose={() => setShowFeedback(false)} /> : null}
     </div>
