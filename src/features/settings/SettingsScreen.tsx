@@ -16,7 +16,7 @@ import type { NotificationPrefs } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
-import { Thermometer, User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 'lucide-react';
+import { User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 'lucide-react';
 
 import { EditProfileModal } from './EditProfileModal';
 import { UnitSettingsModal } from './UnitSettingsModal';
@@ -166,7 +166,7 @@ export function SettingsScreen() {
         {user ? (
           <>
             <button type="button" className={`${styles.row} ${styles.rowButton}`} onClick={() => setShowUnitSettings(true)}>
-              <span><Thermometer size={16} style={{marginRight: 8, verticalAlign: 'middle', color: 'var(--text-muted)'}} aria-hidden="true" /> {t('preferences.unitSettings')}</span>
+              <span>{t('preferences.unitSettings')}</span>
               <span style={{color: 'var(--text-muted)'}}>{profile?.temp_unit === 'f' ? '°F' : '°C'}, {profile?.distance_unit === 'mi' ? 'mi' : 'km'} &gt;</span>
             </button>
             <div className={styles.row}>
