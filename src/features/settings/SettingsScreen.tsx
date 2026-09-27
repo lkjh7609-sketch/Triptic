@@ -119,6 +119,7 @@ export function SettingsScreen() {
               <img src={user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/notionists/svg?seed=' + user.email} alt="Profile" className={styles.avatar} />
               <div className={styles.profileInfo}>
                 <span className={styles.profileName}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
+                {profile?.handle ? <span className={styles.profileHandle}>@{profile.handle}</span> : null}
                 <span className={styles.profileEmail}>{user.email}</span>
               </div>
             </div>
