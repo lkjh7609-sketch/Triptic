@@ -142,61 +142,65 @@ export function ComposePostScreen() {
           {createPost.isPending ? t('compose.submitting') : t('compose.submit')}
         </button>
       </div>
-      <div className={styles.field}>
-        <textarea
-          className={styles.bodyInput}
-          placeholder={t('compose.bodyPlaceholder')}
-          value={body}
-          maxLength={MAX_BODY_LENGTH}
-          onChange={(e) => setBody(e.target.value)}
-        />
-        <span className={styles.counter}>
-          {body.length}/{MAX_BODY_LENGTH}
-        </span>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>{t('compose.tripLabel')}</label>
-        <select className={styles.select} value={tripId} onChange={(e) => setTripId(e.target.value)}>
-          <option value="">{t('compose.tripNone')}</option>
-          {(trips ?? []).map((trip) => (
-            <option key={trip.id} value={trip.id}>
-              {trip.title}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>{t('compose.photoLabel', { max: MAX_IMAGES })}</label>
-        <div className={styles.imageGrid}>
-          {images.map((img, i) => (
-            <div key={img.storagePath} className={styles.imageThumbWrap}>
-              <img src={img.previewUrl} alt="" className={styles.imageThumb} />
-              <button type="button" className={styles.removeImageBtn} onClick={() => handleRemoveImage(i)}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><X size={16} /></span>
-              </button>
-            </div>
-          ))}
-          {images.length < MAX_IMAGES ? (
-            <button
-              type="button"
-              className={styles.addImageBtn}
-              disabled={uploading}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {uploading ? t('compose.processingPhoto') : t('compose.addPhoto')}
-            </button>
-          ) : null}
+      <div className={styles.card}>
+        <div className={styles.field}>
+          <textarea
+            className={styles.bodyInput}
+            placeholder={t('compose.bodyPlaceholder')}
+            value={body}
+            maxLength={MAX_BODY_LENGTH}
+            onChange={(e) => setBody(e.target.value)}
+          />
+          <span className={styles.counter}>
+            {body.length}/{MAX_BODY_LENGTH}
+          </span>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          className={styles.hiddenInput}
-          onChange={handleFilesSelected}
-        />
+      </div>
+
+      <div className={styles.card}>
+        <div className={styles.field}>
+          <label className={styles.label}>{t('compose.tripLabel')}</label>
+          <select className={styles.select} value={tripId} onChange={(e) => setTripId(e.target.value)}>
+            <option value="">{t('compose.tripNone')}</option>
+            {(trips ?? []).map((trip) => (
+              <option key={trip.id} value={trip.id}>
+                {trip.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label}>{t('compose.photoLabel', { max: MAX_IMAGES })}</label>
+          <div className={styles.imageGrid}>
+            {images.map((img, i) => (
+              <div key={img.storagePath} className={styles.imageThumbWrap}>
+                <img src={img.previewUrl} alt="" className={styles.imageThumb} />
+                <button type="button" className={styles.removeImageBtn} onClick={() => handleRemoveImage(i)}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><X size={16} /></span>
+                </button>
+              </div>
+            ))}
+            {images.length < MAX_IMAGES ? (
+              <button
+                type="button"
+                className={styles.addImageBtn}
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploading ? t('compose.processingPhoto') : t('compose.addPhoto')}
+              </button>
+            ) : null}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className={styles.hiddenInput}
+            onChange={handleFilesSelected}
+          />
+        </div>
       </div>
 
       {statusMessage ? (
