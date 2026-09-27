@@ -6,7 +6,7 @@ import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
-import { User, Settings, LogOut, Globe, HardDrive, Sun, Moon, Compass } from 'lucide-react';
+import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon, Compass } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { EditProfileModal } from '@/features/settings/EditProfileModal';
 import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
@@ -123,11 +123,14 @@ export function HeaderDesktop() {
             </div>
           </button>
           <div className={styles.dropdownDivider} />
+          <Link to="/settings" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+            <Settings size={16} /> {t('menu.settingsPage')}
+          </Link>
           <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
             <User size={16} /> {t('menu.editProfile')}
           </button>
           <button className={styles.dropdownItem} onClick={() => openModal('unit')}>
-            <Settings size={16} /> {t('menu.units')}
+            <SlidersHorizontal size={16} /> {t('menu.units')}
           </button>
           <button className={styles.dropdownItem} onClick={() => openModal('language')}>
             <Globe size={16} /> {t('menu.language')}
