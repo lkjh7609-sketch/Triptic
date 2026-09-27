@@ -151,6 +151,12 @@ export function CompanionDetailScreen() {
                 {t('companion.detail.goToMatch')}
               </button>
             ) : null}
+            {/* 자동 검열로 막힌 지원은 문구를 고쳐 다시 지원할 수 있다(0044) */}
+            {post.myApplication.status === 'removed' && post.status === 'recruiting' ? (
+              <button type="button" className={styles.primaryBtn} onClick={() => setShowApplyModal(true)}>
+                {t('companion.detail.apply')}
+              </button>
+            ) : null}
           </div>
         ) : post.status === 'recruiting' ? (
           <div className={styles.ownerActions}>

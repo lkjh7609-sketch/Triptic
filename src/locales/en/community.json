@@ -280,7 +280,7 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
-        "removed": "Removed after a report"
+        "removed": "Removed for violating guidelines"
       },
       "withdraw": "Withdraw",
       "apply": "Apply",
