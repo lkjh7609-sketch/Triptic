@@ -375,7 +375,21 @@
   },
   "errors": {
     "tripLimit": "만들 수 있는 여행 수 한도에 도달했어요.",
-    "shareUnavailable": "지금은 동행자 공유를 사용할 수 없어요."
+    "shareUnavailable": "지금은 동행자 공유를 사용할 수 없어요.",
+    "reopenLimit": "무료 사용자는 이 여행을 최대 5번까지만 재편집할 수 있어요."
+  },
+  "quota": {
+    "tripCreatedToast": "여행을 만들었어요. 무료 생성 {{remaining}}회 남았어요.",
+    "finalizeConfirm": "이 여행의 일정 편집을 마칠까요? 완료하면 보기 전용이 되고, 다시 고치려면 재편집이 필요해요.",
+    "finalizeKeep": "계속 편집하기",
+    "finalizeProceed": "완료하기",
+    "finalizeButton": "일정 완료",
+    "finalizedBanner": "완료된 일정이에요 — 보기 전용",
+    "reopenButton": "재편집하기",
+    "reopenConfirm": "다시 편집할 수 있게 열까요?",
+    "reopenKeep": "그냥 보기만",
+    "reopenProceed": "재편집 열기",
+    "reopenSuccess": "다시 편집할 수 있어요."
   },
   "pdf": {
     "cityFallback": "여행",

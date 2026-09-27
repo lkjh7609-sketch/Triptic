@@ -1,0 +1,27 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+}
+
+.reopenBtn {
+  appearance: none;
+  border: 1px solid var(--brand);
+  background: none;
+  color: var(--brand);
+  font-weight: 700;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reopenBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

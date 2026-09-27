@@ -375,7 +375,21 @@
   },
   "errors": {
     "tripLimit": "已達可建立的行程數量上限。",
-    "shareUnavailable": "目前無法使用同行者分享。"
+    "shareUnavailable": "目前無法使用同行者分享。",
+    "reopenLimit": "免費使用者最多只能重新編輯這個行程 5 次。"
+  },
+  "quota": {
+    "tripCreatedToast": "已建立行程。免費建立次數還剩 {{remaining}} 次。",
+    "finalizeConfirm": "要結束這個行程的編輯嗎？完成後會變成唯讀，之後要修改需要重新開啟編輯。",
+    "finalizeKeep": "繼續編輯",
+    "finalizeProceed": "完成",
+    "finalizeButton": "完成行程",
+    "finalizedBanner": "這個行程已完成 — 僅供檢視",
+    "reopenButton": "重新開啟編輯",
+    "reopenConfirm": "要重新開啟這個行程的編輯嗎？",
+    "reopenKeep": "先看看就好",
+    "reopenProceed": "重新開啟",
+    "reopenSuccess": "已經可以重新編輯了。"
   },
   "pdf": {
     "cityFallback": "旅行",

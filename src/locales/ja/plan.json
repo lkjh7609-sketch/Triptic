@@ -375,7 +375,21 @@
   },
   "errors": {
     "tripLimit": "作成できる旅行の上限に達しました。",
-    "shareUnavailable": "現在、同行者との共有は利用できません。"
+    "shareUnavailable": "現在、同行者との共有は利用できません。",
+    "reopenLimit": "無料ユーザーはこの旅行の再編集を最大5回までしかできません。"
+  },
+  "quota": {
+    "tripCreatedToast": "旅行を作成しました。無料作成の残り回数：{{remaining}}回。",
+    "finalizeConfirm": "この旅行の日程編集を終えますか？完了すると閲覧専用になり、編集するには再編集が必要です。",
+    "finalizeKeep": "編集を続ける",
+    "finalizeProceed": "完了する",
+    "finalizeButton": "日程を完了",
+    "finalizedBanner": "完了した日程です — 閲覧専用",
+    "reopenButton": "再編集する",
+    "reopenConfirm": "この旅行を再編集できるようにしますか？",
+    "reopenKeep": "見るだけにする",
+    "reopenProceed": "再編集する",
+    "reopenSuccess": "再び編集できます。"
   },
   "pdf": {
     "cityFallback": "旅行",

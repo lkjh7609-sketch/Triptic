@@ -389,7 +389,21 @@
   },
   "errors": {
     "tripLimit": "You've reached the limit on how many trips you can create.",
-    "shareUnavailable": "Sharing with companions isn't available right now."
+    "shareUnavailable": "Sharing with companions isn't available right now.",
+    "reopenLimit": "Free users can reopen this trip for editing up to 5 times."
+  },
+  "quota": {
+    "tripCreatedToast": "Trip created. {{remaining}} free trip creates left.",
+    "finalizeConfirm": "Finish editing this trip's itinerary? Once finalized it becomes view-only — you'll need to reopen it to edit again.",
+    "finalizeKeep": "Keep editing",
+    "finalizeProceed": "Finish",
+    "finalizeButton": "Finish itinerary",
+    "finalizedBanner": "This itinerary is finalized — view only",
+    "reopenButton": "Reopen for editing",
+    "reopenConfirm": "Reopen this trip for editing?",
+    "reopenKeep": "Just viewing",
+    "reopenProceed": "Reopen",
+    "reopenSuccess": "You can edit it again."
   },
   "pdf": {
     "cityFallback": "Trip",
