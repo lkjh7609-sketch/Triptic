@@ -264,13 +264,10 @@ export async function finalizeCompanionMatch(postId: string): Promise<void> {
 /** 매칭 멤버 = 주최자 + accepted 신청자. 별도 테이블 없이 파생 조합한다(설계 결정, 0032 참고). */
 export async function listCompanionMatchMembers(post: CompanionPost): Promise<CompanionMatchMember[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from('companion_applications')
-    .select('applicant_id')
-    .eq('post_id', post.id)
-    .eq('status', 'accepted');
+  // 신청 테이블을 직접 읽으면 RLS상 주최자가 아닌 멤버는 다른 수락 멤버를 못 본다(0048)
+  const { data, error } = await supabase.rpc('list_companion_member_ids', { p_post_id: post.id });
   if (error) throw error;
-  const memberIds = [post.author_id, ...((data ?? []) as { applicant_id: string }[]).map((r) => r.applicant_id)];
+  const memberIds = [post.author_id, ...((data ?? []) as string[]).filter((id) => id !== post.author_id)];
   const profileMap = await fetchProfilesByIds(memberIds);
   return memberIds.map((id) => ({
     user_id: id,
