@@ -20,6 +20,7 @@ import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/shared/utils/id';
 import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
+import { showToast } from '@/shared/ui/toast';
 import { reconstructTripContent, type TripItineraryRaw, type TripDayRow, type ItineraryItemRow } from '@/features/plan/itineraryTransform';
 
 /** allProjects[name] 형태의 로컬 프로젝트 (2.x, snapshot 스키마) */
@@ -70,6 +71,10 @@ export interface TripRow {
   content?: TripContent;
   /** 커뮤니티 글에서 복제(포크)해 만든 여행이면 원본 trip id (0036) */
   forked_from_trip_id?: string | null;
+  /** null이면 편집 가능, 값이 있으면 보기 전용(일정 완료) — 0037 */
+  finalized_at?: string | null;
+  /** 완료 후 재편집한 횟수 — 무료 사용자는 여행당 5회까지(0037) */
+  reopen_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -149,7 +154,13 @@ export class TripService {
     if (project.supabaseId) row.id = project.supabaseId;
 
     const { data, error } = await supabase.from('trips').upsert(row).select().single();
-    if (error) throw error;
+    if (error) {
+      // 무료 사용자 평생 생성 2개 한도 — 서버 트리거(0037)가 실제 경계다.
+      if (error.hint === 'trip_limit_reached') {
+        throw new Error(i18next.t('plan:errors.tripLimit'));
+      }
+      throw error;
+    }
     const tripId = (data as { id: string }).id;
 
     // ADR-002 M7 컷오버 — 정규화 테이블이 이제 1차 데이터라 이 호출이
@@ -162,7 +173,28 @@ export class TripService {
       throw fnErr;
     }
 
+    if (isNewTrip) await this.notifyQuotaAfterCreate(user.id);
+
     return { ...(data as Omit<TripRow, 'content'>), content };
+  }
+
+  /** 새 여행 생성 직후 무료 사용자에게 남은 횟수를 토스트로 안내한다(요구사항:
+   * "횟수가 하나씩 차감될 때마다 사용자에게 토스트알람"). 실패해도 저장 자체는
+   * 이미 끝난 뒤라 조용히 무시한다(안내가 실제 게이트는 아니다). */
+  private async notifyQuotaAfterCreate(userId: string): Promise<void> {
+    try {
+      const supabase = getSupabaseClient();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan, trips_created_count')
+        .eq('id', userId)
+        .maybeSingle();
+      if (!profile || profile.plan !== 'free') return;
+      const remaining = Math.max(0, 2 - (profile.trips_created_count as number));
+      showToast(i18next.t('plan:quota.tripCreatedToast', { remaining }));
+    } catch {
+      // 안내용 토스트일 뿐이라 실패해도 무시한다.
+    }
   }
 
   /** 여행 삭제 */
@@ -335,6 +367,24 @@ export class TripService {
       .eq('id', row.id);
     if (error) throw error;
     return { ...row, forked_from_trip_id: payload.trip.id } as TripRow;
+  }
+
+  /** 일정 완료(보기 전용 잠금) — 소유자만, 이미 완료면 서버에서 에러(0037) */
+  async finalizeTrip(tripId: string): Promise<void> {
+    const { error } = await getSupabaseClient().rpc('finalize_trip', { p_trip_id: tripId });
+    if (error) throw error;
+  }
+
+  /** 재편집(잠금 해제) — 무료 사용자는 여행당 5회까지(0037) */
+  async reopenTrip(tripId: string): Promise<number> {
+    const { data, error } = await getSupabaseClient().rpc('reopen_trip', { p_trip_id: tripId });
+    if (error) {
+      if (error.hint === 'reopen_limit_reached') {
+        throw new Error(i18next.t('plan:errors.reopenLimit'));
+      }
+      throw error;
+    }
+    return data as number;
   }
 
   // ── 동행자 제안 ────────────────────────────────────────────────

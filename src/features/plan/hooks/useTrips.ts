@@ -59,6 +59,30 @@ export function useTrip(tripId: string | undefined) {
   });
 }
 
+/** 일정 완료(보기 전용 잠금) */
+export function useFinalizeTrip(tripId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => tripService.finalizeTrip(tripId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKey(tripId ?? '') });
+      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+  });
+}
+
+/** 재편집(잠금 해제) — 무료 사용자는 여행당 5회까지 */
+export function useReopenTrip(tripId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => tripService.reopenTrip(tripId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKey(tripId ?? '') });
+      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+  });
+}
+
 /** snapshot 부분 갱신 (장소 추가/삭제/순서변경 등). project는 이미 toLocalProject로 변환된 전체 상태
  * 비로그인 샘플 여행(SAMPLE_TRIP_ID)은 Supabase에 절대 쓰지 않고 메모리에만 반영한다
  * (index.html saveData의 `activeProjectName === SAMPLE_PROJECT_NAME` 조기 반환과 동일 — sampleTrip.ts 참고). */

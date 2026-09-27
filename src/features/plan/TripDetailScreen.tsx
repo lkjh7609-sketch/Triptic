@@ -8,7 +8,7 @@ import { formatTemp } from '@/features/weather/weatherRules';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { useTranslation } from 'react-i18next';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
+import { useTrip, useUpdateTripSnapshot, useSuggestions, useFinalizeTrip } from './hooks/useTrips';
 import { tripService, type LocalProject, type Suggestion } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
 import { DayChips } from './DayChips';
@@ -58,6 +58,9 @@ import type {
 } from './types';
 import styles from './TripDetailScreen.module.css';
 import { AiNextPlaceModal } from './AiNextPlaceModal';
+import { FinalizedTripView } from './FinalizedTripView';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { showToast } from '@/shared/ui/toast';
 import { Lightbulb, Ticket, ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
 
 /**
@@ -73,7 +76,9 @@ export function TripDetailScreen() {
   const isSample = tripId === SAMPLE_TRIP_ID;
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
   const updateSnapshot = useUpdateTripSnapshot(tripId);
+  const finalizeMutation = useFinalizeTrip(tripId);
   const { data: suggestions } = useSuggestions(tripId);
+  const [confirmFinalize, setConfirmFinalize] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const bgImage = useCityImage(trip?.city ?? '');
@@ -317,6 +322,18 @@ export function TripDetailScreen() {
     return <ErrorState summary={t('tripDetail.loadError')} onRetry={() => refetch()} />;
   }
 
+  if (trip.finalized_at) {
+    return <FinalizedTripView trip={trip} />;
+  }
+
+  async function handleFinalize() {
+    try {
+      await finalizeMutation.mutateAsync();
+    } catch (err) {
+      captureError(err, { context: 'finalizeTrip' });
+      showToast(err instanceof Error ? err.message : t('tripDetail.loadError'));
+    }
+  }
 
   return (
     <>
@@ -482,6 +499,14 @@ export function TripDetailScreen() {
       </div>
     </div>
 
+      {!isSample ? (
+        <div className={styles.finalizeWrap}>
+          <button type="button" className={styles.finalizeButton} disabled={finalizeMutation.isPending} onClick={() => setConfirmFinalize(true)}>
+            {t('quota.finalizeButton')}
+          </button>
+        </div>
+      ) : null}
+
       {aiSuggestBase !== null ? (
         <AiNextPlaceModal
           trip={trip}
@@ -601,6 +626,17 @@ export function TripDetailScreen() {
 
       {showVoucherArchive && tripId ? (
         <VoucherArchive tripId={tripId} onClose={() => setShowVoucherArchive(false)} />
+      ) : null}
+
+      {confirmFinalize ? (
+        <ConfirmDialog
+          title={t('quota.finalizeButton')}
+          message={t('quota.finalizeConfirm')}
+          cancelLabel={t('quota.finalizeKeep')}
+          confirmLabel={t('quota.finalizeProceed')}
+          onConfirm={handleFinalize}
+          onClose={() => setConfirmFinalize(false)}
+        />
       ) : null}
     </>
   );

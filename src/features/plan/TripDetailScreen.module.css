@@ -230,6 +230,25 @@
   min-height: 44px;
 }
 
+.finalizeWrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-4) var(--space-6);
+}
+
+.finalizeButton {
+  appearance: none;
+  border: 1px solid var(--brand);
+  background: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-6);
+  color: var(--brand);
+  font-weight: 700;
+  font-size: var(--font-body-size);
+  cursor: pointer;
+  min-height: 44px;
+}
+
 .mapWrap {
   height: calc(100vh - 220px);
 }

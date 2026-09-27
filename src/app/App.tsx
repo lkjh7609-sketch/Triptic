@@ -6,6 +6,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { RouterProvider } from 'react-router';
 import { LocaleSync } from '@/shared/i18n/useSyncLocale';
 import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
+import { ToastHost } from '@/shared/ui/toast';
 import { ErrorBoundary } from './ErrorBoundary';
 import { router } from './router';
 
@@ -39,6 +40,7 @@ export function App() {
         <Suspense fallback={null}>
           <LocaleSync />
           <RouterProvider router={router} />
+          <ToastHost />
         </Suspense>
       </PersistQueryClientProvider>
     </ErrorBoundary>
