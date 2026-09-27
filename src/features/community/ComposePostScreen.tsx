@@ -8,6 +8,8 @@ import { useTrips } from '@/features/plan/hooks/useTrips';
 import { useDestinations } from './hooks/useDestinations';
 import { useCreatePost } from './hooks/usePosts';
 import { uploadPostImage, type UploadedPostImage } from './imageProcessing';
+import { DestinationSelector } from './DestinationSelector';
+import './CommunityDesign.css';
 import styles from './ComposePostScreen.module.css';
 
 const MAX_BODY_LENGTH = 2000;
@@ -96,6 +98,10 @@ export function ComposePostScreen() {
 
   async function handleSubmit() {
     setStatusMessage(null);
+    if (!destinationId) {
+      setStatusMessage({ type: 'error', text: t('compose.destinationRequiredError') });
+      return;
+    }
     if (!body.trim()) {
       setStatusMessage({ type: 'error', text: t('compose.bodyRequiredError') });
       return;
@@ -142,6 +148,21 @@ export function ComposePostScreen() {
           {createPost.isPending ? t('compose.submitting') : t('compose.submit')}
         </button>
       </div>
+
+      <div className={styles.card}>
+        <div className={styles.field}>
+          <label className={styles.label}>{t('compose.destinationLabel')}</label>
+          <p className={styles.selectedDestination}>
+            {(destinations ?? []).find((d) => d.id === destinationId)?.name ?? t('compose.destinationPlaceholder')}
+          </p>
+          <DestinationSelector
+            destinations={destinations ?? []}
+            onCitySelect={(d) => setDestinationId(d.id)}
+            selectedDestinationId={destinationId || null}
+          />
+        </div>
+      </div>
+
       <div className={styles.card}>
         <div className={styles.field}>
           <textarea

@@ -76,6 +76,13 @@
   margin-bottom: var(--space-2);
 }
 
+.selectedDestination {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .select {
   width: 100%;
   min-height: 48px;

@@ -8,6 +8,8 @@ import { trackScreenView, captureError } from '@/shared/monitoring';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { useDestinations } from './hooks/useDestinations';
 import { useCreateCompanionPost } from './hooks/useCompanionPosts';
+import { DestinationSelector } from './DestinationSelector';
+import './CommunityDesign.css';
 import styles from './CompanionComposeScreen.module.css';
 
 const MAX_TITLE_LENGTH = 100;
@@ -31,6 +33,7 @@ export function CompanionComposeScreen() {
   const [groupSize, setGroupSize] = useState(2);
   const [showCalendar, setShowCalendar] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
+  const selectedDestination = (destinations ?? []).find((d) => d.id === destinationId);
 
   useEffect(() => {
     trackScreenView('community_companion_compose');
@@ -121,14 +124,14 @@ export function CompanionComposeScreen() {
       <div className={styles.card}>
         <div className={styles.field}>
           <label className={styles.label}>{t('companion.compose.destinationLabel')}</label>
-          <select className={styles.select} value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
-            <option value="">{t('companion.compose.destinationAny')}</option>
-            {(destinations ?? []).map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+          <p className={styles.selectedDestination}>
+            {selectedDestination ? selectedDestination.name : t('companion.compose.destinationAny')}
+          </p>
+          <DestinationSelector
+            destinations={destinations ?? []}
+            onCitySelect={(d) => setDestinationId(d.id)}
+            selectedDestinationId={destinationId || null}
+          />
         </div>
 
         <div className={styles.field}>
