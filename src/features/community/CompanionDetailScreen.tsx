@@ -140,9 +140,14 @@ export function CompanionDetailScreen() {
                 </button>
               </>
             ) : post.status === 'matched' ? (
-              <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
-                {t('companion.detail.goToMatch')}
-              </button>
+              <>
+                <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
+                  {t('companion.chat.title')}
+                </button>
+                <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
+                  {t('companion.detail.goToMatch')}
+                </button>
+              </>
             ) : null}
           </div>
         ) : post.myApplication ? (
@@ -154,9 +159,14 @@ export function CompanionDetailScreen() {
               </button>
             ) : null}
             {post.myApplication.status === 'accepted' && post.status === 'matched' ? (
-              <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
-                {t('companion.detail.goToMatch')}
-              </button>
+              <>
+                <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
+                  {t('companion.chat.title')}
+                </button>
+                <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
+                  {t('companion.detail.goToMatch')}
+                </button>
+              </>
             ) : null}
             {/* 자동 검열로 막힌 지원은 문구를 고쳐 다시 지원할 수 있다(0044) */}
             {post.myApplication.status === 'removed' && post.status === 'recruiting' ? (

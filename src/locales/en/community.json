@@ -243,6 +243,11 @@
       "writeFirst": "Post the first listing",
       "empty": "No one is looking for a companion yet."
     },
+    "mine": {
+      "title": "My companions",
+      "hosting": "You're hosting",
+      "matched": "Confirmed · open chat"
+    },
     "compose": {
       "title": "Find a companion",
       "titleLabel": "Title",

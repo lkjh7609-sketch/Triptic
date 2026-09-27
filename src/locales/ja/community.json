@@ -236,6 +236,11 @@
       "writeFirst": "最初の募集を投稿する",
       "empty": "まだ募集中の同行がありません。"
     },
+    "mine": {
+      "title": "自分の同行",
+      "hosting": "主催・募集中",
+      "matched": "確定 · チャットへ"
+    },
     "compose": {
       "title": "同行募集",
       "titleLabel": "タイトル",
