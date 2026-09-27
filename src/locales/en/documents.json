@@ -30,6 +30,12 @@
     "consentText": "Upload a flight or hotel confirmation as a PDF or photo, and we'll automatically read the flight number, times, and hotel details to draft your itinerary. Sensitive info like passport or card numbers is always redacted before it's sent to the recognition (AI) server. Extracted details are only ever added to your itinerary after you confirm them.",
     "agreeAndContinue": "Agree and continue",
     "uploadTitle": "Upload booking document",
+    "categoryPrompt": "What kind of booking is this?",
+    "category": {
+      "flight": "Flight",
+      "lodging": "Hotel",
+      "other": "Other booking"
+    },
     "fileHint": "PDF, JPG, PNG (up to 20MB)",
     "processing": "Reading your document…",
     "uploadError": "Something went wrong during upload. Please try again."
