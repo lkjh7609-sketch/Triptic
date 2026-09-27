@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
 import { SampleTripCard } from './SampleTripCard';
 import { SAMPLE_TRIP_ID, resetSampleTrip } from './sampleTrip';
-import { BackupModal } from './BackupModal';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
@@ -30,7 +29,6 @@ export function PlanScreen() {
   const renameTrip = useRenameTrip();
   const duplicateTrip = useDuplicateTrip();
   const deleteTrip = useDeleteTrip();
-  const [showBackup, setShowBackup] = useState(false);
 
   const cardCallbacks = {
     onRename: (tripId: string, newTitle: string) => renameTrip.mutate({ tripId, newTitle }),
@@ -94,21 +92,15 @@ export function PlanScreen() {
   }
 
   return (
-    <>
-      <PlanDesktop
-        trips={trips ?? []}
-        ongoing={grouped.ongoing}
-        upcoming={grouped.upcoming}
-        past={grouped.past}
-        onRefetch={refetch}
-        onRename={cardCallbacks.onRename}
-        onDuplicate={cardCallbacks.onDuplicate}
-        onDelete={cardCallbacks.onDelete}
-        onOpenBackup={() => setShowBackup(true)}
-      />
-      {showBackup ? (
-        <BackupModal trips={trips ?? []} onClose={() => setShowBackup(false)} onImported={() => refetch()} />
-      ) : null}
-    </>
+    <PlanDesktop
+      trips={trips ?? []}
+      ongoing={grouped.ongoing}
+      upcoming={grouped.upcoming}
+      past={grouped.past}
+      onRefetch={refetch}
+      onRename={cardCallbacks.onRename}
+      onDuplicate={cardCallbacks.onDuplicate}
+      onDelete={cardCallbacks.onDelete}
+    />
   );
 }
