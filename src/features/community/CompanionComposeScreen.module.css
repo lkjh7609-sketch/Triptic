@@ -76,8 +76,14 @@
   margin-bottom: var(--space-2);
 }
 
+.selectedDestination {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .titleInput,
-.select,
 .dateButton {
   width: 100%;
   min-height: 48px;
@@ -89,8 +95,7 @@
   color: var(--text-body);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.titleInput:focus,
-.select:focus {
+.titleInput:focus {
   outline: none;
   border-color: var(--brand);
   box-shadow: 0 0 0 3px var(--brand-tint);
