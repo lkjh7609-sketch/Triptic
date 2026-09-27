@@ -6,7 +6,8 @@
       "reports": "Report queue",
       "pending": "Auto-flag queue",
       "companion": "Companions",
-      "users": "User plans"
+      "users": "User plans",
+      "feedback": "Feedback"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -25,7 +26,12 @@
     "planPro": "Pro",
     "grantPro": "Grant pro",
     "revokePro": "Revert to free",
-    "planChangeError": "Couldn't change this user's plan."
+    "planChangeError": "Couldn't change this user's plan.",
+    "feedbackEmpty": "No feedback yet.",
+    "feedbackStatusNew": "New",
+    "viewScreenshot": "View screenshot",
+    "markReviewed": "Mark reviewed",
+    "markReviewedError": "Failed to update."
   },
   "report": {
     "title": "Report",

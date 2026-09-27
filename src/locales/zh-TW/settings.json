@@ -101,5 +101,17 @@
     "distance": "距離單位",
     "kilometers": "公里 (km)",
     "miles": "英里 (mi)"
+  },
+  "feedback": {
+    "menuLabel": "建議回饋",
+    "title": "建議回饋",
+    "bodyLabel": "內容",
+    "bodyPlaceholder": "請告訴我們您遇到的問題或想提出的建議。",
+    "bodyRequired": "請輸入內容。",
+    "screenshotLabel": "截圖（選填）",
+    "submit": "送出",
+    "submitting": "送出中…",
+    "submitError": "送出失敗，請稍後再試。",
+    "submitSuccess": "已收到您的建議，謝謝！"
   }
 }

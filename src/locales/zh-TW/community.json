@@ -6,7 +6,8 @@
       "reports": "舉報佇列",
       "pending": "自動標記佇列",
       "companion": "找同行",
-      "users": "使用者方案"
+      "users": "使用者方案",
+      "feedback": "建議回饋"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -25,7 +26,12 @@
     "planPro": "付費",
     "grantPro": "授予付費方案",
     "revokePro": "改回免費",
-    "planChangeError": "變更方案失敗了。"
+    "planChangeError": "變更方案失敗了。",
+    "feedbackEmpty": "目前沒有收到建議。",
+    "feedbackStatusNew": "未讀",
+    "viewScreenshot": "查看截圖",
+    "markReviewed": "標記已讀",
+    "markReviewedError": "處理失敗。"
   },
   "report": {
     "title": "舉報",
