@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, Lock as LockIcon } from 'lucide-react';
+import { CheckCircle, Lock as LockIcon, Search } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
-import { trackScreenView } from '@/shared/monitoring';
+import { trackScreenView, captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { isAdmin } from './communityService';
 import {
+  adminSearchUsers,
+  adminSetUserPlan,
   getReportTargetPreview,
   listOpenReports,
   listPendingReviewCompanionPosts,
@@ -18,11 +20,104 @@ import {
   setCompanionMessageStatus,
   setCompanionPostStatus,
   setPostStatus,
+  type AdminUserRow,
 } from './adminService';
 import type { Report } from './types';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending';
+type Tab = 'reports' | 'pending' | 'users';
+
+function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user: AdminUserRow) => void }) {
+  const { t } = useTranslation(['community', 'common']);
+  const [busy, setBusy] = useState(false);
+
+  async function handleToggle() {
+    const nextPlan = user.plan === 'pro' ? 'free' : 'pro';
+    setBusy(true);
+    try {
+      await adminSetUserPlan(user.id, nextPlan);
+      onChanged({ ...user, plan: nextPlan });
+    } catch (err) {
+      captureError(err, { context: 'adminSetUserPlan' });
+      window.alert(t('admin.planChangeError'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className={styles.item}>
+      <div className={styles.userRow}>
+        <div className={styles.userInfo}>
+          <span className={styles.userHandle}>@{user.handle || t('admin.userNoHandle')}</span>
+          <span className={styles.userName}>{user.display_name || t('admin.userNoName')}</span>
+          <span className={user.plan === 'pro' ? styles.planBadgePro : styles.planBadgeFree}>
+            {user.plan === 'pro' ? t('admin.planPro') : t('admin.planFree')}
+          </span>
+        </div>
+        <button type="button" className={user.plan === 'pro' ? styles.secondaryBtn : styles.primaryBtn} disabled={busy} onClick={handleToggle}>
+          {user.plan === 'pro' ? t('admin.revokePro') : t('admin.grantPro')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function UserPlanTab() {
+  const { t } = useTranslation(['community', 'common']);
+  const [query, setQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const usersQuery = useQuery({
+    queryKey: ['admin', 'user-search', submittedQuery],
+    queryFn: () => adminSearchUsers(submittedQuery),
+    enabled: submittedQuery.trim().length > 0,
+  });
+  const [rows, setRows] = useState<AdminUserRow[] | null>(null);
+
+  const displayedRows = rows ?? usersQuery.data ?? [];
+
+  function handleSearch() {
+    setRows(null);
+    setSubmittedQuery(query.trim());
+  }
+
+  return (
+    <div>
+      <div className={styles.searchRow}>
+        <input
+          className={styles.searchInput}
+          placeholder={t('admin.userSearchPlaceholder')}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSearch();
+          }}
+        />
+        <button type="button" className={styles.primaryBtn} onClick={handleSearch}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Search size={16} /> {t('admin.userSearchButton')}</span>
+        </button>
+      </div>
+
+      {usersQuery.isLoading ? (
+        <Skeleton height="60px" />
+      ) : !submittedQuery ? (
+        <EmptyState message={t('admin.userSearchHint')} />
+      ) : displayedRows.length === 0 ? (
+        <EmptyState message={t('admin.userSearchEmpty')} />
+      ) : (
+        <div className={styles.list}>
+          {displayedRows.map((u) => (
+            <UserPlanRow
+              key={u.id}
+              user={u}
+              onChanged={(updated) => setRows(displayedRows.map((r) => (r.id === updated.id ? updated : r)))}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ReportRow({ report, onResolved }: { report: Report; onResolved: () => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -202,9 +297,18 @@ export function AdminScreen() {
         >
           {t('admin.tabs.pending')} {pendingQuery.data ? `(${pendingQuery.data.length})` : ''}
         </button>
+        <button
+          type="button"
+          className={tab === 'users' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('users')}
+        >
+          {t('admin.tabs.users')}
+        </button>
       </div>
 
-      {tab === 'reports' ? (
+      {tab === 'users' ? (
+        <UserPlanTab />
+      ) : tab === 'reports' ? (
         reportsQuery.isLoading ? (
           <Skeleton height="80px" />
         ) : !reportsQuery.data || reportsQuery.data.length === 0 ? (

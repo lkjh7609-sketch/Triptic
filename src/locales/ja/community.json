@@ -5,13 +5,25 @@
     "tabs": {
       "reports": "通報キュー",
       "pending": "自動フラグキュー",
-      "companion": "同行探し"
+      "companion": "同行探し",
+      "users": "ユーザープラン"
     },
     "reportDetail": "通報の詳細: {{detail}}",
     "dismiss": "却下",
     "approve": "承認",
     "noReports": "処理する通報はありません。",
-    "noPending": "審査待ちの投稿はありません。"
+    "noPending": "審査待ちの投稿はありません。",
+    "userSearchPlaceholder": "ハンドルまたは名前で検索",
+    "userSearchButton": "検索",
+    "userSearchEmpty": "該当するユーザーがいません。",
+    "userSearchHint": "ハンドルや名前の一部を入力して検索してください。",
+    "userNoHandle": "ハンドルなし",
+    "userNoName": "名前なし",
+    "planFree": "無料",
+    "planPro": "有料",
+    "grantPro": "有料プランを付与",
+    "revokePro": "無料に戻す",
+    "planChangeError": "プランの変更に失敗しました。"
   },
   "report": {
     "title": "通報する",

@@ -5,13 +5,25 @@
     "tabs": {
       "reports": "舉報佇列",
       "pending": "自動標記佇列",
-      "companion": "找同行"
+      "companion": "找同行",
+      "users": "使用者方案"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
     "approve": "核准",
     "noReports": "目前沒有待處理的舉報。",
-    "noPending": "目前沒有待審核的貼文。"
+    "noPending": "目前沒有待審核的貼文。",
+    "userSearchPlaceholder": "用帳號或名稱搜尋",
+    "userSearchButton": "搜尋",
+    "userSearchEmpty": "沒有符合的使用者。",
+    "userSearchHint": "請輸入帳號或名稱的一部分後搜尋。",
+    "userNoHandle": "沒有帳號",
+    "userNoName": "沒有名稱",
+    "planFree": "免費",
+    "planPro": "付費",
+    "grantPro": "授予付費方案",
+    "revokePro": "改回免費",
+    "planChangeError": "變更方案失敗了。"
   },
   "report": {
     "title": "舉報",
