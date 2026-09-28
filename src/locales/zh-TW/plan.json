@@ -245,7 +245,8 @@
     "hotelStart": "出發飯店",
     "hotelEnd": "到達飯店",
     "addPlace": "新增地點",
-    "loadError": "無法載入此行程。"
+    "loadError": "無法載入此行程。",
+    "activitiesLink": "探索{{city}}的行程與活動"
   },
   "tripMap": {
     "ariaLabel": "行程地圖",
