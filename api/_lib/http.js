@@ -9,14 +9,14 @@ export const ALLOWED_ORIGINS = new Set([
     'capacitor://localhost',
 ]);
 
-export function applyCors(req, res, methods = 'GET,POST,OPTIONS') {
+export function applyCors(req, res, methods = 'GET,POST,OPTIONS', headers = 'Content-Type') {
     const origin = req.headers.origin;
     if (origin && ALLOWED_ORIGINS.has(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
     }
     res.setHeader('Access-Control-Allow-Methods', methods);
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', headers);
 }
 
 /**

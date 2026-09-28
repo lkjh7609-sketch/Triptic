@@ -7,7 +7,8 @@
       "pending": "자동 플래그 큐",
       "companion": "동행찾기",
       "users": "사용자 등급",
-      "feedback": "건의함"
+      "feedback": "건의함",
+      "sales": "판매"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -31,7 +32,43 @@
     "feedbackStatusNew": "미확인",
     "viewScreenshot": "스크린샷 보기",
     "markReviewed": "확인 완료",
-    "markReviewedError": "처리에 실패했어요."
+    "markReviewedError": "처리에 실패했어요.",
+    "sales": {
+      "lastDays_other": "최근 {{count}}일",
+      "rangeLabel": "{{from}} ~ {{to}}",
+      "bookings": "예약",
+      "cancelled_other": "취소 {{count}}건",
+      "salesAmount": "판매액",
+      "commission": "수익",
+      "reservations": "예약 내역",
+      "revenues": "수익 내역",
+      "noReservations": "이 기간 예약이 없어요",
+      "noRevenues": "이 기간 정산된 수익이 없어요",
+      "revenueNote": "수익은 매일 오전 6시에 전날까지 정산돼요",
+      "flight": "항공",
+      "openDashboard": "대시보드",
+      "loadError": "판매 내역을 불러오지 못했어요",
+      "partialError": "일부 내역을 불러오지 못했어요",
+      "notConfiguredHint": "Vercel 환경변수에 API 키를 넣으면 보여요",
+      "notIntegratedHint": "판매 내역 연동 전이에요 — 제휴사 대시보드에서 확인하세요",
+      "status": {
+        "ok": "연동됨",
+        "not_configured": "키 미설정",
+        "not_integrated": "연동 전",
+        "error": "불러오기 실패"
+      },
+      "placement": {
+        "trip_activity": "여행 상세 투어",
+        "activities_search": "액티비티 검색",
+        "activities_city": "인기 도시",
+        "place_ticket": "장소 티켓",
+        "checklist": "출발 전 체크리스트",
+        "activities_product": "상품 카드",
+        "flights_search": "항공 탭 검색",
+        "trip_flights": "이 일정으로 항공권",
+        "unknown": "기타 링크"
+      }
+    }
   },
   "report": {
     "title": "신고하기",
