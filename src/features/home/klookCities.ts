@@ -6,7 +6,7 @@ import { haversineKm } from '@/features/plan/map/geo';
  * 넣으면 그 도시 이름이 돌아오는 걸 이용해 2026-09-28에 1~700번을 한 번 조사하고, 영어
  * 도시 이름으로 여행지와 짝지었다. 목록에 없는 여행지는 기본 도시로 대신한다.
  */
-export const DEFAULT_KLOOK_CITY_ID = 2; // 홍콩 — Travelpayouts 위젯 설정 기본값
+export const DEFAULT_KLOOK_CITY_ID = 13; // 서울 — 다가오는 여행이 없거나 연결된 도시가 없을 때
 
 const KLOOK_CITIES: ReadonlyArray<{ id: number; lat: number; lng: number }> = [
   { id: 131, lat: 24.4539, lng: 54.3773 }, // abudhabi (Abu Dhabi region)
