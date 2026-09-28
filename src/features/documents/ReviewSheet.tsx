@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfidenceField } from './ConfidenceField';
@@ -38,6 +38,27 @@ export function ReviewSheet({
 }: ReviewSheetProps) {
   const { t } = useTranslation(['documents', 'common']);
   const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
+  // 연달아 반영할 때 화면의 flightsData가 아직 갱신 전이어도 방금 넣은 칸을 지우지 않게 최신값을 따로 든다
+  const flightsRef = useRef(flightsData);
+  useEffect(() => {
+    flightsRef.current = flightsData;
+  }, [flightsData]);
+  // 이 창에서 방금 반영한 항공편(문서별) — 검수 목록에서 빠져도 왕복 순서 판단에 쓴다
+  const committedRef = useRef<{ documentId: string | null; flight: ParsedFlight }[]>([]);
+
+  async function commitFlight(booking: BookingRow, edited: ParsedFlight): Promise<boolean> {
+    const siblings = [
+      ...bookings.filter((b) => b.id !== booking.id && b.document_id === booking.document_id && b.parsed.kind === 'flight').map((b) => b.parsed as ParsedFlight),
+      ...committedRef.current.filter((c) => c.documentId === booking.document_id).map((c) => c.flight),
+    ];
+    const result = commitFlightBooking(edited, tripStartDate, tripEndDate, { sameDocumentFlights: siblings, existing: flightsRef.current });
+    if (!result) return false;
+    const next = { ...flightsRef.current, [result.slot]: result.flight };
+    await onCommitFlight(next);
+    flightsRef.current = next;
+    committedRef.current.push({ documentId: booking.document_id, flight: edited });
+    return true;
+  }
 
   if (bookings.length === 0) {
     return (
@@ -76,16 +97,7 @@ export function ReviewSheet({
         <div className={styles.list}>
           {bookings.map((booking) =>
             booking.parsed.kind === 'flight' ? (
-              <FlightBookingCard
-                key={booking.id}
-                tripId={tripId}
-                booking={booking}
-                flight={booking.parsed}
-                tripStartDate={tripStartDate}
-                tripEndDate={tripEndDate}
-                flightsData={flightsData}
-                onCommitFlight={onCommitFlight}
-              />
+              <FlightBookingCard key={booking.id} tripId={tripId} booking={booking} flight={booking.parsed} onCommit={commitFlight} />
             ) : (
               <GenericBookingCard key={booking.id} tripId={tripId} booking={booking} />
             ),
@@ -111,21 +123,11 @@ interface FlightBookingCardProps {
   tripId: string;
   booking: BookingRow;
   flight: ParsedFlight;
-  tripStartDate: string;
-  tripEndDate: string;
-  flightsData: FlightsData;
-  onCommitFlight: (next: FlightsData) => Promise<void>;
+  /** 출국/귀국 칸을 정해 일정에 넣는다(ReviewSheet.commitFlight) — 못 넣으면 false */
+  onCommit: (booking: BookingRow, edited: ParsedFlight) => Promise<boolean>;
 }
 
-function FlightBookingCard({
-  tripId,
-  booking,
-  flight,
-  tripStartDate,
-  tripEndDate,
-  flightsData,
-  onCommitFlight,
-}: FlightBookingCardProps) {
+function FlightBookingCard({ tripId, booking, flight, onCommit }: FlightBookingCardProps) {
   const { t } = useTranslation(['documents', 'common']);
   const confirmMutation = useConfirmBooking(tripId);
   const rejectMutation = useRejectBooking(tripId);
@@ -145,12 +147,10 @@ function FlightBookingCard({
   async function handleConfirm() {
     setSaving(true);
     try {
-      const result = commitFlightBooking(edited, tripStartDate, tripEndDate);
-      if (!result) {
+      if (!(await onCommit(booking, edited))) {
         captureError(new Error('commitFlightBooking returned null'), { context: 'confirmBooking' });
         return;
       }
-      await onCommitFlight({ ...flightsData, [result.slot]: result.flight });
       await confirmMutation.mutateAsync({ bookingId: booking.id, edited });
     } catch (err) {
       captureError(err, { context: 'confirmFlightBooking' });
