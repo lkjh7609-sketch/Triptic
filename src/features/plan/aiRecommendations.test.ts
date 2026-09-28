@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const rpc = vi.fn();
 vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc }) }));
 
-const { fetchNearbyRecommendations } = await import('./aiRecommendations');
+const { fetchNearbyRecommendations, needsServerCoords } = await import('./aiRecommendations');
 const { fetchCityDescription } = await import('@/features/home/cityDescription');
 
 const fetchMock = vi.fn();
@@ -46,5 +46,13 @@ describe('AI 결과는 DB 캐시에 있으면 /api(LLM)를 부르지 않는다',
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ description: 'Paris is…' }) });
     expect(await fetchCityDescription('Paris, France', 'en')).toBe('Paris is…');
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('needsServerCoords', () => {
+  it('좌표도 없고 서버가 찾아본 적도 없는 항목이 있을 때만 서버에 채우기를 요청한다', () => {
+    expect(needsServerCoords([{ name: 'A', lat: 1, lng: 2 }])).toBe(false);
+    expect(needsServerCoords([{ name: 'A', coordsChecked: true }])).toBe(false);
+    expect(needsServerCoords([{ name: 'A', lat: 1, lng: 2 }, { name: 'B' }])).toBe(true);
   });
 });
