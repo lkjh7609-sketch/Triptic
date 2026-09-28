@@ -43,7 +43,6 @@
     "cityLabel": "Destination city (search and select)",
     "cityPlaceholderExample": "e.g. Kyoto, Japan",
     "cityRequired": "Search for and select a destination city.",
-    "currencyLabel": "Currency",
     "startLabel": "Start date",
     "endLabel": "End date",
     "creating": "Creating…",

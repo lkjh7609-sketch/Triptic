@@ -42,7 +42,6 @@
     "cityLabel": "목적지 도시 (검색 후 선택)",
     "cityPlaceholderExample": "예: Kyoto, Japan",
     "cityRequired": "목적지 도시를 검색해서 선택해 주세요.",
-    "currencyLabel": "통화 설정",
     "startLabel": "시작일",
     "endLabel": "종료일",
     "creating": "만드는 중…",

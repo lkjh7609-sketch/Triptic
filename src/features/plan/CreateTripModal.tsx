@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCreateTrip } from './hooks/useTrips';
-import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
-import { CURRENCIES, currencyName } from './expenses';
+import { usePlaceAutocomplete, countryCodeOf, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { currencyForCountry } from './countryCurrency';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import styles from './CreateTripModal.module.css';
@@ -40,7 +40,6 @@ function buildCreateTripSchema(t: TFunction) {
       title: z.string().min(1, t('createTrip.errors.titleRequired')).max(100),
       startDate: dateField(t, t('createTrip.errors.startRequired')),
       endDate: dateField(t, t('createTrip.errors.endRequired')),
-      currency: z.string(),
     })
     .refine((v) => v.endDate >= v.startDate, {
       message: t('createTrip.errors.endAfterStart'),
@@ -83,7 +82,6 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
     formState: { errors, isSubmitting }, setValue,
   } = useForm<CreateTripValues>({
     resolver: zodResolver(schema),
-    defaultValues: { currency: 'KRW' },
   });
 
 
@@ -98,7 +96,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
           service.textSearch({ query: autoCreateCity } as any, (results, status) => {
              if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
                const place = results[0];
-               const resolved = {
+               const resolved: SelectedPlace = {
                  name: place.name || autoCreateCity,
                  address: place.formatted_address || autoCreateCity,
                  lat: place.geometry?.location?.lat() || 0,
@@ -108,6 +106,17 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
                };
                setCity(resolved);
                resolvedCityRef.current = resolved;
+               // textSearch 결과에는 국가 정보가 없어 통화를 정하려면 한 번 더 조회한다
+               if (place.place_id) {
+                 service.getDetails({ placeId: place.place_id, fields: ['address_components'] }, (detail, detailStatus) => {
+                   const countryCode = detailStatus === google.maps.places.PlacesServiceStatus.OK ? countryCodeOf(detail?.address_components) : null;
+                   if (!countryCode) return;
+                   const withCountry = { ...resolved, countryCode };
+                   // 그 사이 사용자가 다른 도시를 직접 골랐으면 덮어쓰지 않는다
+                   setCity((prev) => (prev === resolved ? withCountry : prev));
+                   if (resolvedCityRef.current === resolved) resolvedCityRef.current = withCountry;
+                 });
+               }
              }
           });
         } catch (e) {
@@ -139,7 +148,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
           startDate: values.startDate,
           endDate: values.endDate,
           totalDays,
-          currency: values.currency,
+          currency: currencyForCountry(targetCity.countryCode),
           data: {},
           hotels: {},
           meals: {},
@@ -193,19 +202,6 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
             defaultValue={autoCreateCity || ''}
           />
           {cityError ? <span className={styles.error}>{cityError}</span> : null}
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="trip-currency">
-            {t('createTrip.currencyLabel')}
-          </label>
-          <select id="trip-currency" className={styles.input} {...register('currency')}>
-            {Object.entries(CURRENCIES).map(([code, meta]) => (
-              <option key={code} value={code}>
-                {currencyName(code, i18n.language)} ({code}) - {meta.symbol}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div className={styles.field}>

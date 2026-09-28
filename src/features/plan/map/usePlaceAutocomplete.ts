@@ -14,6 +14,12 @@ export interface SelectedPlace {
   lng: number;
   placeId: string | null;
   types: string[];
+  /** ISO 3166-1 alpha-2 (예: "JP") — 여행 통화 자동 지정용. 모르면 null */
+  countryCode?: string | null;
+}
+
+export function countryCodeOf(components: google.maps.GeocoderAddressComponent[] | undefined): string | null {
+  return components?.find((c) => c.types.includes('country'))?.short_name ?? null;
 }
 
 export interface UsePlaceAutocompleteOptions {
@@ -40,7 +46,7 @@ export function usePlaceAutocomplete(
     loadGoogleMapsPlaces().then(() => {
       if (cancelled || !inputRef.current) return;
       autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-        fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types'],
+        fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types', 'address_components'],
         ...(types ? { types } : {}),
       });
       autocomplete.addListener('place_changed', () => {
@@ -53,6 +59,7 @@ export function usePlaceAutocomplete(
           lng: place.geometry.location.lng(),
           placeId: place.place_id ?? null,
           types: place.types ?? [],
+          countryCode: countryCodeOf(place.address_components),
         });
       });
       setReady(true);
