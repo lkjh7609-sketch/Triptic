@@ -147,6 +147,10 @@ export interface FlightSearch {
   /** 없으면 편도 */
   returnDate: string | null;
   adults: number;
+  /** 아동(만 2~11세) — 없으면 0 */
+  children?: number;
+  /** 유아(만 2세 미만, 좌석 없음) — 없으면 0 */
+  infants?: number;
 }
 
 /** 마이리얼트립 항공 검색 결과 링크 요청 값(서버 api/partnerLink.js kind=flight) */
@@ -162,6 +166,8 @@ export function flightLinkParams(flight: FlightSearch, placement: PartnerPlaceme
     placement,
   };
   if (flight.returnDate) params.return_date = flight.returnDate;
+  if (flight.children) params.children = String(flight.children);
+  if (flight.infants) params.infants = String(flight.infants);
   return params;
 }
 
