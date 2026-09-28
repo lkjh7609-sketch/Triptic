@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
 import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
-import { useTrips } from '@/features/plan/hooks/useTrips';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
@@ -12,6 +10,7 @@ import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
 import { KlookToursWidget } from './KlookToursWidget';
 import { MyrealtripProducts } from './MyrealtripProducts';
+import { useNearestTrip } from './useNearestTrip';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './SectionScreen.module.css';
 
@@ -37,17 +36,6 @@ function MyrealtripCityCard({ dest }: { dest: FeaturedDestination }) {
       <span className={styles.cityName}>{name}</span>
     </button>
   );
-}
-
-/** 가장 가까운(진행 중이거나 곧 떠나는) 내 여행 — 좌표가 있는 것만 */
-function useNearestTrip() {
-  const { data: trips } = useTrips();
-  return useMemo(() => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    return (trips ?? [])
-      .filter((trip) => trip.city_lat != null && trip.city_lng != null && (trip.end_date ?? trip.start_date ?? '') >= today)
-      .sort((a, b) => (a.start_date ?? '9999').localeCompare(b.start_date ?? '9999'))[0];
-  }, [trips]);
 }
 
 /**

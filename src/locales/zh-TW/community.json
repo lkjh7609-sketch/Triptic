@@ -66,6 +66,7 @@
         "activities_product": "商品卡片",
         "flights_search": "機票分頁搜尋",
         "trip_flights": "依此行程找機票",
+        "flights_esim": "機票分頁 SIM/eSIM",
         "unknown": "其他連結"
       }
     }

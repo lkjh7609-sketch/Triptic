@@ -5,7 +5,7 @@ import { AFFILIATE_LINKS } from '@/shared/config';
 import { cityDisplayName } from './cityName';
 
 /** 어디서 누른 링크인지(제휴사 리포트·판매 탭의 sub_id) — api/partnerLink.js SUB_ID */
-export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist' | 'product' | 'flights' | 'trip_flights';
+export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist' | 'product' | 'flights' | 'trip_flights' | 'esim';
 
 /** 제휴 링크(api/partnerLink.js — 제휴사는 서버 레지스트리 api/_lib/affiliates, 한 번 변환해 저장) */
 async function fetchPartnerLink(params: Record<string, string>): Promise<string> {

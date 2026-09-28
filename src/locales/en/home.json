@@ -89,6 +89,18 @@
       "badDates": "Check the dates — return must be on or after departure",
       "linkError": "Couldn't open the results. Please try again shortly",
       "opensOnMyrealtrip": "Results and booking open on MyRealTrip"
+    },
+    "essentials": {
+      "title": "Need a SIM or eSIM?",
+      "subtitle": "Get data for {{city}} ready before you fly",
+      "cityLabel": "Choose a city",
+      "cityTokyo": "Tokyo",
+      "cityHanoi": "Hanoi",
+      "usimsaTitle": "Browse SIMs & eSIMs on Usimsa",
+      "usimsaDesc": "Compare SIMs and eSIMs by country and get one right away",
+      "myrealtripTitle": "{{city}} SIMs & eSIMs on MyRealTrip",
+      "seeAll": "See more {{city}} SIMs on MyRealTrip",
+      "simSearch": "{{city}} eSIM"
     }
   },
   "sections": {

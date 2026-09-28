@@ -73,6 +73,8 @@ export const SALES_PROVIDERS = [
         fetchSales: null,
         dashboardUrl: 'https://app.travelpayouts.com',
     },
+    // 유심사 — 제휴 링크(usimsa.com/affiliate/…)만 붙어 있다(항공 탭 유심·eSIM). 판매 내역은 유심사 파트너 페이지에서
+    { id: 'usimsa', name: '유심사', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     { id: 'tripcom', name: 'Trip.com', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     { id: 'agoda', name: 'Agoda', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
 ];

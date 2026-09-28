@@ -68,6 +68,7 @@
         "activities_product": "Product cards",
         "flights_search": "Flights tab",
         "trip_flights": "Trip flights",
+        "flights_esim": "Flights tab SIM/eSIM",
         "unknown": "Other link"
       }
     }

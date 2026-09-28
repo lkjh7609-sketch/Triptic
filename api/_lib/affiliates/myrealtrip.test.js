@@ -4,6 +4,7 @@ import {
     fetchSales,
     isMyrealtripUrl,
     isProductUrl,
+    isSimProduct,
     kstToday,
     normalizeProduct,
     normalizeReservation,
@@ -105,6 +106,15 @@ describe('kstToday', () => {
     it('UTC 15시 이후는 한국 다음 날', () => {
         expect(kstToday(new Date('2026-09-28T14:59:00Z'))).toBe('2026-09-28');
         expect(kstToday(new Date('2026-09-28T15:00:00Z'))).toBe('2026-09-29');
+    });
+});
+
+describe('isSimProduct', () => {
+    it('유심·eSIM·와이파이 상품만', () => {
+        expect(isSimProduct({ category: '유심·와이파이', title: '일본 전지역 eSIM' })).toBe(true);
+        expect(isSimProduct({ category: '여행편의/대여', title: '호주 포켓 와이파이 대여' })).toBe(true);
+        expect(isSimProduct({ category: null, title: '베트남 이심 5G 무제한' })).toBe(true);
+        expect(isSimProduct({ category: '이동/교통편의', title: '나리타 공항 픽업/샌딩 (차량 보험 포함)' })).toBe(false);
     });
 });
 

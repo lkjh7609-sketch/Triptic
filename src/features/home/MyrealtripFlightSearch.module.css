@@ -1,6 +1,6 @@
 .card {
   max-width: 1120px;
-  margin: 0 auto calc(var(--space-6) + 72px);
+  margin: 0 auto var(--space-6);
   padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);

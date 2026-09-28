@@ -87,6 +87,18 @@
       "badDates": "請確認日期 — 回程日需在出發日當天或之後",
       "linkError": "無法開啟搜尋結果，請稍後再試",
       "opensOnMyrealtrip": "搜尋結果與預訂將在 MyRealTrip 進行"
+    },
+    "essentials": {
+      "title": "也需要 SIM 卡或 eSIM 嗎？",
+      "subtitle": "出發前先準備好在{{city}}使用的網路",
+      "cityLabel": "選擇城市",
+      "cityTokyo": "東京",
+      "cityHanoi": "河內",
+      "usimsaTitle": "在 Usimsa 查看 SIM 卡與 eSIM",
+      "usimsaDesc": "依國家比較 SIM 卡與 eSIM，立即取得",
+      "myrealtripTitle": "MyRealTrip 的{{city}} SIM 卡與 eSIM",
+      "seeAll": "在 MyRealTrip 查看更多{{city}} SIM 卡",
+      "simSearch": "{{city}} eSIM"
     }
   },
   "sections": {

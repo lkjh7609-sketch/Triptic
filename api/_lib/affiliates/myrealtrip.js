@@ -189,6 +189,20 @@ export async function searchProducts(keyword, size) {
     return items.map(normalizeProduct).filter(Boolean);
 }
 
+// 유심·eSIM·포켓와이파이 상품(카테고리 "유심·와이파이" 등) — 도시 이름 + "유심"으로 찾으면 대부분 이것만
+// 오지만, 가끔 섞이는 다른 상품(차량 대여 등)은 뺀다
+const SIM_PATTERN = /유심|와이파이|이심|e-?sim|usim|wi-?fi/i;
+
+export function isSimProduct(product) {
+    return SIM_PATTERN.test(product.category ?? '') || SIM_PATTERN.test(product.title);
+}
+
+/** 그 도시(나라)에서 쓸 유심·eSIM 상품 */
+export async function searchSimProducts(city, size) {
+    const items = await searchProducts(`${city} 유심`, Math.min(size * 2, 20));
+    return items.filter(isSimProduct).slice(0, size);
+}
+
 // ── 판매(예약·수익) ─────────────────────────────────────────────────────
 
 /** [from, to](양끝 포함)를 maxDays일 이하 구간으로 — 조회 기간 제한(항공 예약 1개월 등) 대응 */
