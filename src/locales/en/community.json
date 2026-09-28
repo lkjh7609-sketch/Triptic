@@ -7,7 +7,8 @@
       "pending": "Auto-flag queue",
       "companion": "Companions",
       "users": "User plans",
-      "feedback": "Feedback"
+      "feedback": "Feedback",
+      "sales": "Sales"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -31,7 +32,45 @@
     "feedbackStatusNew": "New",
     "viewScreenshot": "View screenshot",
     "markReviewed": "Mark reviewed",
-    "markReviewedError": "Failed to update."
+    "markReviewedError": "Failed to update.",
+    "sales": {
+      "lastDays_one": "Last {{count}} day",
+      "lastDays_other": "Last {{count}} days",
+      "rangeLabel": "{{from}} – {{to}}",
+      "bookings": "Bookings",
+      "cancelled_one": "{{count}} cancelled",
+      "cancelled_other": "{{count}} cancelled",
+      "salesAmount": "Sales",
+      "commission": "Commission",
+      "reservations": "Reservations",
+      "revenues": "Earnings",
+      "noReservations": "No bookings in this period",
+      "noRevenues": "No settled earnings in this period",
+      "revenueNote": "Earnings settle daily at 6 AM (KST) up to the previous day",
+      "flight": "Flight",
+      "openDashboard": "Dashboard",
+      "loadError": "Couldn't load sales",
+      "partialError": "Some data failed to load",
+      "notConfiguredHint": "Add the API key to the Vercel environment variables to see data",
+      "notIntegratedHint": "Sales not integrated yet — check the partner dashboard",
+      "status": {
+        "ok": "Connected",
+        "not_configured": "Key not set",
+        "not_integrated": "Not integrated",
+        "error": "Failed to load"
+      },
+      "placement": {
+        "trip_activity": "Trip tours",
+        "activities_search": "Activities search",
+        "activities_city": "Popular cities",
+        "place_ticket": "Place tickets",
+        "checklist": "Pre-departure checklist",
+        "activities_product": "Product cards",
+        "flights_search": "Flights tab",
+        "trip_flights": "Trip flights",
+        "unknown": "Other link"
+      }
+    }
   },
   "report": {
     "title": "Report",

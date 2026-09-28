@@ -27,9 +27,10 @@ import {
   type AdminUserRow,
 } from './adminService';
 import type { Report } from './types';
+import { AdminSalesTab } from './AdminSalesTab';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending' | 'users' | 'feedback';
+type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales';
 
 function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user: AdminUserRow) => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -430,9 +431,18 @@ export function AdminScreen() {
         >
           {t('admin.tabs.feedback')}
         </button>
+        <button
+          type="button"
+          className={tab === 'sales' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('sales')}
+        >
+          {t('admin.tabs.sales')}
+        </button>
       </div>
 
-      {tab === 'users' ? (
+      {tab === 'sales' ? (
+        <AdminSalesTab />
+      ) : tab === 'users' ? (
         <UserPlanTab />
       ) : tab === 'feedback' ? (
         <FeedbackTab />

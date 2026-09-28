@@ -7,7 +7,8 @@
       "pending": "自動標記佇列",
       "companion": "找同行",
       "users": "使用者方案",
-      "feedback": "建議回饋"
+      "feedback": "建議回饋",
+      "sales": "銷售"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -31,7 +32,43 @@
     "feedbackStatusNew": "未讀",
     "viewScreenshot": "查看截圖",
     "markReviewed": "標記已讀",
-    "markReviewedError": "處理失敗。"
+    "markReviewedError": "處理失敗。",
+    "sales": {
+      "lastDays_other": "最近 {{count}} 天",
+      "rangeLabel": "{{from}} ~ {{to}}",
+      "bookings": "預訂",
+      "cancelled_other": "取消 {{count}} 筆",
+      "salesAmount": "銷售額",
+      "commission": "收益",
+      "reservations": "預訂紀錄",
+      "revenues": "收益明細",
+      "noReservations": "此期間沒有預訂",
+      "noRevenues": "此期間沒有已結算的收益",
+      "revenueNote": "收益於每天上午 6 點(KST)結算至前一天",
+      "flight": "機票",
+      "openDashboard": "後台",
+      "loadError": "無法載入銷售資料",
+      "partialError": "部分資料無法載入",
+      "notConfiguredHint": "在 Vercel 環境變數設定 API 金鑰後即可顯示",
+      "notIntegratedHint": "尚未串接銷售資料 — 請至合作夥伴後台查看",
+      "status": {
+        "ok": "已串接",
+        "not_configured": "未設定金鑰",
+        "not_integrated": "尚未串接",
+        "error": "載入失敗"
+      },
+      "placement": {
+        "trip_activity": "行程詳情的行程",
+        "activities_search": "活動搜尋",
+        "activities_city": "熱門城市",
+        "place_ticket": "景點門票",
+        "checklist": "出發前檢查清單",
+        "activities_product": "商品卡片",
+        "flights_search": "機票分頁搜尋",
+        "trip_flights": "依此行程找機票",
+        "unknown": "其他連結"
+      }
+    }
   },
   "report": {
     "title": "舉報",
