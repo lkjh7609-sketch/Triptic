@@ -99,9 +99,7 @@
     "essentials": {
       "title": "유심·eSIM도 필요하신가요?",
       "subtitle": "{{city}}에서 쓸 데이터, 출발 전에 준비해 두세요",
-      "cityLabel": "도시 선택",
-      "cityTokyo": "도쿄",
-      "cityHanoi": "하노이",
+      "defaultCity": "일본",
       "usimsaTitle": "유심사에서 유심·eSIM 보기",
       "usimsaDesc": "나라별 유심·eSIM을 한 번에 비교하고 바로 받아요",
       "myrealtripTitle": "마이리얼트립 {{city}} 유심·eSIM",

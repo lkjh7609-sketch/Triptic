@@ -100,9 +100,7 @@
     "essentials": {
       "title": "Need a SIM or eSIM?",
       "subtitle": "Get data for {{city}} ready before you fly",
-      "cityLabel": "Choose a city",
-      "cityTokyo": "Tokyo",
-      "cityHanoi": "Hanoi",
+      "defaultCity": "Japan",
       "usimsaTitle": "Browse SIMs & eSIMs on Usimsa",
       "usimsaDesc": "Compare SIMs and eSIMs by country and get one right away",
       "myrealtripTitle": "{{city}} SIMs & eSIMs on MyRealTrip",

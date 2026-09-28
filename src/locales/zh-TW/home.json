@@ -99,9 +99,7 @@
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
       "subtitle": "出發前先準備好在{{city}}使用的網路",
-      "cityLabel": "選擇城市",
-      "cityTokyo": "東京",
-      "cityHanoi": "河內",
+      "defaultCity": "日本",
       "usimsaTitle": "在 Usimsa 查看 SIM 卡與 eSIM",
       "usimsaDesc": "依國家比較 SIM 卡與 eSIM，立即取得",
       "myrealtripTitle": "MyRealTrip 的{{city}} SIM 卡與 eSIM",

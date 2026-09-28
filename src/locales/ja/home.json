@@ -99,9 +99,7 @@
     "essentials": {
       "title": "SIM・eSIMも必要ですか？",
       "subtitle": "{{city}}で使うデータを出発前に準備しましょう",
-      "cityLabel": "都市を選択",
-      "cityTokyo": "東京",
-      "cityHanoi": "ハノイ",
+      "defaultCity": "日本",
       "usimsaTitle": "UsimsaでSIM・eSIMを見る",
       "usimsaDesc": "国別のSIM・eSIMをまとめて比較してすぐ受け取れます",
       "myrealtripTitle": "MyRealTripの{{city}} SIM・eSIM",
