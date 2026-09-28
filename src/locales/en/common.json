@@ -87,5 +87,9 @@
   "calendar": {
     "prevMonth": "Previous month",
     "nextMonth": "Next month"
+  },
+  "partnerRedirect": {
+    "title": "Redirecting…",
+    "loading": "Taking you to the booking site"
   }
 }

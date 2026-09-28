@@ -43,7 +43,7 @@ import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMemb
 import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
-import { openFlightsSearchForTrip } from './flightsSearchLink';
+import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
 import { DepartureChecklist } from './DepartureChecklist';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
@@ -714,6 +714,8 @@ function hasNotStarted(trip: TripRow): boolean {
 function FindFlightsButton({ trip, className }: { trip: TripRow; className?: string }) {
   const { t, i18n } = useTranslation('plan');
   const [busy, setBusy] = useState(false);
+  // 마이리얼트립 결과 링크를 미리 받아 두면 누르는 순간 바로 열린다
+  const prefetched = useTripFlightsLink(trip, i18n.language, true);
   return (
     <button
       type="button"
@@ -721,7 +723,7 @@ function FindFlightsButton({ trip, className }: { trip: TripRow; className?: str
       disabled={busy}
       onClick={() => {
         setBusy(true);
-        void openFlightsSearchForTrip(trip, i18n.language).finally(() => setBusy(false));
+        void openFlightsSearchForTrip(trip, i18n.language, prefetched).finally(() => setBusy(false));
       }}
     >
       <Search size={14} aria-hidden="true" /> {busy ? t('desktop.findFlightsBusy') : t('desktop.findFlights')}

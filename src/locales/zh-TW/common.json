@@ -87,5 +87,9 @@
   "calendar": {
     "prevMonth": "上個月",
     "nextMonth": "下個月"
+  },
+  "partnerRedirect": {
+    "title": "前往中…",
+    "loading": "正在前往預訂網站"
   }
 }

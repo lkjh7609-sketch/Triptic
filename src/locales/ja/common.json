@@ -87,5 +87,9 @@
   "calendar": {
     "prevMonth": "前の月",
     "nextMonth": "次の月"
+  },
+  "partnerRedirect": {
+    "title": "移動中…",
+    "loading": "予約サイトへ移動しています"
   }
 }

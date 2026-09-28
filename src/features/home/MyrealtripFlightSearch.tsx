@@ -6,7 +6,14 @@ import { addDays, format, parseISO } from 'date-fns';
 import { ArrowLeftRight, CalendarDays, ExternalLink, Search } from 'lucide-react';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
-import { fetchMyrealtripFlightsLink, openInNewTab } from '@/features/plan/partnerLinks';
+import {
+  fetchMyrealtripFlightsLink,
+  flightLinkParams,
+  openExternal,
+  openInNewTab,
+  useMyrealtripLink,
+  type FlightSearch,
+} from '@/features/plan/partnerLinks';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import styles from './MyrealtripFlightSearch.module.css';
 
@@ -221,6 +228,26 @@ export function MyrealtripFlightSearch() {
     setDestination(effectiveOrigin);
   }
 
+  // 폼이 다 채워지고 잠깐 멈추면 마이링크를 미리 받아 둔다(만드는 데 최대 2초) — 검색을 누르면 바로 열리게
+  const flight: FlightSearch | null =
+    effectiveOrigin && destination && effectiveOrigin.code !== destination.code && departDate >= today && (!roundTrip || (returnDate !== '' && returnDate >= departDate))
+      ? {
+          origin: effectiveOrigin.code,
+          originType: effectiveOrigin.type,
+          destination: destination.code,
+          destinationType: destination.type,
+          departDate,
+          returnDate: roundTrip ? returnDate : null,
+          adults,
+        }
+      : null;
+  const flightKey = flight ? JSON.stringify(flight) : '';
+  const [settledKey, setSettledKey] = useState('');
+  useEffect(() => {
+    const id = window.setTimeout(() => setSettledKey(flightKey), 700);
+    return () => window.clearTimeout(id);
+  }, [flightKey]);
+  const prefetched = useMyrealtripLink(flight && settledKey === flightKey ? flightLinkParams(flight, 'flights') : null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -231,6 +258,10 @@ export function MyrealtripFlightSearch() {
     }
     if (departDate < today || (roundTrip && (returnDate === '' || returnDate < departDate))) {
       setError(t('flights.form.badDates'));
+      return;
+    }
+    if (prefetched) {
+      openExternal(prefetched);
       return;
     }
     setBusy(true);

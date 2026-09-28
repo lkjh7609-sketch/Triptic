@@ -4,6 +4,7 @@ import { ExternalLink, Star } from 'lucide-react';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { openMyrealtripPage, openMyrealtripSearch, type PartnerPlacement } from '@/features/plan/partnerLinks';
+import { MyrealtripLink } from './MyrealtripLink';
 import styles from './SectionScreen.module.css';
 
 /** api/partnerProducts.js 카드 한 개 */
@@ -74,9 +75,14 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
   }
 
   const seeAllButton = (
-    <button type="button" className={styles.moreButton} onClick={() => void openMyrealtripSearch(more.keyword, more.placement)}>
+    <MyrealtripLink
+      target={{ kind: 'search', q: more.keyword }}
+      placement={more.placement}
+      onFallback={() => void openMyrealtripSearch(more.keyword, more.placement)}
+      className={styles.moreButton}
+    >
       {more.label} <ExternalLink size={14} aria-hidden="true" />
-    </button>
+    </MyrealtripLink>
   );
 
   if (!data || data.length === 0) return seeAllButton;
@@ -85,7 +91,13 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
     <>
       <div className={count === 4 ? `${styles.productGrid} ${styles.productGridFour}` : styles.productGrid}>
         {data.map((p) => (
-          <button key={p.id} type="button" className={styles.productCard} onClick={() => void openMyrealtripPage(p.url, placement)}>
+          <MyrealtripLink
+            key={p.id}
+            target={{ kind: 'page', url: p.url }}
+            placement={placement}
+            onFallback={() => void openMyrealtripPage(p.url, placement)}
+            className={styles.productCard}
+          >
             {p.imageUrl ? (
               <img
                 src={p.imageUrl}
@@ -111,7 +123,7 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
               ) : null}
               {p.price != null ? <span className={styles.productPrice}>{formatPrice(p.price, p.currency, i18n.language)}</span> : null}
             </span>
-          </button>
+          </MyrealtripLink>
         ))}
       </div>
       {seeAllButton}

@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { cityDisplayName } from './cityName';
 import { haversineKm } from './map/geo';
-import { fetchMyrealtripFlightsLink, openInNewTab } from './partnerLinks';
+import { fetchMyrealtripFlightsLink, fetchTrackedMyrealtripLink, flightLinkParams, openExternal, openInNewTab } from './partnerLinks';
 
 /**
  * 항공 검색 제휴사 — 마이리얼트립은 한국어·원화 사이트뿐이라 한국어 사용자만.
@@ -94,12 +95,40 @@ export async function flightsSearchUrlForTrip(trip: TripForFlights): Promise<str
   }
 }
 
+/** 여행 → 마이리얼트립 항공 결과 링크 요청 값(출발·도착은 whereami·places2 도시 코드) */
+async function tripFlightParams(trip: TripForFlights): Promise<Record<string, string> | null> {
+  const flight = await resolveTripFlight(trip);
+  return flight ? flightLinkParams({ ...flight, originType: 'city', destinationType: 'city', adults: 1 }, 'trip_flights') : null;
+}
+
+/**
+ * "이 일정으로 항공권 찾기" 링크를 미리 받아 둔다(한국어, 출발 전 여행) — 누르면 바로 열리게.
+ * 출발지는 접속 위치라 1시간 지나면 다시 받는다. 못 정하면 null.
+ */
+export function useTripFlightsLink(trip: TripForFlights, language: string, enabled: boolean): string | null | undefined {
+  const { data } = useQuery({
+    queryKey: ['tripFlightsLink', trip.city, trip.city_lat, trip.city_lng, trip.start_date, trip.end_date],
+    queryFn: async () => {
+      const params = await tripFlightParams(trip);
+      return params ? fetchTrackedMyrealtripLink(params) : null;
+    },
+    enabled: enabled && !!trip.start_date && flightsProviderFor(language) === 'myrealtrip',
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+  });
+  return data;
+}
+
 /**
  * "이 일정으로 항공권 찾기". 한국어 사용자는 마이리얼트립 검색 결과를 새 탭으로 바로 연다
  * (whereami·places2 코드는 둘 다 도시 코드). 코드를 못 정하거나 링크를 못 받으면 항공 탭
  * 검색 폼으로 — 날짜는 채워 둔다. 그 외 언어는 항공 탭 위젯 검색.
  */
-export async function openFlightsSearchForTrip(trip: TripForFlights, language: string): Promise<void> {
+export async function openFlightsSearchForTrip(trip: TripForFlights, language: string, prefetchedUrl?: string | null): Promise<void> {
+  if (flightsProviderFor(language) === 'myrealtrip' && prefetchedUrl) {
+    openExternal(prefetchedUrl);
+    return;
+  }
   if (flightsProviderFor(language) === 'travelpayouts') {
     window.location.assign(await flightsSearchUrlForTrip(trip));
     return;
