@@ -90,6 +90,10 @@ export function TripDetailScreen() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
   const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
+  // 검수할 예약을 다 처리했으면(다시 불러온 목록이 비었으면) 검수 창을 닫는다 — 예전엔
+  // "검수할 예약이 없습니다" 창이 남거나, 인식 직후 목록을 다시 받기 전에 그 창이 떴다
+  const pendingCount = pendingBookings.data?.length ?? 0;
+  if (showReviewSheet && !pendingBookings.isFetching && pendingCount === 0) setShowReviewSheet(false);
 
   useEffect(() => {
     trackScreenView('trip_detail');
@@ -563,6 +567,7 @@ export function TripDetailScreen() {
         <ReviewSheet
           tripId={tripId}
           bookings={pendingBookings.data ?? []}
+          loading={pendingBookings.isFetching}
           tripStartDate={trip.start_date ?? ''}
           tripEndDate={trip.end_date ?? ''}
           flightsData={flightsData}
