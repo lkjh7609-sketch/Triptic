@@ -1,7 +1,7 @@
 .wrap {
   max-width: 1120px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4) calc(var(--space-6) + 72px);
+  padding: var(--space-6) var(--space-4) 0;
 }
 
 .header {
@@ -19,6 +19,13 @@
   margin: var(--space-1) 0 0;
   font-size: var(--font-body-size);
   color: var(--text-muted);
+}
+
+/* AppShell이 FlightsScreen 바로 아래에 붙이는 위젯 자리 — 같은 폭으로 맞춘다 */
+.widgetHost {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-4) calc(var(--space-6) + 72px);
 }
 
 .tickets {
