@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, MapPin, Wallet, Info, Check, X, ArrowLeft, RotateCcw } from 'lucide-react';
 import { TimeWheelPicker } from '@/shared/ui/TimeWheelPicker';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
-import { apiUrl } from '@/shared/api/apiUrl';
 import { tripService, type TripRow } from '@/shared/api/tripService';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { captureError } from '@/shared/monitoring';
 import { haversineKm, formatDistance } from './map/geo';
 import { resolvePlace } from './resolvePlace';
+import { fetchNearbyRecommendations, nearbyRecsQueryKey, type ApiRecommendation } from './aiRecommendations';
 import { inferPlaceCategory, type PlaceCategory } from './placeCategory';
 import type { DayCitiesData, PlaceItem } from './types';
 import modalStyles from './AddPlaceModal.module.css';
@@ -24,21 +25,6 @@ interface AiNextPlaceModalProps {
   onAddPlace: (place: PlaceItem) => void;
 }
 
-/** /api/recommend 응답의 추천 1건 */
-interface ApiRecommendation {
-  name: string;
-  category?: string;
-  categoryLabel?: string;
-  signatureMenu?: string;
-  priceRange?: string;
-  reason?: string;
-  tip?: string;
-  placeId?: string;
-  lat?: number;
-  lng?: number;
-  address?: string;
-}
-
 type Located =
   | { status: 'pending' }
   | { status: 'found'; lat: number; lng: number; address: string; placeId: string | null; types: string[] }
@@ -51,6 +37,17 @@ interface Recommendation {
 }
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready' };
+
+function toRecommendations(list: ApiRecommendation[]): Recommendation[] {
+  return list.map((rec, i) => ({
+    id: `${i}-${rec.name}`,
+    rec,
+    located:
+      rec.lat != null && rec.lng != null
+        ? { status: 'found', lat: rec.lat, lng: rec.lng, address: rec.address ?? '', placeId: rec.placeId ?? null, types: rec.types ?? [] }
+        : { status: 'pending' },
+  }));
+}
 
 const REC_CATEGORY_TO_PLACE: Record<string, PlaceCategory> = {
   restaurant: 'restaurant',
@@ -73,8 +70,15 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   const baseLng = baseItem?.lng;
   const locale = i18n.language;
 
-  const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' });
-  const [recs, setRecs] = useState<Recommendation[]>([]);
+  const queryClient = useQueryClient();
+  const recsQueryKey = nearbyRecsQueryKey({ placeName, city, locale });
+  // 이 기기에서 전에 받은 추천이면 첫 화면부터 바로(스켈레톤 없이) 보여준다
+  const [loadState, setLoadState] = useState<LoadState>(() =>
+    queryClient.getQueryData(recsQueryKey) ? { status: 'ready' } : { status: 'loading' },
+  );
+  const [recs, setRecs] = useState<Recommendation[]>(() =>
+    toRecommendations(queryClient.getQueryData<ApiRecommendation[]>(recsQueryKey) ?? []),
+  );
   const [attempt, setAttempt] = useState(0);
   const [confirming, setConfirming] = useState<Recommendation | null>(null);
   const [time, setTime] = useState('');
@@ -82,32 +86,31 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   useEffect(() => {
     const controller = new AbortController();
     const bias = baseLat != null && baseLng != null ? { lat: baseLat, lng: baseLng } : null;
+    const queryKey = nearbyRecsQueryKey({ placeName, city, locale });
 
     async function load() {
-      setLoadState({ status: 'loading' });
-      setRecs([]);
+      const cached = queryClient.getQueryData<ApiRecommendation[]>(queryKey);
+      if (!cached) {
+        setLoadState({ status: 'loading' });
+        setRecs([]);
+      }
       try {
-        const res = await fetch(apiUrl('/api/recommend'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ placeName, city, category: 'all', locale, lat: baseLat, lng: baseLng }),
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(`recommend HTTP ${res.status}`);
-        const data = (await res.json()) as { recommendations?: ApiRecommendation[] };
-        const list: Recommendation[] = (data.recommendations ?? []).map((rec, i) => ({
-          id: `${i}-${rec.name}`,
-          rec,
-          located:
-            rec.lat != null && rec.lng != null
-              ? { status: 'found', lat: rec.lat, lng: rec.lng, address: rec.address ?? '', placeId: rec.placeId ?? null, types: [] }
-              : { status: 'pending' },
-        }));
+        // 이 기기 캐시 → DB 캐시 → (둘 다 없을 때만) /api로 AI 생성. aiRecommendations.ts 참고
+        const data: ApiRecommendation[] =
+          cached ??
+          (await queryClient.fetchQuery<ApiRecommendation[]>({
+            queryKey,
+            queryFn: () => fetchNearbyRecommendations({ placeName, city, locale, lat: baseLat, lng: baseLng }),
+            staleTime: Infinity,
+            gcTime: Infinity,
+          }));
         if (controller.signal.aborted) return;
+        const list = toRecommendations(data);
         setRecs(list);
         setLoadState({ status: 'ready' });
 
-        // 서버가 좌표를 못 붙인 항목은 브라우저에서 Google 좌표를 찾는다(병렬)
+        // 서버가 좌표를 못 붙인 항목은 브라우저에서 Google 좌표를 찾는다(병렬). 찾은 좌표는
+        // 이 기기 캐시에 붙여 두어 같은 추천을 다시 열 때 Google을 또 부르지 않는다.
         await Promise.all(
           list
             .filter((r) => r.located.status === 'pending')
@@ -115,7 +118,16 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
               let located: Located = { status: 'notFound' };
               try {
                 const found = await resolvePlace(city ? `${r.rec.name} ${city}` : r.rec.name, bias);
-                if (found) located = { status: 'found', ...found };
+                if (found) {
+                  located = { status: 'found', ...found };
+                  queryClient.setQueryData<ApiRecommendation[]>(queryKey, (old) =>
+                    old?.map((rec) =>
+                      rec.name === r.rec.name
+                        ? { ...rec, lat: found.lat, lng: found.lng, address: found.address, placeId: found.placeId, types: found.types }
+                        : rec,
+                    ),
+                  );
+                }
               } catch (err) {
                 captureError(err, { context: 'aiNextPlace.resolvePlace' });
               }
@@ -132,6 +144,8 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
 
     void load();
     return () => controller.abort();
+    // queryClient는 앱 전체에서 하나라 바뀌지 않는다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeName, city, locale, baseLat, baseLng, attempt]);
 
   function distanceLabel(located: Located): string | null {
