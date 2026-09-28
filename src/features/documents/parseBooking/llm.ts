@@ -10,6 +10,7 @@
 import { z } from 'zod';
 import type { ParsedBooking } from './schema.ts';
 import { ParsedFlight, ParsedLodging, ParsedRail, ParsedCarRental, ParsedActivity } from './schema.ts';
+import { normalizeLlmEnvelope } from './llmNormalize.ts';
 
 /** kind별 배열로 감싼다 — discriminatedUnion(oneOf)보다 중첩 객체+배열 지원이
  * 안정적이라 이 모양으로 요청하고, 응답을 받은 뒤 ParsedBooking[]으로 펼친다
@@ -21,7 +22,6 @@ const Envelope = z.object({
   carRentals: z.array(ParsedCarRental.omit({ kind: true })),
   activities: z.array(ParsedActivity.omit({ kind: true })),
 });
-type Envelope = z.infer<typeof Envelope>;
 
 const RESPONSE_SCHEMA = z.toJSONSchema(Envelope);
 
@@ -50,15 +50,6 @@ Document text:
 ${maskedText}`;
 }
 
-function envelopeToBookings(env: Envelope): ParsedBooking[] {
-  return [
-    ...env.flights.map((b): ParsedBooking => ({ kind: 'flight', ...b })),
-    ...env.lodgings.map((b): ParsedBooking => ({ kind: 'lodging', ...b })),
-    ...env.rail.map((b): ParsedBooking => ({ kind: 'rail', ...b })),
-    ...env.carRentals.map((b): ParsedBooking => ({ kind: 'car_rental', ...b })),
-    ...env.activities.map((b): ParsedBooking => ({ kind: 'activity', ...b })),
-  ];
-}
 
 function extractJson(text: string): unknown {
   let jsonStr = text.trim();
@@ -81,7 +72,7 @@ const MIN_ATTEMPT_MS = 1500;
 const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
 const MODEL = 'deepseek-flash';
 
-async function callDeepSeek(apiKey: string, prompt: string, deadline: number): Promise<Envelope | null> {
+async function callDeepSeek(apiKey: string, prompt: string, deadline: number): Promise<ParsedBooking[] | null> {
   if (deadline - Date.now() < MIN_ATTEMPT_MS) return null;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), Math.max(500, deadline - Date.now() - 200));
@@ -109,8 +100,9 @@ async function callDeepSeek(apiKey: string, prompt: string, deadline: number): P
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content;
     if (!text) return null;
-    const parsed = Envelope.safeParse(extractJson(text));
-    return parsed.success ? parsed.data : null;
+    // 필드 하나가 형식에 어긋났다고 응답 전체를 버리지 않는다 — 필드 단위로 정리(llmNormalize.ts)
+    const raw = extractJson(text);
+    return raw && typeof raw === 'object' ? normalizeLlmEnvelope(raw) : null;
   } catch {
     return null;
   } finally {
@@ -138,8 +130,8 @@ export async function extractWithLLM(
 
   for (let attempt = 0; attempt < 2; attempt++) {
     if (Date.now() >= deadline) break;
-    const env = await callDeepSeek(key, prompt, deadline);
-    if (env) return { bookings: envelopeToBookings(env), parserUsed };
+    const bookings = await callDeepSeek(key, prompt, deadline);
+    if (bookings) return { bookings, parserUsed };
   }
   return null;
 }
