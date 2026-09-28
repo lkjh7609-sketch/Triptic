@@ -1,6 +1,7 @@
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale, nearbyCacheKeys } from '@/shared/api/aiCacheKeys';
+import { haversineKm } from './map/geo';
 
 /** /api/recommend 응답(또는 DB 캐시 payload)의 추천 1건 */
 export interface ApiRecommendation {
@@ -32,6 +33,15 @@ interface NearbyInput {
 export function nearbyRecsQueryKey({ placeName, city, locale }: Pick<NearbyInput, 'placeName' | 'city' | 'locale'>) {
   const { cityKey, placeKey } = nearbyCacheKeys(placeName, city);
   return ['ai', 'nearby', aiLocale(locale), cityKey, placeKey] as const;
+}
+
+/** "주변" 추천 최대 거리(api/recommend.js MAX_DISTANCE_M과 같은 값) */
+export const NEARBY_RADIUS_M = 1500;
+
+/** 기준점에서 반경 밖 좌표 — AI가 다른 도시의 같은 이름 가게를 지어낸 경우(오사카역 → 도쿄 롯폰기) */
+export function isOutOfRange(point: { lat?: number | null; lng?: number | null }, base: { lat: number; lng: number } | null): boolean {
+  if (!base || point.lat == null || point.lng == null) return false;
+  return haversineKm(base.lat, base.lng, point.lat, point.lng) * 1000 > NEARBY_RADIUS_M;
 }
 
 /** 좌표 없이 저장된 추천(서버 Google 키가 없던 때 생성분)이 섞여 있는지 */

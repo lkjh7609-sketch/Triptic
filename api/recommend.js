@@ -17,6 +17,30 @@ import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 const LLM_TIMEOUT_MS = 22000;
 // 한 번 생성한 결과는 계속 쓴다(expires_at은 컬럼 호환용 먼 미래 값)
 const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
+// "주변" 추천의 최대 거리 — AI가 엉뚱한 도시의 같은 이름 가게를 지어내도(오사카역 근처라며
+// 도쿄 롯폰기 가게) Google이 그 이름으로 좌표를 찾아 붙이면 400km 밖이 찍혔다.
+const MAX_DISTANCE_M = 1500;
+
+function distanceM(a, b) {
+    const R = 6371000;
+    const toRad = (d) => (d * Math.PI) / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+/** 기준점이 있을 때 반경 밖 좌표는 "못 찾음"으로 본다(좌표를 버리고 찾아본 표시만 남김) */
+function withinRange(rec, bias) {
+    if (!bias || rec.lat == null || rec.lng == null) return rec;
+    if (distanceM(bias, rec) <= MAX_DISTANCE_M) return rec;
+    const rest = { ...rec, coordsChecked: true };
+    delete rest.lat;
+    delete rest.lng;
+    delete rest.address;
+    delete rest.placeId;
+    return rest;
+}
 const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
 const isRateLimited = createRateLimiter(20);
 
@@ -189,7 +213,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
                     .eq('query_key', queryKey)
                     .maybeSingle();
                 if (cached && cached.lat != null && cached.lng != null) {
-                    return { ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address, coordsChecked: true };
+                    return withinRange({ ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address, coordsChecked: true }, bias);
                 }
             }
 
@@ -228,7 +252,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
                 });
                 if (error) console.warn('[recommend] place_cache upsert failed:', error.message);
             }
-            return enriched;
+            return withinRange(enriched, bias);
         } catch (e) {
             console.warn('[recommend] Google Places enrich failed:', e instanceof Error ? e.message : e);
             return r;

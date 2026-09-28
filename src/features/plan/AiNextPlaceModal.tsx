@@ -12,6 +12,7 @@ import { haversineKm, formatDistance } from './map/geo';
 import { resolvePlace } from './resolvePlace';
 import {
   fetchNearbyRecommendations,
+  isOutOfRange,
   nearbyRecsQueryKey,
   needsServerCoords,
   requestNearbyFromServer,
@@ -44,8 +45,9 @@ interface Recommendation {
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready' };
 
-function toRecommendations(list: ApiRecommendation[]): Recommendation[] {
-  return list.map((rec, i) => ({
+/** 반경 밖 좌표가 붙은 추천(이전 캐시 포함)은 아예 보여주지 않는다 */
+function toRecommendations(list: ApiRecommendation[], base: { lat: number; lng: number } | null): Recommendation[] {
+  return list.filter((rec) => !isOutOfRange(rec, base)).map((rec, i) => ({
     id: `${i}-${rec.name}`,
     rec,
     located:
@@ -85,7 +87,10 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
     queryClient.getQueryData(recsQueryKey) ? { status: 'ready' } : { status: 'loading' },
   );
   const [recs, setRecs] = useState<Recommendation[]>(() =>
-    toRecommendations(queryClient.getQueryData<ApiRecommendation[]>(recsQueryKey) ?? []),
+    toRecommendations(
+      queryClient.getQueryData<ApiRecommendation[]>(recsQueryKey) ?? [],
+      baseLat != null && baseLng != null ? { lat: baseLat, lng: baseLng } : null,
+    ),
   );
   const [attempt, setAttempt] = useState(0);
   const [confirming, setConfirming] = useState<Recommendation | null>(null);
@@ -113,7 +118,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
             gcTime: Infinity,
           }));
         if (controller.signal.aborted) return;
-        setRecs(toRecommendations(data));
+        setRecs(toRecommendations(data, bias));
         setLoadState({ status: 'ready' });
 
         // 좌표 없이 저장된 추천이면 서버가 한 번 채워 DB 캐시에 되돌려 쓴다 — 다음부터는
@@ -125,14 +130,14 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
               data = withCoords;
               queryClient.setQueryData(queryKey, withCoords);
               if (controller.signal.aborted) return;
-              setRecs(toRecommendations(withCoords));
+              setRecs(toRecommendations(withCoords, bias));
             }
           } catch (err) {
             captureError(err, { context: 'aiNextPlace.serverCoords' });
           }
         }
         if (controller.signal.aborted) return;
-        const list = toRecommendations(data);
+        const list = toRecommendations(data, bias);
 
         // 서버가 좌표를 못 붙인 항목은 브라우저에서 Google 좌표를 찾는다(병렬). 찾은 좌표는
         // 이 기기 캐시에 붙여 두어 같은 추천을 다시 열 때 Google을 또 부르지 않는다.
@@ -143,7 +148,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
               let located: Located = { status: 'notFound' };
               try {
                 const found = await resolvePlace(city ? `${r.rec.name} ${city}` : r.rec.name, bias);
-                if (found) {
+                if (found && !isOutOfRange(found, bias)) {
                   located = { status: 'found', ...found };
                   queryClient.setQueryData<ApiRecommendation[]>(queryKey, (old) =>
                     old?.map((rec) =>
