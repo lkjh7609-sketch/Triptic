@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
+import { AiraloEsimWidget } from './AiraloEsimWidget';
 import styles from './FlightsScreen.module.css';
 
 /** Travelpayouts White Label(항공권 메타서치) — 색·폰트는 Travelpayouts 대시보드 Design 탭에서 설정 */
@@ -24,7 +25,7 @@ function flightsWidgetLocale(appLanguage: string): { language: string; currency:
  */
 export function FlightsWidgetHost({ visible }: { visible: boolean }) {
   const injectedHere = useRef(false);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('home');
 
   useEffect(() => {
     if (document.getElementById(WL_SCRIPT_ID)) {
@@ -56,6 +57,18 @@ export function FlightsWidgetHost({ visible }: { visible: boolean }) {
     <div className={styles.widgetHost} style={visible ? undefined : { display: 'none' }}>
       <div id="tpwl-search" />
       <div id="tpwl-tickets" className={styles.tickets} />
+      {/* 항공권 아래 eSIM(한국어는 FlightsEssentials — 유심사·마이리얼트립) */}
+      <section className={styles.esim} aria-labelledby="flights-esim-title">
+        <div className={styles.esimHead}>
+          <div>
+            <h2 id="flights-esim-title" className={styles.esimTitle}>
+              {t('flights.esimGlobal.title')}
+            </h2>
+            <p className={styles.esimSubtitle}>{t('flights.esimGlobal.subtitle')}</p>
+          </div>
+        </div>
+        <AiraloEsimWidget />
+      </section>
     </div>
   );
 }
