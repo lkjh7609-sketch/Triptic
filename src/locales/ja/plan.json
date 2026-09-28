@@ -370,7 +370,9 @@
     "flightMissingTitle": "航空便を追加",
     "flightMissingDesc": "往復の航空便を入れると、初日と最終日のルートに反映されます。",
     "pdfTitle": "旅行をPDFで保存",
-    "pdfDesc": "地図と全日程入りの印刷用ガイド"
+    "pdfDesc": "地図と全日程入りの印刷用ガイド",
+    "findFlights": "この日程で航空券を探す",
+    "findFlightsBusy": "検索中…"
   },
   "hotel": {
     "title": "宿泊先の設定",

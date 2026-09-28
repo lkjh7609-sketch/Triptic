@@ -43,6 +43,7 @@ import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMemb
 import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
+import { openFlightsSearchForTrip } from './flightsSearchLink';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
 
@@ -702,6 +703,25 @@ function WeatherBox({ trip }: { trip: TripRow }) {
   );
 }
 
+/** 여행 도시·날짜로 항공 탭 검색을 바로 연다(출발지는 접속 위치) — flightsSearchLink.ts */
+function FindFlightsButton({ trip, className }: { trip: TripRow; className?: string }) {
+  const { t } = useTranslation('plan');
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      className={className ?? styles.findFlightsBtn}
+      disabled={busy}
+      onClick={() => {
+        setBusy(true);
+        void openFlightsSearchForTrip(trip).finally(() => setBusy(false));
+      }}
+    >
+      <Search size={14} aria-hidden="true" /> {busy ? t('desktop.findFlightsBusy') : t('desktop.findFlights')}
+    </button>
+  );
+}
+
 function FlightBox({ trip }: { trip: TripRow }) {
   const { t } = useTranslation('plan');
   const flights = (tripService.toLocalProject(trip).flights ?? { outbound: null, return: null }) as FlightsData;
@@ -709,18 +729,21 @@ function FlightBox({ trip }: { trip: TripRow }) {
 
   if (!outbound) {
     return (
-      <Link to={`/plan/${trip.id}`} className={styles.toolkitLink}>
-        <div className={styles.toolkitLinkBody}>
-          <div className={styles.toolkitLinkIcon}>
-            <Plane size={18} aria-hidden="true" />
+      <div className={styles.flightMissingBox}>
+        <Link to={`/plan/${trip.id}`} className={styles.toolkitLink}>
+          <div className={styles.toolkitLinkBody}>
+            <div className={styles.toolkitLinkIcon}>
+              <Plane size={18} aria-hidden="true" />
+            </div>
+            <div>
+              <div className={styles.toolkitLinkTitle}>{t('desktop.flightMissingTitle')}</div>
+              <div className={styles.toolkitLinkSub}>{t('desktop.flightMissingDesc')}</div>
+            </div>
           </div>
-          <div>
-            <div className={styles.toolkitLinkTitle}>{t('desktop.flightMissingTitle')}</div>
-            <div className={styles.toolkitLinkSub}>{t('desktop.flightMissingDesc')}</div>
-          </div>
-        </div>
-        <ChevronRight size={18} color="var(--pd-subtle)" aria-hidden="true" />
-      </Link>
+          <ChevronRight size={18} color="var(--pd-subtle)" aria-hidden="true" />
+        </Link>
+        <FindFlightsButton trip={trip} />
+      </div>
     );
   }
 

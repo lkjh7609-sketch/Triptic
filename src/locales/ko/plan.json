@@ -370,7 +370,9 @@
     "flightMissingTitle": "항공편 추가하기",
     "flightMissingDesc": "출국·귀국 항공편을 넣으면 첫날·마지막 날 동선에 반영돼요.",
     "pdfTitle": "여행 PDF 저장",
-    "pdfDesc": "지도와 전체 일정을 담은 인쇄용 가이드"
+    "pdfDesc": "지도와 전체 일정을 담은 인쇄용 가이드",
+    "findFlights": "이 일정으로 항공권 찾기",
+    "findFlightsBusy": "찾는 중…"
   },
   "hotel": {
     "title": "숙소 설정",

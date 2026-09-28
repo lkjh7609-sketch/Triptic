@@ -384,7 +384,9 @@
     "flightMissingTitle": "Add your flight",
     "flightMissingDesc": "Adding your flights maps them onto the first and last days.",
     "pdfTitle": "Save trip as PDF",
-    "pdfDesc": "A printable guide with maps and the full itinerary"
+    "pdfDesc": "A printable guide with maps and the full itinerary",
+    "findFlights": "Find flights for these dates",
+    "findFlightsBusy": "Searching…"
   },
   "hotel": {
     "title": "Set your stay",
