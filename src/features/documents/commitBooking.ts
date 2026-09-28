@@ -17,7 +17,7 @@
  * 같은 체인의 다른 지점을 잘못 고를 위험이 있다.
  */
 import type { ParsedFlight } from './parseBooking/schema.ts';
-import type { FlightAirportInfo, FlightInfo } from '../plan/types.ts';
+import type { FlightAirportInfo, FlightInfo, FlightsData } from '../plan/types.ts';
 
 function splitLocal(local: string | null | undefined): { date: string; time: string } | null {
   if (!local) return null;
@@ -35,23 +35,51 @@ export interface FlightCommitResult {
   flight: FlightInfo;
 }
 
+export interface FlightSlotContext {
+  /** 같은 문서에서 나온 다른 항공편(검수 대기 중이거나 방금 반영한 것) — 왕복·다구간이면 출발 순서로 칸을 정한다 */
+  sameDocumentFlights?: ParsedFlight[];
+  /** 이미 일정에 들어 있는 항공편 */
+  existing?: FlightsData;
+}
+
 /**
- * ParsedFlight → FlightInfo 변환 + outbound/return 슬롯 판정.
- * 출발일이 여행 시작일에 더 가까우면 outbound, 도착일이 여행 종료일에 더
- * 가까우면 return으로 본다(왕복 중 어느 편인지 문서만으로는 명시적이지 않을 때가 많다).
+ * outbound/return 칸 정하기.
+ *  1) 같은 문서의 항공편이 여럿이면 출발 시각 순서 — 가장 먼저 뜨는 편 outbound, 마지막 편 return
+ *     (여행 날짜와 상관없이 — 예전엔 여행 기간 밖의 왕복 항공권이 둘 다 outbound로 들어가 덮어썼다)
+ *  2) 이미 한쪽만 있으면 그보다 뒤에 뜨면 return, 앞에 뜨면 outbound
+ *  3) 그 밖엔 출발일이 여행 시작일에 더 가까우면 outbound, 도착일이 종료일에 더 가까우면 return
  */
+function pickSlot(flight: ParsedFlight, dep: { date: string }, arr: { date: string }, tripStartDate: string, tripEndDate: string, ctx: FlightSlotContext): 'outbound' | 'return' {
+  const depAt = flight.departure.scheduledLocal.value ?? '';
+  const all = [flight, ...(ctx.sameDocumentFlights ?? [])].filter((f) => !!f.departure.scheduledLocal.value);
+  if (all.length >= 2 && depAt) {
+    const sorted = [...all].sort((a, b) => (a.departure.scheduledLocal.value ?? '').localeCompare(b.departure.scheduledLocal.value ?? ''));
+    const idx = sorted.indexOf(flight);
+    if (idx === 0) return 'outbound';
+    if (idx === sorted.length - 1) return 'return';
+    return idx < sorted.length / 2 ? 'outbound' : 'return';
+  }
+  const existing = ctx.existing;
+  if (existing?.outbound && !existing.return && dep.date >= existing.outbound.date) return 'return';
+  if (existing?.return && !existing.outbound && dep.date <= existing.return.date) return 'outbound';
+
+  const distToStart = Math.abs(daysBetween(tripStartDate, dep.date));
+  const distToEnd = Math.abs(daysBetween(arr.date, tripEndDate));
+  return distToStart <= distToEnd ? 'outbound' : 'return';
+}
+
+/** ParsedFlight → FlightInfo 변환 + outbound/return 칸 판정(pickSlot) */
 export function commitFlightBooking(
   flight: ParsedFlight,
   tripStartDate: string,
   tripEndDate: string,
+  ctx: FlightSlotContext = {},
 ): FlightCommitResult | null {
   const dep = splitLocal(flight.departure.scheduledLocal.value);
   const arr = splitLocal(flight.arrival.scheduledLocal.value);
   if (!dep || !arr || !flight.departure.airportIata.value || !flight.arrival.airportIata.value) return null;
 
-  const distToStart = Math.abs(daysBetween(tripStartDate, dep.date));
-  const distToEnd = Math.abs(daysBetween(arr.date, tripEndDate));
-  const slot: 'outbound' | 'return' = distToStart <= distToEnd ? 'outbound' : 'return';
+  const slot = pickSlot(flight, dep, arr, tripStartDate, tripEndDate, ctx);
 
   const depAirport: FlightAirportInfo = {
     iata: flight.departure.airportIata.value,
