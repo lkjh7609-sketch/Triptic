@@ -115,9 +115,10 @@ export function AppShell() {
       </main>
       {!isGuestSample && !isDesktop && <TabBar />}
       {isGuestSample && authOpen ? <GlobalAuthModal onClose={() => setAuthOpen(false)} /> : null}
-      {/* 새 화면은 맨 위에서, 뒤로가기/탭 복귀는 보던 위치에서 — 키를 경로로 잡아
-          검색 파라미터만 바뀌는 이동(필터 등)에서는 스크롤이 튀지 않는다 */}
-      <ScrollRestoration getKey={(location) => location.pathname} />
+      {/* 이동(탭·링크)은 항상 맨 위에서, 뒤로·앞으로 가기만 보던 위치로 — 기본 키(기록 항목마다
+          다름). 예전엔 키를 경로로 잡아 한 번 가 본 탭으로 다시 가면 예전 위치(페이지 중간)로 떴다.
+          검색 파라미터만 바꾸는 이동은 preventScrollReset으로 위치를 유지한다 */}
+      <ScrollRestoration />
     </div>
   );
 }

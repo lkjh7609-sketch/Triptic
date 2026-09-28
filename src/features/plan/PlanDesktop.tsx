@@ -332,7 +332,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
             setShowCreate(false);
             if (autoCreateCity) {
               searchParams.delete('autoCreate');
-              setSearchParams(searchParams, { replace: true });
+              setSearchParams(searchParams, { replace: true, preventScrollReset: true });
             }
           }}
         />
