@@ -1201,3 +1201,37 @@
     --pd-success: #34d399;
   }
 }
+
+/* 항공편 없는 다음 여행: "항공편 추가하기" 링크 + 항공권 찾기 버튼 */
+.flightMissingBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.findFlightsBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface);
+  color: var(--pd-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.findFlightsBtn:hover {
+  border-color: var(--pd-navy);
+}
+
+.findFlightsBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

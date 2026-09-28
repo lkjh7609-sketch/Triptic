@@ -370,7 +370,9 @@
     "flightMissingTitle": "新增航班",
     "flightMissingDesc": "加入去回程航班後，會反映在第一天與最後一天的路線上。",
     "pdfTitle": "儲存行程 PDF",
-    "pdfDesc": "包含地圖與完整行程的列印版指南"
+    "pdfDesc": "包含地圖與完整行程的列印版指南",
+    "findFlights": "用這個行程搜尋機票",
+    "findFlightsBusy": "搜尋中…"
   },
   "hotel": {
     "title": "設定住宿",
