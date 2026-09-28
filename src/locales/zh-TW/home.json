@@ -66,7 +66,28 @@
   },
   "flights": {
     "title": "搜尋機票",
-    "subtitle": "一次比較多家航空公司與旅行社的價格"
+    "subtitle": "一次比較多家航空公司與旅行社的價格",
+    "form": {
+      "tripType": "行程類型",
+      "roundTrip": "來回",
+      "oneWay": "單程",
+      "from": "出發地",
+      "to": "目的地",
+      "swap": "交換出發地與目的地",
+      "placePlaceholder": "城市或機場",
+      "airport": "機場",
+      "allAirports": "所有機場",
+      "depart": "出發日",
+      "return": "回程日",
+      "adults": "人數",
+      "adultsCount_other": "成人 {{count}} 位",
+      "search": "搜尋機票",
+      "searching": "開啟中…",
+      "needPlaces": "請從清單選擇出發地與目的地",
+      "badDates": "請確認日期 — 回程日需在出發日當天或之後",
+      "linkError": "無法開啟搜尋結果，請稍後再試",
+      "opensOnMyrealtrip": "搜尋結果與預訂將在 MyRealTrip 進行"
+    }
   },
   "sections": {
     "label": "首頁選單",

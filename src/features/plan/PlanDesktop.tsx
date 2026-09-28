@@ -712,7 +712,7 @@ function hasNotStarted(trip: TripRow): boolean {
 
 /** 여행 도시·날짜로 항공 탭 검색을 바로 연다(출발지는 접속 위치) — flightsSearchLink.ts */
 function FindFlightsButton({ trip, className }: { trip: TripRow; className?: string }) {
-  const { t } = useTranslation('plan');
+  const { t, i18n } = useTranslation('plan');
   const [busy, setBusy] = useState(false);
   return (
     <button
@@ -721,7 +721,7 @@ function FindFlightsButton({ trip, className }: { trip: TripRow; className?: str
       disabled={busy}
       onClick={() => {
         setBusy(true);
-        void openFlightsSearchForTrip(trip).finally(() => setBusy(false));
+        void openFlightsSearchForTrip(trip, i18n.language).finally(() => setBusy(false));
       }}
     >
       <Search size={14} aria-hidden="true" /> {busy ? t('desktop.findFlightsBusy') : t('desktop.findFlights')}

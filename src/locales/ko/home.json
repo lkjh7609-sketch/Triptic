@@ -66,7 +66,28 @@
   },
   "flights": {
     "title": "항공권 검색",
-    "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요"
+    "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요",
+    "form": {
+      "tripType": "여정",
+      "roundTrip": "왕복",
+      "oneWay": "편도",
+      "from": "출발지",
+      "to": "도착지",
+      "swap": "출발지와 도착지 바꾸기",
+      "placePlaceholder": "도시 또는 공항",
+      "airport": "공항",
+      "allAirports": "모든 공항",
+      "depart": "가는 날",
+      "return": "오는 날",
+      "adults": "인원",
+      "adultsCount_other": "성인 {{count}}명",
+      "search": "항공권 검색",
+      "searching": "여는 중…",
+      "needPlaces": "출발지와 도착지를 목록에서 골라 주세요",
+      "badDates": "날짜를 확인해 주세요 — 오는 날은 가는 날 이후여야 해요",
+      "linkError": "검색 결과를 열지 못했어요. 잠시 후 다시 시도해 주세요",
+      "opensOnMyrealtrip": "검색 결과와 예약은 마이리얼트립에서 진행돼요"
+    }
   },
   "sections": {
     "label": "홈 메뉴",

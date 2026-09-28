@@ -1,5 +1,17 @@
+import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { cityDisplayName } from './cityName';
 import { haversineKm } from './map/geo';
+import { fetchMyrealtripFlightsLink, openInNewTab } from './partnerLinks';
+
+/**
+ * 항공 검색 제휴사 — 마이리얼트립은 한국어·원화 사이트뿐이라 한국어 사용자만.
+ * 그 외 언어는 Travelpayouts 항공 위젯(영어/달러, FlightsWidgetHost).
+ */
+export type FlightsProvider = 'myrealtrip' | 'travelpayouts';
+
+export function flightsProviderFor(language: string): FlightsProvider {
+  return aiLocale(language) === 'ko' ? 'myrealtrip' : 'travelpayouts';
+}
 
 interface TripForFlights {
   city: string | null;
@@ -49,6 +61,22 @@ async function destinationIata(trip: TripForFlights): Promise<string | null> {
   return best?.code ?? null;
 }
 
+interface TripFlight {
+  origin: string;
+  destination: string;
+  departDate: string;
+  returnDate: string | null;
+}
+
+/** 여행 → 출발(접속 위치)·도착 도시 코드와 날짜. 하나라도 못 정하면 null */
+async function resolveTripFlight(trip: TripForFlights): Promise<TripFlight | null> {
+  if (!trip.start_date) return null;
+  const [origin, destination] = await Promise.all([originIata(), destinationIata(trip)]);
+  if (!origin || !destination || origin === destination) return null;
+  const returnDate = trip.end_date && trip.end_date > trip.start_date ? trip.end_date : null;
+  return { origin, destination, departDate: trip.start_date, returnDate };
+}
+
 /**
  * 여행 도시·날짜로 항공 탭(/flights) 검색 주소를 만든다 — 항공 위젯은 시작할 때만
  * origin/destination/depart_date/return_date를 읽으므로 같은 창 전체 이동으로 연다.
@@ -56,16 +84,34 @@ async function destinationIata(trip: TripForFlights): Promise<string | null> {
  */
 export async function flightsSearchUrlForTrip(trip: TripForFlights): Promise<string> {
   try {
-    const [origin, destination] = await Promise.all([originIata(), destinationIata(trip)]);
-    if (!origin || !destination || origin === destination || !trip.start_date) return '/flights';
-    const params = new URLSearchParams({ origin, destination, depart_date: trip.start_date, adults: '1' });
-    if (trip.end_date && trip.end_date > trip.start_date) params.set('return_date', trip.end_date);
+    const flight = await resolveTripFlight(trip);
+    if (!flight) return '/flights';
+    const params = new URLSearchParams({ origin: flight.origin, destination: flight.destination, depart_date: flight.departDate, adults: '1' });
+    if (flight.returnDate) params.set('return_date', flight.returnDate);
     return `/flights?${params.toString()}`;
   } catch {
     return '/flights';
   }
 }
 
-export async function openFlightsSearchForTrip(trip: TripForFlights): Promise<void> {
-  window.location.assign(await flightsSearchUrlForTrip(trip));
+/**
+ * "이 일정으로 항공권 찾기". 한국어 사용자는 마이리얼트립 검색 결과를 새 탭으로 바로 연다
+ * (whereami·places2 코드는 둘 다 도시 코드). 코드를 못 정하거나 링크를 못 받으면 항공 탭
+ * 검색 폼으로 — 날짜는 채워 둔다. 그 외 언어는 항공 탭 위젯 검색.
+ */
+export async function openFlightsSearchForTrip(trip: TripForFlights, language: string): Promise<void> {
+  if (flightsProviderFor(language) === 'travelpayouts') {
+    window.location.assign(await flightsSearchUrlForTrip(trip));
+    return;
+  }
+  const opened = await openInNewTab(async () => {
+    const flight = await resolveTripFlight(trip);
+    if (!flight) return null;
+    return fetchMyrealtripFlightsLink({ ...flight, originType: 'city', destinationType: 'city', adults: 1 }, 'trip_flights');
+  });
+  if (opened) return;
+  const params = new URLSearchParams();
+  if (trip.start_date) params.set('depart_date', trip.start_date);
+  if (trip.end_date && trip.start_date && trip.end_date > trip.start_date) params.set('return_date', trip.end_date);
+  window.location.assign(`/flights${params.size ? `?${params.toString()}` : ''}`);
 }
