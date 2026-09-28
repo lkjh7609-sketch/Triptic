@@ -53,6 +53,13 @@ export function isMyrealtripUrl(raw) {
     }
 }
 
+/** 투어·티켓 상품 상세 주소(상품 카드가 넘기는 것) — 공개 엔드포인트가 아무 페이지나 마이링크로 만들지 않게 */
+const PRODUCT_URL = /^https:\/\/experiences\.myrealtrip\.com\/products\/\d+(\?[^#]*)?$/;
+
+export function isProductUrl(raw) {
+    return isMyrealtripUrl(raw) && PRODUCT_URL.test(raw);
+}
+
 /**
  * 마이링크(제휴 추적 단축 링크) 생성. 마이링크마다 ID가 달라서, 수익·예약 내역의 linkId로
  * 어느 링크(어디서 누른 것)에서 난 예약인지 되짚을 수 있다(partner_links.external_id).
@@ -161,7 +168,7 @@ const str = (v) => (typeof v === 'string' && v ? v : null);
 
 /** 검색 결과 한 개 → 앱 카드 모양. 상품 주소·이름이 없으면 버린다 */
 export function normalizeProduct(item) {
-    if (!item || !isMyrealtripUrl(item.productUrl) || !str(item.itemName)) return null;
+    if (!item || !isProductUrl(item.productUrl) || !str(item.itemName)) return null;
     const image = str(item.imageUrl);
     return {
         id: String(item.gid ?? item.productUrl),
@@ -250,23 +257,24 @@ async function listReservations(from, to) {
     return rows.map((r) => normalizeReservation(r, 'tna'));
 }
 
+// 항공 예약·항공 수익은 한 번에 최대 1개월 — 28일씩 나눠 동시에 부른다
+const FLIGHT_MAX_DAYS = 28;
+
 async function listFlightReservations(from, to) {
-    const rows = [];
-    // 항공 예약은 한 번에 최대 1개월
-    for (const [start, end] of splitRange(from, to, 28)) {
-        const json = await call('GET', '/v1/reservations/flight', {
-            query: { dateSearchType: 'RESERVATION_DATE', startDate: start, endDate: end },
-        });
-        if (Array.isArray(json.data)) rows.push(...json.data);
-    }
-    return rows.map((r) => normalizeReservation(r, 'flight'));
+    const chunks = await Promise.all(
+        splitRange(from, to, FLIGHT_MAX_DAYS).map(([start, end]) =>
+            call('GET', '/v1/reservations/flight', { query: { dateSearchType: 'RESERVATION_DATE', startDate: start, endDate: end } }),
+        ),
+    );
+    return chunks.flatMap((json) => (Array.isArray(json.data) ? json.data : [])).map((r) => normalizeReservation(r, 'flight'));
 }
 
-async function listRevenues(path, kind, from, to, basis) {
-    const json = await call('GET', path, {
-        query: { dateSearchType: basis === 'settlement' ? 'SETTLEMENT' : 'PAYMENT', startDate: from, endDate: to },
-    });
-    return (Array.isArray(json.data) ? json.data : []).map((r) => normalizeRevenue(r, kind));
+async function listRevenues(path, kind, from, to, basis, maxDays) {
+    const dateSearchType = basis === 'settlement' ? 'SETTLEMENT' : 'PAYMENT';
+    const chunks = await Promise.all(
+        splitRange(from, to, maxDays).map(([start, end]) => call('GET', path, { query: { dateSearchType, startDate: start, endDate: end } })),
+    );
+    return chunks.flatMap((json) => (Array.isArray(json.data) ? json.data : [])).map((r) => normalizeRevenue(r, kind));
 }
 
 /**
@@ -277,8 +285,9 @@ export async function fetchSales(from, to, basis) {
     const parts = await Promise.allSettled([
         listReservations(from, to),
         listFlightReservations(from, to),
-        listRevenues('/v1/revenues', 'tna', from, to, basis),
-        listRevenues('/v1/revenues/flight', 'flight', from, to, basis),
+        // 비항공 수익은 최대 6개월 — 판매 탭 기간(최대 180일)이면 한 번에
+        listRevenues('/v1/revenues', 'tna', from, to, basis, 180),
+        listRevenues('/v1/revenues/flight', 'flight', from, to, basis, FLIGHT_MAX_DAYS),
     ]);
     const failed = [];
     const value = (i, name) => {

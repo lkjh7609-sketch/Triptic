@@ -2,7 +2,7 @@
 // Endpoint: GET /api/partnerLink?brand=klook&q=Osaka&locale=ko&placement=trip|search|city|ticket
 //           GET /api/partnerLink?brand=yesim&placement=checklist (검색어 없는 브랜드 첫 페이지)
 //           GET /api/partnerLink?brand=myrealtrip&kind=search&q=오사카&placement=search
-//           GET /api/partnerLink?brand=myrealtrip&kind=page&url=https://experiences.myrealtrip.com/products/..&placement=product
+//           GET /api/partnerLink?brand=myrealtrip&kind=page&url=https://experiences.myrealtrip.com/products/<id>&placement=product
 //           GET /api/partnerLink?brand=myrealtrip&kind=flight&origin=SEL&origin_type=city&destination=OSA
 //               &destination_type=city&depart_date=2026-11-10&return_date=2026-11-15&adults=1&placement=flights|trip_flights
 //   (klook은 q 대신 city도 받는다 — 여행 상세가 처음 쓰던 이름)
