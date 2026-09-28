@@ -1,0 +1,26 @@
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) calc(var(--space-6) + 72px);
+}
+
+.header {
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-headline-size);
+  font-weight: var(--font-headline-weight);
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-body-size);
+  color: var(--text-muted);
+}
+
+.tickets {
+  margin-top: var(--space-4);
+}

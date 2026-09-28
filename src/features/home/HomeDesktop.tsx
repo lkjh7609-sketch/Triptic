@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
@@ -219,9 +219,9 @@ export function HomeDesktop() {
           </div>
 
           <div className={styles.quickCategories}>
-            <a href="https://www.skyscanner.co.kr/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}>
+            <Link to="/flights" className={styles.categoryPill}>
               <Plane size={16} aria-hidden="true" /> {t('desktop.flights')}
-            </a>
+            </Link>
             <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}>
               <Briefcase size={16} aria-hidden="true" /> {t('desktop.stays')}
             </a>

@@ -66,5 +66,9 @@
     "activities": "액티비티",
     "scrollLeft": "왼쪽으로 넘기기",
     "scrollRight": "오른쪽으로 넘기기"
+  },
+  "flights": {
+    "title": "항공권 검색",
+    "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요"
   }
 }
