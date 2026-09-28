@@ -15,6 +15,7 @@ import { useReopenTrip } from './hooks/useTrips';
 import type { PlaceItem } from './types';
 import sharedStyles from '@/features/shared/SharedTripScreen.module.css';
 import styles from './FinalizedTripView.module.css';
+import { cityDisplayName } from './cityName';
 
 interface FinalizedTripViewProps {
   trip: TripRow;
@@ -71,7 +72,7 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
         <span>{t('community:shared.dayLabel', { day: currentDay })}</span>
         <span className={sharedStyles.cityBadge}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span>{' '}
-          {cityName ? cityName.split(',')[0].trim() : t('community:shared.cityUnset')}
+          {cityName ? cityDisplayName(cityName) : t('community:shared.cityUnset')}
         </span>
       </div>
 

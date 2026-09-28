@@ -41,6 +41,7 @@ import { summarizeTrip, type TripSummary } from './tripSummary';
 import { useFinalizeTrip, useTrip, useTripSummaries } from './hooks/useTrips';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
 import { formatLocalizedDay } from './planDateFormat';
+import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
@@ -486,7 +487,7 @@ function CompactTripCard({
           <h3 className={styles.cardTitle}>{trip.title}</h3>
           <p className={styles.cardDesc}>{range ?? t('tripCard.periodUndecided')}</p>
           <div className={styles.cardRoute}>
-            <Navigation size={14} color="var(--pd-accent)" aria-hidden="true" /> {trip.city || t('desktop.cityUnset')}
+            <Navigation size={14} color="var(--pd-accent)" aria-hidden="true" /> {cityDisplayName(trip.city) || t('desktop.cityUnset')}
           </div>
         </div>
       </div>
@@ -578,7 +579,7 @@ function PastTripCard({ trip, summary, actions, list }: { trip: TripRow; summary
       <div className={styles.pastBody}>
         <div>
           <div className={styles.pastMeta}>
-            <span>{trip.city || t('desktop.cityUnset')}</span>
+            <span>{cityDisplayName(trip.city) || t('desktop.cityUnset')}</span>
             <TripMenu trip={trip} actions={actions} />
           </div>
           <h4 className={styles.pastTitle}>{trip.title}</h4>
@@ -675,7 +676,7 @@ function WeatherBox({ trip }: { trip: TripRow }) {
     <div className={styles.toolkitBox}>
       <div className={styles.toolkitBoxHeader}>
         <span>{t('desktop.weatherTitle')}</span>
-        <span className={styles.accentText}>{(trip.city ?? '').split(',')[0]}</span>
+        <span className={styles.accentText}>{cityDisplayName(trip.city)}</span>
       </div>
       <div className={styles.toolkitBoxContent}>
         <div className={styles.toolkitBoxLeft}>
@@ -752,7 +753,7 @@ function PdfBox({ trip }: { trip: TripRow }) {
       await exportToPdf(
         {
           title: trip.title,
-          city: trip.city ?? '',
+          city: cityDisplayName(trip.city),
           startDate: trip.start_date ?? '',
           endDate: trip.end_date ?? '',
           totalDays: Math.max(1, Number(project.totalDays ?? trip.total_days ?? 1) || 1),

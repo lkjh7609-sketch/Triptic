@@ -139,7 +139,7 @@ export function TripDetailScreen() {
     if (!project || !trip) return undefined;
     return formatItineraryText({
       title: trip.title,
-      city: trip.city,
+      city: cityDisplayName(trip.city),
       startDate: trip.start_date,
       endDate: trip.end_date,
       totalDays,
@@ -151,7 +151,7 @@ export function TripDetailScreen() {
     if (!project || !trip) return undefined;
     return {
       title: trip.title,
-      city: trip.city ?? '',
+      city: cityDisplayName(trip.city),
       startDate: trip.start_date ?? '',
       endDate: trip.end_date ?? '',
       totalDays,
