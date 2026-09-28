@@ -2,12 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
-import { apiUrl } from '@/shared/api/apiUrl';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { CONTACT_EMAIL } from '@/shared/config';
-import { captureError } from '@/shared/monitoring';
+import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
+import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import styles from './HomeDesktop.module.css';
 
 interface FeaturedDestination {
@@ -39,27 +40,14 @@ function DestinationPreviewModal({
   const { t, i18n } = useTranslation(['home', 'common']);
   const locale = i18n.language;
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
-  const [aiDesc, setAiDesc] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 모달은 여행지마다 새로 마운트되므로(열 때마다 조건부 렌더) 초기 state가 곧 로딩 상태다
-    const controller = new AbortController();
-    fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(dest.city)}&locale=${encodeURIComponent(locale)}`), {
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { description?: string } | null) => {
-        if (data?.description) setAiDesc(data.description);
-      })
-      .catch((err) => {
-        if (!controller.signal.aborted) captureError(err, { context: 'homeDesktop.cityDesc' });
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [dest.city, locale]);
+  // 한 번 받은 소개는 DB(서버)와 이 기기 캐시에 남아 있어서, 홈에서 미리 채워뒀거나
+  // 전에 열어봤으면 첫 화면부터 바로 보인다. 실패하면 아래 기본 문구로.
+  const { data: aiDesc, isPending: loading } = useQuery({
+    queryKey: cityDescQueryKey(dest.city, locale),
+    queryFn: () => fetchCityDescription(dest.city, locale),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   return createPortal(
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -108,6 +96,25 @@ export function HomeDesktop() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const { data: destinations } = useDestinations();
+  const queryClient = useQueryClient();
+
+  // 추천 카드 소개 중 이미 DB에 저장된 것들을 한 번에 받아 채워둔다 — 카드를 눌렀을 때 기다림 없이
+  useEffect(() => {
+    const locale = i18n.language;
+    const missing = FEATURED.filter((d) => queryClient.getQueryData(cityDescQueryKey(d.city, locale)) === undefined);
+    if (missing.length === 0) return;
+    let cancelled = false;
+    void readCachedCityDescriptions(missing.map((d) => d.city), locale).then((byKey) => {
+      if (cancelled) return;
+      for (const d of missing) {
+        const description = byKey[cityDescCacheKey(d.city)];
+        if (description) queryClient.setQueryData(cityDescQueryKey(d.city, locale), description);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [queryClient, i18n.language]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoScrollPausedRef = useRef(false);
