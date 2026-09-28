@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { CONTACT_EMAIL } from '@/shared/config';
@@ -11,6 +11,7 @@ import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
 import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { HomeSectionTabs } from './HomeSectionTabs';
+import { HomeWordmark } from './HomeWordmark';
 import styles from './HomeDesktop.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 
@@ -167,10 +168,7 @@ export function HomeDesktop() {
       <HomeSectionTabs />
       <section className={`${styles.hero} ${styles.heroPlain}`}>
         <div className={styles.heroContent}>
-          <div className={styles.wordmark} aria-hidden="true">
-            <Compass size={22} className={styles.wordmarkIcon} />
-            <span>Triptic</span>
-          </div>
+          <HomeWordmark />
           <div className={styles.searchPill}>
             <Search size={20} className={styles.searchIcon} aria-hidden="true" />
             <input
