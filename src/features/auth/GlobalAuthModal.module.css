@@ -118,3 +118,22 @@
   font-weight: 600;
   text-decoration: none;
 }
+
+/* PC 둘러보기 중 띄우는 로그인 창(닫을 수 있을 때) — 보던 화면 위에 카드로. 모바일은 그대로 전체 화면 */
+@media (min-width: 1024px) {
+  .overlayFloating {
+    background: var(--surface-overlay);
+  }
+
+  .modalFloating {
+    max-width: 440px;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  }
+
+  .modalFloating .closeButton {
+    top: var(--space-2);
+    right: var(--space-2);
+  }
+}

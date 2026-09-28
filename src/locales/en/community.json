@@ -155,7 +155,8 @@
     "comment_other": "{{count}} comments",
     "commentPlaceholder": "Leave a comment",
     "commentSubmit": "Post",
-    "noComments": "No comments yet."
+    "noComments": "No comments yet.",
+    "loginToComment": "Sign in to comment"
   },
   "profile": {
     "loadError": "Couldn't load the profile.",

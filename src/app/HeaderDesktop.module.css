@@ -104,6 +104,24 @@
   background-color: var(--surface-subtle);
 }
 
+/* 비로그인 둘러보기 — 프로필 자리 */
+.signInButton {
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: var(--text-on-brand, #fff);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.signInButton:hover {
+  opacity: 0.9;
+}
+
 .avatar {
   width: 32px;
   height: 32px;

@@ -18,6 +18,7 @@ import { getPostImageUrl } from './imageProcessing';
 import type { PostsPage } from './communityService';
 import type { Destination, Post } from './types';
 import type { Tab } from './CommunityScreen';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 type Sort = 'latest' | 'likes' | 'comments';
 
@@ -62,6 +63,7 @@ export function CommunityDesignBody({
 }: Props) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
+  const requireLogin = useRequireLogin();
   const [sort, setSort] = useState<Sort>('latest');
 
   const posts = useMemo(() => {
@@ -111,6 +113,7 @@ export function CommunityDesignBody({
               ) : null}
               <Link
                 to="/community/compose"
+                onClick={requireLogin}
                 className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-container text-on-secondary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 shrink-0"
               >
                 <PenLine size={18} aria-hidden="true" />
@@ -118,6 +121,7 @@ export function CommunityDesignBody({
               </Link>
               <Link
                 to="/community/companion/new"
+                onClick={requireLogin}
                 className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-5 py-3 rounded-full font-label-md text-label-md shadow-sm active:scale-95 transition-all duration-200 shrink-0"
               >
                 <Users size={18} aria-hidden="true" />
@@ -244,6 +248,7 @@ export function CommunityDesignBody({
                 cta={
                   <Link
                     to="/community/compose"
+                    onClick={requireLogin}
                     className="inline-flex items-center gap-2 font-label-md text-label-md text-secondary hover:text-primary transition-colors"
                   >
                     <span>{t('feed.writeFirst')}</span>
@@ -285,6 +290,7 @@ export function CommunityDesignBody({
               <p className="font-body-md text-body-md text-on-surface-variant mb-4">{t('design.promptBody')}</p>
               <Link
                 to="/community/compose"
+                onClick={requireLogin}
                 className="inline-flex items-center gap-2 font-label-md text-label-md text-secondary hover:text-primary transition-colors"
               >
                 <span>{t('design.promptCta')}</span>

@@ -6,12 +6,14 @@ import { GuestBanner } from './GuestBanner';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
+import { closeLoginPrompt, openLoginPrompt, setSignedIn, useLoginPromptOpen } from '@/features/auth/loginPrompt';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
 import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { navDirection } from './navDirection';
+import { requiresLogin } from './guestAccess';
 import styles from './AppShell.module.css';
 
 function RouteSkeleton() {
@@ -73,8 +75,11 @@ function useNavDirectionAttr() {
  * lazy 라우트(router.tsx) 코드가 로드되는 동안 스켈레톤을 보여준다 —
  * 스피너 금지 원칙(01-design-system.md §6.7)을 탭 전환에도 그대로 적용.
  *
- * 비로그인: 로그인 화면으로 막는다. 예외는 샘플 여행 하나(/plan/sample-…) —
- * 로그인 없이 실제 편집 화면을 체험할 수 있고(저장 안 됨), 상단 배너로 로그인할 수 있다.
+ * 비로그인:
+ * - 모바일: 로그인 화면으로 막는다. 예외는 샘플 여행 하나(/plan/sample-…) — 로그인 없이 실제
+ *   편집 화면을 체험할 수 있고(저장 안 됨), 상단 배너로 로그인할 수 있다.
+ * - PC: 로그인 없이 둘러본다. 헤더 "로그인"이나 로그인이 필요한 동작(계획 만들기·글쓰기 등,
+ *   loginPrompt.ts)에서 로그인 창을 띄우고, 로그인해야 하는 화면(guestAccess.ts)은 창부터 띄운다.
  */
 export function AppShell() {
   const navigation = useNavigation();
@@ -82,9 +87,16 @@ export function AppShell() {
   const showRouteSkeleton = useDelayedFlag(navigation.state === 'loading', 150);
   const { user, loading } = useSession();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const [authOpen, setAuthOpen] = useState(false);
+  const navigate = useNavigate();
+  const loginPromptOpen = useLoginPromptOpen();
 
   const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
+  const routeNeedsLogin = !user && requiresLogin(pathname);
+  // 로그인 여부를 로그인 창 모듈(requireLogin)에 알린다 — 자식 화면이 그려지는 같은 커밋 안에서.
+  // 로그인에 성공하면 창도 닫힌다(로그인 필요 화면이었으면 그 화면이 바로 이어서 뜬다)
+  useLayoutEffect(() => {
+    setSignedIn(!!user);
+  }, [user]);
   useNavDirectionAttr();
   useRedirectFlightsWidgetResults();
   // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고).
@@ -102,19 +114,28 @@ export function AppShell() {
     );
   }
 
-  if (!user && !isGuestSample) {
+  if (!user && !isGuestSample && !isDesktop) {
     return <GlobalAuthModal />;
   }
 
+  /** 로그인 필요 화면에서 창을 닫으면 온 곳으로(바로 들어온 주소면 홈으로) */
+  const leaveGatedRoute = () => {
+    closeLoginPrompt();
+    if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) navigate(-1);
+    else navigate('/', { replace: true });
+  };
+
   return (
     <div className={`app-shell ${styles.shell}`}>
-      {isGuestSample ? <GuestBanner onLogin={() => setAuthOpen(true)} /> : isDesktop && <HeaderDesktop />}
+      {isGuestSample ? <GuestBanner onLogin={openLoginPrompt} /> : isDesktop && <HeaderDesktop />}
       <main className={styles.content}>
-        {showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
+        {routeNeedsLogin ? null : showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
         {flightsWidgetMounted ? <FlightsWidgetHost visible={onFlights && !showRouteSkeleton} /> : null}
       </main>
       {!isGuestSample && !isDesktop && <TabBar />}
-      {isGuestSample && authOpen ? <GlobalAuthModal onClose={() => setAuthOpen(false)} /> : null}
+      {!user && (routeNeedsLogin || loginPromptOpen) ? (
+        <GlobalAuthModal onClose={routeNeedsLogin ? leaveGatedRoute : closeLoginPrompt} />
+      ) : null}
       {/* 이동(탭·링크)은 항상 맨 위에서, 뒤로·앞으로 가기만 보던 위치로 — 기본 키(기록 항목마다
           다름). 예전엔 키를 경로로 잡아 한 번 가 본 탭으로 다시 가면 예전 위치(페이지 중간)로 떴다.
           검색 파라미터만 바꾸는 이동은 preventScrollReset으로 위치를 유지한다 */}

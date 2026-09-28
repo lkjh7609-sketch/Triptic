@@ -10,6 +10,7 @@ import { DestinationSelector } from './DestinationSelector';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
 import type { Destination, MyCompanionPost } from './types';
 import styles from './CompanionFeedList.module.css';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 interface CompanionFeedListProps {
   destinations?: Destination[];
@@ -20,6 +21,7 @@ interface CompanionFeedListProps {
 export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
+  const requireLogin = useRequireLogin();
   const [destinationId, setDestinationId] = useState<string | undefined>(undefined);
   const feed = useCompanionPostsFeed({ destinationId, viewerId: user?.id ?? null });
   const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
@@ -48,7 +50,7 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
           icon={<Users size={32} aria-hidden="true" />}
           message={t('companion.list.empty')}
           actions={
-            <Link to="/community/companion/new" className={styles.emptyCta}>
+            <Link to="/community/companion/new" className={styles.emptyCta} onClick={requireLogin}>
               {t('companion.list.writeFirst')}
             </Link>
           }

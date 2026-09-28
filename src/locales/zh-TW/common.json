@@ -57,7 +57,8 @@
       "errorAlreadyRegistered": "此電子郵件已註冊，請直接登入。",
       "errorWeakPassword": "密碼強度不足，請設定更長、更複雜的密碼。",
       "errorGeneric": "無法完成操作，請稍後再試。"
-    }
+    },
+    "signIn": "登入"
   },
   "legal": {
     "terms": "服務條款",

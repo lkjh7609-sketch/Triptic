@@ -21,6 +21,7 @@ import {
 } from './hooks/useCompanionPosts';
 import postDetailStyles from './PostDetailScreen.module.css';
 import styles from './CompanionDetailScreen.module.css';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 export function CompanionDetailScreen() {
   const { t } = useTranslation(['community', 'common']);
@@ -36,6 +37,7 @@ export function CompanionDetailScreen() {
   const finalizeMatch = useFinalizeCompanionMatch(postId ?? '');
   const cancelPost = useCancelCompanionPost();
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const requireLogin = useRequireLogin();
   const [confirmAction, setConfirmAction] = useState<'cancel' | 'finalize' | 'withdraw' | null>(null);
 
   useEffect(() => {
@@ -186,7 +188,7 @@ export function CompanionDetailScreen() {
           </div>
         ) : post.status === 'recruiting' ? (
           <div className={styles.ownerActions}>
-            <button type="button" className={styles.primaryBtn} onClick={() => setShowApplyModal(true)}>
+            <button type="button" className={styles.primaryBtn} onClick={() => requireLogin() && setShowApplyModal(true)}>
               {t('companion.detail.apply')}
             </button>
           </div>

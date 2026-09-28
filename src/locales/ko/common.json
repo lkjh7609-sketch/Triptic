@@ -57,7 +57,8 @@
       "errorAlreadyRegistered": "이미 가입된 이메일이에요. 로그인해 주세요.",
       "errorWeakPassword": "비밀번호가 너무 약해요. 더 길고 복잡하게 만들어 주세요.",
       "errorGeneric": "처리하지 못했어요. 잠시 후 다시 시도해 주세요."
-    }
+    },
+    "signIn": "로그인"
   },
   "legal": {
     "terms": "이용약관",

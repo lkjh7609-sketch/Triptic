@@ -18,6 +18,7 @@ import { getPostImageUrl } from './imageProcessing';
 import { translateText } from './translateClient';
 import type { Locale } from './types';
 import styles from './PostDetailScreen.module.css';
+import { openLoginPrompt } from '@/features/auth/loginPrompt';
 
 export function PostDetailScreen() {
   const { t, i18n } = useTranslation(['community', 'common']);
@@ -209,7 +210,11 @@ export function PostDetailScreen() {
             {t('detail.commentSubmit')}
           </button>
         </div>
-      ) : null}
+      ) : (
+        <button type="button" className={styles.commentLoginBtn} onClick={openLoginPrompt}>
+          {t('detail.loginToComment')}
+        </button>
+      )}
     </div>
   );
 }
