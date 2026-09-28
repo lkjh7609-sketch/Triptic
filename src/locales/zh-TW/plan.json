@@ -372,7 +372,18 @@
     "pdfTitle": "儲存行程 PDF",
     "pdfDesc": "包含地圖與完整行程的列印版指南",
     "findFlights": "用這個行程搜尋機票",
-    "findFlightsBusy": "搜尋中…"
+    "findFlightsBusy": "搜尋中…",
+    "checklist": {
+      "title": "出發前檢查清單",
+      "flights": "預訂機票",
+      "hotel": "預訂住宿",
+      "esim": "準備 eSIM／網路",
+      "insurance": "投保旅遊保險",
+      "passport": "確認護照效期（6 個月以上）",
+      "money": "換匯與海外刷卡",
+      "find": "搜尋",
+      "view": "查看"
+    }
   },
   "hotel": {
     "title": "設定住宿",

@@ -1,5 +1,6 @@
 // Vercel Serverless Function: 도시별 제휴(Travelpayouts) 링크
 // Endpoint: GET /api/partnerLink?brand=klook&q=Osaka&locale=ko&placement=trip|search|city|ticket
+//           GET /api/partnerLink?brand=yesim&placement=checklist (검색어 없는 브랜드 첫 페이지)
 //   (q 대신 city도 받는다 — 여행 상세가 처음 쓰던 이름)
 //
 // 브랜드 검색 주소(예: Klook "Osaka" 검색 결과)를 Travelpayouts 링크 변환 API로 제휴
@@ -16,11 +17,14 @@ const isRateLimited = createRateLimiter(60);
 const KLOOK_LOCALE_PATH = { ko: 'ko', en: 'en-US', ja: 'ja', 'zh-TW': 'zh-TW' };
 
 /** 링크를 어디서 눌렀는지 Travelpayouts 리포트에서 구분하는 꼬리표 */
-const SUB_ID = { trip: 'trip_activity', search: 'activities_search', city: 'activities_city', ticket: 'place_ticket' };
+const SUB_ID = { trip: 'trip_activity', search: 'activities_search', city: 'activities_city', ticket: 'place_ticket', checklist: 'checklist' };
 
-function brandUrl(brand, city, locale) {
-    if (brand === 'klook') return `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(city)}`;
-    return null;
+/** 검색어 없이 첫 페이지로 보내는 브랜드(출발 전 체크리스트) — Travelpayouts에서 연결된 브랜드만 변환된다 */
+const LANDING = { yesim: 'https://yesim.app/' };
+
+function brandUrl(brand, query, locale) {
+    if (brand === 'klook') return query ? `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(query)}` : null;
+    return Object.prototype.hasOwnProperty.call(LANDING, brand) ? LANDING[brand] : null;
 }
 
 async function convert(url, subId) {
@@ -49,7 +53,7 @@ export default async function handler(req, res) {
     const query = sanitizeInput(req.query?.q ?? req.query?.city, 80);
     const locale = parseLocale(req.query?.locale);
     const subId = SUB_ID[req.query?.placement] ?? SUB_ID.trip;
-    const url = typeof brand === 'string' && query ? brandUrl(brand, query, locale) : null;
+    const url = typeof brand === 'string' ? brandUrl(brand, query, locale) : null;
     if (!url) return res.status(400).json({ error: 'invalid_request' });
 
     const db = supabaseAdmin();

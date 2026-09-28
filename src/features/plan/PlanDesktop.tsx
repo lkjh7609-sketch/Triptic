@@ -44,6 +44,7 @@ import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
 import { openFlightsSearchForTrip } from './flightsSearchLink';
+import { DepartureChecklist } from './DepartureChecklist';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
 
@@ -622,6 +623,7 @@ function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; membe
           <>
             <WeatherBox trip={trip} />
             <FlightBox trip={trip} />
+            <DepartureChecklist trip={trip} />
             <PdfBox trip={trip} />
             <div className={styles.membersBlock}>
               <h4 className={styles.membersTitle}>

@@ -1235,3 +1235,95 @@
   opacity: 0.6;
   cursor: default;
 }
+
+/* 출발 전 체크리스트 */
+.checklistBlock {
+  padding-top: 0.25rem;
+}
+
+.checklist {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checklistRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 36px;
+}
+
+.checklistLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--pd-ink);
+  cursor: pointer;
+}
+
+/* 네이티브 체크박스는 접근성·키보드용으로 남기고 보이는 건 아래 박스 */
+.checklistInput {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.checklistInput:focus-visible + .checklistBox,
+.checklistInput:focus-visible + .checklistBoxDone {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.checklistBox,
+.checklistBoxDone {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--pd-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checklistBoxDone {
+  border-color: var(--pd-navy);
+  background: var(--pd-navy);
+  color: #fff;
+}
+
+.checklistTextDone {
+  color: var(--pd-subtle);
+  text-decoration: line-through;
+}
+
+.checklistAction {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface);
+  color: var(--pd-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.checklistAction:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
