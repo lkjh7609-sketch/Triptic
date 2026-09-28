@@ -23,7 +23,13 @@
     "railLabel": "Rail",
     "bookingLabel": "Booking",
     "nameUnrecognized": "(Couldn't recognize the name)",
-    "manualHint": "This booking type isn't added automatically yet — use the details above to add it manually via Lodging or + Add item."
+    "manualHint": "This booking type isn't added automatically yet — use the details above to add it manually via Lodging or + Add item.",
+    "dateMismatchTitle": "Dates don't match your trip",
+    "dateMismatchDetail": "Trip {{trip}} · Ticket {{ticket}}",
+    "useTicketDates": "Use ticket dates",
+    "keepTripDates": "Keep trip dates",
+    "changingDates": "Updating…",
+    "outsideTripHint": "This flight is outside your trip dates, so it can't be added"
   },
   "upload": {
     "title": "Fill your itinerary from a booking document",

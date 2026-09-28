@@ -23,7 +23,13 @@
     "railLabel": "鐵路",
     "bookingLabel": "預訂",
     "nameUnrecognized": "（未能辨識名稱）",
-    "manualHint": "暫不支援自動新增此類預訂——請參考以上內容，透過住宿或+新增行程手動新增。"
+    "manualHint": "暫不支援自動新增此類預訂——請參考以上內容，透過住宿或+新增行程手動新增。",
+    "dateMismatchTitle": "日期與旅行期間不同",
+    "dateMismatchDetail": "旅行 {{trip}} · 機票 {{ticket}}",
+    "useTicketDates": "改為機票期間",
+    "keepTripDates": "維持目前旅行期間",
+    "changingDates": "變更中…",
+    "outsideTripHint": "此航班不在旅行期間內，無法加入行程"
   },
   "upload": {
     "title": "上傳預訂單據填充行程",

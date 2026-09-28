@@ -227,7 +227,11 @@
     "hotelStart": "出発宿泊先",
     "hotelEnd": "到着宿泊先",
     "addPlace": "場所追加",
-    "loadError": "旅行を読み込めませんでした。"
+    "loadError": "旅行を読み込めませんでした。",
+    "tripDatesChanged": "旅行期間を{{start}}〜{{end}}に変更しました",
+    "tripDatesShrinkTitle": "旅行期間を変更しますか？",
+    "tripDatesShrinkMessage": "期間が短くなるため、{{day}}日目以降の予定・宿泊・食事・家計簿の記録が削除されます。",
+    "tripDatesShrinkConfirm": "変更する"
   },
   "tripMap": {
     "ariaLabel": "スケジュール地図",

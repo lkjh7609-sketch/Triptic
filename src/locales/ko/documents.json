@@ -23,7 +23,13 @@
     "railLabel": "철도",
     "bookingLabel": "예약",
     "nameUnrecognized": "(이름을 인식하지 못했어요)",
-    "manualHint": "이 예약 종류는 아직 자동 반영을 지원하지 않아요 — 위 내용을 참고해서 숙소 또는 + 일정 추가로 직접 등록해 주세요."
+    "manualHint": "이 예약 종류는 아직 자동 반영을 지원하지 않아요 — 위 내용을 참고해서 숙소 또는 + 일정 추가로 직접 등록해 주세요.",
+    "dateMismatchTitle": "여행 기간과 날짜가 달라요",
+    "dateMismatchDetail": "여행 {{trip}} · 항공권 {{ticket}}",
+    "useTicketDates": "항공권 기간으로 변경",
+    "keepTripDates": "지금 여행 기간 유지",
+    "changingDates": "바꾸는 중…",
+    "outsideTripHint": "여행 기간 밖이라 일정에 넣을 수 없어요"
   },
   "upload": {
     "title": "예약 서류로 일정 채우기",

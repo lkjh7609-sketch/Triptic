@@ -23,7 +23,13 @@
     "railLabel": "鉄道",
     "bookingLabel": "予約",
     "nameUnrecognized": "(名前を認識できませんでした)",
-    "manualHint": "この予約の種類はまだ自動反映に対応していません — 上記の内容を参考に、手動で宿泊施設または+スケジュール追加から登録してください。"
+    "manualHint": "この予約の種類はまだ自動反映に対応していません — 上記の内容を参考に、手動で宿泊施設または+スケジュール追加から登録してください。",
+    "dateMismatchTitle": "旅行期間と日付が違います",
+    "dateMismatchDetail": "旅行 {{trip}} · 航空券 {{ticket}}",
+    "useTicketDates": "航空券の期間に変更",
+    "keepTripDates": "今の旅行期間のまま",
+    "changingDates": "変更中…",
+    "outsideTripHint": "旅行期間外のため日程に追加できません"
   },
   "upload": {
     "title": "予約書類からスケジュールを自動入力",
