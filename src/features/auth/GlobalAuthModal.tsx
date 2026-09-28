@@ -36,7 +36,8 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
               Triptic
             </h1>
           </div>
-          <p className={styles.subtitle}>{t('auth.signInSubtitle')}</p>
+          {/* 로그인을 재촉하는 문구 대신 앱 한마디(사이트 제목과 같은 문구) */}
+          <p className={styles.subtitle}>{t('auth.tagline')}</p>
         </div>
 
         <EmailAuthForm />
