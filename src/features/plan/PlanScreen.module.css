@@ -13,3 +13,16 @@
   flex-direction: column;
   gap: var(--space-3);
 }
+
+/* 비로그인(PC 둘러보기) — 로그인 창 열기 */
+.signInButton {
+  min-height: 44px;
+  padding: 0 var(--space-6);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -13,6 +13,7 @@ import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
 import { LanguageModal } from '@/features/settings/LanguageModal';
 import { BackupModal } from '@/features/plan/BackupModal';
 import { HOME_SECTIONS, isHomeSectionPath } from '@/features/home/homeSections';
+import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import styles from './HeaderDesktop.module.css';
 
 export function HeaderDesktop() {
@@ -106,63 +107,70 @@ export function HeaderDesktop() {
         </nav>
       </div>
 
-      <div style={{ position: 'relative' }} ref={dropdownRef}>
-        <button
-          type="button"
-          className={styles.profileContainer}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          aria-haspopup="menu"
-          aria-expanded={dropdownOpen}
-        >
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className={styles.avatar} />
-          ) : (
-            <span className={`${styles.avatar} ${styles.avatarInitial}`} aria-hidden="true">
-              {displayName.trim().slice(0, 1).toUpperCase()}
-            </span>
-          )}
-          <span className={styles.userName}>{displayName}</span>
+      {/* 비로그인 둘러보기 — 프로필 자리에 로그인 버튼 */}
+      {!user ? (
+        <button type="button" className={styles.signInButton} onClick={openLoginPrompt}>
+          {t('auth.signIn')}
         </button>
-
-        <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`} role="menu" hidden={!dropdownOpen}>
-          <button 
-            className={styles.dropdownItem} 
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleTheme();
-            }}
+      ) : (
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <button
+            type="button"
+            className={styles.profileContainer}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            aria-haspopup="menu"
+            aria-expanded={dropdownOpen}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {isDark ? <Moon size={16} /> : <Sun size={16} />}
-              {t('menu.darkMode')}
-            </div>
-            <div className={`${styles.toggleSwitch} ${isDark ? styles.toggleOn : ''}`}>
-              <div className={styles.toggleThumb} />
-            </div>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className={styles.avatar} />
+            ) : (
+              <span className={`${styles.avatar} ${styles.avatarInitial}`} aria-hidden="true">
+                {displayName.trim().slice(0, 1).toUpperCase()}
+              </span>
+            )}
+            <span className={styles.userName}>{displayName}</span>
           </button>
-          <div className={styles.dropdownDivider} />
-          <Link to="/settings" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
-            <Settings size={16} /> {t('menu.settingsPage')}
-          </Link>
-          <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
-            <User size={16} /> {t('menu.editProfile')}
-          </button>
-          <button className={styles.dropdownItem} onClick={() => openModal('unit')}>
-            <SlidersHorizontal size={16} /> {t('menu.units')}
-          </button>
-          <button className={styles.dropdownItem} onClick={() => openModal('language')}>
-            <Globe size={16} /> {t('menu.language')}
-          </button>
-          <button className={styles.dropdownItem} onClick={() => openModal('backup')}>
-            <HardDrive size={16} /> {t('menu.backup')}
-          </button>
-          <div className={styles.dropdownDivider} />
-          <button className={styles.dropdownItem} onClick={handleSignOut}>
-            <LogOut size={16} /> {t('menu.signOut')}
-          </button>
+
+          <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`} role="menu" hidden={!dropdownOpen}>
+            <button 
+              className={styles.dropdownItem} 
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleTheme();
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {isDark ? <Moon size={16} /> : <Sun size={16} />}
+                {t('menu.darkMode')}
+              </div>
+              <div className={`${styles.toggleSwitch} ${isDark ? styles.toggleOn : ''}`}>
+                <div className={styles.toggleThumb} />
+              </div>
+            </button>
+            <div className={styles.dropdownDivider} />
+            <Link to="/settings" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <Settings size={16} /> {t('menu.settingsPage')}
+            </Link>
+            <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
+              <User size={16} /> {t('menu.editProfile')}
+            </button>
+            <button className={styles.dropdownItem} onClick={() => openModal('unit')}>
+              <SlidersHorizontal size={16} /> {t('menu.units')}
+            </button>
+            <button className={styles.dropdownItem} onClick={() => openModal('language')}>
+              <Globe size={16} /> {t('menu.language')}
+            </button>
+            <button className={styles.dropdownItem} onClick={() => openModal('backup')}>
+              <HardDrive size={16} /> {t('menu.backup')}
+            </button>
+            <div className={styles.dropdownDivider} />
+            <button className={styles.dropdownItem} onClick={handleSignOut}>
+              <LogOut size={16} /> {t('menu.signOut')}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {activeModal === 'profile' && <EditProfileModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
       {activeModal === 'unit' && <UnitSettingsModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}

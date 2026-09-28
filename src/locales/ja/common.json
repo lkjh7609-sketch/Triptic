@@ -57,7 +57,8 @@
       "errorAlreadyRegistered": "このメールアドレスは登録済みです。ログインしてください。",
       "errorWeakPassword": "パスワードが弱すぎます。より長く複雑なものにしてください。",
       "errorGeneric": "処理できませんでした。しばらくしてからもう一度お試しください。"
-    }
+    },
+    "signIn": "ログイン"
   },
   "legal": {
     "terms": "利用規約",

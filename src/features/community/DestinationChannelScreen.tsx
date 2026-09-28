@@ -12,6 +12,7 @@ import { usePostsFeed } from './hooks/usePosts';
 import { useFollowedDestinationIds, useToggleFollow } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import styles from './DestinationChannelScreen.module.css';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 /**
  * 여행지 채널 (02-screens.md §4.2, 06-community.md §1)
@@ -25,6 +26,7 @@ export function DestinationChannelScreen() {
   const { user } = useSession();
   const { data: destination, isLoading, isError, refetch } = useDestination(slug);
   const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
+  const requireLogin = useRequireLogin();
   const toggleFollow = useToggleFollow(user?.id ?? null);
 
   useEffect(() => {
@@ -48,11 +50,9 @@ export function DestinationChannelScreen() {
 
   return (
     <div className={`${styles.wrap} ${styles.desktopWrap}`}>
-      {user ? (
-        <Link to={`/community/compose?destination=${destination.slug}`} className={styles.fabBtnDesktop}>
-          <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
-        </Link>
-      ) : null}
+      <Link to={`/community/compose?destination=${destination.slug}`} className={styles.fabBtnDesktop} onClick={requireLogin}>
+        <PenLine size={20} /> <span>{t('feed.writeBtn')}</span>
+      </Link>
       
       <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
         ← {t('action.back', { ns: 'common' })}
@@ -91,7 +91,7 @@ export function DestinationChannelScreen() {
           <div className={styles.emptyMainCard}>
             <h3>{t('destination.emptyPosts')}</h3>
             <p>{t('feed.emptySub')}</p>
-            <Link to={`/community/compose?destination=${destination.slug}`} className={styles.emptyCta}>{t('feed.writeFirst')}</Link>
+            <Link to={`/community/compose?destination=${destination.slug}`} className={styles.emptyCta} onClick={requireLogin}>{t('feed.writeFirst')}</Link>
           </div>
         </div>
       ) : (

@@ -148,7 +148,8 @@
     "comment_other": "댓글 {{count}}",
     "commentPlaceholder": "댓글을 남겨보세요",
     "commentSubmit": "등록",
-    "noComments": "아직 댓글이 없어요."
+    "noComments": "아직 댓글이 없어요.",
+    "loginToComment": "로그인하고 댓글 남기기"
   },
   "profile": {
     "loadError": "프로필을 불러오지 못했어요.",

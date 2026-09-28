@@ -148,7 +148,8 @@
     "comment_other": "コメント {{count}}",
     "commentPlaceholder": "コメントを残してみましょう",
     "commentSubmit": "登録",
-    "noComments": "まだコメントがありません。"
+    "noComments": "まだコメントがありません。",
+    "loginToComment": "ログインしてコメントする"
   },
   "profile": {
     "loadError": "プロフィールを読み込めませんでした。",

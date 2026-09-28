@@ -13,16 +13,29 @@ interface GlobalAuthModalProps {
 }
 
 /**
- * 로그인 화면 (02-screens.md §6). 비로그인 사용자는 앱 전체가 이 화면으로 막히고,
- * 로그인 없이 체험할 수 있는 건 샘플 여행 하나뿐이다(체험 중엔 AppShell의 GuestBanner).
+ * 로그인 화면 (02-screens.md §6). 모바일 비로그인은 앱 전체가 이 화면으로 막히고, 로그인 없이
+ * 체험할 수 있는 건 샘플 여행 하나뿐이다(체험 중엔 AppShell의 GuestBanner). PC는 둘러보다가
+ * 로그인이 필요할 때 닫을 수 있는 창(onClose)으로 뜬다.
  */
 export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
   const { t } = useTranslation();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   return (
-    <div className={styles.overlay}>
-      <div ref={trapRef} className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div
+      className={onClose ? `${styles.overlay} ${styles.overlayFloating}` : styles.overlay}
+      // PC에선 카드 바깥(어두운 배경)을 누르면 닫힌다 — 모바일은 전체 화면이라 예전처럼 X로만
+      onClick={(e) => {
+        if (onClose && e.target === e.currentTarget && window.matchMedia('(min-width: 1024px)').matches) onClose();
+      }}
+    >
+      <div
+        ref={trapRef}
+        className={onClose ? `${styles.modal} ${styles.modalFloating}` : styles.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-title"
+      >
         {onClose ? (
           <button type="button" className={styles.closeButton} onClick={onClose} aria-label={t('action.close')}>
             <X size={20} />

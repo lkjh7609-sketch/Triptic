@@ -8,7 +8,7 @@ import { SAMPLE_TRIP_ID, resetSampleTrip } from './sampleTrip';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { LoginButtons } from '@/features/auth/LoginButtons';
+import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import styles from './PlanScreen.module.css';
@@ -63,8 +63,16 @@ export function PlanScreen() {
   if (!user) {
     return (
       <div className={styles.section}>
-        <EmptyState icon={<Luggage size={48} />} message={t('planScreen.loginMessage')} />
-        <LoginButtons />
+        {/* PC 비로그인 둘러보기 — 계획을 만들려면 로그인(이메일·소셜 모두 있는 로그인 창) */}
+        <EmptyState
+          icon={<Luggage size={48} />}
+          message={t('planScreen.loginMessage')}
+          actions={
+            <button type="button" className={styles.signInButton} onClick={openLoginPrompt}>
+              {t('auth.signIn', { ns: 'common' })}
+            </button>
+          }
+        />
         <h2 className={styles.sectionTitle}>{t('planScreen.browseFirst')}</h2>
         <div className={styles.list}>
           <SampleTripCard />

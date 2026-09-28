@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Hotel as HotelIcon } from 'lucide-react';
-import { useSession } from '@/shared/hooks/useSession';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { DayChips } from '@/features/plan/DayChips';
 import { ItineraryItemCard } from '@/features/plan/ItineraryItemCard';
@@ -22,6 +21,7 @@ import postDetailStyles from './PostDetailScreen.module.css';
 import sharedStyles from '@/features/shared/SharedTripScreen.module.css';
 import styles from './PostTripViewScreen.module.css';
 import { cityDisplayName } from '@/features/plan/cityName';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 function toPlaceItem(row: ItineraryItemRow): PlaceItem {
   return {
@@ -47,11 +47,11 @@ export function PostTripViewScreen() {
   const { t } = useTranslation('community');
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  const { user } = useSession();
   const [currentDay, setCurrentDay] = useState(1);
   const [confirmFork, setConfirmFork] = useState(false);
   const [forkedTripId, setForkedTripId] = useState<string | null>(null);
   const forkMutation = useForkPostTrip();
+  const requireLogin = useRequireLogin();
 
   const { data: payload, isLoading, isError } = usePostTrip(postId);
 
@@ -128,17 +128,16 @@ export function PostTripViewScreen() {
 
       <PostTripTimeline dayItems={dayItems} startHotel={startHotel} endHotel={endHotel} />
 
-      {user ? (
-        <div className={styles.forkButtonWrap}>
-          {forkedTripId ? (
-            <p className={styles.forkedNotice}>{t('postTrip.forkSuccess')}</p>
-          ) : (
-            <button type="button" className={styles.forkButton} disabled={forkMutation.isPending} onClick={() => setConfirmFork(true)}>
-              {t('postTrip.forkButton')}
-            </button>
-          )}
-        </div>
-      ) : null}
+      {/* 이 일정으로 내 여행 만들기 — 비로그인(PC 둘러보기)은 누르면 로그인 창 */}
+      <div className={styles.forkButtonWrap}>
+        {forkedTripId ? (
+          <p className={styles.forkedNotice}>{t('postTrip.forkSuccess')}</p>
+        ) : (
+          <button type="button" className={styles.forkButton} disabled={forkMutation.isPending} onClick={() => requireLogin() && setConfirmFork(true)}>
+            {t('postTrip.forkButton')}
+          </button>
+        )}
+      </div>
 
       {confirmFork ? (
         <ConfirmDialog

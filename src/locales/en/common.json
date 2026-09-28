@@ -57,7 +57,8 @@
       "errorAlreadyRegistered": "This email is already registered. Please log in.",
       "errorWeakPassword": "That password is too weak. Try a longer, more complex one.",
       "errorGeneric": "Something went wrong. Please try again shortly."
-    }
+    },
+    "signIn": "Sign in"
   },
   "legal": {
     "terms": "Terms of Service",

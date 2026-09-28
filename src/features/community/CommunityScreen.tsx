@@ -17,12 +17,14 @@ import { CompanionFeedList } from './CompanionFeedList';
 import { PendingCompanionReviewPrompt } from './PendingCompanionReviewPrompt';
 import styles from './CommunityScreen.module.css';
 import { CommunityDesignBody } from './CommunityDesign';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 export type Tab = 'all' | 'following' | 'companion';
 
 export function CommunityScreen() {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
+  const requireLogin = useRequireLogin();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [tab, setTab] = useState<Tab>('all');
   const { data: destinations } = useDestinations();
@@ -161,7 +163,7 @@ export function CommunityScreen() {
           <div className={styles.emptyMainCard}>
             <h3>{tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}</h3>
             <p>{t('feed.emptySub')}</p>
-            <Link to="/community/compose" className={styles.emptyCta}>{t('feed.writeFirst')}</Link>
+            <Link to="/community/compose" className={styles.emptyCta} onClick={requireLogin}>{t('feed.writeFirst')}</Link>
           </div>
           
         </div>

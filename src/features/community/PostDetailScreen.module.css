@@ -212,3 +212,21 @@
 .commentSubmitBtn:disabled {
   opacity: 0.5;
 }
+
+/* 비로그인(PC 둘러보기) — 댓글 입력 대신 로그인 창 열기 */
+.commentLoginBtn {
+  width: 100%;
+  min-height: 44px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-body);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.commentLoginBtn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}

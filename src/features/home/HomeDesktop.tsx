@@ -12,6 +12,7 @@ import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } fr
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './HomeDesktop.module.css';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 function DestinationPreviewModal({
   dest,
@@ -82,6 +83,7 @@ export function HomeDesktop() {
   const [isFocused, setIsFocused] = useState(false);
   const { data: destinations } = useDestinations();
   const queryClient = useQueryClient();
+  const requireLogin = useRequireLogin();
 
   // 추천 카드 소개 중 이미 DB에 저장된 것들을 한 번에 받아 채워둔다 — 카드를 눌렀을 때 기다림 없이
   useEffect(() => {
@@ -137,6 +139,8 @@ export function HomeDesktop() {
   }, []);
 
   const handleStartPlanning = (city?: string) => {
+    // 계획 만들기는 로그인해야 한다(PC 비로그인 둘러보기 — 로그인 창을 띄운다)
+    if (!requireLogin()) return;
     const target = (city ?? searchQuery).trim();
     navigate(target ? `/plan?autoCreate=${encodeURIComponent(target)}` : '/plan');
   };

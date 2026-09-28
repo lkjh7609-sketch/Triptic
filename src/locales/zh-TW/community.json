@@ -148,7 +148,8 @@
     "comment_other": "留言 {{count}}",
     "commentPlaceholder": "寫下你的留言",
     "commentSubmit": "發布",
-    "noComments": "還沒有留言。"
+    "noComments": "還沒有留言。",
+    "loginToComment": "登入後留言"
   },
   "profile": {
     "loadError": "未能載入個人資料。",
