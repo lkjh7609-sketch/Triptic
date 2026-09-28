@@ -39,7 +39,6 @@
     "continueGoogle": "Googleで続ける",
     "continueKakao": "Kakaoで続ける",
     "tagline": "旅の計画も、旅の仲間も。",
-    "or": "または",
     "sampleHint": "まずは試してみたい方は",
     "trySample": "サンプル旅行を体験する",
     "email": {
@@ -51,12 +50,23 @@
       "createAccount": "メールアドレスで登録",
       "haveAccount": "アカウントをお持ちの方はログイン",
       "checkInbox": "確認メールを送信しました。メール内のリンクを開くと登録が完了します。",
-      "passwordHint": "パスワードは{{count}}文字以上で入力してください。",
       "errorInvalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
       "errorNotConfirmed": "メールアドレスの確認がまだ完了していません。受信トレイをご確認ください。",
       "errorAlreadyRegistered": "このメールアドレスは登録済みです。ログインしてください。",
       "errorWeakPassword": "パスワードが弱すぎます。より長く複雑なものにしてください。",
-      "errorGeneric": "処理できませんでした。しばらくしてからもう一度お試しください。"
+      "errorGeneric": "処理できませんでした。しばらくしてからもう一度お試しください。",
+      "toggle": "メールで登録する",
+      "checkDuplicate": "重複確認",
+      "checking": "確認中…",
+      "emailAvailable": "このメールアドレスは使用できます。",
+      "emailTaken": "すでに登録されているメールアドレスです。ログインしてください。",
+      "emailInvalid": "メールアドレスの形式が正しくありません。",
+      "emailCheckRequired": "メールアドレスの重複確認をしてください。",
+      "emailCheckFailed": "重複確認に失敗しました。しばらくしてからもう一度お試しください。",
+      "pwRuleLength": "8〜15文字",
+      "pwRuleUpper": "大文字1つ以上",
+      "pwRuleDigit": "数字1つ以上",
+      "passwordInvalid": "パスワードは8〜15文字で、大文字と数字をそれぞれ1つ以上含めてください。"
     },
     "signIn": "ログイン"
   },

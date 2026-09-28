@@ -39,7 +39,6 @@
     "continueGoogle": "使用 Google 繼續",
     "continueKakao": "使用 Kakao 繼續",
     "tagline": "從行程規劃到旅伴，一次搞定",
-    "or": "或",
     "sampleHint": "想先看看嗎？",
     "trySample": "體驗範例行程",
     "email": {
@@ -51,12 +50,23 @@
       "createAccount": "用電子郵件註冊",
       "haveAccount": "已有帳號？登入",
       "checkInbox": "我們已寄出驗證信，點選信中的連結即可完成註冊。",
-      "passwordHint": "密碼至少需要 {{count}} 個字元。",
       "errorInvalidCredentials": "電子郵件或密碼不正確。",
       "errorNotConfirmed": "電子郵件尚未驗證，請查看收件匣。",
       "errorAlreadyRegistered": "此電子郵件已註冊，請直接登入。",
       "errorWeakPassword": "密碼強度不足，請設定更長、更複雜的密碼。",
-      "errorGeneric": "無法完成操作，請稍後再試。"
+      "errorGeneric": "無法完成操作，請稍後再試。",
+      "toggle": "使用電子郵件註冊",
+      "checkDuplicate": "檢查重複",
+      "checking": "檢查中…",
+      "emailAvailable": "此電子郵件可以使用。",
+      "emailTaken": "此電子郵件已註冊，請直接登入。",
+      "emailInvalid": "電子郵件格式不正確。",
+      "emailCheckRequired": "請先檢查電子郵件是否重複。",
+      "emailCheckFailed": "無法檢查電子郵件，請稍後再試。",
+      "pwRuleLength": "8～15 個字元",
+      "pwRuleUpper": "至少 1 個大寫字母",
+      "pwRuleDigit": "至少 1 個數字",
+      "passwordInvalid": "密碼須為 8～15 個字元，且至少包含 1 個大寫字母與 1 個數字。"
     },
     "signIn": "登入"
   },
