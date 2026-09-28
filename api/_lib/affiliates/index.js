@@ -1,0 +1,78 @@
+// 제휴사 레지스트리 — 새 회사(Trip.com, Agoda 등)는 모듈을 만들고 여기에 붙인다.
+//  - NETWORKS: 원래 주소 → 제휴 추적 링크로 바꾸는 쪽(키 확인 + convert)
+//  - LINK_BRANDS: 앱이 부르는 brand 이름 → 원래 주소 만들기 + 어느 네트워크로 바꿀지
+//  - SALES_PROVIDERS: 관리자 판매 탭에 보이는 회사(fetchSales가 없으면 "연동 전")
+import * as myrealtrip from './myrealtrip.js';
+import * as travelpayouts from './travelpayouts.js';
+import { sanitizeInput } from '../http.js';
+
+export const NETWORKS = {
+    travelpayouts: {
+        isConfigured: travelpayouts.isConfigured,
+        convert: travelpayouts.convert,
+        // 변환을 못 하면 링크를 주지 않는다(앱이 Klook 딜 페이지 등 대체 링크로)
+        passThroughWhenUnavailable: false,
+    },
+    myrealtrip: {
+        isConfigured: myrealtrip.isConfigured,
+        convert: (url) => myrealtrip.createMylink(url),
+        // 마이리얼트립은 대체 링크가 없어서, 변환을 못 하면 원래 주소로라도 보낸다(수수료 없음)
+        passThroughWhenUnavailable: true,
+    },
+};
+
+const KLOOK_LOCALE_PATH = { ko: 'ko', en: 'en-US', ja: 'ja', 'zh-TW': 'zh-TW' };
+
+/**
+ * brand별 원래 주소. query는 요청 쿼리스트링, locale은 앱 언어.
+ * 못 만들면 null(잘못된 요청). 항공처럼 원래 주소를 API로 받아야 하는 경우가 있어 async.
+ */
+export const LINK_BRANDS = {
+    klook: {
+        network: 'travelpayouts',
+        async target(query, locale) {
+            const q = sanitizeInput(query.q ?? query.city, 80);
+            return q ? `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(q)}` : null;
+        },
+    },
+    // 검색어 없이 첫 페이지로(출발 전 체크리스트) — Travelpayouts에서 연결된 브랜드만 변환된다
+    yesim: {
+        network: 'travelpayouts',
+        async target() {
+            return 'https://yesim.app/';
+        },
+    },
+    // kind=search(q: 통합 검색) | page(url: 상품 주소 등 마이리얼트립 페이지) | flight(항공 검색 결과)
+    myrealtrip: {
+        network: 'myrealtrip',
+        async target(query) {
+            if (query.kind === 'flight') {
+                const flight = myrealtrip.parseFlightQuery(query);
+                return flight ? myrealtrip.flightLandingUrl(flight) : null;
+            }
+            if (query.kind === 'page') return myrealtrip.isMyrealtripUrl(query.url) ? query.url : null;
+            const q = sanitizeInput(query.q, 80);
+            return q ? myrealtrip.searchUrl(q) : null;
+        },
+    },
+};
+
+export const SALES_PROVIDERS = [
+    {
+        id: 'myrealtrip',
+        name: 'MyRealTrip',
+        isConfigured: myrealtrip.isConfigured,
+        fetchSales: myrealtrip.fetchSales,
+        dashboardUrl: 'https://partner.myrealtrip.com',
+    },
+    {
+        // Klook·Yesim 등 — 판매 내역 API는 아직 붙이지 않았다(대시보드에서 확인)
+        id: 'travelpayouts',
+        name: 'Travelpayouts',
+        isConfigured: travelpayouts.isConfigured,
+        fetchSales: null,
+        dashboardUrl: 'https://app.travelpayouts.com',
+    },
+    { id: 'tripcom', name: 'Trip.com', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
+    { id: 'agoda', name: 'Agoda', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
+];
