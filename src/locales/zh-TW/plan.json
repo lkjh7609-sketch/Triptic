@@ -449,5 +449,9 @@
     "pageOf": "第 {{page}} / {{total}} 頁",
     "fileAll": "行程表_{{city}}_全部.pdf",
     "fileDay": "行程表_{{city}}_第{{day}}天.pdf"
+  },
+  "itinerary": {
+    "ticket": "票券",
+    "ticketTitle": "在 Klook 搜尋{{place}}票券"
   }
 }

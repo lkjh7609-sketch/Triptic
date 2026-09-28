@@ -464,5 +464,9 @@
     "pageOf": "Page {{page}} of {{total}}",
     "fileAll": "Itinerary_{{city}}_all-days.pdf",
     "fileDay": "Itinerary_{{city}}_day-{{day}}.pdf"
+  },
+  "itinerary": {
+    "ticket": "Tickets",
+    "ticketTitle": "Find {{place}} tickets on Klook"
   }
 }

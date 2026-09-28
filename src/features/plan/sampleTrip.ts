@@ -11,6 +11,7 @@
  * 제안은 지원하지 않는다(legacy updateProjectActionButtons(isSample=true)).
  */
 import i18next, { normalizeLocale, type SupportedLocale } from '@/shared/i18n';
+import type { PlaceCategory } from './placeCategory';
 import type { TripRow } from '@/shared/api/tripService';
 import type { ExpensesData, FlightsData, HotelsData, MealsData, PlannerData } from './types';
 
@@ -28,6 +29,8 @@ interface SamplePlace {
   lat: number;
   lng: number;
   time: string;
+  /** 관광지면 일정 카드에 티켓(Klook) 버튼이 붙는다 */
+  category?: PlaceCategory;
 }
 
 const TITLE: L10n = {
@@ -73,6 +76,7 @@ const PLACES: Record<number, SamplePlace[]> = {
     },
     {
       name: { ko: '신주쿠 교엔 국립정원', en: 'Shinjuku Gyoen National Garden', 'zh-TW': '新宿御苑', ja: '新宿御苑' },
+      category: 'sight',
       memo: {
         ko: '도심 속 푸른 정원 산책 & 감성 테라스 카페',
         en: 'A green garden stroll in the city & a cozy terrace café',
@@ -101,6 +105,7 @@ const PLACES: Record<number, SamplePlace[]> = {
   2: [
     {
       name: { ko: '시부야 스카이 (SHIBUYA SKY)', en: 'SHIBUYA SKY', 'zh-TW': '澀谷 SKY (SHIBUYA SKY)', ja: '渋谷スカイ (SHIBUYA SKY)' },
+      category: 'sight',
       memo: {
         ko: '도쿄 시내가 360도 한눈에 내려다보이는 루프탑 전망대',
         en: 'Rooftop observation deck with 360° views over Tokyo',
@@ -132,6 +137,7 @@ const PLACES: Record<number, SamplePlace[]> = {
     },
     {
       name: { ko: '메이지 신궁 산책로', en: 'Meiji Jingu forest path', 'zh-TW': '明治神宮參道', ja: '明治神宮の参道' },
+      category: 'sight',
       memo: {
         ko: '울창한 삼나무 숲길 힐링 산책',
         en: 'A relaxing walk through the dense cedar forest',
@@ -165,6 +171,7 @@ const PLACES: Record<number, SamplePlace[]> = {
   3: [
     {
       name: { ko: '아사쿠사 센소지 (카미나리몬)', en: 'Senso-ji, Asakusa (Kaminarimon)', 'zh-TW': '淺草寺（雷門）', ja: '浅草寺（雷門）' },
+      category: 'sight',
       memo: {
         ko: '나카미세도리 전통 길거리 간식(말차 아이스크림, 센베이)',
         en: 'Street snacks on Nakamise-dori (matcha ice cream, senbei)',
@@ -178,6 +185,7 @@ const PLACES: Record<number, SamplePlace[]> = {
     },
     {
       name: { ko: '도쿄 스카이트리 & 소라마치', en: 'Tokyo Skytree & Solamachi', 'zh-TW': '東京晴空塔＆晴空街道', ja: '東京スカイツリー＆ソラマチ' },
+      category: 'sight',
       memo: {
         ko: '스카이트리 타운 쇼핑 및 기념품 구경',
         en: 'Shopping and souvenirs at Skytree Town',
@@ -219,6 +227,7 @@ const PLACES: Record<number, SamplePlace[]> = {
     },
     {
       name: { ko: '롯폰기 힐즈 모리 미술관', en: 'Mori Art Museum, Roppongi Hills', 'zh-TW': '六本木之丘森美術館', ja: '六本木ヒルズ 森美術館' },
+      category: 'sight',
       memo: {
         ko: '모던 아트 전시 관람 및 도쿄 타워 전망',
         en: 'Modern art exhibitions and views of Tokyo Tower',
@@ -301,6 +310,7 @@ function buildSampleRow(locale: SupportedLocale): TripRow {
       lng: p.lng,
       time: p.time,
       memo: p.memo[locale],
+      ...(p.category ? { category: p.category } : {}),
     }));
   }
 

@@ -1,5 +1,5 @@
 // Vercel Serverless Function: 도시별 제휴(Travelpayouts) 링크
-// Endpoint: GET /api/partnerLink?brand=klook&q=Osaka&locale=ko&placement=trip|search|city
+// Endpoint: GET /api/partnerLink?brand=klook&q=Osaka&locale=ko&placement=trip|search|city|ticket
 //   (q 대신 city도 받는다 — 여행 상세가 처음 쓰던 이름)
 //
 // 브랜드 검색 주소(예: Klook "Osaka" 검색 결과)를 Travelpayouts 링크 변환 API로 제휴
@@ -16,7 +16,7 @@ const isRateLimited = createRateLimiter(60);
 const KLOOK_LOCALE_PATH = { ko: 'ko', en: 'en-US', ja: 'ja', 'zh-TW': 'zh-TW' };
 
 /** 링크를 어디서 눌렀는지 Travelpayouts 리포트에서 구분하는 꼬리표 */
-const SUB_ID = { trip: 'trip_activity', search: 'activities_search', city: 'activities_city' };
+const SUB_ID = { trip: 'trip_activity', search: 'activities_search', city: 'activities_city', ticket: 'place_ticket' };
 
 function brandUrl(brand, city, locale) {
     if (brand === 'klook') return `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(city)}`;
