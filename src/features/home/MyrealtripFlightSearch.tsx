@@ -7,6 +7,7 @@ import { ArrowLeftRight, ExternalLink, Search } from 'lucide-react';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
 import { fetchMyrealtripFlightsLink, openInNewTab } from '@/features/plan/partnerLinks';
+import { PoweredBy } from '@/shared/ui/PoweredBy';
 import styles from './MyrealtripFlightSearch.module.css';
 
 /** 출발지·도착지 하나 — 도시 코드(SEL)와 공항 코드(ICN)를 구분한다(마이리얼트립 주소의 C./A.) */
@@ -306,9 +307,12 @@ export function MyrealtripFlightSearch() {
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}
-      <p className={styles.note}>
-        <ExternalLink size={12} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
-      </p>
+      <div className={styles.footer}>
+        <p className={styles.note}>
+          <ExternalLink size={12} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
+        </p>
+        <PoweredBy brand="myrealtrip" />
+      </div>
     </form>
   );
 }

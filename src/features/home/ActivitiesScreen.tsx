@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
+import { PoweredBy } from '@/shared/ui/PoweredBy';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
@@ -111,19 +112,28 @@ export function ActivitiesScreen() {
             {t('activities.searchButton')}
           </button>
         </form>
+        <div className={styles.searchCredit}>
+          <PoweredBy brand={provider} align="end" />
+        </div>
 
         {provider === 'myrealtrip' ? (
           <>
-            <h2 className={styles.sectionTitle}>
-              {tripCity ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
-            </h2>
+            <div className={styles.sectionHead}>
+              <h2 className={styles.sectionTitle}>
+                {tripCity ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
+              </h2>
+              <PoweredBy brand="myrealtrip" />
+            </div>
             <MyrealtripProducts keyword={tripCity || t('activities.myrealtripDefaultKeyword')} />
           </>
         ) : (
           <>
-            <h2 className={styles.sectionTitle}>
-              {tripCityId && nearestTrip ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
-            </h2>
+            <div className={styles.sectionHead}>
+              <h2 className={styles.sectionTitle}>
+                {tripCityId && nearestTrip ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
+              </h2>
+              <PoweredBy brand="klook" />
+            </div>
             <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} currency={currency} />
           </>
         )}
