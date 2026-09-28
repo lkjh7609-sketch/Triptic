@@ -449,5 +449,9 @@
     "pageOf": "{{page}} / {{total}} 페이지",
     "fileAll": "여행일정표_{{city}}_전체일정.pdf",
     "fileDay": "여행일정표_{{city}}_{{day}}일차.pdf"
+  },
+  "itinerary": {
+    "ticket": "티켓",
+    "ticketTitle": "Klook에서 {{place}} 티켓 찾기"
   }
 }

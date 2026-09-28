@@ -449,5 +449,9 @@
     "pageOf": "{{page}} / {{total}} ページ",
     "fileAll": "旅程表_{{city}}_全日程.pdf",
     "fileDay": "旅程表_{{city}}_{{day}}日目.pdf"
+  },
+  "itinerary": {
+    "ticket": "チケット",
+    "ticketTitle": "Klookで{{place}}のチケットを探す"
   }
 }

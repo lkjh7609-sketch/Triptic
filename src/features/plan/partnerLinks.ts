@@ -5,7 +5,7 @@ import { AFFILIATE_LINKS } from '@/shared/config';
 import { cityDisplayName } from './cityName';
 
 /** 어디서 누른 링크인지(Travelpayouts 리포트의 sub_id) — api/partnerLink.js SUB_ID */
-export type PartnerPlacement = 'trip' | 'search' | 'city';
+export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket';
 
 /** Klook에서 이 검색어로 검색한 결과로 가는 제휴 링크(api/partnerLink.js, 서버가 한 번 변환해 저장) */
 export async function fetchKlookSearchLink(query: string, locale: string, placement: PartnerPlacement): Promise<string> {
@@ -46,12 +46,12 @@ export function useKlookActivitiesLink(
  * iOS 팝업 차단을 피하려고 누르는 순간 빈 탭을 먼저 열고 링크가 오면 그 탭을 보낸다.
  * 탭을 못 열면(차단) 지금 창에서 이동. 변환이 실패하면 제휴가 붙은 Klook 딜 페이지로.
  */
-export async function openKlookSearch(keyword: string, locale: string): Promise<void> {
+export async function openKlookSearch(keyword: string, locale: string, placement: PartnerPlacement = 'search'): Promise<void> {
   const tab = window.open('', '_blank');
   if (tab) tab.opener = null;
   let url: string = AFFILIATE_LINKS.klookActivities;
   try {
-    url = await fetchKlookSearchLink(keyword, locale, 'search');
+    url = await fetchKlookSearchLink(keyword, locale, placement);
   } catch {
     // 제휴 링크 변환 실패 — 딜 페이지로
   }
