@@ -91,3 +91,11 @@ export async function signUpWithEmail(email: string, password: string, displayNa
   if (result.error) throw result.error;
   return result.data;
 }
+
+/** 이메일 가입 중복확인 — true면 아직 아무도 안 쓰는 이메일 (0055, 로그인 전에도 호출 가능) */
+export async function isEmailAvailable(email: string): Promise<boolean> {
+  const client = getSupabaseClient();
+  const { data, error } = await client.rpc('is_email_available', { p_email: email });
+  if (error) throw error;
+  return data === true;
+}
