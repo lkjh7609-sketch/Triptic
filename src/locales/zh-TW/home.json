@@ -99,6 +99,10 @@
       "myrealtripTitle": "MyRealTrip 的{{city}} SIM 卡與 eSIM",
       "seeAll": "在 MyRealTrip 查看更多{{city}} SIM 卡",
       "simSearch": "{{city}} eSIM"
+    },
+    "esimGlobal": {
+      "title": "旅途中也需要 eSIM 嗎？",
+      "subtitle": "免漫遊費，一落地就能上網"
     }
   },
   "sections": {

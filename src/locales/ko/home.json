@@ -99,6 +99,10 @@
       "myrealtripTitle": "마이리얼트립 {{city}} 유심·eSIM",
       "seeAll": "마이리얼트립에서 {{city}} 유심 더 보기",
       "simSearch": "{{city}} 유심"
+    },
+    "esimGlobal": {
+      "title": "여행용 eSIM도 필요하신가요?",
+      "subtitle": "로밍 요금 걱정 없이 도착하자마자 연결하세요"
     }
   },
   "sections": {

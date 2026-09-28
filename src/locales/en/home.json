@@ -101,6 +101,10 @@
       "myrealtripTitle": "{{city}} SIMs & eSIMs on MyRealTrip",
       "seeAll": "See more {{city}} SIMs on MyRealTrip",
       "simSearch": "{{city}} eSIM"
+    },
+    "esimGlobal": {
+      "title": "Need an eSIM for your trip?",
+      "subtitle": "Get connected the moment you land — no roaming fees"
     }
   },
   "sections": {

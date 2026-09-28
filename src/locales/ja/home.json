@@ -99,6 +99,10 @@
       "myrealtripTitle": "MyRealTripの{{city}} SIM・eSIM",
       "seeAll": "MyRealTripで{{city}}のSIMをもっと見る",
       "simSearch": "{{city}} eSIM"
+    },
+    "esimGlobal": {
+      "title": "旅行用のeSIMも必要ですか？",
+      "subtitle": "ローミング料金なしで、到着してすぐにつながります"
     }
   },
   "sections": {
