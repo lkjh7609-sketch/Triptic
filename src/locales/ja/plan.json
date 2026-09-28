@@ -227,7 +227,8 @@
     "hotelStart": "出発宿泊先",
     "hotelEnd": "到着宿泊先",
     "addPlace": "場所追加",
-    "loadError": "旅行を読み込めませんでした。"
+    "loadError": "旅行を読み込めませんでした。",
+    "activitiesLink": "{{city}}のツアー・アクティビティを探す"
   },
   "tripMap": {
     "ariaLabel": "スケジュール地図",

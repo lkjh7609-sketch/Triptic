@@ -249,7 +249,8 @@
     "hotelStart": "Start Hotel",
     "hotelEnd": "End Hotel",
     "addPlace": "Add Place",
-    "loadError": "Couldn't load this trip."
+    "loadError": "Couldn't load this trip.",
+    "activitiesLink": "Tours & activities in {{city}}"
   },
   "tripMap": {
     "ariaLabel": "Itinerary map",
