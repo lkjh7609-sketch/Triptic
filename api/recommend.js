@@ -267,6 +267,131 @@ function parseBias(lat, lng) {
     return { lat: la, lng: ln };
 }
 
+// ── 반경 장소 풀(0050) ────────────────────────────────────────────────────
+// 기준점 1.5km 안에 이미 쌓인 장소가 5곳 이상이면 AI 없이 그걸 보여주고, 모자라면 AI로
+// 5곳을 더 받아 반경 안에 있는 것만 풀에 쌓는다. 같은 약 500m 칸에서는 30일에 한 번만
+// AI를 부른다 — 장소가 드문 곳에서 열 때마다 AI를 다시 부르지 않게.
+const POOL_TARGET = 5;
+const POOL_MAX_SHOW = 10;
+const CELL_DEG = 0.005;
+const RETRY_AFTER_MS = 30 * 86_400_000;
+
+function poolRowToRec(row) {
+    return {
+        name: row.name,
+        category: row.category,
+        categoryLabel: row.category_label ?? '',
+        signatureMenu: row.signature_menu ?? '',
+        priceRange: row.price_range ?? '',
+        reason: row.reason ?? '',
+        tip: row.tip ?? '',
+        placeId: row.place_id,
+        lat: row.lat,
+        lng: row.lng,
+        address: row.address ?? '',
+        coordsChecked: true,
+    };
+}
+
+async function readPool(db, bias, locale, basePlaceId) {
+    const { data, error } = await db.rpc('get_nearby_ai_places', {
+        p_lat: bias.lat,
+        p_lng: bias.lng,
+        p_radius_m: MAX_DISTANCE_M,
+        p_locale: locale,
+        p_limit: POOL_MAX_SHOW + 1,
+    });
+    if (error) throw error;
+    // 기준 장소 자신(같은 place_id 또는 40m 이내)은 뺀다
+    return (data ?? []).filter((row) => row.place_id !== basePlaceId && row.distance_m > 40).slice(0, POOL_MAX_SHOW);
+}
+
+/** 이 칸에서 AI를 불러도 되는지(30일 안에 부른 적 없으면 지금 부른 것으로 기록) */
+async function claimCell(db, locale, bias) {
+    const cell = { locale, cell_lat: Math.round(bias.lat / CELL_DEG), cell_lng: Math.round(bias.lng / CELL_DEG) };
+    const { data: existing, error } = await db.from('ai_place_attempts').select('attempted_at').match(cell).maybeSingle();
+    if (error) throw error;
+    if (existing && Date.now() - new Date(existing.attempted_at).getTime() < RETRY_AFTER_MS) return null;
+    const { error: upsertErr } = await db.from('ai_place_attempts').upsert({ ...cell, attempted_at: new Date().toISOString() });
+    if (upsertErr) throw upsertErr;
+    return cell;
+}
+
+function buildPoolPrompt({ placeName, city, bias, locale, exclude }) {
+    const where = `"${placeName}"${city ? ` in ${city}` : ''} (latitude ${bias.lat.toFixed(5)}, longitude ${bias.lng.toFixed(5)})`;
+    const known = exclude.length > 0 ? `These places are already known, so do not repeat them: ${exclude.join(', ')}.\n` : '';
+    return `You are a travel guide who knows the area well.
+Recommend 5 real places within 1.5 km walking distance of ${where}.
+Mix restaurants, cafes, and sights. Never include hotels or other lodging. Do not include "${placeName}" itself.
+${known}Only recommend places that actually exist in that neighborhood, using their exact official names so they can be found on Google Maps.
+Describe each place on its own merits. Do not mention the distance or direction from "${placeName}", because the description will be reused for other nearby starting points.
+Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.
+
+Respond with JSON only, in this shape:
+{
+  "recommendations": [
+    {
+      "name": "exact official place name",
+      "category": "restaurant | cafe | culture | spot",
+      "categoryLabel": "short category label",
+      "signatureMenu": "signature dish or highlight",
+      "priceRange": "typical price range",
+      "reason": "one or two short sentences on why it is worth visiting",
+      "tip": "one short practical visiting tip"
+    }
+  ]
+}`;
+}
+
+async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceId }) {
+    let pool = await readPool(db, bias, locale, basePlaceId);
+    if (pool.length >= POOL_TARGET || !hasLlmProvider()) return { recommendations: pool.map(poolRowToRec), cached: true };
+
+    const cell = await claimCell(db, locale, bias);
+    if (!cell) return { recommendations: pool.map(poolRowToRec), cached: true };
+
+    try {
+        const result = await chatCompletion({
+            system: 'You are an expert travel assistant. Output ONLY valid JSON.',
+            user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name) }),
+            json: true,
+            timeoutMs: LLM_TIMEOUT_MS,
+        });
+        const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
+        // enrichWithGoogleMaps가 반경 밖 좌표는 이미 버린다(withinRange)
+        const enriched = await enrichWithGoogleMaps(recs, city, bias);
+        const rows = enriched
+            .filter((r) => r.lat != null && r.lng != null && r.placeId && r.placeId !== basePlaceId && distanceM(bias, r) > 40)
+            .map((r) => ({
+                place_id: r.placeId,
+                locale,
+                name: r.name,
+                lat: r.lat,
+                lng: r.lng,
+                address: r.address ?? null,
+                category: r.category,
+                category_label: r.categoryLabel || null,
+                signature_menu: r.signatureMenu || null,
+                price_range: r.priceRange || null,
+                reason: r.reason || null,
+                tip: r.tip || null,
+                provider: result.provider,
+                model_used: result.model,
+            }));
+        if (rows.length > 0) {
+            const { error } = await db.from('ai_places').upsert(rows, { onConflict: 'place_id,locale', ignoreDuplicates: true });
+            if (error) console.warn('[recommend] ai_places upsert failed:', error.message);
+        }
+    } catch (e) {
+        // AI/네트워크 실패는 "시도함"으로 남기지 않는다 — 다음에 다시 시도
+        await db.from('ai_place_attempts').delete().match(cell);
+        throw e;
+    }
+
+    pool = await readPool(db, bias, locale, basePlaceId);
+    return { recommendations: pool.map(poolRowToRec), cached: false };
+}
+
 export default async function handler(req, res) {
     applyCors(req, res, 'POST,OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
@@ -281,6 +406,19 @@ export default async function handler(req, res) {
     if (!placeName) return res.status(400).json({ error: 'place_required' });
 
     const db = supabaseAdmin();
+
+    // 기준 좌표가 있으면 반경 장소 풀로(기준 장소 이름은 저장하지 않는다). 풀을 못 쓰는
+    // 환경(서버 Google 키 없음 등)이나 오류면 아래 기존 이름별 캐시 경로로.
+    if (db && bias && process.env.GOOGLE_PLACES_SERVER_KEY) {
+        try {
+            const basePlaceId = typeof req.body?.placeId === 'string' ? req.body.placeId.slice(0, 300) : null;
+            const { recommendations, cached } = await recommendFromPool({ db, bias, locale, placeName, city, basePlaceId });
+            return res.status(200).json({ success: true, cached, provider: 'pool', basePlace: placeName, recommendations });
+        } catch (e) {
+            console.warn('[recommend] pool path failed, falling back:', e instanceof Error ? e.message : e);
+        }
+    }
+
     const cacheKey = {
         kind: 'nearby',
         city_key: normalizeKey(city),
