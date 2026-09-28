@@ -249,7 +249,11 @@
     "hotelStart": "Start Hotel",
     "hotelEnd": "End Hotel",
     "addPlace": "Add Place",
-    "loadError": "Couldn't load this trip."
+    "loadError": "Couldn't load this trip.",
+    "tripDatesChanged": "Trip dates changed to {{start}} – {{end}}",
+    "tripDatesShrinkTitle": "Change trip dates?",
+    "tripDatesShrinkMessage": "The trip gets shorter, so plans, stays, meals and expenses from day {{day}} on will be deleted.",
+    "tripDatesShrinkConfirm": "Change"
   },
   "tripMap": {
     "ariaLabel": "Itinerary map",

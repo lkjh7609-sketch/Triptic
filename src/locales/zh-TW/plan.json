@@ -245,7 +245,11 @@
     "hotelStart": "出發飯店",
     "hotelEnd": "到達飯店",
     "addPlace": "新增地點",
-    "loadError": "無法載入此行程。"
+    "loadError": "無法載入此行程。",
+    "tripDatesChanged": "已將旅行期間改為 {{start}} ~ {{end}}",
+    "tripDatesShrinkTitle": "要變更旅行期間嗎？",
+    "tripDatesShrinkMessage": "期間縮短後，第 {{day}} 天起的行程、住宿、餐點與記帳紀錄會被刪除。",
+    "tripDatesShrinkConfirm": "變更"
   },
   "tripMap": {
     "ariaLabel": "行程地圖",

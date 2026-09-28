@@ -52,3 +52,37 @@
 .cardActions > button {
   flex: 1;
 }
+
+/* 항공권 날짜가 여행 기간과 다를 때 */
+.mismatch {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--warning, #f59e0b);
+  border-radius: var(--radius-md);
+  background: var(--warning-tint, rgba(245, 158, 11, 0.1));
+}
+
+.mismatchTitle {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mismatchDetail {
+  margin: 4px 0 var(--space-3);
+  font-size: var(--font-caption-size);
+  color: var(--text-body);
+}
+
+.mismatchActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.outsideHint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}

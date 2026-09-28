@@ -245,7 +245,11 @@
     "hotelStart": "출발 숙소",
     "hotelEnd": "도착 숙소",
     "addPlace": "장소 추가",
-    "loadError": "여행을 불러오지 못했어요."
+    "loadError": "여행을 불러오지 못했어요.",
+    "tripDatesChanged": "여행 기간을 {{start}} ~ {{end}}(으)로 바꿨어요",
+    "tripDatesShrinkTitle": "여행 기간을 바꿀까요?",
+    "tripDatesShrinkMessage": "기간이 짧아져서 {{day}}일차부터의 일정·숙소·식사·가계부 기록이 지워져요.",
+    "tripDatesShrinkConfirm": "바꾸기"
   },
   "tripMap": {
     "ariaLabel": "일정 지도",

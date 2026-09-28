@@ -38,22 +38,23 @@ const row = (id: string, parsed: ParsedFlight): BookingRow => ({
 });
 
 describe('ReviewSheet', () => {
+  const roundTrip = () => [
+    row('b1', leg('RS717', 'ICN', '2026-07-17T19:05', 'KIX', '2026-07-17T20:50')),
+    row('b2', leg('RS714', 'KIX', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25')),
+  ];
+
   it('같은 문서의 왕복 항공편을 연달아 반영하면 출국·귀국으로 나뉜다(화면 데이터가 늦게 갱신돼도)', async () => {
     const saved: FlightsData[] = [];
     const onCommitFlight = vi.fn(async (next: FlightsData) => {
       saved.push(next);
     });
-    // 여행(10/7~10/14)과 날짜가 다른 7월 오사카 왕복 — 예전엔 둘 다 출국 칸으로 들어가 덮어썼다
-    const bookings = [
-      row('b1', leg('RS717', 'ICN', '2026-07-17T19:05', 'KIX', '2026-07-17T20:50')),
-      row('b2', leg('RS714', 'KIX', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25')),
-    ];
+    // 7월 한 달 여행 — 예전 "시작일·종료일 중 가까운 쪽" 판정으론 7/17·7/20 둘 다 귀국 쪽으로 가 덮어썼다
     render(
       <ReviewSheet
         tripId="t1"
-        bookings={bookings}
-        tripStartDate="2026-10-07"
-        tripEndDate="2026-10-14"
+        bookings={roundTrip()}
+        tripStartDate="2026-07-01"
+        tripEndDate="2026-07-31"
         flightsData={{ outbound: null, return: null }}
         onClose={() => {}}
         onCommitFlight={onCommitFlight}
@@ -66,6 +67,31 @@ describe('ReviewSheet', () => {
     await waitFor(() => expect(onCommitFlight).toHaveBeenCalledTimes(2));
     expect(saved[1].outbound?.flightNo).toBe('RS717');
     expect(saved[1].return?.flightNo).toBe('RS714');
+  });
+
+  it('항공권 날짜가 여행 기간과 다르면 경고 — 항공권 기간으로 변경 / 지금 기간 유지(기간 밖 항공편은 반영 막음)', async () => {
+    const onChangeTripDates = vi.fn(async () => {});
+    render(
+      <ReviewSheet
+        tripId="t1"
+        bookings={roundTrip()}
+        tripStartDate="2026-10-07"
+        tripEndDate="2026-10-14"
+        flightsData={{ outbound: null, return: null }}
+        onClose={() => {}}
+        onCommitFlight={async () => {}}
+        onChangeTripDates={onChangeTripDates}
+      />,
+    );
+    expect(screen.getByText('여행 기간과 날짜가 달라요')).toBeInTheDocument();
+    for (const b of screen.getAllByRole('button', { name: '일정에 반영' })) expect(b).toBeDisabled();
+    expect(screen.getAllByText('여행 기간 밖이라 일정에 넣을 수 없어요')).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole('button', { name: '항공권 기간으로 변경' }));
+    await waitFor(() => expect(onChangeTripDates).toHaveBeenCalledWith({ start: '2026-07-17', end: '2026-07-20' }));
+
+    fireEvent.click(screen.getByRole('button', { name: '지금 여행 기간 유지' }));
+    expect(screen.queryByText('여행 기간과 날짜가 달라요')).not.toBeInTheDocument();
   });
 
   it('검수할 예약이 없으면 불러오는 중일 때만 안내, 아니면 아무것도 그리지 않는다(부모가 닫음)', () => {

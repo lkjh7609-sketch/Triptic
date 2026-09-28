@@ -26,6 +26,9 @@ import { UploadModal } from '@/features/documents/UploadModal';
 import { ReviewSheet } from '@/features/documents/ReviewSheet';
 import { usePendingBookings } from '@/features/documents/useDocuments';
 import type { ParseBookingResponse } from '@/features/documents/documentService';
+import { daysWithContentAfter, totalDaysOf, type Period } from '@/features/documents/tripPeriod';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { showToast } from '@/shared/ui/toast';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
@@ -248,6 +251,29 @@ export function TripDetailScreen() {
     if (!project || !trip) return;
     const nextProject: LocalProject = { ...project, flights: nextFlights };
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+  }
+
+  /**
+   * 예약 서류 검수 창의 "항공권 기간으로 변경" — 여행 시작·종료일(과 일수)을 바꾼다. 일차별 기록은
+   * 일차 번호 그대로 따라간다. 기간이 줄어 뒤 일차 기록이 지워지면 먼저 확인받는다.
+   */
+  const [confirmTripDates, setConfirmTripDates] = useState<{ period: Period; fromDay: number } | null>(null);
+  async function applyTripDates(period: Period) {
+    if (!project || !trip) return;
+    const nextTotal = totalDaysOf(period);
+    const nextProject: LocalProject = { ...project, startDate: period.start, endDate: period.end, totalDays: nextTotal };
+    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+    setCurrentDay((d) => Math.min(d, nextTotal));
+    showToast(t('tripDetail.tripDatesChanged', { start: period.start, end: period.end }));
+  }
+  async function handleChangeTripDates(period: Period) {
+    if (!project) return;
+    const lost = daysWithContentAfter(totalDaysOf(period), [project.data, project.hotels, project.meals, project.expenses]);
+    if (lost.length > 0) {
+      setConfirmTripDates({ period, fromDay: lost[0] });
+      return;
+    }
+    await applyTripDates(period);
   }
 
   /** 일차별 도시 변경 (index.html submitDayCityChange 이식) */
@@ -572,7 +598,22 @@ export function TripDetailScreen() {
           tripEndDate={trip.end_date ?? ''}
           flightsData={flightsData}
           onCommitFlight={handleSaveFlights}
+          onChangeTripDates={handleChangeTripDates}
           onClose={() => setShowReviewSheet(false)}
+        />
+      ) : null}
+
+      {confirmTripDates ? (
+        <ConfirmDialog
+          title={t('tripDetail.tripDatesShrinkTitle')}
+          message={t('tripDetail.tripDatesShrinkMessage', { day: confirmTripDates.fromDay })}
+          cancelLabel={t('action.cancel', { ns: 'common' })}
+          confirmLabel={t('tripDetail.tripDatesShrinkConfirm')}
+          danger
+          onConfirm={() => {
+            void applyTripDates(confirmTripDates.period).catch((err) => captureError(err, { context: 'applyTripDates' }));
+          }}
+          onClose={() => setConfirmTripDates(null)}
         />
       ) : null}
 
