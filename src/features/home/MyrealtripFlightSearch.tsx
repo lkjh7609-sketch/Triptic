@@ -2,11 +2,12 @@ import { useEffect, useId, useState, type FormEvent, type KeyboardEvent } from '
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { addDays, format } from 'date-fns';
-import { ArrowLeftRight, ExternalLink, Search } from 'lucide-react';
+import { addDays, format, parseISO } from 'date-fns';
+import { ArrowLeftRight, CalendarDays, ExternalLink, Search } from 'lucide-react';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
 import { fetchMyrealtripFlightsLink, openInNewTab } from '@/features/plan/partnerLinks';
+import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import styles from './MyrealtripFlightSearch.module.css';
 
 /** 출발지·도착지 하나 — 도시 코드(SEL)와 공항 코드(ICN)를 구분한다(마이리얼트립 주소의 C./A.) */
@@ -61,6 +62,11 @@ async function nearestCity(locale: string): Promise<Place | null> {
     name: typeof json.name === 'string' && json.name ? json.name : code,
     detail: typeof json.country_name === 'string' ? json.country_name : null,
   };
+}
+
+/** 10월 12일 / Oct 12 — 날짜 칸 한 줄에 가는 날·오는 날이 다 들어가게 짧게 */
+function formatDay(ymd: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parseISO(ymd));
 }
 
 function placeLabel(place: Place | null): string {
@@ -190,7 +196,9 @@ export function MyrealtripFlightSearch() {
   const [destination, setDestination] = useState<Place | null>(() => placeFromParam(searchParams.get('destination')));
   const [roundTrip, setRoundTrip] = useState(() => !initialDepart || !!initialReturn);
   const [departDate, setDepartDate] = useState(() => initialDepart ?? format(addDays(new Date(), 14), 'yyyy-MM-dd'));
+  // 캘린더에서 가는 날만 고른 상태면 ''(오는 날 고르는 중)
   const [returnDate, setReturnDate] = useState(() => initialReturn ?? format(addDays(new Date(), 17), 'yyyy-MM-dd'));
+  const [showCalendar, setShowCalendar] = useState(false);
   const [adults, setAdults] = useState(() => {
     const n = Number(searchParams.get('adults'));
     return Number.isInteger(n) && n >= 1 && n <= 9 ? n : 1;
@@ -213,6 +221,7 @@ export function MyrealtripFlightSearch() {
     setDestination(effectiveOrigin);
   }
 
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -220,7 +229,7 @@ export function MyrealtripFlightSearch() {
       setError(t('flights.form.needPlaces'));
       return;
     }
-    if (departDate < today || (roundTrip && returnDate < departDate)) {
+    if (departDate < today || (roundTrip && (returnDate === '' || returnDate < departDate))) {
       setError(t('flights.form.badDates'));
       return;
     }
@@ -269,26 +278,16 @@ export function MyrealtripFlightSearch() {
           <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} />
         </div>
         <div className={styles.dates}>
-          <label className={styles.field}>
-            <span className={styles.fieldLabel}>{t('flights.form.depart')}</span>
-            <input
-              type="date"
-              className={styles.input}
-              value={departDate}
-              min={today}
-              required
-              onChange={(e) => {
-                setDepartDate(e.target.value);
-                if (returnDate < e.target.value) setReturnDate(e.target.value);
-              }}
-            />
-          </label>
-          {roundTrip ? (
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flights.form.return')}</span>
-              <input type="date" className={styles.input} value={returnDate} min={departDate} required onChange={(e) => setReturnDate(e.target.value)} />
-            </label>
-          ) : null}
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>{roundTrip ? t('flights.form.dates') : t('flights.form.depart')}</span>
+            <button type="button" className={`${styles.input} ${styles.dateButton}`} onClick={() => setShowCalendar(true)}>
+              <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
+              <span className={styles.dateText}>
+                {formatDay(departDate, i18n.language)}
+                {roundTrip ? ` – ${returnDate ? formatDay(returnDate, i18n.language) : t('flights.form.pickReturn')}` : ''}
+              </span>
+            </button>
+          </div>
           <label className={styles.field}>
             <span className={styles.fieldLabel}>{t('flights.form.adults')}</span>
             <select className={styles.input} value={adults} onChange={(e) => setAdults(Number(e.target.value))}>
@@ -306,6 +305,38 @@ export function MyrealtripFlightSearch() {
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+
+      {showCalendar ? (
+        <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
+          <div
+            className={styles.calendarSheet}
+            role="dialog"
+            aria-modal="true"
+            aria-label={roundTrip ? t('flights.form.dates') : t('flights.form.depart')}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CalendarRangePicker
+              startDate={parseISO(departDate)}
+              endDate={roundTrip && returnDate ? parseISO(returnDate) : null}
+              onChange={(start, end) => {
+                if (!start) return;
+                setDepartDate(format(start, 'yyyy-MM-dd'));
+                if (!roundTrip) {
+                  setShowCalendar(false);
+                  return;
+                }
+                setReturnDate(end ? format(end, 'yyyy-MM-dd') : '');
+                if (end) window.setTimeout(() => setShowCalendar(false), 250);
+              }}
+            />
+            <div className={styles.calendarActions}>
+              <button type="button" className={styles.submit} onClick={() => setShowCalendar(false)}>
+                {t('action.confirm', { ns: 'common' })}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <p className={styles.note}>
         <ExternalLink size={12} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
       </p>
