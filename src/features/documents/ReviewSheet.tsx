@@ -14,6 +14,8 @@ import styles from './ReviewSheet.module.css';
 interface ReviewSheetProps {
   tripId: string;
   bookings: BookingRow[];
+  /** 목록을 (다시) 불러오는 중 — 비어 있어도 "없음"이 아니라 불러오는 중으로 */
+  loading?: boolean;
   tripStartDate: string;
   tripEndDate: string;
   flightsData: FlightsData;
@@ -30,6 +32,7 @@ interface ReviewSheetProps {
 export function ReviewSheet({
   tripId,
   bookings,
+  loading = false,
   tripStartDate,
   tripEndDate,
   flightsData,
@@ -60,6 +63,9 @@ export function ReviewSheet({
     return true;
   }
 
+  // 다 처리해 비었으면 부모가 창을 닫는다 — 불러오는 중일 때만 안내를 보여준다
+  if (bookings.length === 0 && !loading) return null;
+
   if (bookings.length === 0) {
     return (
       <div className={modalStyles.overlay} onClick={onClose}>
@@ -71,7 +77,7 @@ export function ReviewSheet({
           aria-modal="true"
           aria-label={t('review.dialogLabel')}
         >
-          <h2 className={modalStyles.title}>{t('review.emptyTitle')}</h2>
+          <h2 className={modalStyles.title}>{t('review.loading')}</h2>
           <div className={modalStyles.actions}>
             <button type="button" className={modalStyles.primary} onClick={onClose}>
               {t('action.close', { ns: 'common' })}

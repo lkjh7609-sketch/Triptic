@@ -6,6 +6,7 @@
   },
   "review": {
     "emptyTitle": "No bookings to review",
+    "loading": "Loading bookings…",
     "title": "Review extracted info",
     "dialogLabel": "Review extracted info",
     "desc": "Here's what we read automatically. Please check it before adding it to your itinerary.",

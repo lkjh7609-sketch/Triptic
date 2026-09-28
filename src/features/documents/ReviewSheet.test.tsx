@@ -67,4 +67,12 @@ describe('ReviewSheet', () => {
     expect(saved[1].outbound?.flightNo).toBe('RS717');
     expect(saved[1].return?.flightNo).toBe('RS714');
   });
+
+  it('검수할 예약이 없으면 불러오는 중일 때만 안내, 아니면 아무것도 그리지 않는다(부모가 닫음)', () => {
+    const props = { tripId: 't1', bookings: [], tripStartDate: '2026-10-07', tripEndDate: '2026-10-14', flightsData: { outbound: null, return: null }, onClose: () => {}, onCommitFlight: async () => {} };
+    const { container, rerender } = render(<ReviewSheet {...props} loading />);
+    expect(screen.getByText('예약을 불러오는 중…')).toBeInTheDocument();
+    rerender(<ReviewSheet {...props} loading={false} />);
+    expect(container).toBeEmptyDOMElement();
+  });
 });
