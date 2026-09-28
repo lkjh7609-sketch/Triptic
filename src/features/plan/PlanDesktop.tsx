@@ -20,7 +20,7 @@ import {
   BookOpen,
   Map as MapIcon,
 } from 'lucide-react';
-import { differenceInCalendarDays, parseISO, startOfDay } from 'date-fns';
+import { differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
 import type { TripRow } from '@/shared/api/tripService';
 import { tripService } from '@/shared/api/tripService';
 import { useCityImage } from '@/shared/hooks/useCityImage';
@@ -623,7 +623,7 @@ function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; membe
           <>
             <WeatherBox trip={trip} />
             <FlightBox trip={trip} />
-            <DepartureChecklist trip={trip} />
+            {hasNotStarted(trip) ? <DepartureChecklist trip={trip} /> : null}
             <PdfBox trip={trip} />
             <div className={styles.membersBlock}>
               <h4 className={styles.membersTitle}>
@@ -705,6 +705,11 @@ function WeatherBox({ trip }: { trip: TripRow }) {
   );
 }
 
+/** 아직 출발 전(오늘 출발 포함) — 이미 떠난 여행에 항공권 찾기(지난 출발일)나 출발 전 체크리스트는 맞지 않는다 */
+function hasNotStarted(trip: TripRow): boolean {
+  return !trip.start_date || trip.start_date >= format(new Date(), 'yyyy-MM-dd');
+}
+
 /** 여행 도시·날짜로 항공 탭 검색을 바로 연다(출발지는 접속 위치) — flightsSearchLink.ts */
 function FindFlightsButton({ trip, className }: { trip: TripRow; className?: string }) {
   const { t } = useTranslation('plan');
@@ -744,7 +749,7 @@ function FlightBox({ trip }: { trip: TripRow }) {
           </div>
           <ChevronRight size={18} color="var(--pd-subtle)" aria-hidden="true" />
         </Link>
-        <FindFlightsButton trip={trip} />
+        {hasNotStarted(trip) ? <FindFlightsButton trip={trip} /> : null}
       </div>
     );
   }
