@@ -245,8 +245,7 @@
     "hotelStart": "출발 숙소",
     "hotelEnd": "도착 숙소",
     "addPlace": "장소 추가",
-    "loadError": "여행을 불러오지 못했어요.",
-    "activitiesLink": "{{city}} 투어·액티비티 찾아보기"
+    "loadError": "여행을 불러오지 못했어요."
   },
   "tripMap": {
     "ariaLabel": "일정 지도",

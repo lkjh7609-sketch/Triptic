@@ -57,8 +57,7 @@ import type {
 import styles from './TripDetailScreen.module.css';
 import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
-import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List, Ticket } from 'lucide-react';
-import { useKlookActivitiesLink } from './partnerLinks';
+import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
 import { cityDisplayName } from './cityName';
 
 /**
@@ -114,7 +113,6 @@ export function TripDetailScreen() {
   /** 여행 단위로 한 번만 묶어서 조회한다(05-weather.md §3.1) — 같은 도시로 날짜만
    * 바꿔가며 봐도 TanStack Query 캐시가 같아 네트워크 호출이 늘지 않는다. */
   const weather = useWeather(currentCity.lat, currentCity.lng, trip?.start_date, trip?.end_date);
-  const klookActivitiesUrl = useKlookActivitiesLink(currentCity.name, i18n.language);
   const dayDateISO = trip?.start_date
     ? format(addDays(parseISO(trip.start_date), currentDay - 1), 'yyyy-MM-dd')
     : null;
@@ -433,13 +431,6 @@ export function TripDetailScreen() {
             </button>
 
           </div>
-          {currentCity.name ? (
-            <a href={klookActivitiesUrl} target="_blank" rel="sponsored noopener" className={styles.activityLink}>
-              <Ticket size={14} aria-hidden="true" />
-              <span>{t('tripDetail.activitiesLink', { city: cityDisplayName(currentCity.name) })}</span>
-              <ExternalLink size={12} aria-hidden="true" />
-            </a>
-          ) : null}
         </div>
 
         {!isDesktop && viewMode === 'map' ? (
