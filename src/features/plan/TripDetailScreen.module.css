@@ -143,27 +143,6 @@
   min-width: 0;
 }
 
-.activityLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: var(--space-2);
-  padding: 6px var(--space-3);
-  border-radius: var(--radius-pill);
-  background: var(--brand-tint, var(--surface-subtle));
-  color: var(--brand);
-  font-size: var(--font-caption-size);
-  font-weight: 600;
-  text-decoration: none;
-  max-width: 100%;
-}
-
-.activityLink span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .hotelButton {
   appearance: none;
   /* 호텔/식사/경비는 이제 실제 이름이 아니라 고정된 짧은 라벨만 보여주고
