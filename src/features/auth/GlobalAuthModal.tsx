@@ -1,4 +1,5 @@
-import { Compass, Sparkles, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { ChevronDown, Compass, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
@@ -20,6 +21,16 @@ interface GlobalAuthModalProps {
 export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
   const { t } = useTranslation();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+  const [agreed, setAgreed] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const emailToggleRef = useRef<HTMLButtonElement>(null);
+
+  function toggleEmail() {
+    const next = !emailOpen;
+    setEmailOpen(next);
+    // 펼쳐진 폼이 화면 아래로 밀려 안 보이지 않게, 펼침이 끝날 즈음 이메일 영역 맨 위로 스크롤
+    if (next) window.setTimeout(() => emailToggleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 320);
+  }
 
   return (
     <div
@@ -53,11 +64,30 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
           <p className={styles.subtitle}>{t('auth.tagline')}</p>
         </div>
 
-        <EmailAuthForm />
+        <LoginButtons agreed={agreed} onAgreedChange={setAgreed} />
 
-        <div className={styles.divider}>{t('auth.or')}</div>
-
-        <LoginButtons />
+        <div className={styles.emailSection}>
+          <button
+            ref={emailToggleRef}
+            type="button"
+            className={styles.emailToggle}
+            aria-expanded={emailOpen}
+            aria-controls="auth-email-panel"
+            onClick={toggleEmail}
+          >
+            {t('auth.email.toggle')}
+            <ChevronDown size={16} aria-hidden="true" className={emailOpen ? styles.chevronOpen : styles.chevron} />
+          </button>
+          {/* 접혀 있는 동안은 visibility:hidden이라 탭 이동·스크린리더에서 빠진다 */}
+          <div
+            id="auth-email-panel"
+            className={emailOpen ? `${styles.emailPanel} ${styles.emailPanelOpen}` : styles.emailPanel}
+          >
+            <div className={styles.emailPanelInner}>
+              <EmailAuthForm agreed={agreed} onAgreedChange={setAgreed} />
+            </div>
+          </div>
+        </div>
 
         {onClose ? null : (
           <div className={styles.sampleBox}>
