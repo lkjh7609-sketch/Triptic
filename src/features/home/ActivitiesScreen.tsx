@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { Search } from 'lucide-react';
+import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { useProfile } from '@/shared/hooks/useProfile';
@@ -62,7 +62,9 @@ export function ActivitiesScreen() {
       <HomeSectionTabs />
       <div className={styles.wrap}>
         <header className={styles.header}>
-          <h1 className={styles.title}>{t('activities.title')}</h1>
+          <h1 className={styles.title}>
+            <Tent size={22} aria-hidden="true" /> {t('activities.title')}
+          </h1>
           <p className={styles.subtitle}>{t('activities.subtitle')}</p>
         </header>
 

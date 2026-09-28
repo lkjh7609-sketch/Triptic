@@ -170,34 +170,8 @@
   color: var(--text-muted);
 }
 
-.quickCategories {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
 
-.categoryPill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--surface-card);
-  padding: 10px 20px;
-  border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-  border: 1px solid var(--surface-subtle);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
-}
 
-.categoryPill:hover {
-  background: var(--surface-subtle);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
 
 
 .sliderWrapper {
@@ -283,9 +257,6 @@
   color: var(--brand);
   margin-right: 12px;
   flex-shrink: 0;
-}
-.quickCategories {
-  margin-top: 24px;
 }
 .suggestions {
   position: absolute;
@@ -425,15 +396,6 @@
     padding: 10px 14px;
     font-size: 13px;
     white-space: nowrap;
-  }
-  .quickCategories {
-    margin-top: var(--space-4);
-    gap: var(--space-2);
-    flex-wrap: wrap;
-  }
-  .categoryPill {
-    padding: 8px 14px;
-    font-size: 13px;
   }
   .section {
     padding: var(--space-6) var(--space-4);

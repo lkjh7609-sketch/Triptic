@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Plane } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './FlightsScreen.module.css';
@@ -20,7 +21,9 @@ export function FlightsScreen() {
       <HomeSectionTabs />
       <div className={styles.wrap}>
         <header className={styles.header}>
-          <h1 className={styles.title}>{t('flights.title')}</h1>
+          <h1 className={styles.title}>
+            <Plane size={22} aria-hidden="true" /> {t('flights.title')}
+          </h1>
           <p className={styles.subtitle}>{t('flights.subtitle')}</p>
         </header>
       </div>
