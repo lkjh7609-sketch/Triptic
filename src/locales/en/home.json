@@ -67,5 +67,9 @@
     "activities": "Activities",
     "scrollLeft": "Scroll left",
     "scrollRight": "Scroll right"
+  },
+  "flights": {
+    "title": "Search flights",
+    "subtitle": "Compare prices from airlines and travel agencies in one place"
   }
 }

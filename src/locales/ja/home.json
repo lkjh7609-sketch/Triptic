@@ -66,5 +66,9 @@
     "contact": "お問い合わせ",
     "scrollLeft": "左へスクロール",
     "scrollRight": "右へスクロール"
+  },
+  "flights": {
+    "title": "航空券を検索",
+    "subtitle": "複数の航空会社・旅行会社の料金をまとめて比較できます"
   }
 }

@@ -66,5 +66,9 @@
     "activities": "活動",
     "scrollLeft": "向左捲動",
     "scrollRight": "向右捲動"
+  },
+  "flights": {
+    "title": "搜尋機票",
+    "subtitle": "一次比較多家航空公司與旅行社的價格"
   }
 }

@@ -113,6 +113,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 항공권 검색(Travelpayouts White Label 위젯)
+          path: 'flights',
+          lazy: async () => {
+            const { FlightsScreen } = await retryChunkLoad(() => import('@/features/home/FlightsScreen'));
+            return { Component: FlightsScreen };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => {
             const { SettingsScreen } = await retryChunkLoad(() => import('@/features/settings/SettingsScreen'));
