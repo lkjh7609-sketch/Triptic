@@ -1,4 +1,5 @@
 .header {
+  view-transition-name: app-header; /* 화면 전환 때 제자리 고정(global.css) */
   position: sticky;
   top: 0;
   z-index: 1000;
