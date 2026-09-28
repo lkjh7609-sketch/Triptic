@@ -87,6 +87,13 @@
     "searchPlaceholder": "都市、観光地、体験を検索",
     "searchButton": "検索",
     "forTrip": "{{city}}旅行におすすめのツアー",
-    "recommended": "おすすめツアー"
+    "recommended": "おすすめツアー",
+    "providerLabel": "ツアー検索サイト",
+    "provider": {
+      "klook": "Klook",
+      "myrealtrip": "MyRealTrip"
+    },
+    "myrealtripDefaultKeyword": "ソウル",
+    "seeAllOnMyrealtrip": "MyRealTripで{{keyword}}をもっと見る"
   }
 }
