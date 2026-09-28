@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Outlet, ScrollRestoration, useLocation, useNavigation, useNavigationType } from 'react-router';
+import { Outlet, ScrollRestoration, useLocation, useNavigate, useNavigation, useNavigationType } from 'react-router';
 import { TabBar } from './TabBar';
 import { HeaderDesktop } from './HeaderDesktop';
 import { GuestBanner } from './GuestBanner';
@@ -36,6 +36,22 @@ function useDelayedFlag(flag: boolean, delayMs: number) {
   return flag && elapsed;
 }
 
+/**
+ * 항공 위젯(Travelpayouts White Label)은 결과 페이지를 대시보드에 등록된 주소(지금 사이트
+ * 루트)로 연다 — 특히 "호텔도 보기"가 켜진 왕복 검색은 새 탭을 루트?flightSearch=…로 열어
+ * 홈 화면이 떴다. 루트로 들어온 항공 검색 주소는 쿼리를 그대로 들고 /flights로 넘긴다.
+ */
+const FLIGHTS_WIDGET_PARAMS = ['flightSearch', 'ticketId'];
+function useRedirectFlightsWidgetResults() {
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (pathname !== '/') return;
+    const params = new URLSearchParams(search);
+    if (FLIGHTS_WIDGET_PARAMS.some((key) => params.has(key))) navigate(`/flights${search}`, { replace: true });
+  }, [pathname, search, navigate]);
+}
+
 /** 새 화면이 그려지는 순간(View Transition 스냅샷 직전) 방향을 html[data-nav]에 적는다 */
 function useNavDirectionAttr() {
   const { pathname } = useLocation();
@@ -68,6 +84,7 @@ export function AppShell() {
 
   const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
   useNavDirectionAttr();
+  useRedirectFlightsWidgetResults();
   // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고)
   const onFlights = pathname === '/flights';
   const [flightsWidgetMounted, setFlightsWidgetMounted] = useState(onFlights);
