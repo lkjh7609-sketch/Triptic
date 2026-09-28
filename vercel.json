@@ -46,6 +46,10 @@
     },
     "api/adminSales.js": {
       "maxDuration": 30
+    },
+    "api/parseDocument.js": {
+      "maxDuration": 60,
+      "includeFiles": "{data/airports.json,node_modules/unpdf/dist/**}"
     }
   }
 }
