@@ -87,5 +87,9 @@
   "calendar": {
     "prevMonth": "이전 달",
     "nextMonth": "다음 달"
+  },
+  "partnerRedirect": {
+    "title": "이동 중…",
+    "loading": "예약 사이트로 이동하고 있어요"
   }
 }

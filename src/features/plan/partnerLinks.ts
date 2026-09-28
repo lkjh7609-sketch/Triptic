@@ -2,18 +2,26 @@ import { useQuery } from '@tanstack/react-query';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { AFFILIATE_LINKS } from '@/shared/config';
+import i18n from '@/shared/i18n';
 import { cityDisplayName } from './cityName';
 
 /** 어디서 누른 링크인지(제휴사 리포트·판매 탭의 sub_id) — api/partnerLink.js SUB_ID */
 export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist' | 'product' | 'flights' | 'trip_flights' | 'esim';
 
-/** 제휴 링크(api/partnerLink.js — 제휴사는 서버 레지스트리 api/_lib/affiliates, 한 번 변환해 저장) */
-async function fetchPartnerLink(params: Record<string, string>): Promise<string> {
+/**
+ * 제휴 링크(api/partnerLink.js — 제휴사는 서버 레지스트리 api/_lib/affiliates, 한 번 변환해 저장).
+ * tracked=false는 서버가 변환을 못 해 원래 주소를 준 경우(수수료 없음).
+ */
+async function requestPartnerLink(params: Record<string, string>): Promise<{ url: string; tracked: boolean }> {
   const res = await fetch(apiUrl(`/api/partnerLink?${new URLSearchParams(params).toString()}`));
   if (!res.ok) throw new Error(`partnerLink HTTP ${res.status}`);
-  const json = (await res.json()) as { url?: unknown };
+  const json = (await res.json()) as { url?: unknown; tracked?: unknown };
   if (typeof json.url !== 'string') throw new Error('partnerLink: no url');
-  return json.url;
+  return { url: json.url, tracked: json.tracked !== false };
+}
+
+async function fetchPartnerLink(params: Record<string, string>): Promise<string> {
+  return (await requestPartnerLink(params)).url;
 }
 
 /** Klook에서 이 검색어로 검색한 결과로 가는 제휴 링크 */
@@ -21,14 +29,56 @@ export function fetchKlookSearchLink(query: string, locale: string, placement: P
   return fetchPartnerLink({ brand: 'klook', q: query, locale: aiLocale(locale), placement });
 }
 
+/** 미리 연 새 탭에 링크가 올 때까지 "이동 중" 화면(빈 흰 화면 대신) — 같은 출처 about:blank라 그릴 수 있다 */
+function showRedirecting(tab: Window) {
+  try {
+    const doc = tab.document;
+    doc.title = i18n.t('partnerRedirect.title', { ns: 'common' });
+    const style = doc.createElement('style');
+    style.textContent =
+      'html,body{height:100%;margin:0}' +
+      'body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;' +
+      'background:#FDFBF7;color:#57534E;font-size:15px}' +
+      '.spinner{width:28px;height:28px;border:3px solid #E7E5E4;border-top-color:#0D9488;border-radius:50%;animation:spin .8s linear infinite}' +
+      '@keyframes spin{to{transform:rotate(360deg)}}' +
+      '@media (prefers-color-scheme:dark){body{background:#0B0F19;color:#94A3B8}.spinner{border-color:#283548;border-top-color:#4FC3F7}}';
+    doc.head.appendChild(style);
+    const spinner = doc.createElement('div');
+    spinner.className = 'spinner';
+    const text = doc.createElement('p');
+    text.textContent = i18n.t('partnerRedirect.loading', { ns: 'common' });
+    doc.body.replaceChildren(spinner, text);
+  } catch {
+    // 못 그리면 빈 탭 그대로 — 곧 이동한다
+  }
+}
+
 /**
- * 누른 뒤에 받아오는 링크를 새 탭으로. iOS 팝업 차단을 피하려고 누르는 순간 빈 탭을 먼저
- * 열고 링크가 오면 그 탭을 보낸다. 탭을 못 열면(차단) 지금 창에서 이동.
+ * 이미 받아 둔 링크를 새 탭으로 바로 연다(누르는 순간 = 사용자 동작 안이라 iOS도 연다).
+ * 링크를 미리 받아 두는 곳(항공 검색, 상품 카드 등)에서 쓴다.
+ */
+export function openExternal(url: string): void {
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'sponsored noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+/**
+ * 누른 뒤에 받아오는 링크를 새 탭으로. iOS 팝업 차단을 피하려고 누르는 순간 탭을 먼저
+ * 열어 "이동 중" 화면을 띄우고 링크가 오면 그 탭을 보낸다. 탭을 못 열면(차단) 지금 창에서 이동.
  * 링크가 없으면(null) 연 탭을 닫고 false.
  */
 export async function openInNewTab(getUrl: () => Promise<string | null>): Promise<boolean> {
   const tab = window.open('', '_blank');
-  if (tab) tab.opener = null;
+  if (tab) {
+    tab.opener = null;
+    showRedirecting(tab);
+  }
   const url = await getUrl().catch(() => null);
   if (!url) {
     tab?.close();
@@ -99,10 +149,9 @@ export interface FlightSearch {
   adults: number;
 }
 
-/** 마이리얼트립 항공 검색 결과(마이링크). 결과 주소는 서버가 만든다 */
-export function fetchMyrealtripFlightsLink(flight: FlightSearch, placement: PartnerPlacement): Promise<string> {
+/** 마이리얼트립 항공 검색 결과 링크 요청 값(서버 api/partnerLink.js kind=flight) */
+export function flightLinkParams(flight: FlightSearch, placement: PartnerPlacement): Record<string, string> {
   const params: Record<string, string> = {
-    brand: 'myrealtrip',
     kind: 'flight',
     origin: flight.origin,
     origin_type: flight.originType,
@@ -113,7 +162,42 @@ export function fetchMyrealtripFlightsLink(flight: FlightSearch, placement: Part
     placement,
   };
   if (flight.returnDate) params.return_date = flight.returnDate;
-  return fetchPartnerLink(params);
+  return params;
+}
+
+/** 마이리얼트립 항공 검색 결과(마이링크). 결과 주소는 서버가 만든다 */
+export function fetchMyrealtripFlightsLink(flight: FlightSearch, placement: PartnerPlacement): Promise<string> {
+  return fetchPartnerLink({ brand: 'myrealtrip', ...flightLinkParams(flight, placement) });
+}
+
+/** 추적이 붙은 마이리얼트립 링크만(서버가 변환을 못 해 원래 주소를 주면 실패로 — 미리 받아 둘 땐 저장하지 않게) */
+export async function fetchTrackedMyrealtripLink(params: Record<string, string>): Promise<string> {
+  const { url, tracked } = await requestPartnerLink({ brand: 'myrealtrip', ...params });
+  if (!tracked) throw new Error('partnerLink: not tracked');
+  return url;
+}
+
+/**
+ * 마이리얼트립 마이링크를 미리 받아 둔다 — 누르는 순간 바로 열 수 있게(링크 만드는 데 최대 2초).
+ * 같은 (주소, 위치)는 서버가 한 번만 만들어 저장하므로 다시 보면 캐시에서 온다.
+ * params가 null이면 받지 않는다. 받기 전·실패면 undefined(누를 때 "이동 중" 탭으로 대신).
+ */
+export function useMyrealtripLink(params: Record<string, string> | null): string | undefined {
+  const key = params
+    ? Object.entries(params)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([k, v]) => `${k}=${v}`)
+        .join('&')
+    : '';
+  const { data } = useQuery({
+    queryKey: ['partnerLink', 'myrealtrip', key],
+    queryFn: () => fetchTrackedMyrealtripLink(params!),
+    enabled: params !== null,
+    staleTime: Infinity,
+    gcTime: 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+  return data;
 }
 
 /**

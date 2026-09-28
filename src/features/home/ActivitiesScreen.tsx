@@ -4,12 +4,13 @@ import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
-import { openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
+import { openExternal, openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink, useMyrealtripLink } from '@/features/plan/partnerLinks';
 import { ACTIVITY_PROVIDERS, readActivityProvider, saveActivityProvider, type ActivityProvider } from './activityProviders';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
 import { KlookToursWidget } from './KlookToursWidget';
 import { MyrealtripProducts } from './MyrealtripProducts';
+import { MyrealtripLink } from './MyrealtripLink';
 import { useNearestTrip } from './useNearestTrip';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './SectionScreen.module.css';
@@ -26,15 +27,20 @@ function CityActivityCard({ dest }: { dest: FeaturedDestination }) {
   );
 }
 
-/** 마이리얼트립은 도시 검색 결과로 — 링크는 누를 때 만든다(카드마다 미리 만들지 않게) */
+/** 마이리얼트립은 도시 검색 결과로 — 마이링크를 미리 받아 두는 진짜 링크(도시 6곳은 서버에 한 번만 만들어진다) */
 function MyrealtripCityCard({ dest }: { dest: FeaturedDestination }) {
   const { t } = useTranslation('home');
   const name = t(`desktop.dest${dest.key}`);
   return (
-    <button type="button" className={styles.cityCard} onClick={() => void openMyrealtripSearch(name, 'city')}>
+    <MyrealtripLink
+      target={{ kind: 'search', q: name }}
+      placement="city"
+      onFallback={() => void openMyrealtripSearch(name, 'city')}
+      className={styles.cityCard}
+    >
       <img src={dest.image} alt="" className={styles.cityImage} loading="lazy" />
       <span className={styles.cityName}>{name}</span>
-    </button>
+    </MyrealtripLink>
   );
 }
 
@@ -46,6 +52,15 @@ export function ActivitiesScreen() {
   const { t, i18n } = useTranslation('home');
   const [keyword, setKeyword] = useState('');
   const [provider, setProvider] = useState<ActivityProvider>(readActivityProvider);
+  // 마이리얼트립 검색은 입력이 잠깐 멈추면 링크를 미리 받아 둔다 — 검색을 누르면 바로 열리게
+  const [typedKeyword, setTypedKeyword] = useState('');
+  useEffect(() => {
+    const id = window.setTimeout(() => setTypedKeyword(keyword.trim()), 600);
+    return () => window.clearTimeout(id);
+  }, [keyword]);
+  const prefetchedSearch = useMyrealtripLink(
+    provider === 'myrealtrip' && typedKeyword.length >= 2 ? { kind: 'search', q: typedKeyword, placement: 'search' } : null,
+  );
   const nearestTrip = useNearestTrip();
   // 투어 가격은 설정의 기본 통화로, 문구는 앱 언어로
   const { data: profile } = useProfile();
@@ -60,7 +75,10 @@ export function ActivitiesScreen() {
     e.preventDefault();
     const q = keyword.trim();
     if (!q) return;
-    if (provider === 'myrealtrip') void openMyrealtripSearch(q, 'search');
+    if (provider === 'myrealtrip') {
+      if (prefetchedSearch && typedKeyword === q) openExternal(prefetchedSearch);
+      else void openMyrealtripSearch(q, 'search');
+    }
     else void openKlookSearch(q, i18n.language);
   }
 

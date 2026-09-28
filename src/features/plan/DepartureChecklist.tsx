@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, ExternalLink, ListChecks } from 'lucide-react';
 import { tripService, type TripRow } from '@/shared/api/tripService';
 import { AFFILIATE_LINKS } from '@/shared/config';
-import { openFlightsSearchForTrip } from './flightsSearchLink';
+import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
 import { usePartnerLandingLink } from './partnerLinks';
 import type { FlightsData } from './types';
 import styles from './PlanDesktop.module.css';
@@ -49,6 +49,8 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
     flights: !!flights.outbound,
     hotel: Object.keys((project.hotels ?? {}) as Record<string, unknown>).length > 0,
   };
+  // 항공권이 아직 없을 때만 마이리얼트립 결과 링크를 미리 받아 둔다(누르면 바로 열리게)
+  const prefetchedFlights = useTripFlightsLink(trip, i18n.language, !auto.flights);
 
   function toggle(key: ItemKey) {
     setChecked((cur) => {
@@ -68,7 +70,7 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
           disabled={findingFlights}
           onClick={() => {
             setFindingFlights(true);
-            void openFlightsSearchForTrip(trip, i18n.language).finally(() => setFindingFlights(false));
+            void openFlightsSearchForTrip(trip, i18n.language, prefetchedFlights).finally(() => setFindingFlights(false));
           }}
         >
           {t('desktop.checklist.find')}
