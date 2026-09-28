@@ -79,6 +79,8 @@
 
 .itemMain {
   flex: 1;
+  /* 긴 파일 이름(nowrap)이 줄어들지 않아 공유·삭제 버튼을 화면 밖으로 밀던 것 */
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -100,6 +102,7 @@
 }
 
 .info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
