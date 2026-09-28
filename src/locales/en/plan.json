@@ -386,7 +386,18 @@
     "pdfTitle": "Save trip as PDF",
     "pdfDesc": "A printable guide with maps and the full itinerary",
     "findFlights": "Find flights for these dates",
-    "findFlightsBusy": "Searching…"
+    "findFlightsBusy": "Searching…",
+    "checklist": {
+      "title": "Pre-departure checklist",
+      "flights": "Book flights",
+      "hotel": "Book a place to stay",
+      "esim": "Get an eSIM / data",
+      "insurance": "Get travel insurance",
+      "passport": "Check passport validity (6+ months)",
+      "money": "Currency & travel card",
+      "find": "Find",
+      "view": "View"
+    }
   },
   "hotel": {
     "title": "Set your stay",

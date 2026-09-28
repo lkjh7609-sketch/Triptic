@@ -5,7 +5,7 @@ import { AFFILIATE_LINKS } from '@/shared/config';
 import { cityDisplayName } from './cityName';
 
 /** 어디서 누른 링크인지(Travelpayouts 리포트의 sub_id) — api/partnerLink.js SUB_ID */
-export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket';
+export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist';
 
 /** Klook에서 이 검색어로 검색한 결과로 가는 제휴 링크(api/partnerLink.js, 서버가 한 번 변환해 저장) */
 export async function fetchKlookSearchLink(query: string, locale: string, placement: PartnerPlacement): Promise<string> {
@@ -57,4 +57,26 @@ export async function openKlookSearch(keyword: string, locale: string, placement
   }
   if (tab) tab.location.href = url;
   else window.location.href = url;
+}
+
+/**
+ * 검색어 없이 브랜드 첫 페이지로 가는 제휴 링크(출발 전 체크리스트의 eSIM 등).
+ * Travelpayouts에서 그 브랜드에 연결돼 있지 않으면 변환이 실패하므로 원래 주소로 대신한다.
+ */
+export function usePartnerLandingLink(brand: 'yesim', fallbackUrl: string): string {
+  const { data } = useQuery({
+    queryKey: ['partnerLink', brand, 'checklist'],
+    queryFn: async () => {
+      const params = new URLSearchParams({ brand, placement: 'checklist' });
+      const res = await fetch(apiUrl(`/api/partnerLink?${params.toString()}`));
+      if (!res.ok) throw new Error(`partnerLink HTTP ${res.status}`);
+      const json = (await res.json()) as { url?: unknown };
+      if (typeof json.url !== 'string') throw new Error('partnerLink: no url');
+      return json.url;
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
+  return data ?? fallbackUrl;
 }

@@ -372,7 +372,18 @@
     "pdfTitle": "旅行をPDFで保存",
     "pdfDesc": "地図と全日程入りの印刷用ガイド",
     "findFlights": "この日程で航空券を探す",
-    "findFlightsBusy": "検索中…"
+    "findFlightsBusy": "検索中…",
+    "checklist": {
+      "title": "出発前チェックリスト",
+      "flights": "航空券の予約",
+      "hotel": "宿泊先の予約",
+      "esim": "eSIM・データの準備",
+      "insurance": "海外旅行保険に加入",
+      "passport": "パスポートの有効期限を確認（6か月以上）",
+      "money": "両替・海外決済カードの準備",
+      "find": "探す",
+      "view": "見る"
+    }
   },
   "hotel": {
     "title": "宿泊先の設定",

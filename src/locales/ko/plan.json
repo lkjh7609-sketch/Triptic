@@ -372,7 +372,18 @@
     "pdfTitle": "여행 PDF 저장",
     "pdfDesc": "지도와 전체 일정을 담은 인쇄용 가이드",
     "findFlights": "이 일정으로 항공권 찾기",
-    "findFlightsBusy": "찾는 중…"
+    "findFlightsBusy": "찾는 중…",
+    "checklist": {
+      "title": "출발 전 체크리스트",
+      "flights": "항공권 예약",
+      "hotel": "숙소 예약",
+      "esim": "eSIM·데이터 준비",
+      "insurance": "여행자보험 가입",
+      "passport": "여권 유효기간 확인(6개월 이상)",
+      "money": "환전·해외결제 카드 준비",
+      "find": "찾기",
+      "view": "보기"
+    }
   },
   "hotel": {
     "title": "숙소 설정",
