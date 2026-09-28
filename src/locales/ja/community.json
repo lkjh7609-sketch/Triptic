@@ -364,7 +364,11 @@
       "saveError": "費用を保存できませんでした。",
       "list": "費用の履歴",
       "paidSplit_other": "{{name}}が支払い・{{count}}人で割り勘",
-      "formerMember": "退出したメンバー"
+      "formerMember": "退出したメンバー",
+      "deleteTitle": "費用を削除",
+      "deleteConfirm": "この費用を削除しますか？グループ全員の精算結果が変わります。",
+      "deleteKeep": "残す",
+      "deleteProceed": "削除"
     },
     "review": {
       "cta": "レビューを書く",

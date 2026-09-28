@@ -364,7 +364,11 @@
       "saveError": "無法儲存費用。",
       "list": "費用明細",
       "paidSplit_other": "{{name}} 付款 · {{count}} 人分攤",
-      "formerMember": "已離開的成員"
+      "formerMember": "已離開的成員",
+      "deleteTitle": "刪除費用",
+      "deleteConfirm": "要刪除這筆費用嗎？所有成員的分帳結果都會改變。",
+      "deleteKeep": "保留",
+      "deleteProceed": "刪除"
     },
     "review": {
       "cta": "留下評價",

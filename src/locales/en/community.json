@@ -377,7 +377,11 @@
       "list": "Expenses",
       "paidSplit_one": "Paid by {{name}} · split {{count}} way",
       "paidSplit_other": "Paid by {{name}} · split {{count}} ways",
-      "formerMember": "Former member"
+      "formerMember": "Former member",
+      "deleteTitle": "Delete expense",
+      "deleteConfirm": "Delete this expense? It changes the settlement for everyone in the group.",
+      "deleteKeep": "Keep",
+      "deleteProceed": "Delete"
     },
     "review": {
       "cta": "Leave a review",

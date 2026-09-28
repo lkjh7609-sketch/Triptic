@@ -364,7 +364,11 @@
       "saveError": "경비를 저장하지 못했어요.",
       "list": "경비 내역",
       "paidSplit_other": "{{name}} 결제 · {{count}}명이 나눔",
-      "formerMember": "나간 멤버"
+      "formerMember": "나간 멤버",
+      "deleteTitle": "경비 삭제",
+      "deleteConfirm": "이 경비를 지울까요? 모임 전원의 정산 결과가 바뀌어요.",
+      "deleteKeep": "그대로 두기",
+      "deleteProceed": "삭제"
     },
     "review": {
       "cta": "후기 남기기",
