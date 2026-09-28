@@ -43,6 +43,24 @@
   text-decoration: none;
 }
 
+.searchCredit {
+  margin-top: var(--space-2);
+}
+
+/* 섹션 제목 + 오른쪽 Powered by */
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--space-3);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.sectionHead .sectionTitle {
+  margin: 0;
+}
+
 .sectionTitle {
   margin: var(--space-6) 0 var(--space-3);
   font-size: 18px;

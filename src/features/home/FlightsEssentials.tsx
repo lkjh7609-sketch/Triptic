@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink, Smartphone } from 'lucide-react';
 import { AFFILIATE_LINKS } from '@/shared/config';
+import { PoweredBy } from '@/shared/ui/PoweredBy';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { MyrealtripProducts } from './MyrealtripProducts';
 import { useNearestTrip } from './useNearestTrip';
@@ -52,11 +53,15 @@ export function FlightsEssentials() {
         <span className={styles.usimsaText}>
           <span className={styles.usimsaTitle}>{t('flights.essentials.usimsaTitle')}</span>
           <span className={styles.usimsaDesc}>{t('flights.essentials.usimsaDesc')}</span>
+          <PoweredBy brand="usimsa" />
         </span>
         <ExternalLink size={16} aria-hidden="true" className={styles.usimsaArrow} />
       </a>
 
-      <h3 className={styles.subheading}>{t('flights.essentials.myrealtripTitle', { city })}</h3>
+      <div className={styles.subheadRow}>
+        <h3 className={styles.subheading}>{t('flights.essentials.myrealtripTitle', { city })}</h3>
+        <PoweredBy brand="myrealtrip" />
+      </div>
       <MyrealtripProducts
         keyword={city}
         kind="sim"
