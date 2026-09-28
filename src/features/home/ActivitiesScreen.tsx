@@ -1,17 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExternalLink, Ticket } from 'lucide-react';
+import { format } from 'date-fns';
+import { Search } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
-import { AFFILIATE_LINKS } from '@/shared/config';
-import { useKlookActivitiesLink } from '@/features/plan/partnerLinks';
+import { useTrips } from '@/features/plan/hooks/useTrips';
+import { cityDisplayName } from '@/features/plan/cityName';
+import { openKlookSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
+import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
+import { KlookToursWidget } from './KlookToursWidget';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './SectionScreen.module.css';
 
 /** 도시 하나 = 제휴 링크 하나(훅은 map 안에서 못 불러서 카드 단위 컴포넌트로) */
 function CityActivityCard({ dest }: { dest: FeaturedDestination }) {
   const { t, i18n } = useTranslation('home');
-  const href = useKlookActivitiesLink(dest.city, i18n.language);
+  const href = useKlookActivitiesLink(dest.city, i18n.language, 'city');
   return (
     <a href={href} target="_blank" rel="sponsored noopener" className={styles.cityCard}>
       <img src={dest.image} alt="" className={styles.cityImage} loading="lazy" />
@@ -20,13 +24,34 @@ function CityActivityCard({ dest }: { dest: FeaturedDestination }) {
   );
 }
 
-/** 액티비티 탭 — Klook(Travelpayouts 제휴). 도시 카드는 그 도시 검색 결과로 */
+/** 가장 가까운(진행 중이거나 곧 떠나는) 내 여행 — 좌표가 있는 것만 */
+function useNearestTrip() {
+  const { data: trips } = useTrips();
+  return useMemo(() => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    return (trips ?? [])
+      .filter((trip) => trip.city_lat != null && trip.city_lng != null && (trip.end_date ?? trip.start_date ?? '') >= today)
+      .sort((a, b) => (a.start_date ?? '9999').localeCompare(b.start_date ?? '9999'))[0];
+  }, [trips]);
+}
+
+/** 액티비티 탭 — 검색창(키워드 그대로 Klook 검색), 내 다음 여행 도시 투어 위젯, 인기 도시 */
 export function ActivitiesScreen() {
-  const { t } = useTranslation('home');
+  const { t, i18n } = useTranslation('home');
+  const [keyword, setKeyword] = useState('');
+  const nearestTrip = useNearestTrip();
+  const tripCityId = nearestTrip ? nearestKlookCityId(nearestTrip.city_lat!, nearestTrip.city_lng!) : null;
 
   useEffect(() => {
     trackScreenView('activities');
   }, []);
+
+  function handleSearch(e: FormEvent) {
+    e.preventDefault();
+    const q = keyword.trim();
+    if (!q) return;
+    void openKlookSearch(q, i18n.language);
+  }
 
   return (
     <div className={styles.page}>
@@ -36,9 +61,30 @@ export function ActivitiesScreen() {
           <h1 className={styles.title}>{t('activities.title')}</h1>
           <p className={styles.subtitle}>{t('activities.subtitle')}</p>
         </header>
-        <a href={AFFILIATE_LINKS.klookActivities} target="_blank" rel="sponsored noopener" className={styles.cta}>
-          <Ticket size={18} aria-hidden="true" /> {t('activities.cta')} <ExternalLink size={14} aria-hidden="true" />
-        </a>
+
+        <form className={styles.searchForm} onSubmit={handleSearch} role="search">
+          <Search size={18} className={styles.searchIcon} aria-hidden="true" />
+          <input
+            type="search"
+            className={styles.searchInput}
+            placeholder={t('activities.searchPlaceholder')}
+            aria-label={t('activities.searchPlaceholder')}
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            enterKeyHint="search"
+          />
+          <button type="submit" className={styles.searchButton} disabled={!keyword.trim()}>
+            {t('activities.searchButton')}
+          </button>
+        </form>
+
+        <h2 className={styles.sectionTitle}>
+          {tripCityId && nearestTrip
+            ? t('activities.forTrip', { city: cityDisplayName(nearestTrip.city) })
+            : t('activities.recommended')}
+        </h2>
+        <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} />
+
         <h2 className={styles.sectionTitle}>{t('activities.popular')}</h2>
         <div className={styles.cityGrid}>
           {FEATURED.map((dest) => (

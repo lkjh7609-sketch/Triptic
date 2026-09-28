@@ -85,3 +85,56 @@
   font-weight: 800;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
 }
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 6px 6px var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+}
+
+.searchForm:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.searchIcon {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+}
+
+.searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--font-body-size);
+  color: var(--text-primary);
+}
+
+.searchButton {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: var(--text-on-brand, #fff);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.searchButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.toursWidget {
+  min-height: 200px;
+}

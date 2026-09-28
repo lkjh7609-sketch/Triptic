@@ -86,7 +86,10 @@
   "activities": {
     "title": "투어·액티비티",
     "subtitle": "현지 투어, 입장권, 체험을 둘러보세요",
-    "cta": "Klook에서 투어·액티비티 보기",
-    "popular": "인기 도시"
+    "popular": "인기 도시",
+    "searchPlaceholder": "도시, 명소, 체험 검색 (예: 유니버설 스튜디오)",
+    "searchButton": "검색",
+    "forTrip": "{{city}} 여행에 추천하는 투어",
+    "recommended": "추천 투어"
   }
 }

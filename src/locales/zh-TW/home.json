@@ -86,7 +86,10 @@
   "activities": {
     "title": "行程與活動",
     "subtitle": "瀏覽當地行程、門票與體驗",
-    "cta": "在 Klook 瀏覽行程與活動",
-    "popular": "熱門城市"
+    "popular": "熱門城市",
+    "searchPlaceholder": "搜尋城市、景點、體驗",
+    "searchButton": "搜尋",
+    "forTrip": "為您的{{city}}之旅推薦的行程",
+    "recommended": "推薦行程"
   }
 }
