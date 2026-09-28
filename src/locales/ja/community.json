@@ -346,6 +346,26 @@
       "completeError": "日程を完了できませんでした。",
       "closedBanner": "日程が終了しました。チャットは閲覧専用です。"
     },
+    "expenses": {
+      "button": "割り勘",
+      "title": "費用の割り勘",
+      "settlement": "精算結果",
+      "total": "合計 {{amount}}",
+      "settled": "精算する金額はありません",
+      "noExpenses": "まだ記録した費用がありません",
+      "addTitle": "費用を追加",
+      "descriptionPlaceholder": "何に使いましたか？（例：夕食）",
+      "amountPlaceholder": "金額",
+      "currency": "通貨",
+      "paidBy": "支払った人",
+      "splitAmong": "割り勘する人",
+      "add": "追加",
+      "invalid": "内容・金額・割り勘する人を確認してください。",
+      "saveError": "費用を保存できませんでした。",
+      "list": "費用の履歴",
+      "paidSplit_other": "{{name}}が支払い・{{count}}人で割り勘",
+      "formerMember": "退出したメンバー"
+    },
     "review": {
       "cta": "レビューを書く",
       "title": "同行はいかがでしたか?",

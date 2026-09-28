@@ -346,6 +346,26 @@
       "completeError": "일정 완료에 실패했어요.",
       "closedBanner": "일정이 끝났어요. 채팅방은 읽기 전용이에요."
     },
+    "expenses": {
+      "button": "정산",
+      "title": "경비 정산",
+      "settlement": "정산 결과",
+      "total": "총 {{amount}}",
+      "settled": "정산할 금액이 없어요",
+      "noExpenses": "아직 기록한 경비가 없어요",
+      "addTitle": "경비 추가",
+      "descriptionPlaceholder": "어디에 썼나요? (예: 저녁 식사)",
+      "amountPlaceholder": "금액",
+      "currency": "통화",
+      "paidBy": "결제한 사람",
+      "splitAmong": "나눌 사람",
+      "add": "추가",
+      "invalid": "내용, 금액, 나눌 사람을 확인해 주세요.",
+      "saveError": "경비를 저장하지 못했어요.",
+      "list": "경비 내역",
+      "paidSplit_other": "{{name}} 결제 · {{count}}명이 나눔",
+      "formerMember": "나간 멤버"
+    },
     "review": {
       "cta": "후기 남기기",
       "title": "동행은 어땠나요?",

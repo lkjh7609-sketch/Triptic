@@ -346,6 +346,26 @@
       "completeError": "無法完成行程。",
       "closedBanner": "行程已結束,聊天室為唯讀。"
     },
+    "expenses": {
+      "button": "分帳",
+      "title": "費用分帳",
+      "settlement": "分帳結果",
+      "total": "總計 {{amount}}",
+      "settled": "沒有需要結算的金額",
+      "noExpenses": "還沒有記錄任何費用",
+      "addTitle": "新增費用",
+      "descriptionPlaceholder": "花在哪裡？（例：晚餐）",
+      "amountPlaceholder": "金額",
+      "currency": "幣別",
+      "paidBy": "付款人",
+      "splitAmong": "分攤的人",
+      "add": "新增",
+      "invalid": "請確認內容、金額和分攤的人。",
+      "saveError": "無法儲存費用。",
+      "list": "費用明細",
+      "paidSplit_other": "{{name}} 付款 · {{count}} 人分攤",
+      "formerMember": "已離開的成員"
+    },
     "review": {
       "cta": "留下評價",
       "title": "這趟旅伴體驗如何?",
