@@ -8,6 +8,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
 import { navDirection } from './navDirection';
 import styles from './AppShell.module.css';
 
@@ -67,6 +68,10 @@ export function AppShell() {
 
   const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
   useNavDirectionAttr();
+  // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고)
+  const onFlights = pathname === '/flights';
+  const [flightsWidgetMounted, setFlightsWidgetMounted] = useState(onFlights);
+  if (onFlights && !flightsWidgetMounted) setFlightsWidgetMounted(true);
 
   if (loading) {
     return (
@@ -83,7 +88,10 @@ export function AppShell() {
   return (
     <div className={`app-shell ${styles.shell}`}>
       {isGuestSample ? <GuestBanner onLogin={() => setAuthOpen(true)} /> : isDesktop && <HeaderDesktop />}
-      <main className={styles.content}>{showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}</main>
+      <main className={styles.content}>
+        {showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
+        {flightsWidgetMounted ? <FlightsWidgetHost visible={onFlights && !showRouteSkeleton} /> : null}
+      </main>
       {!isGuestSample && !isDesktop && <TabBar />}
       {isGuestSample && authOpen ? <GlobalAuthModal onClose={() => setAuthOpen(false)} /> : null}
       {/* 새 화면은 맨 위에서, 뒤로가기/탭 복귀는 보던 위치에서 — 키를 경로로 잡아
