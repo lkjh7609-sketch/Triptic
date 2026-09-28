@@ -16,7 +16,8 @@ export function cityDisplayName(city: string | null | undefined): string {
     const parts = value.split('、').map((s) => s.trim()).filter(Boolean);
     return parts[parts.length - 1] ?? value;
   }
-  if (/[가-힣]/.test(value) && value.includes(' ')) {
+  // 한글 음절(가~힣)이 섞여 있으면 한국어 주소 — 화면 문구가 아니라 판별용 범위라 이스케이프로 쓴다
+  if (/[\uAC00-\uD7A3]/.test(value) && value.includes(' ')) {
     const words = value.split(/\s+/);
     return words[words.length - 1];
   }
