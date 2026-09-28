@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const rpc = vi.fn();
 vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc }) }));
 
-const { fetchNearbyRecommendations, needsServerCoords } = await import('./aiRecommendations');
+const { fetchNearbyRecommendations, isOutOfRange, needsServerCoords } = await import('./aiRecommendations');
 const { fetchCityDescription } = await import('@/features/home/cityDescription');
 
 const fetchMock = vi.fn();
@@ -54,5 +54,17 @@ describe('needsServerCoords', () => {
     expect(needsServerCoords([{ name: 'A', lat: 1, lng: 2 }])).toBe(false);
     expect(needsServerCoords([{ name: 'A', coordsChecked: true }])).toBe(false);
     expect(needsServerCoords([{ name: 'A', lat: 1, lng: 2 }, { name: 'B' }])).toBe(true);
+  });
+});
+
+describe('isOutOfRange (1.5km)', () => {
+  const osakaStation = { lat: 34.7025, lng: 135.4959 };
+  it('오사카역 기준 우메다 스카이빌딩(약 0.6km)은 통과, 도쿄 롯폰기(약 400km)는 제외', () => {
+    expect(isOutOfRange({ lat: 34.7052872, lng: 135.4896527 }, osakaStation)).toBe(false);
+    expect(isOutOfRange({ lat: 35.661469, lng: 139.7362366 }, osakaStation)).toBe(true);
+  });
+  it('기준점이나 좌표가 없으면 거르지 않는다', () => {
+    expect(isOutOfRange({ lat: 35.66, lng: 139.73 }, null)).toBe(false);
+    expect(isOutOfRange({}, osakaStation)).toBe(false);
   });
 });
