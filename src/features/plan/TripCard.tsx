@@ -5,6 +5,7 @@ import type { TripRow } from '@/shared/api/tripService';
 import { useCityImage } from '@/shared/hooks/useCityImage';
 import { getDDay } from './tripStatus';
 import styles from './TripCard.module.css';
+import { cityDisplayName } from './cityName';
 
 interface TripCardProps {
   trip: TripRow;
@@ -77,7 +78,7 @@ export function TripCard({ trip, onRename, onDuplicate, onDelete, showMenu = tru
           </p>
           {trip.city ? (
             <div className={styles.chips}>
-              <span className={styles.chip}>{trip.city}</span>
+              <span className={styles.chip}>{cityDisplayName(trip.city)}</span>
             </div>
           ) : null}
         </div>

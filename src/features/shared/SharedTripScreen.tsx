@@ -19,6 +19,7 @@ import type { PlaceCategory } from '@/features/plan/placeCategory';
 import type { PlaceItem } from '@/features/plan/types';
 import styles from './SharedTripScreen.module.css';
 import { Plane, MapPin, Hotel as HotelIcon } from 'lucide-react';
+import { cityDisplayName } from '@/features/plan/cityName';
 
 /** get_shared_trip() RPC(0008_shared_trip_cutover.sql, 정규화 테이블 기반)가 반환하는 형태 */
 interface SharedDayRow {
@@ -151,7 +152,7 @@ export function SharedTripScreen() {
       <div className={styles.dayHeader}>
         <span>{t('shared.dayLabel', { day: currentDay })}</span>
         <span className={styles.cityBadge}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span> {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : t('shared.cityUnset')}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span> {dayRow?.city_name ? cityDisplayName(dayRow.city_name) : t('shared.cityUnset')}
         </span>
       </div>
 

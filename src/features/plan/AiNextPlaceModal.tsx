@@ -22,6 +22,7 @@ import { inferPlaceCategory, type PlaceCategory } from './placeCategory';
 import type { DayCitiesData, PlaceItem } from './types';
 import modalStyles from './AddPlaceModal.module.css';
 import styles from './AiNextPlaceModal.module.css';
+import { cityDisplayName } from './cityName';
 
 interface AiNextPlaceModalProps {
   trip: TripRow;
@@ -74,7 +75,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
 
   const dayCities = (tripService.toLocalProject(trip).dayCities ?? {}) as DayCitiesData;
   const dayCityName = dayCities[currentDay]?.name;
-  const city = (dayCityName ?? trip.city ?? '').split(',')[0].trim();
+  const city = cityDisplayName(dayCityName ?? trip.city);
   const placeName = baseItem?.name ?? city;
   const baseLat = baseItem?.lat;
   const baseLng = baseItem?.lng;

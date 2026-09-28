@@ -21,6 +21,7 @@ import type { ItineraryItemRow } from '@/features/plan/itineraryTransform';
 import postDetailStyles from './PostDetailScreen.module.css';
 import sharedStyles from '@/features/shared/SharedTripScreen.module.css';
 import styles from './PostTripViewScreen.module.css';
+import { cityDisplayName } from '@/features/plan/cityName';
 
 function toPlaceItem(row: ItineraryItemRow): PlaceItem {
   return {
@@ -121,7 +122,7 @@ export function PostTripViewScreen() {
         <span>{t('shared.dayLabel', { day: currentDay })}</span>
         <span className={sharedStyles.cityBadge}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MapPin size={16} /></span>{' '}
-          {dayRow?.city_name ? dayRow.city_name.split(',')[0].trim() : t('shared.cityUnset')}
+          {dayRow?.city_name ? cityDisplayName(dayRow.city_name) : t('shared.cityUnset')}
         </span>
       </div>
 
