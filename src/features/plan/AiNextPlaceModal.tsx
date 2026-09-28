@@ -10,7 +10,13 @@ import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { captureError } from '@/shared/monitoring';
 import { haversineKm, formatDistance } from './map/geo';
 import { resolvePlace } from './resolvePlace';
-import { fetchNearbyRecommendations, nearbyRecsQueryKey, type ApiRecommendation } from './aiRecommendations';
+import {
+  fetchNearbyRecommendations,
+  nearbyRecsQueryKey,
+  needsServerCoords,
+  requestNearbyFromServer,
+  type ApiRecommendation,
+} from './aiRecommendations';
 import { inferPlaceCategory, type PlaceCategory } from './placeCategory';
 import type { DayCitiesData, PlaceItem } from './types';
 import modalStyles from './AddPlaceModal.module.css';
@@ -45,7 +51,9 @@ function toRecommendations(list: ApiRecommendation[]): Recommendation[] {
     located:
       rec.lat != null && rec.lng != null
         ? { status: 'found', lat: rec.lat, lng: rec.lng, address: rec.address ?? '', placeId: rec.placeId ?? null, types: rec.types ?? [] }
-        : { status: 'pending' },
+        : rec.coordsChecked
+          ? { status: 'notFound' }
+          : { status: 'pending' },
   }));
 }
 
@@ -96,7 +104,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
       }
       try {
         // 이 기기 캐시 → DB 캐시 → (둘 다 없을 때만) /api로 AI 생성. aiRecommendations.ts 참고
-        const data: ApiRecommendation[] =
+        let data: ApiRecommendation[] =
           cached ??
           (await queryClient.fetchQuery<ApiRecommendation[]>({
             queryKey,
@@ -105,9 +113,26 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
             gcTime: Infinity,
           }));
         if (controller.signal.aborted) return;
-        const list = toRecommendations(data);
-        setRecs(list);
+        setRecs(toRecommendations(data));
         setLoadState({ status: 'ready' });
+
+        // 좌표 없이 저장된 추천이면 서버가 한 번 채워 DB 캐시에 되돌려 쓴다 — 다음부터는
+        // 누가 열든 좌표까지 바로 나온다. 실패하면 아래 브라우저 조회로 넘어간다.
+        if (needsServerCoords(data)) {
+          try {
+            const withCoords = await requestNearbyFromServer({ placeName, city, locale, lat: baseLat, lng: baseLng });
+            if (withCoords.length > 0) {
+              data = withCoords;
+              queryClient.setQueryData(queryKey, withCoords);
+              if (controller.signal.aborted) return;
+              setRecs(toRecommendations(withCoords));
+            }
+          } catch (err) {
+            captureError(err, { context: 'aiNextPlace.serverCoords' });
+          }
+        }
+        if (controller.signal.aborted) return;
+        const list = toRecommendations(data);
 
         // 서버가 좌표를 못 붙인 항목은 브라우저에서 Google 좌표를 찾는다(병렬). 찾은 좌표는
         // 이 기기 캐시에 붙여 두어 같은 추천을 다시 열 때 Google을 또 부르지 않는다.

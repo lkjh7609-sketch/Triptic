@@ -162,7 +162,14 @@ function sanitizeRecommendations(list, placeName) {
         }));
 }
 
-/** 추천 장소에 Google Places 실제 좌표/주소를 붙인다(place_cache로 중복 호출 절약) */
+/** 좌표가 없고 아직 서버에서 찾아본 적도 없는 추천 */
+function needsCoords(rec) {
+    return (rec.lat == null || rec.lng == null) && !rec.coordsChecked;
+}
+
+/** 추천 장소에 Google Places 실제 좌표/주소를 붙인다(place_cache로 중복 호출 절약).
+ * 찾아봤으면(있든 없든) coordsChecked를 남겨 같은 캐시 행을 다시 조회하지 않는다 —
+ * 키/쿼터 오류처럼 일시적인 실패는 표시하지 않아 다음에 다시 시도된다. */
 async function enrichWithGoogleMaps(recs, city, bias) {
     const apiKey = process.env.GOOGLE_PLACES_SERVER_KEY;
     if (!apiKey) return recs;
@@ -170,6 +177,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
 
     return Promise.all(recs.map(async (rec) => {
         const r = { ...rec };
+        if (!needsCoords(r)) return r;
         try {
             const query = city ? `${r.name} ${city}` : r.name;
             const queryKey = normalizeKey(query);
@@ -181,7 +189,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
                     .eq('query_key', queryKey)
                     .maybeSingle();
                 if (cached && cached.lat != null && cached.lng != null) {
-                    return { ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address };
+                    return { ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address, coordsChecked: true };
                 }
             }
 
@@ -194,8 +202,13 @@ async function enrichWithGoogleMaps(recs, city, bias) {
             if (bias) params.set('locationbias', `circle:3000@${bias.lat},${bias.lng}`);
             const res = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?${params}`);
             const data = await res.json();
-            const first = data.status === 'OK' ? data.candidates?.[0] : null;
-            if (!first?.geometry?.location) return r;
+            if (data.status === 'ZERO_RESULTS') return { ...r, coordsChecked: true };
+            if (data.status !== 'OK') {
+                console.warn('[recommend] Google Places status:', data.status, data.error_message ?? '');
+                return r;
+            }
+            const first = data.candidates?.[0];
+            if (!first?.geometry?.location) return { ...r, coordsChecked: true };
 
             const enriched = {
                 ...r,
@@ -203,6 +216,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
                 lat: first.geometry.location.lat,
                 lng: first.geometry.location.lng,
                 address: first.formatted_address,
+                coordsChecked: true,
             };
             if (db) {
                 const { error } = await db.from('place_cache').upsert({
@@ -259,14 +273,23 @@ export default async function handler(req, res) {
             .maybeSingle();
         if (error) console.warn('[recommend] cache read failed:', error.message);
         if (hit && Array.isArray(hit.payload?.recommendations)) {
-            void db.from('ai_recommendation_cache').update({ hit_count: (hit.hit_count ?? 0) + 1 }).eq('id', hit.id).then(() => {});
+            let recommendations = hit.payload.recommendations;
+            // 좌표 없이 저장된 추천(서버 키가 없던 때 생성분)은 여기서 한 번 채워 캐시에 되돌려
+            // 쓴다 — 앱은 캐시에 좌표 없는 항목이 있을 때만 이 경로로 온다(aiRecommendations.ts).
+            const update = { hit_count: (hit.hit_count ?? 0) + 1 };
+            if (process.env.GOOGLE_PLACES_SERVER_KEY && recommendations.some(needsCoords)) {
+                recommendations = await enrichWithGoogleMaps(recommendations, city, bias);
+                update.payload = { ...hit.payload, recommendations };
+            }
+            const { error: updateErr } = await db.from('ai_recommendation_cache').update(update).eq('id', hit.id);
+            if (updateErr) console.warn('[recommend] cache update failed:', updateErr.message);
             return res.status(200).json({
                 success: true,
                 cached: true,
                 provider: hit.provider,
                 modelUsed: hit.model_used,
                 basePlace: placeName,
-                recommendations: hit.payload.recommendations,
+                recommendations,
             });
         }
     }
