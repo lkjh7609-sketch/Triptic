@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
-import { CONTACT_EMAIL } from '@/shared/config';
+import { AFFILIATE_LINKS, CONTACT_EMAIL } from '@/shared/config';
 import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
 import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import styles from './HomeDesktop.module.css';
@@ -225,7 +225,7 @@ export function HomeDesktop() {
             <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}>
               <Briefcase size={16} aria-hidden="true" /> {t('desktop.stays')}
             </a>
-            <a href="https://www.klook.com/" target="_blank" rel="noopener noreferrer" className={styles.categoryPill}>
+            <a href={AFFILIATE_LINKS.klookActivities} target="_blank" rel="sponsored noopener" className={styles.categoryPill}>
               <Tent size={16} aria-hidden="true" /> {t('desktop.activities')}
             </a>
           </div>
