@@ -39,6 +39,52 @@
   color: var(--brand, #FF6B4A);
 }
 
+/* 홈 드롭다운 — 항목 높이를 헤더(64px)와 같게 해 메뉴가 헤더 바로 아래 붙는다 */
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 64px;
+}
+
+.subMenu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 160px;
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1001;
+}
+
+.navItem:hover .subMenu,
+.navItem:focus-within .subMenu {
+  display: flex;
+}
+
+.subMenuItem {
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.subMenuItem:hover,
+.subMenuItem[aria-current="page"] {
+  background: var(--surface-subtle);
+  color: var(--brand);
+}
+
 .profileContainer {
   position: relative;
   border: none;

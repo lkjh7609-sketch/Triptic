@@ -70,5 +70,23 @@
   "flights": {
     "title": "搜尋機票",
     "subtitle": "一次比較多家航空公司與旅行社的價格"
+  },
+  "sections": {
+    "label": "首頁選單",
+    "home": "首頁",
+    "flights": "機票",
+    "hotels": "飯店",
+    "activities": "活動"
+  },
+  "hotels": {
+    "title": "住宿",
+    "subtitle": "尋找目的地的住宿",
+    "cta": "在 Agoda 搜尋住宿"
+  },
+  "activities": {
+    "title": "行程與活動",
+    "subtitle": "瀏覽當地行程、門票與體驗",
+    "cta": "在 Klook 瀏覽行程與活動",
+    "popular": "熱門城市"
   }
 }

@@ -12,10 +12,11 @@ import { EditProfileModal } from '@/features/settings/EditProfileModal';
 import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
 import { LanguageModal } from '@/features/settings/LanguageModal';
 import { BackupModal } from '@/features/plan/BackupModal';
+import { HOME_SECTIONS, isHomeSectionPath } from '@/features/home/homeSections';
 import styles from './HeaderDesktop.module.css';
 
 export function HeaderDesktop() {
-  const { t } = useTranslation(['common', 'settings']);
+  const { t } = useTranslation(['common', 'settings', 'home']);
   const { user } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -75,9 +76,27 @@ export function HeaderDesktop() {
         </Link>
         
         <nav className={styles.nav}>
-          <Link to="/" className={styles.navLink} aria-current={pathname === '/' ? 'page' : undefined}>
-            {t('tab.home')}
-          </Link>
+          {/* 홈에 커서를 올리거나(키보드는 포커스) 하면 항공·호텔·액티비티가 펼쳐진다.
+              메뉴가 헤더 바로 아래 붙어 있어 커서를 내리는 사이 닫히지 않는다 */}
+          <div className={styles.navItem}>
+            <Link to="/" className={styles.navLink} aria-current={isHomeSectionPath(pathname) ? 'page' : undefined}>
+              {t('tab.home')}
+            </Link>
+            <div className={styles.subMenu}>
+              {HOME_SECTIONS.filter((s) => s.to !== '/').map((s) => (
+                <Link
+                  key={s.to}
+                  to={s.to}
+                  className={styles.subMenuItem}
+                  aria-current={pathname === s.to ? 'page' : undefined}
+                  // 누른 뒤에도 포커스가 남아 메뉴가 계속 열려 있지 않게
+                  onClick={(e) => e.currentTarget.blur()}
+                >
+                  {t(`home:sections.${s.key}`)}
+                </Link>
+              ))}
+            </div>
+          </div>
           <Link to="/plan" className={styles.navLink} aria-current={pathname.startsWith('/plan') ? 'page' : undefined}>
             {t('tab.plan')}
           </Link>
