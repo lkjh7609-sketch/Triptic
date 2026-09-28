@@ -81,7 +81,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   const locale = i18n.language;
 
   const queryClient = useQueryClient();
-  const recsQueryKey = nearbyRecsQueryKey({ placeName, city, locale });
+  const recsQueryKey = nearbyRecsQueryKey({ placeName, city, locale, lat: baseLat, lng: baseLng });
   // 이 기기에서 전에 받은 추천이면 첫 화면부터 바로(스켈레톤 없이) 보여준다
   const [loadState, setLoadState] = useState<LoadState>(() =>
     queryClient.getQueryData(recsQueryKey) ? { status: 'ready' } : { status: 'loading' },
@@ -99,7 +99,8 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   useEffect(() => {
     const controller = new AbortController();
     const bias = baseLat != null && baseLng != null ? { lat: baseLat, lng: baseLng } : null;
-    const queryKey = nearbyRecsQueryKey({ placeName, city, locale });
+    const queryKey = nearbyRecsQueryKey({ placeName, city, locale, lat: baseLat, lng: baseLng });
+    const basePlaceId = baseItem?.placeId ?? null;
 
     async function load() {
       const cached = queryClient.getQueryData<ApiRecommendation[]>(queryKey);
@@ -113,7 +114,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
           cached ??
           (await queryClient.fetchQuery<ApiRecommendation[]>({
             queryKey,
-            queryFn: () => fetchNearbyRecommendations({ placeName, city, locale, lat: baseLat, lng: baseLng }),
+            queryFn: () => fetchNearbyRecommendations({ placeName, city, locale, lat: baseLat, lng: baseLng, placeId: basePlaceId }),
             staleTime: Infinity,
             gcTime: Infinity,
           }));
@@ -125,7 +126,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
         // 누가 열든 좌표까지 바로 나온다. 실패하면 아래 브라우저 조회로 넘어간다.
         if (needsServerCoords(data)) {
           try {
-            const withCoords = await requestNearbyFromServer({ placeName, city, locale, lat: baseLat, lng: baseLng });
+            const withCoords = await requestNearbyFromServer({ placeName, city, locale, lat: baseLat, lng: baseLng, placeId: basePlaceId });
             if (withCoords.length > 0) {
               data = withCoords;
               queryClient.setQueryData(queryKey, withCoords);

@@ -28,11 +28,50 @@ interface NearbyInput {
   locale: string;
   lat?: number;
   lng?: number;
+  /** 기준 장소 자신은 추천에서 뺀다 */
+  placeId?: string | null;
 }
 
-export function nearbyRecsQueryKey({ placeName, city, locale }: Pick<NearbyInput, 'placeName' | 'city' | 'locale'>) {
+/** 기준 좌표가 있으면 좌표(약 11m 단위)로, 없으면(도시 기준 추천) 이름으로 */
+export function nearbyRecsQueryKey({ placeName, city, locale, lat, lng }: Omit<NearbyInput, 'placeId'>) {
+  if (lat != null && lng != null) return ['ai', 'nearby-pool', aiLocale(locale), lat.toFixed(4), lng.toFixed(4)] as const;
   const { cityKey, placeKey } = nearbyCacheKeys(placeName, city);
   return ['ai', 'nearby', aiLocale(locale), cityKey, placeKey] as const;
+}
+
+/** 반경 안 추천이 이만큼 쌓여 있으면 AI를 부르지 않는다(api/recommend.js POOL_TARGET) */
+export const NEARBY_TARGET = 5;
+
+interface PoolRow {
+  place_id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  address: string | null;
+  category: string;
+  category_label: string | null;
+  signature_menu: string | null;
+  price_range: string | null;
+  reason: string | null;
+  tip: string | null;
+  distance_m: number;
+}
+
+function poolRowToRec(row: PoolRow): ApiRecommendation {
+  return {
+    name: row.name,
+    category: row.category,
+    categoryLabel: row.category_label ?? '',
+    signatureMenu: row.signature_menu ?? '',
+    priceRange: row.price_range ?? '',
+    reason: row.reason ?? '',
+    tip: row.tip ?? '',
+    placeId: row.place_id,
+    lat: row.lat,
+    lng: row.lng,
+    address: row.address ?? '',
+    coordsChecked: true,
+  };
 }
 
 /** "주변" 추천 최대 거리(api/recommend.js MAX_DISTANCE_M과 같은 값) */
@@ -54,15 +93,46 @@ export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRe
   const res = await fetch(apiUrl('/api/recommend'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ placeName: input.placeName, city: input.city, category: 'all', locale: input.locale, lat: input.lat, lng: input.lng }),
+    body: JSON.stringify({
+      placeName: input.placeName,
+      city: input.city,
+      category: 'all',
+      locale: input.locale,
+      lat: input.lat,
+      lng: input.lng,
+      placeId: input.placeId ?? undefined,
+    }),
   });
   if (!res.ok) throw new Error(`recommend HTTP ${res.status}`);
   const json = (await res.json()) as { recommendations?: ApiRecommendation[] };
   return json.recommendations ?? [];
 }
 
-/** 1) DB 캐시(0049) → 2) 없을 때만 /api/recommend(LLM으로 한 번 생성하고 서버가 DB에 영구 저장) */
+/**
+ * 기준 좌표가 있으면: 1.5km 안 장소 풀(0050)에 5곳 이상 있으면 그대로(AI 없음), 모자라면
+ * /api/recommend가 AI로 더 받아 반경 안 것만 풀에 쌓은 뒤 돌려준다.
+ * 좌표가 없으면(도시 기준): 1) 이름별 DB 캐시(0049) → 2) 없을 때만 /api/recommend.
+ */
 export async function fetchNearbyRecommendations(input: NearbyInput): Promise<ApiRecommendation[]> {
+  if (input.lat != null && input.lng != null) {
+    try {
+      const { data, error } = await getSupabaseClient().rpc('get_nearby_ai_places', {
+        p_lat: input.lat,
+        p_lng: input.lng,
+        p_radius_m: NEARBY_RADIUS_M,
+        p_locale: aiLocale(input.locale),
+        p_limit: 11,
+      });
+      if (!error && Array.isArray(data)) {
+        const rows = (data as PoolRow[]).filter((r) => r.place_id !== input.placeId && r.distance_m > 40).slice(0, 10);
+        if (rows.length >= NEARBY_TARGET) return rows.map(poolRowToRec);
+      }
+    } catch {
+      // RPC 네트워크 오류 등 — 서버로 넘어간다
+    }
+    return requestNearbyFromServer(input);
+  }
+
   const { cityKey, placeKey } = nearbyCacheKeys(input.placeName, input.city);
   try {
     const { data, error } = await getSupabaseClient().rpc('get_ai_cache', {

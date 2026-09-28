@@ -68,3 +68,26 @@ describe('isOutOfRange (1.5km)', () => {
     expect(isOutOfRange({}, osakaStation)).toBe(false);
   });
 });
+
+describe('기준 좌표가 있으면 1.5km 장소 풀부터', () => {
+  const row = (id: string, distance: number) => ({
+    place_id: id, name: id, lat: 34.7, lng: 135.49, address: null, category: 'spot',
+    category_label: null, signature_menu: null, price_range: null, reason: null, tip: null, distance_m: distance,
+  });
+  const base = { placeName: '오사카역', city: 'Osaka', locale: 'ko', lat: 34.7025, lng: 135.4959, placeId: 'base' };
+
+  it('반경 안에 5곳 이상이면 AI(/api) 없이 풀만 쓴다 — 기준 장소 자신은 뺀다', async () => {
+    rpc.mockResolvedValue({ data: [row('base', 0), row('a', 100), row('b', 200), row('c', 300), row('d', 400), row('e', 500)], error: null });
+    const recs = await fetchNearbyRecommendations(base);
+    expect(recs.map((r) => r.placeId)).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect(rpc).toHaveBeenCalledWith('get_nearby_ai_places', expect.objectContaining({ p_radius_m: 1500, p_locale: 'ko' }));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('5곳 미만이면 서버에 요청해 AI로 더 받는다(기준 place_id 전달)', async () => {
+    rpc.mockResolvedValue({ data: [row('a', 100), row('b', 200), row('c', 300), row('d', 400)], error: null });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ recommendations: [{ name: 'a' }, { name: 'new' }] }) });
+    expect(await fetchNearbyRecommendations(base)).toEqual([{ name: 'a' }, { name: 'new' }]);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({ lat: 34.7025, lng: 135.4959, placeId: 'base' });
+  });
+});
