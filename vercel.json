@@ -43,6 +43,9 @@
     },
     "api/cityDesc.js": {
       "maxDuration": 20
+    },
+    "api/adminSales.js": {
+      "maxDuration": 30
     }
   }
 }

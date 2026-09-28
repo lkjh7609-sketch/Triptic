@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     airWebResultsUrl,
+    fetchSales,
     isMyrealtripUrl,
+    isProductUrl,
     kstToday,
     normalizeProduct,
     normalizeReservation,
@@ -77,6 +79,14 @@ describe('links', () => {
         expect(isMyrealtripUrl('https://evilmyrealtrip.com/x')).toBe(false);
         expect(isMyrealtripUrl(`https://www.myrealtrip.com/?q=${'a'.repeat(2000)}`)).toBe(false);
         expect(isMyrealtripUrl(undefined)).toBe(false);
+    });
+
+    it('상품 링크는 투어·티켓 상품 상세 주소만', () => {
+        expect(isProductUrl('https://experiences.myrealtrip.com/products/5869248')).toBe(true);
+        expect(isProductUrl('https://experiences.myrealtrip.com/products/5869248?utm=x')).toBe(true);
+        expect(isProductUrl('https://www.myrealtrip.com/offers/3467')).toBe(false);
+        expect(isProductUrl('https://experiences.myrealtrip.com/products/abc')).toBe(false);
+        expect(isProductUrl('https://experiences.myrealtrip.com/products/1/../../x')).toBe(false);
     });
 });
 
@@ -184,5 +194,54 @@ describe('normalizers', () => {
                 'flight',
             ),
         ).toMatchObject({ title: '제주항공', category: 'AIR_JEJU_INT', status: 'CANCELLED', amount: 305490, canceledAt: '2026-02-06T15:14:07' });
+    });
+});
+
+describe('fetchSales — 조회 기간 제한대로 나눠 부른다', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.unstubAllEnvs();
+    });
+
+    it('항공 예약·항공 수익은 28일씩, 예약은 한 번에(페이지), 비항공 수익은 한 번에', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        const calls = [];
+        vi.stubGlobal('fetch', async (url) => {
+            const u = new URL(String(url));
+            calls.push([u.pathname, u.searchParams.get('startDate'), u.searchParams.get('endDate'), u.searchParams.get('dateSearchType')]);
+            return { ok: true, json: async () => ({ data: [], meta: { totalCount: 0 }, result: { status: 200, code: 'success' } }) };
+        });
+        const result = await fetchSales('2026-07-01', '2026-09-28', 'payment');
+        expect(result).toEqual({ reservations: [], revenues: [], failed: [] });
+        const byPath = (path) => calls.filter((c) => c[0] === path);
+        expect(byPath('/v1/reservations')).toEqual([['/v1/reservations', '2026-07-01', '2026-09-28', 'RESERVATION_DATE']]);
+        expect(byPath('/v1/revenues')).toEqual([['/v1/revenues', '2026-07-01', '2026-09-28', 'PAYMENT']]);
+        const flightRanges = [
+            ['2026-07-01', '2026-07-28'],
+            ['2026-07-29', '2026-08-25'],
+            ['2026-08-26', '2026-09-22'],
+            ['2026-09-23', '2026-09-28'],
+        ];
+        expect(byPath('/v1/reservations/flight').map((c) => [c[1], c[2]])).toEqual(flightRanges);
+        expect(byPath('/v1/revenues/flight').map((c) => [c[1], c[2]])).toEqual(flightRanges);
+    });
+
+    it('한 쪽이 실패해도 나머지는 돌려주고 실패한 쪽 이름을 모은다', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        vi.stubGlobal('fetch', async (url) => {
+            const failing = new URL(String(url)).pathname === '/v1/revenues/flight';
+            return {
+                ok: true,
+                json: async () =>
+                    failing
+                        ? { data: {}, result: { status: 400, code: 'bad_request', message: 'too long' } }
+                        : { data: [{ reservationNo: 'R1', commission: 100 }], result: { status: 200, code: 'success' } },
+            };
+        });
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const result = await fetchSales('2026-09-01', '2026-09-28', 'settlement');
+        expect(result.failed).toEqual(['flightRevenues']);
+        expect(result.revenues).toHaveLength(1);
+        expect(result.reservations).toHaveLength(2);
     });
 });

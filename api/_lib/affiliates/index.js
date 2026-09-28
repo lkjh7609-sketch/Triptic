@@ -42,7 +42,7 @@ export const LINK_BRANDS = {
             return 'https://yesim.app/';
         },
     },
-    // kind=search(q: 통합 검색) | page(url: 상품 주소 등 마이리얼트립 페이지) | flight(항공 검색 결과)
+    // kind=search(q: 통합 검색) | page(url: 투어·티켓 상품 주소) | flight(항공 검색 결과)
     myrealtrip: {
         network: 'myrealtrip',
         async target(query) {
@@ -50,7 +50,7 @@ export const LINK_BRANDS = {
                 const flight = myrealtrip.parseFlightQuery(query);
                 return flight ? myrealtrip.flightLandingUrl(flight) : null;
             }
-            if (query.kind === 'page') return myrealtrip.isMyrealtripUrl(query.url) ? query.url : null;
+            if (query.kind === 'page') return myrealtrip.isProductUrl(query.url) ? query.url : null;
             const q = sanitizeInput(query.q, 80);
             return q ? myrealtrip.searchUrl(q) : null;
         },
