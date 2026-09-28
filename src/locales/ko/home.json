@@ -70,5 +70,23 @@
   "flights": {
     "title": "항공권 검색",
     "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요"
+  },
+  "sections": {
+    "label": "홈 메뉴",
+    "home": "홈",
+    "flights": "항공",
+    "hotels": "호텔",
+    "activities": "액티비티"
+  },
+  "hotels": {
+    "title": "숙소",
+    "subtitle": "여행지 숙소를 찾아보세요",
+    "cta": "아고다에서 숙소 찾기"
+  },
+  "activities": {
+    "title": "투어·액티비티",
+    "subtitle": "현지 투어, 입장권, 체험을 둘러보세요",
+    "cta": "Klook에서 투어·액티비티 보기",
+    "popular": "인기 도시"
   }
 }

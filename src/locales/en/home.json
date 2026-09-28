@@ -71,5 +71,23 @@
   "flights": {
     "title": "Search flights",
     "subtitle": "Compare prices from airlines and travel agencies in one place"
+  },
+  "sections": {
+    "label": "Home menu",
+    "home": "Home",
+    "flights": "Flights",
+    "hotels": "Hotels",
+    "activities": "Activities"
+  },
+  "hotels": {
+    "title": "Hotels",
+    "subtitle": "Find a place to stay at your destination",
+    "cta": "Find hotels on Agoda"
+  },
+  "activities": {
+    "title": "Tours & activities",
+    "subtitle": "Browse local tours, tickets and experiences",
+    "cta": "Browse tours & activities on Klook",
+    "popular": "Popular cities"
   }
 }

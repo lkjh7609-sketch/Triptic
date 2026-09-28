@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, Map, MessageCircle, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { isHomeSectionPath } from '@/features/home/homeSections';
 import styles from './TabBar.module.css';
 
 interface TabDef {
@@ -19,7 +20,8 @@ const TABS: TabDef[] = [
 ];
 
 function isTabActive(pathname: string, to: string): boolean {
-  if (to === '/') return pathname === '/';
+  // 홈 탭은 홈 상단 탭(항공·호텔·액티비티)에서도 켜져 있다
+  if (to === '/') return isHomeSectionPath(pathname);
   return pathname === to || pathname.startsWith(`${to}/`);
 }
 

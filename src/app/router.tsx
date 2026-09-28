@@ -121,6 +121,20 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'hotels',
+          lazy: async () => {
+            const { HotelsScreen } = await retryChunkLoad(() => import('@/features/home/HotelsScreen'));
+            return { Component: HotelsScreen };
+          },
+        },
+        {
+          path: 'activities',
+          lazy: async () => {
+            const { ActivitiesScreen } = await retryChunkLoad(() => import('@/features/home/ActivitiesScreen'));
+            return { Component: ActivitiesScreen };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => {
             const { SettingsScreen } = await retryChunkLoad(() => import('@/features/settings/SettingsScreen'));

@@ -70,5 +70,23 @@
   "flights": {
     "title": "航空券を検索",
     "subtitle": "複数の航空会社・旅行会社の料金をまとめて比較できます"
+  },
+  "sections": {
+    "label": "ホームメニュー",
+    "home": "ホーム",
+    "flights": "航空券",
+    "hotels": "ホテル",
+    "activities": "アクティビティ"
+  },
+  "hotels": {
+    "title": "宿泊",
+    "subtitle": "旅行先の宿を探しましょう",
+    "cta": "Agodaで宿を探す"
+  },
+  "activities": {
+    "title": "ツアー・アクティビティ",
+    "subtitle": "現地ツアー、入場券、体験をチェック",
+    "cta": "Klookでツアー・アクティビティを見る",
+    "popular": "人気の都市"
   }
 }

@@ -5,6 +5,8 @@ describe('navDirection', () => {
   it('탭끼리 이동은 페이드', () => {
     expect(navDirection('/', '/plan', 'PUSH')).toBe('fade');
     expect(navDirection('/community', '/settings', 'POP')).toBe('fade');
+    expect(navDirection('/', '/flights', 'PUSH')).toBe('fade');
+    expect(navDirection('/flights', '/activities', 'PUSH')).toBe('fade');
   });
 
   it('다른 섹션 깊은 화면에서 탭을 누르면 페이드', () => {

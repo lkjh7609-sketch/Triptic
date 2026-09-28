@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trackScreenView } from '@/shared/monitoring';
+import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './FlightsScreen.module.css';
 
 /**
@@ -15,11 +16,14 @@ export function FlightsScreen() {
   }, []);
 
   return (
-    <div className={styles.wrap}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{t('flights.title')}</h1>
-        <p className={styles.subtitle}>{t('flights.subtitle')}</p>
-      </header>
-    </div>
+    <>
+      <HomeSectionTabs />
+      <div className={styles.wrap}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{t('flights.title')}</h1>
+          <p className={styles.subtitle}>{t('flights.subtitle')}</p>
+        </header>
+      </div>
+    </>
   );
 }
