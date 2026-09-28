@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react';
+
 /**
  * 테마 전환 (02-screens.md §5 환경설정 "테마(시스템/라이트/다크)")
  * tokens.css는 이미 `:root[data-theme='dark']`/시스템 `prefers-color-scheme`
@@ -39,4 +41,27 @@ export function setTheme(theme: ThemePreference) {
     // 저장 실패해도 이번 세션 화면 반영은 계속 진행
   }
   apply(theme);
+}
+
+/** 지금 화면에 적용된 테마(시스템 설정이면 OS 다크 모드 여부까지 풀어서) */
+function resolvedTheme(): 'light' | 'dark' {
+  const attr = document.documentElement.getAttribute('data-theme');
+  if (attr === 'light' || attr === 'dark') return attr;
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function subscribeTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const media = window.matchMedia?.('(prefers-color-scheme: dark)');
+  media?.addEventListener?.('change', onChange);
+  return () => {
+    observer.disconnect();
+    media?.removeEventListener?.('change', onChange);
+  };
+}
+
+/** 테마가 바뀌면 다시 그려야 하는 외부 위젯(색을 주소로 받는 제휴 위젯 등)용 */
+export function useResolvedTheme(): 'light' | 'dark' {
+  return useSyncExternalStore(subscribeTheme, resolvedTheme, () => 'light');
 }
