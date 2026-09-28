@@ -38,7 +38,7 @@ function writeChecked(tripId: string, keys: ItemKey[]) {
  * eSIM·보험은 제휴 링크, 여권·환전은 직접 체크.
  */
 export function DepartureChecklist({ trip }: { trip: TripRow }) {
-  const { t } = useTranslation('plan');
+  const { t, i18n } = useTranslation('plan');
   const [checked, setChecked] = useState<ItemKey[]>(() => readChecked(trip.id));
   const [findingFlights, setFindingFlights] = useState(false);
   const esimUrl = usePartnerLandingLink('yesim', AFFILIATE_LINKS.esimFallback);
@@ -68,7 +68,7 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
           disabled={findingFlights}
           onClick={() => {
             setFindingFlights(true);
-            void openFlightsSearchForTrip(trip).finally(() => setFindingFlights(false));
+            void openFlightsSearchForTrip(trip, i18n.language).finally(() => setFindingFlights(false));
           }}
         >
           {t('desktop.checklist.find')}

@@ -8,7 +8,9 @@ import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { useTranslation } from 'react-i18next';
 import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
+import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { navDirection } from './navDirection';
 import styles from './AppShell.module.css';
 
@@ -85,8 +87,10 @@ export function AppShell() {
   const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
   useNavDirectionAttr();
   useRedirectFlightsWidgetResults();
-  // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고)
-  const onFlights = pathname === '/flights';
+  // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고).
+  // 한국어는 마이리얼트립 검색 폼을 쓰므로 위젯을 만들지 않는다
+  const { i18n } = useTranslation();
+  const onFlights = pathname === '/flights' && flightsProviderFor(i18n.language) === 'travelpayouts';
   const [flightsWidgetMounted, setFlightsWidgetMounted] = useState(onFlights);
   if (onFlights && !flightsWidgetMounted) setFlightsWidgetMounted(true);
 

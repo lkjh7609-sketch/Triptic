@@ -67,7 +67,29 @@
   },
   "flights": {
     "title": "Search flights",
-    "subtitle": "Compare prices from airlines and travel agencies in one place"
+    "subtitle": "Compare prices from airlines and travel agencies in one place",
+    "form": {
+      "tripType": "Trip type",
+      "roundTrip": "Round trip",
+      "oneWay": "One way",
+      "from": "From",
+      "to": "To",
+      "swap": "Swap origin and destination",
+      "placePlaceholder": "City or airport",
+      "airport": "Airport",
+      "allAirports": "All airports",
+      "depart": "Depart",
+      "return": "Return",
+      "adults": "Passengers",
+      "adultsCount_one": "{{count}} adult",
+      "adultsCount_other": "{{count}} adults",
+      "search": "Search flights",
+      "searching": "Opening…",
+      "needPlaces": "Pick both origin and destination from the list",
+      "badDates": "Check the dates — return must be on or after departure",
+      "linkError": "Couldn't open the results. Please try again shortly",
+      "opensOnMyrealtrip": "Results and booking open on MyRealTrip"
+    }
   },
   "sections": {
     "label": "Home menu",

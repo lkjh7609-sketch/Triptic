@@ -66,7 +66,28 @@
   },
   "flights": {
     "title": "航空券を検索",
-    "subtitle": "複数の航空会社・旅行会社の料金をまとめて比較できます"
+    "subtitle": "複数の航空会社・旅行会社の料金をまとめて比較できます",
+    "form": {
+      "tripType": "旅程",
+      "roundTrip": "往復",
+      "oneWay": "片道",
+      "from": "出発地",
+      "to": "目的地",
+      "swap": "出発地と目的地を入れ替え",
+      "placePlaceholder": "都市または空港",
+      "airport": "空港",
+      "allAirports": "すべての空港",
+      "depart": "出発日",
+      "return": "帰国日",
+      "adults": "人数",
+      "adultsCount_other": "大人{{count}}名",
+      "search": "航空券を検索",
+      "searching": "開いています…",
+      "needPlaces": "出発地と目的地をリストから選んでください",
+      "badDates": "日付を確認してください — 帰国日は出発日以降にしてください",
+      "linkError": "検索結果を開けませんでした。しばらくしてからもう一度お試しください",
+      "opensOnMyrealtrip": "検索結果と予約はMyRealTripで行います"
+    }
   },
   "sections": {
     "label": "ホームメニュー",
