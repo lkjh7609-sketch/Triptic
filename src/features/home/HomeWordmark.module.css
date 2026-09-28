@@ -1,0 +1,153 @@
+/* AppShell의 isDesktop 기준(min-width:1024px)과 맞춘다 — 그 이상에서는
+   HeaderDesktop이 이미 같은 워드마크를 보여주므로 여기서는 숨긴다. */
+.wordmark {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto 26px;
+}
+
+@media (max-width: 1023px) {
+  .wordmark {
+    display: flex;
+  }
+}
+
+.mark {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-pressed));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  animation: wm-pop 720ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* 로고 뒤에서 은은하게 숨 쉬는 빛 */
+.mark::before {
+  content: '';
+  position: absolute;
+  inset: 5px -2px -6px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--brand);
+  filter: blur(14px);
+  opacity: 0.4;
+  animation: wm-glow 5s ease-in-out 900ms infinite;
+}
+
+.needle {
+  animation:
+    wm-spin 1100ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both,
+    wm-wobble 8s ease-in-out 2s infinite;
+}
+
+.name {
+  position: relative;
+  display: inline-flex;
+  padding-bottom: 7px;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+}
+
+.letter {
+  display: inline-block;
+  animation: wm-letter 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(300ms + var(--i) * 60ms);
+}
+
+/* 글자가 다 뜬 뒤 왼쪽에서 오른쪽으로 그어지는 가는 선 */
+.rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--brand), transparent);
+  transform-origin: left center;
+  animation: wm-rule 900ms cubic-bezier(0.22, 1, 0.36, 1) 950ms both;
+}
+
+@keyframes wm-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-18deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wm-spin {
+  from {
+    transform: rotate(-220deg);
+  }
+  to {
+    transform: rotate(0);
+  }
+}
+
+/* 대부분 가만히 있다가 가끔 나침반 바늘이 흔들리며 자리 잡는다 */
+@keyframes wm-wobble {
+  0%,
+  32%,
+  100% {
+    transform: rotate(0);
+  }
+  8% {
+    transform: rotate(16deg);
+  }
+  16% {
+    transform: rotate(-9deg);
+  }
+  24% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes wm-glow {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes wm-letter {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes wm-rule {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
