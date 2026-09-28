@@ -4,17 +4,44 @@ import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { AFFILIATE_LINKS } from '@/shared/config';
 import { cityDisplayName } from './cityName';
 
-/** 어디서 누른 링크인지(Travelpayouts 리포트의 sub_id) — api/partnerLink.js SUB_ID */
-export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist';
+/** 어디서 누른 링크인지(제휴사 리포트·판매 탭의 sub_id) — api/partnerLink.js SUB_ID */
+export type PartnerPlacement = 'trip' | 'search' | 'city' | 'ticket' | 'checklist' | 'product' | 'flights' | 'trip_flights';
 
-/** Klook에서 이 검색어로 검색한 결과로 가는 제휴 링크(api/partnerLink.js, 서버가 한 번 변환해 저장) */
-export async function fetchKlookSearchLink(query: string, locale: string, placement: PartnerPlacement): Promise<string> {
-  const params = new URLSearchParams({ brand: 'klook', q: query, locale: aiLocale(locale), placement });
-  const res = await fetch(apiUrl(`/api/partnerLink?${params.toString()}`));
+/** 제휴 링크(api/partnerLink.js — 제휴사는 서버 레지스트리 api/_lib/affiliates, 한 번 변환해 저장) */
+async function fetchPartnerLink(params: Record<string, string>): Promise<string> {
+  const res = await fetch(apiUrl(`/api/partnerLink?${new URLSearchParams(params).toString()}`));
   if (!res.ok) throw new Error(`partnerLink HTTP ${res.status}`);
   const json = (await res.json()) as { url?: unknown };
   if (typeof json.url !== 'string') throw new Error('partnerLink: no url');
   return json.url;
+}
+
+/** Klook에서 이 검색어로 검색한 결과로 가는 제휴 링크 */
+export function fetchKlookSearchLink(query: string, locale: string, placement: PartnerPlacement): Promise<string> {
+  return fetchPartnerLink({ brand: 'klook', q: query, locale: aiLocale(locale), placement });
+}
+
+/**
+ * 누른 뒤에 받아오는 링크를 새 탭으로. iOS 팝업 차단을 피하려고 누르는 순간 빈 탭을 먼저
+ * 열고 링크가 오면 그 탭을 보낸다. 탭을 못 열면(차단) 지금 창에서 이동.
+ * 링크가 없으면(null) 연 탭을 닫고 false.
+ */
+export async function openInNewTab(getUrl: () => Promise<string | null>): Promise<boolean> {
+  const tab = window.open('', '_blank');
+  if (tab) tab.opener = null;
+  const url = await getUrl().catch(() => null);
+  if (!url) {
+    tab?.close();
+    return false;
+  }
+  if (tab) tab.location.href = url;
+  else window.location.href = url;
+  return true;
+}
+
+/** 제휴 링크를 새 탭으로 — 못 받으면 fallbackUrl로 */
+function openPartnerLink(params: Record<string, string>, fallbackUrl: string | null): Promise<boolean> {
+  return openInNewTab(() => fetchPartnerLink(params).catch(() => fallbackUrl));
 }
 
 /**
@@ -41,22 +68,52 @@ export function useKlookActivitiesLink(
   return data ?? AFFILIATE_LINKS.klookActivities;
 }
 
-/**
- * 검색창에서 입력한 키워드로 Klook 검색(제휴 링크). 링크는 누른 뒤에 받아와야 해서,
- * iOS 팝업 차단을 피하려고 누르는 순간 빈 탭을 먼저 열고 링크가 오면 그 탭을 보낸다.
- * 탭을 못 열면(차단) 지금 창에서 이동. 변환이 실패하면 제휴가 붙은 Klook 딜 페이지로.
- */
+/** 검색창에서 입력한 키워드로 Klook 검색(제휴 링크). 변환이 실패하면 제휴가 붙은 Klook 딜 페이지로 */
 export async function openKlookSearch(keyword: string, locale: string, placement: PartnerPlacement = 'search'): Promise<void> {
-  const tab = window.open('', '_blank');
-  if (tab) tab.opener = null;
-  let url: string = AFFILIATE_LINKS.klookActivities;
-  try {
-    url = await fetchKlookSearchLink(keyword, locale, placement);
-  } catch {
-    // 제휴 링크 변환 실패 — 딜 페이지로
-  }
-  if (tab) tab.location.href = url;
-  else window.location.href = url;
+  await openPartnerLink({ brand: 'klook', q: keyword, locale: aiLocale(locale), placement }, AFFILIATE_LINKS.klookActivities);
+}
+
+const MYREALTRIP_SEARCH = 'https://www.myrealtrip.com/search?q=';
+
+/**
+ * 마이리얼트립 통합 검색(마이링크). 서버가 키가 없거나 변환에 실패하면 원래 검색 주소를 주고,
+ * 서버에 닿지도 못하면 여기서 같은 주소로(수수료는 없음).
+ */
+export async function openMyrealtripSearch(keyword: string, placement: PartnerPlacement = 'search'): Promise<void> {
+  await openPartnerLink({ brand: 'myrealtrip', kind: 'search', q: keyword, placement }, `${MYREALTRIP_SEARCH}${encodeURIComponent(keyword)}`);
+}
+
+/** 마이리얼트립 상품 페이지(상품 카드) — 누를 때만 마이링크를 만든다 */
+export async function openMyrealtripPage(url: string, placement: PartnerPlacement = 'product'): Promise<void> {
+  await openPartnerLink({ brand: 'myrealtrip', kind: 'page', url, placement }, url);
+}
+
+export interface FlightSearch {
+  origin: string;
+  originType: 'city' | 'airport';
+  destination: string;
+  destinationType: 'city' | 'airport';
+  departDate: string;
+  /** 없으면 편도 */
+  returnDate: string | null;
+  adults: number;
+}
+
+/** 마이리얼트립 항공 검색 결과(마이링크). 결과 주소는 서버가 만든다 */
+export function fetchMyrealtripFlightsLink(flight: FlightSearch, placement: PartnerPlacement): Promise<string> {
+  const params: Record<string, string> = {
+    brand: 'myrealtrip',
+    kind: 'flight',
+    origin: flight.origin,
+    origin_type: flight.originType,
+    destination: flight.destination,
+    destination_type: flight.destinationType,
+    depart_date: flight.departDate,
+    adults: String(flight.adults),
+    placement,
+  };
+  if (flight.returnDate) params.return_date = flight.returnDate;
+  return fetchPartnerLink(params);
 }
 
 /**

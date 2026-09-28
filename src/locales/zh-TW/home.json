@@ -87,6 +87,13 @@
     "searchPlaceholder": "搜尋城市、景點、體驗",
     "searchButton": "搜尋",
     "forTrip": "為您的{{city}}之旅推薦的行程",
-    "recommended": "推薦行程"
+    "recommended": "推薦行程",
+    "providerLabel": "行程搜尋網站",
+    "provider": {
+      "klook": "Klook",
+      "myrealtrip": "MyRealTrip"
+    },
+    "myrealtripDefaultKeyword": "首爾",
+    "seeAllOnMyrealtrip": "在 MyRealTrip 查看更多{{keyword}}"
   }
 }

@@ -88,6 +88,13 @@
     "searchPlaceholder": "Search cities, attractions, experiences",
     "searchButton": "Search",
     "forTrip": "Tours for your trip to {{city}}",
-    "recommended": "Recommended tours"
+    "recommended": "Recommended tours",
+    "providerLabel": "Search tours on",
+    "provider": {
+      "klook": "Klook",
+      "myrealtrip": "MyRealTrip"
+    },
+    "myrealtripDefaultKeyword": "Seoul",
+    "seeAllOnMyrealtrip": "See more {{keyword}} on MyRealTrip"
   }
 }

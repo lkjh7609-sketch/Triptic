@@ -6,10 +6,12 @@ import { trackScreenView } from '@/shared/monitoring';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
-import { openKlookSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
+import { openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
+import { ACTIVITY_PROVIDERS, readActivityProvider, saveActivityProvider, type ActivityProvider } from './activityProviders';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
 import { KlookToursWidget } from './KlookToursWidget';
+import { MyrealtripProducts } from './MyrealtripProducts';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './SectionScreen.module.css';
 
@@ -25,6 +27,18 @@ function CityActivityCard({ dest }: { dest: FeaturedDestination }) {
   );
 }
 
+/** 마이리얼트립은 도시 검색 결과로 — 링크는 누를 때 만든다(카드마다 미리 만들지 않게) */
+function MyrealtripCityCard({ dest }: { dest: FeaturedDestination }) {
+  const { t } = useTranslation('home');
+  const name = t(`desktop.dest${dest.key}`);
+  return (
+    <button type="button" className={styles.cityCard} onClick={() => void openMyrealtripSearch(name, 'city')}>
+      <img src={dest.image} alt="" className={styles.cityImage} loading="lazy" />
+      <span className={styles.cityName}>{name}</span>
+    </button>
+  );
+}
+
 /** 가장 가까운(진행 중이거나 곧 떠나는) 내 여행 — 좌표가 있는 것만 */
 function useNearestTrip() {
   const { data: trips } = useTrips();
@@ -36,10 +50,14 @@ function useNearestTrip() {
   }, [trips]);
 }
 
-/** 액티비티 탭 — 검색창(키워드 그대로 Klook 검색), 내 다음 여행 도시 투어 위젯, 인기 도시 */
+/**
+ * 액티비티 탭 — 제휴사 선택(Klook | 마이리얼트립), 검색창(키워드 그대로 그 제휴사에서 검색),
+ * 내 다음 여행 도시 추천(Klook 위젯 / 마이리얼트립 상품 카드), 인기 도시
+ */
 export function ActivitiesScreen() {
   const { t, i18n } = useTranslation('home');
   const [keyword, setKeyword] = useState('');
+  const [provider, setProvider] = useState<ActivityProvider>(readActivityProvider);
   const nearestTrip = useNearestTrip();
   // 투어 가격은 설정의 기본 통화로, 문구는 앱 언어로
   const { data: profile } = useProfile();
@@ -54,8 +72,16 @@ export function ActivitiesScreen() {
     e.preventDefault();
     const q = keyword.trim();
     if (!q) return;
-    void openKlookSearch(q, i18n.language);
+    if (provider === 'myrealtrip') void openMyrealtripSearch(q, 'search');
+    else void openKlookSearch(q, i18n.language);
   }
+
+  function chooseProvider(next: ActivityProvider) {
+    setProvider(next);
+    saveActivityProvider(next);
+  }
+
+  const tripCity = nearestTrip ? cityDisplayName(nearestTrip.city) : '';
 
   return (
     <div className={styles.page}>
@@ -67,6 +93,20 @@ export function ActivitiesScreen() {
           </h1>
           <p className={styles.subtitle}>{t('activities.subtitle')}</p>
         </header>
+
+        <div className={styles.providerToggle} role="group" aria-label={t('activities.providerLabel')}>
+          {ACTIVITY_PROVIDERS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              aria-pressed={provider === p}
+              className={provider === p ? styles.providerOn : styles.providerOff}
+              onClick={() => chooseProvider(p)}
+            >
+              {t(`activities.provider.${p}`)}
+            </button>
+          ))}
+        </div>
 
         <form className={styles.searchForm} onSubmit={handleSearch} role="search">
           <Search size={18} className={styles.searchIcon} aria-hidden="true" />
@@ -84,18 +124,27 @@ export function ActivitiesScreen() {
           </button>
         </form>
 
-        <h2 className={styles.sectionTitle}>
-          {tripCityId && nearestTrip
-            ? t('activities.forTrip', { city: cityDisplayName(nearestTrip.city) })
-            : t('activities.recommended')}
-        </h2>
-        <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} currency={currency} />
+        {provider === 'myrealtrip' ? (
+          <>
+            <h2 className={styles.sectionTitle}>
+              {tripCity ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
+            </h2>
+            <MyrealtripProducts keyword={tripCity || t('activities.myrealtripDefaultKeyword')} />
+          </>
+        ) : (
+          <>
+            <h2 className={styles.sectionTitle}>
+              {tripCityId && nearestTrip ? t('activities.forTrip', { city: tripCity }) : t('activities.recommended')}
+            </h2>
+            <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} currency={currency} />
+          </>
+        )}
 
         <h2 className={styles.sectionTitle}>{t('activities.popular')}</h2>
         <div className={styles.cityGrid}>
-          {FEATURED.map((dest) => (
-            <CityActivityCard key={dest.key} dest={dest} />
-          ))}
+          {FEATURED.map((dest) =>
+            provider === 'myrealtrip' ? <MyrealtripCityCard key={dest.key} dest={dest} /> : <CityActivityCard key={dest.key} dest={dest} />,
+          )}
         </div>
       </div>
     </div>

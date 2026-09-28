@@ -87,6 +87,13 @@
     "searchPlaceholder": "도시, 명소, 체험 검색 (예: 유니버설 스튜디오)",
     "searchButton": "검색",
     "forTrip": "{{city}} 여행에 추천하는 투어",
-    "recommended": "추천 투어"
+    "recommended": "추천 투어",
+    "providerLabel": "투어 검색 사이트",
+    "provider": {
+      "klook": "Klook",
+      "myrealtrip": "마이리얼트립"
+    },
+    "myrealtripDefaultKeyword": "서울",
+    "seeAllOnMyrealtrip": "마이리얼트립에서 {{keyword}} 더 보기"
   }
 }
