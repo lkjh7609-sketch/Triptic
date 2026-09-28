@@ -13,6 +13,8 @@ export default tseslint.config(
       'www/**',
       'ios/**',
       'public/**',
+      // scripts/build-doc-pipeline.mjs가 만드는 번들(원본 src/features/documents/parseBooking는 검사한다)
+      'api/_lib/documents/pipeline.js',
       '*.config.js',
       '*.config.cjs',
     ],

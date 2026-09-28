@@ -26,6 +26,9 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Check document pipeline bundle is up to date
+        run: node scripts/build-doc-pipeline.mjs --check
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
