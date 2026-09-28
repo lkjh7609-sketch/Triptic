@@ -59,6 +59,7 @@ import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
 import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List, Ticket } from 'lucide-react';
 import { useKlookActivitiesLink } from './partnerLinks';
+import { cityDisplayName } from './cityName';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -419,7 +420,7 @@ export function TripDetailScreen() {
           </div>
           <div className={styles.dayHeaderActions}>
             <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
-              <MapPin size={16} /> <span className={styles.buttonText}>{currentCity.name ? currentCity.name.split(',')[0].trim() : t('tripDetail.cityUnset')}</span>
+              <MapPin size={16} /> <span className={styles.buttonText}>{currentCity.name ? cityDisplayName(currentCity.name) : t('tripDetail.cityUnset')}</span>
             </button>
             {currentDay < totalDays ? (<button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
               <HotelIcon size={16} /> <span className={styles.buttonText}>{t('tripDetail.hotelChipLabel')}</span>
@@ -435,7 +436,7 @@ export function TripDetailScreen() {
           {currentCity.name ? (
             <a href={klookActivitiesUrl} target="_blank" rel="sponsored noopener" className={styles.activityLink}>
               <Ticket size={14} aria-hidden="true" />
-              <span>{t('tripDetail.activitiesLink', { city: currentCity.name.split(',')[0].trim() })}</span>
+              <span>{t('tripDetail.activitiesLink', { city: cityDisplayName(currentCity.name) })}</span>
               <ExternalLink size={12} aria-hidden="true" />
             </a>
           ) : null}
