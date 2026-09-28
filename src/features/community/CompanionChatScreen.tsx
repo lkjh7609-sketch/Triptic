@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { CheckCircle2, LogOut, QrCode, Send } from 'lucide-react';
+import { CheckCircle2, LogOut, QrCode, Receipt, Send } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
@@ -132,6 +132,9 @@ export function CompanionChatScreen() {
             <button type="button" className={styles.actionBtn} onClick={() => navigate(`/community/companion/${post.id}/match`)}>
               <QrCode size={16} aria-hidden="true" /> {t('companion.chat.qrCheck')}
             </button>
+            <button type="button" className={styles.actionBtn} onClick={() => navigate(`/community/companion/${post.id}/expenses`)}>
+              <Receipt size={16} aria-hidden="true" /> {t('companion.expenses.button')}
+            </button>
             {canComplete ? (
               <button type="button" className={styles.actionBtn} disabled={completeTrip.isPending} onClick={() => setConfirmAction('complete')}>
                 <CheckCircle2 size={16} aria-hidden="true" /> {t('companion.chat.complete')}
@@ -151,11 +154,16 @@ export function CompanionChatScreen() {
         ) : (
           <div className={styles.closedBanner}>
             <p className={styles.closedText}>{t('companion.chat.closedBanner')}</p>
-            {needsReview ? (
-              <button type="button" className={styles.actionBtn} onClick={() => setShowReview(true)}>
-                {t('companion.review.cta')}
+            <div className={styles.actions}>
+              <button type="button" className={styles.actionBtn} onClick={() => navigate(`/community/companion/${post.id}/expenses`)}>
+                <Receipt size={16} aria-hidden="true" /> {t('companion.expenses.button')}
               </button>
-            ) : null}
+              {needsReview ? (
+                <button type="button" className={styles.actionBtn} onClick={() => setShowReview(true)}>
+                  {t('companion.review.cta')}
+                </button>
+              ) : null}
+            </div>
           </div>
         )}
       </div>

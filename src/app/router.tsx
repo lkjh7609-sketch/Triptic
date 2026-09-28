@@ -84,6 +84,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 동행 경비 나누기(0053)
+          path: 'community/companion/:postId/expenses',
+          lazy: async () => {
+            const { CompanionExpensesScreen } = await retryChunkLoad(() => import('@/features/community/CompanionExpensesScreen'));
+            return { Component: CompanionExpensesScreen };
+          },
+        },
+        {
           path: 'community/d/:slug',
           lazy: async () => {
             const { DestinationChannelScreen } = await retryChunkLoad(() => import('@/features/community/DestinationChannelScreen'));

@@ -358,6 +358,27 @@
       "completeError": "Couldn't finish the trip.",
       "closedBanner": "This trip has ended. The chat is read-only."
     },
+    "expenses": {
+      "button": "Split costs",
+      "title": "Split expenses",
+      "settlement": "Who owes whom",
+      "total": "Total {{amount}}",
+      "settled": "All settled up",
+      "noExpenses": "No expenses yet",
+      "addTitle": "Add an expense",
+      "descriptionPlaceholder": "What was it for? (e.g. dinner)",
+      "amountPlaceholder": "Amount",
+      "currency": "Currency",
+      "paidBy": "Paid by",
+      "splitAmong": "Split between",
+      "add": "Add",
+      "invalid": "Check the description, amount and who to split with.",
+      "saveError": "Couldn't save the expense.",
+      "list": "Expenses",
+      "paidSplit_one": "Paid by {{name}} · split {{count}} way",
+      "paidSplit_other": "Paid by {{name}} · split {{count}} ways",
+      "formerMember": "Former member"
+    },
     "review": {
       "cta": "Leave a review",
       "title": "How was your trip?",
