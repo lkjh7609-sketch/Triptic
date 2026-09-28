@@ -255,6 +255,18 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
 }
 
+/* 모바일·태블릿: 목록을 출발지~도착지 한 줄 전체 폭(.places 기준)으로 — 반쪽 칸에 붙이면
+   도착지 목록(최소 240px)이 화면 오른쪽 밖으로 나가 잘렸다 */
+@media (max-width: 1023px) {
+  .places .field {
+    position: static;
+  }
+
+  .places .options {
+    min-width: 0;
+  }
+}
+
 .option,
 .optionActive {
   display: flex;
