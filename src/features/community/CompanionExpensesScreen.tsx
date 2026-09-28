@@ -8,6 +8,7 @@ import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { useCompanionMatchMembers, useCompanionPost } from './hooks/useCompanionPosts';
 import { useAddCompanionExpense, useCompanionExpenses, useDeleteCompanionExpense } from './companionExpenseService';
@@ -44,6 +45,8 @@ export function CompanionExpensesScreen() {
   const [splitAmong, setSplitAmong] = useState<string[] | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // 경비는 모임 전체가 같이 보는 기록이라 한 번 더 묻고 지운다
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     trackScreenView('community_companion_expenses');
@@ -241,7 +244,7 @@ export function CompanionExpensesScreen() {
                     className={styles.deleteBtn}
                     aria-label={t('action.delete', { ns: 'common' })}
                     disabled={deleteExpense.isPending}
-                    onClick={() => deleteExpense.mutate(e.id)}
+                    onClick={() => setConfirmDeleteId(e.id)}
                   >
                     <Trash2 size={16} aria-hidden="true" />
                   </button>
@@ -251,6 +254,18 @@ export function CompanionExpensesScreen() {
           </ul>
         )}
       </section>
+
+      {confirmDeleteId ? (
+        <ConfirmDialog
+          title={t('companion.expenses.deleteTitle')}
+          message={t('companion.expenses.deleteConfirm')}
+          cancelLabel={t('companion.expenses.deleteKeep')}
+          confirmLabel={t('companion.expenses.deleteProceed')}
+          danger
+          onConfirm={() => deleteExpense.mutate(confirmDeleteId)}
+          onClose={() => setConfirmDeleteId(null)}
+        />
+      ) : null}
     </div>
   );
 }
