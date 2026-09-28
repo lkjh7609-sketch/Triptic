@@ -24,7 +24,6 @@
     "cityLabel": "目的地の都市 (検索して選択)",
     "cityPlaceholderExample": "例：Kyoto, Japan",
     "cityRequired": "目的地の都市を検索して選択してください。",
-    "currencyLabel": "通貨設定",
     "startLabel": "開始日",
     "endLabel": "終了日",
     "creating": "作成中…",
