@@ -3,6 +3,7 @@
  * (04-document-ai.md §2 클라이언트 단계 1~5, §10.1)
  */
 import i18next from '@/shared/i18n';
+import { apiUrl } from '@/shared/api/apiUrl';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { can } from '@/shared/entitlements';
 import type { ParsedBooking } from './parseBooking/schema';
@@ -110,11 +111,19 @@ export async function uploadAndParseDocument(
     .single();
   if (insertErr || !doc) throw insertErr ?? new Error(i18next.t('documents:errors.registerFailed'));
 
-  const { data, error: fnErr } = await supabase.functions.invoke<ParseBookingResponse>('parse-booking', {
-    body: { documentId: doc.id },
+  // 인식은 Vercel 함수(api/parseDocument.js) — PDF 첫 장 글자층, 스캔본·사진은 Google Vision OCR,
+  // DeepSeek로 폼 값 정리. 서버가 토큰으로 본인 문서인지(RLS) 확인한다.
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  if (!token) throw new Error(i18next.t('documents:errors.registerFailed'));
+  const res = await fetch(apiUrl('/api/parseDocument'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ documentId: doc.id }),
   });
-  if (fnErr) throw fnErr;
-  return data as ParseBookingResponse;
+  const json = (await res.json().catch(() => ({}))) as ParseBookingResponse;
+  if (!res.ok) throw new Error(json.error ?? `parseDocument HTTP ${res.status}`);
+  return json;
 }
 
 /** 검수 대기 중인(§9 확정 전) 예약 목록 */
