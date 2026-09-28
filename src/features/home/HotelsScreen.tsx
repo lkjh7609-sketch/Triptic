@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BedDouble, ExternalLink } from 'lucide-react';
+import { BedDouble, Briefcase, ExternalLink } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './SectionScreen.module.css';
@@ -18,7 +18,9 @@ export function HotelsScreen() {
       <HomeSectionTabs />
       <div className={styles.wrap}>
         <header className={styles.header}>
-          <h1 className={styles.title}>{t('hotels.title')}</h1>
+          <h1 className={styles.title}>
+            <Briefcase size={22} aria-hidden="true" /> {t('hotels.title')}
+          </h1>
           <p className={styles.subtitle}>{t('hotels.subtitle')}</p>
         </header>
         <a href="https://www.agoda.com/" target="_blank" rel="noopener noreferrer" className={styles.cta}>

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, Plane, Briefcase, Tent, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, X, Compass } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { CONTACT_EMAIL } from '@/shared/config';
@@ -204,17 +204,6 @@ export function HomeDesktop() {
             )}
           </div>
 
-          <div className={styles.quickCategories}>
-            <Link to="/flights" className={styles.categoryPill}>
-              <Plane size={16} aria-hidden="true" /> {t('desktop.flights')}
-            </Link>
-            <Link to="/hotels" className={styles.categoryPill}>
-              <Briefcase size={16} aria-hidden="true" /> {t('desktop.stays')}
-            </Link>
-            <Link to="/activities" className={styles.categoryPill}>
-              <Tent size={16} aria-hidden="true" /> {t('desktop.activities')}
-            </Link>
-          </div>
         </div>
       </section>
 

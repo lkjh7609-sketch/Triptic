@@ -36,8 +36,9 @@
   background: var(--text-primary);
 }
 
-/* PC는 헤더의 "홈" 드롭다운으로 이동한다 */
-@media (min-width: 1024px) {
+/* 마우스가 있는 PC는 헤더의 "홈" 드롭다운으로 이동한다. 아이패드 가로처럼 넓지만 커서가
+   없는 기기는 드롭다운을 열 수 없으니 탭을 그대로 둔다 */
+@media (min-width: 1024px) and (hover: hover) {
   .tabs {
     display: none;
   }
