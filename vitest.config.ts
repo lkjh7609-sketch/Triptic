@@ -19,7 +19,7 @@ export default defineConfig({
     globals: true,
     css: false,
     setupFiles: ['./vitest.setup.ts'],
-    include: ['src/**/*.test.{js,ts,tsx}'],
+    include: ['src/**/*.test.{js,ts,tsx}', 'api/**/*.test.js'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{js,ts,tsx}'],
