@@ -107,3 +107,67 @@ button:active:not(:disabled) {
   transform: scale(0.96);
   opacity: 0.8;
 }
+
+/* ===== 화면 전환 (View Transitions, router.tsx에서 전역으로 켬) =====
+   html[data-nav]는 AppShell이 새 화면을 그리는 순간 적는다(navDirection.ts).
+   헤더/탭바는 app-header/app-tabbar로 따로 떼어 제자리에 두고, 본문(root)만 움직인다.
+   모바일은 iOS 푸시처럼 화면 전체가 밀려 들어오고(이전 화면은 살짝 뒤로 물러나며
+   어두워짐), 데스크톱은 넓은 화면이 통째로 움직이면 과해서 짧은 거리 + 페이드만. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes vt-fade-in { from { opacity: 0; } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-rise-in { from { opacity: 0; transform: translateY(10px) scale(0.99); } }
+
+/* 데스크톱 기본: 짧게 밀기 + 페이드 */
+@keyframes vt-in-from-right { from { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-out-to-left { to { opacity: 0; transform: translateX(-16px); } }
+@keyframes vt-in-from-left { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes vt-out-to-right { to { opacity: 0; transform: translateX(16px); } }
+
+html[data-nav='forward']::view-transition-old(root) { animation-name: vt-out-to-left; animation-duration: 200ms; }
+html[data-nav='forward']::view-transition-new(root) { animation-name: vt-in-from-right; }
+html[data-nav='back']::view-transition-old(root) { animation-name: vt-out-to-right; animation-duration: 200ms; }
+html[data-nav='back']::view-transition-new(root) { animation-name: vt-in-from-left; }
+html[data-nav='fade']::view-transition-old(root) { animation-name: vt-fade-out; animation-duration: 160ms; }
+html[data-nav='fade']::view-transition-new(root) { animation-name: vt-rise-in; animation-duration: 280ms; }
+
+/* 모바일: 네이티브 앱식 푸시/팝 */
+@keyframes vt-push-in { from { transform: translateX(100%); } }
+@keyframes vt-push-out { to { transform: translateX(-28%); filter: brightness(0.82); } }
+@keyframes vt-pop-in { from { transform: translateX(-28%); filter: brightness(0.82); } }
+@keyframes vt-pop-out { to { transform: translateX(100%); } }
+
+@media (max-width: 1023px) {
+  html[data-nav='forward']::view-transition-old(root),
+  html[data-nav='forward']::view-transition-new(root),
+  html[data-nav='back']::view-transition-old(root),
+  html[data-nav='back']::view-transition-new(root) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  html[data-nav='forward']::view-transition-old(root) { animation-name: vt-push-out; }
+  html[data-nav='forward']::view-transition-new(root) { animation-name: vt-push-in; box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12); }
+  html[data-nav='back']::view-transition-old(root) { animation-name: vt-pop-out; z-index: 1; box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12); }
+  html[data-nav='back']::view-transition-new(root) { animation-name: vt-pop-in; }
+}
+
+/* 헤더/탭바는 움직이지 않고 바뀐 부분(활성 탭 등)만 살짝 교차 */
+::view-transition-group(app-header),
+::view-transition-group(app-tabbar) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

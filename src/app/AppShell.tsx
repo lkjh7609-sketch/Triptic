@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Outlet, useLocation, useNavigation } from 'react-router';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Outlet, ScrollRestoration, useLocation, useNavigation, useNavigationType } from 'react-router';
 import { TabBar } from './TabBar';
 import { HeaderDesktop } from './HeaderDesktop';
 import { GuestBanner } from './GuestBanner';
@@ -8,6 +8,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { navDirection } from './navDirection';
 import styles from './AppShell.module.css';
 
 function RouteSkeleton() {
@@ -18,6 +19,32 @@ function RouteSkeleton() {
       <Skeleton height="88px" />
     </div>
   );
+}
+
+/** 청크가 금방 오면 스켈레톤을 건너뛰고 이전 화면 → 새 화면으로 바로 전환되게 조금 늦게 띄운다 */
+function useDelayedFlag(flag: boolean, delayMs: number) {
+  const [elapsed, setElapsed] = useState(false);
+  useEffect(() => {
+    if (!flag) return;
+    const id = window.setTimeout(() => setElapsed(true), delayMs);
+    return () => {
+      window.clearTimeout(id);
+      setElapsed(false);
+    };
+  }, [flag, delayMs]);
+  return flag && elapsed;
+}
+
+/** 새 화면이 그려지는 순간(View Transition 스냅샷 직전) 방향을 html[data-nav]에 적는다 */
+function useNavDirectionAttr() {
+  const { pathname } = useLocation();
+  const navType = useNavigationType();
+  const prevPathname = useRef(pathname);
+  useLayoutEffect(() => {
+    if (prevPathname.current === pathname) return;
+    document.documentElement.dataset.nav = navDirection(prevPathname.current, pathname, navType);
+    prevPathname.current = pathname;
+  }, [pathname, navType]);
 }
 
 /**
@@ -33,12 +60,13 @@ function RouteSkeleton() {
 export function AppShell() {
   const navigation = useNavigation();
   const { pathname } = useLocation();
-  const isLoadingRoute = navigation.state === 'loading';
+  const showRouteSkeleton = useDelayedFlag(navigation.state === 'loading', 150);
   const { user, loading } = useSession();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [authOpen, setAuthOpen] = useState(false);
 
   const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
+  useNavDirectionAttr();
 
   if (loading) {
     return (
@@ -55,9 +83,12 @@ export function AppShell() {
   return (
     <div className={`app-shell ${styles.shell}`}>
       {isGuestSample ? <GuestBanner onLogin={() => setAuthOpen(true)} /> : isDesktop && <HeaderDesktop />}
-      <main className={styles.content}>{isLoadingRoute ? <RouteSkeleton /> : <Outlet />}</main>
+      <main className={styles.content}>{showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}</main>
       {!isGuestSample && !isDesktop && <TabBar />}
       {isGuestSample && authOpen ? <GlobalAuthModal onClose={() => setAuthOpen(false)} /> : null}
+      {/* 새 화면은 맨 위에서, 뒤로가기/탭 복귀는 보던 위치에서 — 키를 경로로 잡아
+          검색 파라미터만 바뀌는 이동(필터 등)에서는 스크롤이 튀지 않는다 */}
+      <ScrollRestoration getKey={(location) => location.pathname} />
     </div>
   );
 }

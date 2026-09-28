@@ -142,3 +142,17 @@ export const router = createBrowserRouter(
     },
   ],
 );
+
+// 모든 화면 이동에 View Transition을 켠다(애니메이션은 global.css의 html[data-nav]).
+// Link/useNavigate/<Navigate>가 전부 결국 router.navigate를 거치므로, 70여 개 호출부에
+// viewTransition 옵션을 일일이 붙이는 대신 여기 한 곳에서 기본값으로 넣는다. 숫자 이동
+// (navigate(-1))과 브라우저 뒤로가기는 react-router가 앞서 적용한 전환을 거꾸로 재생한다.
+// 미지원 브라우저에서는 옵션 자체를 안 넣어야 react-router 경고가 안 뜬다.
+if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+  const navigateWithoutTransition = router.navigate.bind(router);
+  router.navigate = ((to: Parameters<typeof router.navigate>[0], opts?: Parameters<typeof router.navigate>[1]) =>
+    typeof to === 'number'
+      ? navigateWithoutTransition(to)
+      : // <Link>는 viewTransition: undefined를 명시적으로 넘기므로 스프레드 기본값이 아니라 ??로
+        navigateWithoutTransition(to, { ...opts, viewTransition: opts?.viewTransition ?? true })) as typeof router.navigate;
+}
