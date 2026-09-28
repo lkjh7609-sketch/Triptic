@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { addDays, format, parseISO } from 'date-fns';
-import { ArrowLeftRight, CalendarDays, ExternalLink, Search } from 'lucide-react';
+import { ArrowLeftRight, CalendarDays, ExternalLink, Minus, Plus, Search } from 'lucide-react';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
 import {
@@ -182,9 +182,61 @@ function PlaceField({ label, value, onChange, locale }: { label: string; value: 
   );
 }
 
+/** 좌석은 한 번에 9석(성인+아동), 유아(좌석 없음)는 성인 1명당 1명 — 서버 parseFlightQuery와 같은 규칙 */
+const MAX_SEATS = 9;
+
+function PassengerStepper({
+  label,
+  hint,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (n: number) => void;
+}) {
+  const { t } = useTranslation('home');
+  return (
+    <div className={styles.passenger}>
+      <span className={styles.passengerText}>
+        <span className={styles.passengerLabel}>{label}</span>
+        <span className={styles.passengerHint}>{hint}</span>
+      </span>
+      <span className={styles.stepper}>
+        <button
+          type="button"
+          className={styles.stepButton}
+          disabled={value <= min}
+          aria-label={t('flights.form.decrease', { label })}
+          onClick={() => onChange(value - 1)}
+        >
+          <Minus size={14} aria-hidden="true" />
+        </button>
+        <span className={styles.stepValue} aria-live="polite">
+          {value}
+        </span>
+        <button
+          type="button"
+          className={styles.stepButton}
+          disabled={value >= max}
+          aria-label={t('flights.form.increase', { label })}
+          onClick={() => onChange(value + 1)}
+        >
+          <Plus size={14} aria-hidden="true" />
+        </button>
+      </span>
+    </div>
+  );
+}
+
 /**
  * 항공 탭(한국어) — 마이리얼트립 항공권 검색. 결과는 마이리얼트립 사이트(새 탭)에서 열린다.
- * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults를 채워 둔다.
+ * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults/children/infants를 채워 둔다.
  */
 export function MyrealtripFlightSearch() {
   const { t, i18n } = useTranslation('home');
@@ -206,10 +258,13 @@ export function MyrealtripFlightSearch() {
   // 캘린더에서 가는 날만 고른 상태면 ''(오는 날 고르는 중)
   const [returnDate, setReturnDate] = useState(() => initialReturn ?? format(addDays(new Date(), 17), 'yyyy-MM-dd'));
   const [showCalendar, setShowCalendar] = useState(false);
-  const [adults, setAdults] = useState(() => {
-    const n = Number(searchParams.get('adults'));
-    return Number.isInteger(n) && n >= 1 && n <= 9 ? n : 1;
-  });
+  const paramCount = (key: string, min: number, fallback: number) => {
+    const n = Number(searchParams.get(key));
+    return searchParams.get(key) !== null && Number.isInteger(n) && n >= min && n <= MAX_SEATS ? n : fallback;
+  };
+  const [adults, setAdults] = useState(() => paramCount('adults', 1, 1));
+  const [children, setChildren] = useState(() => Math.min(paramCount('children', 0, 0), MAX_SEATS - adults));
+  const [infants, setInfants] = useState(() => Math.min(paramCount('infants', 0, 0), adults));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -239,6 +294,8 @@ export function MyrealtripFlightSearch() {
           departDate,
           returnDate: roundTrip ? returnDate : null,
           adults,
+          children,
+          infants,
         }
       : null;
   const flightKey = flight ? JSON.stringify(flight) : '';
@@ -276,6 +333,8 @@ export function MyrealtripFlightSearch() {
             departDate,
             returnDate: roundTrip ? returnDate : null,
             adults,
+            children,
+            infants,
           },
           'flights',
         ),
@@ -319,16 +378,38 @@ export function MyrealtripFlightSearch() {
               </span>
             </button>
           </div>
-          <label className={styles.field}>
-            <span className={styles.fieldLabel}>{t('flights.form.adults')}</span>
-            <select className={styles.input} value={adults} onChange={(e) => setAdults(Number(e.target.value))}>
-              {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>
-                  {t('flights.form.adultsCount', { count: n })}
-                </option>
-              ))}
-            </select>
-          </label>
+        </div>
+        <div className={styles.passengers} role="group" aria-label={t('flights.form.passengers')}>
+          <span className={styles.fieldLabel}>{t('flights.form.passengers')}</span>
+          <div className={styles.passengerList}>
+            <PassengerStepper
+              label={t('flights.form.adult')}
+              hint={t('flights.form.adultHint')}
+              value={adults}
+              min={1}
+              max={MAX_SEATS - children}
+              onChange={(n) => {
+                setAdults(n);
+                if (infants > n) setInfants(n);
+              }}
+            />
+            <PassengerStepper
+              label={t('flights.form.child')}
+              hint={t('flights.form.childHint')}
+              value={children}
+              min={0}
+              max={MAX_SEATS - adults}
+              onChange={setChildren}
+            />
+            <PassengerStepper
+              label={t('flights.form.infant')}
+              hint={t('flights.form.infantHint')}
+              value={infants}
+              min={0}
+              max={adults}
+              onChange={setInfants}
+            />
+          </div>
         </div>
         <button type="submit" className={styles.submit} disabled={busy}>
           <Search size={18} aria-hidden="true" /> {busy ? t('flights.form.searching') : t('flights.form.search')}

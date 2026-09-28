@@ -28,7 +28,13 @@ describe('parseFlightQuery', () => {
             departDate: '2026-11-10',
             returnDate: '2026-11-15',
             adults: 1,
+            children: 0,
+            infants: 0,
         });
+    });
+
+    it('아동·유아', () => {
+        expect(parseFlightQuery({ ...base, adults: '2', children: '2', infants: '1' }, TODAY)).toMatchObject({ adults: 2, children: 2, infants: 1 });
     });
 
     it('편도 + 공항 코드 + 인원', () => {
@@ -46,6 +52,9 @@ describe('parseFlightQuery', () => {
         ['성인 0명', { ...base, adults: '0' }],
         ['성인 10명', { ...base, adults: '10' }],
         ['성인 소수', { ...base, adults: '1.5' }],
+        ['성인+아동 10명', { ...base, adults: '5', children: '5' }],
+        ['유아가 성인보다 많음', { ...base, adults: '1', infants: '2' }],
+        ['아동 음수', { ...base, children: '-1' }],
     ])('거절: %s', (_label, query) => {
         expect(parseFlightQuery(query, TODAY)).toBeNull();
     });
@@ -59,6 +68,11 @@ describe('airWebResultsUrl', () => {
     it('랜딩 API가 주던 모양 그대로(왕복, 도시 코드)', () => {
         const url = airWebResultsUrl({ origin: 'SEL', originType: 'city', destination: 'OSA', destinationType: 'city', departDate: '2026-11-10', returnDate: '2026-11-15', adults: 1 });
         expect(url).toBe('https://air-web.myrealtrip.com/results?trip=C.SEL.C.OSA.2026-11-10%2FC.OSA.C.SEL.2026-11-15&adult=1&tripType=ROUND_TRIP');
+    });
+
+    it('아동·유아는 child·infant로', () => {
+        const url = airWebResultsUrl({ origin: 'SEL', originType: 'city', destination: 'KIX', destinationType: 'airport', departDate: '2026-11-10', returnDate: null, adults: 2, children: 1, infants: 1 });
+        expect(url).toBe('https://air-web.myrealtrip.com/results?trip=C.SEL.A.KIX.2026-11-10&adult=2&child=1&infant=1&tripType=ONE_WAY');
     });
 
     it('편도, 공항 코드는 A.', () => {

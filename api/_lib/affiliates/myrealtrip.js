@@ -96,7 +96,7 @@ export function kstToday(now = new Date()) {
 
 /**
  * 항공 검색 요청 검증 — 공개 엔드포인트라 키를 쓰는 호출 전에 걸러낸다.
- * 출발일은 오늘(시차 하루 여유)부터 1년 안, 귀국일은 출발일 이후, 성인 1~9명.
+ * 출발일은 오늘(시차 하루 여유)부터 1년 안, 귀국일은 출발일 이후, 성인 1명 이상·성인+아동 9명 이하·유아는 성인 수까지.
  * 코드 종류(city/airport)는 마이리얼트립 주소의 C./A. 접두어에 쓴다.
  */
 export function parseFlightQuery(query, today = kstToday()) {
@@ -107,8 +107,13 @@ export function parseFlightQuery(query, today = kstToday()) {
     if (!isValidYmd(departDate) || departDate < addDays(today, -1) || departDate > addDays(today, 366)) return null;
     const returnDate = query.return_date ? query.return_date : null;
     if (returnDate !== null && (!isValidYmd(returnDate) || returnDate < departDate || returnDate > addDays(today, 400))) return null;
-    const adults = query.adults == null || query.adults === '' ? 1 : Number(query.adults);
-    if (!Number.isInteger(adults) || adults < 1 || adults > 9) return null;
+    const count = (value, fallback) => (value == null || value === '' ? fallback : Number(value));
+    const adults = count(query.adults, 1);
+    const children = count(query.children, 0);
+    const infants = count(query.infants, 0);
+    if (![adults, children, infants].every(Number.isInteger)) return null;
+    // 항공 예약 한 번에 좌석 9석(성인+아동), 유아(좌석 없음)는 성인 1명당 1명
+    if (adults < 1 || children < 0 || infants < 0 || adults + children > 9 || infants > adults) return null;
     const kind = (value) => (value === 'airport' ? 'airport' : 'city');
     return {
         origin,
@@ -118,6 +123,8 @@ export function parseFlightQuery(query, today = kstToday()) {
         departDate,
         returnDate,
         adults,
+        children,
+        infants,
     };
 }
 
@@ -131,11 +138,11 @@ export function airWebResultsUrl(flight) {
     const to = place(flight.destination, flight.destinationType);
     const legs = [`${from}.${to}.${flight.departDate}`];
     if (flight.returnDate) legs.push(`${to}.${from}.${flight.returnDate}`);
-    const params = new URLSearchParams({
-        trip: legs.join('/'),
-        adult: String(flight.adults),
-        tripType: flight.returnDate ? 'ROUND_TRIP' : 'ONE_WAY',
-    });
+    const params = new URLSearchParams({ trip: legs.join('/'), adult: String(flight.adults) });
+    // 결과 페이지는 child·infant를 읽는다(승객 수 표시로 확인)
+    if (flight.children) params.set('child', String(flight.children));
+    if (flight.infants) params.set('infant', String(flight.infants));
+    params.set('tripType', flight.returnDate ? 'ROUND_TRIP' : 'ONE_WAY');
     return `https://air-web.myrealtrip.com/results?${params.toString()}`;
 }
 
@@ -151,6 +158,8 @@ export async function flightLandingUrl(flight) {
                     depDate: flight.departDate,
                     ...(flight.returnDate ? { arrDate: flight.returnDate } : {}),
                     adult: flight.adults,
+                    child: flight.children ?? 0,
+                    infant: flight.infants ?? 0,
                 },
             });
             if (isMyrealtripUrl(json.data)) return json.data;

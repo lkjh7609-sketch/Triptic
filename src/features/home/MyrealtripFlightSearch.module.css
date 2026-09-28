@@ -56,8 +56,82 @@
 
 .dates {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 인원 — 성인·아동·유아 따로 */
+.passengers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.passengerList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-2);
+}
+
+.passenger {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+.passengerText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 4px;
+}
+
+.passengerLabel {
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.passengerHint {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-body);
+  cursor: pointer;
+}
+
+.stepButton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.stepValue {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 /* 가는 날·오는 날을 한 칸에 — 누르면 기간 캘린더 */
@@ -105,18 +179,16 @@
   margin-top: var(--space-4);
 }
 
+/* PC: 윗줄 출발·도착 | 날짜, 아랫줄 인원 | 검색 */
 @media (min-width: 1024px) {
   .grid {
-    flex-direction: row;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+    align-items: end;
   }
 
-  .places {
-    flex: 2 1 0;
-  }
-
-  .dates {
-    flex: 2 1 0;
+  .submit {
+    align-self: end;
   }
 }
 
