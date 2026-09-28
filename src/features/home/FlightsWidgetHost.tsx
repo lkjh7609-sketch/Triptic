@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
-import { PoweredBy } from '@/shared/ui/PoweredBy';
 import { AiraloEsimWidget } from './AiraloEsimWidget';
 import styles from './FlightsScreen.module.css';
 
@@ -57,7 +56,6 @@ export function FlightsWidgetHost({ visible }: { visible: boolean }) {
   return (
     <div className={styles.widgetHost} style={visible ? undefined : { display: 'none' }}>
       <div id="tpwl-search" />
-      <PoweredBy brand="aviasales" align="end" />
       <div id="tpwl-tickets" className={styles.tickets} />
       {/* 항공권 아래 eSIM(한국어는 FlightsEssentials — 유심사·마이리얼트립) */}
       <section className={styles.esim} aria-labelledby="flights-esim-title">
@@ -68,7 +66,6 @@ export function FlightsWidgetHost({ visible }: { visible: boolean }) {
             </h2>
             <p className={styles.esimSubtitle}>{t('flights.esimGlobal.subtitle')}</p>
           </div>
-          <PoweredBy brand="airalo" />
         </div>
         <AiraloEsimWidget />
       </section>
