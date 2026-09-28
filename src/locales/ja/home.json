@@ -87,6 +87,18 @@
       "badDates": "日付を確認してください — 帰国日は出発日以降にしてください",
       "linkError": "検索結果を開けませんでした。しばらくしてからもう一度お試しください",
       "opensOnMyrealtrip": "検索結果と予約はMyRealTripで行います"
+    },
+    "essentials": {
+      "title": "SIM・eSIMも必要ですか？",
+      "subtitle": "{{city}}で使うデータを出発前に準備しましょう",
+      "cityLabel": "都市を選択",
+      "cityTokyo": "東京",
+      "cityHanoi": "ハノイ",
+      "usimsaTitle": "UsimsaでSIM・eSIMを見る",
+      "usimsaDesc": "国別のSIM・eSIMをまとめて比較してすぐ受け取れます",
+      "myrealtripTitle": "MyRealTripの{{city}} SIM・eSIM",
+      "seeAll": "MyRealTripで{{city}}のSIMをもっと見る",
+      "simSearch": "{{city}} eSIM"
     }
   },
   "sections": {

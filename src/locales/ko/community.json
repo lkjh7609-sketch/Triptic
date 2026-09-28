@@ -66,6 +66,7 @@
         "activities_product": "상품 카드",
         "flights_search": "항공 탭 검색",
         "trip_flights": "이 일정으로 항공권",
+        "flights_esim": "항공 탭 유심·eSIM",
         "unknown": "기타 링크"
       }
     }

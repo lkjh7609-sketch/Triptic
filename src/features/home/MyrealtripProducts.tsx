@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink, Star } from 'lucide-react';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
-import { openMyrealtripPage, openMyrealtripSearch } from '@/features/plan/partnerLinks';
+import { openMyrealtripPage, openMyrealtripSearch, type PartnerPlacement } from '@/features/plan/partnerLinks';
 import styles from './SectionScreen.module.css';
 
 /** api/partnerProducts.js 카드 한 개 */
@@ -19,10 +19,12 @@ interface PartnerProduct {
   url: string;
 }
 
-const PRODUCT_COUNT = 6;
+/** tna: 투어·티켓 검색 · sim: 그 도시에서 쓸 유심·eSIM(서버가 "도시 + 유심"으로 찾아 유심 상품만) */
+type ProductKind = 'tna' | 'sim';
 
-async function fetchMyrealtripProducts(keyword: string): Promise<PartnerProduct[]> {
-  const params = new URLSearchParams({ provider: 'myrealtrip', q: keyword, size: String(PRODUCT_COUNT) });
+async function fetchMyrealtripProducts(keyword: string, kind: ProductKind, count: number): Promise<PartnerProduct[]> {
+  const params = new URLSearchParams({ provider: 'myrealtrip', q: keyword, size: String(count) });
+  if (kind === 'sim') params.set('kind', 'sim');
   const res = await fetch(apiUrl(`/api/partnerProducts?${params.toString()}`));
   if (!res.ok) throw new Error(`partnerProducts HTTP ${res.status}`);
   const json = (await res.json()) as { items?: unknown };
@@ -37,42 +39,53 @@ function formatPrice(amount: number, currency: string, locale: string): string {
   }
 }
 
+interface MyrealtripProductsProps {
+  keyword: string;
+  kind?: ProductKind;
+  count?: number;
+  /** 상품 카드를 눌렀을 때의 위치 꼬리표 */
+  placement?: PartnerPlacement;
+  /** "더 보기" 버튼 — 기본은 이 키워드로 마이리얼트립 검색 */
+  seeAll?: { label: string; keyword: string; placement: PartnerPlacement };
+}
+
 /**
- * 마이리얼트립 투어·티켓 상품 카드(Klook 위젯 자리). 추적 링크(마이링크)는 누를 때만 만든다.
+ * 마이리얼트립 상품 카드(액티비티 탭 추천, 항공 탭 유심·eSIM). 추적 링크(마이링크)는 누를 때만 만든다.
  * 상품을 못 받거나 없으면 마이리얼트립 검색으로 보내는 버튼만 보여준다.
  */
-export function MyrealtripProducts({ keyword }: { keyword: string }) {
+export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement = 'product', seeAll }: MyrealtripProductsProps) {
   const { t, i18n } = useTranslation('home');
+  const more = seeAll ?? { label: t('activities.seeAllOnMyrealtrip', { keyword }), keyword, placement: 'city' as const };
   const { data, isLoading } = useQuery({
-    queryKey: ['partnerProducts', 'myrealtrip', keyword.toLowerCase()],
-    queryFn: () => fetchMyrealtripProducts(keyword),
+    queryKey: ['partnerProducts', 'myrealtrip', kind, count, keyword.toLowerCase()],
+    queryFn: () => fetchMyrealtripProducts(keyword, kind, count),
     staleTime: 6 * 60 * 60 * 1000,
     retry: false,
   });
 
   if (isLoading) {
     return (
-      <div className={styles.productGrid}>
-        {Array.from({ length: 3 }, (_, i) => (
+      <div className={count === 4 ? `${styles.productGrid} ${styles.productGridFour}` : styles.productGrid}>
+        {Array.from({ length: Math.min(count, 3) }, (_, i) => (
           <Skeleton key={i} height="220px" />
         ))}
       </div>
     );
   }
 
-  const seeAll = (
-    <button type="button" className={styles.moreButton} onClick={() => void openMyrealtripSearch(keyword, 'city')}>
-      {t('activities.seeAllOnMyrealtrip', { keyword })} <ExternalLink size={14} aria-hidden="true" />
+  const seeAllButton = (
+    <button type="button" className={styles.moreButton} onClick={() => void openMyrealtripSearch(more.keyword, more.placement)}>
+      {more.label} <ExternalLink size={14} aria-hidden="true" />
     </button>
   );
 
-  if (!data || data.length === 0) return seeAll;
+  if (!data || data.length === 0) return seeAllButton;
 
   return (
     <>
-      <div className={styles.productGrid}>
+      <div className={count === 4 ? `${styles.productGrid} ${styles.productGridFour}` : styles.productGrid}>
         {data.map((p) => (
-          <button key={p.id} type="button" className={styles.productCard} onClick={() => void openMyrealtripPage(p.url, 'product')}>
+          <button key={p.id} type="button" className={styles.productCard} onClick={() => void openMyrealtripPage(p.url, placement)}>
             {p.imageUrl ? (
               <img
                 src={p.imageUrl}
@@ -101,7 +114,7 @@ export function MyrealtripProducts({ keyword }: { keyword: string }) {
           </button>
         ))}
       </div>
-      {seeAll}
+      {seeAllButton}
     </>
   );
 }

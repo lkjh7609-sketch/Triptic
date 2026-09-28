@@ -66,6 +66,7 @@
         "activities_product": "商品カード",
         "flights_search": "航空タブ検索",
         "trip_flights": "この日程で航空券",
+        "flights_esim": "航空タブのSIM・eSIM",
         "unknown": "その他のリンク"
       }
     }

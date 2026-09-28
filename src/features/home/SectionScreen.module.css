@@ -195,6 +195,11 @@ button.cityCard {
   .productGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  /* 4개짜리(항공 탭 유심·eSIM)는 한 줄에 */
+  .productGridFour {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .productCard {

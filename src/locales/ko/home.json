@@ -87,6 +87,18 @@
       "badDates": "날짜를 확인해 주세요 — 오는 날은 가는 날 이후여야 해요",
       "linkError": "검색 결과를 열지 못했어요. 잠시 후 다시 시도해 주세요",
       "opensOnMyrealtrip": "검색 결과와 예약은 마이리얼트립에서 진행돼요"
+    },
+    "essentials": {
+      "title": "유심·eSIM도 필요하신가요?",
+      "subtitle": "{{city}}에서 쓸 데이터, 출발 전에 준비해 두세요",
+      "cityLabel": "도시 선택",
+      "cityTokyo": "도쿄",
+      "cityHanoi": "하노이",
+      "usimsaTitle": "유심사에서 유심·eSIM 보기",
+      "usimsaDesc": "나라별 유심·eSIM을 한 번에 비교하고 바로 받아요",
+      "myrealtripTitle": "마이리얼트립 {{city}} 유심·eSIM",
+      "seeAll": "마이리얼트립에서 {{city}} 유심 더 보기",
+      "simSearch": "{{city}} 유심"
     }
   },
   "sections": {

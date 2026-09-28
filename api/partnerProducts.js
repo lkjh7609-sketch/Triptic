@@ -1,5 +1,6 @@
 // Vercel Serverless Function: 제휴사 상품 검색(액티비티 탭 카드)
 // Endpoint: GET /api/partnerProducts?provider=myrealtrip&q=오사카&size=8
+//           GET /api/partnerProducts?provider=myrealtrip&kind=sim&q=도쿄&size=4 (그 도시에서 쓸 유심·eSIM)
 //
 // 제휴사 상품 검색 API 결과를 앱 카드 모양으로 돌려준다. 상품을 누를 때만 /api/partnerLink로
 // 추적 링크를 만든다(카드마다 미리 만들면 화면 한 번에 유료 호출이 N번).
@@ -9,7 +10,7 @@ import * as myrealtrip from './_lib/affiliates/myrealtrip.js';
 const isRateLimited = createRateLimiter(30);
 
 const PROVIDERS = {
-    myrealtrip: { isConfigured: myrealtrip.isConfigured, search: myrealtrip.searchProducts },
+    myrealtrip: { isConfigured: myrealtrip.isConfigured, search: myrealtrip.searchProducts, searchSim: myrealtrip.searchSimProducts },
 };
 
 export default async function handler(req, res) {
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
     if (!provider.isConfigured()) return res.status(503).json({ error: 'partner_unavailable' });
 
     try {
-        const items = await provider.search(keyword, size);
+        const items = req.query?.kind === 'sim' ? await provider.searchSim(keyword, size) : await provider.search(keyword, size);
         res.setHeader('Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=86400');
         return res.status(200).json({ items });
     } catch (e) {

@@ -7,6 +7,8 @@ export const AFFILIATE_LINKS = {
   klookActivities: 'https://klook.tp.st/B43lPtzP',
   /** 출발 전 체크리스트 eSIM — 제휴 변환(api/partnerLink.js LANDING.yesim)이 안 되면 이 주소로 */
   esimFallback: 'https://yesim.app/',
+  /** 유심사 제휴 링크(항공 탭 유심·eSIM) */
+  usimsa: 'https://www.usimsa.com/affiliate/3657',
   /** 출발 전 체크리스트 여행자보험 — Travelpayouts에서 보험 브랜드를 연결하면 제휴 링크를 넣는다 */
   insurance: null as string | null,
 } as const;

@@ -5,6 +5,7 @@ import { trackScreenView } from '@/shared/monitoring';
 import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import { MyrealtripFlightSearch } from './MyrealtripFlightSearch';
+import { FlightsEssentials } from './FlightsEssentials';
 import styles from './FlightsScreen.module.css';
 
 /**
@@ -30,7 +31,12 @@ export function FlightsScreen() {
           </h1>
           <p className={styles.subtitle}>{t('flights.subtitle')}</p>
         </header>
-        {provider === 'myrealtrip' ? <MyrealtripFlightSearch /> : null}
+        {provider === 'myrealtrip' ? (
+          <>
+            <MyrealtripFlightSearch />
+            <FlightsEssentials />
+          </>
+        ) : null}
       </div>
     </>
   );

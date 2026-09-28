@@ -25,6 +25,7 @@ const SUB_ID = {
     product: 'activities_product',
     flights: 'flights_search',
     trip_flights: 'trip_flights',
+    esim: 'flights_esim',
 };
 
 const CACHED = 'public, s-maxage=86400, stale-while-revalidate=604800';
