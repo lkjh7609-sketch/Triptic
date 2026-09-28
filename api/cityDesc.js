@@ -1,13 +1,14 @@
 // Vercel Serverless Function: AI 도시 소개
 // Endpoint: GET /api/cityDesc?city=Kyoto&locale=ja
 //
-// ai_recommendation_cache(kind='city_desc', 180일)에 언어별로 캐시한다. 같은 도시·언어
-// 조합은 한 번만 LLM을 부른다.
+// ai_recommendation_cache(kind='city_desc')에 언어별로 영구 캐시한다. 같은 도시·언어
+// 조합은 한 번만 LLM을 부른다(만료 없음 — 앱은 0049 RPC로 이 캐시를 먼저 직접 읽는다).
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 
-const CACHE_TTL_DAYS = 180;
+// 한 번 생성한 결과는 계속 쓴다(expires_at은 컬럼 호환용 먼 미래 값)
+const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
 const isRateLimited = createRateLimiter(30);
 
 export default async function handler(req, res) {
@@ -28,7 +29,6 @@ export default async function handler(req, res) {
             .from('ai_recommendation_cache')
             .select('payload')
             .match(cacheKey)
-            .gt('expires_at', new Date().toISOString())
             .maybeSingle();
         if (error) console.warn('[cityDesc] cache read failed:', error.message);
         if (typeof hit?.payload?.description === 'string') {
@@ -48,9 +48,8 @@ export default async function handler(req, res) {
         const description = result.content.replace(/^["'“]|["'”]$/g, '').trim().slice(0, 1200);
 
         if (db) {
-            const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 86_400_000).toISOString();
             const { error } = await db.from('ai_recommendation_cache').upsert(
-                { ...cacheKey, payload: { description }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: expiresAt },
+                { ...cacheKey, payload: { description }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: NEVER_EXPIRES },
                 { onConflict: 'kind,city_key,place_key,category,locale' },
             );
             if (error) console.warn('[cityDesc] cache write failed:', error.message);

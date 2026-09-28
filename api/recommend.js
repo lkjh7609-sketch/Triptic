@@ -1,7 +1,7 @@
 // Vercel Serverless Function: AI 주변 장소 추천
 // Endpoint: POST /api/recommend { placeName, city, category?, locale?, lat?, lng? }
 //
-// 1) ai_recommendation_cache(90일) 조회 → 2) LLM(OpenRouter 경유 DeepSeek, 없으면
+// 1) ai_recommendation_cache 조회(영구 — 앱은 0049 RPC로 먼저 직접 읽는다) → 2) LLM(OpenRouter 경유 DeepSeek, 없으면
 // DeepSeek 직접) → 3) locale이 ko면 큐레이션 폴백.
 //
 // 좌표: 앱의 Google Maps 키는 HTTP 리퍼러 제한이 걸린 브라우저 키라 서버에서 Places
@@ -15,7 +15,8 @@ import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 // DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
 // Google Places 보강 시간까지 남겨둔다.
 const LLM_TIMEOUT_MS = 22000;
-const CACHE_TTL_DAYS = 90;
+// 한 번 생성한 결과는 계속 쓴다(expires_at은 컬럼 호환용 먼 미래 값)
+const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
 const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
 const isRateLimited = createRateLimiter(20);
 
@@ -255,7 +256,6 @@ export default async function handler(req, res) {
             .from('ai_recommendation_cache')
             .select('id, payload, provider, model_used, hit_count')
             .match(cacheKey)
-            .gt('expires_at', new Date().toISOString())
             .maybeSingle();
         if (error) console.warn('[recommend] cache read failed:', error.message);
         if (hit && Array.isArray(hit.payload?.recommendations)) {
@@ -283,9 +283,8 @@ export default async function handler(req, res) {
             if (recs.length > 0) {
                 const enriched = await enrichWithGoogleMaps(recs, city, bias);
                 if (db) {
-                    const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 86_400_000).toISOString();
-                    const { error } = await db.from('ai_recommendation_cache').upsert(
-                        { ...cacheKey, payload: { recommendations: enriched }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: expiresAt },
+                            const { error } = await db.from('ai_recommendation_cache').upsert(
+                        { ...cacheKey, payload: { recommendations: enriched }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: NEVER_EXPIRES },
                         { onConflict: 'kind,city_key,place_key,category,locale' },
                     );
                     if (error) console.warn('[recommend] cache write failed:', error.message);
