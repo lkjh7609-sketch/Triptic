@@ -1,9 +1,19 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { aiLocale } from '@/shared/api/aiCacheKeys';
 import styles from './FlightsScreen.module.css';
 
 /** Travelpayouts White Label(항공권 메타서치) — 색·폰트는 Travelpayouts 대시보드 Design 탭에서 설정 */
 const WL_SCRIPT_ID = 'tpwl-script';
 const WL_SCRIPT_SRC = 'https://tpembd.com/wl_web/main.js?wl_id=22732';
+
+/**
+ * 위젯 언어·통화 — 한국어 사용자는 한국어/원화, 그 외는 영어/달러.
+ * 위젯은 시작할 때 주소의 language/currency를 저장된 선택보다 먼저 읽는다(읽고 나서 지운다).
+ */
+function flightsWidgetLocale(appLanguage: string): { language: string; currency: string } {
+  return aiLocale(appLanguage) === 'ko' ? { language: 'ko', currency: 'KRW' } : { language: 'en', currency: 'USD' };
+}
 
 /**
  * 항공 탭 위젯을 담는 자리. AppShell이 /flights에 처음 들어올 때 한 번 만들고 이후로는
@@ -14,6 +24,7 @@ const WL_SCRIPT_SRC = 'https://tpembd.com/wl_web/main.js?wl_id=22732';
  */
 export function FlightsWidgetHost({ visible }: { visible: boolean }) {
   const injectedHere = useRef(false);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (document.getElementById(WL_SCRIPT_ID)) {
@@ -23,12 +34,22 @@ export function FlightsWidgetHost({ visible }: { visible: boolean }) {
       return;
     }
     injectedHere.current = true;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('language') && !url.searchParams.has('currency')) {
+      const { language, currency } = flightsWidgetLocale(i18n.language);
+      url.searchParams.set('language', language);
+      url.searchParams.set('currency', currency);
+      // 라우터 상태(history.state)는 그대로 두고 주소만 바꾼다 — 화면 이동이 아니다
+      window.history.replaceState(window.history.state, '', url.href);
+    }
     const script = document.createElement('script');
     script.id = WL_SCRIPT_ID;
     script.type = 'module';
     script.async = true;
     script.src = WL_SCRIPT_SRC;
     document.head.appendChild(script);
+    // 언어는 위젯이 처음 뜰 때 한 번만 반영된다(이후 앱 언어를 바꿔도 위젯은 그대로)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

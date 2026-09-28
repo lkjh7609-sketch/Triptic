@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Search } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { useTrips } from '@/features/plan/hooks/useTrips';
+import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { openKlookSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
@@ -40,6 +41,9 @@ export function ActivitiesScreen() {
   const { t, i18n } = useTranslation('home');
   const [keyword, setKeyword] = useState('');
   const nearestTrip = useNearestTrip();
+  // 투어 가격은 설정의 기본 통화로, 문구는 앱 언어로
+  const { data: profile } = useProfile();
+  const currency = profile?.base_currency ?? 'KRW';
   const tripCityId = nearestTrip ? nearestKlookCityId(nearestTrip.city_lat!, nearestTrip.city_lng!) : null;
 
   useEffect(() => {
@@ -83,7 +87,7 @@ export function ActivitiesScreen() {
             ? t('activities.forTrip', { city: cityDisplayName(nearestTrip.city) })
             : t('activities.recommended')}
         </h2>
-        <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} />
+        <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} currency={currency} />
 
         <h2 className={styles.sectionTitle}>{t('activities.popular')}</h2>
         <div className={styles.cityGrid}>
