@@ -2,11 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { AFFILIATE_LINKS } from '@/shared/config';
-
-/** "Osaka, Japan" → "Osaka" (Klook 검색어) */
-function cityQuery(city: string | null | undefined): string {
-  return (city ?? '').split(',')[0].trim();
-}
+import { cityDisplayName } from './cityName';
 
 /**
  * 그 도시의 Klook 투어·액티비티 검색 결과로 가는 제휴 링크(api/partnerLink.js).
@@ -14,7 +10,8 @@ function cityQuery(city: string | null | undefined): string {
  * 받기 전이거나 실패하면 Klook 딜 페이지 제휴 링크로 대신 연결한다(수수료는 그대로).
  */
 export function useKlookActivitiesLink(city: string | null | undefined, locale: string): string {
-  const query = cityQuery(city);
+  // Klook 검색어는 도시 이름만("오스트레일리아 뉴사우스웨일스 주 시드니" → "시드니")
+  const query = cityDisplayName(city);
   const loc = aiLocale(locale);
   const { data } = useQuery({
     queryKey: ['partnerLink', 'klook', loc, query.toLowerCase()],
