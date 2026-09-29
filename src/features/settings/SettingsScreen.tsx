@@ -11,6 +11,7 @@ import { LoginButtons } from '@/features/auth/LoginButtons';
 import { BackupModal } from '@/features/plan/BackupModal';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
+import { clearOfflineCache } from '@/shared/offline/persister';
 import type { NotificationPrefs } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
@@ -33,6 +34,17 @@ const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
   communityReplies: 'notifications.communityReplies',
   marketing: 'notifications.marketing',
 };
+
+/** 이 사이트가 이 기기에서 실제로 쓰는 저장 공간(MB). 잴 수 없는 환경이면 null */
+async function readCacheUsageMB(): Promise<number | null> {
+  if (!navigator.storage?.estimate) return null;
+  try {
+    const estimate = await navigator.storage.estimate();
+    return (estimate.usage ?? 0) / (1024 * 1024);
+  } catch {
+    return null;
+  }
+}
 
 /**
  * 설정 탭 (02-screens.md §5)
@@ -66,11 +78,9 @@ export function SettingsScreen() {
   }, []);
 
   useEffect(() => {
-    if (!navigator.storage?.estimate) return;
-    navigator.storage
-      .estimate()
-      .then((estimate) => setCacheUsageMB((estimate.usage ?? 0) / (1024 * 1024)))
-      .catch(() => {});
+    void readCacheUsageMB().then((mb) => {
+      if (mb != null) setCacheUsageMB(mb);
+    });
   }, []);
 
   if (showDeleteFlow) {
@@ -85,9 +95,12 @@ export function SettingsScreen() {
   async function handleClearCache() {
     setClearingCache(true);
     try {
+      // 앱 셸 캐시(오프라인으로 앱을 여는 데 필요)는 남기고, 사진 캐시와 저장된 여행 데이터만 비운다
       const keys = await caches.keys();
-      await Promise.all(keys.map((key) => caches.delete(key)));
-      setCacheUsageMB(0);
+      await Promise.all(keys.filter((key) => key.startsWith('triptic-images')).map((key) => caches.delete(key)));
+      await clearOfflineCache();
+      const mb = await readCacheUsageMB();
+      if (mb != null) setCacheUsageMB(mb);
     } catch (err) {
       captureError(err, { context: 'clearOfflineCache' });
     } finally {

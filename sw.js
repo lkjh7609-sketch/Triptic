@@ -22,9 +22,16 @@
 // 매 빌드마다 이름 자체가 달라지면 activate 핸들러가 이전 이름의 캐시를 통째로
 // 지워서 이 문제가 구조적으로 재발하지 않는다.
 const CACHE_NAME = '__BUILD_ID__';
-/** 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게 */
-const IMAGE_CACHE_NAME = 'triptic-images-v1';
-const IMAGE_CACHE_MAX_ENTRIES = 150;
+/**
+ * 외부 이미지(도시 사진·위키백과 썸네일·커뮤니티 사진 등) 전용 — 개수 제한으로 무한히 커지지 않게.
+ *
+ * ⚠️ opaque 응답(cross-origin no-cors)은 절대 저장하지 않는다. 브라우저는 내용을 볼 수 없는
+ * opaque 응답의 용량을 정보 유출 방지용으로 항목당 수 MB(Chrome은 약 7MB)씩 부풀려 계산한다 —
+ * 실제로는 수백 KB인 사진 150장이 설정 화면에 1GB 가까운 "오프라인 캐시"로 찍히던 원인이었다.
+ * 이름을 v2로 올린 것도 그 때문이다: activate 핸들러가 v1(부풀려진 옛 캐시)을 통째로 지운다.
+ */
+const IMAGE_CACHE_NAME = 'triptic-images-v2';
+const IMAGE_CACHE_MAX_ENTRIES = 100;
 
 // App shell files
 const APP_SHELL = [
@@ -209,19 +216,28 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. 외부 이미지: 캐시 우선 + 개수 제한
+  // 4. 외부 이미지: 캐시 우선 + 개수 제한. CORS로 받아 실제 크기가 보이는 응답만 저장한다
   if (isImageRequest(event.request, url)) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(IMAGE_CACHE_NAME);
         const cached = await cache.match(event.request);
         if (cached) return cached;
-        const response = await fetch(event.request);
-        if (response.ok || response.type === 'opaque') {
-          await cache.put(event.request, response.clone());
-          event.waitUntil(trimCache(IMAGE_CACHE_NAME, IMAGE_CACHE_MAX_ENTRIES));
+        try {
+          const response = await fetch(event.request.url, {
+            mode: 'cors',
+            credentials: 'omit',
+            referrerPolicy: event.request.referrerPolicy,
+          });
+          if (response.ok) {
+            await cache.put(event.request, response.clone());
+            event.waitUntil(trimCache(IMAGE_CACHE_NAME, IMAGE_CACHE_MAX_ENTRIES));
+          }
+          return response;
+        } catch {
+          // CORS 헤더가 없는 서버 — 화면에는 그대로 보여 주되 저장은 하지 않는다(opaque)
+          return fetch(event.request);
         }
-        return response;
       })()
     );
     return;
@@ -235,7 +251,8 @@ self.addEventListener('fetch', (event) => {
 
       try {
         const networkResponse = await fetch(event.request);
-        if (networkResponse.ok || networkResponse.type === 'opaque') {
+        // opaque(제3자 스크립트 등)는 저장하지 않는다 — 위 IMAGE_CACHE_NAME 주석 참고
+        if (networkResponse.ok) {
           const cache = await caches.open(CACHE_NAME);
           cache.put(event.request, networkResponse.clone());
         }
