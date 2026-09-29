@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tripHotelSearchUrl, tripHotelsHomeUrl, type TripHotelSearch } from './tripPartner';
+import { TRIP_HOTEL_CARDS, tripHotelCardSrc, tripHotelSearchUrl, tripHotelsHomeUrl, type TripHotelSearch } from './tripPartner';
 
 const tokyo: TripHotelSearch = { cityId: 228, cityName: '도쿄', checkIn: '2026-10-01', checkOut: '2026-10-02', adults: 2, rooms: 1 };
 
@@ -57,5 +57,20 @@ describe('tripHotelSearchUrl', () => {
     expect(url.searchParams.get('cityName')).toBe('New York & Co');
     expect(url.searchParams.get('adult')).toBe('4');
     expect(url.searchParams.get('crn')).toBe('2');
+  });
+});
+
+describe('tripHotelCardSrc', () => {
+  it('추천 호텔 배너 3개 — 만들어 준 코드와 카드마다 다른 자리 표시를 그대로', () => {
+    expect(TRIP_HOTEL_CARDS.map((c) => tripHotelCardSrc(c, 'ko'))).toEqual([
+      'https://kr.trip.com/partners/ad/DB20019386?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card1',
+      'https://kr.trip.com/partners/ad/DB20019407?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card2',
+      'https://kr.trip.com/partners/ad/DB20019414?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card3',
+    ]);
+  });
+
+  it('표시 언어에 맞는 지역 사이트로', () => {
+    expect(new URL(tripHotelCardSrc(TRIP_HOTEL_CARDS[0], 'en')).host).toBe('www.trip.com');
+    expect(new URL(tripHotelCardSrc(TRIP_HOTEL_CARDS[2], 'ja')).host).toBe('jp.trip.com');
   });
 });
