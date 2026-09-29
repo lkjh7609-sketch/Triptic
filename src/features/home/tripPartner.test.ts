@@ -1,76 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { TRIP_HOTEL_CARDS, tripHotelCardSrc, tripHotelSearchUrl, tripHotelsHomeUrl, type TripHotelSearch } from './tripPartner';
+import { TRIP_HOTEL_CARDS, TRIP_HOTEL_WIDGET, tripAdSrc } from './tripPartner';
 
-const tokyo: TripHotelSearch = { cityId: 228, cityName: '도쿄', checkIn: '2026-10-01', checkOut: '2026-10-02', adults: 2, rooms: 1 };
-
-describe('tripHotelSearchUrl', () => {
-  it('트립닷컴 검색창이 만든 주소와 같은 구조 — 도쿄(228) 한국어', () => {
-    const url = new URL(tripHotelSearchUrl(tokyo, 'ko'));
-    expect(url.origin + url.pathname).toBe('https://kr.trip.com/hotels/list');
-    expect(url.searchParams.get('city')).toBe('228');
-    expect(url.searchParams.get('cityName')).toBe('도쿄');
-    expect(url.searchParams.get('searchWord')).toBe('도쿄');
-    expect(url.searchParams.get('searchType')).toBe('CT');
-    expect(url.searchParams.get('checkIn')).toBe('2026-10-01');
-    expect(url.searchParams.get('checkOut')).toBe('2026-10-02');
-    expect(url.searchParams.get('adult')).toBe('2');
-    expect(url.searchParams.get('children')).toBe('0');
-    expect(url.searchParams.get('crn')).toBe('1');
-  });
-
-  it('파트너 센터가 붙여 준 제휴 값을 그대로 유지한다', () => {
-    const url = new URL(tripHotelSearchUrl(tokyo, 'ko'));
-    expect(url.searchParams.get('Allianceid')).toBe('10792895');
-    expect(url.searchParams.get('SID')).toBe('332524291');
-    expect(url.searchParams.get('trip_sub1')).toBe('home_hotels');
-    expect(url.searchParams.get('trip_sub3')).toBe('D20018770');
-  });
-
-  it('도시별·계정별 값은 짐작으로 넣지 않는다', () => {
-    const url = new URL(tripHotelSearchUrl(tokyo, 'ko'));
-    for (const key of ['countryId', 'provinceId', 'districtId', 'searchValue', 'searchCoordinate', 'lat', 'lon', 'barCurr', 'domestic']) {
-      expect(url.searchParams.has(key)).toBe(false);
-    }
-  });
-
-  it('표시 언어에 맞는 지역 사이트로 — 브라우저 언어 태그(en-US·ja-JP·zh-HK)도 앱 언어로 맞춘다', () => {
-    expect(new URL(tripHotelSearchUrl(tokyo, 'en')).host).toBe('www.trip.com');
-    expect(new URL(tripHotelSearchUrl(tokyo, 'en-US')).host).toBe('www.trip.com');
-    expect(new URL(tripHotelSearchUrl(tokyo, 'ja-JP')).host).toBe('jp.trip.com');
-    expect(new URL(tripHotelSearchUrl(tokyo, 'zh-HK')).host).toBe('tw.trip.com');
-    expect(new URL(tripHotelSearchUrl(tokyo, 'fr')).host).toBe('kr.trip.com');
-  });
-
-  it('트립닷컴 호텔 검색 첫 화면 주소 — 제휴 값만 붙고 언어별 사이트로', () => {
-    expect(tripHotelsHomeUrl('ko')).toBe(
-      'https://kr.trip.com/hotels/?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels&trip_sub3=D20018770',
+describe('tripAdSrc', () => {
+  it('검색 위젯 — 파트너 센터에서 만든 주소 그대로(한국어)', () => {
+    expect(tripAdSrc(TRIP_HOTEL_WIDGET, 'ko')).toBe(
+      'https://kr.trip.com/partners/ad/S20018532?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels',
     );
-    expect(new URL(tripHotelsHomeUrl('en')).host).toBe('www.trip.com');
-    expect(new URL(tripHotelsHomeUrl('ja')).host).toBe('jp.trip.com');
-    expect(new URL(tripHotelsHomeUrl('zh-TW')).host).toBe('tw.trip.com');
   });
 
-  it('도시 이름은 주소에 안전하게 인코딩되고 객실·성인 수가 그대로 간다', () => {
-    const raw = tripHotelSearchUrl({ ...tokyo, cityId: 192, cityName: 'New York & Co', adults: 4, rooms: 2 }, 'en');
-    expect(raw).not.toContain('New York & Co');
-    const url = new URL(raw);
-    expect(url.searchParams.get('cityName')).toBe('New York & Co');
-    expect(url.searchParams.get('adult')).toBe('4');
-    expect(url.searchParams.get('crn')).toBe('2');
-  });
-});
-
-describe('tripHotelCardSrc', () => {
-  it('추천 호텔 배너 3개 — 만들어 준 코드와 카드마다 다른 자리 표시를 그대로', () => {
-    expect(TRIP_HOTEL_CARDS.map((c) => tripHotelCardSrc(c, 'ko'))).toEqual([
+  it('추천 호텔 배너 3개 — 만들어 준 코드와 카드마다 다른 자리 표시 그대로', () => {
+    expect(TRIP_HOTEL_CARDS.map((c) => tripAdSrc(c, 'ko'))).toEqual([
       'https://kr.trip.com/partners/ad/DB20019386?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card1',
       'https://kr.trip.com/partners/ad/DB20019407?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card2',
       'https://kr.trip.com/partners/ad/DB20019414?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels_card3',
     ]);
   });
 
-  it('표시 언어에 맞는 지역 사이트로', () => {
-    expect(new URL(tripHotelCardSrc(TRIP_HOTEL_CARDS[0], 'en')).host).toBe('www.trip.com');
-    expect(new URL(tripHotelCardSrc(TRIP_HOTEL_CARDS[2], 'ja')).host).toBe('jp.trip.com');
+  it('표시 언어에 맞는 지역 사이트로 — 브라우저 언어 태그(en-US·ja-JP·zh-HK)도 앱 언어로 맞춘다', () => {
+    expect(new URL(tripAdSrc(TRIP_HOTEL_WIDGET, 'en')).host).toBe('www.trip.com');
+    expect(new URL(tripAdSrc(TRIP_HOTEL_WIDGET, 'en-US')).host).toBe('www.trip.com');
+    expect(new URL(tripAdSrc(TRIP_HOTEL_WIDGET, 'ja-JP')).host).toBe('jp.trip.com');
+    expect(new URL(tripAdSrc(TRIP_HOTEL_WIDGET, 'zh-HK')).host).toBe('tw.trip.com');
+    expect(new URL(tripAdSrc(TRIP_HOTEL_WIDGET, 'fr')).host).toBe('kr.trip.com');
   });
 });

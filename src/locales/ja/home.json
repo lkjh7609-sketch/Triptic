@@ -121,20 +121,7 @@
   "hotels": {
     "title": "宿泊",
     "subtitle": "旅行先の宿を探しましょう",
-    "form": {
-      "destination": "目的地",
-      "destinationPlaceholder": "都市を検索（例：東京）",
-      "noMatch": "一致する目的地がありません",
-      "dates": "チェックイン – チェックアウト",
-      "pickCheckOut": "チェックアウトを選択",
-      "nights_other": "{{count}}泊",
-      "rooms": "客室",
-      "search": "ホテルを検索",
-      "opensOnTrip": "検索結果と予約はTrip.comで行われます",
-      "childrenHint": "お子様連れの場合は、Trip.comの検索画面で年齢と一緒に追加してください。",
-      "pickCity": "リストから都市を選んでください。エリアやホテル名で探す場合は、Trip.comで直接検索できます。",
-      "searchOnTrip": "Trip.comで検索"
-    },
+    "widgetTitle": "Trip.comのホテル検索",
     "cards": {
       "label": "Trip.comのおすすめホテル",
       "title": "Trip.comのおすすめホテル {{n}}"
