@@ -124,6 +124,43 @@
   opacity: 0.9;
 }
 
+.guestActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.languageWrap {
+  position: relative;
+}
+
+.languageButton {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.languageButton:hover,
+.languageButton[aria-expanded='true'] {
+  background-color: var(--surface-subtle);
+}
+
+.languageDropdown {
+  min-width: 168px;
+}
+
+.languageName {
+  flex: 1;
+}
+
 .avatar {
   width: 32px;
   height: 32px;
