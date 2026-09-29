@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useDestinations } from '@/features/community/hooks/useDestinations';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
-import { CONTACT_EMAIL } from '@/shared/config';
+import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
 import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
@@ -79,6 +79,7 @@ export function HomeDesktop() {
   const { t, i18n } = useTranslation('home');
   const navigate = useNavigate();
   const [previewDest, setPreviewDest] = useState<FeaturedDestination | null>(null);
+  const [showContact, setShowContact] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const { data: destinations } = useDestinations();
@@ -252,12 +253,21 @@ export function HomeDesktop() {
           <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>
             {t('desktop.privacy')}
           </a>
-          <a href={`mailto:${CONTACT_EMAIL}`} className={styles.footerLink}>
+          {/* 고객센터 = 설정의 문의하기와 같은 창(글 + 스크린샷 1장). 비로그인은 로그인부터 */}
+          <button
+            type="button"
+            className={`${styles.footerLink} ${styles.footerButton}`}
+            onClick={() => {
+              if (requireLogin()) setShowContact(true);
+            }}
+          >
             {t('desktop.contact')}
-          </a>
+          </button>
         </div>
         <div>&copy; {new Date().getFullYear()} Triptic</div>
       </footer>
+
+      {showContact ? <FeedbackModal onClose={() => setShowContact(false)} /> : null}
 
       {previewDest && (
         <DestinationPreviewModal

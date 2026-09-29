@@ -4,7 +4,7 @@
  * 브라우저가 zh-CN·zh-HK·zh처럼 다른 중국어 태그를 주면 zh-TW로, en-US·ja-JP처럼
  * 지역이 붙은 태그는 언어 부분으로 맞춘다(normalizeLocale).
  * 감지 순서: localStorage(§2.2) > navigator.language > 'ko'. 단 언어를 정한 적 없는 첫 방문은
- * 접속 국가로 한 번 더 맞춘다(한국 IP → 한국어, 외국 → 영어, geoLocale.ts). 로그인 사용자의
+ * 접속 국가로 한 번 더 맞춘다(한국 → 한국어, 일본 → 일본어, 대만 → 번체, 그 밖 → 영어, geoLocale.ts). 로그인 사용자의
  * `profiles.locale`은 비동기로만 얻을 수 있어 부팅 감지에는 못 쓴다 —
  * `useSyncLocale`(같은 디렉터리)이 로그인 후 프로필 값으로 한 번 더 맞춘다.
  *
@@ -59,7 +59,7 @@ function isFirstVisit(): boolean {
   }
 }
 
-// 첫 방문이면 접속 국가로 언어를 정한다(한국 → 한국어, 외국 → 영어). 초기화와 동시에 물어
+// 첫 방문이면 접속 국가로 언어를 정한다(한국·일본·대만은 그 나라 말, 그 밖은 영어). 초기화와 동시에 물어
 // 첫 화면(인트로가 덮고 있는 동안)에 바로 바꾼다. 네이티브 앱은 기기 언어를 따른다.
 const ipLocale =
   isFirstVisit() && !isNativeApp() && !pseudoEnabled && import.meta.env.MODE !== 'test' ? detectLocaleByIp() : null;

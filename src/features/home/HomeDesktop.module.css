@@ -218,6 +218,14 @@
   transition: color 0.2s;
 }
 
+.footerButton {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .footerLink:hover {
   color: var(--text-primary, #0F2942);
 }

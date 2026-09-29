@@ -103,15 +103,16 @@
     "miles": "英里 (mi)"
   },
   "feedback": {
-    "menuLabel": "建議回饋",
-    "title": "建議回饋",
+    "menuLabel": "聯絡我們",
+    "title": "聯絡我們",
     "bodyLabel": "內容",
-    "bodyPlaceholder": "請告訴我們您遇到的問題或想提出的建議。",
+    "bodyPlaceholder": "有任何問題、不便或建議，都歡迎告訴我們。",
     "bodyRequired": "請輸入內容。",
     "screenshotLabel": "截圖（選填）",
+    "screenshotHint": "最多可上傳 1 張截圖。",
     "submit": "送出",
     "submitting": "送出中…",
     "submitError": "送出失敗，請稍後再試。",
-    "submitSuccess": "已收到您的建議，謝謝！"
+    "submitSuccess": "已收到您的訊息，謝謝！"
   }
 }

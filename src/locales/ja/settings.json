@@ -103,15 +103,16 @@
     "miles": "マイル (mi)"
   },
   "feedback": {
-    "menuLabel": "ご意見・ご要望",
-    "title": "ご意見・ご要望",
+    "menuLabel": "お問い合わせ",
+    "title": "お問い合わせ",
     "bodyLabel": "内容",
-    "bodyPlaceholder": "不便な点やご要望を書いてください。",
+    "bodyPlaceholder": "ご質問、不便な点、ご要望などをお書きください。",
     "bodyRequired": "内容を入力してください。",
     "screenshotLabel": "スクリーンショット（任意）",
+    "screenshotHint": "スクリーンショットは1枚まで添付できます。",
     "submit": "送信",
     "submitting": "送信中…",
     "submitError": "送信できませんでした。しばらくしてからもう一度お試しください。",
-    "submitSuccess": "ご意見ありがとうございました！"
+    "submitSuccess": "お問い合わせを受け付けました。ありがとうございます！"
   }
 }
