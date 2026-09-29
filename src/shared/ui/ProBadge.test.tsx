@@ -5,6 +5,6 @@ import { ProBadge } from './ProBadge';
 describe('ProBadge', () => {
   it('프로 회원 표시 글자를 보여 준다', () => {
     render(<ProBadge />);
-    expect(screen.getByText('프리미엄')).toBeInTheDocument();
+    expect(screen.getByText('Premium')).toBeInTheDocument();
   });
 });
