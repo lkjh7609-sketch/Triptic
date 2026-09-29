@@ -131,6 +131,13 @@
   gap: 2px;
 }
 
+.profileNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .profileName {
   font-size: var(--font-title-size);
   font-weight: 700;

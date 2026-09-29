@@ -100,6 +100,9 @@
     "backup": "Backup & restore",
     "signOut": "Sign out"
   },
+  "plan": {
+    "proBadge": "Pro"
+  },
   "calendar": {
     "prevMonth": "Previous month",
     "nextMonth": "Next month"

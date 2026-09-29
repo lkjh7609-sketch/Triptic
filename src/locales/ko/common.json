@@ -100,6 +100,9 @@
     "backup": "백업 및 복원",
     "signOut": "로그아웃"
   },
+  "plan": {
+    "proBadge": "프로"
+  },
   "calendar": {
     "prevMonth": "이전 달",
     "nextMonth": "다음 달"

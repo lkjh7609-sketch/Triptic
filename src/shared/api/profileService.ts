@@ -21,6 +21,8 @@ export interface ProfileRow {
   display_name: string;
   /** 가입 시 서버가 발급하는 닉네임과 무관한 5자리 식별자 — 본인만 확인 가능(0041) */
   handle: string | null;
+  /** 요금제 — 관리자가 수동으로 정한다(0037). 'pro'면 프로 배지 */
+  plan: 'free' | 'pro';
   locale: Locale;
   temp_unit: TempUnit;
   distance_unit: DistanceUnit;
@@ -35,7 +37,7 @@ const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   marketing: false,
 };
 
-const SELECT_COLUMNS = 'id, display_name, handle, locale, temp_unit, distance_unit, base_currency, notification_prefs';
+const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs';
 
 export async function getMyProfile(userId: string): Promise<ProfileRow> {
   const supabase = getSupabaseClient();
