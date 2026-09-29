@@ -122,21 +122,7 @@
   "hotels": {
     "title": "Hotels",
     "subtitle": "Find a place to stay at your destination",
-    "form": {
-      "destination": "Destination",
-      "destinationPlaceholder": "Search a city (e.g. Tokyo)",
-      "noMatch": "No matching destination",
-      "dates": "Check-in – Check-out",
-      "pickCheckOut": "Pick check-out",
-      "nights_one": "{{count}} night",
-      "nights_other": "{{count}} nights",
-      "rooms": "Rooms",
-      "search": "Search hotels",
-      "opensOnTrip": "Search results and booking continue on Trip.com",
-      "childrenHint": "Traveling with children? Add them with their ages on Trip.com.",
-      "pickCity": "Please pick a city from the list. To search by district or hotel name, use Trip.com directly.",
-      "searchOnTrip": "Search on Trip.com"
-    },
+    "widgetTitle": "Trip.com hotel search",
     "cards": {
       "label": "Recommended hotels from Trip.com",
       "title": "Trip.com recommended hotel {{n}}"
