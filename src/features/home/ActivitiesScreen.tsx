@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tent } from 'lucide-react';
+import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
-import { openMyrealtripSearch, useKlookActivitiesLink } from '@/features/plan/partnerLinks';
-import { readActivityProvider, type ActivityProvider } from './activityProviders';
-import { ActivitySearchForm } from './ActivitySearchForm';
+import { openExternal, openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink, useMyrealtripLink } from '@/features/plan/partnerLinks';
+import { ACTIVITY_PROVIDERS, readActivityProvider, saveActivityProvider, type ActivityProvider } from './activityProviders';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
 import { KlookToursWidget } from './KlookToursWidget';
@@ -46,12 +46,23 @@ function MyrealtripCityCard({ dest }: { dest: FeaturedDestination }) {
 }
 
 /**
- * 액티비티 탭 — 제휴사 선택 + 검색창(ActivitySearchForm), 내 다음 여행 도시 추천(Klook 위젯 /
- * 마이리얼트립 상품 카드), 인기 도시
+ * 액티비티 탭 — 제휴사 선택(Klook | 마이리얼트립), 검색창(키워드 그대로 그 제휴사에서 검색),
+ * 내 다음 여행 도시 추천(Klook 위젯 / 마이리얼트립 상품 카드), 인기 도시
  */
 export function ActivitiesScreen() {
   const { t, i18n } = useTranslation('home');
+  const [keyword, setKeyword] = useState('');
+  const searchFormRef = useRef<HTMLFormElement>(null);
   const [provider, setProvider] = useState<ActivityProvider>(readActivityProvider);
+  // 마이리얼트립 검색은 입력이 잠깐 멈추면 링크를 미리 받아 둔다 — 검색을 누르면 바로 열리게
+  const [typedKeyword, setTypedKeyword] = useState('');
+  useEffect(() => {
+    const id = window.setTimeout(() => setTypedKeyword(keyword.trim()), 600);
+    return () => window.clearTimeout(id);
+  }, [keyword]);
+  const prefetchedSearch = useMyrealtripLink(
+    provider === 'myrealtrip' && typedKeyword.length >= 2 ? { kind: 'search', q: typedKeyword, placement: 'search' } : null,
+  );
   const nearestTrip = useNearestTrip();
   // 투어 가격은 설정의 기본 통화로, 문구는 앱 언어로
   const { data: profile } = useProfile();
@@ -61,6 +72,25 @@ export function ActivitiesScreen() {
   useEffect(() => {
     trackScreenView('activities');
   }, []);
+
+  function handleSearch(e: FormEvent) {
+    e.preventDefault();
+    const q = keyword.trim();
+    if (!q) {
+      flagInvalid(searchFormRef.current);
+      return;
+    }
+    if (provider === 'myrealtrip') {
+      if (prefetchedSearch && typedKeyword === q) openExternal(prefetchedSearch);
+      else void openMyrealtripSearch(q, 'search');
+    }
+    else void openKlookSearch(q, i18n.language);
+  }
+
+  function chooseProvider(next: ActivityProvider) {
+    setProvider(next);
+    saveActivityProvider(next);
+  }
 
   const tripCity = nearestTrip ? cityDisplayName(nearestTrip.city) : '';
 
@@ -75,7 +105,35 @@ export function ActivitiesScreen() {
           <p className={styles.subtitle}>{t('activities.subtitle')}</p>
         </header>
 
-        <ActivitySearchForm provider={provider} onProviderChange={setProvider} />
+        <div className={styles.providerToggle} role="group" aria-label={t('activities.providerLabel')}>
+          {ACTIVITY_PROVIDERS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              aria-pressed={provider === p}
+              className={provider === p ? styles.providerOn : styles.providerOff}
+              onClick={() => chooseProvider(p)}
+            >
+              {t(`activities.provider.${p}`)}
+            </button>
+          ))}
+        </div>
+
+        <form ref={searchFormRef} className={styles.searchForm} onSubmit={handleSearch} role="search">
+          <Search size={18} className={styles.searchIcon} aria-hidden="true" />
+          <input
+            type="search"
+            className={styles.searchInput}
+            placeholder={t('activities.searchPlaceholder')}
+            aria-label={t('activities.searchPlaceholder')}
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            enterKeyHint="search"
+          />
+          <button type="submit" className={styles.searchButton}>
+            {t('activities.searchButton')}
+          </button>
+        </form>
 
         {provider === 'myrealtrip' ? (
           <>

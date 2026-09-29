@@ -11,9 +11,6 @@ import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
 import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { HomeSectionTabs } from './HomeSectionTabs';
-import { HeroSearchTabs, type HeroTab } from './HeroSearchTabs';
-import { HeroActivitiesPanel, HeroFlightsPanel, HeroHotelsPanel } from './HeroServicePanels';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import styles from './HomeDesktop.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 
@@ -83,16 +80,6 @@ export function HomeDesktop() {
   const navigate = useNavigate();
   const [previewDest, setPreviewDest] = useState<FeaturedDestination | null>(null);
   const [showContact, setShowContact] = useState(false);
-  // 히어로 검색 탭(PC만 — 모바일은 위의 HomeSectionTabs가 같은 이동을 맡아 중복이라 여행 계획 검색만 둔다).
-  // 패널은 처음 열 때 만들고 그 뒤로는 숨기기만 한다 — 다시 열어도 입력한 값이 남고 항공 폼이 자료를 또 받지 않는다
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const [heroTab, setHeroTab] = useState<HeroTab>('plan');
-  const [openedTabs, setOpenedTabs] = useState<ReadonlySet<HeroTab>>(() => new Set<HeroTab>(['plan']));
-  const tab: HeroTab = isDesktop ? heroTab : 'plan';
-  const selectHeroTab = (next: HeroTab) => {
-    setHeroTab(next);
-    setOpenedTabs((prev) => (prev.has(next) ? prev : new Set(prev).add(next)));
-  };
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const { data: destinations } = useDestinations();
@@ -181,8 +168,7 @@ export function HomeDesktop() {
       <HomeSectionTabs />
       <section className={`${styles.hero} ${styles.heroPlain}`}>
         <div className={styles.heroContent}>
-          {isDesktop ? <HeroSearchTabs active={tab} onChange={selectHeroTab} /> : null}
-          <div className={styles.searchPill} hidden={tab !== 'plan'}>
+          <div className={styles.searchPill}>
             <Search size={20} className={styles.searchIcon} aria-hidden="true" />
             <input
               type="text"
@@ -219,21 +205,6 @@ export function HomeDesktop() {
             )}
           </div>
 
-          {isDesktop && openedTabs.has('flights') ? (
-            <div className={styles.heroPanel} hidden={tab !== 'flights'}>
-              <HeroFlightsPanel />
-            </div>
-          ) : null}
-          {isDesktop && openedTabs.has('hotels') ? (
-            <div className={styles.heroPanel} hidden={tab !== 'hotels'}>
-              <HeroHotelsPanel />
-            </div>
-          ) : null}
-          {isDesktop && openedTabs.has('activities') ? (
-            <div className={styles.heroPanel} hidden={tab !== 'activities'}>
-              <HeroActivitiesPanel />
-            </div>
-          ) : null}
         </div>
       </section>
 
