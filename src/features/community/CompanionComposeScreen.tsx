@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -6,6 +6,7 @@ import { Calendar, Minus, Plus } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView, captureError } from '@/shared/monitoring';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { useDestinations } from './hooks/useDestinations';
 import { useCreateCompanionPost } from './hooks/useCompanionPosts';
 import { DestinationSelector } from './DestinationSelector';
@@ -33,6 +34,9 @@ export function CompanionComposeScreen() {
   const [groupSize, setGroupSize] = useState(2);
   const [showCalendar, setShowCalendar] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const dateButtonRef = useRef<HTMLButtonElement>(null);
   const selectedDestination = (destinations ?? []).find((d) => d.id === destinationId);
 
   useEffect(() => {
@@ -51,14 +55,17 @@ export function CompanionComposeScreen() {
     setStatusMessage(null);
     if (!title.trim()) {
       setStatusMessage({ type: 'error', text: t('companion.compose.titleRequiredError') });
+      flagInvalid(titleRef.current);
       return;
     }
     if (!body.trim()) {
       setStatusMessage({ type: 'error', text: t('compose.bodyRequiredError') });
+      flagInvalid(bodyRef.current);
       return;
     }
     if (!startDateStr || !endDateStr) {
       setStatusMessage({ type: 'error', text: t('companion.compose.dateRequiredError') });
+      flagInvalid(dateButtonRef.current);
       return;
     }
     try {
@@ -98,6 +105,7 @@ export function CompanionComposeScreen() {
         <div className={styles.field}>
           <label className={styles.label}>{t('companion.compose.titleLabel')}</label>
           <input
+            ref={titleRef}
             type="text"
             className={styles.titleInput}
             placeholder={t('companion.compose.titlePlaceholder')}
@@ -109,6 +117,7 @@ export function CompanionComposeScreen() {
 
         <div className={styles.field}>
           <textarea
+            ref={bodyRef}
             className={styles.bodyInput}
             placeholder={t('companion.compose.bodyPlaceholder')}
             value={body}
@@ -136,7 +145,7 @@ export function CompanionComposeScreen() {
 
         <div className={styles.field}>
           <label className={styles.label}>{t('companion.compose.dateLabel')}</label>
-          <button type="button" className={styles.dateButton} onClick={() => setShowCalendar(true)}>
+          <button ref={dateButtonRef} type="button" className={styles.dateButton} onClick={() => setShowCalendar(true)}>
             <Calendar size={18} className={styles.dateIcon} aria-hidden="true" />
             {startDateStr && endDateStr ? `${startDateStr} ~ ${endDateStr}` : t('companion.compose.datePlaceholder')}
           </button>
@@ -183,6 +192,7 @@ export function CompanionComposeScreen() {
               onChange={(start, end) => {
                 setStartDateStr(start ? format(start, 'yyyy-MM-dd') : '');
                 setEndDateStr(end ? format(end, 'yyyy-MM-dd') : '');
+                if (start && end) clearInvalid(dateButtonRef.current);
                 if (start && end) setTimeout(() => setShowCalendar(false), 300);
               }}
             />

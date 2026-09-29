@@ -38,14 +38,18 @@ describe('CompanionReviewModal', () => {
 
     expect(screen.queryByText('나')).toBeNull();
     const submit = screen.getByRole('button', { name: '제출' });
-    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(mutateAsync).not.toHaveBeenCalled();
+    expect(document.querySelectorAll('[data-invalid="true"]')).toHaveLength(3);
 
     fireEvent.click(screen.getByRole('button', { name: '네, 잘 마무리됐어요' }));
     fireEvent.click(screen.getAllByRole('radio', { name: '5점' })[0]);
-    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(mutateAsync).not.toHaveBeenCalled();
+    expect(document.querySelectorAll('[data-invalid="true"]')).toHaveLength(1);
 
     fireEvent.click(screen.getAllByRole('radio', { name: '3점' })[1]);
-    expect(submit).toBeEnabled();
+    expect(document.querySelectorAll('[data-invalid="true"]')).toHaveLength(0);
     fireEvent.click(submit);
 
     await waitFor(() =>

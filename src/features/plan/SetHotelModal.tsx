@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { captureError } from '@/shared/monitoring';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import type { HotelItem, HotelsData } from './types';
 import styles from './SetHotelModal.module.css';
 import { Hotel } from 'lucide-react';
@@ -21,6 +22,8 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   const [draftHotels, setDraftHotels] = useState<HotelsData>(hotelsData);
   const [saving, setSaving] = useState(false);
   const sheetRef = useFocusTrap<HTMLDivElement>();
+  const paneRef = useRef<HTMLDivElement>(null);
+  const dayTabsRef = useRef<HTMLDivElement>(null);
 
   // 현재 탭의 숙소
   const currentDraft = draftHotels[activeDay];
@@ -41,7 +44,10 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   }
 
   function applyToAll() {
-    if (!draftHotels[activeDay]) return;
+    if (!draftHotels[activeDay]) {
+      flagInvalid(paneRef.current?.querySelector('input'));
+      return;
+    }
     const hotel = draftHotels[activeDay]!;
     const next: HotelsData = {};
     for (let i = 1; i <= totalDays; i++) {
@@ -53,7 +59,10 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   function copyFromPrevious() {
     if (activeDay <= 1) return;
     const prev = draftHotels[activeDay - 1];
-    if (!prev) return;
+    if (!prev) {
+      flagInvalid(dayTabsRef.current?.children[activeDay - 2] as HTMLElement | undefined);
+      return;
+    }
     const next = { ...draftHotels };
     next[activeDay] = { ...prev };
     setDraftHotels(next);
@@ -77,7 +86,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
         <h2 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Hotel size={18} aria-hidden="true" /> {t('hotel.title')}</span></h2>
         
         {totalDays > 1 && (
-          <div className={styles.dayTabs}>
+          <div ref={dayTabsRef} className={styles.dayTabs}>
             {Array.from({ length: totalDays }).map((_, i) => {
               const d = i + 1;
               const hasHotel = !!draftHotels[d];
@@ -85,7 +94,10 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
                 <button
                   key={d}
                   className={`${styles.dayTab} ${activeDay === d ? styles.dayTabActive : ''} ${hasHotel ? styles.dayTabFilled : ''}`}
-                  onClick={() => setActiveDay(d)}
+                  onClick={(e) => {
+                    clearInvalid(e.currentTarget);
+                    setActiveDay(d);
+                  }}
                 >
                   {t('day.header', { index: d })}
                 </button>
@@ -94,7 +106,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
           </div>
         )}
 
-        <div className={styles.pane}>
+        <div ref={paneRef} className={styles.pane}>
           <HotelSearchInput 
             key={activeDay} // 탭이 바뀔때마다 input 리셋
             currentHotel={currentDraft ?? null}
@@ -105,8 +117,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
             <div className={styles.bulkActions}>
               <button 
                 type="button" 
-                className={styles.bulkBtn} 
-                disabled={!draftHotels[activeDay]} 
+                className={styles.bulkBtn}
                 onClick={applyToAll}
               >
                 {t('hotel.applyAll')}
@@ -114,8 +125,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
               {activeDay > 1 && (
                 <button 
                   type="button" 
-                  className={styles.bulkBtn} 
-                  disabled={!draftHotels[activeDay - 1]} 
+                  className={styles.bulkBtn}
                   onClick={copyFromPrevious}
                 >
                   {t('hotel.sameAsPrevious')}

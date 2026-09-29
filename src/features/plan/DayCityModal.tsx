@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import type { DayCityInfo } from './types';
 import styles from './DayCityModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -30,7 +31,10 @@ export function DayCityModal({ currentDay, totalDays, currentCity, onClose, onSa
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   async function handleSave() {
-    if (!selected) return;
+    if (!selected) {
+      flagInvalid(inputRef.current);
+      return;
+    }
     setSaving(true);
     try {
       await onSave({ name: selected.name, lat: selected.lat, lng: selected.lng }, scope);
@@ -101,7 +105,7 @@ export function DayCityModal({ currentDay, totalDays, currentCity, onClose, onSa
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
             {t('action.cancel', { ns: 'common' })}
           </button>
-          <button type="button" className={modalStyles.primary} disabled={!selected || saving} onClick={handleSave}>
+          <button type="button" className={modalStyles.primary} disabled={saving} onClick={handleSave}>
             {saving ? t('dayCity.applying') : t('dayCity.apply')}
           </button>
         </div>

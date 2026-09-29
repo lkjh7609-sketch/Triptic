@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { CheckCircle2, LogOut, QrCode, Receipt, Send } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { captureError, trackScreenView } from '@/shared/monitoring';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
@@ -49,6 +50,7 @@ export function CompanionChatScreen() {
   const needsReview = post?.status === 'closed' && checkinQuery.data === false;
 
   const [body, setBody] = useState('');
+  const messageInputRef = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reportTarget, setReportTarget] = useState<string | null>(null);
   const listEndRef = useRef<HTMLDivElement>(null);
@@ -103,7 +105,11 @@ export function CompanionChatScreen() {
   }
 
   async function handleSend() {
-    if (!body.trim() || sendMessage.isPending) return;
+    if (sendMessage.isPending) return;
+    if (!body.trim()) {
+      flagInvalid(messageInputRef.current);
+      return;
+    }
     setErrorMessage(null);
     try {
       await sendMessage.mutateAsync(body);
@@ -209,6 +215,7 @@ export function CompanionChatScreen() {
       {isOpen ? (
       <div className={postDetailStyles.commentInputRow}>
         <input
+          ref={messageInputRef}
           className={postDetailStyles.commentInput}
           placeholder={t('companion.chat.placeholder')}
           value={body}
@@ -221,7 +228,7 @@ export function CompanionChatScreen() {
         <button
           type="button"
           className={postDetailStyles.commentSubmitBtn}
-          disabled={sendMessage.isPending || !body.trim()}
+          disabled={sendMessage.isPending}
           onClick={handleSend}
         >
           <Send size={16} aria-hidden="true" />

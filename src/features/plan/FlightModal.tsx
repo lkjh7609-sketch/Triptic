@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { flightPreviewText } from './flights';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import type { FlightInfo, FlightsData } from './types';
 import styles from './FlightModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -99,6 +100,7 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
     value?.arr.name ? { name: value.arr.name, address: '', lat: value.arr.lat ?? 0, lng: value.arr.lng ?? 0, placeId: null, types: [] } : null,
   );
 
+  const flightNoRef = useRef<HTMLInputElement>(null);
   const { inputRef: depInputRef } = usePlaceAutocomplete(setDepPlace, { types: ['airport'] });
   const { inputRef: arrInputRef } = usePlaceAutocomplete(setArrPlace, { types: ['airport'] });
 
@@ -115,12 +117,12 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
   }, [isEditing, value]);
 
   function handleApply() {
-    if (!flightNo.trim()) {
-      setError(t('flight.flightNoRequired'));
-      return;
-    }
-    if (!depPlace?.name || !arrPlace?.name) {
-      setError(t('flight.airportRequired'));
+    const noMissing = !flightNo.trim();
+    const depMissing = !depPlace?.name;
+    const arrMissing = !arrPlace?.name;
+    if (noMissing || depMissing || arrMissing) {
+      setError(noMissing ? t('flight.flightNoRequired') : t('flight.airportRequired'));
+      flagInvalid(noMissing ? flightNoRef.current : null, depMissing ? depInputRef.current : null, arrMissing ? arrInputRef.current : null);
       return;
     }
     setError(null);
@@ -172,6 +174,7 @@ function FlightSlotEditor({ label, date, value, onChange }: FlightSlotEditorProp
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{t('flight.flightNoLabel')}</span>
               <input
+                ref={flightNoRef}
                 className={styles.fieldInput}
                 placeholder={t('flight.flightNoPlaceholder')}
                 value={flightNo}

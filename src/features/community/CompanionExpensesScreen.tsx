@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Plus, Receipt, Trash2 } from 'lucide-react';
@@ -9,6 +9,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { useCompanionMatchMembers, useCompanionPost } from './hooks/useCompanionPosts';
 import { useAddCompanionExpense, useCompanionExpenses, useDeleteCompanionExpense } from './companionExpenseService';
@@ -45,6 +46,9 @@ export function CompanionExpensesScreen() {
   const [splitAmong, setSplitAmong] = useState<string[] | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const descRef = useRef<HTMLInputElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const splitRef = useRef<HTMLFieldSetElement>(null);
   // 경비는 모임 전체가 같이 보는 기록이라 한 번 더 묻고 지운다
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -86,6 +90,11 @@ export function CompanionExpensesScreen() {
     const value = Number(amount.replace(/,/g, ''));
     if (!description.trim() || !(value > 0) || effectiveSplit.length === 0 || !effectivePayer) {
       setErrorMessage(t('companion.expenses.invalid'));
+      flagInvalid(
+        !description.trim() ? descRef.current : null,
+        !(value > 0) ? amountRef.current : null,
+        effectiveSplit.length === 0 ? splitRef.current : null,
+      );
       return;
     }
     try {
@@ -153,6 +162,7 @@ export function CompanionExpensesScreen() {
         {showForm ? (
           <form className={styles.form} onSubmit={handleAdd}>
             <input
+              ref={descRef}
               className={styles.input}
               placeholder={t('companion.expenses.descriptionPlaceholder')}
               aria-label={t('companion.expenses.descriptionPlaceholder')}
@@ -162,6 +172,7 @@ export function CompanionExpensesScreen() {
             />
             <div className={styles.amountRow}>
               <input
+                ref={amountRef}
                 className={styles.input}
                 inputMode="decimal"
                 placeholder={t('companion.expenses.amountPlaceholder')}
@@ -187,7 +198,7 @@ export function CompanionExpensesScreen() {
                 ))}
               </select>
             </label>
-            <fieldset className={styles.splitFieldset}>
+            <fieldset ref={splitRef} className={styles.splitFieldset}>
               <legend className={styles.fieldLabel}>{t('companion.expenses.splitAmong')}</legend>
               <div className={styles.splitChips}>
                 {members.map((m) => {
@@ -198,7 +209,10 @@ export function CompanionExpensesScreen() {
                       type="button"
                       aria-pressed={on}
                       className={on ? styles.chipOn : styles.chip}
-                      onClick={() => toggleSplit(m.user_id)}
+                      onClick={() => {
+                        toggleSplit(m.user_id);
+                        clearInvalid(splitRef.current);
+                      }}
                     >
                       {m.profile?.display_name || t('post.fallbackAuthor')}
                     </button>

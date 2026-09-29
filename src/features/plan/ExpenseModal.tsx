@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   CURRENCIES,
@@ -14,6 +14,7 @@ import {
 import { ExpenseChart } from './ExpenseChart';
 import { DoughnutChart } from './DoughnutChart';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
 import styles from './ExpenseModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
@@ -58,6 +59,8 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const [paymentMethod, _setPaymentMethod] = useState<ExpensePaymentMethod | ''>('');
   const [saving, setSaving] = useState(false);
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+  const descRef = useRef<HTMLInputElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
 
   const list = expensesData[currentDay] ?? [];
   const dayTotal = getDayExpenseTotal(list, currency);
@@ -70,7 +73,10 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
 
   async function handleAdd() {
     const amountNum = Number(amount);
-    if (!desc.trim() || !amountNum) return;
+    if (!desc.trim() || !amountNum) {
+      flagInvalid(!desc.trim() ? descRef.current : null, !amountNum ? amountRef.current : null);
+      return;
+    }
     setSaving(true);
     try {
       // 통화는 여행 통화로 고정 — 여행 도시에서 자동 지정되므로 입력할 때 고르지 않는다
@@ -112,6 +118,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
 
         <div className={styles.addRow}>
           <input
+            ref={descRef}
             className={styles.descInput}
             placeholder={t('expense.descPlaceholder')}
             value={desc}
@@ -136,6 +143,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
           </div>
           <div className={styles.detailsRow}>
             <input
+              ref={amountRef}
               className={styles.amountInput}
               type="number"
               placeholder={t('expense.amountPlaceholder', { symbol: currSymbol })}

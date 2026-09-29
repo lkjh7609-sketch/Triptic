@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Plane, Hotel, Ticket, Calendar, Image, FileText, Trash2 } from 'lucide-react';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { hasDocumentUploadConsent, setDocumentUploadConsent } from './consent';
 import {
   validateFile,
@@ -61,6 +62,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
   const { t } = useTranslation(['documents', 'common']);
   const [consented, setConsented] = useState(hasDocumentUploadConsent());
   const [category, setCategory] = useState<DocumentCategory | null>(null);
+  const categoryRowRef = useRef<HTMLDivElement>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const upload = useUploadDocument(tripId);
@@ -239,13 +241,16 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
         <h2 className={modalStyles.title}>{t('upload.uploadTitle')}</h2>
         <p className={styles.consentText}>{t('upload.categoryPrompt')}</p>
 
-        <div className={styles.categoryRow}>
+        <div ref={categoryRowRef} className={styles.categoryRow}>
           {CATEGORIES.map((c) => (
             <button
               key={c}
               type="button"
               className={category === c ? styles.categoryBtnActive : styles.categoryBtn}
-              onClick={() => setCategory(c)}
+              onClick={() => {
+                setCategory(c);
+                clearInvalid(categoryRowRef.current);
+              }}
             >
               {t(`upload.category.${c}`)}
             </button>
@@ -259,7 +264,13 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
           type="file"
           accept={ACCEPTED_MIME_TYPES.join(',')}
           onChange={handleFileChange}
-          disabled={upload.isPending || !category}
+          disabled={upload.isPending}
+          onClick={(e) => {
+            if (!category) {
+              e.preventDefault();
+              flagInvalid(categoryRowRef.current);
+            }
+          }}
           className={styles.fileInput}
         />
 

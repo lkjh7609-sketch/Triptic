@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { useSession } from '@/shared/hooks/useSession';
@@ -26,6 +27,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     return () => {
@@ -50,6 +52,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
     const trimmed = body.trim();
     if (!trimmed) {
       setError(t('feedback.bodyRequired'));
+      flagInvalid(bodyRef.current);
       return;
     }
     if (!user) return;
@@ -99,6 +102,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
               {t('feedback.bodyLabel')}
             </label>
             <textarea
+              ref={bodyRef}
               id="feedback-body"
               className={styles.textarea}
               value={body}

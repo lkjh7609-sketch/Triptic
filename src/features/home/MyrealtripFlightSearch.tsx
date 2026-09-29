@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type Ref } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import {
   type FlightSearch,
 } from '@/features/plan/partnerLinks';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import styles from './MyrealtripFlightSearch.module.css';
 
 /** 출발지·도착지 하나 — 도시 코드(SEL)와 공항 코드(ICN)를 구분한다(마이리얼트립 주소의 C./A.) */
@@ -86,7 +87,7 @@ function placeFromParam(value: string | null): Place | null {
   return IATA.test(code) ? { code, type: 'city', name: code, detail: null } : null;
 }
 
-function PlaceField({ label, value, onChange, locale }: { label: string; value: Place | null; onChange: (p: Place) => void; locale: string }) {
+function PlaceField({ label, value, onChange, locale, inputRef }: { label: string; value: Place | null; onChange: (p: Place) => void; locale: string; inputRef?: Ref<HTMLInputElement> }) {
   const { t } = useTranslation('home');
   const listId = useId();
   // 입력 중일 때만 글자를 따로 들고, 아니면 고른 곳 이름을 보여준다
@@ -133,6 +134,7 @@ function PlaceField({ label, value, onChange, locale }: { label: string; value: 
     <label className={styles.field}>
       <span className={styles.fieldLabel}>{label}</span>
       <input
+        ref={inputRef}
         className={styles.input}
         value={editing ?? placeLabel(value)}
         placeholder={t('flights.form.placePlaceholder')}
@@ -267,6 +269,9 @@ export function MyrealtripFlightSearch() {
   const [infants, setInfants] = useState(() => Math.min(paramCount('infants', 0, 0), adults));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const originInputRef = useRef<HTMLInputElement>(null);
+  const destInputRef = useRef<HTMLInputElement>(null);
+  const dateButtonRef = useRef<HTMLButtonElement>(null);
 
   // 출발지를 안 넘겨받았으면 접속 위치의 도시로
   const { data: here } = useQuery({
@@ -311,10 +316,12 @@ export function MyrealtripFlightSearch() {
     setError(null);
     if (!effectiveOrigin || !destination || effectiveOrigin.code === destination.code) {
       setError(t('flights.form.needPlaces'));
+      flagInvalid(!effectiveOrigin ? originInputRef.current : null, !destination || effectiveOrigin?.code === destination.code ? destInputRef.current : null);
       return;
     }
     if (departDate < today || (roundTrip && (returnDate === '' || returnDate < departDate))) {
       setError(t('flights.form.badDates'));
+      flagInvalid(dateButtonRef.current);
       return;
     }
     if (prefetched) {
@@ -361,16 +368,16 @@ export function MyrealtripFlightSearch() {
 
       <div className={styles.grid}>
         <div className={styles.places}>
-          <PlaceField label={t('flights.form.from')} value={effectiveOrigin} onChange={setOrigin} locale={placesLocale} />
+          <PlaceField label={t('flights.form.from')} value={effectiveOrigin} onChange={setOrigin} locale={placesLocale} inputRef={originInputRef} />
           <button type="button" className={styles.swap} onClick={swap} aria-label={t('flights.form.swap')}>
             <ArrowLeftRight size={16} aria-hidden="true" />
           </button>
-          <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} />
+          <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} inputRef={destInputRef} />
         </div>
         <div className={styles.dates}>
           <div className={styles.field}>
             <span className={styles.fieldLabel}>{roundTrip ? t('flights.form.dates') : t('flights.form.depart')}</span>
-            <button type="button" className={`${styles.input} ${styles.dateButton}`} onClick={() => setShowCalendar(true)}>
+            <button ref={dateButtonRef} type="button" className={`${styles.input} ${styles.dateButton}`} onClick={() => setShowCalendar(true)}>
               <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
               <span className={styles.dateText}>
                 {formatDay(departDate, i18n.language)}
@@ -432,6 +439,7 @@ export function MyrealtripFlightSearch() {
               endDate={roundTrip && returnDate ? parseISO(returnDate) : null}
               onChange={(start, end) => {
                 if (!start) return;
+                clearInvalid(dateButtonRef.current);
                 setDepartDate(format(start, 'yyyy-MM-dd'));
                 if (!roundTrip) {
                   setShowCalendar(false);

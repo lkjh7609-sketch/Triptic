@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Check, Circle } from 'lucide-react';
 import { isEmailAvailable, signInWithEmail, signUpWithEmail } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { PASSWORD_MAX_LENGTH, checkPassword, isPasswordValid } from './passwordRules';
 import styles from './EmailAuthForm.module.css';
 
@@ -38,6 +39,9 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
   const [emailCheck, setEmailCheck] = useState<{ email: string; available: boolean } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const isSignup = mode === 'signup';
   const normalizedEmail = email.trim().toLowerCase();
@@ -49,6 +53,7 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
     setError(null);
     if (!EMAIL_PATTERN.test(normalizedEmail)) {
       setError(t('auth.email.emailInvalid'));
+      flagInvalid(emailRef.current);
       return;
     }
     setChecking(true);
@@ -65,8 +70,14 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!email || !password) return;
-    if (isSignup && !name.trim()) return;
+    const nameMissing = isSignup && !name.trim();
+    const emailBad = !EMAIL_PATTERN.test(normalizedEmail);
+    const passwordMissing = !password;
+    if (nameMissing || emailBad || passwordMissing) {
+      if (emailBad && normalizedEmail) setError(t('auth.email.emailInvalid'));
+      flagInvalid(nameMissing ? nameRef.current : null, emailBad ? emailRef.current : null, passwordMissing ? passwordRef.current : null);
+      return;
+    }
     if (isSignup && !agreed) {
       onConsentMissing();
       return;
@@ -74,14 +85,17 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
     if (isSignup) {
       if (!currentCheck) {
         setError(t('auth.email.emailCheckRequired'));
+        flagInvalid(emailRef.current);
         return;
       }
       if (!currentCheck.available) {
         setError(t('auth.email.emailTaken'));
+        flagInvalid(emailRef.current);
         return;
       }
       if (!isPasswordValid(password)) {
         setError(t('auth.email.passwordInvalid'));
+        flagInvalid(passwordRef.current);
         return;
       }
     }
@@ -107,19 +121,19 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {isSignup && (
         <div className={styles.inputGroup}>
           <label htmlFor="auth-name">{t('auth.email.name')}</label>
           <input
             id="auth-name"
+            ref={nameRef}
             type="text"
             autoComplete="name"
             className={styles.input}
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={loading}
-            required
           />
         </div>
       )}
@@ -129,20 +143,20 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
         <div className={styles.emailRow}>
           <input
             id="auth-email"
+            ref={emailRef}
             type="email"
             autoComplete="email"
             className={styles.input}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
-            required
           />
           {isSignup ? (
             <button
               type="button"
               className={styles.checkButton}
               onClick={handleCheckEmail}
-              disabled={loading || checking || !email.trim()}
+              disabled={loading || checking}
             >
               {checking ? t('auth.email.checking') : t('auth.email.checkDuplicate')}
             </button>
@@ -159,6 +173,7 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
         <label htmlFor="auth-password">{t('auth.email.password')}</label>
         <input
           id="auth-password"
+          ref={passwordRef}
           type="password"
           autoComplete={isSignup ? 'new-password' : 'current-password'}
           maxLength={isSignup ? PASSWORD_MAX_LENGTH : undefined}
@@ -167,7 +182,6 @@ export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) 
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
-          required
         />
         {isSignup ? (
           <ul id="auth-password-rules" className={styles.rules}>

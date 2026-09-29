@@ -1,10 +1,11 @@
 import { MessageCircle, Heart } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { trackScreenView, captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -36,6 +37,7 @@ export function PostDetailScreen() {
   const deleteComment = useDeleteComment(postId ?? '');
 
   const [commentBody, setCommentBody] = useState('');
+  const commentInputRef = useRef<HTMLInputElement>(null);
   const [translated, setTranslated] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
 
@@ -76,7 +78,10 @@ export function PostDetailScreen() {
   }
 
   async function handleSubmitComment() {
-    if (!commentBody.trim()) return;
+    if (!commentBody.trim()) {
+      flagInvalid(commentInputRef.current);
+      return;
+    }
     try {
       await createComment.mutateAsync({ body: commentBody.trim() });
       setCommentBody('');
@@ -192,6 +197,7 @@ export function PostDetailScreen() {
       {user ? (
         <div className={styles.commentInputRow}>
           <input
+            ref={commentInputRef}
             className={styles.commentInput}
             placeholder={t('detail.commentPlaceholder')}
             value={commentBody}
@@ -204,7 +210,7 @@ export function PostDetailScreen() {
           <button
             type="button"
             className={styles.commentSubmitBtn}
-            disabled={createComment.isPending || !commentBody.trim()}
+            disabled={createComment.isPending}
             onClick={handleSubmitComment}
           >
             {t('detail.commentSubmit')}

@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import type { UseMutationResult } from '@tanstack/react-query';
 import { checkDisplayNameAvailable, type ProfilePatch, type ProfileRow } from '@/shared/api/profileService';
@@ -35,6 +36,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
   const [checkState, setCheckState] = useState<'idle' | 'checking' | 'available'>('idle');
   const [checking, setChecking] = useState(false);
   const checkedNameRef = useRef<string | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const nameChanged = name.trim() !== (profile?.display_name ?? '');
 
   function handleNameChange(value: string) {
@@ -47,6 +49,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
     const trimmed = name.trim();
     if (!DISPLAY_NAME_REGEX.test(trimmed)) {
       setError(t('profile.nameFormatError'));
+      flagInvalid(nameInputRef.current);
       return;
     }
     if (!profile) return;
@@ -74,6 +77,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
     const trimmed = name.trim();
     if (!trimmed) {
       setError(t('profile.nameRequired'));
+      flagInvalid(nameInputRef.current);
       return;
     }
     if (!nameChanged) {
@@ -82,10 +86,12 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
     }
     if (!DISPLAY_NAME_REGEX.test(trimmed)) {
       setError(t('profile.nameFormatError'));
+      flagInvalid(nameInputRef.current);
       return;
     }
     if (checkState !== 'available' || checkedNameRef.current !== trimmed) {
       setError(t('profile.nameCheckRequired'));
+      flagInvalid(nameInputRef.current);
       return;
     }
     updateProfile.mutate(
@@ -121,6 +127,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
             </label>
             <div className={styles.nameRow}>
               <input
+                ref={nameInputRef}
                 id="profile-name"
                 className={modalStyles.input}
                 value={name}
@@ -155,7 +162,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
             <button
               type="submit"
               className={modalStyles.primary}
-              disabled={updateProfile.isPending || (nameChanged && checkState !== 'available')}
+              disabled={updateProfile.isPending}
             >
               {t('common:action.save')}
             </button>

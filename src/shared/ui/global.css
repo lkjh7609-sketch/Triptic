@@ -171,3 +171,25 @@ html[data-nav='fade']::view-transition-new(root) { animation-name: vt-rise-in; a
     animation: none !important;
   }
 }
+
+/* 필수 입력이 비어 진행이 막혔을 때 — src/shared/ui/invalidField.ts 의 flagInvalid()가 붙인다 */
+[data-invalid='true'] {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent) !important;
+}
+
+[data-invalid='true'][data-shake] {
+  animation: field-shake 360ms ease;
+}
+
+@keyframes field-shake {
+  20% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  80% { transform: translateX(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-invalid='true'][data-shake] {
+    animation: none;
+  }
+}
