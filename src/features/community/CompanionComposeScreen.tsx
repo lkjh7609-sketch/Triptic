@@ -184,7 +184,7 @@ export function CompanionComposeScreen() {
       ) : null}
 
       {showCalendar ? (
-        <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
+        <div className={styles.calendarOverlay}>
           <div className={styles.calendarSheet} onClick={(e) => e.stopPropagation()}>
             <CalendarRangePicker
               startDate={startDateStr ? new Date(startDateStr) : null}

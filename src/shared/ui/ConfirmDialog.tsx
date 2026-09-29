@@ -22,7 +22,7 @@ export function ConfirmDialog({ title, message, cancelLabel, confirmLabel, dange
   const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}

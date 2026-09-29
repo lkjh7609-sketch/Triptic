@@ -76,7 +76,7 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={handleClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

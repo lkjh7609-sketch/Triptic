@@ -97,7 +97,7 @@ export function ReviewSheet({
 
   if (bookings.length === 0) {
     return (
-      <div className={modalStyles.overlay} onClick={onClose}>
+      <div className={modalStyles.overlay}>
         <div
           ref={focusTrapRef}
           className={modalStyles.sheet}
@@ -118,7 +118,7 @@ export function ReviewSheet({
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}

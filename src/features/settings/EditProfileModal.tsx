@@ -110,7 +110,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

@@ -40,7 +40,7 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

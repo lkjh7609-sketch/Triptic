@@ -137,7 +137,7 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
         <h2 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Link size={18} /> {t('share.title')}</span></h2>
 

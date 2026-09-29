@@ -105,7 +105,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

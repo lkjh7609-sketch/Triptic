@@ -26,7 +26,7 @@ export function LanguageModal({ onClose, profile, updateProfile }: LanguageModal
   };
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

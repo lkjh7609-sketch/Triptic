@@ -36,7 +36,7 @@ export function CompanionApplyModal({ postId, onClose }: CompanionApplyModalProp
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}

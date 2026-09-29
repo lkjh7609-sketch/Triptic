@@ -426,7 +426,7 @@ export function MyrealtripFlightSearch() {
       {error ? <p className={styles.error}>{error}</p> : null}
 
       {showCalendar ? (
-        <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
+        <div className={styles.calendarOverlay}>
           <div
             className={styles.calendarSheet}
             role="dialog"

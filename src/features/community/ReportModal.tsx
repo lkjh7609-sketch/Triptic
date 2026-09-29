@@ -55,7 +55,7 @@ export function ReportModal({ targetType, targetId, onClose, onReported }: Repor
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={handleClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}
