@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
+import { ProBadge } from '@/shared/ui/ProBadge';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
@@ -117,6 +118,7 @@ export function HeaderDesktop() {
               </span>
             )}
             <span className={styles.userName}>{displayName}</span>
+            {profile?.plan === 'pro' ? <ProBadge /> : null}
           </button>
 
           <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`} role="menu" hidden={!dropdownOpen}>

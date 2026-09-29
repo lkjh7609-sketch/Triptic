@@ -4,6 +4,7 @@ import { LANGUAGE_AUTONYMS } from '@/shared/i18n/languageNames';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
+import { ProBadge } from '@/shared/ui/ProBadge';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError, trackScreenView } from '@/shared/monitoring';
@@ -133,7 +134,10 @@ export function SettingsScreen() {
             <div className={styles.profileHeader}>
               <img src={user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/notionists/svg?seed=' + user.email} alt="Profile" className={styles.avatar} />
               <div className={styles.profileInfo}>
-                <span className={styles.profileName}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
+                <span className={styles.profileNameRow}>
+                  <span className={styles.profileName}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
+                  {profile?.plan === 'pro' ? <ProBadge /> : null}
+                </span>
                 {profile?.handle ? <span className={styles.profileHandle}>@{profile.handle}</span> : null}
                 <span className={styles.profileEmail}>{user.email}</span>
               </div>

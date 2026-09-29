@@ -100,6 +100,9 @@
     "backup": "備份與還原",
     "signOut": "登出"
   },
+  "plan": {
+    "proBadge": "Pro"
+  },
   "calendar": {
     "prevMonth": "上個月",
     "nextMonth": "下個月"
