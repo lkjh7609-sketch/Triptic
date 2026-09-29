@@ -121,7 +121,8 @@
   "hotels": {
     "title": "宿泊",
     "subtitle": "旅行先の宿を探しましょう",
-    "cta": "Agodaで宿を探す"
+    "cta": "Agodaで宿を探す",
+    "widgetTitle": "Trip.com ホテル検索"
   },
   "activities": {
     "title": "ツアー・アクティビティ",

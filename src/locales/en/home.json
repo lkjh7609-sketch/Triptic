@@ -122,7 +122,8 @@
   "hotels": {
     "title": "Hotels",
     "subtitle": "Find a place to stay at your destination",
-    "cta": "Find hotels on Agoda"
+    "cta": "Find hotels on Agoda",
+    "widgetTitle": "Trip.com hotel search"
   },
   "activities": {
     "title": "Tours & activities",
