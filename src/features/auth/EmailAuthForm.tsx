@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { Check, Circle } from 'lucide-react';
 import { isEmailAvailable, signInWithEmail, signUpWithEmail } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
@@ -19,13 +20,15 @@ function authErrorKey(err: unknown): string {
 }
 
 interface EmailAuthFormProps {
-  /** 약관 동의 — 소셜 로그인 쪽 체크박스와 같은 값을 쓴다 */
+  /** 약관 동의 — 로그인 창 바깥의 체크박스(소셜 로그인과 공용) 값. 가입 전에 필요하다 */
   agreed: boolean;
-  onAgreedChange: (agreed: boolean) => void;
+  /** 동의 전에 가입을 누르면 체크박스로 안내하도록 알린다 */
+  onConsentMissing: () => void;
 }
 
-export function EmailAuthForm({ agreed, onAgreedChange }: EmailAuthFormProps) {
+export function EmailAuthForm({ agreed, onConsentMissing }: EmailAuthFormProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup'>('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -63,7 +66,11 @@ export function EmailAuthForm({ agreed, onAgreedChange }: EmailAuthFormProps) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email || !password) return;
-    if (isSignup && (!name.trim() || !agreed)) return;
+    if (isSignup && !name.trim()) return;
+    if (isSignup && !agreed) {
+      onConsentMissing();
+      return;
+    }
     if (isSignup) {
       if (!currentCheck) {
         setError(t('auth.email.emailCheckRequired'));
@@ -88,6 +95,8 @@ export function EmailAuthForm({ agreed, onAgreedChange }: EmailAuthFormProps) {
         setMessage(t('auth.email.checkInbox'));
       } else {
         await signInWithEmail(email.trim(), password);
+        // 설정 화면에서 로그인해도 홈으로 — 소셜 로그인과 같은 동작
+        if (window.location.pathname === '/settings') navigate('/', { replace: true });
       }
     } catch (err) {
       captureError(err, { context: isSignup ? 'signUpWithEmail' : 'signInWithEmail' });
@@ -178,22 +187,6 @@ export function EmailAuthForm({ agreed, onAgreedChange }: EmailAuthFormProps) {
         ) : null}
       </div>
 
-      {isSignup ? (
-        <label className={styles.consent}>
-          <input type="checkbox" checked={agreed} onChange={(e) => onAgreedChange(e.target.checked)} />
-          <span>
-            <Trans
-              t={t}
-              i18nKey="auth.consent"
-              components={{
-                terms: <a href="/terms.html" target="_blank" rel="noopener" />,
-                privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
-              }}
-            />
-          </span>
-        </label>
-      ) : null}
-
       {error && (
         <p className={styles.error} role="alert">
           {error}
@@ -206,7 +199,7 @@ export function EmailAuthForm({ agreed, onAgreedChange }: EmailAuthFormProps) {
       )}
 
       <div className={styles.actions}>
-        <button type="submit" className={styles.primaryButton} disabled={loading || (isSignup && !agreed)}>
+        <button type="submit" className={styles.primaryButton} disabled={loading}>
           {loading ? t('auth.connecting') : isSignup ? t('auth.email.signUp') : t('auth.email.logIn')}
         </button>
         <button

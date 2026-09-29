@@ -163,7 +163,7 @@ export function SettingsScreen() {
             </div>
           </>
         ) : (
-          <LoginButtons />
+          <LoginButtons redirectPath="/" />
         )}
         </div>
       </section>

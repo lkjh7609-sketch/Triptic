@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
-import { ChevronDown, Compass, Sparkles, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { ChevronDown, Sparkles, X } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 import { LoginButtons } from './LoginButtons';
 import { EmailAuthForm } from './EmailAuthForm';
 import styles from './GlobalAuthModal.module.css';
@@ -22,8 +23,22 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
   const { t } = useTranslation();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
   const [agreed, setAgreed] = useState(false);
+  const [consentMissing, setConsentMissing] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const emailToggleRef = useRef<HTMLButtonElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
+
+  function handleAgreedChange(next: boolean) {
+    setAgreed(next);
+    if (next) setConsentMissing(false);
+  }
+
+  // 동의 전에 로그인·가입을 누르면 동의 체크박스로 눈길을 돌린다
+  function handleConsentMissing() {
+    setConsentMissing(true);
+    consentRef.current?.focus();
+    consentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   function toggleEmail() {
     const next = !emailOpen;
@@ -54,17 +69,14 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
         ) : null}
 
         <div className={styles.header}>
-          <div className={styles.brandRow}>
-            <Compass size={36} color="var(--brand)" strokeWidth={1.5} aria-hidden="true" />
-            <h1 id="auth-title" className={styles.title}>
-              Triptic
-            </h1>
-          </div>
+          <h1 id="auth-title" className={styles.brand}>
+            <BrandLogo className={styles.brandLogo} />
+          </h1>
           {/* 로그인을 재촉하는 문구 대신 앱 한마디 */}
           <p className={styles.subtitle}>{t('auth.tagline')}</p>
         </div>
 
-        <LoginButtons agreed={agreed} onAgreedChange={setAgreed} />
+        <LoginButtons consent={{ agreed, onMissing: handleConsentMissing }} />
 
         <div className={styles.emailSection}>
           <button
@@ -78,13 +90,40 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
             {t('auth.email.toggle')}
             <ChevronDown size={16} aria-hidden="true" className={emailOpen ? styles.chevronOpen : styles.chevron} />
           </button>
+          {/* 소셜 로그인·이메일 가입 공용 동의 — 이메일 가입하기 바로 아래 */}
+          <div className={styles.consentBox}>
+            <label className={consentMissing ? `${styles.consent} ${styles.consentMissing}` : styles.consent}>
+              <input
+                ref={consentRef}
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => handleAgreedChange(e.target.checked)}
+                aria-describedby={consentMissing ? 'auth-consent-hint' : undefined}
+              />
+              <span>
+                <Trans
+                  t={t}
+                  i18nKey="auth.consent"
+                  components={{
+                    terms: <a href="/terms.html" target="_blank" rel="noopener" />,
+                    privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
+                  }}
+                />
+              </span>
+            </label>
+            {consentMissing ? (
+              <p id="auth-consent-hint" className={styles.consentHint} role="alert">
+                {t('auth.consentRequired')}
+              </p>
+            ) : null}
+          </div>
           {/* 접혀 있는 동안은 visibility:hidden이라 탭 이동·스크린리더에서 빠진다 */}
           <div
             id="auth-email-panel"
             className={emailOpen ? `${styles.emailPanel} ${styles.emailPanelOpen}` : styles.emailPanel}
           >
             <div className={styles.emailPanelInner}>
-              <EmailAuthForm agreed={agreed} onAgreedChange={setAgreed} />
+              <EmailAuthForm agreed={agreed} onConsentMissing={handleConsentMissing} />
             </div>
           </div>
         </div>

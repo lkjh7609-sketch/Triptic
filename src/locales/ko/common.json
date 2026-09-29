@@ -33,6 +33,7 @@
   "auth": {
     "loginRequired": "로그인이 필요해요",
     "consent": "<terms>이용약관</terms> 및 <privacy>개인정보처리방침</privacy>에 동의합니다",
+    "consentRequired": "이용약관 및 개인정보처리방침에 먼저 동의해 주세요",
     "loginFailed": "로그인을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.",
     "connecting": "연결 중…",
     "continueApple": "Apple로 계속하기",
