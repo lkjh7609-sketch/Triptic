@@ -1,0 +1,48 @@
+.section {
+  margin-top: var(--space-6);
+}
+
+/* PC는 3개가 한 줄에 다 들어가고(300×3 + 간격), 좁은 화면은 가로로 넘겨 본다 */
+.row {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 300px;
+  height: 250px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+  scroll-snap-align: start;
+}
+
+.iframe {
+  display: block;
+  border: 0;
+}
+
+.powered {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-3) 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 공식 로고 파일이 생기면 <img>로 바꾼다 — 그때까지는 글자로 */
+.wordmark {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #287dfa;
+}

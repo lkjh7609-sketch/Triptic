@@ -134,6 +134,10 @@
       "childrenHint": "若有兒童同行，請在 Trip.com 搜尋畫面加入並填寫年齡。",
       "pickCity": "請從清單中選擇城市。若要以區域或飯店名稱搜尋，可直接到 Trip.com 搜尋。",
       "searchOnTrip": "前往 Trip.com 搜尋"
+    },
+    "cards": {
+      "label": "Trip.com 推薦飯店",
+      "title": "Trip.com 推薦飯店 {{n}}"
     }
   },
   "activities": {

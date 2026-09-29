@@ -29,6 +29,25 @@ export function tripHotelsHomeUrl(locale: string): string {
   return `https://${host}/hotels/?${params.toString()}`;
 }
 
+/** 호텔 화면 검색창 아래의 추천 호텔 배너 3개(300×250) — 파트너 센터에서 하나씩 만든 코드, 링크 자리 표시는 카드마다 다르다 */
+export const TRIP_HOTEL_CARDS = [
+  { code: 'DB20019386', sub1: 'home_hotels_card1' }, // 서울
+  { code: 'DB20019407', sub1: 'home_hotels_card2' }, // 서울
+  { code: 'DB20019414', sub1: 'home_hotels_card3' }, // 도쿄
+] as const;
+
+export const TRIP_CARD_SIZE = { width: 300, height: 250 } as const;
+
+/**
+ * 추천 호텔 배너 iframe 주소 — 표시 언어의 지역 사이트로(검색창과 같은 규칙).
+ * ⚠️ 한국어(kr)로 만든 코드라 다른 지역 사이트에서도 뜨는지는 확인하지 못했다.
+ */
+export function tripHotelCardSrc(card: (typeof TRIP_HOTEL_CARDS)[number], locale: string): string {
+  const host = TRIP_HOST[normalizeLocale(locale)];
+  const params = new URLSearchParams({ Allianceid: ALLIANCE_ID, SID, trip_sub1: card.sub1 });
+  return `https://${host}/partners/ad/${card.code}?${params.toString()}`;
+}
+
 export interface TripHotelSearch {
   /** 트립닷컴 도시 번호(tripHotelCities.ts) */
   cityId: number;
