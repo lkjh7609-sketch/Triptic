@@ -22,7 +22,7 @@
     "distanceUnit": "거리 단위",
     "distanceUnitHint": "거리 단위는 지도·경로 표시에는 아직 반영되지 않아요.",
     "baseCurrency": "기본 통화",
-    "language": "언어",
+    "language": "언어 (Language)",
     "loginHint": "로그인하면 온도·거리 단위, 기본 통화, 언어 설정을 저장할 수 있어요.",
     "unitSettings": "단위 설정 (온도/거리)"
   },

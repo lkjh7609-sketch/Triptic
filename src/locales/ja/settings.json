@@ -22,7 +22,7 @@
     "distanceUnit": "距離単位",
     "distanceUnitHint": "距離単位は地図やルートの表示にはまだ反映されません。",
     "baseCurrency": "基本通貨",
-    "language": "言語",
+    "language": "言語 (Language)",
     "loginHint": "ログインすると、温度・距離の単位、基本通貨、言語設定を保存できます。",
     "unitSettings": "単位設定 (温度/距離)"
   },
