@@ -78,7 +78,7 @@ export function HeaderDesktop() {
         </Link>
         
         <nav className={styles.nav}>
-          {/* 홈·항공·호텔·액티비티 이동은 각 화면 위의 탭 줄(HomeSectionTabs)이 맡는다 —
+          {/* 항공·호텔·액티비티 이동은 각 화면 위의 탭 줄(HomeSectionTabs)이 맡는다 —
               예전엔 여기 "홈"에 커서를 올려야만 나타나서 있는 줄도 모르는 사람이 많았다 */}
           <Link to="/" className={styles.navLink} aria-current={isHomeSectionPath(pathname) ? 'page' : undefined}>
             {t('tab.home')}
