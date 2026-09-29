@@ -14,11 +14,13 @@
 }
 
 .logo {
-  font-family: 'Newsreader', var(--font-sans);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--brand, #FF6B4A);
+  display: flex;
+  align-items: center;
   text-decoration: none;
+}
+
+.logoImage {
+  height: 48px;
 }
 
 .nav {

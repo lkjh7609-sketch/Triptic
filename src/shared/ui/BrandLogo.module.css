@@ -1,0 +1,17 @@
+.logo {
+  display: block;
+  width: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 로고 색이 짙은 청록이라 어두운 배경에서는 밝혀서 쓴다(인트로 스플래시도 같은 값) */
+:global(:root[data-theme='dark']) .logo {
+  filter: brightness(1.9) saturate(1.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light']):not([data-theme='dark'])) .logo {
+    filter: brightness(1.9) saturate(1.1);
+  }
+}
