@@ -60,6 +60,11 @@
     color: var(--text-primary);
   }
 
+  /* 헤더에 이미 "홈"이 있다 */
+  .homeTab {
+    display: none;
+  }
+
   .active {
     color: var(--brand);
   }
