@@ -14,8 +14,9 @@
       if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 2500 });
       else setTimeout(fn, 800);
     }
-    if (document.readyState === 'complete') run();
-    else window.addEventListener('load', run, { once: true });
+    // load 이벤트는 폰트 파일까지 기다려 느린 회선에서 10초 넘게 걸린다 — 모듈(메인 JS)이 실행된 뒤 오는 DOMContentLoaded 기준
+    if (document.readyState !== 'loading') run();
+    else document.addEventListener('DOMContentLoaded', run, { once: true });
   };
   window.__loadScript = function (src, attrs) {
     var el = document.createElement('script');
