@@ -160,7 +160,8 @@ html[data-nav='fade']::view-transition-new(root) { animation-name: vt-rise-in; a
 
 /* 헤더/탭바는 움직이지 않고 바뀐 부분(활성 탭 등)만 살짝 교차 */
 ::view-transition-group(app-header),
-::view-transition-group(app-tabbar) {
+::view-transition-group(app-tabbar),
+::view-transition-group(home-tabs) {
   animation-duration: 200ms;
 }
 

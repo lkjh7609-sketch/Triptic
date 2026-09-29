@@ -36,10 +36,39 @@
   background: var(--text-primary);
 }
 
-/* 마우스가 있는 PC는 헤더의 "홈" 드롭다운으로 이동한다. 아이패드 가로처럼 넓지만 커서가
-   없는 기기는 드롭다운을 열 수 없으니 탭을 그대로 둔다 */
-@media (min-width: 1024px) and (hover: hover) {
+/* PC(1024px 이상, 아이패드 가로 포함): 헤더 바로 아래 넓은 탭 줄. 모바일의 큰 제목형 탭은
+   PC 헤더 밑에서 너무 무거워 작고 단정하게 바꾼다. 본문 폭(1120px)에 왼쪽 선을 맞춘다 */
+@media (min-width: 1024px) {
   .tabs {
-    display: none;
+    view-transition-name: home-tabs; /* 화면 전환 때 제자리 고정(global.css) */
+    gap: 4px;
+    overflow: visible;
+    padding: 0 max(var(--space-4), calc((100% - 1120px) / 2 + var(--space-4)));
+    background: var(--surface-card);
+    border-bottom: 1px solid var(--border-subtle, var(--border));
+  }
+
+  .tab {
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+  }
+
+  .tab:hover {
+    color: var(--text-primary);
+  }
+
+  .active {
+    color: var(--brand);
+  }
+
+  .active::after {
+    left: 12px;
+    right: 12px;
+    bottom: -1px; /* 아래 테두리와 겹쳐 선이 이어져 보이게 */
+    height: 2px;
+    background: var(--brand);
   }
 }
