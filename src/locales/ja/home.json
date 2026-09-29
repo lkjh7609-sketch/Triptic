@@ -121,8 +121,18 @@
   "hotels": {
     "title": "宿泊",
     "subtitle": "旅行先の宿を探しましょう",
-    "cta": "Agodaで宿を探す",
-    "widgetTitle": "Trip.com ホテル検索"
+    "form": {
+      "destination": "目的地",
+      "destinationPlaceholder": "都市を検索（例：東京）",
+      "noMatch": "一致する目的地がありません",
+      "dates": "チェックイン – チェックアウト",
+      "pickCheckOut": "チェックアウトを選択",
+      "nights_other": "{{count}}泊",
+      "rooms": "客室",
+      "search": "ホテルを検索",
+      "opensOnTrip": "検索結果と予約はTrip.comで行われます",
+      "childrenHint": "お子様連れの場合は、Trip.comの検索画面で年齢と一緒に追加してください。"
+    }
   },
   "activities": {
     "title": "ツアー・アクティビティ",

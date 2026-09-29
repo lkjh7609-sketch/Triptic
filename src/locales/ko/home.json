@@ -121,8 +121,18 @@
   "hotels": {
     "title": "숙소",
     "subtitle": "여행지 숙소를 찾아보세요",
-    "cta": "아고다에서 숙소 찾기",
-    "widgetTitle": "트립닷컴 호텔 검색"
+    "form": {
+      "destination": "여행지",
+      "destinationPlaceholder": "도시를 검색하세요 (예: 도쿄)",
+      "noMatch": "찾는 여행지가 없어요",
+      "dates": "체크인 – 체크아웃",
+      "pickCheckOut": "체크아웃 선택",
+      "nights_other": "{{count}}박",
+      "rooms": "객실",
+      "search": "호텔 검색",
+      "opensOnTrip": "검색 결과와 예약은 트립닷컴에서 진행돼요",
+      "childrenHint": "어린이와 함께라면 트립닷컴 검색 화면에서 나이와 함께 추가해 주세요."
+    }
   },
   "activities": {
     "title": "투어·액티비티",
