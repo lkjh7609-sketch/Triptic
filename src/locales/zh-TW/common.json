@@ -85,7 +85,11 @@
   },
   "guest": {
     "bannerText": "正在體驗範例行程 — 變更不會被儲存",
-    "bannerCta": "登入並建立我的行程"
+    "bannerCta": "登入並建立我的行程",
+    "loginRequiredTitle": "需要登入",
+    "loginRequiredMessage": "登入後才能使用此功能。要現在登入嗎？",
+    "loginLater": "稍後再說",
+    "sampleLocked": "樣例行程無法使用此功能"
   },
   "menu": {
     "darkMode": "深色模式",

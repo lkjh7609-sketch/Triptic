@@ -85,7 +85,11 @@
   },
   "guest": {
     "bannerText": "샘플 여행 체험 중 — 변경 내용은 저장되지 않아요",
-    "bannerCta": "로그인하고 내 여행 만들기"
+    "bannerCta": "로그인하고 내 여행 만들기",
+    "loginRequiredTitle": "로그인이 필요해요",
+    "loginRequiredMessage": "이 기능은 로그인해야 쓸 수 있어요. 로그인하시겠어요?",
+    "loginLater": "나중에",
+    "sampleLocked": "샘플 여행에서는 쓸 수 없는 기능이에요"
   },
   "menu": {
     "darkMode": "다크 모드",

@@ -48,6 +48,10 @@ export function setSignedIn(value: boolean) {
   if (value) closeLoginPrompt();
 }
 
+export function isSignedIn(): boolean {
+  return signedIn;
+}
+
 /**
  * 로그인해야 하는 동작 앞에 건다. 로그인했으면 true, 아니면 로그인 창을 열고 false.
  * 링크의 onClick에 그대로 넘기면 비로그인일 때 이동을 막는다.
