@@ -22,7 +22,7 @@
     "distanceUnit": "距離單位",
     "distanceUnitHint": "距離單位暫未套用到地圖或路線顯示中。",
     "baseCurrency": "預設貨幣",
-    "language": "語言",
+    "language": "語言 (Language)",
     "loginHint": "登入後可儲存溫度單位、距離單位、預設貨幣和語言設定。",
     "unitSettings": "單位設定 (溫度/距離)"
   },
