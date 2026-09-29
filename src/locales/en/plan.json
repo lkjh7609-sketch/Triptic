@@ -78,18 +78,17 @@
     "title": "Expenses for this day",
     "descPlaceholder": "What did you spend on (e.g. lunch)",
     "amountPlaceholder": "Amount ({{symbol}})",
-    "currencyAria": "Currency",
     "categoryAria": "Category",
     "paymentAria": "Payment method",
     "paymentPlaceholder": "Payment method",
     "empty": "No expenses recorded yet.",
-    "fxWarning": "No exchange rate for this currency yet. The amount is saved but won't be included in totals.",
     "unconverted": "not convertible",
     "unconvertedCount_one": " (excludes {{count}} unconverted item)",
     "unconvertedCount_other": " (excludes {{count}} unconverted items)",
     "dayTotal": "Total for this day",
     "grandTotal": "Total for the whole trip",
     "chartByDay": "Totals by day",
+    "chartPage": "Page {{page}} of {{total}}",
     "chartByCategory": "Totals by category",
     "category": {
       "food": "Food",
@@ -104,7 +103,6 @@
       "card": "Card",
       "other": "Other"
     },
-    "rateHint": "{{from}} = {{to}} · rate as of {{time}}",
     "totalLabel": "Total"
   },
   "flightCard": {

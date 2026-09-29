@@ -52,3 +52,68 @@
   color: var(--text-body);
   white-space: nowrap;
 }
+
+/* 5일씩 한 쪽 — 옆으로 밀면 한 쪽씩 딱 맞게 멈춘다 */
+.pager {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.pager::-webkit-scrollbar {
+  display: none;
+}
+
+.page {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* 점은 작게 보이되 누르는 영역은 넉넉하게 */
+.dot,
+.dotActive {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot::after,
+.dotActive::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transform: translate(-50%, -50%);
+  transition: width 200ms ease, background-color 200ms ease;
+}
+
+.dotActive::after {
+  width: 16px;
+  border-radius: 3px;
+  background: var(--brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot::after,
+  .dotActive::after {
+    transition: none;
+  }
+}

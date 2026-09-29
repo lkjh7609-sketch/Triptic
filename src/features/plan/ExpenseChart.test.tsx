@@ -24,4 +24,23 @@ describe('ExpenseChart', () => {
     expect(screen.getByText('교통')).toBeInTheDocument();
     expect(screen.getByText('₩5,000')).toBeInTheDocument();
   });
+
+  it('pageSize를 주면 그 개수씩 쪽으로 나누고 점으로 이동한다', () => {
+    const data = Array.from({ length: 12 }, (_, i) => ({ label: `Day ${i + 1}`, value: (i + 1) * 1000 }));
+    render(<ExpenseChart title="일자별 합계" data={data} currency="KRW" pageSize={5} />);
+    const groups = screen.getAllByRole('group', { name: /쪽/ });
+    expect(groups).toHaveLength(3);
+    expect(groups[0]).toHaveTextContent('Day 1');
+    expect(groups[0]).toHaveTextContent('Day 5');
+    expect(groups[0]).not.toHaveTextContent('Day 6');
+    expect(groups[2]).toHaveTextContent('Day 12');
+    expect(screen.getAllByRole('button', { name: /쪽/ })).toHaveLength(3);
+  });
+
+  it('항목이 pageSize 이하이면 나누지 않는다', () => {
+    const data = Array.from({ length: 5 }, (_, i) => ({ label: `Day ${i + 1}`, value: 1000 }));
+    render(<ExpenseChart title="일자별 합계" data={data} currency="KRW" pageSize={5} />);
+    expect(screen.queryAllByRole('group')).toHaveLength(0);
+    expect(screen.getByText('Day 5')).toBeInTheDocument();
+  });
 });

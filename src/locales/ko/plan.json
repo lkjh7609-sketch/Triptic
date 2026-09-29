@@ -77,17 +77,16 @@
     "title": "이 날의 경비",
     "descPlaceholder": "사용처 (예: 점심 식사)",
     "amountPlaceholder": "금액 ({{symbol}})",
-    "currencyAria": "통화",
     "categoryAria": "카테고리",
     "paymentAria": "결제수단",
     "paymentPlaceholder": "결제수단",
     "empty": "아직 등록된 경비가 없습니다.",
-    "fxWarning": "아직 이 통화의 환율이 없어요. 금액은 저장되지만 합계에는 반영되지 않아요.",
     "unconverted": "환산 불가",
     "unconvertedCount_other": "(환산 불가 {{count}}건 제외)",
     "dayTotal": "이 날 합계",
     "grandTotal": "전체 여행 합계",
     "chartByDay": "일자별 합계",
+    "chartPage": "{{page}} / {{total}}쪽",
     "chartByCategory": "카테고리별 합계",
     "category": {
       "food": "식비",
@@ -102,7 +101,6 @@
       "card": "카드",
       "other": "기타"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}} 기준 환율",
     "totalLabel": "합계"
   },
   "flightCard": {
