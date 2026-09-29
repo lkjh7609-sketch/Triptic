@@ -11,7 +11,6 @@ import { cityDescCacheKey } from '@/shared/api/aiCacheKeys';
 import { cityDescQueryKey, fetchCityDescription, readCachedCityDescriptions } from './cityDescription';
 import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { HomeSectionTabs } from './HomeSectionTabs';
-import { HomeWordmark } from './HomeWordmark';
 import styles from './HomeDesktop.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 
@@ -168,7 +167,6 @@ export function HomeDesktop() {
       <HomeSectionTabs />
       <section className={`${styles.hero} ${styles.heroPlain}`}>
         <div className={styles.heroContent}>
-          <HomeWordmark />
           <div className={styles.searchPill}>
             <Search size={20} className={styles.searchIcon} aria-hidden="true" />
             <input
