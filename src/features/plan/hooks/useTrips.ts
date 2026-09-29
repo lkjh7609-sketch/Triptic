@@ -45,6 +45,25 @@ export function useDeleteTrip() {
   });
 }
 
+/** 동행 인원이 바뀌었을 때 다시 셀 것들 — 여행 목록·카드 인원·홈 동행자 수 */
+export function invalidateTripMembership(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+  queryClient.invalidateQueries({ queryKey: ['trip-members'] });
+  queryClient.invalidateQueries({ queryKey: ['homeStats'] });
+}
+
+/** 함께하는 여행에서 나가기(소유자가 아닌 멤버) */
+export function useLeaveTrip() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (tripId: string) => tripService.leaveTrip(tripId),
+    onSuccess: (_data, tripId) => {
+      queryClient.removeQueries({ queryKey: tripQueryKey(tripId) });
+      invalidateTripMembership(queryClient);
+    },
+  });
+}
+
 export function tripQueryKey(tripId: string) {
   return ['trip', tripId] as const;
 }

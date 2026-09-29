@@ -472,5 +472,9 @@
   "itinerary": {
     "ticket": "Tickets",
     "ticketTitle": "Find {{place}} tickets on Klook"
+  },
+  "collab": {
+    "leave": "Leave trip",
+    "leaveConfirm": "Leave \"{{title}}\"? You'll need a new share link to rejoin."
   }
 }

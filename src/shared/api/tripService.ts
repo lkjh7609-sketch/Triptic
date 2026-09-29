@@ -205,7 +205,17 @@ export class TripService {
     if (error) throw error;
   }
 
-  /** 로그인한 사용자의 모든 여행 목록 조회 */
+  /** 함께하는 여행에서 나가기(소유자가 아닌 멤버만, 0056) */
+  async leaveTrip(tripId: string): Promise<void> {
+    const supabase = getSupabaseClient();
+    const user = await this.getCurrentUser();
+    if (!user) throw new Error('Not signed in');
+    const { error } = await supabase.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', user.id);
+    if (error) throw error;
+  }
+
+  /** 로그인한 사용자의 모든 여행 목록 조회 — 내가 만든 여행 + 공유 링크로 참여한 여행.
+   * 어느 여행이 보이는지는 trips 조회 정책(소유자 또는 멤버, 0056)이 정한다. */
   async listTrips(): Promise<TripRow[]> {
     const supabase = getSupabaseClient();
     const user = await this.getCurrentUser();
@@ -214,7 +224,7 @@ export class TripService {
     const { data, error } = await supabase
       .from('trips')
       .select('*')
-      .eq('owner_id', user.id)
+      .is('deleted_at', null)
       .order('updated_at', { ascending: false });
 
     if (error) throw error;

@@ -458,5 +458,9 @@
   "itinerary": {
     "ticket": "チケット",
     "ticketTitle": "Klookで{{place}}のチケットを探す"
+  },
+  "collab": {
+    "leave": "旅行から抜ける",
+    "leaveConfirm": "「{{title}}」から抜けますか？また参加するには新しい共有リンクが必要です。"
   }
 }
