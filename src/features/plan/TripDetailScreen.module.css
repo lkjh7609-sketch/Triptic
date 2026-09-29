@@ -104,6 +104,12 @@
   cursor: not-allowed;
 }
 
+/* 샘플 여행에서 잠긴 버튼 — 흐리게 보이지만 누르면 로그인 안내가 뜬다(그래서 disabled 대신 aria-disabled) */
+.toggleButtonLocked {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
 .badge {
   position: absolute;
   top: -4px;

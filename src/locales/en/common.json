@@ -85,7 +85,11 @@
   },
   "guest": {
     "bannerText": "You're exploring a sample trip — changes won't be saved",
-    "bannerCta": "Sign in to plan your own trip"
+    "bannerCta": "Sign in to plan your own trip",
+    "loginRequiredTitle": "Sign in required",
+    "loginRequiredMessage": "You need to sign in to use this. Sign in now?",
+    "loginLater": "Not now",
+    "sampleLocked": "This isn't available in the sample trip"
   },
   "menu": {
     "darkMode": "Dark mode",

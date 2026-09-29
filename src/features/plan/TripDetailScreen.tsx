@@ -29,6 +29,8 @@ import type { ParseBookingResponse } from '@/features/documents/documentService'
 import { daysWithContentAfter, totalDaysOf, type Period } from '@/features/documents/tripPeriod';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
+import { isSignedIn } from '@/features/auth/loginPrompt';
+import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
@@ -92,6 +94,12 @@ export function TripDetailScreen() {
   const [showShare, setShowShare] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
+  /** 샘플 여행에서 잠긴 기능 — 비로그인이면 로그인하겠냐고 묻고, 로그인 상태면 샘플에선 안 된다고만 알린다 */
+  function handleSampleLocked() {
+    if (isSignedIn()) showToast(t('common:guest.sampleLocked'));
+    else setShowLoginRequired(true);
+  }
   const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
   // 검수할 예약을 다 처리했으면(다시 불러온 목록이 비었으면) 검수 창을 닫는다 — 예전엔
   // "검수할 예약이 없습니다" 창이 남거나, 인식 직후 목록을 다시 받기 전에 그 창이 떴다
@@ -404,31 +412,34 @@ export function TripDetailScreen() {
               {viewMode === 'list' ? <Map size={18} /> : <List size={18} />}
             </button>
           )}
-          {!isSample ? (
-            <button
-              type="button"
-              className={styles.toggleButton}
-              aria-label={t('flight.title')}
-              onClick={() => setShowFlightModal(true)}
-            >
-              <Plane size={18} />
-            </button>
-          ) : null}
-          {!isSample ? (
-            <button
-              type="button"
-              className={styles.toggleButton}
-              aria-label={t('tripDetail.addByDocument')}
-              onClick={() =>
-                (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
-              }
-            >
-              <FileText size={18} />
-              {(pendingBookings.data?.length ?? 0) > 0 ? (
-                <span className={styles.badge}>{pendingBookings.data!.length}</span>
-              ) : null}
-            </button>
-          ) : null}
+          {/* 샘플 여행에도 버튼은 그대로 보여 주되 잠가 둔다 — 누르면 로그인하겠냐고 묻는다 */}
+          <button
+            type="button"
+            className={isSample ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
+            aria-label={t('flight.title')}
+            aria-disabled={isSample || undefined}
+            onClick={() => (isSample ? handleSampleLocked() : setShowFlightModal(true))}
+          >
+            <Plane size={18} />
+          </button>
+          <button
+            type="button"
+            className={isSample ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
+            aria-label={t('tripDetail.addByDocument')}
+            aria-disabled={isSample || undefined}
+            onClick={() =>
+              isSample
+                ? handleSampleLocked()
+                : (pendingBookings.data?.length ?? 0) > 0
+                  ? setShowReviewSheet(true)
+                  : setShowUploadModal(true)
+            }
+          >
+            <FileText size={18} />
+            {!isSample && (pendingBookings.data?.length ?? 0) > 0 ? (
+              <span className={styles.badge}>{pendingBookings.data!.length}</span>
+            ) : null}
+          </button>
           <button type="button" className={styles.toggleButton} aria-label={t('tripDetail.shareAria')} onClick={() => setShowShare(true)}>
             <ExternalLink size={18} />
             {(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
@@ -556,6 +567,7 @@ export function TripDetailScreen() {
         />
       ) : null}
 
+      {showLoginRequired ? <LoginRequiredDialog onClose={() => setShowLoginRequired(false)} /> : null}
       {showFlightModal && trip ? (
         <FlightModal
           flightsData={flightsData}
