@@ -131,7 +131,9 @@
       "rooms": "客室",
       "search": "ホテルを検索",
       "opensOnTrip": "検索結果と予約はTrip.comで行われます",
-      "childrenHint": "お子様連れの場合は、Trip.comの検索画面で年齢と一緒に追加してください。"
+      "childrenHint": "お子様連れの場合は、Trip.comの検索画面で年齢と一緒に追加してください。",
+      "pickCity": "リストから都市を選んでください。エリアやホテル名で探す場合は、Trip.comで直接検索できます。",
+      "searchOnTrip": "Trip.comで検索"
     }
   },
   "activities": {
