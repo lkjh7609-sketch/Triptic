@@ -17,9 +17,9 @@ function isLocalHost(): boolean {
   return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 }
 
-export async function signInWithProvider(provider: AuthProvider) {
+export async function signInWithProvider(provider: AuthProvider, redirectPath?: string) {
   const client = getSupabaseClient();
-  const currentPath = window.location.pathname + window.location.search;
+  const currentPath = redirectPath ?? window.location.pathname + window.location.search;
   const redirectUrl = isLocalHost() && !isNativeApp() ? window.location.origin + currentPath : 'https://triptic.my' + currentPath;
 
   const result = await client.auth.signInWithOAuth({

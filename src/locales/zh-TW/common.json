@@ -33,6 +33,7 @@
   "auth": {
     "loginRequired": "需要登入",
     "consent": "我同意<terms>服務條款</terms>和<privacy>隱私政策</privacy>",
+    "consentRequired": "請先同意服務條款和隱私政策",
     "loginFailed": "未能開始登入，請稍後再試。",
     "connecting": "連線中…",
     "continueApple": "使用 Apple 繼續",

@@ -45,23 +45,17 @@
   text-align: center;
 }
 
-.brandRow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
+.brand {
+  margin: 0;
+  line-height: 0;
 }
 
-.title {
-  margin: 0;
-  font-family: 'Newsreader', var(--font-sans);
-  font-size: 40px;
-  line-height: 1;
-  font-weight: 600;
-  color: var(--brand);
+.brandLogo {
+  height: 96px;
 }
 
 .subtitle {
-  margin: var(--space-4) 0 0;
+  margin: var(--space-2) 0 0;
   font-family: 'Newsreader', var(--font-sans);
   font-size: 18px;
   font-weight: 500;
@@ -104,6 +98,58 @@
 
 .chevronOpen {
   transform: rotate(180deg);
+}
+
+.consentBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.consent a {
+  color: var(--brand);
+}
+
+.consentMissing {
+  border-color: var(--danger);
+  animation: consent-shake 360ms ease;
+}
+
+.consentHint {
+  margin: 0;
+  padding: 0 var(--space-3);
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}
+
+@keyframes consent-shake {
+  20% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  80% {
+    transform: translateX(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consentMissing {
+    animation: none;
+  }
 }
 
 /* 높이가 0 → 내용 높이로 부드럽게 펼쳐진다(grid 행 트랙 애니메이션) */

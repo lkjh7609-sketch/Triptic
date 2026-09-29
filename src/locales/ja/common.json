@@ -33,6 +33,7 @@
   "auth": {
     "loginRequired": "ログインが必要です",
     "consent": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します",
+    "consentRequired": "先に利用規約とプライバシーポリシーに同意してください",
     "loginFailed": "ログインを開始できませんでした。しばらくしてからもう一度お試しください。",
     "connecting": "接続中…",
     "continueApple": "Appleで続ける",
