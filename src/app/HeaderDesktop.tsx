@@ -15,6 +15,7 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import { HOME_SECTIONS, isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { LanguageMenu } from './LanguageMenu';
 import styles from './HeaderDesktop.module.css';
 
 export function HeaderDesktop() {
@@ -107,11 +108,14 @@ export function HeaderDesktop() {
         </nav>
       </div>
 
-      {/* 비로그인 둘러보기 — 프로필 자리에 로그인 버튼 */}
+      {/* 비로그인 둘러보기 — 프로필 자리에 언어(지구본)와 로그인 버튼 */}
       {!user ? (
-        <button type="button" className={styles.signInButton} onClick={openLoginPrompt}>
-          {t('auth.signIn')}
-        </button>
+        <div className={styles.guestActions}>
+          <LanguageMenu />
+          <button type="button" className={styles.signInButton} onClick={openLoginPrompt}>
+            {t('auth.signIn')}
+          </button>
+        </div>
       ) : (
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <button
