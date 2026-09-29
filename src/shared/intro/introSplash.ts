@@ -4,11 +4,11 @@
  * 앵커가 없으면(모바일 홈·로그인 화면 등) 비행기처럼 우측 상단으로 날아가 사라진다.
  */
 
-const MIN_HOLD_MS = 1900; // 로고 등장 + 빛 스침이 끝날 때까지
+const MIN_HOLD_MS = 1300; // 로고 등장 + 빛 스침이 끝날 때까지(index.html의 intro 애니메이션 길이와 맞춤)
 const ANCHOR_GRACE_MS = 700; // 앱이 그려진 뒤 앵커가 나타나길 기다리는 시간 — 이후엔 앵커 없는 화면으로 본다
 const MAX_WAIT_MS = 6000; // 앱이 끝내 안 그려져도 이 시간이 지나면 그냥 걷는다
-const FLIGHT_MS = 820;
-const TAKEOFF_MS = 1100;
+const FLIGHT_MS = 600;
+const TAKEOFF_MS = 800;
 const HARD_CLEANUP_MS = 9000;
 
 type IntroState = 'playing' | 'reveal' | 'done' | 'skip';
