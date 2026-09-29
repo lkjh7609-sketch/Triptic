@@ -1,0 +1,36 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 16px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--surface-card);
+  color: var(--text-body);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tab:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.tabOn,
+.tabOn:hover {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--text-on-brand, #fff);
+}
