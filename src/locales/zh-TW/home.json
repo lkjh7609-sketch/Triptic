@@ -121,7 +121,8 @@
   "hotels": {
     "title": "住宿",
     "subtitle": "尋找目的地的住宿",
-    "cta": "在 Agoda 搜尋住宿"
+    "cta": "在 Agoda 搜尋住宿",
+    "widgetTitle": "Trip.com 飯店搜尋"
   },
   "activities": {
     "title": "行程與活動",

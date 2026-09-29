@@ -121,7 +121,8 @@
   "hotels": {
     "title": "숙소",
     "subtitle": "여행지 숙소를 찾아보세요",
-    "cta": "아고다에서 숙소 찾기"
+    "cta": "아고다에서 숙소 찾기",
+    "widgetTitle": "트립닷컴 호텔 검색"
   },
   "activities": {
     "title": "투어·액티비티",
