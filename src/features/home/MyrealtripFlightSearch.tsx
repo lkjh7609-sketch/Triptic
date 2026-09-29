@@ -239,8 +239,9 @@ function PassengerStepper({
 /**
  * 항공 탭(한국어) — 마이리얼트립 항공권 검색. 결과는 마이리얼트립 사이트(새 탭)에서 열린다.
  * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults/children/infants를 채워 둔다.
+ * embedded: 홈 히어로 카드 안에 넣을 때 — 자기 카드 테두리·그림자·여백을 빼고 바깥 카드에 맡긴다.
  */
-export function MyrealtripFlightSearch() {
+export function MyrealtripFlightSearch({ embedded = false }: { embedded?: boolean } = {}) {
   const { t, i18n } = useTranslation('home');
   const [searchParams] = useSearchParams();
   const placesLocale = aiLocale(i18n.language) === 'ko' ? 'ko' : 'en';
@@ -356,7 +357,7 @@ export function MyrealtripFlightSearch() {
   }
 
   return (
-    <form className={styles.card} onSubmit={handleSubmit}>
+    <form className={embedded ? `${styles.card} ${styles.embedded}` : styles.card} onSubmit={handleSubmit}>
       <div className={styles.tripType} role="group" aria-label={t('flights.form.tripType')}>
         <button type="button" aria-pressed={roundTrip} className={roundTrip ? styles.tripOn : styles.tripOff} onClick={() => setRoundTrip(true)}>
           {t('flights.form.roundTrip')}
