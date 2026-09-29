@@ -3,16 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
-import { SampleTripCard } from './SampleTripCard';
-import { SAMPLE_TRIP_ID, resetSampleTrip } from './sampleTrip';
+import { SAMPLE_TRIP_ID, getSampleTripRow, resetSampleTrip } from './sampleTrip';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
-import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView } from '@/shared/monitoring';
 import styles from './PlanScreen.module.css';
-import { Luggage } from 'lucide-react';
 import { PlanDesktop } from './PlanDesktop';
 
 /**
@@ -22,7 +18,7 @@ import { PlanDesktop } from './PlanDesktop';
  * 후속 작업(TripDetailScreen 등)에서 이어간다.
  */
 export function PlanScreen() {
-  const { t } = useTranslation(['plan', 'common']);
+  const { t, i18n } = useTranslation(['plan', 'common']);
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
   const { data: trips, isLoading, isError, refetch } = useTrips();
@@ -49,35 +45,39 @@ export function PlanScreen() {
     }
   }, [sessionLoading, user, queryClient]);
 
+  /** 비로그인은 샘플 여행 하나로 같은 대시보드를 그린다 — 도착할 때마다(언어가 바뀌어도) 원본으로 */
+  const sampleTrips = useMemo(() => {
+    if (sessionLoading || user) return [];
+    resetSampleTrip();
+    return [getSampleTripRow()];
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 언어가 바뀌면 샘플을 그 언어로 다시 만든다
+  }, [sessionLoading, user, i18n.language]);
+  const list = useMemo(() => (user ? (trips ?? []) : sampleTrips), [user, trips, sampleTrips]);
+
   const grouped = useMemo(() => {
-    const list = trips ?? [];
     return {
       ongoing: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'ongoing'),
       upcoming: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'upcoming'),
       past: list.filter((trip) => getTripPhase(trip.start_date, trip.end_date) === 'past'),
     };
-  }, [trips]);
+  }, [list]);
 
   if (sessionLoading) return null;
 
   if (!user) {
+    // PC 비로그인 둘러보기 — 로그인한 화면과 같은 대시보드. 여행 만들기·편집만 로그인 창으로 막는다
     return (
-      <div className={styles.section}>
-        {/* PC 비로그인 둘러보기 — 계획을 만들려면 로그인(이메일·소셜 모두 있는 로그인 창) */}
-        <EmptyState
-          icon={<Luggage size={48} />}
-          message={t('planScreen.loginMessage')}
-          actions={
-            <button type="button" className={styles.signInButton} onClick={openLoginPrompt}>
-              {t('auth.signIn', { ns: 'common' })}
-            </button>
-          }
-        />
-        <h2 className={styles.sectionTitle}>{t('planScreen.browseFirst')}</h2>
-        <div className={styles.list}>
-          <SampleTripCard />
-        </div>
-      </div>
+      <PlanDesktop
+        guest
+        trips={list}
+        ongoing={grouped.ongoing}
+        upcoming={grouped.upcoming}
+        past={grouped.past}
+        onRefetch={refetch}
+        onRename={cardCallbacks.onRename}
+        onDuplicate={cardCallbacks.onDuplicate}
+        onDelete={cardCallbacks.onDelete}
+      />
     );
   }
 
@@ -101,7 +101,7 @@ export function PlanScreen() {
 
   return (
     <PlanDesktop
-      trips={trips ?? []}
+      trips={list}
       ongoing={grouped.ongoing}
       upcoming={grouped.upcoming}
       past={grouped.past}

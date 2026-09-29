@@ -390,7 +390,3 @@ export function updateSampleTripSnapshot(content: TripRow['content']): TripRow {
   };
   return sampleTripRow;
 }
-
-export function getSampleTripPlaceCount(): number {
-  return Object.values(PLACES).reduce((sum, items) => sum + items.length, 0);
-}

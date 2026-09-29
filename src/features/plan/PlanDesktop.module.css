@@ -876,6 +876,12 @@
 .cardMenuItem:hover {
   background: var(--pd-soft);
 }
+/* 비로그인 샘플 여행 — 흐리게, 누르면 로그인 안내 */
+.cardMenuItemLocked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .cardMenuDanger {
   color: var(--pd-accent);
 }

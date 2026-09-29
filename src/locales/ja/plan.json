@@ -135,8 +135,6 @@
   "planScreen": {
     "myTrips": "私の旅行",
     "createTripAria": "旅行を作成",
-    "loginMessage": "ログインすると旅行を保存して、どこからでも続きを作成できます。",
-    "browseFirst": "先に見る",
     "listError": "旅行リストを読み込めませんでした。",
     "firstTripMessage": "最初の旅行を作成してみましょう。",
     "ongoing": "進行中",
@@ -145,12 +143,6 @@
     "pastShow": "表示 ▼",
     "pastHide": "非表示 ▲",
     "backupFooter": "デバイス同期とバックアップ"
-  },
-  "sampleTrip": {
-    "badge": "おすすめサンプル日程",
-    "duration": "{{nights}}泊 {{days}}日",
-    "placeCount_other": "場所 {{count}}ヶ所",
-    "openLink": "日程を見る"
   },
   "setHotel": {
     "title": "宿泊先を設定",
