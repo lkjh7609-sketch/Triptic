@@ -220,6 +220,21 @@
   margin-top: var(--space-4);
 }
 
+.error {
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--danger);
+}
+
+.errorLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+}
+
 .note {
   display: flex;
   align-items: center;

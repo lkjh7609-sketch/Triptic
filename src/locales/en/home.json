@@ -133,7 +133,9 @@
       "rooms": "Rooms",
       "search": "Search hotels",
       "opensOnTrip": "Search results and booking continue on Trip.com",
-      "childrenHint": "Traveling with children? Add them with their ages on Trip.com."
+      "childrenHint": "Traveling with children? Add them with their ages on Trip.com.",
+      "pickCity": "Please pick a city from the list. To search by district or hotel name, use Trip.com directly.",
+      "searchOnTrip": "Search on Trip.com"
     }
   },
   "activities": {

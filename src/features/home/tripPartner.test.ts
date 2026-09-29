@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tripHotelSearchUrl, type TripHotelSearch } from './tripPartner';
+import { tripHotelSearchUrl, tripHotelsHomeUrl, type TripHotelSearch } from './tripPartner';
 
 const tokyo: TripHotelSearch = { cityId: 228, cityName: '도쿄', checkIn: '2026-10-01', checkOut: '2026-10-02', adults: 2, rooms: 1 };
 
@@ -39,6 +39,15 @@ describe('tripHotelSearchUrl', () => {
     expect(new URL(tripHotelSearchUrl(tokyo, 'ja-JP')).host).toBe('jp.trip.com');
     expect(new URL(tripHotelSearchUrl(tokyo, 'zh-HK')).host).toBe('tw.trip.com');
     expect(new URL(tripHotelSearchUrl(tokyo, 'fr')).host).toBe('kr.trip.com');
+  });
+
+  it('트립닷컴 호텔 검색 첫 화면 주소 — 제휴 값만 붙고 언어별 사이트로', () => {
+    expect(tripHotelsHomeUrl('ko')).toBe(
+      'https://kr.trip.com/hotels/?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels&trip_sub3=D20018770',
+    );
+    expect(new URL(tripHotelsHomeUrl('en')).host).toBe('www.trip.com');
+    expect(new URL(tripHotelsHomeUrl('ja')).host).toBe('jp.trip.com');
+    expect(new URL(tripHotelsHomeUrl('zh-TW')).host).toBe('tw.trip.com');
   });
 
   it('도시 이름은 주소에 안전하게 인코딩되고 객실·성인 수가 그대로 간다', () => {

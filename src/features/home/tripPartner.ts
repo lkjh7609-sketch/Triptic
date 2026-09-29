@@ -22,6 +22,13 @@ const TRIP_HOST: Record<SupportedLocale, string> = {
   'zh-TW': 'tw.trip.com',
 };
 
+/** 트립닷컴 호텔 검색 첫 화면(제휴 값만 붙임) — 우리 목록에 없는 지역·호텔 이름은 여기서 직접 찾게 한다 */
+export function tripHotelsHomeUrl(locale: string): string {
+  const host = TRIP_HOST[normalizeLocale(locale)];
+  const params = new URLSearchParams({ Allianceid: ALLIANCE_ID, SID, trip_sub1: SUB1, trip_sub3: SUB3 });
+  return `https://${host}/hotels/?${params.toString()}`;
+}
+
 export interface TripHotelSearch {
   /** 트립닷컴 도시 번호(tripHotelCities.ts) */
   cityId: number;

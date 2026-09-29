@@ -78,6 +78,30 @@ describe('HotelSearchForm', () => {
     expect(openExternal).not.toHaveBeenCalled();
   });
 
+  it('도시 목록에 없는 글자(지역·호텔 이름)로 검색하면 조용히 넘어가지 않고 안내와 트립닷컴 직접 검색 링크를 보여 준다', () => {
+    renderForm();
+    fireEvent.focus(destinationInput());
+    fireEvent.change(destinationInput(), { target: { value: '신주쿠' } });
+    fireEvent.blur(destinationInput());
+    fireEvent.click(screen.getByRole('button', { name: '호텔 검색' }));
+
+    expect(openExternal).not.toHaveBeenCalled();
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('목록에서 도시를 골라 주세요');
+    const link = screen.getByRole('link', { name: /트립닷컴에서 검색/ });
+    expect(link).toHaveAttribute(
+      'href',
+      'https://kr.trip.com/hotels/?Allianceid=10792895&SID=332524291&trip_sub1=home_hotels&trip_sub3=D20018770',
+    );
+    expect(link).toHaveAttribute('rel', 'sponsored noopener');
+
+    // 도시를 고르면 안내가 사라진다
+    fireEvent.focus(destinationInput());
+    fireEvent.change(destinationInput(), { target: { value: '도' } });
+    fireEvent.mouseDown(screen.getByRole('option', { name: /도쿄/ }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('객실은 성인 수를 넘길 수 없고, 성인을 줄이면 객실도 같이 줄어든다', () => {
     renderForm();
     fireEvent.click(screen.getByRole('button', { name: '성인 더하기' })); // 3명

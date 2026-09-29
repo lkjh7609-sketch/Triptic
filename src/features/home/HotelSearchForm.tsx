@@ -9,7 +9,7 @@ import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { hotelDestinations, matchDestinations, nearestDestination, nightsBetween } from './hotelSearch';
 import { TRIP_HOTEL_CITY_IDS } from './tripHotelCities';
-import { tripHotelSearchUrl } from './tripPartner';
+import { tripHotelSearchUrl, tripHotelsHomeUrl } from './tripPartner';
 import { useNearestTrip } from './useNearestTrip';
 import styles from './HotelSearchForm.module.css';
 
@@ -221,6 +221,8 @@ export function HotelSearchForm() {
   const [adults, setAdults] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
+  // 목록에서 도시를 안 골랐는데 검색을 눌렀을 때 — 붉은 테두리만으로는 왜 안 되는지 몰라서 문구로 알려 준다
+  const [needCity, setNeedCity] = useState(false);
   const destInputRef = useRef<HTMLInputElement>(null);
   const dateButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -233,6 +235,7 @@ export function HotelSearchForm() {
     e.preventDefault();
     const cityId = dest ? TRIP_HOTEL_CITY_IDS[dest.slug] : undefined;
     if (!dest || cityId === undefined) {
+      setNeedCity(true);
       flagInvalid(destInputRef.current);
       destInputRef.current?.focus();
       return;
@@ -257,6 +260,7 @@ export function HotelSearchForm() {
             value={dest}
             onChange={(d) => {
               clearInvalid(destInputRef.current);
+              setNeedCity(false);
               setPickedDest(d);
             }}
             options={options}
@@ -296,6 +300,15 @@ export function HotelSearchForm() {
           <Search size={18} aria-hidden="true" /> {t('hotels.form.search')}
         </button>
       </div>
+
+      {needCity ? (
+        <p className={styles.error} role="alert">
+          {t('hotels.form.pickCity')}{' '}
+          <a href={tripHotelsHomeUrl(i18n.language)} target="_blank" rel="sponsored noopener" className={styles.errorLink}>
+            {t('hotels.form.searchOnTrip')} <ExternalLink size={12} aria-hidden="true" />
+          </a>
+        </p>
+      ) : null}
 
       {showCalendar ? (
         <div className={styles.calendarOverlay}>
