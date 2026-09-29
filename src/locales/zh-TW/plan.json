@@ -169,19 +169,18 @@
     "saving": "正在儲存…"
   },
   "share": {
-    "title": "僅檢視的分享連結",
+    "title": "邀請一起編輯的人",
     "sampleMessage": "樣例行程無法分享。建立屬於自己的新行程後即可分享！",
-    "desc": "將此連結傳送給同行的朋友，對方即可在不編輯的情況下檢視行程。",
+    "desc": "收到這個連結的人登入後就能和你一起編輯這趟旅行，任何人修改都會立即顯示在彼此的畫面上。",
     "generatingLink": "正在產生…",
-    "revoke": "停止分享",
-    "revokeConfirm": "要停止分享嗎？對方將無法再檢視此行程。",
+    "revoke": "停用連結",
+    "revokeConfirm": "要停用連結嗎？只會阻止新成員加入，已經加入的人會保留。",
     "copied": "已複製！",
     "copyText": "複製完整行程文本",
     "textCopied": "文本已複製！",
     "pdfAllBtn": "完整行程 PDF（共 {{days}} 天）",
     "pdfCurrentBtn": "僅第 {{day}} 天 PDF",
     "generatingPdf": "正在產生…",
-    "suggestionsBtn": "同行者建議（{{count}}則）",
     "text": {
       "destination": "目的地：{{city}}",
       "period": "期間：{{start}} ~ {{end}}（共 {{total}} 天）",
@@ -191,15 +190,6 @@
       "freeDay": "（自由行程）",
       "departure": "回程：{{label}}"
     }
-  },
-  "suggestions": {
-    "title": "同行者推薦的建議（{{count}} 條）",
-    "empty": "還沒有同行者發來的建議。",
-    "dayTag": "推薦用於第 {{day}} 天",
-    "sentBy": "傳送者",
-    "reject": "拒絕",
-    "addToItinerary": "新增到行程",
-    "memoPrefix": "[{{name}} 推薦]"
   },
   "tripCard": {
     "periodUndecided": "日期未定",
@@ -347,7 +337,7 @@
     "toolkitTitle": "下一趟旅行準備",
     "toolkitEmpty": "有預定行程後，就能在這裡一次查看天氣、航班與同行者。",
     "membersTitle": "同行者",
-    "membersSolo": "目前是一個人規劃，可以在行程頁面分享給旅伴。",
+    "membersSolo": "目前是一個人在規劃。可以從旅行畫面的分享邀請一起編輯的人。",
     "memberUnknown": "未命名",
     "role": {
       "owner": "建立者",
@@ -460,7 +450,14 @@
     "ticketTitle": "在 Klook 搜尋{{place}}票券"
   },
   "collab": {
+    "membersTitle_other": "一起同行 {{count}} 人",
+    "me": "(我)",
+    "remove": "移除",
+    "removeConfirm": "要將 {{name}} 從這趟旅行移除嗎？對方將無法再查看或編輯這趟旅行。",
     "leave": "離開旅行",
-    "leaveConfirm": "要離開「{{title}}」嗎？若要重新加入，需要新的分享連結。"
+    "leaveConfirm": "要離開「{{title}}」嗎？若要重新加入，需要新的分享連結。",
+    "leaveConfirmShort": "要離開這趟旅行嗎？若要重新加入，需要新的分享連結。",
+    "ownerOnlyLink": "只有建立旅行的人可以建立連結",
+    "conflict": "其他同行者剛剛修改了行程。已載入最新行程，請再試一次。"
   }
 }

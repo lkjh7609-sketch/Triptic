@@ -14,6 +14,8 @@ import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
 import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { navDirection } from './navDirection';
 import { requiresLogin } from './guestAccess';
+import { useTripRealtimeSync } from '@/features/plan/hooks/useTripRealtimeSync';
+import { takePendingShare } from '@/features/shared/pendingShare';
 import styles from './AppShell.module.css';
 
 function RouteSkeleton() {
@@ -99,6 +101,15 @@ export function AppShell() {
   }, [user]);
   useNavDirectionAttr();
   useRedirectFlightsWidgetResults();
+  // 함께 편집하는 여행·동행 인원을 실시간으로 맞춘다
+  useTripRealtimeSync(user?.id ?? null);
+  // 공유 링크로 들어와 로그인했는데 첫 화면으로 돌아왔으면 그 링크로 이어서 참여한다
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return;
+    const code = takePendingShare();
+    if (code) navigate(`/shared/${code}`, { replace: true });
+  }, [userId, navigate]);
   // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고).
   // 한국어는 마이리얼트립 검색 폼을 쓰므로 위젯을 만들지 않는다
   const { i18n } = useTranslation();

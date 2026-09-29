@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { tripService, type Suggestion } from '@/shared/api/tripService';
+import { tripService } from '@/shared/api/tripService';
 import { captureError } from '@/shared/monitoring';
+import { useSession } from '@/shared/hooks/useSession';
 import type { PdfExportInput } from './pdfExport';
-import { SuggestionsModal } from './SuggestionsModal';
+import { useTripMembers, initialsOf } from './hooks/useTripMembers';
+import { useLeaveTrip, useRemoveTripMember } from './hooks/useTrips';
 import styles from './ShareSheet.module.css';
-import { Link, Clipboard, BookOpen, FileText, Lightbulb } from 'lucide-react';
+import { Link, Clipboard, BookOpen, FileText, Users } from 'lucide-react';
 
 interface ShareSheetProps {
   tripId: string;
@@ -18,29 +21,31 @@ interface ShareSheetProps {
    * (index.html openShareModal만 SAMPLE_PROJECT_NAME을 검사하고, openExportModal/
    * copyItineraryText/openPdfModal은 검사하지 않는다) */
   isSample?: boolean;
-  /** 공유 링크로 받은 동행자 제안 — 원래 툴바에 따로 있던 전구 아이콘을 여기로
-   * 옮겼다(공유 흐름과 같은 맥락이라 별도 아이콘 없이 여기 얹는 게 자연스럽다는
-   * 이 파일의 기존 방침을 그대로 따름). 샘플 여행이면 숨긴다. */
-  suggestions?: Suggestion[];
-  onAcceptSuggestion?: (suggestion: Suggestion) => Promise<void>;
+  /** 여행 소유자 — 링크 만들기·끊기·멤버 내보내기는 소유자만(shared_trips/trip_members 정책) */
+  ownerId: string;
 }
 
 /**
- * 공유 시트 (02-screens.md §3.2 "↗ 아이콘 → 공유 시트")
- * 서비스 레이어(tripService.createShareLink/revokeShareLinks)는 legacy와 동일하게
- * shared_trips 테이블을 쓴다. 공유 링크로 여는 읽기 전용 뷰어 화면(/shared/:code)은
- * 아직 없다 — 이번 라운드는 생성·복사·해제까지만 다룬다.
- * 전체 일정 텍스트 복사(legacy copyItineraryText)도 같은 시트에 얹었다 — 헤더가
- * 이미 버튼 3개로 빽빽해서 별도 아이콘 대신 공유 흐름 안에 자연스럽게 포함시켰다.
+ * 공유 시트 — 함께 편집할 사람 초대(0057).
+ * 링크(/shared/:code)를 받은 사람은 로그인한 뒤 이 여행의 편집 멤버가 되어 같은 여행 화면에서
+ * 실시간으로 함께 고친다. 아래에 함께하는 사람 목록(소유자는 내보내기, 멤버는 나가기)을 둔다.
+ * 전체 일정 텍스트 복사·PDF도 같은 시트에 얹었다 — 헤더가 이미 버튼으로 빽빽해서.
  */
-export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample, suggestions, onAcceptSuggestion }: ShareSheetProps) {
+export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample, ownerId }: ShareSheetProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [textCopied, setTextCopied] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState<'all' | 'current' | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [linkUnavailable, setLinkUnavailable] = useState(false);
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const isOwner = !!user && user.id === ownerId;
+  const members = useTripMembers(isSample ? [] : [tripId]);
+  const memberList = members.data?.[tripId] ?? [];
+  const leaveTrip = useLeaveTrip();
+  const removeMember = useRemoveTripMember(tripId);
 
   async function handleCreate() {
     setLoading(true);
@@ -48,10 +53,25 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
       const code = await tripService.createShareLink(tripId);
       setShareCode(code);
     } catch (err) {
+      // 멤버는 소유자가 만든 링크만 받아 쓸 수 있다 — 아직 없으면 안내만
+      setLinkUnavailable(true);
       captureError(err, { context: 'createShareLink' });
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleRemoveMember(userId: string, name: string | null) {
+    if (!window.confirm(t('collab.removeConfirm', { name: name ?? t('desktop.memberUnknown') }))) return;
+    removeMember.mutate(userId, { onError: (err) => captureError(err, { context: 'removeTripMember' }) });
+  }
+
+  function handleLeave() {
+    if (!window.confirm(t('collab.leaveConfirmShort'))) return;
+    leaveTrip.mutate(tripId, {
+      onSuccess: () => navigate('/plan', { replace: true }),
+      onError: (err) => captureError(err, { context: 'leaveTrip' }),
+    });
   }
 
   useEffect(() => {
@@ -138,25 +158,57 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
               <input
                 className={styles.linkInput}
                 readOnly
-                value={loading ? t('share.generatingLink') : shareUrl}
+                value={loading ? t('share.generatingLink') : linkUnavailable ? t('collab.ownerOnlyLink') : shareUrl}
               />
             </div>
 
             <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.danger}
-                disabled={!shareCode || loading}
-                onClick={handleRevoke}
-              >
-                {t('share.revoke')}
-              </button>
+              {isOwner ? (
+                <button
+                  type="button"
+                  className={styles.danger}
+                  disabled={!shareCode || loading}
+                  onClick={handleRevoke}
+                >
+                  {t('share.revoke')}
+                </button>
+              ) : null}
               <button type="button" className={styles.primary} disabled={!shareCode || loading} onClick={handleCopy}>
                 {copied ? t('share.copied') : t('common:action.copy')}
               </button>
               <button type="button" className={styles.secondary} onClick={onClose}>
                 {t('common:action.close')}
               </button>
+            </div>
+
+            <div className={styles.members}>
+              <h3 className={styles.membersTitle}>
+                <Users size={16} aria-hidden="true" /> {t('collab.membersTitle', { count: Math.max(1, memberList.length) })}
+              </h3>
+              {memberList.map((m) => (
+                <div key={m.userId} className={styles.memberRow}>
+                  <span className={styles.memberAvatar} aria-hidden="true">{initialsOf(m.name)}</span>
+                  <span className={styles.memberName}>
+                    {m.name ?? t('desktop.memberUnknown')}
+                    {m.userId === user?.id ? <span className={styles.memberMe}> {t('collab.me')}</span> : null}
+                  </span>
+                  <span className={styles.memberRole}>{t(`desktop.role.${m.role}`, { defaultValue: m.role })}</span>
+                  {isOwner && m.role !== 'owner' ? (
+                    <button
+                      type="button"
+                      className={styles.memberAction}
+                      disabled={removeMember.isPending}
+                      onClick={() => handleRemoveMember(m.userId, m.name)}
+                    >
+                      {t('collab.remove')}
+                    </button>
+                  ) : !isOwner && m.userId === user?.id ? (
+                    <button type="button" className={styles.memberAction} disabled={leaveTrip.isPending} onClick={handleLeave}>
+                      {t('collab.leave')}
+                    </button>
+                  ) : null}
+                </div>
+              ))}
             </div>
           </>
         )}
@@ -188,23 +240,7 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
           </div>
         ) : null}
 
-        {!isSample && suggestions && onAcceptSuggestion ? (
-          <button type="button" className={styles.secondary} onClick={() => setShowSuggestions(true)}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Lightbulb size={16} /> {t('share.suggestionsBtn', { count: suggestions.length })}
-            </span>
-          </button>
-        ) : null}
       </div>
-
-      {showSuggestions && onAcceptSuggestion ? (
-        <SuggestionsModal
-          tripId={tripId}
-          suggestions={suggestions ?? []}
-          onClose={() => setShowSuggestions(false)}
-          onAccept={onAcceptSuggestion}
-        />
-      ) : null}
     </div>
   );
 }

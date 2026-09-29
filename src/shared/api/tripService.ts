@@ -40,6 +40,16 @@ export interface LocalProject {
   flights?: { outbound: unknown; return: unknown } | null;
   dayCities?: unknown;
   updatedAt?: number;
+  /** 불러온 시점의 trips.revision(0058) — 있으면 그 버전일 때만 저장한다(동시 편집 덮어쓰기 방지) */
+  revision?: number;
+}
+
+/** 저장하려는 사이 다른 동행자가 먼저 이 여행을 바꿨다 — 최신 내용을 다시 불러와야 한다 */
+export class TripConflictError extends Error {
+  constructor() {
+    super('trip_conflict');
+    this.name = 'TripConflictError';
+  }
 }
 
 /** trips.snapshot이 갖던 것과 동일한 모양의 콘텐츠 — 이제 DB 컬럼이 아니라
@@ -75,6 +85,10 @@ export interface TripRow {
   finalized_at?: string | null;
   /** 완료 후 재편집한 횟수 — 무료 사용자는 여행당 5회까지(0037) */
   reopen_count?: number;
+  /** 행이 바뀔 때마다 1씩 오른다(0058) */
+  revision?: number;
+  /** 마지막으로 고친 사람(0058) */
+  updated_by?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -96,19 +110,6 @@ export interface PostTripPayload {
   days: TripDayRow[];
   items: ItineraryItemRow[];
   legs: unknown[];
-}
-
-export interface Suggestion {
-  id: string;
-  trip_id: string;
-  day: number;
-  name: string;
-  address: string | null;
-  lat: number | null;
-  lng: number | null;
-  memo: string | null;
-  proposer: string | null;
-  created_at: string;
 }
 
 export class TripService {
@@ -140,8 +141,7 @@ export class TripService {
       dayCities: project.dayCities || {},
     };
 
-    const row: Record<string, unknown> = {
-      owner_id: user.id,
+    const fields: Record<string, unknown> = {
       title: name,
       city: project.city || null,
       city_lat: project.cityLat ?? null,
@@ -151,17 +151,41 @@ export class TripService {
       total_days: project.totalDays || null,
       base_currency: project.currency || 'KRW',
     };
-    if (project.supabaseId) row.id = project.supabaseId;
 
-    const { data, error } = await supabase.from('trips').upsert(row).select().single();
-    if (error) {
-      // 무료 사용자 평생 생성 2개 한도 — 서버 트리거(0037)가 실제 경계다.
-      if (error.hint === 'trip_limit_reached') {
-        throw new Error(i18next.t('plan:errors.tripLimit'));
+    let data: Omit<TripRow, 'content'>;
+    if (isNewTrip) {
+      const res = await supabase.from('trips').insert({ ...fields, owner_id: user.id }).select().single();
+      if (res.error) {
+        // 무료 사용자 평생 생성 2개 한도 — 서버 트리거(0037)가 실제 경계다.
+        if (res.error.hint === 'trip_limit_reached') {
+          throw new Error(i18next.t('plan:errors.tripLimit'));
+        }
+        throw res.error;
       }
-      throw error;
+      data = res.data as Omit<TripRow, 'content'>;
+    } else {
+      // 기존 여행은 소유자가 아니어도(편집 멤버) 고칠 수 있으므로 owner_id를 보내지 않는다(0056).
+      // 불러온 revision이 있으면 그 버전일 때만 고친다 — 그 사이 다른 동행자가 저장했으면 0행.
+      let query = supabase.from('trips').update(fields).eq('id', project.supabaseId!);
+      if (project.revision !== undefined) query = query.eq('revision', project.revision);
+      const res = await query.select().maybeSingle();
+      if (res.error) throw res.error;
+      if (res.data) {
+        data = res.data as Omit<TripRow, 'content'>;
+      } else if (project.revision !== undefined) {
+        throw new TripConflictError();
+      } else {
+        // 예전 백업/로컬 이관처럼 revision 없이 id만 들고 온 경우 — 행이 없으면 예전 upsert처럼 만든다
+        const ins = await supabase
+          .from('trips')
+          .insert({ ...fields, id: project.supabaseId, owner_id: user.id })
+          .select()
+          .single();
+        if (ins.error) throw ins.error;
+        data = ins.data as Omit<TripRow, 'content'>;
+      }
     }
-    const tripId = (data as { id: string }).id;
+    const tripId = data.id;
 
     // ADR-002 M7 컷오버 — 정규화 테이블이 이제 1차 데이터라 이 호출이
     // 실패하면 저장 자체가 실패해야 한다(예전 fire-and-forget과 다름).
@@ -173,9 +197,23 @@ export class TripService {
       throw fnErr;
     }
 
+    // 일정까지 다 바뀐 뒤 trips 행을 한 번 더 건드려 "저장 끝" 신호를 realtime으로 보낸다 —
+    // 첫 수정 신호만 받고 다시 읽으면 일정이 아직 예전 것일 수 있다. 그 사이 다른 사람이
+    // 저장했으면(0행) 그 사람의 신호로 다시 읽게 두고 방금 받은 행을 그대로 쓴다.
+    if (!isNewTrip) {
+      const touched = await supabase
+        .from('trips')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', tripId)
+        .eq('revision', data.revision ?? 0)
+        .select()
+        .maybeSingle();
+      if (touched.data) data = touched.data as Omit<TripRow, 'content'>;
+    }
+
     if (isNewTrip) await this.notifyQuotaAfterCreate(user.id);
 
-    return { ...(data as Omit<TripRow, 'content'>), content };
+    return { ...data, content };
   }
 
   /** 새 여행 생성 직후 무료 사용자에게 남은 횟수를 토스트로 안내한다(요구사항:
@@ -211,6 +249,13 @@ export class TripService {
     const user = await this.getCurrentUser();
     if (!user) throw new Error('Not signed in');
     const { error } = await supabase.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', user.id);
+    if (error) throw error;
+  }
+
+  /** 소유자가 멤버를 내보낸다 */
+  async removeTripMember(tripId: string, userId: string): Promise<void> {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', userId);
     if (error) throw error;
   }
 
@@ -290,6 +335,7 @@ export class TripService {
       flights: content.flights || { outbound: null, return: null },
       dayCities: content.dayCities || {},
       updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : Date.now(),
+      revision: row.revision,
     };
   }
 
@@ -322,19 +368,20 @@ export class TripService {
     return shareCode;
   }
 
-  /** 공유 중단 (이 trip의 모든 공유 링크 삭제 → suggestions도 CASCADE로 함께 삭제됨) */
+  /** 공유 중단 — 새로 참여하는 것만 막는다. 이미 참여한 멤버는 남는다(내보내기는 따로) */
   async revokeShareLinks(tripId: string): Promise<void> {
     const supabase = getSupabaseClient();
     const { error } = await supabase.from('shared_trips').delete().eq('trip_id', tripId);
     if (error) throw error;
   }
 
-  /** 공유 코드로 여행 조회 (인증 불필요, RPC가 만료/존재 여부를 서버에서 검증) */
-  async getSharedTripByCode(shareCode: string): Promise<unknown | null> {
+  /** 공유 링크로 이 여행의 편집 멤버가 된다(로그인 필요, 0057). 코드가 없거나 만료됐으면 null.
+   * 소유자 본인이면 가입 없이 trip id만 돌려주고, 이미 멤버면 그대로다. */
+  async joinTripByShareCode(shareCode: string): Promise<string | null> {
     const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('get_shared_trip', { p_share_code: shareCode });
+    const { data, error } = await supabase.rpc('join_trip_by_share_code', { p_share_code: shareCode });
     if (error) throw error;
-    return data ?? null;
+    return (data as string | null) ?? null;
   }
 
   /** 커뮤니티 글에 첨부된 일정 읽기 전용 조회 — get_post_trip RPC가 글이
@@ -395,47 +442,6 @@ export class TripService {
       throw error;
     }
     return data as number;
-  }
-
-  // ── 동행자 제안 ────────────────────────────────────────────────
-
-  /** 제안 추가 (공유받은 뷰어가 인증 없이 호출) */
-  async addSuggestion(
-    tripId: string,
-    suggestion: {
-      day: number;
-      name: string;
-      address?: string | null;
-      lat?: number | null;
-      lng?: number | null;
-      memo?: string | null;
-      proposer?: string | null;
-    },
-  ): Promise<void> {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase
-      .from('suggestions')
-      .insert({ trip_id: tripId, ...suggestion });
-    if (error) throw error;
-  }
-
-  /** 특정 여행에 대해 받은 제안 목록 조회 (소유자만 가능 — RLS) */
-  async listSuggestions(tripId: string): Promise<Suggestion[]> {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('suggestions')
-      .select('*')
-      .eq('trip_id', tripId)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return (data as Suggestion[]) ?? [];
-  }
-
-  /** 제안 삭제 (수락/거절 공통) */
-  async deleteSuggestion(suggestionId: string): Promise<void> {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase.from('suggestions').delete().eq('id', suggestionId);
-    if (error) throw error;
   }
 
   // ── 마이그레이션 ───────────────────────────────────────────────

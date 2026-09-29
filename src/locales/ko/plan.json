@@ -169,19 +169,18 @@
     "saving": "저장 중…"
   },
   "share": {
-    "title": "보기 전용 공유 링크",
+    "title": "함께 편집할 사람 초대",
     "sampleMessage": "샘플 여행은 공유할 수 없습니다. 나만의 새 여행을 만들어 공유해 보세요!",
-    "desc": "동행자에게 이 링크를 보내면 편집 없이 일정을 확인할 수 있어요.",
+    "desc": "이 링크를 받은 사람은 로그인한 뒤 이 여행을 함께 편집할 수 있어요. 누가 고치든 서로 화면에 바로 반영돼요.",
     "generatingLink": "생성하는 중…",
-    "revoke": "공유 중단",
-    "revokeConfirm": "공유를 중단할까요? 더 이상 상대방이 이 여행을 볼 수 없게 돼요.",
+    "revoke": "링크 끊기",
+    "revokeConfirm": "링크를 끊을까요? 새로 참여하는 것만 막히고, 이미 함께하는 사람은 그대로예요.",
     "copied": "복사됨!",
     "copyText": "전체 일정 텍스트로 복사",
     "textCopied": "텍스트 복사됨!",
     "pdfAllBtn": "전체 일정 PDF ({{days}}일치)",
     "pdfCurrentBtn": "{{day}}일차만 PDF",
     "generatingPdf": "생성 중…",
-    "suggestionsBtn": "동행자 제안 ({{count}}건)",
     "text": {
       "destination": "목적지: {{city}}",
       "period": "기간: {{start}} ~ {{end}} ({{total}}일간)",
@@ -191,15 +190,6 @@
       "freeDay": "(자유 일정)",
       "departure": "귀국: {{label}}"
     }
-  },
-  "suggestions": {
-    "title": "동행자 추천 제안 ({{count}}건)",
-    "empty": "아직 동행자가 보낸 제안이 없습니다.",
-    "dayTag": "{{day}}일차 추천",
-    "sentBy": "보낸 사람",
-    "reject": "거절",
-    "addToItinerary": "일정에 추가",
-    "memoPrefix": "[{{name}}님 추천]"
   },
   "tripCard": {
     "periodUndecided": "기간 미정",
@@ -347,7 +337,7 @@
     "toolkitTitle": "다음 여행 준비",
     "toolkitEmpty": "예정된 여행이 생기면 날씨, 항공편, 동행자를 여기에서 한눈에 볼 수 있어요.",
     "membersTitle": "함께하는 사람",
-    "membersSolo": "아직 혼자 계획 중이에요. 여행 화면의 공유로 함께 볼 수 있어요.",
+    "membersSolo": "아직 혼자 계획 중이에요. 여행 화면의 공유로 함께 편집할 사람을 초대해 보세요.",
     "memberUnknown": "이름 없음",
     "role": {
       "owner": "만든 사람",
@@ -460,7 +450,14 @@
     "ticketTitle": "Klook에서 {{place}} 티켓 찾기"
   },
   "collab": {
+    "membersTitle_other": "함께하는 사람 {{count}}명",
+    "me": "(나)",
+    "remove": "내보내기",
+    "removeConfirm": "{{name}} 님을 이 여행에서 내보낼까요? 더 이상 이 여행을 보거나 고칠 수 없게 돼요.",
     "leave": "여행에서 나가기",
-    "leaveConfirm": "\"{{title}}\" 여행에서 나갈까요? 다시 들어오려면 공유 링크를 새로 받아야 해요."
+    "leaveConfirm": "\"{{title}}\" 여행에서 나갈까요? 다시 들어오려면 공유 링크를 새로 받아야 해요.",
+    "leaveConfirmShort": "이 여행에서 나갈까요? 다시 들어오려면 공유 링크를 새로 받아야 해요.",
+    "ownerOnlyLink": "여행을 만든 사람만 링크를 만들 수 있어요",
+    "conflict": "다른 동행자가 방금 일정을 바꿨어요. 최신 일정으로 불러왔으니 다시 한 번 해 주세요."
   }
 }

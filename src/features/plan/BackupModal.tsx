@@ -93,7 +93,8 @@ export function BackupModal({ trips, onClose, onImported }: BackupModalProps) {
         if (!existing) {
           await tripService.saveTrip({ ...project, supabaseId: undefined }, name);
         } else if (mode === 'overwrite') {
-          await tripService.saveTrip({ ...project, supabaseId: existing.id }, name);
+          // 덮어쓰기는 지금 버전과 상관없이 쓴다 — 백업 파일에 남은 예전 revision으로 막히지 않게
+          await tripService.saveTrip({ ...project, supabaseId: existing.id, revision: undefined }, name);
         } else {
           let altName = `${name} ${t('backup.importedSuffix')}`;
           let n = 1;

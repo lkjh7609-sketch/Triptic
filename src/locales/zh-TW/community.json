@@ -176,36 +176,17 @@
     "moderationBlockedError": "內容中包含違反社群規範的資訊，發布已被攔截。",
     "submitError": "發布失敗，請稍後重試。"
   },
-  "guestName": {
-    "dialogLabel": "輸入姓名",
-    "promptLine1": "請告訴我們同行者的姓名或暱稱。",
-    "promptLine2": "建議地點時將顯示為作者。",
-    "nameLabel": "我的姓名",
-    "namePlaceholder": "例如：小明",
-    "enter": "進入"
-  },
-  "suggest": {
-    "title": "建議新增地點",
-    "dialogLabel": "建議新增地點",
-    "searchLabel": "搜尋要新增的地點",
-    "searchPlaceholder": "搜尋地點名稱",
-    "dayLabel": "建議天數",
-    "dayOption": "第{{day}}天",
-    "memoLabel": "備註（可選）",
-    "memoPlaceholder": "例如：這裡的甜品很有名！",
-    "proposerLabel": "作者姓名",
-    "submitting": "傳送中…",
-    "submit": "傳送建議"
-  },
   "shared": {
-    "loadError": "分享連結已過期或不存在。",
+    "loadError": "分享連結已過期或找不到。",
     "daysCount_other": "{{count}}天行程",
     "dayLabel": "第{{day}}天",
     "cityUnset": "未設定城市",
     "departure": "出發",
     "return": "返回",
-    "suggestSent": "建議已傳送給行程建立者！",
-    "emptyDay": "這一天還沒有安排行程。"
+    "emptyDay": "這一天還沒有安排行程。",
+    "loginNotice": "你受邀加入一趟旅行。登入後就能一起編輯。",
+    "joining": "正在加入旅行…",
+    "goToPlans": "前往我的旅行"
   },
   "postTrip": {
     "viewLink": "查看行程",

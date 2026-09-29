@@ -176,27 +176,6 @@
     "moderationBlockedError": "커뮤니티 가이드라인을 위반하는 내용이 포함돼 있어 게시가 차단됐어요.",
     "submitError": "게시에 실패했어요. 잠시 후 다시 시도해 주세요."
   },
-  "guestName": {
-    "dialogLabel": "이름 입력",
-    "promptLine1": "동행하시는 분의 성함이나 별명을 알려주세요.",
-    "promptLine2": "장소를 건의할 때 작성자로 표시됩니다.",
-    "nameLabel": "내 이름",
-    "namePlaceholder": "예: 민수",
-    "enter": "입장하기"
-  },
-  "suggest": {
-    "title": "장소 추가 건의하기",
-    "dialogLabel": "장소 추가 건의하기",
-    "searchLabel": "추가할 장소 검색",
-    "searchPlaceholder": "장소 이름을 검색하세요",
-    "dayLabel": "추천 일차",
-    "dayOption": "{{day}}일차",
-    "memoLabel": "한마디 메모 (선택)",
-    "memoPlaceholder": "예: 여기 디저트 유명하대요!",
-    "proposerLabel": "작성자 이름",
-    "submitting": "보내는 중…",
-    "submit": "건의 보내기"
-  },
   "shared": {
     "loadError": "공유 링크가 만료되었거나 찾을 수 없어요.",
     "daysCount_other": "{{count}}일간",
@@ -204,8 +183,10 @@
     "cityUnset": "도시 미설정",
     "departure": "출발",
     "return": "복귀",
-    "suggestSent": "제안이 여행 작성자에게 전송되었어요!",
-    "emptyDay": "이 날에는 아직 일정이 없어요."
+    "emptyDay": "이 날에는 아직 일정이 없어요.",
+    "loginNotice": "여행에 초대받았어요. 로그인하면 이 여행을 함께 편집할 수 있어요.",
+    "joining": "여행에 참여하는 중…",
+    "goToPlans": "내 여행으로"
   },
   "postTrip": {
     "viewLink": "일정 보기",
