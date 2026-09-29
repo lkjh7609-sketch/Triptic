@@ -122,8 +122,19 @@
   "hotels": {
     "title": "Hotels",
     "subtitle": "Find a place to stay at your destination",
-    "cta": "Find hotels on Agoda",
-    "widgetTitle": "Trip.com hotel search"
+    "form": {
+      "destination": "Destination",
+      "destinationPlaceholder": "Search a city (e.g. Tokyo)",
+      "noMatch": "No matching destination",
+      "dates": "Check-in – Check-out",
+      "pickCheckOut": "Pick check-out",
+      "nights_one": "{{count}} night",
+      "nights_other": "{{count}} nights",
+      "rooms": "Rooms",
+      "search": "Search hotels",
+      "opensOnTrip": "Search results and booking continue on Trip.com",
+      "childrenHint": "Traveling with children? Add them with their ages on Trip.com."
+    }
   },
   "activities": {
     "title": "Tours & activities",

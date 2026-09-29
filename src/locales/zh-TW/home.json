@@ -121,8 +121,18 @@
   "hotels": {
     "title": "住宿",
     "subtitle": "尋找目的地的住宿",
-    "cta": "在 Agoda 搜尋住宿",
-    "widgetTitle": "Trip.com 飯店搜尋"
+    "form": {
+      "destination": "目的地",
+      "destinationPlaceholder": "搜尋城市（例如：東京）",
+      "noMatch": "找不到符合的目的地",
+      "dates": "入住 – 退房",
+      "pickCheckOut": "選擇退房日期",
+      "nights_other": "{{count}}晚",
+      "rooms": "客房",
+      "search": "搜尋飯店",
+      "opensOnTrip": "搜尋結果與訂房將在 Trip.com 進行",
+      "childrenHint": "若有兒童同行，請在 Trip.com 搜尋畫面加入並填寫年齡。"
+    }
   },
   "activities": {
     "title": "行程與活動",
