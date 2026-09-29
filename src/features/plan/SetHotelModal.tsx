@@ -81,7 +81,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <div ref={sheetRef} className={styles.sheet} onClick={(e) => e.stopPropagation()}>
         <h2 className={styles.title}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><Hotel size={18} aria-hidden="true" /> {t('hotel.title')}</span></h2>
         

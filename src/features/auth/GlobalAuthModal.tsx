@@ -50,13 +50,8 @@ export function GlobalAuthModal({ onClose, notice }: GlobalAuthModalProps) {
   }
 
   return (
-    <div
-      className={onClose ? `${styles.overlay} ${styles.overlayFloating}` : styles.overlay}
-      // PC에선 카드 바깥(어두운 배경)을 누르면 닫힌다 — 모바일은 전체 화면이라 예전처럼 X로만
-      onClick={(e) => {
-        if (onClose && e.target === e.currentTarget && window.matchMedia('(min-width: 1024px)').matches) onClose();
-      }}
-    >
+    // 바깥(어두운 배경)을 눌러도 닫히지 않는다 — 닫기는 X로만
+    <div className={onClose ? `${styles.overlay} ${styles.overlayFloating}` : styles.overlay}>
       <div
         ref={trapRef}
         className={onClose ? `${styles.modal} ${styles.modalFloating}` : styles.modal}

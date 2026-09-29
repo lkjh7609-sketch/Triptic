@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { PlaceItem } from './types';
 import styles from './ItemDetailSheet.module.css';
@@ -67,7 +68,7 @@ export function ItemDetailSheet({
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <div
         ref={trapRef}
         className={styles.sheet}
@@ -76,6 +77,9 @@ export function ItemDetailSheet({
         aria-modal="true"
         aria-label={item.name}
       >
+        <button type="button" className={styles.closeButton} onClick={onClose} aria-label={t('action.close', { ns: 'common' })}>
+          <X size={20} />
+        </button>
         <h2 className={styles.title}>{item.name}</h2>
         {item.address ? <p className={styles.address}>{item.address}</p> : null}
 

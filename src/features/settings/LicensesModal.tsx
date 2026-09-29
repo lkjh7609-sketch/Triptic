@@ -11,7 +11,7 @@ interface LicensesModalProps {
 export function LicensesModal({ onClose }: LicensesModalProps) {
   const { t } = useTranslation(['settings', 'common']);
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div className={modalStyles.sheet} onClick={(e) => e.stopPropagation()}>
         <h2 className={modalStyles.title}>{t('licenses.title')}</h2>
         <ul className={styles.list}>

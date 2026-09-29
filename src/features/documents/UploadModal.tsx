@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plane, Hotel, Ticket, Calendar, Image, FileText, Trash2 } from 'lucide-react';
+import { Plane, Hotel, Ticket, Calendar, Image, FileText, Trash2, X } from 'lucide-react';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
@@ -204,7 +204,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
 
   if (!consented) {
     return (
-      <div className={modalStyles.overlay} onClick={onClose}>
+      <div className={modalStyles.overlay}>
         <div
           ref={focusTrapRef}
           className={modalStyles.sheet}
@@ -229,7 +229,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}
@@ -351,32 +351,29 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
       </div>
 
       {viewerUrl ? (
-        <div
-          className={styles.imageViewerOverlay}
-          onClick={(e) => {
-            e.stopPropagation();
-            setViewerUrl(null);
-          }}
-        >
+        <div className={styles.imageViewerOverlay}>
+          <button
+            type="button"
+            className={styles.imageViewerClose}
+            onClick={() => setViewerUrl(null)}
+            aria-label={t('action.close', { ns: 'common' })}
+          >
+            <X size={22} />
+          </button>
           <img src={viewerUrl.url} alt={t('archive.voucherOriginalAlt')} className={styles.imageViewerImg} />
         </div>
       ) : null}
 
       {confirmDeleteEntry ? (
-        // ConfirmDialog가 이 모달의 overlay(onClick={onClose}) 안에 중첩돼
-        // 있어서, 다이얼로그 자체 배경을 탭해도 클릭이 계속 올라가 이 모달까지
-        // 같이 닫혔다 — 여기서 막는다.
-        <div onClick={(e) => e.stopPropagation()}>
-          <ConfirmDialog
-            title={t('archive.deleteConfirmTitle')}
-            message={t('archive.deleteConfirm', { name: confirmDeleteEntry.original_name })}
-            cancelLabel={t('archive.deleteKeep')}
-            confirmLabel={t('action.delete', { ns: 'common' })}
-            danger
-            onClose={() => setConfirmDeleteEntry(null)}
-            onConfirm={() => handleDelete(confirmDeleteEntry)}
-          />
-        </div>
+        <ConfirmDialog
+          title={t('archive.deleteConfirmTitle')}
+          message={t('archive.deleteConfirm', { name: confirmDeleteEntry.original_name })}
+          cancelLabel={t('archive.deleteKeep')}
+          confirmLabel={t('action.delete', { ns: 'common' })}
+          danger
+          onClose={() => setConfirmDeleteEntry(null)}
+          onConfirm={() => handleDelete(confirmDeleteEntry)}
+        />
       ) : null}
     </div>
   );

@@ -67,7 +67,7 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch }: AddPlaceModalPr
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <div
         ref={trapRef}
         className={styles.sheet}

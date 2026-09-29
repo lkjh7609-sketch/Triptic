@@ -205,7 +205,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         role="dialog"

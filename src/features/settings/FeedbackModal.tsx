@@ -71,7 +71,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
 
   if (done) {
     return (
-      <div className={modalStyles.overlay} onClick={onClose}>
+      <div className={modalStyles.overlay}>
         <div ref={trapRef} className={modalStyles.sheet} role="dialog" aria-modal="true" aria-label={t('feedback.title')} onClick={(e) => e.stopPropagation()}>
           <h2>{t('feedback.title')}</h2>
           <p className={modalStyles.hint}>{t('feedback.submitSuccess')}</p>
@@ -86,7 +86,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
   }
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={trapRef}
         className={modalStyles.sheet}

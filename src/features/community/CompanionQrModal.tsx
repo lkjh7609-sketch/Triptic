@@ -19,7 +19,7 @@ export function CompanionQrModal({ postId, onClose }: CompanionQrModalProps) {
   const { data: token, isLoading, isError, refetch } = useMyCompanionQrToken(postId);
 
   return (
-    <div className={modalStyles.overlay} onClick={onClose}>
+    <div className={modalStyles.overlay}>
       <div
         ref={focusTrapRef}
         className={modalStyles.sheet}

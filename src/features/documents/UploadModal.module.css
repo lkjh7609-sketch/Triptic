@@ -151,6 +151,22 @@
   z-index: 60;
 }
 
+.imageViewerClose {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+}
+
 .imageViewerImg {
   max-width: 95vw;
   max-height: 95vh;

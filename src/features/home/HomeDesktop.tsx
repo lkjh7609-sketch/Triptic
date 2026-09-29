@@ -36,7 +36,7 @@ function DestinationPreviewModal({
   });
 
   return createPortal(
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={styles.modalOverlay}>
       <div
         ref={trapRef}
         className={styles.modal}

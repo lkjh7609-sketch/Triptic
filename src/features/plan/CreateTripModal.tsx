@@ -180,7 +180,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <form
         ref={trapRef}
         className={styles.sheet}
