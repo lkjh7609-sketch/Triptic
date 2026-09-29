@@ -44,9 +44,10 @@ export interface LocalProject {
   revision?: number;
 }
 
-/** 저장하려는 사이 다른 동행자가 먼저 이 여행을 바꿨다 — 최신 내용을 다시 불러와야 한다 */
+/** 저장하려는 사이 이 여행이 먼저 바뀌었다 — 최신 내용을 다시 불러와야 한다.
+ * byOther: 다른 동행자가 바꿨는지(아니면 내가 연달아 저장한 게 겹친 것) */
 export class TripConflictError extends Error {
-  constructor() {
+  constructor(readonly byOther: boolean) {
     super('trip_conflict');
     this.name = 'TripConflictError';
   }
@@ -173,7 +174,13 @@ export class TripService {
       if (res.data) {
         data = res.data as Omit<TripRow, 'content'>;
       } else if (project.revision !== undefined) {
-        throw new TripConflictError();
+        // 누가 바꿨는지 봐서 안내를 고른다 — 혼자 편집하다 저장이 겹친 걸 남 탓으로 보이지 않게
+        const { data: latest } = await supabase
+          .from('trips')
+          .select('updated_by')
+          .eq('id', project.supabaseId!)
+          .maybeSingle();
+        throw new TripConflictError(!!latest?.updated_by && latest.updated_by !== user.id);
       } else {
         // 예전 백업/로컬 이관처럼 revision 없이 id만 들고 온 경우 — 행이 없으면 예전 upsert처럼 만든다
         const ins = await supabase

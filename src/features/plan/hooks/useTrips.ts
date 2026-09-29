@@ -150,9 +150,9 @@ export function useUpdateTripSnapshot(tripId: string | undefined) {
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
     onError: (err) => {
-      // 그 사이 다른 동행자가 먼저 저장했다 — 내 변경은 버리고 최신 일정을 다시 불러온다
+      // 그 사이 이 여행이 먼저 바뀌었다(다른 동행자, 또는 내 연달은 저장) — 내 변경은 버리고 최신 일정을 다시 불러온다
       if (err instanceof TripConflictError) {
-        showToast(i18next.t('plan:collab.conflict'));
+        showToast(i18next.t(err.byOther ? 'plan:collab.conflict' : 'plan:collab.conflictSelf'));
         queryClient.invalidateQueries({ queryKey: tripQueryKey(tripId ?? '') });
       }
     },
