@@ -6,7 +6,7 @@ import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
-import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon, Compass } from 'lucide-react';
+import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { EditProfileModal } from '@/features/settings/EditProfileModal';
 import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
@@ -14,6 +14,7 @@ import { LanguageModal } from '@/features/settings/LanguageModal';
 import { BackupModal } from '@/features/plan/BackupModal';
 import { HOME_SECTIONS, isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 import styles from './HeaderDesktop.module.css';
 
 export function HeaderDesktop() {
@@ -71,9 +72,8 @@ export function HeaderDesktop() {
   return (
     <header className={styles.header}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
-        <Link to="/" className={styles.logo} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Compass size={28} color="var(--brand)" strokeWidth={2} />
-          Triptic
+        <Link to="/" className={styles.logo} aria-label="Triptic">
+          <BrandLogo className={styles.logoImage} />
         </Link>
         
         <nav className={styles.nav}>

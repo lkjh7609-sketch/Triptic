@@ -5,6 +5,7 @@ import '@/shared/i18n';
 import { initMonitoring } from '@/shared/monitoring';
 import { applyStoredTheme } from '@/shared/theme';
 import { isNativeApp } from '@/shared/platform';
+import { finishIntro } from '@/shared/intro/introSplash';
 import { App } from './App';
 
 initMonitoring();
@@ -37,3 +38,5 @@ createRoot(rootEl).render(
     <App />
   </StrictMode>,
 );
+
+void finishIntro();
