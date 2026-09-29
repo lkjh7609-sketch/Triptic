@@ -86,7 +86,9 @@ export async function finishIntro(): Promise<void> {
     const now = performance.now();
     const elapsed = now - t0;
     anchor = findAnchor();
-    if (!mountedAt && document.getElementById('root')?.childElementCount) mountedAt = now;
+    // #root엔 앱이 뜨기 전부터 검색 로봇용 소개(#seo-intro, index.html)가 있다 — 그게 바뀌어야 뜬 것
+    const rootFirst = document.getElementById('root')?.firstElementChild;
+    if (!mountedAt && rootFirst && rootFirst.id !== 'seo-intro') mountedAt = now;
     const settled = mountedAt > 0 && now - mountedAt >= ANCHOR_GRACE_MS;
     if (elapsed >= MIN_HOLD_MS && (anchor || settled || elapsed >= MAX_WAIT_MS)) break;
     await nextFrame();
