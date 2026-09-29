@@ -8,8 +8,8 @@ import { formatTemp } from '@/features/weather/weatherRules';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { useTranslation } from 'react-i18next';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useTrip, useUpdateTripSnapshot, useSuggestions } from './hooks/useTrips';
-import { tripService, type LocalProject, type Suggestion } from '@/shared/api/tripService';
+import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
+import { tripService, type LocalProject } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
 import { DayChips } from './DayChips';
 import { SortableItineraryItem } from './SortableItineraryItem';
@@ -78,7 +78,6 @@ export function TripDetailScreen() {
   const isSample = tripId === SAMPLE_TRIP_ID;
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
   const updateSnapshot = useUpdateTripSnapshot(tripId);
-  const { data: suggestions } = useSuggestions(tripId);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const bgImage = useCityImage(trip?.city ?? '');
@@ -297,24 +296,6 @@ export function TripDetailScreen() {
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
-  /** 동행자 제안 수락 — 해당 일차 맨 뒤에 추가한다 (index.html acceptSuggestion 이식) */
-  async function handleAcceptSuggestion(s: Suggestion) {
-    if (!project || !trip) return;
-    const plannerData = { ...((project.data ?? {}) as PlannerData) };
-    const dayList = plannerData[s.day] ?? [];
-    const validList = dayList.filter(Boolean);
-    const defaultTime = validList.length > 0 ? validList[validList.length - 1].time || '10:00' : '10:00';
-    let memo = s.proposer ? `${t('suggestions.memoPrefix', { name: s.proposer })} ` : '';
-    if (s.memo) memo += s.memo;
-    plannerData[s.day] = [
-      ...dayList,
-      { name: s.name, address: s.address ?? '', lat: s.lat ?? 0, lng: s.lng ?? 0, time: defaultTime, memo },
-    ];
-    const nextProject: LocalProject = { ...project, data: plannerData };
-    await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
-    setCurrentDay(s.day);
-  }
-
   // 지도 마커 클릭 핸들러는 참조가 바뀌면 useTripMarkers가 마커를 전부 다시 만들고 fitBounds로
   // 사용자가 옮긴 지도를 되돌린다 — 반드시 고정된 함수로 넘긴다.
   const handleMarkerClick = useCallback((index: number, type: 'item' | 'startHotel' | 'endHotel') => {
@@ -442,7 +423,6 @@ export function TripDetailScreen() {
           </button>
           <button type="button" className={styles.toggleButton} aria-label={t('tripDetail.shareAria')} onClick={() => setShowShare(true)}>
             <ExternalLink size={18} />
-            {(suggestions?.length ?? 0) > 0 ? <span className={styles.badge}>{suggestions!.length}</span> : null}
           </button>
         </div>
 
@@ -584,8 +564,7 @@ export function TripDetailScreen() {
           itineraryText={itineraryText}
           pdfInput={pdfInput}
           isSample={isSample}
-          suggestions={suggestions ?? []}
-          onAcceptSuggestion={handleAcceptSuggestion}
+          ownerId={trip.owner_id}
           onClose={() => setShowShare(false)}
         />
       ) : null}

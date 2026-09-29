@@ -172,19 +172,18 @@
     "saving": "Saving…"
   },
   "share": {
-    "title": "View-only share link",
+    "title": "Invite people to edit together",
     "sampleMessage": "Sample trips can't be shared. Create your own trip to share it!",
-    "desc": "Send this link to your travel companions so they can view the itinerary without editing it.",
+    "desc": "Anyone with this link can sign in and edit this trip with you. Changes show up for everyone right away.",
     "generatingLink": "Generating…",
-    "revoke": "Stop sharing",
-    "revokeConfirm": "Stop sharing this trip? Others will no longer be able to view it.",
+    "revoke": "Disable link",
+    "revokeConfirm": "Disable this link? It only stops new people from joining — current members stay.",
     "copied": "Copied!",
     "copyText": "Copy full itinerary as text",
     "textCopied": "Text copied!",
     "pdfAllBtn": "Full itinerary PDF ({{days}} days)",
     "pdfCurrentBtn": "PDF for day {{day}} only",
     "generatingPdf": "Generating…",
-    "suggestionsBtn": "Suggestions from companions ({{count}})",
     "text": {
       "destination": "Destination: {{city}}",
       "period": "Dates: {{start}} - {{end}} ({{total}} days)",
@@ -194,15 +193,6 @@
       "freeDay": "(Free day)",
       "departure": "Departure: {{label}}"
     }
-  },
-  "suggestions": {
-    "title": "Suggestions from companions ({{count}})",
-    "empty": "No suggestions from your companions yet.",
-    "dayTag": "Suggested for day {{day}}",
-    "sentBy": "Sent by",
-    "reject": "Decline",
-    "addToItinerary": "Add to itinerary",
-    "memoPrefix": "[Suggested by {{name}}]"
   },
   "tripCard": {
     "periodUndecided": "Dates not set",
@@ -360,7 +350,7 @@
     "toolkitTitle": "Next trip prep",
     "toolkitEmpty": "Once you have an upcoming trip, its weather, flight and travel companions show up here.",
     "membersTitle": "Travel companions",
-    "membersSolo": "You're planning solo for now. Share the trip from its page to plan together.",
+    "membersSolo": "You're planning solo for now. Invite people from the trip's share button to edit together.",
     "memberUnknown": "Unnamed",
     "role": {
       "owner": "Owner",
@@ -474,7 +464,15 @@
     "ticketTitle": "Find {{place}} tickets on Klook"
   },
   "collab": {
+    "membersTitle_one": "{{count}} person on this trip",
+    "membersTitle_other": "{{count}} people on this trip",
+    "me": "(you)",
+    "remove": "Remove",
+    "removeConfirm": "Remove {{name}} from this trip? They won't be able to view or edit it anymore.",
     "leave": "Leave trip",
-    "leaveConfirm": "Leave \"{{title}}\"? You'll need a new share link to rejoin."
+    "leaveConfirm": "Leave \"{{title}}\"? You'll need a new share link to rejoin.",
+    "leaveConfirmShort": "Leave this trip? You'll need a new share link to rejoin.",
+    "ownerOnlyLink": "Only the trip creator can create a link",
+    "conflict": "Another member just changed this trip. We loaded the latest version — please try again."
   }
 }

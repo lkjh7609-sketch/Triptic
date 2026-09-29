@@ -64,3 +64,16 @@
   color: var(--brand);
   margin: 0;
 }
+
+/* 공유 링크로 참여하는 동안(/shared/:code) */
+.joinScreen {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.joining {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+}

@@ -62,6 +62,16 @@
   color: var(--brand);
 }
 
+.notice {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+  font-size: var(--font-label-size);
+  line-height: 1.5;
+  color: var(--text-body);
+}
+
 .emailSection {
   display: flex;
   flex-direction: column;

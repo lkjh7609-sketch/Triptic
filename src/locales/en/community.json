@@ -183,37 +183,18 @@
     "moderationBlockedError": "Your post was blocked for containing content that violates the community guidelines.",
     "submitError": "Couldn't publish the post. Please try again shortly."
   },
-  "guestName": {
-    "dialogLabel": "Enter your name",
-    "promptLine1": "Let us know your name or nickname as a fellow traveler.",
-    "promptLine2": "It's shown as the author when you suggest a place.",
-    "nameLabel": "Your name",
-    "namePlaceholder": "e.g. Alex",
-    "enter": "Continue"
-  },
-  "suggest": {
-    "title": "Suggest a place",
-    "dialogLabel": "Suggest a place",
-    "searchLabel": "Search for a place to add",
-    "searchPlaceholder": "Search for a place",
-    "dayLabel": "Suggested day",
-    "dayOption": "Day {{day}}",
-    "memoLabel": "A short note (optional)",
-    "memoPlaceholder": "e.g. Great desserts here!",
-    "proposerLabel": "Your name",
-    "submitting": "Sending…",
-    "submit": "Send suggestion"
-  },
   "shared": {
-    "loadError": "This share link has expired or doesn't exist.",
+    "loadError": "This share link has expired or could not be found.",
     "daysCount_one": "{{count}} day",
     "daysCount_other": "{{count}} days",
     "dayLabel": "Day {{day}}",
     "cityUnset": "No city set",
     "departure": "Departure",
     "return": "Return",
-    "suggestSent": "Your suggestion was sent to the trip owner!",
-    "emptyDay": "No plans for this day yet."
+    "emptyDay": "No plans for this day yet.",
+    "loginNotice": "You've been invited to a trip. Sign in to edit it together.",
+    "joining": "Joining the trip…",
+    "goToPlans": "Go to my trips"
   },
   "postTrip": {
     "viewLink": "View itinerary",

@@ -176,27 +176,6 @@
     "moderationBlockedError": "コミュニティガイドラインに違反する内容が含まれているため、投稿がブロックされました。",
     "submitError": "投稿に失敗しました。しばらくしてからもう一度お試しください。"
   },
-  "guestName": {
-    "dialogLabel": "名前を入力",
-    "promptLine1": "同行される方のお名前やニックネームを教えてください。",
-    "promptLine2": "場所を提案する際に作成者として表示されます。",
-    "nameLabel": "名前",
-    "namePlaceholder": "例: マコト",
-    "enter": "入場する"
-  },
-  "suggest": {
-    "title": "場所の追加を提案",
-    "dialogLabel": "場所の追加を提案",
-    "searchLabel": "追加する場所を検索",
-    "searchPlaceholder": "場所の名前を検索してください",
-    "dayLabel": "おすすめの日",
-    "dayOption": "{{day}}日目",
-    "memoLabel": "一言メモ (任意)",
-    "memoPlaceholder": "例: ここのデザートが有名だそうです！",
-    "proposerLabel": "作成者の名前",
-    "submitting": "送信中…",
-    "submit": "提案を送信"
-  },
   "shared": {
     "loadError": "共有リンクの有効期限が切れているか、見つかりません。",
     "daysCount_other": "{{count}}日間",
@@ -204,8 +183,10 @@
     "cityUnset": "都市未設定",
     "departure": "出発",
     "return": "帰国",
-    "suggestSent": "提案が旅行の作成者に送信されました！",
-    "emptyDay": "この日にはまだ予定がありません。"
+    "emptyDay": "この日にはまだ予定がありません。",
+    "loginNotice": "旅行に招待されました。ログインするとこの旅行を一緒に編集できます。",
+    "joining": "旅行に参加しています…",
+    "goToPlans": "マイ旅行へ"
   },
   "postTrip": {
     "viewLink": "旅程を見る",

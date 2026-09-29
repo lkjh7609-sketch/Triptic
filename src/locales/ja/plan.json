@@ -151,19 +151,18 @@
     "saving": "保存中…"
   },
   "share": {
-    "title": "閲覧専用共有リンク",
+    "title": "一緒に編集する人を招待",
     "sampleMessage": "サンプル旅行は共有できません。自分だけの新しい旅行を作成して共有してみましょう！",
-    "desc": "同行者にこのリンクを送ると、編集なしでスケジュールを確認できます。",
+    "desc": "このリンクを受け取った人はログインすると、この旅行を一緒に編集できます。誰が変更してもすぐお互いの画面に反映されます。",
     "generatingLink": "作成中…",
-    "revoke": "共有を停止",
-    "revokeConfirm": "共有を停止しますか？相手はこの旅行を見ることができなくなります。",
+    "revoke": "リンクを無効にする",
+    "revokeConfirm": "リンクを無効にしますか？新しく参加できなくなるだけで、すでに参加している人はそのままです。",
     "copied": "コピーしました！",
     "copyText": "全日程をテキストでコピー",
     "textCopied": "テキストをコピーしました！",
     "pdfAllBtn": "全日程PDF ({{days}}日分)",
     "pdfCurrentBtn": "{{day}}日目のみPDF",
     "generatingPdf": "作成中…",
-    "suggestionsBtn": "同行者からの提案（{{count}}件）",
     "text": {
       "destination": "目的地: {{city}}",
       "period": "期間: {{start}}〜{{end}}（{{total}}日間）",
@@ -173,15 +172,6 @@
       "freeDay": "（自由行動）",
       "departure": "帰国: {{label}}"
     }
-  },
-  "suggestions": {
-    "title": "同行者の追加提案 ({{count}}件)",
-    "empty": "まだ同行者からの提案はありません。",
-    "dayTag": "{{day}}日目の提案",
-    "sentBy": "送信者",
-    "reject": "拒否",
-    "addToItinerary": "スケジュールに追加",
-    "memoPrefix": "[{{name}}さんのおすすめ]"
   },
   "tripCard": {
     "periodUndecided": "期間未定",
@@ -347,7 +337,7 @@
     "toolkitTitle": "次の旅行の準備",
     "toolkitEmpty": "予定の旅行ができると、天気・航空便・同行者をここでまとめて確認できます。",
     "membersTitle": "同行者",
-    "membersSolo": "今は一人で計画中です。旅行ページの共有から一緒に見られます。",
+    "membersSolo": "まだ一人で計画中です。旅行画面の共有から一緒に編集する人を招待してみましょう。",
     "memberUnknown": "名前なし",
     "role": {
       "owner": "作成者",
@@ -460,7 +450,14 @@
     "ticketTitle": "Klookで{{place}}のチケットを探す"
   },
   "collab": {
+    "membersTitle_other": "参加メンバー {{count}}人",
+    "me": "(自分)",
+    "remove": "外す",
+    "removeConfirm": "{{name}}さんをこの旅行から外しますか？この旅行を見たり編集したりできなくなります。",
     "leave": "旅行から抜ける",
-    "leaveConfirm": "「{{title}}」から抜けますか？また参加するには新しい共有リンクが必要です。"
+    "leaveConfirm": "「{{title}}」から抜けますか？また参加するには新しい共有リンクが必要です。",
+    "leaveConfirmShort": "この旅行から抜けますか？また参加するには新しい共有リンクが必要です。",
+    "ownerOnlyLink": "リンクは旅行を作成した人だけが作れます",
+    "conflict": "他のメンバーがちょうど日程を変更しました。最新の日程を読み込んだので、もう一度お試しください。"
   }
 }

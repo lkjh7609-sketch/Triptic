@@ -13,6 +13,8 @@ import styles from './GlobalAuthModal.module.css';
 interface GlobalAuthModalProps {
   /** 샘플 여행 체험 중에 띄운 경우에만 넘긴다 — 닫으면 샘플로 돌아간다 */
   onClose?: () => void;
+  /** 한마디 아래 덧붙일 안내(예: 공유 링크로 들어온 사람에게 "로그인하면 함께 편집") */
+  notice?: string;
 }
 
 /**
@@ -20,7 +22,7 @@ interface GlobalAuthModalProps {
  * 체험할 수 있는 건 샘플 여행 하나뿐이다(체험 중엔 AppShell의 GuestBanner). PC는 둘러보다가
  * 로그인이 필요할 때 닫을 수 있는 창(onClose)으로 뜬다.
  */
-export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
+export function GlobalAuthModal({ onClose, notice }: GlobalAuthModalProps) {
   const { t } = useTranslation();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
   const [agreed, setAgreed] = useState(false);
@@ -74,6 +76,7 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
           </h1>
           {/* 로그인을 재촉하는 문구 대신 앱 한마디 */}
           <p className={styles.subtitle}>{t('auth.tagline')}</p>
+          {notice ? <p className={styles.notice}>{notice}</p> : null}
         </div>
 
         <LoginButtons consent={{ agreed, onMissing: handleConsentMissing }} />

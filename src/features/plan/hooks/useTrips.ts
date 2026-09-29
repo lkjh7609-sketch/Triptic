@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tripService, type LocalProject, type TripRow } from '@/shared/api/tripService';
+import { tripService, TripConflictError, type LocalProject, type TripRow } from '@/shared/api/tripService';
+import { showToast } from '@/shared/ui/toast';
 import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
 import { useTranslation } from 'react-i18next';
 import i18next from '@/shared/i18n';
@@ -64,6 +65,15 @@ export function useLeaveTrip() {
   });
 }
 
+/** 소유자가 멤버를 내보낸다 */
+export function useRemoveTripMember(tripId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => tripService.removeTripMember(tripId, userId),
+    onSuccess: () => invalidateTripMembership(queryClient),
+  });
+}
+
 export function tripQueryKey(tripId: string) {
   return ['trip', tripId] as const;
 }
@@ -106,9 +116,15 @@ export function useReopenTrip(tripId: string | undefined) {
 /** snapshot 부분 갱신 (장소 추가/삭제/순서변경 등). project는 이미 toLocalProject로 변환된 전체 상태
  * 비로그인 샘플 여행(SAMPLE_TRIP_ID)은 Supabase에 절대 쓰지 않고 메모리에만 반영한다
  * (index.html saveData의 `activeProjectName === SAMPLE_PROJECT_NAME` 조기 반환과 동일 — sampleTrip.ts 참고). */
+/** 여행 저장 중인지 — 실시간 동기화가 저장 도중에 다시 읽어 방금 고친 내용을 덮지 않게 이 키로 확인한다 */
+export function tripSaveMutationKey(tripId: string) {
+  return ['trip-save', tripId] as const;
+}
+
 export function useUpdateTripSnapshot(tripId: string | undefined) {
   const queryClient = useQueryClient();
   return useMutation({
+    mutationKey: tripSaveMutationKey(tripId ?? ''),
     mutationFn: ({ project, name }: { project: LocalProject; name: string }) => {
       if (tripId === SAMPLE_TRIP_ID) {
         return Promise.resolve(
@@ -132,6 +148,13 @@ export function useUpdateTripSnapshot(tripId: string | undefined) {
       }
       queryClient.setQueryData(tripQueryKey(row.id), row);
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+    onError: (err) => {
+      // 그 사이 다른 동행자가 먼저 저장했다 — 내 변경은 버리고 최신 일정을 다시 불러온다
+      if (err instanceof TripConflictError) {
+        showToast(i18next.t('plan:collab.conflict'));
+        queryClient.invalidateQueries({ queryKey: tripQueryKey(tripId ?? '') });
+      }
     },
   });
 }
@@ -166,28 +189,6 @@ export function useDuplicateTrip() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
-    },
-  });
-}
-
-/** 동행자 제안 목록 (index.html checkSuggestionsCount/openReviewSuggestionModal 이식)
- * 샘플 여행은 제안 기능을 지원하지 않는다(index.html openReviewSuggestionModal 가드와 동일) —
- * 실존하지 않는 tripId로 Supabase를 호출하지 않도록 여기서 막는다. */
-export function useSuggestions(tripId: string | undefined) {
-  return useQuery({
-    queryKey: ['suggestions', tripId ?? ''],
-    queryFn: () => tripService.listSuggestions(tripId!),
-    enabled: !!tripId && tripId !== SAMPLE_TRIP_ID,
-  });
-}
-
-/** 제안 거절 — 목록에서 제거만 한다 (index.html rejectSuggestion 이식) */
-export function useRejectSuggestion(tripId: string | undefined) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (suggestionId: string) => tripService.deleteSuggestion(suggestionId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suggestions', tripId ?? ''] });
     },
   });
 }
