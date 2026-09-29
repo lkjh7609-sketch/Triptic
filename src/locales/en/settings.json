@@ -106,15 +106,16 @@
     "miles": "Miles (mi)"
   },
   "feedback": {
-    "menuLabel": "Suggest a feature",
-    "title": "Suggest a feature",
+    "menuLabel": "Contact us",
+    "title": "Contact us",
     "bodyLabel": "Details",
-    "bodyPlaceholder": "Tell us what's bothering you or what you'd like to see.",
+    "bodyPlaceholder": "Questions, problems or ideas — tell us anything.",
     "bodyRequired": "Please enter some details.",
     "screenshotLabel": "Screenshot (optional)",
+    "screenshotHint": "You can attach up to 1 screenshot.",
     "submit": "Send",
     "submitting": "Sending…",
     "submitError": "Couldn't send it. Please try again later.",
-    "submitSuccess": "Thanks for the feedback!"
+    "submitSuccess": "Thanks! Your message has been sent."
   }
 }

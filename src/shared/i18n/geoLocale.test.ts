@@ -7,10 +7,17 @@ describe('localeForCountry', () => {
     expect(localeForCountry('kr')).toBe('ko');
   });
 
+  it('일본은 일본어, 대만·홍콩·마카오는 번체 중국어', () => {
+    expect(localeForCountry('JP')).toBe('ja');
+    expect(localeForCountry('TW')).toBe('zh-TW');
+    expect(localeForCountry('hk')).toBe('zh-TW');
+    expect(localeForCountry('MO')).toBe('zh-TW');
+  });
+
   it('그 밖의 나라는 영어', () => {
     expect(localeForCountry('US')).toBe('en');
-    expect(localeForCountry('JP')).toBe('en');
-    expect(localeForCountry('TW')).toBe('en');
+    expect(localeForCountry('CN')).toBe('en');
+    expect(localeForCountry('AU')).toBe('en');
   });
 
   it('국가를 모르면 null(브라우저 언어 유지)', () => {

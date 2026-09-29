@@ -14,8 +14,8 @@ interface FeedbackModalProps {
   onClose: () => void;
 }
 
-/** 설정 화면의 예전 "문의하기"(mailto) 자리를 대신하는 건의하기 — 텍스트 +
- * 선택적 스크린샷을 바로 작성해서 보내면 운영 콘솔에서 확인할 수 있다. */
+/** 문의하기(고객센터) — 설정 화면과 PC 홈 하단 "고객센터"에서 연다. 텍스트 + 선택적
+ * 스크린샷 1장을 바로 작성해서 보내면 운영 콘솔에서 확인할 수 있다. */
 export function FeedbackModal({ onClose }: FeedbackModalProps) {
   const { t } = useTranslation(['settings', 'common']);
   const { user } = useSession();
@@ -116,7 +116,12 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
             />
           </div>
           <div className={modalStyles.field}>
-            <label className={modalStyles.label}>{t('feedback.screenshotLabel')}</label>
+            <label className={modalStyles.label} htmlFor="feedback-screenshot">
+              {t('feedback.screenshotLabel')}
+            </label>
+            <p className={modalStyles.hint} id="feedback-screenshot-hint">
+              {t('feedback.screenshotHint')}
+            </p>
             {previewUrl ? (
               <div className={styles.previewWrap}>
                 <img src={previewUrl} alt="" className={styles.previewImg} />
@@ -125,8 +130,11 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
                 </button>
               </div>
             ) : (
+              // 한 장만 받는다(multiple 없음) — 바꾸려면 지우고 다시 고른다
               <input
                 ref={fileInputRef}
+                id="feedback-screenshot"
+                aria-describedby="feedback-screenshot-hint"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
