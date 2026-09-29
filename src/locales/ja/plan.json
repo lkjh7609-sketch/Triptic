@@ -59,17 +59,16 @@
     "title": "この日の経費",
     "descPlaceholder": "用途 (例: 昼食)",
     "amountPlaceholder": "金額 ({{symbol}})",
-    "currencyAria": "通貨",
     "categoryAria": "カテゴリー",
     "paymentAria": "支払い方法",
     "paymentPlaceholder": "支払い方法",
     "empty": "まだ登録された経費はありません。",
-    "fxWarning": "この通貨の為替レートがまだありません。金額は保存されますが、合計には反映されません。",
     "unconverted": "換算不可",
     "unconvertedCount_other": "(換算不可 {{count}}件を除く)",
     "dayTotal": "この日の合計",
     "grandTotal": "旅行全体の合計",
     "chartByDay": "日別合計",
+    "chartPage": "{{page}} / {{total}}ページ",
     "chartByCategory": "カテゴリー別合計",
     "category": {
       "food": "食費",
@@ -84,7 +83,6 @@
       "card": "カード",
       "other": "その他"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}}時点のレート",
     "totalLabel": "合計"
   },
   "flightCard": {

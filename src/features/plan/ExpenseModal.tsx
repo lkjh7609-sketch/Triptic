@@ -6,14 +6,11 @@ import {
 
   convertToBase,
   formatMoney,
-  formatRate,
   getCategoryTotalsSeries,
   getDayExpenseTotal,
   getDayTotalsSeries,
   getGrandExpenseTotal,
 } from './expenses';
-import { getRate } from './fxRates';
-import { useFxRates } from './useFxRates';
 import { ExpenseChart } from './ExpenseChart';
 import { DoughnutChart } from './DoughnutChart';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -30,6 +27,9 @@ interface ExpenseModalProps {
   onClose: () => void;
   onSave: (dayExpenses: ExpenseItem[]) => Promise<void>;
 }
+
+/** 일자별 합계는 5일씩 한 쪽 — 옆으로 넘긴다 */
+const DAY_CHART_PAGE_SIZE = 5;
 
 const CATEGORY_ICON: Record<ExpenseCategory, React.ReactNode> = {
   food: <Utensils size={18} />,
@@ -54,19 +54,15 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const { t, i18n } = useTranslation(['plan', 'common']);
   const [desc, setDesc] = useState('');
   const [amount, setAmount] = useState('');
-  const [itemCurrency, setItemCurrency] = useState(currency);
   const [category, setCategory] = useState<ExpenseCategory>('other');
   const [paymentMethod, _setPaymentMethod] = useState<ExpensePaymentMethod | ''>('');
   const [saving, setSaving] = useState(false);
-  const [fxWarning, setFxWarning] = useState<string | null>(null);
-  const fxRates = useFxRates();
-  const previewRate = itemCurrency !== currency ? getRate(fxRates.data, itemCurrency, currency) : null;
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   const list = expensesData[currentDay] ?? [];
   const dayTotal = getDayExpenseTotal(list, currency);
   const grandTotal = getGrandExpenseTotal(expensesData, currency);
-  const currSymbol = (CURRENCIES[itemCurrency] ?? CURRENCIES.KRW).symbol;
+  const currSymbol = (CURRENCIES[currency] ?? CURRENCIES.KRW).symbol;
 
   function unconvertedNote(count: number): string {
     return count > 0 ? ` ${t('expense.unconvertedCount', { count })}` : '';
@@ -76,22 +72,14 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
     const amountNum = Number(amount);
     if (!desc.trim() || !amountNum) return;
     setSaving(true);
-    setFxWarning(null);
     try {
-      let fxRateToBase: number | null = null;
-      if (itemCurrency !== currency) {
-        fxRateToBase = getRate(fxRates.data, itemCurrency, currency);
-        if (fxRateToBase == null) {
-          setFxWarning(t('expense.fxWarning'));
-        }
-      }
+      // 통화는 여행 통화로 고정 — 여행 도시에서 자동 지정되므로 입력할 때 고르지 않는다
       const newItem: ExpenseItem = {
         desc: desc.trim(),
         amount: amountNum,
-        currency: itemCurrency,
+        currency,
         category,
         ...(paymentMethod ? { paymentMethod } : {}),
-        ...(itemCurrency !== currency ? { fxRateToBase } : {}),
       };
       await onSave([...list, newItem]);
       setDesc('');
@@ -154,36 +142,11 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <select
-              className={styles.smallSelect}
-              value={itemCurrency}
-              onChange={(e) => setItemCurrency(e.target.value)}
-              aria-label={t('expense.currencyAria')}
-            >
-              {Object.keys(CURRENCIES).map((code) => (
-                <option key={code} value={code}>
-                  {code}
-                </option>
-              ))}
-            </select>
             <button type="button" className={styles.addBtn} disabled={saving} onClick={handleAdd}>
               {t('action.add', { ns: 'common' })}
             </button>
           </div>
         </div>
-        {previewRate != null ? (
-          <p className={styles.rateHint}>
-            {t('expense.rateHint', {
-              from: formatMoney(1, itemCurrency, i18n.language),
-              to: formatRate(previewRate, currency, i18n.language),
-              time: fxRates.data?.newestAt
-                ? new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(new Date(fxRates.data.newestAt))
-                : '',
-            })}
-          </p>
-        ) : null}
-        {fxWarning ? <p className={styles.warning}>{fxWarning}</p> : null}
-
         <div className={styles.list}>
           {list.length === 0 ? (
             <p className={styles.empty}>{t('expense.empty')}</p>
@@ -235,6 +198,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
           title={t('expense.chartByDay')}
           data={getDayTotalsSeries(expensesData, totalDays, currency, (day) => t('day.header', { index: day }))}
           currency={currency}
+          pageSize={DAY_CHART_PAGE_SIZE}
         />
         <DoughnutChart
           title={t('expense.chartByCategory')}

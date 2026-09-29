@@ -77,17 +77,16 @@
     "title": "當天支出",
     "descPlaceholder": "消費地點（例如：午餐）",
     "amountPlaceholder": "金額（{{symbol}}）",
-    "currencyAria": "貨幣",
     "categoryAria": "類別",
     "paymentAria": "支付方式",
     "paymentPlaceholder": "支付方式",
     "empty": "還沒有記錄支出。",
-    "fxWarning": "目前還沒有這個貨幣的匯率。金額會儲存，但不會計入合計。",
     "unconverted": "無法換算",
     "unconvertedCount_other": "（不含 {{count}} 項無法換算的支出）",
     "dayTotal": "當天合計",
     "grandTotal": "全程合計",
     "chartByDay": "按日期合計",
+    "chartPage": "第 {{page}} / {{total}} 頁",
     "chartByCategory": "按類別合計",
     "category": {
       "food": "餐飲",
@@ -102,7 +101,6 @@
       "card": "刷卡",
       "other": "其他"
     },
-    "rateHint": "{{from}} = {{to}} · {{time}} 匯率",
     "totalLabel": "合計"
   },
   "flightCard": {
