@@ -1,12 +1,14 @@
 /**
  * 첫 접속 인트로의 두 번째 절반 — index.html의 정적 스플래시(가운데 로고)를 받아서
- * 화면 안 로고 자리(data-intro-anchor)로 날려 보내고 걷어낸다.
- * 앵커가 끝내 없으면(로그인 화면·깊은 주소 등) 그 자리에서 부드럽게 사라진다.
+ * 화면 안 로고 자리(data-intro-anchor, PC 상단 바)로 날려 보내고 걷어낸다.
+ * 앵커가 없으면(모바일 홈·로그인 화면 등) 비행기처럼 우측 상단으로 날아가 사라진다.
  */
 
 const MIN_HOLD_MS = 1900; // 로고 등장 + 빛 스침이 끝날 때까지
-const MAX_WAIT_MS = 3000; // 앵커가 안 나타나도 이 시간이 지나면 그냥 걷는다
+const ANCHOR_GRACE_MS = 700; // 앱이 그려진 뒤 앵커가 나타나길 기다리는 시간 — 이후엔 앵커 없는 화면으로 본다
+const MAX_WAIT_MS = 6000; // 앱이 끝내 안 그려져도 이 시간이 지나면 그냥 걷는다
 const FLIGHT_MS = 820;
+const TAKEOFF_MS = 1100;
 const HARD_CLEANUP_MS = 9000;
 
 type IntroState = 'playing' | 'reveal' | 'done' | 'skip';
@@ -32,6 +34,34 @@ function nextFrame() {
   return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 }
 
+/** 살짝 웅크렸다가 우측 상단 화면 밖으로 날아가며 작아지고 사라진다 */
+async function takeOff(stage: HTMLElement) {
+  const from = stage.getBoundingClientRect();
+  const dx = window.innerWidth - from.left + from.width * 0.2;
+  const dy = -(from.bottom + from.height * 0.2);
+  stage.style.transformOrigin = '50% 50%';
+  const flight = stage.animate(
+    [
+      { offset: 0, transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1, easing: 'cubic-bezier(0.3, 0, 0.4, 1)' },
+      {
+        offset: 0.2,
+        transform: `translate(${-from.width * 0.05}px, ${from.height * 0.07}px) rotate(3deg) scale(0.96)`,
+        opacity: 1,
+        easing: 'cubic-bezier(0.55, 0, 0.9, 0.55)',
+      },
+      {
+        offset: 0.62,
+        transform: `translate(${dx * 0.4}px, ${dy * 0.2}px) rotate(-5deg) scale(0.82)`,
+        opacity: 1,
+        easing: 'cubic-bezier(0.4, 0, 0.9, 0.7)',
+      },
+      { offset: 1, transform: `translate(${dx}px, ${dy}px) rotate(-11deg) scale(0.45)`, opacity: 0 },
+    ],
+    { duration: TAKEOFF_MS, fill: 'forwards' },
+  );
+  await flight.finished;
+}
+
 export async function finishIntro(): Promise<void> {
   const root = document.documentElement;
   const splash = document.getElementById('intro-splash');
@@ -51,10 +81,14 @@ export async function finishIntro(): Promise<void> {
 
   const t0 = Number(splash.dataset.t0) || 0;
   let anchor: HTMLElement | null = null;
+  let mountedAt = 0;
   for (;;) {
-    const elapsed = performance.now() - t0;
+    const now = performance.now();
+    const elapsed = now - t0;
     anchor = findAnchor();
-    if (elapsed >= MIN_HOLD_MS && (anchor || elapsed >= MAX_WAIT_MS)) break;
+    if (!mountedAt && document.getElementById('root')?.childElementCount) mountedAt = now;
+    const settled = mountedAt > 0 && now - mountedAt >= ANCHOR_GRACE_MS;
+    if (elapsed >= MIN_HOLD_MS && (anchor || settled || elapsed >= MAX_WAIT_MS)) break;
     await nextFrame();
   }
 
@@ -78,12 +112,7 @@ export async function finishIntro(): Promise<void> {
       setState('done');
       await nextFrame();
     } else {
-      const fade = splash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: 'ease', fill: 'forwards' });
-      stage.animate(
-        [{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }],
-        { duration: 500, easing: 'ease', fill: 'forwards' },
-      );
-      await fade.finished;
+      await takeOff(stage);
     }
   } catch {
     // 애니메이션을 못 돌려도(오래된 웹뷰 등) 화면은 반드시 열어 준다

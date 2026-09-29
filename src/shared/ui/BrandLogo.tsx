@@ -4,10 +4,11 @@ export const BRAND_LOGO_SRC = '/triptic-logo.webp';
 
 interface BrandLogoProps {
   className?: string;
+  /** 첫 접속 인트로(introSplash.ts)의 로고가 날아와 앉을 자리로 표시 — 화면에 하나만 */
+  introAnchor?: boolean;
 }
 
-/** 로고 이미지. 첫 접속 인트로(introSplash.ts)가 날아와 앉는 자리는 data-intro-anchor로 표시한다 */
-export function BrandLogo({ className }: BrandLogoProps) {
+export function BrandLogo({ className, introAnchor = false }: BrandLogoProps) {
   return (
     <img
       src={BRAND_LOGO_SRC}
@@ -15,7 +16,7 @@ export function BrandLogo({ className }: BrandLogoProps) {
       width={508}
       height={378}
       draggable={false}
-      data-intro-anchor=""
+      data-intro-anchor={introAnchor ? '' : undefined}
       className={className ? `${styles.logo} ${className}` : styles.logo}
     />
   );
