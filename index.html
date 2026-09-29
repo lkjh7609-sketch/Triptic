@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Triptic - 직관적인 나만의 여행 일정 관리</title>
+    <title>트립틱(Triptic) - 여행 일정 플래너 · 동행 찾기</title>
 
 <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">
   (function () {
@@ -19,7 +19,18 @@
     <!-- 📱 PWA 매니페스트 & 테마 설정 -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#FDFBF7">
-    <meta name="description" content="예약 서류를 던져 넣으면 일정이 완성되는 여행 플래너, Triptic">
+    <meta name="description" content="예약 서류만 올리면 여행 일정이 자동으로 완성되는 여행 플래너 트립틱. 일자별 지도 동선, 동행과 실시간 함께 편집, 항공권·호텔 검색과 여행지별 동행 찾기까지 한곳에서.">
+    <!-- 공유 미리보기(카카오톡·네이버 등). canonical·og:url은 모든 주소에 같은 이 파일이 나가서 여기 두지 않는다 —
+         고정하면 모든 페이지가 홈의 복사본으로 취급된다(주소별 값은 크롤러용 api/seo.js가 넣는다) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="트립틱 Triptic">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="트립틱(Triptic) - 여행 일정 플래너 · 동행 찾기">
+    <meta property="og:description" content="예약 서류만 올리면 여행 일정이 자동으로 완성되는 여행 플래너. 지도 동선, 함께 편집, 동행 찾기까지 한곳에서.">
+    <meta property="og:image" content="https://triptic.my/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -176,7 +187,28 @@
         }
       })();
     </script>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 자바스크립트를 실행하지 않는 검색 로봇도 서비스 내용을 읽을 수 있게 둔 소개 — 앱이 뜨면
+           React(createRoot)가 통째로 바꾼다. 눈에는 안 보이고(화면 읽기 프로그램과 로봇만) 모든 주소에 같이 나가므로
+           특정 화면이 아니라 서비스 전체 소개만 쓴다 -->
+      <div id="seo-intro" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
+        <h1>트립틱(Triptic) — 여행 계획부터 동행까지, 한곳에서</h1>
+        <p>항공권·호텔 예약 확인서와 바우처를 올리면 여행 일정이 자동으로 완성되는 여행 플래너입니다. 일자별 동선을 지도로 확인하고, 링크 하나로 동행과 같은 일정을 실시간으로 함께 편집하세요.</p>
+        <ul>
+          <li>여행 일정 짜기 · 여행 계획표 · 일자별 지도 동선과 이동 시간</li>
+          <li>예약 서류(항공권·호텔 바우처) 자동 인식으로 일정 채우기</li>
+          <li>항공권 · 호텔 · 투어와 액티비티 검색</li>
+          <li>도쿄 · 오사카 · 후쿠오카 · 방콕 · 다낭 등 여행지별 커뮤니티와 동행 찾기</li>
+          <li>여행 경비 정리 · 환율 · 여행지 날씨</li>
+        </ul>
+        <nav>
+          <a href="/flights">항공권 검색</a>
+          <a href="/hotels">호텔 검색</a>
+          <a href="/activities">투어·액티비티</a>
+          <a href="/community">여행 커뮤니티 · 동행 찾기</a>
+        </nav>
+      </div>
+    </div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

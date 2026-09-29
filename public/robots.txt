@@ -1,0 +1,16 @@
+# 트립틱(Triptic) — https://triptic.my
+User-agent: *
+Allow: /
+# 로그인한 사람만 쓰는 화면·개인 여행·서버 API는 수집하지 않는다
+Disallow: /api/
+Disallow: /admin
+Disallow: /settings
+Disallow: /shared/
+Disallow: /plan/
+Disallow: /community/compose
+Disallow: /community/companion/new
+Disallow: /community/companion/*/match
+Disallow: /community/companion/*/chat
+Disallow: /community/companion/*/expenses
+
+Sitemap: https://triptic.my/sitemap.xml
