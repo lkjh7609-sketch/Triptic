@@ -19,6 +19,76 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/seo?route=sitemap"
+    },
+    {
+      "source": "/flights",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=page&path=/flights"
+    },
+    {
+      "source": "/hotels",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=page&path=/hotels"
+    },
+    {
+      "source": "/activities",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=page&path=/activities"
+    },
+    {
+      "source": "/community",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=page&path=/community"
+    },
+    {
+      "source": "/community/d/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=dest&slug=:slug"
+    },
+    {
+      "source": "/community/post/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=post&id=:id"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
