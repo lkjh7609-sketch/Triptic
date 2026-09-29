@@ -2,15 +2,17 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import type { TripRow } from '@/shared/api/tripService';
-import { invalidateTripMembership, tripQueryKey, tripSaveMutationKey, tripsQueryKey } from './useTrips';
+import { invalidateTripMembership, tripQueryKey, tripSaveMutationKey } from './useTrips';
 
 /**
- * 여행 실시간 동기화(0058) — 로그인한 동안 채널 하나로 받는다. 무엇이 오는지는 RLS가
- * 정한다(내가 소유자이거나 멤버인 여행만).
- * - trips 행 변경: 목록을 다시 읽고, 받아 둔 여행이 더 새 버전(revision)이면 일정도 다시 읽는다.
- *   저장 한 번에 신호가 두 번 온다(행 수정 → 일정 교체 후 "저장 끝") — 모아서 한 번에 처리한다.
- *   내가 저장한 것은 이미 그 버전을 들고 있어 다시 읽지 않는다.
- * - trip_members 변경: 여행 카드 인원·함께하는 사람·홈 동행자 수를 다시 센다.
+ * 여행 실시간 동기화(0058) — 로그인한 동안 trips 행 변경을 채널 하나로 받는다. 무엇이 오는지는
+ * RLS가 정한다(내가 소유자이거나 멤버인 여행만).
+ * - 목록·여행 카드 인원·함께하는 사람·홈 동행자 수를 다시 읽는다. 멤버가 들어오거나 나가도
+ *   그 여행 행이 바뀌어(0059) 같은 신호로 온다 — trip_members 자체는 삭제 이벤트가 RLS 없이
+ *   모두에게 가서 구독하지 않는다.
+ * - 받아 둔 여행이 더 새 버전(revision)이면 일정도 다시 읽는다. 저장 한 번에 신호가 두 번
+ *   온다(행 수정 → 일정 교체 후 "저장 끝") — 모아서 한 번에 처리한다. 내가 저장한 것은 이미
+ *   그 버전을 들고 있어 다시 읽지 않는다.
  */
 export function useTripRealtimeSync(userId: string | null) {
   const queryClient = useQueryClient();
@@ -21,11 +23,10 @@ export function useTripRealtimeSync(userId: string | null) {
     const latestRevision = new Map<string, number>();
     const tripTimers = new Map<string, number>();
     let listTimer: number | undefined;
-    let membersTimer: number | undefined;
 
     const refreshList = () => {
       window.clearTimeout(listTimer);
-      listTimer = window.setTimeout(() => queryClient.invalidateQueries({ queryKey: tripsQueryKey }), 800);
+      listTimer = window.setTimeout(() => invalidateTripMembership(queryClient), 800);
     };
 
     const syncTrip = (tripId: string) => {
@@ -56,16 +57,10 @@ export function useTripRealtimeSync(userId: string | null) {
         latestRevision.set(row.id, Math.max(latestRevision.get(row.id) ?? 0, row.revision ?? 0));
         syncTrip(row.id);
       })
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'trips' }, refreshList)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_members' }, () => {
-        window.clearTimeout(membersTimer);
-        membersTimer = window.setTimeout(() => invalidateTripMembership(queryClient), 300);
-      })
       .subscribe();
 
     return () => {
       window.clearTimeout(listTimer);
-      window.clearTimeout(membersTimer);
       tripTimers.forEach((id) => window.clearTimeout(id));
       void supabase.removeChannel(channel);
     };

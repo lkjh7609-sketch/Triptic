@@ -473,6 +473,7 @@
     "leaveConfirm": "Leave \"{{title}}\"? You'll need a new share link to rejoin.",
     "leaveConfirmShort": "Leave this trip? You'll need a new share link to rejoin.",
     "ownerOnlyLink": "Only the trip creator can create a link",
-    "conflict": "Another member just changed this trip. We loaded the latest version — please try again."
+    "conflict": "Another member just changed this trip. We loaded the latest version — please try again.",
+    "conflictSelf": "Your changes overlapped with a save in progress. We loaded the latest version — please try again."
   }
 }
