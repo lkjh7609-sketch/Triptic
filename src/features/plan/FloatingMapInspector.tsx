@@ -33,7 +33,7 @@ export function FloatingMapInspector({ title, subtitle, time, memo, onFocusMove 
               </div>
             ) : null}
             {memo ? (
-              <div className={styles.detailItem}>
+              <div className={`${styles.detailItem} ${styles.detailMemo}`} title={memo}>
                 <StickyNote size={14} aria-hidden="true" />
                 <span>{memo}</span>
               </div>

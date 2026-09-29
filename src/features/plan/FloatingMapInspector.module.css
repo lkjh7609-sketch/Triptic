@@ -2,7 +2,10 @@
   position: absolute;
   bottom: 32px;
   left: 32px;
-  width: 320px;
+  /* 메모가 한 줄로 들어가게 내용만큼 넓히되, 지도 폭은 넘지 않는다 */
+  width: max-content;
+  min-width: 320px;
+  max-width: calc(100% - 64px);
   background: var(--surface-card, #FFFFFF);
   border-radius: 12px;
   box-shadow: 0 20px 48px -8px rgba(15, 41, 66, 0.12), 0 2px 8px rgba(15, 41, 66, 0.04);
@@ -49,12 +52,16 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  min-width: 0;
 }
 
 .detailItem {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
+  min-width: 0;
+  white-space: nowrap;
   font-size: 11px;
   color: var(--text-muted, #718096);
   background: var(--surface-subtle, #F7FAFC);
@@ -82,4 +89,19 @@
 
 .actionBtn:hover {
   background: var(--brand-hover, #EA580C);
+}
+
+/* 메모 칩: 한 줄 유지, 지도 폭보다 길면 말줄임 */
+.detailMemo {
+  flex-shrink: 1;
+}
+
+.detailMemo > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailItem > svg {
+  flex-shrink: 0;
 }
