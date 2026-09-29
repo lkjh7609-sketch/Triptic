@@ -40,7 +40,7 @@ import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
-import { useFinalizeTrip, useTrip, useTripSummaries } from './hooks/useTrips';
+import { useFinalizeTrip, useLeaveTrip, useTrip, useTripSummaries } from './hooks/useTrips';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
 import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
@@ -71,6 +71,9 @@ interface TripActions {
   onRename: (id: string, newTitle: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  /** 공유 링크로 참여한 여행(내가 소유자가 아님)은 삭제 대신 나가기 */
+  onLeave?: (id: string) => void;
+  currentUserId?: string;
   /** 있으면 메뉴 항목이 잠겨 있고, 누르면 이것만 부른다(비로그인 샘플 여행) */
   onLocked?: () => void;
 }
@@ -118,9 +121,10 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const [pastView, setPastView] = useState<PastView>('grid');
   const [showCreate, setShowCreate] = useState(false);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const leaveTrip = useLeaveTrip();
   const actions: TripActions = guest
     ? { onRename, onDuplicate, onDelete, onLocked: () => setShowLoginRequired(true) }
-    : { onRename, onDuplicate, onDelete };
+    : { onRename, onDuplicate, onDelete, onLeave: (id) => leaveTrip.mutate(id), currentUserId: user?.id };
   const statsData = guest ? GUEST_STATS : stats.data;
   // 비로그인은 여행을 만들 수 없다 — 로그인 창을 연다
   const openCreate = () => {
@@ -401,6 +405,8 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
   }
 
   const itemClass = actions.onLocked ? `${styles.cardMenuItem} ${styles.cardMenuItemLocked}` : styles.cardMenuItem;
+  // 삭제는 소유자만 된다(RLS) — 참여한 여행에서 누르면 아무 일도 안 일어나므로 나가기로 바꾼다
+  const isMemberTrip = !!actions.currentUserId && !!actions.onLeave && trip.owner_id !== actions.currentUserId;
   /** 잠긴 메뉴(비로그인 샘플)면 동작 대신 로그인 안내 */
   function run(e: MouseEvent, action: () => void) {
     stop(e);
@@ -449,19 +455,34 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
           >
             {t('tripCard.duplicate')}
           </button>
-          <button
-            type="button"
-            role="menuitem"
-            className={`${itemClass} ${styles.cardMenuDanger}`}
-            aria-disabled={actions.onLocked ? true : undefined}
-            onClick={(e) =>
-              run(e, () => {
-                if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
-              })
-            }
-          >
-            {t('common:action.delete')}
-          </button>
+          {isMemberTrip ? (
+            <button
+              type="button"
+              role="menuitem"
+              className={`${itemClass} ${styles.cardMenuDanger}`}
+              onClick={(e) =>
+                run(e, () => {
+                  if (window.confirm(t('collab.leaveConfirm', { title: trip.title }))) actions.onLeave?.(trip.id);
+                })
+              }
+            >
+              {t('collab.leave')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              role="menuitem"
+              className={`${itemClass} ${styles.cardMenuDanger}`}
+              aria-disabled={actions.onLocked ? true : undefined}
+              onClick={(e) =>
+                run(e, () => {
+                  if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
+                })
+              }
+            >
+              {t('common:action.delete')}
+            </button>
+          )}
         </div>
       ) : null}
     </div>

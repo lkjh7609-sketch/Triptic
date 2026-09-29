@@ -12,6 +12,7 @@ import { FixedPointCard, LegBetween } from './FixedPointCard';
 import { useTripRoutes, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels } from './map/hotels';
 import { useReopenTrip } from './hooks/useTrips';
+import { useSession } from '@/shared/hooks/useSession';
 import type { PlaceItem } from './types';
 import sharedStyles from '@/features/shared/SharedTripScreen.module.css';
 import styles from './FinalizedTripView.module.css';
@@ -31,6 +32,8 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
   const [currentDay, setCurrentDay] = useState(1);
   const [confirmReopen, setConfirmReopen] = useState(false);
   const reopenMutation = useReopenTrip(trip.id);
+  const { user } = useSession();
+  const isOwner = !!user && user.id === trip.owner_id;
 
   const project = tripService.toLocalProject(trip);
   const totalDays = Math.max(1, Number(project.totalDays ?? trip.total_days ?? 1) || 1);
@@ -54,9 +57,12 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
     <div className={sharedStyles.screen}>
       <div className={styles.banner}>
         <span>{t('quota.finalizedBanner')}</span>
-        <button type="button" className={styles.reopenBtn} disabled={reopenMutation.isPending} onClick={() => setConfirmReopen(true)}>
-          {t('quota.reopenButton')}
-        </button>
+        {/* 재편집(reopen_trip)은 소유자만 된다 — 함께하는 멤버에겐 버튼을 안 보여준다 */}
+        {isOwner ? (
+          <button type="button" className={styles.reopenBtn} disabled={reopenMutation.isPending} onClick={() => setConfirmReopen(true)}>
+            {t('quota.reopenButton')}
+          </button>
+        ) : null}
       </div>
 
       <header className={sharedStyles.header}>

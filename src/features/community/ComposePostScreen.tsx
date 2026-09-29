@@ -192,7 +192,8 @@ export function ComposePostScreen() {
           <label className={styles.label}>{t('compose.tripLabel')}</label>
           <select className={styles.select} value={tripId} onChange={(e) => setTripId(e.target.value)}>
             <option value="">{t('compose.tripNone')}</option>
-            {(trips ?? []).map((trip) => (
+            {/* 글에 붙인 일정은 누구나 보게 된다 — 공유 링크로 참여한 남의 여행은 빼고 내가 만든 것만 */}
+            {(trips ?? []).filter((trip) => trip.owner_id === user?.id).map((trip) => (
               <option key={trip.id} value={trip.id}>
                 {trip.title}
               </option>
