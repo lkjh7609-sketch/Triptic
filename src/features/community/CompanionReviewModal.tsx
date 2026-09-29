@@ -10,6 +10,7 @@ import { AuthorName } from './AuthorName';
 import { useCompanionMatchMembers, useSubmitCompanionReview } from './hooks/useCompanionPosts';
 import type { CompanionPost } from './types';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import styles from './CompanionReviewModal.module.css';
 
 interface CompanionReviewModalProps {
@@ -24,6 +25,8 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
   const queryClient = useQueryClient();
   // useFocusTrap은 첫 렌더의 콜백을 계속 쓰므로(Escape) 완료 여부는 ref로 읽는다
   const doneRef = useRef(false);
+  const wentWellRef = useRef<HTMLFieldSetElement>(null);
+  const ratingRefs = useRef(new Map<string, HTMLDivElement>());
   const trapRef = useFocusTrap<HTMLDivElement>(handleClose);
   const membersQuery = useCompanionMatchMembers(post);
   const submitReview = useSubmitCompanionReview(post.id);
@@ -44,7 +47,14 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
   }
 
   async function handleSubmit() {
-    if (!canSubmit || wentWell === null) return;
+    if (membersQuery.isLoading) return;
+    if (!canSubmit || wentWell === null) {
+      flagInvalid(
+        wentWell === null ? wentWellRef.current : null,
+        ...others.filter((m) => !((ratings[m.user_id] ?? 0) > 0)).map((m) => ratingRefs.current.get(m.user_id)),
+      );
+      return;
+    }
     setErrorMessage(null);
     try {
       await submitReview.mutateAsync({
@@ -90,14 +100,17 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
             <h2 id="companion-review-title" className={modalStyles.title}>{t('companion.review.title')}</h2>
             <p className={styles.desc}>{post.title}</p>
 
-            <fieldset className={styles.fieldset}>
+            <fieldset ref={wentWellRef} className={styles.fieldset}>
               <legend className={styles.question}>{t('companion.review.wentWellQuestion')}</legend>
               <div className={styles.choiceRow}>
                 <button
                   type="button"
                   className={wentWell === true ? styles.choiceActive : styles.choice}
                   aria-pressed={wentWell === true}
-                  onClick={() => setWentWell(true)}
+                  onClick={() => {
+                    setWentWell(true);
+                    clearInvalid(wentWellRef.current);
+                  }}
                 >
                   {t('companion.review.wentWellYes')}
                 </button>
@@ -105,7 +118,10 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
                   type="button"
                   className={wentWell === false ? styles.choiceActive : styles.choice}
                   aria-pressed={wentWell === false}
-                  onClick={() => setWentWell(false)}
+                  onClick={() => {
+                    setWentWell(false);
+                    clearInvalid(wentWellRef.current);
+                  }}
                 >
                   {t('companion.review.wentWellNo')}
                 </button>
@@ -121,7 +137,15 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
                 {others.map((member) => (
                   <div key={member.user_id} className={styles.memberRow}>
                     <span className={styles.memberName}><AuthorName profile={member.profile} /></span>
-                    <div className={styles.stars} role="radiogroup" aria-label={member.profile?.display_name ?? ''}>
+                    <div
+                      ref={(el) => {
+                        if (el) ratingRefs.current.set(member.user_id, el);
+                        else ratingRefs.current.delete(member.user_id);
+                      }}
+                      className={styles.stars}
+                      role="radiogroup"
+                      aria-label={member.profile?.display_name ?? ''}
+                    >
                       {[1, 2, 3, 4, 5].map((n) => {
                         const selected = (ratings[member.user_id] ?? 0) >= n;
                         return (
@@ -132,7 +156,10 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
                             aria-checked={ratings[member.user_id] === n}
                             aria-label={t('companion.review.starLabel', { count: n })}
                             className={styles.starBtn}
-                            onClick={() => setRatings((cur) => ({ ...cur, [member.user_id]: n }))}
+                            onClick={() => {
+                              setRatings((cur) => ({ ...cur, [member.user_id]: n }));
+                              clearInvalid(ratingRefs.current.get(member.user_id));
+                            }}
                           >
                             <Star size={24} className={selected ? styles.starOn : styles.starOff} aria-hidden="true" />
                           </button>
@@ -153,7 +180,7 @@ export function CompanionReviewModal({ post, onClose }: CompanionReviewModalProp
               <button
                 type="button"
                 className={modalStyles.primary}
-                disabled={!canSubmit || submitReview.isPending}
+                disabled={submitReview.isPending}
                 onClick={handleSubmit}
               >
                 {submitReview.isPending ? t('companion.review.submitting') : t('companion.review.submit')}

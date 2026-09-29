@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { z } from 'zod';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { usePlaceAutocomplete, countryCodeOf, type SelectedPlace } from './map/u
 import { currencyForCountry } from './countryCurrency';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import styles from './CreateTripModal.module.css';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { format } from 'date-fns';
@@ -75,6 +76,8 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
     setCityError(null);
   }, { types: ['(cities)'] });
   const trapRef = useFocusTrap<HTMLFormElement>(onClose);
+  const titleElRef = useRef<HTMLInputElement | null>(null);
+  const dateBoxRef = useRef<HTMLDivElement>(null);
   const schema = useMemo(() => buildCreateTripSchema(t), [t, i18n.language]);
   const {
     register,
@@ -83,6 +86,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
   } = useForm<CreateTripValues>({
     resolver: zodResolver(schema),
   });
+  const titleField = register('title');
 
 
   useEffect(() => {
@@ -127,10 +131,21 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
     }
   }, [autoCreateCity]);
 
+  function onInvalid(errs: FieldErrors<CreateTripValues>) {
+    const cityMissing = !(city || resolvedCityRef.current);
+    if (cityMissing) setCityError(t('createTrip.cityRequired'));
+    flagInvalid(
+      errs.title ? titleElRef.current : null,
+      cityMissing ? cityInputRef.current : null,
+      errs.startDate || errs.endDate ? dateBoxRef.current : null,
+    );
+  }
+
   async function onSubmit(values: CreateTripValues) {
     const targetCity = city || resolvedCityRef.current;
     if (!targetCity) {
       setCityError(t('createTrip.cityRequired'));
+      flagInvalid(cityInputRef.current);
       return;
     }
     try {
@@ -170,7 +185,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
         ref={trapRef}
         className={styles.sheet}
         onClick={(e) => e.stopPropagation()}
-        onSubmit={e => { e.preventDefault(); handleSubmit(onSubmit)(); }}
+        onSubmit={e => { e.preventDefault(); handleSubmit(onSubmit, onInvalid)(); }}
         role="dialog"
         aria-modal="true"
         aria-label={t('createTrip.title')}
@@ -185,7 +200,11 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
             id="trip-title"
             className={styles.input}
             placeholder={t('createTrip.namePlaceholder')}
-            {...register('title')}
+            {...titleField}
+            ref={(el) => {
+              titleField.ref(el);
+              titleElRef.current = el;
+            }}
           />
           {errors.title ? <span className={styles.error}>{errors.title.message}</span> : null}
         </div>
@@ -207,6 +226,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
         <div className={styles.field}>
           <label className={styles.label}>{t('createTrip.startLabel')} - {t('createTrip.endLabel')}</label>
           <div 
+            ref={dateBoxRef}
             className={styles.input}
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={() => setShowCalendar(true)}
@@ -229,6 +249,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
                  onChange={(start, end) => {
                    const s = start ? format(start, 'yyyy-MM-dd') : '';
                    const e = end ? format(end, 'yyyy-MM-dd') : '';
+                   if (s && e) clearInvalid(dateBoxRef.current);
                    setStartDateStr(s); setValue('startDate', s, { shouldValidate: true });
                    setEndDateStr(e); setValue('endDate', e, { shouldValidate: true });
                    // If both selected, close automatically after a short delay

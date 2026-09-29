@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import {
@@ -8,6 +8,7 @@ import {
 } from '@/shared/api/accountService';
 import { signInWithProvider, signOut, type AuthProvider } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import styles from './DeleteAccountFlow.module.css';
 
 type Step = 'warning' | 'reauth' | 'confirm' | 'done';
@@ -36,6 +37,7 @@ export function DeleteAccountFlow() {
   const [step, setStep] = useState<Step>('warning');
   const [impact, setImpact] = useState<DeletionImpactSummary | null>(null);
   const [confirmText, setConfirmText] = useState('');
+  const confirmInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -66,7 +68,10 @@ export function DeleteAccountFlow() {
   }
 
   async function handleFinalConfirm() {
-    if (confirmText !== deleteWord) return;
+    if (confirmText !== deleteWord) {
+      flagInvalid(confirmInputRef.current);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -145,6 +150,7 @@ export function DeleteAccountFlow() {
             <Trans t={t} i18nKey="delete.confirmBody" components={{ strong: <strong /> }} />
           </p>
           <input
+            ref={confirmInputRef}
             className={styles.input}
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
@@ -154,7 +160,7 @@ export function DeleteAccountFlow() {
           <button
             type="button"
             className={styles.primary}
-            disabled={confirmText !== deleteWord || submitting}
+            disabled={submitting}
             onClick={handleFinalConfirm}
           >
             {submitting ? t('delete.processing') : t('account.deleteAction')}

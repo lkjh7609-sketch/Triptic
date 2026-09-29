@@ -1,7 +1,8 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Tent } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { openExternal, openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink, useMyrealtripLink } from '@/features/plan/partnerLinks';
@@ -51,6 +52,7 @@ function MyrealtripCityCard({ dest }: { dest: FeaturedDestination }) {
 export function ActivitiesScreen() {
   const { t, i18n } = useTranslation('home');
   const [keyword, setKeyword] = useState('');
+  const searchFormRef = useRef<HTMLFormElement>(null);
   const [provider, setProvider] = useState<ActivityProvider>(readActivityProvider);
   // 마이리얼트립 검색은 입력이 잠깐 멈추면 링크를 미리 받아 둔다 — 검색을 누르면 바로 열리게
   const [typedKeyword, setTypedKeyword] = useState('');
@@ -74,7 +76,10 @@ export function ActivitiesScreen() {
   function handleSearch(e: FormEvent) {
     e.preventDefault();
     const q = keyword.trim();
-    if (!q) return;
+    if (!q) {
+      flagInvalid(searchFormRef.current);
+      return;
+    }
     if (provider === 'myrealtrip') {
       if (prefetchedSearch && typedKeyword === q) openExternal(prefetchedSearch);
       else void openMyrealtripSearch(q, 'search');
@@ -114,7 +119,7 @@ export function ActivitiesScreen() {
           ))}
         </div>
 
-        <form className={styles.searchForm} onSubmit={handleSearch} role="search">
+        <form ref={searchFormRef} className={styles.searchForm} onSubmit={handleSearch} role="search">
           <Search size={18} className={styles.searchIcon} aria-hidden="true" />
           <input
             type="search"
@@ -125,7 +130,7 @@ export function ActivitiesScreen() {
             onChange={(e) => setKeyword(e.target.value)}
             enterKeyHint="search"
           />
-          <button type="submit" className={styles.searchButton} disabled={!keyword.trim()}>
+          <button type="submit" className={styles.searchButton}>
             {t('activities.searchButton')}
           </button>
         </form>

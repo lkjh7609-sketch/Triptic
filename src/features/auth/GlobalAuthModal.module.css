@@ -122,34 +122,11 @@
   color: var(--brand);
 }
 
-.consentMissing {
-  border-color: var(--danger);
-  animation: consent-shake 360ms ease;
-}
-
 .consentHint {
   margin: 0;
   padding: 0 var(--space-3);
   font-size: var(--font-caption-size);
   color: var(--danger);
-}
-
-@keyframes consent-shake {
-  20% {
-    transform: translateX(-5px);
-  }
-  50% {
-    transform: translateX(5px);
-  }
-  80% {
-    transform: translateX(-3px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .consentMissing {
-    animation: none;
-  }
 }
 
 /* 높이가 0 → 내용 높이로 부드럽게 펼쳐진다(grid 행 트랙 애니메이션) */

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from '@/features/plan/map/usePlaceAutocomplete';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { getGuestName, saveGuestName } from './guestName';
 import { captureError } from '@/shared/monitoring';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
@@ -36,7 +37,10 @@ export function SuggestPlaceModal({ totalDays, defaultDay, onClose, onSubmit }: 
   const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   async function handleSubmit() {
-    if (!selected) return;
+    if (!selected) {
+      flagInvalid(inputRef.current);
+      return;
+    }
     setSubmitting(true);
     try {
       saveGuestName(proposer);
@@ -119,7 +123,7 @@ export function SuggestPlaceModal({ totalDays, defaultDay, onClose, onSubmit }: 
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
             {t('action.cancel', { ns: 'common' })}
           </button>
-          <button type="button" className={modalStyles.primary} disabled={!selected || submitting} onClick={handleSubmit}>
+          <button type="button" className={modalStyles.primary} disabled={submitting} onClick={handleSubmit}>
             {submitting ? t('suggest.submitting') : t('suggest.submit')}
           </button>
         </div>

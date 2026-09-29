@@ -4,6 +4,7 @@ import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomp
 import { inferPlaceCategory } from './placeCategory';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import type { PlaceItem } from './types';
 import styles from './AddPlaceModal.module.css';
 import { TimeWheelPicker } from '@/shared/ui/TimeWheelPicker';
@@ -40,7 +41,10 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch }: AddPlaceModalPr
   const category = selected ? inferPlaceCategory(selected.types) : null;
 
   async function handleSave() {
-    if (!selected) return;
+    if (!selected) {
+      flagInvalid(inputRef.current);
+      return;
+    }
     setSaving(true);
     try {
       await onAdd({
@@ -122,7 +126,7 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch }: AddPlaceModalPr
           <button
             type="button"
             className={styles.primary}
-            disabled={!selected || saving}
+            disabled={saving}
             onClick={handleSave}
           >
             {saving ? t('addPlace.adding') : t('action.add', { ns: 'common' })}

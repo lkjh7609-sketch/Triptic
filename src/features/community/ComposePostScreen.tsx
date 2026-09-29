@@ -9,6 +9,7 @@ import { useDestinations } from './hooks/useDestinations';
 import { useCreatePost } from './hooks/usePosts';
 import { uploadPostImage, type UploadedPostImage } from './imageProcessing';
 import { DestinationSelector } from './DestinationSelector';
+import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import './CommunityDesign.css';
 import styles from './ComposePostScreen.module.css';
 
@@ -33,6 +34,8 @@ export function ComposePostScreen() {
   const { data: trips } = useTrips();
   const createPost = useCreatePost();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const destCardRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const initialDestSlug = searchParams.get('destination');
 
@@ -100,10 +103,12 @@ export function ComposePostScreen() {
     setStatusMessage(null);
     if (!destinationId) {
       setStatusMessage({ type: 'error', text: t('compose.destinationRequiredError') });
+      flagInvalid(destCardRef.current);
       return;
     }
     if (!body.trim()) {
       setStatusMessage({ type: 'error', text: t('compose.bodyRequiredError') });
+      flagInvalid(bodyRef.current);
       return;
     }
     try {
@@ -149,7 +154,7 @@ export function ComposePostScreen() {
         </button>
       </div>
 
-      <div className={styles.card}>
+      <div ref={destCardRef} className={styles.card}>
         <div className={styles.field}>
           <label className={styles.label}>{t('compose.destinationLabel')}</label>
           <p className={styles.selectedDestination}>
@@ -157,7 +162,10 @@ export function ComposePostScreen() {
           </p>
           <DestinationSelector
             destinations={destinations ?? []}
-            onCitySelect={(d) => setDestinationId(d.id)}
+            onCitySelect={(d) => {
+              setDestinationId(d.id);
+              clearInvalid(destCardRef.current);
+            }}
             selectedDestinationId={destinationId || null}
           />
         </div>
@@ -166,6 +174,7 @@ export function ComposePostScreen() {
       <div className={styles.card}>
         <div className={styles.field}>
           <textarea
+            ref={bodyRef}
             className={styles.bodyInput}
             placeholder={t('compose.bodyPlaceholder')}
             value={body}

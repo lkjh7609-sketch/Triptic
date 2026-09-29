@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { flagInvalid } from '@/shared/ui/invalidField';
 import { LoginButtons } from './LoginButtons';
 import { EmailAuthForm } from './EmailAuthForm';
 import styles from './GlobalAuthModal.module.css';
@@ -26,7 +27,7 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
   const [consentMissing, setConsentMissing] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const emailToggleRef = useRef<HTMLButtonElement>(null);
-  const consentRef = useRef<HTMLInputElement>(null);
+  const consentLabelRef = useRef<HTMLLabelElement>(null);
 
   function handleAgreedChange(next: boolean) {
     setAgreed(next);
@@ -36,8 +37,7 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
   // 동의 전에 로그인·가입을 누르면 동의 체크박스로 눈길을 돌린다
   function handleConsentMissing() {
     setConsentMissing(true);
-    consentRef.current?.focus();
-    consentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flagInvalid(consentLabelRef.current);
   }
 
   function toggleEmail() {
@@ -92,9 +92,8 @@ export function GlobalAuthModal({ onClose }: GlobalAuthModalProps) {
           </button>
           {/* 소셜 로그인·이메일 가입 공용 동의 — 이메일 가입하기 바로 아래 */}
           <div className={styles.consentBox}>
-            <label className={consentMissing ? `${styles.consent} ${styles.consentMissing}` : styles.consent}>
+            <label ref={consentLabelRef} className={styles.consent}>
               <input
-                ref={consentRef}
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => handleAgreedChange(e.target.checked)}
