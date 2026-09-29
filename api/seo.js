@@ -10,8 +10,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const ORIGIN = 'https://triptic.my';
 const SITE = '트립틱';
-const DEFAULT_DESC =
-    '예약 서류만 올리면 여행 일정이 자동으로 완성되는 여행 플래너 트립틱. 일자별 지도 동선, 동행과 실시간 함께 편집, 항공권·호텔 검색과 여행지별 동행 찾기까지 한곳에서.';
+// 설명(description)은 네이버 권장대로 80자 이내
+const DEFAULT_DESC = '예약 서류만 올리면 여행 일정이 자동 완성되는 여행 플래너 트립틱. 지도 동선, 함께 편집, 항공권·호텔 검색, 동행 찾기까지.';
 
 const STATIC_PAGES = {
     '/flights': {
@@ -140,7 +140,7 @@ async function renderPost(db, shell, id) {
     return renderPage(shell, {
         path: `/community/post/${post.id}`,
         title: `${lead} | ${place ? `${place} 여행 이야기 - ` : ''}${SITE}`,
-        desc: clip(post.body, 150),
+        desc: clip(post.body, 80),
         heading: place ? `${place} 여행 이야기` : '여행 이야기',
         paragraphs: [clip(post.body, 2000)],
         links: dest ? [{ href: `/community/d/${dest.slug}`, text: `${place} 여행 커뮤니티 더 보기` }] : [],
