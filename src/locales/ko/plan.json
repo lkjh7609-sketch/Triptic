@@ -153,8 +153,6 @@
   "planScreen": {
     "myTrips": "내 여행",
     "createTripAria": "여행 만들기",
-    "loginMessage": "로그인하면 내 여행을 저장하고 어디서든 이어갈 수 있어요.",
-    "browseFirst": "먼저 둘러보기",
     "listError": "여행 목록을 불러오지 못했어요.",
     "firstTripMessage": "첫 여행을 만들어 보세요.",
     "ongoing": "진행 중",
@@ -163,12 +161,6 @@
     "pastShow": "보기 ▼",
     "pastHide": "숨기기 ▲",
     "backupFooter": "기기 동기화 & 백업"
-  },
-  "sampleTrip": {
-    "badge": "추천 샘플 일정",
-    "duration": "{{nights}}박 {{days}}일",
-    "placeCount_other": "장소 {{count}}곳",
-    "openLink": "일정 보기"
   },
   "setHotel": {
     "title": "숙소 지정",

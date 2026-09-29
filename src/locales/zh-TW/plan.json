@@ -153,8 +153,6 @@
   "planScreen": {
     "myTrips": "我的行程",
     "createTripAria": "建立行程",
-    "loginMessage": "登入後即可儲存我的行程，隨時隨地繼續檢視。",
-    "browseFirst": "先隨便看看",
     "listError": "無法載入行程列表。",
     "firstTripMessage": "建立你的第一個行程吧。",
     "ongoing": "進行中",
@@ -163,12 +161,6 @@
     "pastShow": "顯示 ▼",
     "pastHide": "隱藏 ▲",
     "backupFooter": "裝置同步與備份"
-  },
-  "sampleTrip": {
-    "badge": "推薦樣例行程",
-    "duration": "{{nights}}晚{{days}}天",
-    "placeCount_other": "{{count}} 個地點",
-    "openLink": "檢視行程"
   },
   "setHotel": {
     "title": "設定住宿",

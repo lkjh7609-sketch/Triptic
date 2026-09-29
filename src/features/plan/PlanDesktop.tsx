@@ -33,7 +33,9 @@ import { formatTemp } from '@/features/weather/weatherRules';
 import { captureError } from '@/shared/monitoring';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
-import { useHomeStats } from '@/features/home/useHomeStats';
+import { useHomeStats, type TravelStats } from '@/features/home/useHomeStats';
+import { requireLogin } from '@/features/auth/loginPrompt';
+import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
 import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
@@ -45,6 +47,7 @@ import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
 import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
 import { DepartureChecklist } from './DepartureChecklist';
+import { SAMPLE_TRIP_ID } from './sampleTrip';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
 import styles from './PlanDesktop.module.css';
 
@@ -57,6 +60,8 @@ interface PlanDesktopProps {
   onRename: (id: string, newTitle: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  /** 비로그인 둘러보기 — 샘플 여행 하나로 같은 대시보드를 보여 주고, 여행 만들기·편집만 로그인으로 막는다 */
+  guest?: boolean;
 }
 
 type StatusFilter = 'all' | 'active' | 'past';
@@ -66,7 +71,21 @@ interface TripActions {
   onRename: (id: string, newTitle: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  /** 있으면 메뉴 항목이 잠겨 있고, 누르면 이것만 부른다(비로그인 샘플 여행) */
+  onLocked?: () => void;
 }
+
+/** 비로그인은 통계가 없다 — 막 가입한 사용자와 같은 빈 통계로 보여 준다 */
+const GUEST_STATS: TravelStats = {
+  tripCount: 0,
+  countryCount: 0,
+  cityCount: 0,
+  dayCount: 0,
+  placeCount: 0,
+  groundMeters: 0,
+  countries: [],
+  companionCount: 0,
+};
 
 const byStartDate = (a: TripRow, b: TripRow) => (a.start_date ?? '9999').localeCompare(b.start_date ?? '9999');
 
@@ -87,7 +106,7 @@ function formatRange(trip: TripRow, locale: string): string | null {
  * 계획 탭 데스크톱 (사용자 디자인). 화면의 모든 숫자·문구는 로그인한 사용자의 실제
  * 여행 데이터에서 계산한다 — 여행이 없으면 빈 상태를 보여주고 예시 데이터를 채우지 않는다.
  */
-export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplicate, onDelete }: PlanDesktopProps) {
+export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplicate, onDelete, guest = false }: PlanDesktopProps) {
   const { t } = useTranslation(['plan', 'common']);
   const { user } = useSession();
   const { data: profile } = useProfile();
@@ -98,14 +117,23 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const [query, setQuery] = useState('');
   const [pastView, setPastView] = useState<PastView>('grid');
   const [showCreate, setShowCreate] = useState(false);
-  const actions: TripActions = { onRename, onDuplicate, onDelete };
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const actions: TripActions = guest
+    ? { onRename, onDuplicate, onDelete, onLocked: () => setShowLoginRequired(true) }
+    : { onRename, onDuplicate, onDelete };
+  const statsData = guest ? GUEST_STATS : stats.data;
+  // 비로그인은 여행을 만들 수 없다 — 로그인 창을 연다
+  const openCreate = () => {
+    if (guest) requireLogin();
+    else setShowCreate(true);
+  };
 
   const activeTrips = useMemo(() => [...ongoing, ...[...upcoming].sort(byStartDate)], [ongoing, upcoming]);
   const nextTrip = activeTrips[0] ?? null;
   // listTrips()는 비용이 드는 정규화 테이블 재구성을 건너뛰어 trip.content가
   // 비어 있다 — summarizeTrip(trip)만으로는 완성도/장소/호텔/항공이 전부
   // 0/미정으로 보이므로, 집계 전용 RPC(get_trip_summaries) 결과로 덮어쓴다.
-  const tripSummaries = useTripSummaries();
+  const tripSummaries = useTripSummaries(!guest);
   const summaries = useMemo(
     () =>
       new Map(
@@ -128,7 +156,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
       ),
     [trips, tripSummaries.data],
   );
-  const members = useTripMembers(activeTrips.map((trip) => trip.id));
+  const members = useTripMembers(guest ? [] : activeTrips.map((trip) => trip.id));
   // NextTripRail의 날씨/항공편/PDF는 실제 콘텐츠가 필요하다 — nextTrip은
   // listTrips() 결과라 content가 비어 있으므로 단일 여행 조회로 다시 채운다.
   const nextTripDetail = useTrip(nextTrip?.id);
@@ -160,7 +188,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
             </p>
           </div>
           <div className={styles.headerActions}>
-            <button type="button" className={styles.btnCreate} onClick={() => setShowCreate(true)}>
+            <button type="button" className={styles.btnCreate} onClick={openCreate}>
               <Plus size={20} /> {t('desktop.createTrip')}
             </button>
           </div>
@@ -215,10 +243,10 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         </div>
       </section>
 
-      {stats.data ? (
+      {statsData ? (
         <section className={styles.statsSection}>
-          <StatsTiles stats={stats.data} />
-          <WorldMapCard countries={stats.data.countries} />
+          <StatsTiles stats={statsData} />
+          <WorldMapCard countries={statsData.countries} />
         </section>
       ) : null}
 
@@ -311,7 +339,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
                   <p className={styles.emptyText}>{isFiltering ? t('desktop.noResultsDesc') : t('desktop.emptyDesc')}</p>
                 </div>
               </div>
-              <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={() => setShowCreate(true)}>
+              <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={openCreate}>
                 {t('desktop.emptyCta')}
               </button>
             </div>
@@ -321,11 +349,13 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         <NextTripRail
           trip={nextTripDetail.data ?? nextTrip}
           members={nextTrip ? (members.data?.[nextTrip.id] ?? []) : []}
-          onCreate={() => setShowCreate(true)}
+          onCreate={openCreate}
         />
       </div>
 
-      {(showCreate || autoCreateCity) && (
+      {showLoginRequired ? <LoginRequiredDialog onClose={() => setShowLoginRequired(false)} /> : null}
+
+      {!guest && (showCreate || autoCreateCity) && (
         <CreateTripModal
           autoCreateCity={autoCreateCity}
           onClose={() => {
@@ -370,6 +400,15 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
     e.stopPropagation();
   }
 
+  const itemClass = actions.onLocked ? `${styles.cardMenuItem} ${styles.cardMenuItemLocked}` : styles.cardMenuItem;
+  /** 잠긴 메뉴(비로그인 샘플)면 동작 대신 로그인 안내 */
+  function run(e: MouseEvent, action: () => void) {
+    stop(e);
+    setOpen(false);
+    if (actions.onLocked) actions.onLocked();
+    else action();
+  }
+
   return (
     <div className={styles.cardMenuWrap}>
       <button
@@ -390,37 +429,36 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
           <button
             type="button"
             role="menuitem"
-            className={styles.cardMenuItem}
-            onClick={(e) => {
-              stop(e);
-              setOpen(false);
-              const next = window.prompt(t('tripCard.renamePrompt'), trip.title);
-              if (next && next.trim()) actions.onRename(trip.id, next.trim());
-            }}
+            className={itemClass}
+            aria-disabled={actions.onLocked ? true : undefined}
+            onClick={(e) =>
+              run(e, () => {
+                const next = window.prompt(t('tripCard.renamePrompt'), trip.title);
+                if (next && next.trim()) actions.onRename(trip.id, next.trim());
+              })
+            }
           >
             {t('tripCard.rename')}
           </button>
           <button
             type="button"
             role="menuitem"
-            className={styles.cardMenuItem}
-            onClick={(e) => {
-              stop(e);
-              setOpen(false);
-              actions.onDuplicate(trip.id);
-            }}
+            className={itemClass}
+            aria-disabled={actions.onLocked ? true : undefined}
+            onClick={(e) => run(e, () => actions.onDuplicate(trip.id))}
           >
             {t('tripCard.duplicate')}
           </button>
           <button
             type="button"
             role="menuitem"
-            className={`${styles.cardMenuItem} ${styles.cardMenuDanger}`}
-            onClick={(e) => {
-              stop(e);
-              setOpen(false);
-              if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
-            }}
+            className={`${itemClass} ${styles.cardMenuDanger}`}
+            aria-disabled={actions.onLocked ? true : undefined}
+            onClick={(e) =>
+              run(e, () => {
+                if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
+              })
+            }
           >
             {t('common:action.delete')}
           </button>
@@ -482,7 +520,9 @@ function CompactTripCard({
               </span>
             </div>
             <div className={styles.cardStatusRight}>
-              <span className={styles.travelersBadge}>{t('desktop.travelers', { count: travelerCount })}</span>
+              <span className={styles.travelersBadge}>
+                {trip.id === SAMPLE_TRIP_ID ? t('tripDetail.sampleBadge') : t('desktop.travelers', { count: travelerCount })}
+              </span>
               <TripMenu trip={trip} actions={actions} />
             </div>
           </div>

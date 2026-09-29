@@ -155,8 +155,6 @@
   "planScreen": {
     "myTrips": "My trips",
     "createTripAria": "Create trip",
-    "loginMessage": "Log in to save your trips and pick up where you left off, anywhere.",
-    "browseFirst": "Take a look around first",
     "listError": "Couldn't load your trip list.",
     "firstTripMessage": "Create your first trip.",
     "ongoing": "Ongoing",
@@ -166,13 +164,6 @@
     "pastShow": "Show ▼",
     "pastHide": "Hide ▲",
     "backupFooter": "Device sync & backup"
-  },
-  "sampleTrip": {
-    "badge": "Recommended sample itinerary",
-    "duration": "{{nights}} nights, {{days}} days",
-    "placeCount_one": "{{count}} place",
-    "placeCount_other": "{{count}} places",
-    "openLink": "View itinerary"
   },
   "setHotel": {
     "title": "Set lodging",

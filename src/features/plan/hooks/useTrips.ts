@@ -16,10 +16,11 @@ export function useTrips() {
 /** 여행 목록 카드(완성도/장소/호텔/항공 칩)용 요약 — listTrips()와 갱신 타이밍을
  * 맞추려고 같은 쿼리 키 접두사 아래 별도 쿼리로 둔다(트립 CRUD는 tripsQueryKey를
  * invalidate하므로 이것도 같이 갱신된다). */
-export function useTripSummaries() {
+export function useTripSummaries(enabled = true) {
   return useQuery({
     queryKey: [...tripsQueryKey, 'summaries'],
     queryFn: () => tripService.listTripSummaries(),
+    enabled,
   });
 }
 
