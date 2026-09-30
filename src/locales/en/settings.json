@@ -118,6 +118,9 @@
     "submit": "Send",
     "submitting": "Sending…",
     "submitError": "Couldn't send it. Please try again later.",
-    "submitSuccess": "Thanks! Your message has been sent."
+    "submitSuccess": "Thanks! Your message has been sent.",
+    "partnershipTitle": "Partnership inquiry",
+    "partnershipPlaceholder": "Tell us your company or service name, what you would like to propose, and how we can reach you.",
+    "partnershipSuccess": "Your partnership inquiry was sent. We will review it and get back to you. Thank you!"
   }
 }

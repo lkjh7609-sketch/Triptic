@@ -156,6 +156,13 @@
       "loadError": "無法載入封存區",
       "empty": "沒有封存的貼文",
       "note": "使用者刪除的貼文與取消的旅伴徵求。不會對使用者公開，作者退出時會一併刪除。"
+    },
+    "feedbackCategoryPartnership": "合作洽詢",
+    "feedbackFilterLabel": "詢問類型",
+    "feedbackFilter": {
+      "all": "全部",
+      "general": "一般詢問",
+      "partnership": "合作洽詢"
     }
   },
   "report": {

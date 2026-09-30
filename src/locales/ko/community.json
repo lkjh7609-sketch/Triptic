@@ -156,6 +156,13 @@
       "loadError": "보관함을 불러오지 못했어요",
       "empty": "보관된 글이 없어요",
       "note": "사용자가 삭제한 글과 취소한 동행 모집이에요. 이용자에게는 공개되지 않고, 작성자가 탈퇴하면 함께 삭제돼요."
+    },
+    "feedbackCategoryPartnership": "제휴문의",
+    "feedbackFilterLabel": "문의 종류",
+    "feedbackFilter": {
+      "all": "전체",
+      "general": "일반 문의",
+      "partnership": "제휴문의"
     }
   },
   "report": {

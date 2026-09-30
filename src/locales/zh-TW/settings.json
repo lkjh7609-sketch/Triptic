@@ -115,6 +115,9 @@
     "submit": "送出",
     "submitting": "送出中…",
     "submitError": "送出失敗，請稍後再試。",
-    "submitSuccess": "已收到您的訊息，謝謝！"
+    "submitSuccess": "已收到您的訊息，謝謝！",
+    "partnershipTitle": "合作洽詢",
+    "partnershipPlaceholder": "請填寫公司（服務）名稱、合作提案內容與聯絡方式。",
+    "partnershipSuccess": "合作洽詢已送出，我們會審閱後與你聯絡，謝謝！"
   }
 }

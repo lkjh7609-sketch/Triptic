@@ -115,6 +115,9 @@
     "submit": "보내기",
     "submitting": "보내는 중…",
     "submitError": "보내지 못했어요. 잠시 후 다시 시도해 주세요.",
-    "submitSuccess": "문의가 전달됐어요. 감사합니다!"
+    "submitSuccess": "문의가 전달됐어요. 감사합니다!",
+    "partnershipTitle": "제휴문의",
+    "partnershipPlaceholder": "회사(서비스) 이름, 제안하고 싶은 내용, 연락받을 방법을 적어주세요.",
+    "partnershipSuccess": "제휴문의가 전달됐어요. 검토 후 연락드릴게요. 감사합니다!"
   }
 }
