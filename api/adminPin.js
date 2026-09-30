@@ -26,7 +26,9 @@ export default async function handler(req, res) {
     const db = supabaseAdmin();
 
     if (req.method === 'GET') {
-        if (!config.enabled || !db) return res.status(200).json({ enabled: false, locked: false, retryAfter: 0 });
+        // 꺼진 이유는 종류만 알린다(not_configured 없거나 6자리 숫자가 아님 / weak 너무 뻔함 / server 서버 설정) — 값은 절대 안 나간다
+        if (!config.enabled) return res.status(200).json({ enabled: false, reason: config.reason, locked: false, retryAfter: 0 });
+        if (!db) return res.status(200).json({ enabled: false, reason: 'server', locked: false, retryAfter: 0 });
         const { data } = await db.rpc('admin_pin_status');
         const row = Array.isArray(data) ? data[0] : data;
         return res.status(200).json({ enabled: true, locked: !!row?.locked, retryAfter: row?.retry_after ?? 0 });
