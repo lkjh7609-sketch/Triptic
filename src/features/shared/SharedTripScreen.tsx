@@ -8,7 +8,7 @@ import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { invalidateTripMembership } from '@/features/plan/hooks/useTrips';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { captureError, trackScreenView } from '@/shared/monitoring';
+import { captureError, track, trackScreenView } from '@/shared/monitoring';
 import { clearPendingShare, savePendingShare } from './pendingShare';
 import styles from './SharedTripScreen.module.css';
 
@@ -47,6 +47,7 @@ export function SharedTripScreen() {
           setFailed(true);
           return;
         }
+        track('share_joined');
         invalidateTripMembership(queryClient);
         navigate(`/plan/${tripId}`, { replace: true });
       })

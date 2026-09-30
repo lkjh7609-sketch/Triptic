@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router';
 import { LocaleSync } from '@/shared/i18n/useSyncLocale';
 import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
 import { ToastHost } from '@/shared/ui/toast';
+import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
 import { ErrorBoundary } from './ErrorBoundary';
 import { router } from './router';
 
@@ -27,9 +28,32 @@ i18next.on('languageChanged', () => {
 // 로그아웃하면 메모리의 쿼리 캐시도 비운다. ['trips'] 같은 키는 사용자 id를 포함하지 않아서,
 // 같은 탭에서 다른 계정으로 로그인하면 이전 계정의 여행 목록이 staleTime 동안 보일 수 있었다.
 onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') queryClient.clear();
-  refetchIfUserChanged(session?.user?.id ?? null);
+  if (event === 'SIGNED_OUT') {
+    queryClient.clear();
+    resetIdentity();
+  }
+  const user = session?.user;
+  if (user) {
+    identifyUser(user.id);
+    trackSignupOnce(event, user);
+  }
+  refetchIfUserChanged(user?.id ?? null);
 });
+
+/** 가입 직후 첫 로그인이면 가입 완료 이벤트를 한 번만 — 계정을 만든 시각과 로그인 시각이 거의 같으면 신규다 */
+function trackSignupOnce(event: string, user: { id: string; created_at: string; last_sign_in_at?: string; app_metadata?: { provider?: string } }) {
+  if (event !== 'SIGNED_IN' || !user.last_sign_in_at) return;
+  const gap = Math.abs(new Date(user.last_sign_in_at).getTime() - new Date(user.created_at).getTime());
+  if (gap > 2 * 60_000) return;
+  const key = `triptic-signup-tracked:${user.id}`;
+  try {
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, '1');
+  } catch {
+    return;
+  }
+  track('signup_completed', { provider: user.app_metadata?.provider ?? 'unknown' });
+}
 
 // PC는 로그인 없이 둘러볼 수 있어서, 비로그인으로 받아 둔 목록(여행 0개 등)이 캐시·IndexedDB에
 // 남는다. 로그인(소셜 로그인은 페이지를 새로 연다)으로 사용자가 바뀌면 전부 다시 읽는다.

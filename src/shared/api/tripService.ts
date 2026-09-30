@@ -18,7 +18,7 @@
 import i18next from '@/shared/i18n';
 import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/shared/utils/id';
-import { captureError } from '@/shared/monitoring';
+import { captureError, track } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
 import { showToast } from '@/shared/ui/toast';
 import { reconstructTripContent, type TripItineraryRaw, type TripDayRow, type ItineraryItemRow } from '@/features/plan/itineraryTransform';
@@ -159,6 +159,7 @@ export class TripService {
       if (res.error) {
         // 무료 사용자 평생 생성 2개 한도 — 서버 트리거(0037)가 실제 경계다.
         if (res.error.hint === 'trip_limit_reached') {
+          track('trip_limit_reached');
           throw new Error(i18next.t('plan:errors.tripLimit'));
         }
         throw res.error;

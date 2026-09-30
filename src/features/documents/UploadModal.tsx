@@ -14,7 +14,7 @@ import {
   type VoucherEntry,
 } from './documentService';
 import { useUploadDocument, useDocumentsList, useDeleteDocument } from './useDocuments';
-import { captureError } from '@/shared/monitoring';
+import { captureError, track } from '@/shared/monitoring';
 import modalStyles from '../plan/AddPlaceModal.module.css';
 import styles from './UploadModal.module.css';
 
@@ -93,6 +93,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
     setFileError(null);
     try {
       const result = await upload.mutateAsync({ file, category });
+      track('document_uploaded');
       onParsed(result);
     } catch (err2) {
       captureError(err2, { context: 'uploadAndParseDocument' });
