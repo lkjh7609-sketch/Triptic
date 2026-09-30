@@ -226,6 +226,9 @@ export function HomeDesktop() {
             onMouseLeave={() => { autoScrollPausedRef.current = false; }}
             onTouchStart={() => { autoScrollPausedRef.current = true; }}
             onTouchEnd={() => { autoScrollPausedRef.current = false; }}
+            // 키보드로 카드에 포커스가 있는 동안에도 멈춘다(움직이는 목록은 멈출 수 있어야 한다 — WCAG 2.2.2)
+            onFocus={() => { autoScrollPausedRef.current = true; }}
+            onBlur={() => { autoScrollPausedRef.current = false; }}
           >
             {[...FEATURED, ...FEATURED].map((dest, i) => (
               <button
