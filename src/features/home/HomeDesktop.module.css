@@ -407,3 +407,102 @@
     padding: var(--space-4);
   }
 }
+
+/* 모바일 홈(1024px 미만, 앱 셸이 하단 탭을 쓰는 구간) — 검색창 없이 추천 여행지를 맨 위에 크게,
+   그 아래 "트립틱 시작하기" 3단계. 카드는 사진을 꽉 채우고 제목·설명을 사진 위 어두운 그라데이션 위에 얹는다.
+   카드가 계속 흐르는 자동 스크롤은 그대로(스냅은 쓰지 않는다 — 위 .grid 주석). PC는 위 기본 규칙 그대로. */
+@media (max-width: 1023px) {
+  .card {
+    position: relative;
+    width: 226px;
+    min-width: 226px;
+    height: 308px;
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2), transparent);
+    pointer-events: none;
+  }
+  .cardImage {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .cardBody {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 20px;
+    color: #fff;
+  }
+  .cardTitle {
+    margin-bottom: var(--space-1);
+    font-size: 20px;
+    color: #fff;
+  }
+  .cardDesc {
+    font-size: 13px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* 트립틱 시작하기 — 모바일에서만 렌더된다(HomeDesktop.tsx) */
+.stepsSection {
+  padding-top: 0;
+}
+.stepList {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.stepList::-webkit-scrollbar {
+  display: none;
+}
+.step {
+  flex: 1 0 130px;
+  scroll-snap-align: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+.stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--space-3);
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+.stepTitle {
+  margin-bottom: var(--space-1);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stepDesc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}

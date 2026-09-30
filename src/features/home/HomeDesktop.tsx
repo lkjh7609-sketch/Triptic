@@ -13,6 +13,7 @@ import { FEATURED, type FeaturedDestination } from './featuredDestinations';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import styles from './HomeDesktop.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 function DestinationPreviewModal({
   dest,
@@ -85,6 +86,8 @@ export function HomeDesktop() {
   const { data: destinations } = useDestinations();
   const queryClient = useQueryClient();
   const requireLogin = useRequireLogin();
+  // 모바일(1024px 미만)은 검색창 없이 추천 여행지 → 시작하기 안내 순서. 도시 검색은 PC에서만(9/30 디자인 결정)
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   // 추천 카드 소개 중 이미 DB에 저장된 것들을 한 번에 받아 채워둔다 — 카드를 눌렀을 때 기다림 없이
   useEffect(() => {
@@ -166,47 +169,49 @@ export function HomeDesktop() {
   return (
     <div className={styles.container}>
       <HomeSectionTabs />
-      <section className={`${styles.hero} ${styles.heroPlain}`}>
-        <div className={styles.heroContent}>
-          <div className={styles.searchPill}>
-            <Search size={20} className={styles.searchIcon} aria-hidden="true" />
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder={t('desktop.searchPlaceholder')}
-              aria-label={t('desktop.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              onKeyDown={(e) => e.key === 'Enter' && handleStartPlanning()}
-            />
-            <button type="button" className={styles.searchBtn} onClick={() => handleStartPlanning()}>
-              {t('desktop.startPlanning')}
-            </button>
-            {isFocused && suggestions.length > 0 && (
-              <ul className={styles.suggestions} role="listbox" aria-label={t('desktop.searchPlaceholder')}>
-                {suggestions.map((s) => (
-                  <li
-                    key={s.id}
-                    role="option"
-                    aria-selected={false}
-                    className={styles.suggestion}
-                    // onClick 대신 onMouseDown: 입력창 blur보다 먼저 처리돼야 목록이 사라지기 전에 선택된다
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      handleStartPlanning(s.city);
-                    }}
-                  >
-                    {s.label}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+      {isDesktop ? (
+        <section className={`${styles.hero} ${styles.heroPlain}`}>
+          <div className={styles.heroContent}>
+            <div className={styles.searchPill}>
+              <Search size={20} className={styles.searchIcon} aria-hidden="true" />
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder={t('desktop.searchPlaceholder')}
+                aria-label={t('desktop.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onKeyDown={(e) => e.key === 'Enter' && handleStartPlanning()}
+              />
+              <button type="button" className={styles.searchBtn} onClick={() => handleStartPlanning()}>
+                {t('desktop.startPlanning')}
+              </button>
+              {isFocused && suggestions.length > 0 && (
+                <ul className={styles.suggestions} role="listbox" aria-label={t('desktop.searchPlaceholder')}>
+                  {suggestions.map((s) => (
+                    <li
+                      key={s.id}
+                      role="option"
+                      aria-selected={false}
+                      className={styles.suggestion}
+                      // onClick 대신 onMouseDown: 입력창 blur보다 먼저 처리돼야 목록이 사라지기 전에 선택된다
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleStartPlanning(s.city);
+                      }}
+                    >
+                      {s.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t('desktop.featuredTitle')}</h2>
@@ -244,6 +249,23 @@ export function HomeDesktop() {
           </button>
         </div>
       </section>
+
+      {!isDesktop ? (
+        <section className={`${styles.section} ${styles.stepsSection}`}>
+          <h2 className={styles.sectionTitle}>{t('desktop.stepsTitle')}</h2>
+          <ol className={styles.stepList}>
+            {([1, 2, 3] as const).map((n) => (
+              <li key={n} className={styles.step}>
+                <span className={styles.stepNum} aria-hidden="true">
+                  {n}
+                </span>
+                <div className={styles.stepTitle}>{t(`desktop.step${n}Title`)}</div>
+                <div className={styles.stepDesc}>{t(`desktop.step${n}Desc`)}</div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       <footer className={styles.footer}>
         <div className={styles.footerLinks}>

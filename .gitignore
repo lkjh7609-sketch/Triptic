@@ -55,3 +55,6 @@ public/index.html
 
 # 보안 점검 상세 등 공개하면 안 되는 로컬 전용 문서
 docs/private/
+
+# Superdesign temporary files
+.superdesign/tmp/
