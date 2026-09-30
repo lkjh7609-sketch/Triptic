@@ -30,6 +30,7 @@ import {
 import type { Report } from './types';
 import { AdminSalesTab } from './AdminSalesTab';
 import { AdminAnalyticsTab } from './AdminAnalyticsTab';
+import { AdminPinPad } from './AdminPinPad';
 import styles from './AdminScreen.module.css';
 
 type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics';
@@ -405,7 +406,10 @@ export function AdminScreen() {
       </div>
     );
   }
-  if (!user || !admin) {
+  // 로그인하지 않은 방문자에게는 6자리 비밀번호 키패드 — 맞으면 관리자 로그인 상태가 된다(adminPinService).
+  // 로그인한 일반 사용자는 세션을 바꾸지 않도록 키패드 대신 권한 안내만 보인다
+  if (!user) return <AdminPinPad />;
+  if (!admin) {
     return <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('admin.accessDenied')} />;
   }
 
