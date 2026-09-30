@@ -2,7 +2,7 @@
  * Supabase 클라이언트 싱글톤 (새 React 앱 전용)
  *
  * ⚠️ src/services/supabaseClient.js(레거시)와는 별개다. 레거시는 legacy/index.html이
- * classic <script>로 미리 로드해 둔 UMD window.supabase 전역 + /api/env가 내려주는
+ * classic <script>로 미리 로드해 둔 UMD window.supabase 전역 + (지금은 지운) /api/env가 내려주던
  * window.ENV를 재사용하는 방식이었다(로더 우회를 위한 레거시 전용 설계).
  * 새 앱은 @supabase/supabase-js를 정식 npm 의존성으로 번들하므로 그 우회가 필요
  * 없고, 대신 Vite 표준 방식(import.meta.env)으로 환경변수를 읽는다.
