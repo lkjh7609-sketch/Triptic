@@ -31,7 +31,7 @@ import type { ParseBookingResponse } from '@/features/documents/documentService'
 import { daysWithContentAfter, totalDaysOf, type Period } from '@/features/documents/tripPeriod';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
-import { isSignedIn } from '@/features/auth/loginPrompt';
+import { isSignedIn, requireLogin } from '@/features/auth/loginPrompt';
 import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
@@ -497,8 +497,8 @@ export function TripDetailScreen() {
             onAddClick={() => setShowAddPlace(true)}
           onItemClick={setEditingIndex}
           onReorder={handleReorder}
-          onAiSuggest={() => setAiSuggestBase({ index: dayItems.length - 1, item: dayItems[dayItems.length - 1] })}
-          onAiSuggestItem={(index, item) => setAiSuggestBase({ index, item })}
+          onAiSuggest={() => requireLogin() && setAiSuggestBase({ index: dayItems.length - 1, item: dayItems[dayItems.length - 1] })}
+          onAiSuggestItem={(index, item) => requireLogin() && setAiSuggestBase({ index, item })}
         />
       )}
       </div>

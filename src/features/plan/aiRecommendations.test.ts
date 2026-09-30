@@ -1,7 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const rpc = vi.fn();
-vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc }) }));
+const getSession = vi.fn();
+vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc, auth: { getSession } }) }));
 
 const { fetchNearbyRecommendations, isOutOfRange, needsServerCoords } = await import('./aiRecommendations');
 const { fetchCityDescription } = await import('@/features/home/cityDescription');
@@ -9,9 +10,15 @@ const { fetchCityDescription } = await import('@/features/home/cityDescription')
 const fetchMock = vi.fn();
 vi.stubGlobal('fetch', fetchMock);
 
+// 기본은 로그인한 상태 — 비로그인 동작은 아래 별도 describe에서
+beforeEach(() => {
+  getSession.mockResolvedValue({ data: { session: { access_token: 'tok' } } });
+});
+
 afterEach(() => {
   rpc.mockReset();
   fetchMock.mockReset();
+  getSession.mockReset();
 });
 
 describe('AI 결과는 DB 캐시에 있으면 /api(LLM)를 부르지 않는다', () => {
@@ -89,5 +96,37 @@ describe('기준 좌표가 있으면 1.5km 장소 풀부터', () => {
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ recommendations: [{ name: 'a' }, { name: 'new' }] }) });
     expect(await fetchNearbyRecommendations(base)).toEqual([{ name: 'a' }, { name: 'new' }]);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({ lat: 34.7025, lng: 135.4959, placeId: 'base' });
+  });
+});
+
+describe('AI 생성 API는 로그인 사용자에게만 열려 있다', () => {
+  it('로그인 상태면 토큰을 Bearer로 보낸다', async () => {
+    rpc.mockResolvedValue({ data: null, error: null });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ recommendations: [] }) });
+    await fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' });
+    expect((fetchMock.mock.calls[0][1] as { headers: Record<string, string> }).headers.Authorization).toBe('Bearer tok');
+  });
+
+  it('비로그인이면 추천은 서버를 부르지 않고 로그인 필요 오류를 낸다(캐시 적중은 그대로 보인다)', async () => {
+    getSession.mockResolvedValue({ data: { session: null } });
+    rpc.mockResolvedValue({ data: null, error: null });
+    await expect(fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' })).rejects.toThrow('login_required');
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    rpc.mockResolvedValue({ data: { recommendations: [{ name: '캐시' }] }, error: null });
+    expect(await fetchNearbyRecommendations({ placeName: 'X2', city: 'Y', locale: 'en' })).toEqual([{ name: '캐시' }]);
+  });
+
+  it('비로그인 도시 소개는 캐시만 보고, 없으면 생성 API를 부르지 않고 null', async () => {
+    getSession.mockResolvedValue({ data: { session: null } });
+    rpc.mockResolvedValue({ data: null, error: null });
+    expect(await fetchCityDescription('Paris, France', 'en')).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('서버가 401을 돌려주면(토큰 만료 등) 로그인 필요 오류', async () => {
+    rpc.mockResolvedValue({ data: null, error: null });
+    fetchMock.mockResolvedValue({ ok: false, status: 401, json: async () => ({}) });
+    await expect(fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' })).rejects.toThrow('login_required');
   });
 });

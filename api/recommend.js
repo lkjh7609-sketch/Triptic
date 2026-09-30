@@ -8,6 +8,7 @@
 // 웹 서비스를 부를 수 없다("API keys with referer restrictions cannot be used"). 그래서
 // 기본적으로 좌표는 클라이언트(Maps JS PlacesService)가 붙인다. IP 제한 서버 키를
 // GOOGLE_PLACES_SERVER_KEY로 따로 등록하면 서버가 미리 붙이고 place_cache에 저장한다.
+import { requireUser } from './_lib/auth.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -397,6 +398,9 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+    // AI(LLM) 호출은 비용이 드는 API라 로그인 사용자에게만 연다. 캐시 읽기는 앱이 DB 함수로 직접 하므로 비로그인도 캐시된 결과는 본다
+    const user = await requireUser(req, res);
+    if (!user) return;
 
     const placeName = sanitizeInput(req.body?.placeName, 100);
     const city = sanitizeInput(req.body?.city, 60);

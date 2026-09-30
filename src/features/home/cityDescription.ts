@@ -1,3 +1,4 @@
+import { getAccessToken } from '@/shared/api/authToken';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale, cityDescCacheKey } from '@/shared/api/aiCacheKeys';
@@ -21,7 +22,7 @@ export async function readCachedCityDescriptions(cities: string[], locale: strin
   return byKey;
 }
 
-/** 1) DB 캐시(0049) → 2) 없을 때만 /api/cityDesc(LLM으로 한 번 생성하고 서버가 DB에 영구 저장) */
+/** 1) DB 캐시(0049) → 2) 없을 때만, 로그인했으면 /api/cityDesc(LLM으로 한 번 생성하고 서버가 DB에 영구 저장) */
 export async function fetchCityDescription(city: string, locale: string): Promise<string | null> {
   try {
     const { data, error } = await getSupabaseClient().rpc('get_ai_cache', {
@@ -38,7 +39,12 @@ export async function fetchCityDescription(city: string, locale: string): Promis
   } catch {
     // RPC 네트워크 오류 등 — 아래 API로 넘어간다
   }
-  const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(city)}&locale=${encodeURIComponent(locale)}`));
+  // 캐시에 없을 때 새로 생성하는 건 로그인 사용자에게만 열려 있다(api/cityDesc.js) — 비로그인은 캐시된 소개만 본다
+  const token = await getAccessToken();
+  if (!token) return null;
+  const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(city)}&locale=${encodeURIComponent(locale)}`), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!res.ok) throw new Error(`cityDesc HTTP ${res.status}`);
   const json = (await res.json()) as { description?: unknown };
   return typeof json.description === 'string' ? json.description : null;
