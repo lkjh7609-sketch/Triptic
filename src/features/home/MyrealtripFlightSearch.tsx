@@ -367,23 +367,34 @@ export function MyrealtripFlightSearch() {
       </div>
 
       <div className={styles.grid}>
-        <div className={styles.places}>
-          <PlaceField label={t('flights.form.from')} value={effectiveOrigin} onChange={setOrigin} locale={placesLocale} inputRef={originInputRef} />
-          <button type="button" className={styles.swap} onClick={swap} aria-label={t('flights.form.swap')}>
-            <ArrowLeftRight size={16} aria-hidden="true" />
-          </button>
-          <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} inputRef={destInputRef} />
-        </div>
-        <div className={styles.dates}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>{roundTrip ? t('flights.form.dates') : t('flights.form.depart')}</span>
-            <button ref={dateButtonRef} type="button" className={`${styles.input} ${styles.dateButton}`} onClick={() => setShowCalendar(true)}>
-              <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
-              <span className={styles.dateText}>
-                {formatDay(departDate, i18n.language)}
-                {roundTrip ? ` – ${returnDate ? formatDay(returnDate, i18n.language) : t('flights.form.pickReturn')}` : ''}
+        {/* 출발지·도착지 / 가는 날·오는 날을 선으로 나눈 큰 칸 하나 */}
+        <div className={styles.route}>
+          <div className={styles.places}>
+            <PlaceField label={t('flights.form.from')} value={effectiveOrigin} onChange={setOrigin} locale={placesLocale} inputRef={originInputRef} />
+            <button type="button" className={styles.swap} onClick={swap} aria-label={t('flights.form.swap')}>
+              <ArrowLeftRight size={16} aria-hidden="true" />
+            </button>
+            <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} inputRef={destInputRef} />
+          </div>
+          <div className={styles.dates} style={{ gridTemplateColumns: `repeat(${roundTrip ? 2 : 1}, minmax(0, 1fr))` }}>
+            <button ref={dateButtonRef} type="button" className={styles.dateCell} onClick={() => setShowCalendar(true)}>
+              <span className={styles.fieldLabel}>{t('flights.form.depart')}</span>
+              <span className={styles.dateValue}>
+                <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
+                <span className={styles.dateText}>{formatDay(departDate, i18n.language)}</span>
               </span>
             </button>
+            {roundTrip ? (
+              <button type="button" className={styles.dateCell} onClick={() => setShowCalendar(true)}>
+                <span className={styles.fieldLabel}>{t('flights.form.return')}</span>
+                <span className={styles.dateValue}>
+                  <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
+                  <span className={`${styles.dateText} ${returnDate ? '' : styles.datePlaceholder}`}>
+                    {returnDate ? formatDay(returnDate, i18n.language) : t('flights.form.pickReturn')}
+                  </span>
+                </span>
+              </button>
+            ) : null}
           </div>
         </div>
         <div className={styles.passengers} role="group" aria-label={t('flights.form.passengers')}>

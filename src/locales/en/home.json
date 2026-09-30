@@ -86,6 +86,7 @@
       "airport": "Airport",
       "allAirports": "All airports",
       "depart": "Depart",
+      "return": "Return",
       "dates": "Depart – Return",
       "pickReturn": "Pick return",
       "passengers": "Passengers",
