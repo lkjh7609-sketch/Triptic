@@ -16,7 +16,7 @@
   background: var(--pb-bg);
   box-shadow: var(--pb-shadow);
   color: var(--pb-text);
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 800;
   line-height: 18px;
   letter-spacing: 0.3px;
