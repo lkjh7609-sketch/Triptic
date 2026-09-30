@@ -8,7 +8,8 @@
       "companion": "找同行",
       "users": "使用者方案",
       "feedback": "建議回饋",
-      "sales": "銷售"
+      "sales": "銷售",
+      "analytics": "分析"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -71,6 +72,42 @@
         "trip_flights": "依此行程找機票",
         "flights_esim": "機票分頁 SIM/eSIM",
         "unknown": "其他連結"
+      }
+    },
+    "analytics": {
+      "posthog": "使用分析 (PostHog)",
+      "sentry": "錯誤 (Sentry)",
+      "notConfigured": "尚未連接。設定伺服器環境變數 {{names}} 後會顯示在這裡。",
+      "sourceError": "無法載入，請檢查金鑰與權限。",
+      "loadError": "無法載入分析資料",
+      "rangeLabel": "期間",
+      "visitors": "訪客",
+      "signups": "註冊人數",
+      "tripMakers": "建立行程的人",
+      "eventsTitle": "功能使用",
+      "colEvent": "項目",
+      "colUsers": "使用者",
+      "colCount": "次數",
+      "colRate": "佔訪客比",
+      "dailyTitle": "每日訪客",
+      "screensTitle": "最常瀏覽的畫面",
+      "noData": "尚無資料",
+      "issuesTitle": "未解決的錯誤（依次數）",
+      "noIssues": "沒有未解決的錯誤",
+      "issueMeta": "{{count}} 次・{{users}} 人・最後 {{when}}",
+      "updatedAt": "截至 {{when}}（快取 1 分鐘）",
+      "event": {
+        "screen_view": "瀏覽畫面的人",
+        "signup_completed": "完成註冊",
+        "guest_trip_started": "開始建立暫存行程",
+        "guest_trip_saved": "暫存行程儲存到帳號",
+        "trip_created": "建立行程",
+        "place_added": "新增地點",
+        "document_uploaded": "上傳訂單文件",
+        "share_link_created": "建立分享連結",
+        "share_joined": "透過分享連結加入",
+        "onboarding_step_done": "完成入門步驟",
+        "trip_limit_reached": "達到免費上限"
       }
     }
   },
