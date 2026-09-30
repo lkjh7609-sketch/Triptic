@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Map, MessageCircle, Settings } from 'lucide-react';
+import { Home, LogIn, Map, MessageCircle, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { isHomeSectionPath } from '@/features/home/homeSections';
@@ -31,13 +31,22 @@ function isTabActive(pathname: string, to: string): boolean {
  * - 터치 타깃 최소 44×44pt
  * - 지도 전체화면 모드에서도 숨기지 않는다 (§6.1) — Phase 2에서 지도 뷰 연동 시 유지
  */
-export function TabBar() {
+export function TabBar({ guest = false }: { guest?: boolean }) {
   const { pathname } = useLocation();
   const { t } = useTranslation();
 
   return (
     <nav className={`${styles.tabBar} tab-bar`} role="tablist" aria-label={t('nav.primary')}>
-      {TABS.map((tab) => {
+      {TABS.map((rawTab) => {
+        // 비로그인: 모바일에는 헤더의 로그인 버튼이 없어서, 설정 칸이 로그인 칸이 된다(누르면 로그인 창)
+        const tab: TabDef =
+          guest && rawTab.to === '/settings'
+            ? {
+                ...rawTab,
+                labelKey: 'auth.signIn',
+                icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LogIn size={16} /></span>,
+              }
+            : rawTab;
         const active = isTabActive(pathname, tab.to);
         return (
           <Link

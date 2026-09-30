@@ -77,10 +77,9 @@ function useNavDirectionAttr() {
  * lazy 라우트(router.tsx) 코드가 로드되는 동안 스켈레톤을 보여준다 —
  * 스피너 금지 원칙(01-design-system.md §6.7)을 탭 전환에도 그대로 적용.
  *
- * 비로그인:
- * - 모바일: 로그인 화면으로 막는다. 예외는 샘플 여행 하나(/plan/sample-…) — 로그인 없이 실제
- *   편집 화면을 체험할 수 있고(저장 안 됨), 상단 배너로 로그인할 수 있다.
- * - PC: 로그인 없이 둘러본다. 헤더 "로그인"이나 로그인이 필요한 동작(계획 만들기·글쓰기 등,
+ * 비로그인(PC·모바일 같음): 로그인 없이 둘러본다. 샘플 여행(/plan/sample-…)은 실제 편집 화면을 체험할 수
+ *   있다(저장 안 됨, 상단 배너로 로그인). 모바일에는 헤더가 없어 하단 탭의 마지막 칸이 '설정' 대신
+ *   '로그인'이 된다(TabBar). 헤더 "로그인"이나 로그인이 필요한 동작(계획 만들기·글쓰기 등,
  *   loginPrompt.ts)에서 로그인 창을 띄우고, 로그인해야 하는 화면(guestAccess.ts)은 창부터 띄운다.
  */
 export function AppShell() {
@@ -125,10 +124,6 @@ export function AppShell() {
     );
   }
 
-  if (!user && !isGuestSample && !isDesktop) {
-    return <GlobalAuthModal />;
-  }
-
   /** 로그인 필요 화면에서 창을 닫으면 온 곳으로(바로 들어온 주소면 홈으로) */
   const leaveGatedRoute = () => {
     closeLoginPrompt();
@@ -143,7 +138,7 @@ export function AppShell() {
         {routeNeedsLogin ? null : showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
         {flightsWidgetMounted ? <FlightsWidgetHost visible={onFlights && !showRouteSkeleton} /> : null}
       </main>
-      {!isGuestSample && !isDesktop && <TabBar />}
+      {!isGuestSample && !isDesktop && <TabBar guest={!user} />}
       {!user && (routeNeedsLogin || loginPromptOpen) ? (
         <GlobalAuthModal onClose={routeNeedsLogin ? leaveGatedRoute : closeLoginPrompt} />
       ) : null}
