@@ -11,6 +11,10 @@
 -- 3) post_bookmarks — 여행기 저장. 본인 것만 읽고 쓰고 지운다. 저장 수는 get_post_bookmark_counts()로만 센다(목록은 공개 안 함).
 --    profiles/posts가 지워지면 CASCADE로 함께 사라지므로 탈퇴(0065)·보관(0067)은 손대지 않는다.
 -- 4) get_post_trip — 반환값에 allow_copy를 더한다.
+-- 5) set_forked_from_trip — 일정 복사가 원본 표시(trips.forked_from_trip_id)를 남기는 서버 경로.
+--    0041 이후 이 컬럼은 서버 관리라 클라이언트가 직접 UPDATE하면 'forked_from_trip_id is server-managed'로 막힌다.
+--    그래서 지금까지 복사는 여행을 만든 뒤 이 UPDATE에서 실패했다(운영에서 확인, 2026-10-01). 내 여행(아직 원본 표시가 없는 것)에
+--    '공개된 글에 첨부된 여행'을 원본으로 적는 것만 허용한다.
 -- ============================================================================
 
 -- ── 1) 일정 복사 허용 ───────────────────────────────────────────────────────
@@ -121,3 +125,27 @@ $fn$;
 
 revoke all on function public.get_post_trip(uuid) from public, anon;
 grant execute on function public.get_post_trip(uuid) to authenticated;
+
+-- ── 5) 일정 복사 원본 표시 ──────────────────────────────────────────────────
+create or replace function public.set_forked_from_trip(p_trip_id uuid, p_source_trip_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+begin
+  if auth.uid() is null then
+    raise exception 'not signed in' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.trips t where t.id = p_trip_id and t.owner_id = auth.uid() and t.forked_from_trip_id is null) then
+    raise exception 'trip not found' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.posts p where p.trip_id = p_source_trip_id and p.status = 'published' and p.deleted_at is null) then
+    raise exception 'source is not a published post trip' using errcode = '42501';
+  end if;
+  update public.trips set forked_from_trip_id = p_source_trip_id where id = p_trip_id;
+end;
+$fn$;
+
+revoke all on function public.set_forked_from_trip(uuid, uuid) from public, anon;
+grant execute on function public.set_forked_from_trip(uuid, uuid) to authenticated;
