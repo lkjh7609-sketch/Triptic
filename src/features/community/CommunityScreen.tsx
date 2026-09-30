@@ -1,6 +1,6 @@
 import { Lock as LockIcon, PenLine, Users, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
@@ -26,7 +26,9 @@ export function CommunityScreen() {
   const { user } = useSession();
   const requireLogin = useRequireLogin();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const [tab, setTab] = useState<Tab>('all');
+  // 홈의 "같이 갈 사람 찾기 > 더보기"는 ?tab=companion 으로 들어온다
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => (searchParams.get('tab') === 'companion' ? 'companion' : 'all'));
   const { data: destinations } = useDestinations();
   const { data: followedIds } = useFollowedDestinationIds(user?.id ?? null);
 

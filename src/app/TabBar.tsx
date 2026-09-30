@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, LogIn, Map, MessageCircle, Settings } from 'lucide-react';
+import { CircleUser, Home, LogIn, Luggage, Users } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { isHomeSectionPath } from '@/features/home/homeSections';
@@ -11,12 +11,12 @@ interface TabDef {
   icon: React.ReactNode;
 }
 
-// 01-design-system.md §6.1: 홈 / 계획 / 커뮤니티 / 설정
+// 모바일 하단 탭(홈 시안): 홈 / 내 여행 / 커뮤니티 / 마이. 경로는 그대로(/plan, /settings) — 이름·아이콘만 시안대로. PC 헤더의 '계획' 라벨은 그대로
 const TABS: TabDef[] = [
   { to: '/', labelKey: 'tab.home', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Home size={16} /></span> },
-  { to: '/plan', labelKey: 'tab.plan', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Map size={16} /></span> },
-  { to: '/community', labelKey: 'tab.community', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> },
-  { to: '/settings', labelKey: 'tab.settings', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Settings size={16} /></span> },
+  { to: '/plan', labelKey: 'tab.myTrips', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Luggage size={16} /></span> },
+  { to: '/community', labelKey: 'tab.community', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Users size={16} /></span> },
+  { to: '/settings', labelKey: 'tab.my', icon: <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><CircleUser size={16} /></span> },
 ];
 
 function isTabActive(pathname: string, to: string): boolean {
