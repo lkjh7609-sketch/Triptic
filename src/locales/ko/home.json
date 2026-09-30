@@ -280,7 +280,7 @@
       "write": "여행기 쓰기",
       "bannerTitle": "첫 여행기를 남겨보세요!",
       "bannerDesc": "사진과 일정표를 올려 다른 여행자와 나눠 보세요.",
-      "bannerCta": "여행기 쓰러 가기"
+      "bannerCta": "여행기 작성 가이드 보기"
     },
     "season": {
       "eyebrow": "SEASONAL CURATION",
@@ -458,7 +458,7 @@
       "match": "{{pct}}% 일치",
       "recruiting_other": "모집중 {{count}}명",
       "anywhere": "어디든",
-      "talk": "대화하기",
+      "talk": "신청하기",
       "emptyTitle": "아직 모집 중인 동행이 없어요",
       "emptyDesc": "함께 갈 사람을 찾고 있다면 첫 모집글을 올려 보세요."
     },

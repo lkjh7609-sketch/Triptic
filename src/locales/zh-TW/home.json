@@ -280,7 +280,7 @@
       "write": "撰寫旅行記",
       "bannerTitle": "寫下你的第一篇旅行記吧！",
       "bannerDesc": "上傳照片與行程表，與其他旅人分享。",
-      "bannerCta": "前往撰寫"
+      "bannerCta": "查看旅行記撰寫指南"
     },
     "season": {
       "eyebrow": "SEASONAL CURATION",
@@ -458,7 +458,7 @@
       "match": "{{pct}}% 吻合",
       "recruiting_other": "徵求 {{count}} 人",
       "anywhere": "不限地點",
-      "talk": "聊聊看",
+      "talk": "申請",
       "emptyTitle": "目前沒有徵旅伴的貼文",
       "emptyDesc": "想找人一起出發嗎？發布第一則徵旅伴文吧。"
     },
