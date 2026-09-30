@@ -109,7 +109,7 @@
 }
 .btnAi {
   padding: 0.75rem 1.25rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-navy);
   color: var(--pd-navy);
   font-size: 13px;
@@ -128,7 +128,7 @@
 }
 .btnCreate {
   padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--pd-coral);
   color: var(--text-on-brand);
   font-size: 16px;
@@ -138,7 +138,7 @@
   gap: 0.5rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s;
 }
 @media (hover: hover) {
@@ -180,13 +180,13 @@
   border-radius: var(--radius-lg);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  box-shadow: 0 2px 8px 0 rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 @media (min-width: 1024px) {
   .metricBadge {
     gap: 0.75rem;
     padding: 0.625rem 1rem;
-    border-radius: 9999px;
+    border-radius: var(--radius-pill);
     white-space: nowrap;
   }
 }
@@ -235,8 +235,8 @@
   align-items: center;
   background: var(--pd-surface);
   border: 1px solid var(--border-control);
-  border-radius: 9999px;
-  box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
   padding: 0.375rem 0.375rem 0.375rem 1.25rem;
 }
 .searchInput {
@@ -329,7 +329,7 @@
 }
 .sectionBadge {
   padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--pd-accent-soft);
   color: var(--pd-accent-deep);
   font-size: var(--font-caption-size);
@@ -359,7 +359,7 @@
 
 .compactCard {
   position: relative;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   padding: 1rem;
@@ -373,7 +373,7 @@
 @media (hover: hover) {
   .compactCard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+    box-shadow: var(--shadow-lg);
   }
 }
 .cardTop {
@@ -385,7 +385,7 @@
   position: relative;
   width: 6rem;
   height: 6rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-soft);
   flex-shrink: 0;
   overflow: hidden;
@@ -438,7 +438,7 @@
   color: var(--pd-muted);
   background: var(--pd-soft);
   padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 .cardTitle {
   font-family: 'Newsreader', var(--font-sans);
@@ -484,12 +484,12 @@
   width: 100%;
   height: 0.375rem;
   background: var(--pd-line-2);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 .progressFill {
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 .logisticsChips {
   display: flex;
@@ -535,7 +535,7 @@
 }
 .btnOpen {
   padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 600;
   display: flex;
@@ -553,9 +553,9 @@
 .toolkitWidget {
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   padding: 1.5rem;
-  box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -591,7 +591,7 @@
 
 .toolkitBox {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-bg-2);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -631,7 +631,7 @@
 
 .toolkitAlert {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: rgba(253, 106, 73, 0.1);
   border: 1px solid rgba(174, 49, 21, 0.2);
   display: flex;
@@ -641,7 +641,7 @@
 
 .toolkitLink {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -658,7 +658,7 @@
 .toolkitLinkIcon {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-soft);
   display: flex;
   align-items: center;
@@ -721,7 +721,7 @@
   gap: 0.25rem;
   background: var(--pd-soft);
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
 }
 .viewToggle {
   padding: 0.25rem 0.625rem;
@@ -739,7 +739,7 @@
 .viewToggle.active {
   background: var(--pd-surface);
   color: var(--pd-ink);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .pastGrid {
@@ -753,7 +753,7 @@
   }
 }
 .pastCard {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -766,7 +766,7 @@
 @media (hover: hover) {
   .pastCard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+    box-shadow: var(--shadow-lg);
   }
 }
 .pastImageWrap {
@@ -796,7 +796,7 @@
 
 .emptyState {
   border: 2px dashed rgba(195, 198, 206, 0.6);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: rgba(244, 243, 240, 0.5);
   padding: 1.25rem;
   display: flex;
@@ -882,10 +882,10 @@
   z-index: 20;
   min-width: 140px;
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.16);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
 }
@@ -1010,7 +1010,7 @@
   top: 10px;
   left: 10px;
   padding: 2px 8px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-size: var(--font-caption-size);
   background: rgba(0, 20, 40, 0.7);
   backdrop-filter: blur(12px);
@@ -1173,7 +1173,7 @@
 .tipBox {
   background: var(--pd-soft);
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -1241,7 +1241,7 @@
   width: 100%;
   min-height: 40px;
   padding: 0.5rem 0.875rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-border);
   background: var(--pd-surface);
   color: var(--pd-ink);
@@ -1338,7 +1338,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-border);
   background: var(--pd-surface);
   color: var(--pd-ink);

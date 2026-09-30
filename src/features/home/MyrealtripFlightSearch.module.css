@@ -5,7 +5,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface-card);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .tripType {
@@ -32,7 +32,7 @@
 .tripOn {
   background: var(--surface-card);
   color: var(--text-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .tripOff {
@@ -252,7 +252,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface-card);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--shadow-md);
 }
 
 /* 모바일·태블릿: 목록을 출발지~도착지 한 줄 전체 폭(.places 기준)으로 — 반쪽 칸에 붙이면

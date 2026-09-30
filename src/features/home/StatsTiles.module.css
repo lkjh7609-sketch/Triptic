@@ -24,21 +24,21 @@
   gap: 8px;
   min-width: 0;
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 @media (min-width: 640px) {
   .tile {
     padding: 20px;
     gap: 16px;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 }
 
 @media (hover: hover) {
   .tile:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(15, 41, 66, 0.08);
+    box-shadow: var(--shadow-md);
   }
 }
 
@@ -57,7 +57,7 @@
   .iconWrap {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 }
 
