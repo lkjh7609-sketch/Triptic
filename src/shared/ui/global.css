@@ -81,6 +81,7 @@ body {
 @media (pointer: coarse) {
   :is(input, textarea, select):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='button']):not([type='submit']) {
     font-size: max(16px, 1rem);
+    text-overflow: ellipsis; /* 글자가 커진 만큼 좁은 칸에서 잘리면 말줄임으로 */
   }
 }
 
