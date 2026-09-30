@@ -23,7 +23,7 @@
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
-| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안: 이메일 가입 여부 확인 함수(비로그인 실행), CSP 강제 전환(애드센스 도메인 먼저 허용), 유출 비밀번호 검사, 옛 `api/env.js` 삭제, `search_path` 미고정 함수 6개, 로그인 사용자별 AI 하루 한도. 그 밖: pro 계정 정리, 분석 키 등록. 완료: 저장소 비공개, AI API 로그인 전용, `guard_protected_columns`·`admin_search_users` 정리 |
+| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안 남은 항목은 로컬 전용 문서(`docs/private/`)에 있음, pro 계정 정리, 분석 키 등록·재배포. 완료: 저장소 비공개, 비용이 드는 AI API 로그인 전용 |
 
 ---
 
@@ -53,6 +53,11 @@
 - iOS에서 새 탭을 여는 동작은 **클릭 즉시, `await` 없이** 해야 합니다. 미리 주소를 받아 두고 `<a href>`로 엽니다.
 - `index.html`에 `canonical`·`og:url`을 넣지 않습니다. 모든 주소가 같은 파일을 받아서 전부 홈의 복사본으로 취급됩니다. 주소별 값은 로봇용 `api/seo.js`가 넣습니다.
 - 한글 하드코딩은 `check:i18n`이 막습니다. 문자열은 번역 키로 넣고, 네 언어를 모두 채웁니다.
+
+### 보안 문서
+
+- 보안 취약점 상세(어디가 약한지, 아직 안 고친 것)는 **git에 올리지 않고** `docs/private/`(`.gitignore`)에만 둡니다. 저장소가 공개될 수 있고, 약점 목록이 커밋에 있으면 푸시가 자동 안전 검사에서 막힙니다(2026-09-30 실제로 막힘).
+- 이 기록·보고서에는 "무엇을 고쳤다"만 적고, 아직 안 고친 약점의 구체적인 이름·경로는 적지 않습니다.
 
 ### 제품 결정 (다시 제안하지 않을 것)
 
@@ -88,7 +93,7 @@
 - 첫 로딩 속도 개선. 애드센스·Travelpayouts 스크립트를 앱이 뜬 뒤(DOMContentLoaded 이후 여유 시간)에 불러오게 했습니다. 폰트 CSS는 화면을 막지 않게 바꾸고, 쓰지 않는 Material Symbols는 뺐습니다. 첫 접속 인트로는 약 2.7초에서 1.9초로 줄였습니다. (f19f83f, 935076c, 6fdaae9)
 - 호텔 화면 iframe은 화면 전환이 끝난 뒤 0.45초에 위젯, 그다음 배너 순서로 불러옵니다. (dc74b92)
 - 프리미엄 회원 배지. `profiles.plan = 'pro'`인 사용자는 모바일 설정의 프로필 이름 옆, PC 우측 상단 프로필 이름 옆에 금색 왕관 배지가 붙습니다. 글자는 한국어·영어 Premium, 일본어 プレミアム, 번체 尊榮입니다. (6d0f8c0, 62dcd6c, b5d40f1)
-- [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md) 작성.
+- [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md) 작성(보안 점검 상세는 로컬 전용 문서로 분리).
 - 문서 정리. 흩어진 진행 메모를 이 파일로 합치고, 보고서는 `docs/reports/`, 옛 문서는 `docs/archive/`로 옮겼습니다. 루트 README의 오래된 설명(Gemini, 로그인 없는 공유, 항공편 자동 조회)을 지금 앱에 맞게 고쳤습니다.
 
 **결정·교훈**

@@ -52,3 +52,6 @@ android/
 # public/(Vite publicDir)에 원본 사본을 두면 빌드 산출물과 내용이 어긋날 수 있습니다.
 public/index.html
 .env*
+
+# 보안 점검 상세 등 공개하면 안 되는 로컬 전용 문서
+docs/private/

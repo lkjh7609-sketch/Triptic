@@ -8,7 +8,8 @@
 |---|---|
 | **[HISTORY.md](HISTORY.md)** | 개발 기록(유일한 진행 기록). 현재 상태 · 지켜야 할 원칙 · 날짜별 변경 |
 | [reports/](reports/) | 분석 보고서. 날짜-주제 이름으로 쌓습니다 |
-| └ [2026-09-30 구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md) | 프리미엄 구독 설계, 기능 개선점, 보안 점검, 추천 기능, 실행 순서 |
+| └ [2026-09-30 구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md) | 프리미엄 구독 설계, 기능 개선점, 추천 기능, 실행 순서 (보안 점검 상세는 로컬 전용) |
+| `private/` (git 제외) | 보안 점검 상세처럼 공개하면 안 되는 문서. 이 폴더는 저장소에 올라가지 않으므로 각자 로컬에만 있습니다 |
 | [../README.md](../README.md) | 서비스 소개, 로컬 개발, 스크립트, 프로젝트 구조 |
 | [../supabase/migrations/README.md](../supabase/migrations/README.md) | DB 마이그레이션 적용 방식과 초기 전환 기록 |
 
@@ -42,3 +43,4 @@
 - 분석·조사 결과는 `reports/YYYY-MM-DD-주제.md`로 추가하고 위 표에 한 줄 넣습니다.
 - 더 이상 맞지 않는 문서는 지우지 말고 `archive/`로 옮긴 뒤 맨 위에 "보관용" 안내를 붙입니다.
 - API 키·비밀번호·개인 연락처는 문서에 적지 않습니다.
+- 아직 안 고친 보안 약점의 상세는 `docs/private/`(git 제외)에만 적습니다.
