@@ -88,7 +88,7 @@
 }
 
 .actionBtn:hover {
-  background: var(--brand-hover, #EA580C);
+  background: var(--brand-hover);
 }
 
 /* 메모 칩: 한 줄 유지, 지도 폭보다 길면 말줄임 */
