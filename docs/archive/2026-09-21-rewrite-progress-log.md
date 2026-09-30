@@ -1,3 +1,5 @@
+> **보관용 원문.** 2026-09-17~09-23 3.0 개편 진행 메모입니다. 정리된 최신 기록은 [../HISTORY.md](../HISTORY.md)를 보세요. 이 파일은 더 이상 갱신하지 않습니다.
+
 ---
 name: triptic-3-0-rewrite-progress
 description: "Triptic 3.0 전면 개편(docs/DEVELOPMENT_PLAN.md 기반) 진행 상황 — Phase 2·3·4·5 main에 완료. AI 전부 DeepSeek 전환. Phase 6(다국어+접근성+오프라인+푸시) 진행 중 컴퓨터 종료로 중단(커밋 409cee4) — i18n 인프라/CI검사/오프라인캐시/푸시배선/공통·홈·설정·서류·커뮤니티 화면 전환 완료, Plan 탭(PlanScreen 이후 9개 파일) 미완료. push 안 됨, 마이그레이션 0024 미적용. Phase 7 0%. 재개 방법 최상단에 정리"
