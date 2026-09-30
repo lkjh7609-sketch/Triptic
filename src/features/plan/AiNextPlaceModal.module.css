@@ -173,8 +173,10 @@
   border: 1px solid var(--border);
 }
 
-.rejectBtn:hover {
-  background: var(--border-subtle);
+@media (hover: hover) {
+  .rejectBtn:hover {
+    background: var(--border-subtle);
+  }
 }
 
 .acceptBtn {
@@ -182,8 +184,10 @@
   color: var(--text-on-brand);
 }
 
-.acceptBtn:hover {
-  opacity: 0.9;
+@media (hover: hover) {
+  .acceptBtn:hover {
+    opacity: 0.9;
+  }
 }
 
 .timeSelectWrap {
@@ -218,8 +222,10 @@
   justify-content: center;
 }
 
-.backBtn:hover {
-  color: var(--text-primary);
+@media (hover: hover) {
+  .backBtn:hover {
+    color: var(--text-primary);
+  }
 }
 
 .timeConfirmView {

@@ -135,7 +135,9 @@
   transition: all 0.2s;
 }
 
-.cornerBtn:hover {
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
+@media (hover: hover) {
+  .cornerBtn:hover {
+    background: var(--brand-solid);
+    color: var(--text-on-brand);
+  }
 }

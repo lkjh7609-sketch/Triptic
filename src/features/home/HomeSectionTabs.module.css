@@ -56,9 +56,11 @@
     transition: color 0.15s ease;
   }
 
+  @media (hover: hover) {
   .tab:hover {
-    color: var(--text-primary);
-  }
+      color: var(--text-primary);
+    }
+}
 
   /* 헤더에 이미 "홈"이 있다 */
   .homeTab {

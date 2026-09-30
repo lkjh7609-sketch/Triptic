@@ -97,8 +97,10 @@
   scroll-margin-top: var(--space-4);
 }
 
-.emailToggle:hover {
-  color: var(--text-primary);
+@media (hover: hover) {
+  .emailToggle:hover {
+    color: var(--text-primary);
+  }
 }
 
 .chevron,

@@ -30,8 +30,10 @@
   transition: all 0.2s ease;
 }
 
-.chip:hover {
-  background: var(--border);
+@media (hover: hover) {
+  .chip:hover {
+    background: var(--border);
+  }
 }
 
 .chip.active {
@@ -56,7 +58,9 @@
   background: var(--surface-card);
 }
 
-.chipCity:hover {
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
+@media (hover: hover) {
+  .chipCity:hover {
+    background: var(--brand-solid);
+    color: var(--text-on-brand);
+  }
 }

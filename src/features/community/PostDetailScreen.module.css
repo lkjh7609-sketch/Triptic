@@ -227,7 +227,9 @@
   cursor: pointer;
 }
 
-.commentLoginBtn:hover {
-  border-color: var(--brand);
-  color: var(--brand-text);
+@media (hover: hover) {
+  .commentLoginBtn:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+  }
 }

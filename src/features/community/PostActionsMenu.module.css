@@ -38,8 +38,10 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
-.item:hover {
-  background: var(--surface-subtle);
+@media (hover: hover) {
+  .item:hover {
+    background: var(--surface-subtle);
+  }
 }
 
 .danger {

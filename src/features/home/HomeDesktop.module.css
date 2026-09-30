@@ -80,9 +80,11 @@
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.searchBtn:hover {
-  filter: brightness(0.92);
-  transform: scale(0.98);
+@media (hover: hover) {
+  .searchBtn:hover {
+    filter: brightness(0.92);
+    transform: scale(0.98);
+  }
 }
 
 .section {
@@ -128,10 +130,12 @@
   transition: all 0.3s ease;
   cursor: pointer;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
-  border-color: rgba(15, 41, 66, 0.12);
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+    border-color: rgba(15, 41, 66, 0.12);
+  }
 }
 
 .cardImage {
@@ -183,9 +187,11 @@
   color: var(--text-primary);
 }
 
-.sliderBtnLeft:hover, .sliderBtnRight:hover {
-  background: var(--surface-subtle);
-  box-shadow: 0 6px 16px rgba(15, 41, 66, 0.12);
+@media (hover: hover) {
+  .sliderBtnLeft:hover, .sliderBtnRight:hover {
+    background: var(--surface-subtle);
+    box-shadow: 0 6px 16px rgba(15, 41, 66, 0.12);
+  }
 }
 
 .sliderBtnLeft {
@@ -226,8 +232,10 @@
   cursor: pointer;
 }
 
-.footerLink:hover {
-  color: var(--text-primary, #0F2942);
+@media (hover: hover) {
+  .footerLink:hover {
+    color: var(--text-primary, #0F2942);
+  }
 }
 
 /* ── 인라인 스타일에서 옮긴 것 + 접근성(버튼/다이얼로그) ─────────────── */
@@ -270,8 +278,10 @@
   color: var(--text-primary);
   font-size: 16px;
 }
-.suggestion:hover {
-  background: var(--surface-subtle);
+@media (hover: hover) {
+  .suggestion:hover {
+    background: var(--surface-subtle);
+  }
 }
 .card {
   padding: 0;
@@ -453,9 +463,11 @@
     line-height: 1.35;
     color: rgba(255, 255, 255, 0.8);
   }
+  @media (hover: hover) {
   .card:hover {
-    transform: none;
-  }
+      transform: none;
+    }
+}
 }
 
 /* 트립틱 시작하기 — 모바일에서만 렌더된다(HomeDesktop.tsx) */
