@@ -143,36 +143,6 @@
   text-align: center;
 }
 
-.dayHeaderActions {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: nowrap;
-  width: 100%;
-  min-width: 0;
-}
-
-.hotelButton {
-  appearance: none;
-  /* 호텔/식사/경비는 이제 실제 이름이 아니라 고정된 짧은 라벨만 보여주고
-     (도시만 가변) 4개를 균등한 폭으로 나눠 스크롤 없이 한 줄에 다 들어가게
-     한다. 도시 이름이 유난히 길 때만 buttonText의 ellipsis가 잘라준다. */
-  flex: 1 1 0;
-  min-width: 0;
-  border: 1px solid var(--border-strong);
-  background: var(--surface-subtle);
-  border-radius: var(--radius-pill);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 0 var(--space-3);
-  min-height: 44px; /* overflow:hidden이라 ::after 확장이 안 돼 실제 높이로 */
-  font-size: var(--font-caption-size);
-  color: var(--text-body);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
 .dayHeader {
   flex-shrink: 0;
   display: flex;
@@ -300,20 +270,6 @@
 .desktopMapLeft :global(.map-container) {
   width: 100% !important;
   height: 100% !important;
-}
-
-.buttonText {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hotelButton svg {
-  flex-shrink: 0;
-}
-
-.buttonText {
-  display: block;
 }
 
 .dayHeaderTopRow {

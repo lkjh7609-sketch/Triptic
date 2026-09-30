@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { ko, enUS, zhTW, ja, type Locale } from 'date-fns/locale';
 
 export const DATE_FNS_LOCALE: Record<string, Locale> = { ko, en: enUS, 'zh-TW': zhTW, ja };
+const SHORT_FORMAT: Record<string, string> = { ko: 'M/d', en: 'MMM d', 'zh-TW': 'M/d', ja: 'M/d' };
 const DAY_FORMAT: Record<string, string> = { ko: 'M/d (E)', en: 'MMM d (EEE)', 'zh-TW': 'M月d日 (E)', ja: 'M月d日 (E)' };
 
 /** 유효하지 않은 날짜면 빈 문자열을 반환한다(크래시 방지 — CreateTripModal 비정상 입력 방어와 동일한 원칙) */
@@ -17,5 +18,13 @@ export function formatLocalizedDay(date: Date, language: string): string {
   if (Number.isNaN(date.getTime())) return '';
   const locale = DATE_FNS_LOCALE[language] ?? DATE_FNS_LOCALE.ko;
   const pattern = DAY_FORMAT[language] ?? DAY_FORMAT.ko;
+  return format(date, pattern, { locale });
+}
+
+/** 날짜 카드처럼 좁은 곳에 쓰는 월/일 표기(요일 없음) — 10/14, Oct 14 */
+export function formatShortDate(date: Date, language: string): string {
+  if (Number.isNaN(date.getTime())) return '';
+  const locale = DATE_FNS_LOCALE[language] ?? DATE_FNS_LOCALE.ko;
+  const pattern = SHORT_FORMAT[language] ?? SHORT_FORMAT.ko;
   return format(date, pattern, { locale });
 }
