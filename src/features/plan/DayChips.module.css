@@ -38,3 +38,15 @@
   position: absolute;
   inset: -4px 0;
 }
+
+/* 모바일: 한 줄에 4개씩 좌우 끝까지 균등하게(칩이 내용 폭이라 오른쪽에 여백이 남던 것). 5일째부터는 다음 줄 */
+@media (max-width: 1023px) {
+  .row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .chip {
+    width: 100%;
+    padding: 0;
+  }
+}
