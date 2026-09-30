@@ -29,6 +29,8 @@
     "planPro": "Pro",
     "tripUsageFree": "{{used}}/{{limit}} trips used · {{left}} left",
     "tripUsagePro": "{{used}} trips created · no limit",
+    "activityLine": "Last seen {{last}} · active {{days}} days · {{views}} screen views (last {{window}} days)",
+    "activityNone": "No activity in the last {{window}} days (only counted after sign-in)",
     "tripLimitRelaxed": "Limit {{limit}} applied (default {{base}})",
     "grantPro": "Grant pro",
     "revokePro": "Revert to free",

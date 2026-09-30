@@ -116,6 +116,37 @@ export async function fetchPosthogReport(days, env = process.env, fetchImpl = fe
     }
 }
 
+/** 회원 UUID 모양(로그인 회원은 identify로 distinct_id가 회원 UUID가 된다). 익명 방문자의 기기 ID는 제외 */
+const UUID_REGEX = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
+export const USER_ACTIVITY_DAYS = 90;
+
+/**
+ * 회원별 이용 기록(최근 90일) — 회원 UUID → 이벤트 수·화면 조회 수·활동한 날 수·마지막 활동 시각.
+ * 사용자 목록에서 "누가 얼마나 들어왔나"를 보는 용도. 이름·이메일은 PostHog에 없으므로 UUID로만 이어진다.
+ * 로그인(identify) 이후의 이벤트만 회원에게 묶인다 — 로그인 전 기록은 익명 ID라 여기 안 잡힌다.
+ */
+export async function fetchPosthogUserActivity(env = process.env, fetchImpl = fetch) {
+    const cfg = posthogConfig(env);
+    if (cfg.missing.length) return { status: 'not_configured', missing: cfg.missing };
+    try {
+        const rows = await hogql(
+            cfg,
+            `select distinct_id, count() as events, countIf(event = 'screen_view') as views, count(distinct toDate(timestamp)) as days, toString(max(timestamp)) as last_seen ` +
+                `from events where timestamp >= now() - interval ${USER_ACTIVITY_DAYS} day and match(distinct_id, '${UUID_REGEX}') ` +
+                `group by distinct_id order by max(timestamp) desc limit 1000`,
+            fetchImpl,
+        );
+        const users = {};
+        for (const [id, events, views, days, lastSeen] of rows) {
+            users[String(id)] = { events: Number(events), views: Number(views), days: Number(days), lastSeen: lastSeen ? String(lastSeen) : null };
+        }
+        return { status: 'ok', windowDays: USER_ACTIVITY_DAYS, users };
+    } catch (e) {
+        console.warn('[adminAnalytics] posthog users failed:', e instanceof Error ? e.message : e);
+        return { status: 'error', httpStatus: e?.httpStatus ?? null };
+    }
+}
+
 /** 최근 days일 안에 생긴 미해결 오류를 많이 난 순으로 10개 */
 export async function fetchSentryReport(days, env = process.env, fetchImpl = fetch) {
     const cfg = sentryConfig(env);

@@ -1,5 +1,6 @@
 // Vercel Serverless Function: 운영 콘솔 "분석" 탭 — PostHog 이용 분석 + Sentry 오류 요약
 // Endpoint: GET /api/adminAnalytics?days=7|30|90
+//           GET /api/adminAnalytics?view=users  (회원별 최근 90일 이용 기록 — 운영 콘솔 사용자 목록용)
 //           Authorization: Bearer <Supabase access token>
 //
 // 관리자 확인은 서버가 직접 한다(adminSales와 같은 방식): 토큰으로 사용자를 확인하고 profiles.role='admin'이 아니면 403.
@@ -7,7 +8,7 @@
 // 어떤 환경 변수 이름이 비었는지만 알려 준다(값은 절대 응답에 넣지 않는다).
 import { applyCors, createRateLimiter } from './_lib/http.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
-import { ALLOWED_DAYS, fetchPosthogReport, fetchSentryReport } from './_lib/analytics.js';
+import { ALLOWED_DAYS, fetchPosthogReport, fetchPosthogUserActivity, fetchSentryReport } from './_lib/analytics.js';
 
 const isRateLimited = createRateLimiter(20);
 const CACHE_MS = 60_000;
@@ -44,6 +45,10 @@ export default async function handler(req, res) {
     if (!db) return res.status(503).json({ error: 'server_unavailable' });
     const admin = await requireAdmin(req, db);
     if (!admin) return res.status(403).json({ error: 'forbidden' });
+
+    if (req.query?.view === 'users') {
+        return res.status(200).json(await cached('posthog:users', () => fetchPosthogUserActivity()));
+    }
 
     const days = Number(req.query?.days ?? 7);
     if (!ALLOWED_DAYS.includes(days)) return res.status(400).json({ error: 'invalid_days' });

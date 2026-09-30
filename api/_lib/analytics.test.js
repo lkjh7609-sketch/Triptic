@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ALLOWED_DAYS, fetchPosthogReport, fetchSentryReport, posthogConfig, sentryConfig } from './analytics.js';
+import { ALLOWED_DAYS, fetchPosthogReport, fetchPosthogUserActivity, fetchSentryReport, posthogConfig, sentryConfig } from './analytics.js';
 
 const PH = { POSTHOG_PERSONAL_API_KEY: 'k', POSTHOG_PROJECT_ID: '636703' };
 const SE = { SENTRY_AUTH_TOKEN: 't', SENTRY_ORG: 'triptic-kg', SENTRY_PROJECT: 'javascript-react' };
@@ -135,5 +135,30 @@ describe('Sentry 토큰 정리와 진단', () => {
         const f = vi.fn().mockResolvedValue(jsonRes([]));
         await fetchSentryReport(7, SE, f);
         expect(f).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('fetchPosthogUserActivity', () => {
+    it('키가 없으면 연결 전 — 외부 호출 없음', async () => {
+        const f = vi.fn();
+        const r = await fetchPosthogUserActivity({}, f);
+        expect(r.status).toBe('not_configured');
+        expect(f).not.toHaveBeenCalled();
+    });
+
+    it('회원 UUID별로 매핑하고 쿼리는 UUID 모양·90일로 고정', async () => {
+        const f = vi.fn().mockResolvedValueOnce(jsonRes({ results: [['11111111-1111-1111-1111-111111111111', 12, 7, 3, '2026-09-30 06:00:00']] }));
+        const r = await fetchPosthogUserActivity(PH, f);
+        expect(r.status).toBe('ok');
+        expect(r.users['11111111-1111-1111-1111-111111111111']).toEqual({ events: 12, views: 7, days: 3, lastSeen: '2026-09-30 06:00:00' });
+        const q = JSON.parse(f.mock.calls[0][1].body).query.query;
+        expect(q).toContain('interval 90 day');
+        expect(q).toContain('match(distinct_id');
+    });
+
+    it('오류는 상태 번호만 알린다', async () => {
+        const f = vi.fn().mockResolvedValue(jsonRes({ detail: 'secret' }, false, 403));
+        const r = await fetchPosthogUserActivity(PH, f);
+        expect(r).toEqual({ status: 'error', httpStatus: 403 });
     });
 });

@@ -29,6 +29,8 @@
     "planPro": "付費",
     "tripUsageFree": "已用行程 {{used}}/{{limit}} 個・剩餘 {{left}} 個",
     "tripUsagePro": "已建立行程 {{used}} 個・無上限",
+    "activityLine": "最後造訪 {{last}}・活動 {{days}} 天・瀏覽畫面 {{views}} 次（近 {{window}} 天）",
+    "activityNone": "近 {{window}} 天無造訪紀錄（僅統計登入後的紀錄）",
     "tripLimitRelaxed": "已套用上限 {{limit}} 個（原為 {{base}} 個）",
     "grantPro": "授予付費方案",
     "revokePro": "改回免費",
