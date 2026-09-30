@@ -261,7 +261,9 @@
     "maxImagesError": "이미지는 최대 {{max}}장까지 첨부할 수 있어요.",
     "uploadImageError": "이미지 업로드에 실패했어요.",
     "moderationBlockedError": "커뮤니티 가이드라인을 위반하는 내용이 포함돼 있어 게시가 차단됐어요.",
-    "submitError": "게시에 실패했어요. 잠시 후 다시 시도해 주세요."
+    "submitError": "게시에 실패했어요. 잠시 후 다시 시도해 주세요.",
+    "allowCopy": "첨부한 일정을 다른 사람이 복사할 수 있게 허용",
+    "allowCopyHint": "허용하면 이 글을 보는 사람이 일정을 자기 여행으로 복사할 수 있어요. 경비·예약 서류는 복사되지 않아요."
   },
   "shared": {
     "loadError": "공유 링크가 만료되었거나 찾을 수 없어요.",
@@ -280,12 +282,16 @@
     "header": "첨부된 일정",
     "loadError": "이 일정을 불러올 수 없어요.",
     "forkButton": "이 일정 복제해서 내 계획에 담기",
-    "forkConfirm": "이 일정을 복제해서 내 계획에 담을까요? 날짜·장소·숙소·항공편만 복사되고, 이후엔 자유롭게 수정할 수 있어요.",
+    "forkConfirm": "이 일정을 내 여행으로 복사할까요? 장소·숙소·항공편만 복사되고 경비·서류는 제외돼요. 출발일을 고르면 일 수는 그대로 그 날부터 이어져요.",
     "forkKeep": "그냥 둘러보기",
     "forkProceed": "복제하기",
     "forkTitleSuffix": " (사본)",
     "forkSuccess": "내 계획에 저장했어요!",
-    "forkError": "복제에 실패했어요."
+    "forkError": "복제에 실패했어요.",
+    "forkDialogTitle": "일정 복사하기",
+    "forkStartLabel": "출발일",
+    "forkRange": "{{start}} ~ {{end}} ({{days}}일)",
+    "copyNotAllowed": "작성자가 일정 복사를 허용하지 않았어요."
   },
   "continent": {
     "AS": {
@@ -492,6 +498,45 @@
       "submitError": "후기 저장에 실패했어요. 잠시 후 다시 시도해 주세요.",
       "doneTitle": "후기를 남겨주셔서 고마워요",
       "doneDesc": "별점은 상대방 닉네임 옆에 평균으로만 표시돼요."
+    },
+    "prefs": {
+      "ageLabel": "원하는 나이대 (여러 개 선택 가능)",
+      "genderLabel": "원하는 성별",
+      "tagLabel": "태그 (최대 {{max}}개)",
+      "hint": "선택 사항이에요. 참고용이고 신청을 막지는 않아요."
+    },
+    "ages": {
+      "10s": "10대",
+      "20s": "20대",
+      "30s": "30대",
+      "40s": "40대",
+      "50s": "50대",
+      "60s": "60대 이상"
+    },
+    "gender": {
+      "any": "성별 무관",
+      "female": "여성",
+      "male": "남성",
+      "anyShort": "무관"
+    },
+    "tags": {
+      "photo": "사진촬영",
+      "cafe": "카페투어",
+      "night": "야경투어",
+      "beer": "맥주한잔",
+      "localfood": "로컬맛집",
+      "healing": "힐링여행",
+      "tour": "투어",
+      "shopping": "쇼핑",
+      "activity": "액티비티",
+      "nature": "자연",
+      "culture": "문화예술",
+      "budget": "저예산"
     }
+  },
+  "bookmark": {
+    "saveAria": "저장하기 (저장 {{count}}명)",
+    "savedAria": "저장 취소 (저장 {{count}}명)",
+    "error": "저장 목록을 바꾸지 못했어요. 잠시 뒤 다시 해 주세요."
   }
 }

@@ -10,6 +10,8 @@ import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { useDestinations } from './hooks/useDestinations';
 import { useCreateCompanionPost } from './hooks/useCompanionPosts';
 import { DestinationSelector } from './DestinationSelector';
+import { CompanionPrefsFields } from './CompanionPrefsFields';
+import { EMPTY_PREFS, type CompanionPrefs } from './companionPrefs';
 import './CommunityDesign.css';
 import styles from './CompanionComposeScreen.module.css';
 
@@ -32,6 +34,7 @@ export function CompanionComposeScreen() {
   const [startDateStr, setStartDateStr] = useState('');
   const [endDateStr, setEndDateStr] = useState('');
   const [groupSize, setGroupSize] = useState(2);
+  const [prefs, setPrefs] = useState<CompanionPrefs>(EMPTY_PREFS);
   const [showCalendar, setShowCalendar] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -77,6 +80,7 @@ export function CompanionComposeScreen() {
         endDate: endDateStr,
         groupSize,
         userId: user!.id,
+        prefs,
       });
       if (result.status === 'removed') {
         setStatusMessage({ type: 'error', text: t('compose.moderationBlockedError') });
@@ -175,6 +179,10 @@ export function CompanionComposeScreen() {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className={styles.card}>
+        <CompanionPrefsFields value={prefs} onChange={setPrefs} />
       </div>
 
       {statusMessage ? (

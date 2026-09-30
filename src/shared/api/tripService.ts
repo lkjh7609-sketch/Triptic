@@ -21,6 +21,7 @@ import { generateShortId } from '@/shared/utils/id';
 import { captureError, track } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
 import { showToast } from '@/shared/ui/toast';
+import { forkDates, shiftYmd } from '@/features/plan/forkDates';
 import { reconstructTripContent, type TripItineraryRaw, type TripDayRow, type ItineraryItemRow } from '@/features/plan/itineraryTransform';
 
 /** allProjects[name] 형태의 로컬 프로젝트 (2.x, snapshot 스키마) */
@@ -119,6 +120,8 @@ export interface PostTripPayload {
   days: TripDayRow[];
   items: ItineraryItemRow[];
   legs: unknown[];
+  /** 작성자가 "일정 복사 허용"을 켰는지(0070). 없으면(아직 0070 전) 허용으로 본다 */
+  allow_copy?: boolean;
 }
 
 export class TripService {
@@ -411,26 +414,39 @@ export class TripService {
 
   /** 다른 사람의 공개 일정을 내 계정으로 복제 — 경비/서류/예약확정서는 복사하지
    * 않는다(원래 get_shared_trip과 같은 최소 노출 원칙, days/items/hotels/
-   * flights만). forked_from_trip_id에 원본을 남겨 둔다. */
-  async forkPostTrip(postId: string, newTitle: string): Promise<TripRow> {
+   * flights만). forked_from_trip_id에 원본을 남겨 둔다.
+   * startDate를 주면 일 수는 그대로 두고 그 날부터 이어지게 날짜를 옮긴다(항공편 날짜도 같이).
+   * 작성자가 복사를 허용하지 않은 글(allow_copy === false, 0070)은 복사하지 않는다 —
+   * 값이 없으면(아직 0070 전) 예전처럼 허용이다. */
+  async forkPostTrip(postId: string, newTitle: string, startDate?: string | null): Promise<TripRow> {
     const payload = await this.getPostTrip(postId);
     if (!payload) throw new Error('Trip not found or not published');
+    if (payload.allow_copy === false) throw new Error('Copying is not allowed for this post');
     const content = reconstructTripContent(
       { days: payload.days, items: payload.items, expenses: [] },
       { name: payload.trip.city, lat: payload.trip.city_lat, lng: payload.trip.city_lng },
     );
+    const totalDays = payload.trip.total_days ?? payload.days.length;
+    const dates = forkDates(payload.trip.start_date, totalDays, startDate);
+    const flights = content.flights;
+    if (dates.offsetDays !== 0) {
+      for (const leg of ['outbound', 'return'] as const) {
+        const f = flights[leg];
+        if (f?.date) flights[leg] = { ...f, date: shiftYmd(f.date, dates.offsetDays) };
+      }
+    }
     const project: LocalProject = {
       city: payload.trip.city,
       cityLat: payload.trip.city_lat,
       cityLng: payload.trip.city_lng,
-      startDate: payload.trip.start_date,
-      endDate: payload.trip.end_date,
+      startDate: dates.startDate,
+      endDate: dates.endDate,
       totalDays: payload.trip.total_days,
       currency: payload.trip.base_currency,
       data: content.data,
       hotels: content.hotels,
       meals: content.meals,
-      flights: content.flights,
+      flights,
       dayCities: content.dayCities,
     };
     const row = await this.saveTrip(project, newTitle);

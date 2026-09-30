@@ -80,6 +80,12 @@ export interface Post {
   images?: PostImage[];
   /** 내가 좋아요를 눌렀는지(클라이언트에서 reactions 별도 조회 후 채움) */
   likedByMe?: boolean;
+  /** 작성자가 "첨부한 일정 복사 허용"을 켰는지(0070) */
+  allow_copy?: boolean;
+  /** 이 글을 저장(북마크)한 사람 수(0070, get_post_bookmark_counts로 채움) */
+  bookmark_count?: number;
+  /** 내가 저장했는지 */
+  bookmarkedByMe?: boolean;
 }
 
 export interface Comment {
@@ -149,6 +155,12 @@ export interface CompanionPost {
   destination?: Pick<Destination, 'id' | 'slug' | 'name'>;
   /** 내가 이 글에 낸 신청(없으면 아직 지원 안 함) */
   myApplication?: CompanionApplication;
+  /** 원하는 나이대(비어 있으면 무관) — 'COMPANION_AGES' 중 여러 개(0070) */
+  pref_ages?: string[];
+  /** 원하는 성별(0070) */
+  pref_gender?: 'any' | 'female' | 'male';
+  /** 태그(최대 3개, 'COMPANION_TAGS'의 키)(0070) */
+  tags?: string[];
 }
 
 export interface CompanionApplication {

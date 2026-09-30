@@ -3,13 +3,16 @@ import i18next from '@/shared/i18n';
 import { tripService } from '@/shared/api/tripService';
 import { tripsQueryKey } from '@/features/plan/hooks/useTrips';
 import {
+  addBookmark,
   createPost,
   deleteOwnPost,
   getPost,
   likePost,
+  listBookmarkedPosts,
   listPopularPosts,
   listPosts,
   listUserPosts,
+  removeBookmark,
   unlikePost,
   type PostCursor,
 } from '../communityService';
@@ -115,9 +118,35 @@ export function usePostTrip(postId: string | undefined) {
 export function useForkPostTrip() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ postId, title }: { postId: string; title: string }) => tripService.forkPostTrip(postId, title),
+    mutationFn: ({ postId, title, startDate }: { postId: string; title: string; startDate?: string | null }) =>
+      tripService.forkPostTrip(postId, title, startDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+    },
+  });
+}
+
+export const bookmarkedPostsQueryKey = (userId: string | null) => ['community', 'bookmarked', userId ?? ''] as const;
+
+/** 저장한 여행기 — 내 여행(계획) 탭의 "저장한 여행기" 구역 */
+export function useBookmarkedPosts(userId: string | null) {
+  return useQuery({
+    queryKey: bookmarkedPostsQueryKey(userId),
+    queryFn: () => listBookmarkedPosts(userId!),
+    enabled: !!userId,
+  });
+}
+
+/** 저장(북마크) 토글 — 끝나면 글 목록·단건·저장 목록을 다시 받는다(저장 수가 바로 바뀌게) */
+export function useToggleBookmark(postId: string, userId: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (bookmarked: boolean) => {
+      if (!userId) throw new Error(i18next.t('common:auth.loginRequired'));
+      return bookmarked ? removeBookmark(userId, postId) : addBookmark(userId, postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community'] });
     },
   });
 }

@@ -5,6 +5,7 @@
  * 합친다.
  */
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
+import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
 import i18next, { normalizeLocale } from '@/shared/i18n';
 import type {
@@ -92,11 +93,13 @@ async function fetchMyLikedPostIds(postIds: string[], userId: string | null): Pr
 
 async function enrichPosts(rows: Post[], viewerId: string | null, locale = currentLocale()): Promise<Post[]> {
   if (rows.length === 0) return [];
-  const [profileMap, nameMap, imageMap, likedSet] = await Promise.all([
+  const [profileMap, nameMap, imageMap, likedSet, bookmarkCounts, bookmarkedSet] = await Promise.all([
     fetchProfilesByIds(rows.map((r) => r.author_id)),
     fetchDestinationNamesByIds(rows.map((r) => r.destination_id).filter((id): id is string => id !== null), locale),
     fetchImagesByPostIds(rows.map((r) => r.id)),
     fetchMyLikedPostIds(rows.map((r) => r.id), viewerId),
+    fetchBookmarkCounts(rows.map((r) => r.id)),
+    fetchMyBookmarkedPostIds(rows.map((r) => r.id), viewerId),
   ]);
   return rows.map((r) => ({
     ...r,
@@ -104,7 +107,63 @@ async function enrichPosts(rows: Post[], viewerId: string | null, locale = curre
     destination: r.destination_id ? { id: r.destination_id, slug: '', name: nameMap.get(r.destination_id) ?? '' } : undefined,
     images: imageMap.get(r.id) ?? [],
     likedByMe: likedSet.has(r.id),
+    bookmark_count: bookmarkCounts[r.id] ?? 0,
+    bookmarkedByMe: bookmarkedSet.has(r.id),
   }));
+}
+
+// ── 여행기 저장(북마크, 0070) ─────────────────────────────────────────────
+/** 글마다 저장한 사람 수(평범한 객체). 테이블이 아직 없거나 실패하면 빈 결과 — 저장 수만 0으로 보인다 */
+async function fetchBookmarkCounts(postIds: string[]): Promise<Record<string, number>> {
+  if (postIds.length === 0) return {};
+  const { data, error } = await getSupabaseClient().rpc('get_post_bookmark_counts', { p_post_ids: postIds });
+  if (error) return {};
+  const counts: Record<string, number> = {};
+  for (const row of (data ?? []) as { post_id: string; bookmark_count: number }[]) counts[row.post_id] = row.bookmark_count;
+  return counts;
+}
+
+async function fetchMyBookmarkedPostIds(postIds: string[], viewerId: string | null): Promise<Set<string>> {
+  if (!viewerId || postIds.length === 0) return new Set();
+  const { data, error } = await getSupabaseClient().from('post_bookmarks').select('post_id').eq('user_id', viewerId).in('post_id', postIds);
+  if (error) return new Set();
+  return new Set((data ?? []).map((r) => r.post_id as string));
+}
+
+export async function addBookmark(userId: string, postId: string): Promise<void> {
+  const { error } = await getSupabaseClient().from('post_bookmarks').insert({ user_id: userId, post_id: postId });
+  // 이미 저장돼 있으면(23505) 성공으로 친다
+  if (error && error.code !== '23505') throw error;
+}
+
+export async function removeBookmark(userId: string, postId: string): Promise<void> {
+  const { error } = await getSupabaseClient().from('post_bookmarks').delete().eq('user_id', userId).eq('post_id', postId);
+  if (error) throw error;
+}
+
+/** 내가 저장한 여행기(최근 저장 순) — 지워지거나 숨겨진 글은 빠진다 */
+export async function listBookmarkedPosts(userId: string): Promise<Post[]> {
+  const supabase = getSupabaseClient();
+  const { data: marks, error } = await supabase
+    .from('post_bookmarks')
+    .select('post_id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  const ids = (marks ?? []).map((m) => m.post_id as string);
+  if (ids.length === 0) return [];
+  const { data: rows, error: postsError } = await supabase.from('posts').select('*').in('id', ids).eq('status', 'published').is('deleted_at', null);
+  if (postsError) throw postsError;
+  const byId = new Map(((rows as Post[]) ?? []).map((p) => [p.id, p]));
+  const ordered = ids.map((id) => byId.get(id)).filter((p): p is Post => !!p);
+  return enrichPosts(ordered, userId);
+}
+
+/** 글 작성 뒤 "일정 복사 허용"을 켠다(작성자만 — RLS "update own posts"). 새 글의 기본값은 허용 안 함 */
+export async function setPostAllowCopy(postId: string, allow: boolean): Promise<void> {
+  const { error } = await getSupabaseClient().from('posts').update({ allow_copy: allow }).eq('id', postId);
+  if (error) throw error;
 }
 
 // ── 여행지 ──────────────────────────────────────────────────────────────
@@ -236,6 +295,8 @@ export async function createPost(input: {
   tripId?: string | null;
   images?: { storagePath: string; width?: number; height?: number }[];
   userId: string;
+  /** 첨부한 일정을 다른 사람이 복사해도 되는가(0070) — 일정을 첨부했을 때만 의미 있다 */
+  allowCopy?: boolean;
 }): Promise<CreatePostResult> {
   if (!can('community.post', { userId: input.userId })) {
     throw new Error(i18next.t('community:errors.postingUnavailable'));
@@ -251,7 +312,17 @@ export async function createPost(input: {
     },
   });
   if (error) throw error;
-  return data as CreatePostResult;
+  const result = data as CreatePostResult;
+  // 게시는 moderate-content 함수가 하고(복사 허용 값은 그 함수가 모른다), 글이 만들어진 뒤 작성자가 켠다.
+  // 실패해도 글은 올라간 상태라 막지 않는다 — 기본값(허용 안 함)으로 남고 작성자가 나중에 다시 켤 수 있다
+  if (input.allowCopy && input.tripId && result.id && result.status !== 'removed') {
+    try {
+      await setPostAllowCopy(result.id, true);
+    } catch (err) {
+      captureError(err, { context: 'setPostAllowCopy' });
+    }
+  }
+  return result;
 }
 
 /** 본인 글 소프트 삭제(soft delete own posts RLS) */
