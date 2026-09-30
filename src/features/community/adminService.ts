@@ -158,6 +158,43 @@ export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Pr
   if (error) throw error;
 }
 
+// ── 보관함(0067) — 사용자가 삭제한 글·취소한 동행 모집. 이용자에게는 공개되지 않고 운영자만 읽는다 ─────────────
+export interface ArchivedItem {
+  id: number;
+  source_table: 'posts' | 'companion_posts';
+  source_id: string;
+  author_id: string;
+  author_name: string | null;
+  author_handle: string | null;
+  reason: 'user_deleted' | 'user_cancelled' | string;
+  archived_at: string;
+  original_created_at: string | null;
+  preview: string;
+  comment_count: number;
+}
+
+export interface ArchivedDetail {
+  snapshot: { title?: string; body?: string; created_at?: string } & Record<string, unknown>;
+  children: { comments?: Array<{ author_id: string; body: string; created_at?: string }> };
+  reason: string;
+  archived_at: string;
+}
+
+export async function adminListArchived(page: number, pageSize: number): Promise<{ rows: ArchivedItem[]; hasMore: boolean }> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_list_archived_content', { p_limit: pageSize + 1, p_offset: page * pageSize });
+  if (error) throw error;
+  const rows = (data as ArchivedItem[]) ?? [];
+  return { rows: rows.slice(0, pageSize), hasMore: rows.length > pageSize };
+}
+
+export async function adminGetArchived(id: number): Promise<ArchivedDetail | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_get_archived_content', { p_id: id });
+  if (error) throw error;
+  return (data as ArchivedDetail | null) ?? null;
+}
+
 /** 사용자별 무료 여행 생성 한도를 정한다(0064) — 더하기가 아니라 값 지정이라 두 번 눌려도 이중으로 늘지 않는다 */
 export async function adminSetTripLimit(userId: string, limit: number): Promise<number> {
   const supabase = getSupabaseClient();

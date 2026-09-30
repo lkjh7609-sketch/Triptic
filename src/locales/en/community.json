@@ -9,7 +9,8 @@
       "users": "User plans",
       "feedback": "Feedback",
       "sales": "Sales",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "archive": "Archive"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -140,6 +141,21 @@
       "invalid": "Enter a number from 0 to {{max}}",
       "preview": "After saving: limit {{limit}} · {{left}} left",
       "full": "Limit reached"
+    },
+    "archive": {
+      "kindPost": "Post",
+      "kindCompanion": "Companion listing",
+      "reason": {
+        "user_deleted": "Deleted by author",
+        "user_cancelled": "Cancelled by author"
+      },
+      "noText": "(no text)",
+      "comments": "{{count}} comments kept",
+      "view": "View",
+      "close": "Collapse",
+      "loadError": "Couldn't load the archive",
+      "empty": "Nothing archived",
+      "note": "Posts users deleted and companion listings they cancelled. Not shown to users; removed when the author deletes their account."
     }
   },
   "report": {

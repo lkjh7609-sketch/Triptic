@@ -9,7 +9,8 @@
       "users": "ユーザープラン",
       "feedback": "ご意見",
       "sales": "販売",
-      "analytics": "分析"
+      "analytics": "分析",
+      "archive": "保管庫"
     },
     "reportDetail": "通報の詳細: {{detail}}",
     "dismiss": "却下",
@@ -138,6 +139,21 @@
       "invalid": "0〜{{max}}の数字を入力してください",
       "preview": "保存後：上限{{limit}}件・残り{{left}}件",
       "full": "上限に到達"
+    },
+    "archive": {
+      "kindPost": "投稿",
+      "kindCompanion": "同行募集",
+      "reason": {
+        "user_deleted": "作成者が削除",
+        "user_cancelled": "作成者が取消"
+      },
+      "noText": "（内容なし）",
+      "comments": "コメント{{count}}件も保管",
+      "view": "内容を見る",
+      "close": "閉じる",
+      "loadError": "保管庫を読み込めませんでした",
+      "empty": "保管された投稿はありません",
+      "note": "ユーザーが削除した投稿と取り消した同行募集です。ユーザーには公開されず、作成者が退会すると一緒に削除されます。"
     }
   },
   "report": {
