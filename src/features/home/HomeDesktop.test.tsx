@@ -44,11 +44,11 @@ describe('HomeDesktop — 모바일/PC 구성', () => {
     for (const label of ['서류 올리기', '일정 자동 완성', '함께 편집하기']) expect(screen.getByText(label)).toBeInTheDocument();
   });
 
-  it('PC: 기존처럼 검색창이 있고 시작하기 안내는 없다', () => {
+  it('PC: 검색창이 있고 시작하기 안내도 모바일처럼 보인다', () => {
     isDesktop.value = true;
     renderHome();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByText('여행 계획하기')).toBeInTheDocument();
-    expect(screen.queryByText('트립틱 시작하기')).not.toBeInTheDocument();
+    expect(screen.getByText('트립틱 시작하기')).toBeInTheDocument();
   });
 });
