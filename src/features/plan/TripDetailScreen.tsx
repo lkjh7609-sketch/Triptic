@@ -66,6 +66,7 @@ import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
 import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
 import { cityDisplayName } from './cityName';
+import { isTripDatesLocked } from './tripStatus';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -612,7 +613,7 @@ export function TripDetailScreen() {
           tripEndDate={trip.end_date ?? ''}
           flightsData={flightsData}
           onCommitFlight={handleSaveFlights}
-          onChangeTripDates={handleChangeTripDates}
+          onChangeTripDates={isTripDatesLocked(trip.end_date) ? undefined : handleChangeTripDates}
           onClose={() => setShowReviewSheet(false)}
         />
       ) : null}

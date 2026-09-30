@@ -23,3 +23,14 @@ export function getDDay(startDate: string | null): number | null {
   const diff = differenceInCalendarDays(start, today);
   return diff >= 0 ? diff : null;
 }
+
+/**
+ * 종료일이 지난 여행은 목적지·날짜를 못 바꾼다(서버 트리거 0069가 실제 경계 — 종료일 + 1일 뒤부터).
+ * 지난 여행을 고쳐 새 여행처럼 다시 쓰는 한도 우회를 막는 규칙이고, 일정 내용 편집은 그대로 된다.
+ */
+export function isTripDatesLocked(endDate: string | null | undefined, now: Date = new Date()): boolean {
+  if (!endDate) return false;
+  const end = startOfDay(parseISO(endDate));
+  if (Number.isNaN(end.getTime())) return false;
+  return differenceInCalendarDays(startOfDay(now), end) > 1;
+}
