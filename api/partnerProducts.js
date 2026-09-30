@@ -27,7 +27,8 @@ export default async function handler(req, res) {
 
     try {
         const items = req.query?.kind === 'sim' ? await provider.searchSim(keyword, size) : await provider.search(keyword, size);
-        res.setHeader('Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=86400');
+        // 빈 결과는 캐시하지 않는다 — 일시적으로 비어 온 응답이 6시간 동안 모두에게 나가지 않게
+        res.setHeader('Cache-Control', items.length > 0 ? 'public, s-maxage=21600, stale-while-revalidate=86400' : 'no-store');
         return res.status(200).json({ items });
     } catch (e) {
         console.warn('[partnerProducts] search failed:', e instanceof Error ? e.message : e);

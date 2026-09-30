@@ -24,7 +24,8 @@ interface PartnerProduct {
 type ProductKind = 'tna' | 'sim';
 
 async function fetchMyrealtripProducts(keyword: string, kind: ProductKind, count: number): Promise<PartnerProduct[]> {
-  const params = new URLSearchParams({ provider: 'myrealtrip', q: keyword, size: String(count) });
+  // v: 빈 목록이 서버 캐시(CDN 6시간)에 박혀 있던 것을 새 키로 건너뛴다 — 캐시 모양을 바꿀 때 올린다
+  const params = new URLSearchParams({ provider: 'myrealtrip', q: keyword, size: String(count), v: '2' });
   if (kind === 'sim') params.set('kind', 'sim');
   const res = await fetch(apiUrl(`/api/partnerProducts?${params.toString()}`));
   if (!res.ok) throw new Error(`partnerProducts HTTP ${res.status}`);
@@ -60,8 +61,9 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
   const { data, isLoading } = useQuery({
     queryKey: ['partnerProducts', 'myrealtrip', kind, count, keyword.toLowerCase()],
     queryFn: () => fetchMyrealtripProducts(keyword, kind, count),
-    staleTime: 6 * 60 * 60 * 1000,
-    retry: false,
+    // 빈 목록·실패는 오래 붙잡지 않는다(IndexedDB에도 24시간 저장되므로, 한 번 비면 모바일에서 더보기 버튼만 계속 보였다)
+    staleTime: (query) => (query.state.data && query.state.data.length > 0 ? 6 * 60 * 60 * 1000 : 0),
+    retry: 1,
   });
 
   if (isLoading) {
