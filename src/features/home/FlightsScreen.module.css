@@ -8,6 +8,49 @@
   margin-bottom: var(--space-4);
 }
 
+/* PC: 한국어 항공 탭은 아래 .hero가 머리말이라 작은 머리말은 숨긴다(제목은 h1로 하나만) */
+.hero {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .headerCompact {
+    display: none;
+  }
+
+  .hero {
+    display: block;
+    margin-bottom: var(--space-6);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 4px var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--brand-tint);
+    color: var(--brand-text);
+    font-size: var(--font-caption-size);
+    font-weight: 700;
+  }
+
+  .heroTitle {
+    margin: var(--space-3) 0 var(--space-1);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+
+  .lead {
+    margin: 0;
+    font-size: var(--font-body-size);
+    color: var(--text-muted);
+  }
+}
+
 .title {
   display: flex;
   align-items: center;

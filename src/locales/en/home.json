@@ -75,6 +75,7 @@
   "flights": {
     "title": "Search flights",
     "subtitle": "Compare prices from airlines and travel agencies in one place",
+    "lead": "Pick where and when — compare prices right away on MyRealTrip.",
     "form": {
       "tripType": "Trip type",
       "roundTrip": "Round trip",
@@ -102,7 +103,17 @@
       "needPlaces": "Pick both origin and destination from the list",
       "badDates": "Check the dates — return must be on or after departure",
       "linkError": "Couldn't open the results. Please try again shortly",
-      "opensOnMyrealtrip": "Results and booking open on MyRealTrip"
+      "opensOnMyrealtrip": "Results and booking open on MyRealTrip",
+      "recent": "Recent: {{route}}",
+      "passengerSummary": "Passengers & cabin",
+      "adultN": "Adults {{n}}",
+      "childN": "Children {{n}}",
+      "infantN": "Infants {{n}}",
+      "cabinLabel": "Cabin",
+      "cabinECONOMY": "Economy",
+      "cabinPREMIUM_ECONOMY": "Premium economy",
+      "cabinBUSINESS": "Business",
+      "cabinFIRST": "First"
     },
     "essentials": {
       "title": "Need a SIM or eSIM?",
@@ -112,11 +123,35 @@
       "usimsaDesc": "Compare SIMs and eSIMs by country and get one right away",
       "myrealtripTitle": "{{city}} SIMs & eSIMs on MyRealTrip",
       "seeAll": "See more {{city}} SIMs on MyRealTrip",
-      "simSearch": "{{city}} eSIM"
+      "simSearch": "{{city}} eSIM",
+      "eyebrow": "TRAVEL ESSENTIAL",
+      "usimsaCta": "Check eSIM"
     },
     "esimGlobal": {
       "title": "Need an eSIM for your trip?",
       "subtitle": "Get connected the moment you land — no roaming fees"
+    },
+    "deals": {
+      "title": "Lowest fares from Seoul (Incheon)",
+      "notice": "Prices are saved lowest fares from MyRealTrip, not live. They can change when you book.",
+      "discount": "{{pct}}% below average",
+      "plain": "Lowest round trip",
+      "dates": "{{start}} – {{end}} round trip",
+      "lowest": "Lowest",
+      "priceFrom": "₩{{price}}~",
+      "prev": "Previous deals",
+      "next": "Next deals",
+      "open": "View flights to {{city}}"
+    },
+    "themes": {
+      "title": "Flights by theme",
+      "subtitle": "The cheapest city right now for each theme",
+      "japan": "Nearby Japan",
+      "sea": "Asian getaways",
+      "far": "Europe, Americas & Australia",
+      "meta": "From ₩{{price}} round trip",
+      "metaAirline": "From ₩{{price}} round trip · {{airline}}",
+      "open": "View flights to {{city}}"
     }
   },
   "sections": {

@@ -74,6 +74,7 @@
   "flights": {
     "title": "항공권 검색",
     "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요",
+    "lead": "출발지와 날짜만 고르면 마이리얼트립에서 가격을 바로 비교할 수 있어요.",
     "form": {
       "tripType": "여정",
       "roundTrip": "왕복",
@@ -101,7 +102,17 @@
       "needPlaces": "출발지와 도착지를 목록에서 골라 주세요",
       "badDates": "날짜를 확인해 주세요 — 오는 날은 가는 날 이후여야 해요",
       "linkError": "검색 결과를 열지 못했어요. 잠시 후 다시 시도해 주세요",
-      "opensOnMyrealtrip": "검색 결과와 예약은 마이리얼트립에서 진행돼요"
+      "opensOnMyrealtrip": "검색 결과와 예약은 마이리얼트립에서 진행돼요",
+      "recent": "최근 검색: {{route}}",
+      "passengerSummary": "탑승객 및 좌석 등급",
+      "adultN": "성인 {{n}}명",
+      "childN": "아동 {{n}}명",
+      "infantN": "유아 {{n}}명",
+      "cabinLabel": "좌석 등급",
+      "cabinECONOMY": "일반석",
+      "cabinPREMIUM_ECONOMY": "프리미엄 일반석",
+      "cabinBUSINESS": "비즈니스석",
+      "cabinFIRST": "일등석"
     },
     "essentials": {
       "title": "유심·eSIM도 필요하신가요?",
@@ -111,11 +122,35 @@
       "usimsaDesc": "나라별 유심·eSIM을 한 번에 비교하고 바로 받아요",
       "myrealtripTitle": "마이리얼트립 {{city}} 유심·eSIM",
       "seeAll": "마이리얼트립에서 {{city}} 유심 더 보기",
-      "simSearch": "{{city}} 유심"
+      "simSearch": "{{city}} 유심",
+      "eyebrow": "TRAVEL ESSENTIAL",
+      "usimsaCta": "eSIM 확인하기"
     },
     "esimGlobal": {
       "title": "여행용 eSIM도 필요하신가요?",
       "subtitle": "로밍 요금 걱정 없이 도착하자마자 연결하세요"
+    },
+    "deals": {
+      "title": "서울(인천) 출발 최저가 특가",
+      "notice": "가격은 실시간이 아니라 마이리얼트립이 모아 둔 최저가예요. 예약할 때 달라질 수 있어요.",
+      "discount": "평균보다 {{pct}}% 저렴",
+      "plain": "왕복 최저가",
+      "dates": "{{start}} – {{end}} 왕복",
+      "lowest": "최저가",
+      "priceFrom": "{{price}}원~",
+      "prev": "이전 특가",
+      "next": "다음 특가",
+      "open": "{{city}} 항공권 보기"
+    },
+    "themes": {
+      "title": "테마로 고르는 항공권",
+      "subtitle": "테마마다 지금 가장 싼 도시를 골랐어요",
+      "japan": "가까운 일본",
+      "sea": "아시아 휴양",
+      "far": "유럽·미주·호주",
+      "meta": "왕복 최저 {{price}}원~",
+      "metaAirline": "왕복 최저 {{price}}원~ · {{airline}}",
+      "open": "{{city}} 항공권 보기"
     }
   },
   "sections": {
