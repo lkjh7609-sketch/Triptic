@@ -1,4 +1,4 @@
-import { Lock as LockIcon, PenLine, Users } from 'lucide-react';
+import { Lock as LockIcon, PenLine, Users, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -132,7 +132,9 @@ export function CommunityScreen() {
         </div>
 
         {tab !== 'companion' && destinations && destinations.length > 0 ? (
-          <DestinationSelector destinations={destinations} />
+          <div className={styles.selectorGutter}>
+            <DestinationSelector destinations={destinations} />
+          </div>
         ) : null}
 
         {tab !== 'companion' && followedDestinations.length > 0 ? (
@@ -161,6 +163,9 @@ export function CommunityScreen() {
       ) : posts.length === 0 ? (
         <div className={styles.emptyGrid}>
           <div className={styles.emptyMainCard}>
+            <span className={styles.emptyIcon} aria-hidden="true">
+              <MessageCircle size={24} />
+            </span>
             <h3>{tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}</h3>
             <p>{t('feed.emptySub')}</p>
             <Link to="/community/compose" className={styles.emptyCta} onClick={requireLogin}>{t('feed.writeFirst')}</Link>

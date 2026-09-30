@@ -11,7 +11,7 @@
 .fixedLabel {
   font-size: var(--font-caption-size);
   font-weight: 700;
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .fixedName {

@@ -61,7 +61,7 @@
 
 .badge {
   background: var(--danger-tint);
-  color: var(--danger);
+  color: var(--danger-text);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -121,7 +121,7 @@
 }
 
 .primaryBtn {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
 }
 
@@ -157,7 +157,7 @@
 .searchInput {
   flex: 1;
   min-height: 44px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
   font-size: var(--font-body-size);
@@ -195,7 +195,7 @@
   margin-top: 2px;
   padding: 1px 8px;
   border-radius: var(--radius-pill);
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -207,7 +207,7 @@
 .planBadgePro {
   composes: planBadge;
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 /* 여행 생성 수 / 무료 한도, 임시 완화 표시 */
@@ -225,8 +225,8 @@
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: var(--brand-tint);
-  color: var(--brand);
-  font-size: 11px;
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
   font-weight: 700;
   line-height: 18px;
 }
@@ -252,7 +252,7 @@
   width: 64px;
   min-height: 32px;
   padding: 0 var(--space-2);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-md);
   background: var(--surface-card);
   color: var(--text-primary);
@@ -294,8 +294,8 @@
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: var(--surface-subtle);
-  color: var(--danger);
-  font-size: 11px;
+  color: var(--danger-text);
+  font-size: var(--font-caption-size);
   font-weight: 700;
   line-height: 18px;
 }

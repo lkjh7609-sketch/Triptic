@@ -51,7 +51,7 @@
 }
 
 .totalText {
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
   text-transform: uppercase;
 }

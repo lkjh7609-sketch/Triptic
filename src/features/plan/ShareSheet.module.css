@@ -44,7 +44,7 @@
 .linkInput {
   flex: 1;
   min-height: 44px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
   font-size: var(--font-caption-size);
@@ -63,7 +63,7 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--danger);
   background: var(--danger-tint);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .secondary {
@@ -80,7 +80,7 @@
   min-height: 44px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 600;
 }
@@ -123,7 +123,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-size: var(--font-caption-size);
   font-weight: 600;
@@ -157,6 +157,6 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface-card);
-  color: var(--danger);
+  color: var(--danger-text);
   font-size: var(--font-caption-size);
 }

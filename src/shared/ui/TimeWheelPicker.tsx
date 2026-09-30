@@ -76,7 +76,7 @@ export function TimeWheelPicker({ value, onChange }: TimeWheelPickerProps) {
       <div className={styles.column} ref={hourRef} onScroll={() => handleScroll(hourRef, 'hour')}>
         <div className={styles.pad} />
         {hours.map(h => (
-          <div key={h} className={styles.item} style={{ color: h === hour ? 'var(--brand)' : '' }}>{h}</div>
+          <div key={h} className={styles.item} style={{ color: h === hour ? 'var(--brand-text)' : '' }}>{h}</div>
         ))}
         <div className={styles.pad} />
       </div>
@@ -86,7 +86,7 @@ export function TimeWheelPicker({ value, onChange }: TimeWheelPickerProps) {
       <div className={styles.column} ref={minRef} onScroll={() => handleScroll(minRef, 'min')}>
         <div className={styles.pad} />
         {minutes.map(m => (
-          <div key={m} className={styles.item} style={{ color: m === minute ? 'var(--brand)' : '' }}>{m}</div>
+          <div key={m} className={styles.item} style={{ color: m === minute ? 'var(--brand-text)' : '' }}>{m}</div>
         ))}
         <div className={styles.pad} />
       </div>

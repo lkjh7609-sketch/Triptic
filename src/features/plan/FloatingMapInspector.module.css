@@ -7,7 +7,7 @@
   min-width: 320px;
   max-width: calc(100% - 64px);
   background: var(--surface-card, #FFFFFF);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   box-shadow: 0 20px 48px -8px rgba(15, 41, 66, 0.12), 0 2px 8px rgba(15, 41, 66, 0.04);
   border: 1px solid var(--border-subtle, #EFECE6);
   overflow: hidden;
@@ -62,11 +62,11 @@
   flex-shrink: 0;
   min-width: 0;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted, #718096);
   background: var(--surface-subtle, #F7FAFC);
   padding: 4px 8px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
 }
 
@@ -76,7 +76,7 @@
   color: white;
   border: none;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -87,8 +87,10 @@
   transition: all 0.2s;
 }
 
-.actionBtn:hover {
-  background: var(--brand-hover, #EA580C);
+@media (hover: hover) {
+  .actionBtn:hover {
+    background: var(--brand-hover);
+  }
 }
 
 /* 메모 칩: 한 줄 유지, 지도 폭보다 길면 말줄임 */

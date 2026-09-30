@@ -48,7 +48,7 @@
 
 .scopeBadge {
   font-size: var(--font-caption-size);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .scopeDesc {

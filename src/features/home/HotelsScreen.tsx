@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Briefcase } from 'lucide-react';
+import { BedDouble } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import { TripHotelsSection } from './TripHotelsSection';
@@ -23,7 +23,7 @@ export function HotelsScreen() {
       <div className={styles.wrap}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            <Briefcase size={22} aria-hidden="true" /> {t('hotels.title')}
+            <BedDouble size={22} aria-hidden="true" /> {t('hotels.title')}
           </h1>
           <p className={styles.subtitle}>{t('hotels.subtitle')}</p>
         </header>

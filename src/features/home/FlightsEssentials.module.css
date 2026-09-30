@@ -28,8 +28,10 @@
   text-decoration: none;
 }
 
-.usimsa:hover {
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  .usimsa:hover {
+    border-color: var(--border-strong);
+  }
 }
 
 .usimsaIcon {
@@ -41,7 +43,7 @@
   height: 40px;
   border-radius: var(--radius-pill);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .usimsaText {

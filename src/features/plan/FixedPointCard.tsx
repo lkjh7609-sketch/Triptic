@@ -51,14 +51,14 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
         <span className={styles.fixedName}>
           {flight.dep.name || flight.dep.iata || '?'}
           {flight.dep.lat && flight.dep.lng ? (
-            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand-text)', textDecoration: 'none' }}>
               <ExternalLink size={12} />
             </a>
           ) : null}
           {" → "}
           {flight.arr.name || flight.arr.iata || '?'}
           {flight.arr.lat && flight.arr.lng ? (
-            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand)', textDecoration: 'none' }}>
+            <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand-text)', textDecoration: 'none' }}>
               <ExternalLink size={12} />
             </a>
           ) : null}

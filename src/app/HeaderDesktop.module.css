@@ -10,7 +10,7 @@
   padding: 0 2rem;
   background-color: var(--surface-card);
   border-bottom: 1px solid var(--border-subtle, #EFECE6);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .logo {
@@ -52,30 +52,34 @@
   gap: 0.5rem;
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   transition: background-color 0.2s ease;
 }
 
-.profileContainer:hover {
-  background-color: var(--surface-subtle);
+@media (hover: hover) {
+  .profileContainer:hover {
+    background-color: var(--surface-subtle);
+  }
 }
 
 /* 비로그인 둘러보기 — 프로필 자리 */
 .signInButton {
   border: 1px solid var(--brand);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   padding: 8px 18px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
 
-.signInButton:hover {
-  opacity: 0.9;
+@media (hover: hover) {
+  .signInButton:hover {
+    opacity: 0.9;
+  }
 }
 
 .guestActions {
@@ -140,9 +144,9 @@
   right: 0;
   margin-top: 8px;
   background: var(--surface-card);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   min-width: 200px;
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-subtle);
   padding: 8px 0;
   opacity: 0;
@@ -175,8 +179,10 @@
   cursor: pointer;
 }
 
-.dropdownItem:hover {
-  background-color: var(--surface-subtle);
+@media (hover: hover) {
+  .dropdownItem:hover {
+    background-color: var(--surface-subtle);
+  }
 }
 
 .dropdownDivider {
@@ -189,7 +195,7 @@
   width: 40px;
   height: 24px;
   background-color: var(--surface-sunken, #E2DFD6);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   position: relative;
   transition: background-color 0.3s;
 }
@@ -207,7 +213,7 @@
   top: 3px;
   left: 3px;
   transition: transform 0.3s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .toggleOn .toggleThumb {
@@ -218,8 +224,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--brand);
-  color: #fff;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   font-size: 14px;
   font-weight: 700;
 }

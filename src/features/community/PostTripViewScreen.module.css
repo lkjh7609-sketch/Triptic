@@ -10,7 +10,7 @@
   appearance: none;
   border: none;
   border-radius: var(--radius-pill);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
   padding: var(--space-3) var(--space-6);
@@ -25,6 +25,6 @@
 
 .forkedNotice {
   font-size: var(--font-caption-size);
-  color: var(--brand);
+  color: var(--brand-text);
   margin: 0;
 }

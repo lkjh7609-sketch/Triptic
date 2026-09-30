@@ -17,7 +17,7 @@
   appearance: none;
   border: 1px solid var(--brand);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-5);
   font-size: var(--font-label-size);
@@ -26,7 +26,7 @@
   cursor: pointer;
 }
 .retry:active {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
 }
 
