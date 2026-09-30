@@ -1,0 +1,184 @@
+.section {
+  max-width: 1120px;
+  margin: 0 auto var(--space-8);
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.titleIcon {
+  color: var(--brand-text);
+}
+
+/* 저장된 최저가라는 안내 — 마이리얼트립 API 이용 조건(실시간이 아님을 화면에 밝힌다) */
+.notice {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-caption-size);
+  line-height: var(--font-caption-line);
+  color: var(--text-tertiary);
+}
+
+.arrows {
+  display: none;
+  gap: var(--space-2);
+}
+
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .arrow:hover {
+    background: var(--surface-subtle);
+  }
+}
+
+/* 카드 줄 — 모바일은 손가락으로 넘기고, PC는 네 장이 보이고 화살표로 넘긴다 */
+.track {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  appearance: none;
+  flex: 0 0 72%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  min-height: 160px;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.tagDiscount,
+.tagPlain {
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+}
+
+.tagDiscount {
+  color: var(--brand-text);
+}
+
+.tagPlain {
+  color: var(--text-tertiary);
+}
+
+.airline {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.city {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.airport {
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+}
+
+.cardBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.dates {
+  font-size: var(--font-caption-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.priceBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.priceLabel {
+  font-size: var(--font-caption-size);
+  color: var(--text-tertiary);
+}
+
+.price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .arrows {
+    display: flex;
+  }
+
+  /* 네 장이 딱 맞게 — 간격 셋을 빼고 4등분 */
+  .card {
+    flex: 0 0 calc((100% - 3 * var(--space-3)) / 4);
+  }
+}

@@ -74,6 +74,7 @@
   "flights": {
     "title": "搜尋機票",
     "subtitle": "一次比較多家航空公司與旅行社的價格",
+    "lead": "選好出發地與日期，即可在 MyRealTrip 立即比價。",
     "form": {
       "tripType": "行程類型",
       "roundTrip": "來回",
@@ -101,7 +102,17 @@
       "needPlaces": "請從清單選擇出發地與目的地",
       "badDates": "請確認日期 — 回程日需在出發日當天或之後",
       "linkError": "無法開啟搜尋結果，請稍後再試",
-      "opensOnMyrealtrip": "搜尋結果與預訂將在 MyRealTrip 進行"
+      "opensOnMyrealtrip": "搜尋結果與預訂將在 MyRealTrip 進行",
+      "recent": "最近搜尋：{{route}}",
+      "passengerSummary": "乘客與艙等",
+      "adultN": "成人 {{n}}位",
+      "childN": "兒童 {{n}}位",
+      "infantN": "嬰兒 {{n}}位",
+      "cabinLabel": "艙等",
+      "cabinECONOMY": "經濟艙",
+      "cabinPREMIUM_ECONOMY": "豪華經濟艙",
+      "cabinBUSINESS": "商務艙",
+      "cabinFIRST": "頭等艙"
     },
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
@@ -111,11 +122,35 @@
       "usimsaDesc": "依國家比較 SIM 卡與 eSIM，立即取得",
       "myrealtripTitle": "MyRealTrip 的{{city}} SIM 卡與 eSIM",
       "seeAll": "在 MyRealTrip 查看更多{{city}} SIM 卡",
-      "simSearch": "{{city}} eSIM"
+      "simSearch": "{{city}} eSIM",
+      "eyebrow": "TRAVEL ESSENTIAL",
+      "usimsaCta": "查看 eSIM"
     },
     "esimGlobal": {
       "title": "旅途中也需要 eSIM 嗎？",
       "subtitle": "免漫遊費，一落地就能上網"
+    },
+    "deals": {
+      "title": "首爾(仁川)出發 最低價特惠",
+      "notice": "價格並非即時，而是 MyRealTrip 儲存的最低價，訂票時可能變動。",
+      "discount": "比平均便宜 {{pct}}%",
+      "plain": "來回最低價",
+      "dates": "{{start}} – {{end}} 來回",
+      "lowest": "最低價",
+      "priceFrom": "{{price}}韓元起",
+      "prev": "上一組特惠",
+      "next": "下一組特惠",
+      "open": "查看飛往{{city}}的機票"
+    },
+    "themes": {
+      "title": "依主題選機票",
+      "subtitle": "為每個主題挑出目前最便宜的城市",
+      "japan": "近距離日本",
+      "sea": "亞洲度假",
+      "far": "歐洲・美洲・澳洲",
+      "meta": "來回最低 {{price}}韓元起",
+      "metaAirline": "來回最低 {{price}}韓元起 · {{airline}}",
+      "open": "查看飛往{{city}}的機票"
     }
   },
   "sections": {

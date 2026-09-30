@@ -6,6 +6,8 @@ import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { HomeSectionTabs } from './HomeSectionTabs';
 import { MyrealtripFlightSearch } from './MyrealtripFlightSearch';
 import { FlightsEssentials } from './FlightsEssentials';
+import { FlightDeals } from './FlightDeals';
+import { FlightThemes } from './FlightThemes';
 import styles from './FlightsScreen.module.css';
 
 /**
@@ -25,16 +27,28 @@ export function FlightsScreen() {
     <>
       <HomeSectionTabs />
       <div className={styles.wrap}>
-        <header className={styles.header}>
+        <header className={provider === 'myrealtrip' ? `${styles.header} ${styles.headerCompact}` : styles.header}>
           <h1 className={styles.title}>
             <Plane size={22} aria-hidden="true" /> {t('flights.title')}
           </h1>
           <p className={styles.subtitle}>{t('flights.subtitle')}</p>
         </header>
+        {/* PC(1024px 이상)의 한국어 항공 탭은 큰 제목형 머리말 — 위 작은 머리말은 모바일에서만 */}
+        {provider === 'myrealtrip' ? (
+          <header className={styles.hero}>
+            <span className={styles.badge}>
+              <Plane size={14} aria-hidden="true" /> {t('flights.title')}
+            </span>
+            <h1 className={styles.heroTitle}>{t('flights.subtitle')}</h1>
+            <p className={styles.lead}>{t('flights.lead')}</p>
+          </header>
+        ) : null}
         {provider === 'myrealtrip' ? (
           <>
             <MyrealtripFlightSearch />
+            <FlightDeals />
             <FlightsEssentials />
+            <FlightThemes />
           </>
         ) : null}
       </div>
