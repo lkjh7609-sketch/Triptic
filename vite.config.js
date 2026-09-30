@@ -12,6 +12,39 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
+        // 홈(/)으로 들어오면 HomeScreen 청크를 HTML 단계에서 미리 받게 한다. 홈은 lazy 라우트라 원래는 메인 JS가 내려받혀
+        // 실행된 뒤에야 청크를 찾기 시작한다(느린 회선에서 그만큼의 직렬 대기). 다른 주소에서는 받지 않는다.
+        // 청크가 다시 가져오는 공용 청크(chunk.imports)도 같이 — 진입 청크만 미리 받으면 대기 사슬이 남는다.
+        name: 'preload-home-chunk',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html, ctx) {
+            const bundle = ctx.bundle;
+            if (!bundle) return html;
+            const home = Object.values(bundle).find(
+              (c) => c.type === 'chunk' && c.isDynamicEntry && /features\/home\/HomeScreen\.tsx$/.test(c.facadeModuleId ?? '')
+            );
+            if (!home) return html;
+            const entry = Object.values(bundle).find((c) => c.type === 'chunk' && c.isEntry);
+            const seen = new Set();
+            const files = [];
+            const visit = (name) => {
+              if (seen.has(name) || name === entry?.fileName) return;
+              seen.add(name);
+              const c = bundle[name];
+              if (!c || c.type !== 'chunk') return;
+              c.imports.forEach(visit);
+              files.push(c.fileName);
+            };
+            visit(home.fileName);
+            const list = JSON.stringify(files.map((f) => `/${f}`));
+            const tag = `<script>if(location.pathname==='/'){${list}.forEach(function(h){var l=document.createElement('link');l.rel='modulepreload';l.href=h;document.head.appendChild(l)})}</script>`;
+            return html.replace('</head>', `${tag}\n</head>`);
+          },
+        },
+      },
+      {
         // 로컬 개발 서버에서 api/*.js(Vercel 서버리스 함수)를 그대로 실행하는 어댑터.
         // Vercel 런타임이 주는 req.query/req.body/res.status().json()만 흉내낸다.
         // 키는 .env.local에서 읽는다(VITE_ 접두사 없는 서버 전용 키 포함).
