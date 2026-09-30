@@ -11,8 +11,6 @@ import {
   adminListFeedback,
   adminMarkFeedbackReviewed,
   adminSearchUsers,
-  adminSetUserPlan,
-  BASE_FREE_TRIP_LIMIT,
   getFeedbackScreenshotSignedUrl,
   getReportTargetPreview,
   listOpenReports,
@@ -31,53 +29,10 @@ import type { Report } from './types';
 import { AdminSalesTab } from './AdminSalesTab';
 import { AdminAnalyticsTab } from './AdminAnalyticsTab';
 import { AdminPinPad } from './AdminPinPad';
+import { AdminUserPlanRow } from './AdminUserPlanRow';
 import styles from './AdminScreen.module.css';
 
 type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics';
-
-function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user: AdminUserRow) => void }) {
-  const { t } = useTranslation(['community', 'common']);
-  const [busy, setBusy] = useState(false);
-
-  async function handleToggle() {
-    const nextPlan = user.plan === 'pro' ? 'free' : 'pro';
-    setBusy(true);
-    try {
-      await adminSetUserPlan(user.id, nextPlan);
-      onChanged({ ...user, plan: nextPlan });
-    } catch (err) {
-      captureError(err, { context: 'adminSetUserPlan' });
-      window.alert(t('admin.planChangeError'));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className={styles.item}>
-      <div className={styles.userRow}>
-        <div className={styles.userInfo}>
-          <span className={styles.userHandle}>@{user.handle || t('admin.userNoHandle')}</span>
-          <span className={styles.userName}>{user.display_name || t('admin.userNoName')}</span>
-          <span className={user.plan === 'pro' ? styles.planBadgePro : styles.planBadgeFree}>
-            {user.plan === 'pro' ? t('admin.planPro') : t('admin.planFree')}
-          </span>
-          <span className={styles.tripUsage}>
-            {user.plan === 'pro'
-              ? t('admin.tripUsagePro', { used: user.trips_created_count })
-              : t('admin.tripUsageFree', { used: user.trips_created_count, limit: user.trip_limit })}
-            {user.plan === 'free' && user.trip_limit > BASE_FREE_TRIP_LIMIT ? (
-              <span className={styles.relaxedBadge}>{t('admin.tripLimitRelaxed', { limit: user.trip_limit, base: BASE_FREE_TRIP_LIMIT })}</span>
-            ) : null}
-          </span>
-        </div>
-        <button type="button" className={user.plan === 'pro' ? styles.secondaryBtn : styles.primaryBtn} disabled={busy} onClick={handleToggle}>
-          {user.plan === 'pro' ? t('admin.revokePro') : t('admin.grantPro')}
-        </button>
-      </div>
-    </div>
-  );
-}
 
 const USER_PAGE_SIZE = 20;
 
@@ -125,7 +80,7 @@ function UserPlanTab() {
         <>
           <div className={styles.list}>
             {displayedRows.map((u) => (
-              <UserPlanRow
+              <AdminUserPlanRow
                 key={u.id}
                 user={u}
                 onChanged={(updated) => setOverrides((prev) => ({ ...prev, [updated.id]: updated }))}

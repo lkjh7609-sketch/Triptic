@@ -26,7 +26,7 @@
     "userNoName": "No name",
     "planFree": "Free",
     "planPro": "Pro",
-    "tripUsageFree": "{{used}}/{{limit}} trips created",
+    "tripUsageFree": "{{used}}/{{limit}} trips used · {{left}} left",
     "tripUsagePro": "{{used}} trips created · no limit",
     "tripLimitRelaxed": "Limit {{limit}} applied (default {{base}})",
     "grantPro": "Grant pro",
@@ -131,6 +131,15 @@
       "disabled": "Passcode sign-in is unavailable. Sign in with the admin account.",
       "useAccount": "Sign in with account",
       "erase": "Delete last digit"
+    },
+    "limit": {
+      "label": "Limit",
+      "save": "Save",
+      "saved": "Saved",
+      "error": "Couldn't save. Please try again.",
+      "invalid": "Enter a number from 0 to {{max}}",
+      "preview": "After saving: limit {{limit}} · {{left}} left",
+      "full": "Limit reached"
     }
   },
   "report": {
