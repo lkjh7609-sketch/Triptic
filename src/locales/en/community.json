@@ -158,6 +158,13 @@
       "loadError": "Couldn't load the archive",
       "empty": "Nothing archived",
       "note": "Posts users deleted and companion listings they cancelled. Not shown to users; removed when the author deletes their account."
+    },
+    "feedbackCategoryPartnership": "Partnership",
+    "feedbackFilterLabel": "Inquiry type",
+    "feedbackFilter": {
+      "all": "All",
+      "general": "General",
+      "partnership": "Partnership"
     }
   },
   "report": {

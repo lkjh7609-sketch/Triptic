@@ -22,6 +22,7 @@ import {
   setCompanionMessageStatus,
   setCompanionPostStatus,
   setPostStatus,
+  type AdminFeedbackFilter,
   type AdminFeedbackRow,
   type AdminUserRow,
 } from './adminService';
@@ -150,6 +151,7 @@ function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (
       <div className={styles.itemMeta}>
         <span className={styles.userName}>{item.display_name || t('admin.userNoName')}</span>
         <span className={styles.itemTime}>{new Date(item.created_at).toLocaleString('ko-KR')}</span>
+        {item.category === 'partnership' ? <span className={styles.badge}>{t('admin.feedbackCategoryPartnership')}</span> : null}
         {item.status === 'new' ? <span className={styles.badge}>{t('admin.feedbackStatusNew')}</span> : null}
       </div>
       <p className={styles.preview}>{item.body}</p>
@@ -174,22 +176,54 @@ const FEEDBACK_PAGE_SIZE = 20;
 function FeedbackTab() {
   const { t } = useTranslation(['community', 'common']);
   const [page, setPage] = useState(0);
+  const [filter, setFilter] = useState<AdminFeedbackFilter>('all');
   const feedbackQuery = useQuery({
-    queryKey: ['admin', 'feedback', page],
-    queryFn: () => adminListFeedback(page, FEEDBACK_PAGE_SIZE),
+    queryKey: ['admin', 'feedback', filter, page],
+    queryFn: () => adminListFeedback(page, FEEDBACK_PAGE_SIZE, filter),
   });
   const [overrides, setOverrides] = useState<Record<string, AdminFeedbackRow>>({});
 
   const displayedRows = (feedbackQuery.data?.rows ?? []).map((r) => overrides[r.id] ?? r);
 
+  // 일반 문의 / 제휴문의를 나눠 본다(0071)
+  const filters = (
+    <div className={styles.tabs} role="group" aria-label={t('admin.feedbackFilterLabel')}>
+      {(['all', 'general', 'partnership'] as const).map((key) => (
+        <button
+          key={key}
+          type="button"
+          className={filter === key ? styles.tabActive : styles.tab}
+          aria-pressed={filter === key}
+          onClick={() => {
+            setFilter(key);
+            setPage(0);
+          }}
+        >
+          {t(`admin.feedbackFilter.${key}`)}
+        </button>
+      ))}
+    </div>
+  );
+
   if (feedbackQuery.isLoading) {
-    return <Skeleton height="60px" />;
+    return (
+      <>
+        {filters}
+        <Skeleton height="60px" />
+      </>
+    );
   }
   if (displayedRows.length === 0) {
-    return <EmptyState message={t('admin.feedbackEmpty')} />;
+    return (
+      <>
+        {filters}
+        <EmptyState message={t('admin.feedbackEmpty')} />
+      </>
+    );
   }
   return (
     <>
+      {filters}
       <div className={styles.list}>
         {displayedRows.map((item) => (
           <FeedbackRow

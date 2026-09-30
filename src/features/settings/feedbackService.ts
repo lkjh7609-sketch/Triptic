@@ -18,9 +18,14 @@ async function uploadFeedbackScreenshot(file: File, userId: string): Promise<str
   return path;
 }
 
-export async function submitFeedback(userId: string, body: string, screenshot: File | null): Promise<void> {
+export type FeedbackCategory = 'general' | 'partnership';
+
+/** 문의 저장. 일반 문의는 category를 보내지 않는다(DB 기본값 'general') — 제휴문의(0071)만 구분해서 저장한다 */
+export async function submitFeedback(userId: string, body: string, screenshot: File | null, category: FeedbackCategory = 'general'): Promise<void> {
   const screenshotPath = screenshot ? await uploadFeedbackScreenshot(screenshot, userId) : null;
   const supabase = getSupabaseClient();
-  const { error } = await supabase.from('user_feedback').insert({ user_id: userId, body, screenshot_path: screenshotPath });
+  const { error } = await supabase
+    .from('user_feedback')
+    .insert({ user_id: userId, body, screenshot_path: screenshotPath, ...(category === 'partnership' ? { category } : {}) });
   if (error) throw error;
 }

@@ -222,11 +222,23 @@ export interface AdminFeedbackRow {
   screenshot_path: string | null;
   status: 'new' | 'reviewed';
   created_at: string;
+  /** 일반 문의 / 제휴문의(0071) */
+  category: 'general' | 'partnership';
 }
 
-export async function adminListFeedback(page: number, pageSize: number): Promise<{ rows: AdminFeedbackRow[]; hasMore: boolean }> {
+export type AdminFeedbackFilter = 'all' | 'general' | 'partnership';
+
+export async function adminListFeedback(
+  page: number,
+  pageSize: number,
+  filter: AdminFeedbackFilter = 'all',
+): Promise<{ rows: AdminFeedbackRow[]; hasMore: boolean }> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('admin_list_feedback', { p_offset: page * pageSize, p_limit: pageSize + 1 });
+  const { data, error } = await supabase.rpc('admin_list_feedback', {
+    p_offset: page * pageSize,
+    p_limit: pageSize + 1,
+    p_category: filter === 'all' ? null : filter,
+  });
   if (error) throw error;
   const rows = (data as AdminFeedbackRow[]) ?? [];
   return { rows: rows.slice(0, pageSize), hasMore: rows.length > pageSize };

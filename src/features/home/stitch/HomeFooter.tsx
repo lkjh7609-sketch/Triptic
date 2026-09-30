@@ -4,14 +4,14 @@ import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import styles from './HomeFooter.module.css';
 
-/** 이용약관 · 개인정보처리방침 · 고객센터 · 제휴문의 + 저작권. 고객센터·제휴문의는 설정의 "문의하기"와 같은 창(비로그인은 로그인부터) */
+/** 이용약관 · 개인정보처리방침 · 고객센터 · 제휴문의 + 저작권. 고객센터는 설정의 "문의하기"와 같은 창, 제휴문의는 같은 창을 "제휴문의" 제목으로 열고 따로 저장된다(비로그인은 로그인부터) */
 export function HomeFooter() {
   const { t } = useTranslation('home');
   const requireLogin = useRequireLogin();
-  const [showContact, setShowContact] = useState(false);
+  const [contactKind, setContactKind] = useState<'general' | 'partnership' | null>(null);
 
-  const openContact = () => {
-    if (requireLogin()) setShowContact(true);
+  const openContact = (kind: 'general' | 'partnership') => {
+    if (requireLogin()) setContactKind(kind);
   };
 
   return (
@@ -30,19 +30,19 @@ export function HomeFooter() {
           <span className={styles.sep} aria-hidden="true">
             ·
           </span>
-          <button type="button" className={styles.link} onClick={openContact}>
+          <button type="button" className={styles.link} onClick={() => openContact('general')}>
             {t('desktop.contact')}
           </button>
           <span className={styles.sep} aria-hidden="true">
             ·
           </span>
-          <button type="button" className={styles.link} onClick={openContact}>
+          <button type="button" className={styles.link} onClick={() => openContact('partnership')}>
             {t('page.footer.partnership')}
           </button>
         </div>
         <div className={styles.copy}>&copy; {new Date().getFullYear()} Triptic. All rights reserved.</div>
       </div>
-      {showContact ? <FeedbackModal onClose={() => setShowContact(false)} /> : null}
+      {contactKind ? <FeedbackModal kind={contactKind} onClose={() => setContactKind(null)} /> : null}
     </footer>
   );
 }

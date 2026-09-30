@@ -156,6 +156,13 @@
       "loadError": "保管庫を読み込めませんでした",
       "empty": "保管された投稿はありません",
       "note": "ユーザーが削除した投稿と取り消した同行募集です。ユーザーには公開されず、作成者が退会すると一緒に削除されます。"
+    },
+    "feedbackCategoryPartnership": "提携のお問い合わせ",
+    "feedbackFilterLabel": "問い合わせの種類",
+    "feedbackFilter": {
+      "all": "すべて",
+      "general": "一般のお問い合わせ",
+      "partnership": "提携のお問い合わせ"
     }
   },
   "report": {

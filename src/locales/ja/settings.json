@@ -115,6 +115,9 @@
     "submit": "送信",
     "submitting": "送信中…",
     "submitError": "送信できませんでした。しばらくしてからもう一度お試しください。",
-    "submitSuccess": "お問い合わせを受け付けました。ありがとうございます！"
+    "submitSuccess": "お問い合わせを受け付けました。ありがとうございます！",
+    "partnershipTitle": "提携のお問い合わせ",
+    "partnershipPlaceholder": "会社（サービス）名、ご提案の内容、ご連絡方法をご記入ください。",
+    "partnershipSuccess": "提携のお問い合わせを送信しました。確認のうえご連絡します。ありがとうございます！"
   }
 }

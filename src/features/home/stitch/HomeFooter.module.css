@@ -42,6 +42,16 @@
   color: var(--h-ink-2);
 }
 
+/* 모바일: 네 링크가 한 줄에 들어오게 — 글자를 화면 너비에 맞춰 조금 줄이고 줄바꿈하지 않는다 */
+@media (max-width: 1023px) {
+  .links {
+    flex-wrap: nowrap;
+    gap: 0 clamp(6px, 2.4vw, 12px);
+    font-size: clamp(0.6875rem, 3.1vw, 0.8125rem);
+    white-space: nowrap;
+  }
+}
+
 .link {
   display: inline-flex;
   align-items: center;

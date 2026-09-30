@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { useSession } from '@/shared/hooks/useSession';
 import { captureError } from '@/shared/monitoring';
-import { submitFeedback } from './feedbackService';
+import { submitFeedback, type FeedbackCategory } from './feedbackService';
 import modalStyles from '../plan/AddPlaceModal.module.css';
 import styles from './FeedbackModal.module.css';
 
@@ -12,12 +12,16 @@ const MAX_BODY_LENGTH = 2000;
 
 interface FeedbackModalProps {
   onClose: () => void;
+  /** 'partnership'이면 제목·안내 문구가 "제휴문의"로 바뀌고 제휴문의로 저장된다(0071). 기본은 일반 문의 */
+  kind?: FeedbackCategory;
 }
 
 /** 문의하기(고객센터) — 설정 화면과 PC 홈 하단 "고객센터"에서 연다. 텍스트 + 선택적
  * 스크린샷 1장을 바로 작성해서 보내면 운영 콘솔에서 확인할 수 있다. */
-export function FeedbackModal({ onClose }: FeedbackModalProps) {
+export function FeedbackModal({ onClose, kind = 'general' }: FeedbackModalProps) {
   const { t } = useTranslation(['settings', 'common']);
+  const partnership = kind === 'partnership';
+  const title = partnership ? t('feedback.partnershipTitle') : t('feedback.title');
   const { user } = useSession();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
   const [body, setBody] = useState('');
@@ -59,7 +63,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
     setSubmitting(true);
     setError(null);
     try {
-      await submitFeedback(user.id, trimmed, screenshot);
+      await submitFeedback(user.id, trimmed, screenshot, kind);
       setDone(true);
     } catch (err) {
       captureError(err, { context: 'submitFeedback' });
@@ -72,9 +76,9 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
   if (done) {
     return (
       <div className={modalStyles.overlay}>
-        <div ref={trapRef} className={modalStyles.sheet} role="dialog" aria-modal="true" aria-label={t('feedback.title')} onClick={(e) => e.stopPropagation()}>
-          <h2>{t('feedback.title')}</h2>
-          <p className={modalStyles.hint}>{t('feedback.submitSuccess')}</p>
+        <div ref={trapRef} className={modalStyles.sheet} role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+          <h2>{title}</h2>
+          <p className={modalStyles.hint}>{partnership ? t('feedback.partnershipSuccess') : t('feedback.submitSuccess')}</p>
           <div className={modalStyles.actions}>
             <button type="button" className={modalStyles.primary} onClick={onClose}>
               {t('action.close', { ns: 'common' })}
@@ -96,7 +100,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <form onSubmit={handleSubmit}>
-          <h2 id="feedback-title">{t('feedback.title')}</h2>
+          <h2 id="feedback-title">{title}</h2>
           <div className={modalStyles.field}>
             <label className={modalStyles.label} htmlFor="feedback-body">
               {t('feedback.bodyLabel')}
@@ -111,7 +115,7 @@ export function FeedbackModal({ onClose }: FeedbackModalProps) {
                 setBody(e.target.value);
                 setError(null);
               }}
-              placeholder={t('feedback.bodyPlaceholder')}
+              placeholder={partnership ? t('feedback.partnershipPlaceholder') : t('feedback.bodyPlaceholder')}
               rows={5}
             />
           </div>
