@@ -12,6 +12,40 @@ import type * as SentryNS from '@sentry/react';
 let sentryModule: typeof SentryNS | null = null;
 let posthogModule: typeof import('posthog-js').default | null = null;
 
+/**
+ * 성장·전환 분석 이벤트 — 가입 → 첫 여행 → 첫 장소 → 서류 → 공유 중 어디서 멈추는지 보는 용도.
+ * 값에는 개인정보(이름·이메일·여행 제목·장소 이름·주소)를 절대 넣지 않는다. 분류값·횟수만.
+ */
+export type AnalyticsEvent =
+  | 'signup_completed' // { provider }
+  | 'trip_created' // { source: create_modal | guest_import }
+  | 'place_added' // { source }
+  | 'document_uploaded'
+  | 'share_link_created'
+  | 'share_joined'
+  | 'trip_limit_reached'
+  | 'onboarding_step_done' // { step: place | document | invite }
+  | 'guest_trip_started'
+  | 'guest_trip_saved'; // 게스트 여행을 로그인 후 계정으로 옮김
+
+/** 분석 SDK는 동적 import라 준비되기 전에 발생한 이벤트는 여기 모았다가 내보낸다(키가 없으면 버린다) */
+type Queued = { name: string; props?: Record<string, unknown> };
+let queue: Queued[] | null = [];
+const QUEUE_MAX = 50;
+
+/** 분석 SDK가 준비되기 전에 알게 된 로그인 사용자 — 준비되면 이벤트를 내보내기 전에 먼저 연결한다 */
+let currentUserId: string | null = null;
+
+function flushQueue() {
+  if (currentUserId) {
+    posthogModule?.identify(currentUserId);
+    sentryModule?.setUser({ id: currentUserId });
+  }
+  const pending = queue ?? [];
+  queue = null;
+  for (const item of pending) posthogModule?.capture(item.name, item.props);
+}
+
 export async function initMonitoring(): Promise<void> {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
   if (sentryDsn && !sentryModule) {
@@ -33,14 +67,49 @@ export async function initMonitoring(): Promise<void> {
       capture_pageview: false, // 화면 전환은 02-screens.md §1.3 규칙에 맞춰 직접 기록한다
       // 개인정보 최소 수집 (DEVELOPMENT_PLAN.md §5 분석: "개인정보 최소 수집")
       person_profiles: 'identified_only',
+      // 화면 글자·입력이 새어 나가지 않게: 클릭 자동 수집과 화면 녹화는 끄고, 위에서 정한 이벤트만 보낸다
+      autocapture: false,
+      disable_session_recording: true,
+      // 쿠키 대신 브라우저 저장소(localStorage)만 쓴다
+      persistence: 'localStorage',
+      // 브라우저의 "추적 안 함" 설정을 켠 사용자는 이용 분석 이벤트를 보내지 않는다(방침 1번에 안내)
+      respect_dnt: true,
     });
     posthogModule = posthog;
+  }
+  flushQueue();
+}
+
+function capture(name: string, props?: Record<string, unknown>): void {
+  if (posthogModule) {
+    posthogModule.capture(name, props);
+  } else if (queue && queue.length < QUEUE_MAX) {
+    queue.push({ name, props });
   }
 }
 
 /** 화면 진입 시 1건 (02-screens.md §1.3: 화면명만, 개인정보 금지) */
 export function trackScreenView(screenName: string): void {
-  posthogModule?.capture('screen_view', { screen: screenName });
+  capture('screen_view', { screen: screenName });
+}
+
+/** 성장·전환 이벤트 1건. 분석 키가 없으면 아무 일도 하지 않는다 */
+export function track(event: AnalyticsEvent, props?: Record<string, string | number | boolean>): void {
+  capture(event, props);
+}
+
+/** 로그인한 사용자를 무작위 아이디(UUID)로만 구분한다 — 이름·이메일은 보내지 않는다 */
+export function identifyUser(userId: string): void {
+  currentUserId = userId;
+  posthogModule?.identify(userId);
+  sentryModule?.setUser({ id: userId });
+}
+
+/** 로그아웃 — 다음 사람과 섞이지 않게 분석 신원을 끊는다 */
+export function resetIdentity(): void {
+  currentUserId = null;
+  posthogModule?.reset();
+  sentryModule?.setUser(null);
 }
 
 export function captureError(error: unknown, context?: Record<string, unknown>): void {

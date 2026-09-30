@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { tripService } from '@/shared/api/tripService';
-import { captureError } from '@/shared/monitoring';
+import { captureError, track } from '@/shared/monitoring';
 import { useSession } from '@/shared/hooks/useSession';
 import type { PdfExportInput } from './pdfExport';
 import { useTripMembers, initialsOf } from './hooks/useTripMembers';
@@ -52,6 +52,7 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
     try {
       const code = await tripService.createShareLink(tripId);
       setShareCode(code);
+      track('share_link_created');
     } catch (err) {
       // 멤버는 소유자가 만든 링크만 받아 쓸 수 있다 — 아직 없으면 안내만
       setLinkUnavailable(true);

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tripService, TripConflictError, type LocalProject, type TripRow } from '@/shared/api/tripService';
 import { showToast } from '@/shared/ui/toast';
+import { track } from '@/shared/monitoring';
 import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
 import { useTranslation } from 'react-i18next';
 import i18next from '@/shared/i18n';
@@ -31,6 +32,7 @@ export function useCreateTrip() {
     mutationFn: ({ project, name }: { project: LocalProject; name: string }) =>
       tripService.saveTrip(project, name),
     onSuccess: () => {
+      track('trip_created', { source: 'create_modal' });
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
   });

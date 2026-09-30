@@ -41,7 +41,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { FloatingMapInspector } from './FloatingMapInspector';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { trackScreenView, captureError } from '@/shared/monitoring';
+import { trackScreenView, captureError, track } from '@/shared/monitoring';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import { useCityImage } from '@/shared/hooks/useCityImage';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
@@ -198,6 +198,7 @@ export function TripDetailScreen() {
 
   async function handleAddPlace(item: PlaceItem) {
     await persistDayItems([...dayItems, item]);
+    if (!isSample) track('place_added');
   }
 
   async function handleUpdateItem(index: number, patch: Partial<PlaceItem>) {
