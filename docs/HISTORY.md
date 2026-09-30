@@ -19,7 +19,7 @@
 | 배포 | GitHub `Triptic`(**origin**)에 푸시하면 Vercel이 자동 배포합니다. `triptic-further`(further)는 **배포되지 않는** 별도 저장소(백업)입니다 — 예전 문서의 "두 곳 모두 배포"는 틀렸고 2026-09-30에 정정했습니다 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0070` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0071` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
@@ -106,6 +106,9 @@
 
 - 일정 복사가 사본을 만든 뒤 '원본 표시'(trips.forked_from_trip_id 직접 UPDATE)에서 실패하던 버그를 0070의 `set_forked_from_trip` RPC로 고쳤다(0041부터 그 컬럼은 서버 관리라 클라이언트 UPDATE가 막혀 있었다 — 운영 DB에서 확인).
 - 개인정보처리방침 4번 표·개정 이력에 Open-Meteo를 추가했다.
+
+- **제휴문의(0071, 2026-10-01 운영 적용)**: 홈 푸터의 '제휴문의'는 문의 창을 '제휴문의' 제목으로 열고 `user_feedback.category='partnership'`으로 저장한다(일반 문의는 category를 보내지 않아 기본값 'general'). 관리자 문의 탭에 전체/일반 문의/제휴문의 필터와 제휴문의 배지. `admin_list_feedback`은 반환 열이 늘어 (int,int,text) 버전으로 다시 만들었다.
+- 모바일 여행지 동그란 사진의 기온 글자가 오른쪽 아래로 밀려 잘리던 것을 고쳤다(글자를 좌우 0으로 고정, 사진 display:block).
 
 **남은 것**: 푸시·배포 뒤 홈 실제 화면 확인(특가 API는 로컬에 키가 없어 못 봄), 헤더 '시작하기' 버튼은 사용자가 현재 헤더 유지로 정해 만들지 않음.
 
