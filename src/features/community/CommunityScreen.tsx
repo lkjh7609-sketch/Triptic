@@ -132,7 +132,9 @@ export function CommunityScreen() {
         </div>
 
         {tab !== 'companion' && destinations && destinations.length > 0 ? (
-          <DestinationSelector destinations={destinations} />
+          <div className={styles.selectorGutter}>
+            <DestinationSelector destinations={destinations} />
+          </div>
         ) : null}
 
         {tab !== 'companion' && followedDestinations.length > 0 ? (
