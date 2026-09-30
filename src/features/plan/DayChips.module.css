@@ -1,9 +1,6 @@
-/* 일차 선택 스트립 — 카드가 가로로 스크롤되고, 4일 이하면 폭을 나눠 채운다 */
+/* 일차 선택 — 이어진 선 위에 날짜마다 점을 찍고, 선택한 날까지 선이 차오른다 */
 .row {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-2) var(--space-2);
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
@@ -13,76 +10,116 @@
   display: none;
 }
 
-.chip {
-  flex: 1 0 68px;
+.track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(44px, 1fr));
+  width: max(100%, calc(var(--n) * 44px));
+}
+
+/* 첫 점 중심 ~ 마지막 점 중심 (열 폭의 절반씩 안쪽) */
+.line {
+  position: absolute;
+  left: calc(50% / var(--n));
+  right: calc(50% / var(--n));
+  bottom: 9px; /* nodeRow(20px) 세로 중앙 */
+  height: 2px;
+  border-radius: 1px;
+  background: var(--border);
+}
+
+.fill {
+  width: calc(var(--progress) * 100%);
+  height: 100%;
+  border-radius: 1px;
+  background: var(--brand);
+  transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.day {
+  appearance: none;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 2px;
-  min-height: 68px;
-  padding: var(--space-2) 0;
-  scroll-snap-align: center;
-  border-radius: var(--radius-lg);
-  background: var(--surface-card);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
   cursor: pointer;
+  scroll-snap-align: center;
 }
 
-.chip.active {
-  background: var(--brand-solid);
-  border-color: var(--brand-solid);
-  color: var(--text-on-brand);
-  box-shadow: var(--shadow-sm);
-}
-
-.dayLabel {
+.top {
   font-size: var(--font-caption-size);
   line-height: var(--font-caption-line);
-  font-weight: 600;
+  font-weight: 500;
 }
 
-/* 날짜가 카드의 주인공 — 일차 번호는 작게 위에 */
-.date {
+.number {
   font-size: var(--font-headline-size);
   line-height: var(--font-headline-line);
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+  transition: color 0.25s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.chip.active .date {
-  color: var(--text-on-brand);
-}
-
-.dots {
+.nodeRow {
   display: flex;
-  gap: 3px;
-  height: 6px;
   align-items: center;
+  justify-content: center;
+  height: 20px;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
+.node {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1), height 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+    background-color 0.25s ease, box-shadow 0.3s ease;
+}
+
+/* 일정이 있는 날 — 채운 점 */
+.filled {
   background: var(--brand-text);
 }
 
-.chip.active .dot {
-  background: var(--text-on-brand);
+/* 일정이 없는 날 — 속 빈 점(선이 비치지 않게 바탕색으로 채움) */
+.hollow {
+  background: var(--surface-page);
+  box-shadow: inset 0 0 0 2px var(--border-control);
 }
 
-/* 일정이 없는 날 — 점 대신 작은 점 줄(점 줄과 같은 6px 높이라 카드 안 글자 위치가 어긋나지 않는다) */
-.emptyMark {
-  display: block;
+.selected .top {
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+.selected .number {
+  color: var(--text-primary);
+  font-weight: 700;
+  transform: translateY(-1px) scale(1.12);
+}
+
+.selected .node {
   width: 18px;
-  height: 6px;
-  color: var(--border-control);
-  background: radial-gradient(circle, currentColor 1.2px, transparent 1.4px) 0 50% / 6px 6px repeat-x;
+  height: 18px;
+  background: var(--brand-solid);
+  box-shadow: 0 0 0 5px var(--brand-tint);
+  animation: node-pop 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.chip.active .emptyMark {
-  color: var(--text-on-brand);
+@keyframes node-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
