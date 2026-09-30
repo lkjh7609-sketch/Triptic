@@ -1,6 +1,7 @@
 /*
- * 계획 탭 데스크톱 디자인 팔레트. 라이트 값은 디자인 원본 그대로이고,
- * 다크 모드(data-theme="dark" 또는 시스템 다크)에서만 아래 값으로 바뀐다.
+ * 계획 탭 팔레트. 회색·잉크 계열(--pd-bg~--pd-muted)은 이 화면 고유 값이고, 강조색(navy·accent·coral)은
+ * 앱 전체 브랜드 토큰을 따른다 — 이전엔 네이비+녹슨 주황+코랄이라 하단 탭바·다른 화면의 teal과 색이 4가지로 갈렸다.
+ * 다크 모드(data-theme="dark" 또는 시스템 다크)에서만 회색 계열이 아래 값으로 바뀐다.
  */
 .container {
   --pd-bg: #faf9f6;
@@ -13,12 +14,12 @@
   --pd-ink: #001428;
   --pd-text: #1a1c1a;
   --pd-muted: #43474d;
-  --pd-subtle: #74777e;
-  --pd-navy: #0f2942;
-  --pd-accent: #ae3115;
-  --pd-accent-deep: #8c1900;
-  --pd-accent-soft: #ffdad2;
-  --pd-coral: #fd6a49;
+  --pd-subtle: var(--text-tertiary); /* 이전 #74777e는 4.26:1 */
+  --pd-navy: var(--brand-solid);
+  --pd-accent: var(--brand-text);
+  --pd-accent-deep: var(--brand-pressed);
+  --pd-accent-soft: var(--brand-tint);
+  --pd-coral: var(--brand-solid);
   --pd-success: #10b981;
   flex: 1;
   width: 100%;
@@ -127,7 +128,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 9999px;
   background: var(--pd-coral);
-  color: #fff;
+  color: var(--text-on-brand);
   font-size: 16px;
   font-weight: 600;
   display: flex;
@@ -139,7 +140,7 @@
   transition: all 0.15s;
 }
 .btnCreate:hover {
-  background: var(--pd-accent);
+  background: var(--brand-pressed);
 }
 
 .metricsBar {
@@ -259,7 +260,7 @@
   height: 36px;
   border-radius: 50%;
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -650,7 +651,7 @@
 }
 .toolkitLink:hover .toolkitLinkIcon {
   background: var(--pd-ink);
-  color: #fff;
+  color: var(--pd-surface); /* 다크에선 ink가 밝은 색이라 흰 글씨가 안 보였다 */
 }
 
 /* Past Grid / Filter Tabs */
@@ -904,7 +905,7 @@
 }
 .avatarPrimary {
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
 }
 .avatar:not(.avatarPrimary) {
   background: var(--pd-line);
@@ -917,7 +918,7 @@
 }
 .btnOpenActive {
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   border-color: var(--pd-navy);
 }
 .btnOpen:is(button) {
@@ -1126,7 +1127,7 @@
   height: 28px;
   border-radius: 50%;
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1179,11 +1180,6 @@
   --pd-text: #e6e8ea;
   --pd-muted: #b4bac1;
   --pd-subtle: #8d949b;
-  --pd-navy: #3b5f86;
-  --pd-accent: #ff8a6a;
-  --pd-accent-deep: #ffb49e;
-  --pd-accent-soft: #3a221c;
-  --pd-coral: #f2643f;
   --pd-success: #34d399;
 }
 @media (prefers-color-scheme: dark) {
@@ -1199,12 +1195,7 @@
     --pd-text: #e6e8ea;
     --pd-muted: #b4bac1;
     --pd-subtle: #8d949b;
-    --pd-navy: #3b5f86;
-    --pd-accent: #ff8a6a;
-    --pd-accent-deep: #ffb49e;
-    --pd-accent-soft: #3a221c;
-    --pd-coral: #f2643f;
-    --pd-success: #34d399;
+              --pd-success: #34d399;
   }
 }
 
@@ -1304,7 +1295,7 @@
 .checklistBoxDone {
   border-color: var(--pd-navy);
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
 }
 
 .checklistTextDone {
