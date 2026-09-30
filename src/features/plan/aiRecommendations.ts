@@ -89,6 +89,14 @@ export function needsServerCoords(recs: ApiRecommendation[]): boolean {
   return recs.some((r) => (r.lat == null || r.lng == null) && !r.coordsChecked);
 }
 
+/** 오늘의 AI 생성 한도(로그인 사용자별 하루)를 다 썼다 — 서버가 429(daily_limit)로 알려 준다 */
+export class AiLimitError extends Error {
+  constructor(readonly limit: number) {
+    super('daily_limit');
+    this.name = 'AiLimitError';
+  }
+}
+
 /** /api/recommend — 캐시에 없으면 AI로 생성, 있으면 빠진 좌표를 서버가 채워 캐시에 되돌려 쓴 결과 */
 export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRecommendation[]> {
   // AI 호출은 로그인 사용자에게만 열려 있다(api/recommend.js) — 토큰이 없으면 서버까지 가지 않는다
@@ -108,6 +116,10 @@ export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRe
     }),
   });
   if (res.status === 401) throw new LoginRequiredError();
+  if (res.status === 429) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string; limit?: number };
+    if (body.error === 'daily_limit') throw new AiLimitError(body.limit ?? 0);
+  }
   if (!res.ok) throw new Error(`recommend HTTP ${res.status}`);
   const json = (await res.json()) as { recommendations?: ApiRecommendation[] };
   return json.recommendations ?? [];

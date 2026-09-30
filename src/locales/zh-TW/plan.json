@@ -286,7 +286,8 @@
     "confirmAdd": "加入行程",
     "aiNotice": "以上為 AI 產生的推薦，出發前請再確認營業時間與價格。",
     "button": "AI 推薦",
-    "buttonTitle": "取得此地點之後的 AI 推薦"
+    "buttonTitle": "取得此地點之後的 AI 推薦",
+    "dailyLimit": "今天可用的 AI 推薦 {{limit}} 次已用完，請明天再試。升級 Premium 可使用更多次。"
   },
   "desktop": {
     "badge": "我的行程",

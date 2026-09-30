@@ -4,7 +4,7 @@ const rpc = vi.fn();
 const getSession = vi.fn();
 vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc, auth: { getSession } }) }));
 
-const { fetchNearbyRecommendations, isOutOfRange, needsServerCoords } = await import('./aiRecommendations');
+const { AiLimitError, fetchNearbyRecommendations, isOutOfRange, needsServerCoords } = await import('./aiRecommendations');
 const { fetchCityDescription } = await import('@/features/home/cityDescription');
 
 const fetchMock = vi.fn();
@@ -128,5 +128,28 @@ describe('AI 생성 API는 로그인 사용자에게만 열려 있다', () => {
     rpc.mockResolvedValue({ data: null, error: null });
     fetchMock.mockResolvedValue({ ok: false, status: 401, json: async () => ({}) });
     await expect(fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' })).rejects.toThrow('login_required');
+  });
+});
+
+describe('오늘의 AI 한도', () => {
+  it('서버가 429(daily_limit)를 주면 한도 오류(한도 포함)로 알린다', async () => {
+    rpc.mockResolvedValue({ data: null, error: null });
+    fetchMock.mockResolvedValue({ ok: false, status: 429, json: async () => ({ error: 'daily_limit', limit: 10 }) });
+    const err = await fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' }).catch((e) => e);
+    expect(err).toBeInstanceOf(AiLimitError);
+    expect(err.limit).toBe(10);
+  });
+
+  it('호출 빈도 제한(rate_limited)은 한도 오류가 아니다', async () => {
+    rpc.mockResolvedValue({ data: null, error: null });
+    fetchMock.mockResolvedValue({ ok: false, status: 429, json: async () => ({ error: 'rate_limited' }) });
+    const err = await fetchNearbyRecommendations({ placeName: 'X', city: 'Y', locale: 'en' }).catch((e) => e);
+    expect(err).not.toBeInstanceOf(AiLimitError);
+  });
+
+  it('도시 소개는 한도를 넘으면 오류 없이 소개만 비워 둔다', async () => {
+    rpc.mockResolvedValue({ data: null, error: null });
+    fetchMock.mockResolvedValue({ ok: false, status: 429, json: async () => ({ error: 'daily_limit', limit: 10 }) });
+    expect(await fetchCityDescription('Rome, Italy', 'en')).toBeNull();
   });
 });
