@@ -125,7 +125,14 @@ export interface AdminUserRow {
   display_name: string | null;
   avatar_url: string | null;
   plan: 'free' | 'pro';
+  /** 지금까지 만든 여행 수(삭제해도 안 줄어듦) */
+  trips_created_count: number;
+  /** 이 사용자에게 적용된 무료 여행 생성 한도(0061) — 프로는 무시 */
+  trip_limit: number;
 }
+
+/** 원래 무료 한도. 사용자별 한도가 이보다 크면 임시 완화를 적용받은 것으로 표시한다 */
+export const BASE_FREE_TRIP_LIMIT = 2;
 
 /** query가 빈 문자열이면 전체 사용자를 표시 이름순으로 페이지네이션한다.
  * hasMore를 별도 COUNT 없이 알아내려고 limit보다 1개 더 요청해서 잘라낸다. */

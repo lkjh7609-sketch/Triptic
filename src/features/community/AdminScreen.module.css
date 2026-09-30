@@ -209,3 +209,24 @@
   background: var(--brand-tint);
   color: var(--brand);
 }
+
+/* 여행 생성 수 / 무료 한도, 임시 완화 표시 */
+.tripUsage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.relaxedBadge {
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+}

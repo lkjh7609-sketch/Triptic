@@ -12,6 +12,7 @@ import {
   adminMarkFeedbackReviewed,
   adminSearchUsers,
   adminSetUserPlan,
+  BASE_FREE_TRIP_LIMIT,
   getFeedbackScreenshotSignedUrl,
   getReportTargetPreview,
   listOpenReports,
@@ -58,6 +59,14 @@ function UserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user
           <span className={styles.userName}>{user.display_name || t('admin.userNoName')}</span>
           <span className={user.plan === 'pro' ? styles.planBadgePro : styles.planBadgeFree}>
             {user.plan === 'pro' ? t('admin.planPro') : t('admin.planFree')}
+          </span>
+          <span className={styles.tripUsage}>
+            {user.plan === 'pro'
+              ? t('admin.tripUsagePro', { used: user.trips_created_count })
+              : t('admin.tripUsageFree', { used: user.trips_created_count, limit: user.trip_limit })}
+            {user.plan === 'free' && user.trip_limit > BASE_FREE_TRIP_LIMIT ? (
+              <span className={styles.relaxedBadge}>{t('admin.tripLimitRelaxed', { limit: user.trip_limit, base: BASE_FREE_TRIP_LIMIT })}</span>
+            ) : null}
           </span>
         </div>
         <button type="button" className={user.plan === 'pro' ? styles.secondaryBtn : styles.primaryBtn} disabled={busy} onClick={handleToggle}>
