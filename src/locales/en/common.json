@@ -95,7 +95,8 @@
     "draftBannerCta": "Sign in to save",
     "importedToast": "Saved {{count}} draft trip(s) to your account",
     "importLimit": "Some drafts stayed on this device because you reached the free trip limit",
-    "importFailed": "Couldn't move your draft trips to your account. We'll try again next time"
+    "importFailed": "Couldn't move your draft trips to your account. We'll try again next time",
+    "draftLocked": "This isn't available for a draft trip that hasn't been saved to your account yet"
   },
   "menu": {
     "darkMode": "Dark mode",

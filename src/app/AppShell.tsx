@@ -9,7 +9,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { closeLoginPrompt, openLoginPrompt, setSignedIn, useLoginPromptOpen } from '@/features/auth/loginPrompt';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
-import { importGuestTrips, isGuestTripId } from '@/features/plan/guestTrips';
+import { forgetGuestImportAttempts, importGuestTripsOncePerSession, isGuestTripId } from '@/features/plan/guestTrips';
 import { tripsQueryKey } from '@/features/plan/hooks/useTrips';
 import { showToast } from '@/shared/ui/toast';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
@@ -114,8 +114,11 @@ export function AppShell() {
   const { t } = useTranslation('common');
   const userId = user?.id;
   useEffect(() => {
-    if (!userId) return;
-    void importGuestTrips().then((result) => {
+    if (!userId) {
+      forgetGuestImportAttempts();
+      return;
+    }
+    void importGuestTripsOncePerSession(userId)?.then((result) => {
       if (result.imported.length > 0) {
         void queryClient.invalidateQueries({ queryKey: tripsQueryKey });
         showToast(t('guest.importedToast', { count: result.imported.length }));

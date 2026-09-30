@@ -165,7 +165,8 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
       ),
     [trips, tripSummaries.data],
   );
-  const members = useTripMembers(guest ? [] : activeTrips.map((trip) => trip.id));
+  // 임시 여행(guest-…)은 서버에 없다 — 멤버 조회에 넣으면 uuid가 아니라 요청 전체가 실패한다
+  const members = useTripMembers(guest ? [] : activeTrips.filter((trip) => !isGuestTripId(trip.id)).map((trip) => trip.id));
   // NextTripRail의 날씨/항공편/PDF는 실제 콘텐츠가 필요하다 — nextTrip은
   // listTrips() 결과라 content가 비어 있으므로 단일 여행 조회로 다시 채운다.
   const nextTripDetail = useTrip(nextTrip?.id);

@@ -13,7 +13,9 @@ import {
   createGuestTrip,
   deleteGuestTrip,
   getGuestTrip,
+  forgetGuestImportAttempts,
   importGuestTrips,
+  importGuestTripsOncePerSession,
   isGuestTripId,
   isLocalTripId,
   listGuestTrips,
@@ -27,6 +29,7 @@ const project = { city: 'Tokyo, Japan', cityLat: 35.6, cityLng: 139.7, startDate
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   resetGuestTripsCacheForTest();
   saveTrip.mockReset();
 });
@@ -121,6 +124,32 @@ describe('로그인 후 계정으로 옮기기', () => {
   it('옮길 게 없으면 서버를 부르지 않는다', async () => {
     const result = await importGuestTrips();
     expect(result.imported).toHaveLength(0);
+    expect(saveTrip).not.toHaveBeenCalled();
+  });
+});
+
+describe('접속마다 한 번만 옮겨 보기', () => {
+  it('한도에 걸려 남은 여행이 있어도, 같은 접속에서 다시 부르면 서버를 또 부르지 않는다', async () => {
+    createGuestTrip(project, '여행 A');
+    saveTrip.mockRejectedValue(new TripLimitError('한도'));
+    const first = await importGuestTripsOncePerSession('user-1');
+    expect(first?.limitReached).toBe(true);
+    expect(importGuestTripsOncePerSession('user-1')).toBeNull();
+    expect(saveTrip).toHaveBeenCalledTimes(1);
+  });
+
+  it('로그아웃하면 표시를 지워서, 다시 임시 여행을 만들고 로그인하면 옮긴다', async () => {
+    createGuestTrip(project, '여행 A');
+    saveTrip.mockRejectedValueOnce(new Error('network'));
+    await importGuestTripsOncePerSession('user-1');
+    forgetGuestImportAttempts();
+    saveTrip.mockImplementation(async (p: { supabaseId?: string }) => ({ id: p.supabaseId, title: 'A' }));
+    const again = await importGuestTripsOncePerSession('user-1');
+    expect(again?.imported).toHaveLength(1);
+  });
+
+  it('옮길 임시 여행이 없으면 아무것도 안 한다', () => {
+    expect(importGuestTripsOncePerSession('user-1')).toBeNull();
     expect(saveTrip).not.toHaveBeenCalled();
   });
 });

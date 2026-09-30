@@ -102,7 +102,7 @@ export function TripDetailScreen() {
   const [showLoginRequired, setShowLoginRequired] = useState(false);
   /** 샘플 여행에서 잠긴 기능 — 비로그인이면 로그인하겠냐고 묻고, 로그인 상태면 샘플에선 안 된다고만 알린다 */
   function handleSampleLocked() {
-    if (isSignedIn()) showToast(t('common:guest.sampleLocked'));
+    if (isSignedIn()) showToast(t(isDraft ? 'common:guest.draftLocked' : 'common:guest.sampleLocked'));
     else setShowLoginRequired(true);
   }
   const pendingBookings = usePendingBookings(isLocal ? undefined : tripId);

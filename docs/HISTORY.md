@@ -23,7 +23,7 @@
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
-| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 "실행 순서" 0단계 중 남은 것(보안 항목 · 저장소 비공개는 완료, pro 계정 정리) |
+| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안: 로그인 없이 부르는 AI API(가장 큼), 이메일 가입 여부 확인 함수, CSP 강제 전환, 유출 비밀번호 검사, 옛 `api/env.js` 삭제, `search_path` 미고정 함수 6개. 그 밖: pro 계정 정리, 분석 키 등록. 저장소 비공개 전환과 `guard_protected_columns`·`admin_search_users` 정리는 완료 |
 
 ---
 
