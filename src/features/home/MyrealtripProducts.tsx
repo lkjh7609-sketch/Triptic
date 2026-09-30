@@ -47,6 +47,8 @@ interface MyrealtripProductsProps {
   count?: number;
   /** 상품 카드를 눌렀을 때의 위치 꼬리표 */
   placement?: PartnerPlacement;
+  /** 세로를 줄인 카드(항공 탭 유심·eSIM 2단) — 사진을 낮추고 분류 글을 뺀다 */
+  compact?: boolean;
   /** "더 보기" 버튼 — 기본은 이 키워드로 마이리얼트립 검색 */
   seeAll?: { label: string; keyword: string; placement: PartnerPlacement };
 }
@@ -55,7 +57,7 @@ interface MyrealtripProductsProps {
  * 마이리얼트립 상품 카드(액티비티 탭 추천, 항공 탭 유심·eSIM). 추적 링크(마이링크)는 누를 때만 만든다.
  * 상품을 못 받거나 없으면 마이리얼트립 검색으로 보내는 버튼만 보여준다.
  */
-export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement = 'product', seeAll }: MyrealtripProductsProps) {
+export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement = 'product', seeAll, compact = false }: MyrealtripProductsProps) {
   const { t, i18n } = useTranslation('home');
   const more = seeAll ?? { label: t('activities.seeAllOnMyrealtrip', { keyword }), keyword, placement: 'city' as const };
   const { data, isLoading } = useQuery({
@@ -81,7 +83,7 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
       target={{ kind: 'search', q: more.keyword }}
       placement={more.placement}
       onFallback={() => void openMyrealtripSearch(more.keyword, more.placement)}
-      className={styles.moreButton}
+      className={compact ? `${styles.moreButton} ${styles.moreButtonCompact}` : styles.moreButton}
     >
       {more.label} <ExternalLink size={14} aria-hidden="true" />
     </MyrealtripLink>
@@ -91,7 +93,7 @@ export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement
 
   return (
     <>
-      <div className={count === 4 ? `${styles.productGrid} ${styles.productGridFour}` : styles.productGrid}>
+      <div className={[styles.productGrid, count === 4 ? styles.productGridFour : '', compact ? styles.productGridCompact : ''].filter(Boolean).join(' ')}>
         {data.map((p) => (
           <MyrealtripLink
             key={p.id}

@@ -116,7 +116,6 @@
     },
     "essentials": {
       "title": "SIM・eSIMも必要ですか？",
-      "subtitle": "{{city}}で使うデータを出発前に準備しましょう",
       "defaultCity": "日本",
       "usimsaTitle": "UsimsaでSIM・eSIMを見る",
       "usimsaDesc": "国別のSIM・eSIMをまとめて比較してすぐ受け取れます",
@@ -124,7 +123,10 @@
       "seeAll": "MyRealTripで{{city}}のSIMをもっと見る",
       "simSearch": "{{city}} eSIM",
       "eyebrow": "TRAVEL ESSENTIAL",
-      "usimsaCta": "eSIMを確認する"
+      "usimsaCta": "eSIMを確認する",
+      "badgeCare": "ユーシムサケア 補償額",
+      "badgeCareAmount": "最大30万ウォン",
+      "badgeData": "Googleマップ・ChatGPTのデータ無料"
     },
     "esimGlobal": {
       "title": "旅行用のeSIMも必要ですか？",

@@ -116,7 +116,6 @@
     },
     "essentials": {
       "title": "유심·eSIM도 필요하신가요?",
-      "subtitle": "{{city}}에서 쓸 데이터, 출발 전에 준비해 두세요",
       "defaultCity": "일본",
       "usimsaTitle": "유심사에서 유심·eSIM 보기",
       "usimsaDesc": "나라별 유심·eSIM을 한 번에 비교하고 바로 받아요",
@@ -124,7 +123,10 @@
       "seeAll": "마이리얼트립에서 {{city}} 유심 더 보기",
       "simSearch": "{{city}} 유심",
       "eyebrow": "TRAVEL ESSENTIAL",
-      "usimsaCta": "eSIM 확인하기"
+      "usimsaCta": "eSIM 확인하기",
+      "badgeCare": "유심사케어 보장액",
+      "badgeCareAmount": "최대 300,000원",
+      "badgeData": "구글맵, ChatGPT 데이터 무료"
     },
     "esimGlobal": {
       "title": "여행용 eSIM도 필요하신가요?",
