@@ -19,7 +19,7 @@
 | 배포 | GitHub 저장소 두 곳(`Triptic`=origin, `triptic-further`=further) 모두 Vercel 자동 배포. 푸시는 항상 두 곳에 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0062` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0063` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
@@ -34,6 +34,7 @@
 - 커밋 전에 **다섯 가지 검사**를 모두 통과시킵니다: `npm run typecheck`, `npm test`, `npm run check:i18n`, `npx eslint src`, `npm run build`. 빌드 뒤에는 `git checkout -- public/sw.js`로 자동 생성된 캐시 이름 변경을 되돌립니다.
 - 커밋은 기능·수정 단위로 잘게 나눕니다. 작업 중 발견한 버그 수정과 기능 추가는 따로 커밋합니다. 큰 단계가 끝날 때마다 이전 기능도 같이 회귀 확인합니다.
 - 푸시는 `further`와 `origin` 두 곳 모두에 하고, CI와 Vercel 배포가 그 커밋으로 끝났는지 확인합니다.
+- `api/` 바로 아래 `.js` 파일은 이름이 `_`로 시작하지 않으면 전부 Vercel 함수로 배포됩니다(개수 한도 있음, 테스트 파일도 포함). 테스트·공용 코드는 `api/_lib/`에 둡니다.
 - `sw.js`는 **루트 파일**을 고칩니다(`public/`, `www/`는 빌드 산출물). `CACHE_NAME`은 `__BUILD_ID__` 자리표시자를 유지합니다. 빌드가 매번 바꿔 줘야 옛 캐시가 지워집니다.
 - `privacy.html`·`terms.html`을 고치면 `node scripts/build.js`로 `public/` 사본을 맞춰 같이 커밋합니다.
 
@@ -81,6 +82,7 @@
 - **AI 생성 API는 로그인 사용자에게만**: `/api/recommend`·`/api/cityDesc`가 Supabase 토큰을 검증합니다(`api/_lib/auth.js`). 비로그인은 DB에 캐시된 추천·도시 소개만 보고, AI 추천 버튼을 누르면 로그인 창이 뜹니다. 보고서의 보안 1순위(비용 남용) 조치입니다.
 - **운영 콘솔 "분석" 탭**: PostHog 이용 분석(방문자·가입·전환율·일별 방문자·많이 본 화면)과 Sentry 미해결 오류(많이 난 순)를 콘솔에서 봅니다. 서버 `api/adminAnalytics.js`가 관리자만 통과시키고 두 서비스에서 읽어 옵니다(1분 캐시, 키는 서버에만). 키를 안 넣은 쪽은 "연결 전"과 비어 있는 환경 변수 이름만 보입니다. 필요한 서버 환경 변수(`VITE_` 아님): `POSTHOG_PERSONAL_API_KEY`(개인 API 키, Query: Read 권한), `POSTHOG_PROJECT_ID`, `SENTRY_AUTH_TOKEN`(Project·Issue & Event·Organization 읽기), `SENTRY_ORG`, `SENTRY_PROJECT`. 브라우저용 공개 키(`VITE_POSTHOG_KEY` 등)와는 별개입니다.
 - 분석 탭 수정: Sentry 요청에 넣던 기간 값(`statsPeriod=7d`)이 프로젝트 이슈 API에서 허용되지 않아(24h·14d만) 오류가 났습니다 → 기간은 검색어 `lastSeen:-Nd`로 바꿨습니다. 오류일 때 상대 서버의 HTTP 상태 번호(401 키·403 권한·404 이름·400 형식)만 화면에 보여 원인을 좁힐 수 있게 했습니다. 일별 방문자는 방문이 없던 날을 0으로 채우고 막대 폭에 상한을 뒀습니다(하루만 있으면 막대 하나가 화면을 채우던 것).
+- **관리자 6자리 비밀번호(누르는 방식)**: 로그인하지 않은 방문자가 `/admin`을 열면 숫자 키패드가 뜨고, 맞으면 서버(`api/adminPin.js`)가 관리자 계정의 로그인 세션을 내려 줘서 그 기기가 관리자 로그인 상태가 됩니다(그래서 모든 관리 기능은 기존 관리자 권한 검사를 그대로 거칩니다). 시도 횟수 잠금은 DB(0063)가 전역·원자적으로 겁니다 — 어디서 누가 시도하든 합쳐서 5번 틀리면 15분 동안 잠기고, 잠긴 동안에는 비밀번호를 검사하지 않습니다. 비밀번호는 Vercel 서버 환경 변수 `ADMIN_PIN`(정확히 6자리 숫자, 뻔한 값은 서버가 거부) 하나이고 코드·저장소에는 없습니다. 계정 로그인은 그대로 남아 있어 잠겨도 들어갈 수 있습니다. 함수 개수 한도 때문에 `api/`의 테스트 파일은 `api/_lib/`로 옮기고 쓰지 않던 `api/env.js`는 삭제했습니다(`api/` 바로 아래 `.js`는 전부 공개 함수로 배포됩니다 — 테스트 파일도 배포돼 있었습니다).
 - **활성화**: 여행 상세에 "첫 여행 시작하기" 카드(장소 추가 · 예약 확인서 올리기 · 같이 갈 사람 초대, 진행 표시). 완료 여부는 실제 데이터(일정·서류·멤버·공유 링크)로 계산하고, 기기에는 "닫았다"만 저장합니다. 샘플 여행에는 안 보이고, 셋 다 하면 사라집니다.
 
 **결정·교훈**
