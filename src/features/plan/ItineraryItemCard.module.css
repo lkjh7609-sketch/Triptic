@@ -114,7 +114,7 @@
 .cornerActions {
   position: absolute;
   top: 8px;
-  right: 8px;
+  right: var(--space-4); /* 카드 안쪽 여백(16px)에 맞춘다 */
   display: flex;
   gap: 6px;
   z-index: 2;
