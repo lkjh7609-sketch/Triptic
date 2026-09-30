@@ -19,7 +19,7 @@
 | 배포 | GitHub 저장소 두 곳(`Triptic`=origin, `triptic-further`=further) 모두 Vercel 자동 배포. 푸시는 항상 두 곳에 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0067` 운영 적용 완료(`0068`·`0069` 작성됨·미적용). `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0069` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
@@ -75,14 +75,14 @@
 
 ### 2026-09-30
 
-**지난 여행 목적지·날짜 잠금 (로컬 커밋, `0069` 운영 적용 대기)**
+**지난 여행 목적지·날짜 잠금 (`0069` 운영 적용 완료)**
 - 사용자 결정: 요금제와 상관없이(나중에 유료도 "여행 n개 얼마" 단위 판매) 여행 종료일이 지나면 목적지와 날짜를 못 바꾸게 한다. 생성 한도는 평생 누적이라, 지난 여행을 고쳐 새 여행처럼 쓰는 편법(완료 후 재편집 제한이 막으려던 것)을 직접 막는 규칙입니다. 일정 내용 편집은 그대로 허용.
 - `0069` 트리거 `guard_trip_identity_after_end`: 종료일 + 1일(UTC 기준)이 지난 여행의 city·city_lat·city_lng·start_date·end_date·total_days가 **실제로 바뀔 때만** 막음(hint `trip_locked_after_end`). 앱은 저장마다 이 값들을 그대로 보내므로 값이 같으면 통과. 롤백 시험 통과(도시·종료일 변경 차단, 같은 값 저장·예정 여행 변경 통과). 앱은 서류 검수의 "항공권 기간으로 변경"을 지난 여행에서 숨김(`isTripDatesLocked`).
 - **남은 구멍**: 일차별 도시(`dayCities`, DayCityModal)는 일정 내용이라 안 잠김 — 지난 여행에서도 일차마다 도시를 바꿀 수 있음. 재오픈 한도(여행당 5회)는 그대로.
 
-**보관함 보관 기간 · 홈 청크 미리 받기 (로컬 커밋, 운영 적용 대기)**
+**보관함 보관 기간 · 홈 청크 미리 받기 (운영 적용 완료)**
 - **보관 기간(사용자 결정)**: 삭제·취소한 날부터 **2개월** 뒤 보관함 행 삭제, 게시 **사진 파일은 1개월** 뒤 삭제. 기준은 보관함에 옮긴 날이 아니라 삭제·취소한 날(글 `snapshot.deleted_at`, 모집 `snapshot.updated_at`). 마이그레이션 `0068`(함수 3개 + pg_cron 2개, 롤백 시험 통과) + Edge Function `purge-archive`(저장소 파일은 API로만 지워짐, 비밀값 `PURGE_SECRET`으로 잠금). 사진 목록이 비어야 행을 지우므로 파일이 먼저 지워짐이 보장됩니다. 방침에 기간 명시.
-  - **운영 적용 순서**: `supabase secrets set PURGE_SECRET=…` → `select vault.create_secret('…','purge_secret')` → `supabase functions deploy purge-archive` → 0068 적용. 적용 전까지는 기간이 지켜지지 않습니다(방침 문구는 푸시하면 나감).
+  - **운영 적용 완료(9/30)**: PURGE_SECRET 설정·Vault 등록·`purge-archive` 배포·0068 적용, 크론 2개 활성. 비밀값 없이/틀린 값 호출은 401, 맞는 값은 200(대상 0건) 확인. 실제 파일 삭제 경로는 운영에서 시험하지 못함(첫 대상이 생기는 시점, 삭제 후 1달에 로그로 확인할 것). `db query`로 적용해 이력 테이블에는 수동으로 행을 넣음.
   - 사진 파일이 지워지기 전까지 버킷이 공개라 URL을 알면 접근됩니다(1개월).
 - **홈 청크 미리 받기**: `vite.config.js`의 `preload-home-chunk` 플러그인이 `/`일 때만 HomeScreen 청크와 그 공용 청크(약 20KB, 10개)를 HTML에서 modulepreload 합니다. 구조만 확인(dist/index.html·파일 존재), 느린 회선 실측은 못 함.
 
