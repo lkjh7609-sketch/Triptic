@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getTripPhase, getDDay } from './tripStatus';
+import { getTripPhase, getDDay, isTripDatesLocked } from './tripStatus';
 
 describe('getTripPhase', () => {
   afterEach(() => {
@@ -52,5 +52,19 @@ describe('getDDay', () => {
 
   it('유효하지 않은 날짜 문자열이면 크래시 없이 null을 반환한다', () => {
     expect(getDDay('110120-02-06')).toBeNull();
+  });
+});
+
+describe('isTripDatesLocked', () => {
+  const now = new Date('2026-05-21T12:00:00');
+  it('종료일 + 1일이 지나야 잠긴다', () => {
+    expect(isTripDatesLocked('2026-05-21', now)).toBe(false);
+    expect(isTripDatesLocked('2026-05-20', now)).toBe(false);
+    expect(isTripDatesLocked('2026-05-19', now)).toBe(true);
+  });
+  it('종료일이 없거나 잘못된 값이면 잠그지 않는다', () => {
+    expect(isTripDatesLocked(null, now)).toBe(false);
+    expect(isTripDatesLocked('', now)).toBe(false);
+    expect(isTripDatesLocked('nope', now)).toBe(false);
   });
 });
