@@ -98,7 +98,7 @@
 .rating {
   font-size: var(--font-caption-size);
   font-weight: 600;
-  color: var(--warning);
+  color: var(--warning-text);
 }
 
 .metaInfo {
@@ -137,7 +137,7 @@
   gap: 4px;
   font-weight: 700;
   font-size: var(--font-caption-size);
-  color: var(--brand);
+  color: var(--brand-text);
   margin-bottom: 4px;
 }
 
@@ -178,7 +178,7 @@
 }
 
 .acceptBtn {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
 }
 

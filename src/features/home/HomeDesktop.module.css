@@ -245,7 +245,7 @@
   position: relative;
 }
 .searchIcon {
-  color: var(--brand);
+  color: var(--brand-text);
   margin-right: 12px;
   flex-shrink: 0;
 }
@@ -350,8 +350,8 @@
   padding: 10px 20px;
   border: none;
   border-radius: 999px;
-  background: var(--brand);
-  color: #fff;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   font-weight: 600;
   cursor: pointer;
 }
@@ -491,7 +491,7 @@
   margin-bottom: var(--space-3);
   border-radius: 50%;
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: 14px;
   font-weight: 700;
 }

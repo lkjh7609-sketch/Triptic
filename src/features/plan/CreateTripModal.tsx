@@ -267,7 +267,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
                  }}
                />
                <div style={{ marginTop: 'var(--space-4)', textAlign: 'right' }}>
-                 <button type="button" onClick={() => setShowCalendar(false)} style={{ padding: '8px 16px', background: 'var(--brand)', color: 'white', border: 'none', borderRadius: '8px' }}>{t('common:action.confirm')}</button>
+                 <button type="button" onClick={() => setShowCalendar(false)} style={{ padding: '8px 16px', background: 'var(--brand-solid)', color: 'var(--text-on-brand)', border: 'none', borderRadius: '8px' }}>{t('common:action.confirm')}</button>
                </div>
              </div>
            </div>

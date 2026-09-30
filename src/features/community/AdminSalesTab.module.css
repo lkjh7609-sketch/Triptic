@@ -20,7 +20,7 @@
 .rangeOn {
   border: 1px solid var(--brand);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .rangeOff {
@@ -68,7 +68,7 @@
 
 .statusOk {
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .statusMuted {
@@ -78,7 +78,7 @@
 
 .statusError {
   background: var(--danger-tint);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .dashboardLink {
@@ -98,7 +98,7 @@
 }
 
 .warning {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .tiles {
@@ -155,7 +155,7 @@
 
 .tileSub {
   font-size: 12px;
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .listTitle {
@@ -219,5 +219,5 @@
 }
 
 .rowAmountNegative {
-  color: var(--danger);
+  color: var(--danger-text);
 }

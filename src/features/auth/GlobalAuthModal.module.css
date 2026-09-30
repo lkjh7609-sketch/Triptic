@@ -59,7 +59,7 @@
   font-family: 'Newsreader', var(--font-sans);
   font-size: 18px;
   font-weight: 500;
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .notice {
@@ -129,14 +129,14 @@
 }
 
 .consent a {
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .consentHint {
   margin: 0;
   padding: 0 var(--space-3);
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 /* 높이가 0 → 내용 높이로 부드럽게 펼쳐진다(grid 행 트랙 애니메이션) */
@@ -192,7 +192,7 @@
   min-height: 44px;
   border-radius: var(--radius-md);
   border: 1px dashed var(--brand);
-  color: var(--brand);
+  color: var(--brand-text);
   font-weight: 600;
   text-decoration: none;
 }

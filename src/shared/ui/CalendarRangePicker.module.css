@@ -92,11 +92,11 @@
 }
 
 .dayCell.selected .dayBtn {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
 }
 
 .dayCell.today:not(.selected) .dayBtn {
-  color: var(--brand);
+  color: var(--brand-text);
 }

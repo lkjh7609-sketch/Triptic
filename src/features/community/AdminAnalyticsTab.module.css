@@ -94,7 +94,7 @@
 .levelError {
   composes: level;
   background: var(--danger-tint, #fbe9e7);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .issueLink {

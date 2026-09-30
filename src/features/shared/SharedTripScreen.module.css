@@ -51,7 +51,7 @@
   border: none;
   border-radius: var(--radius-pill);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   font-weight: 600;
   padding: var(--space-3) var(--space-6);
   min-height: 44px;
@@ -61,7 +61,7 @@
 
 .suggestSent {
   font-size: var(--font-caption-size);
-  color: var(--brand);
+  color: var(--brand-text);
   margin: 0;
 }
 

@@ -57,7 +57,7 @@
 .categoryBadge {
   font-size: var(--font-caption-size);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   padding: 1px var(--space-2);
   border-radius: var(--radius-pill);
 }
@@ -103,7 +103,7 @@
   min-height: 44px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 600;
 }
@@ -114,5 +114,5 @@
 .error {
   margin: var(--space-1) 0 0;
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
 }

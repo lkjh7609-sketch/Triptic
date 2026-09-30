@@ -44,5 +44,5 @@
 
 .danger {
   composes: item;
-  color: var(--danger);
+  color: var(--danger-text);
 }

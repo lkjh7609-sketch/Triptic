@@ -1,7 +1,7 @@
 .badge {
   display: inline-block;
   margin-left: 4px;
-  color: var(--brand);
+  color: var(--brand-text);
   vertical-align: -2px;
 }
 
@@ -17,6 +17,6 @@
 }
 
 .ratingStar {
-  color: var(--warning);
+  color: var(--warning-text);
   fill: var(--warning);
 }

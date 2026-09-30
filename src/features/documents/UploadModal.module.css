@@ -20,7 +20,7 @@
 
 .error {
   font-size: var(--font-label-size);
-  color: var(--danger);
+  color: var(--danger-text);
   margin: 0;
 }
 
@@ -47,7 +47,7 @@
 .categoryBtnActive {
   border-color: var(--brand);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .sectionTitle {
@@ -138,7 +138,7 @@
 }
 
 .actionBtnDanger {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .imageViewerOverlay {

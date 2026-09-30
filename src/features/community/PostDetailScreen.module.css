@@ -81,7 +81,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-caption-size);
   font-weight: 600;
   padding: 0;
@@ -202,7 +202,7 @@
 .commentSubmitBtn {
   appearance: none;
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
   padding: 0 var(--space-4);
@@ -228,5 +228,5 @@
 
 .commentLoginBtn:hover {
   border-color: var(--brand);
-  color: var(--brand);
+  color: var(--brand-text);
 }

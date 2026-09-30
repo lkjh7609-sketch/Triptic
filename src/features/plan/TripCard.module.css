@@ -73,7 +73,7 @@
   background: var(--surface-subtle);
 }
 .menuItem.danger {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .title {
@@ -88,8 +88,8 @@
   position: absolute;
   top: 8px;
   left: 8px;
-  background: var(--brand);
-  color: #fff;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   font-size: 10px;
   font-weight: 800;
   padding: 4px 8px;
