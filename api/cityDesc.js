@@ -3,6 +3,7 @@
 //
 // ai_recommendation_cache(kind='city_desc')에 언어별로 영구 캐시한다. 같은 도시·언어
 // 조합은 한 번만 LLM을 부른다(만료 없음 — 앱은 0049 RPC로 이 캐시를 먼저 직접 읽는다).
+import { requireUser } from './_lib/auth.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -16,6 +17,9 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+    // AI(LLM) 호출은 비용이 드는 API라 로그인 사용자에게만 연다. 캐시 읽기는 앱이 DB 함수로 직접 하므로 비로그인도 캐시된 결과는 본다
+    const user = await requireUser(req, res);
+    if (!user) return;
 
     const city = sanitizeInput(req.query?.city, 60);
     const locale = parseLocale(req.query?.locale);

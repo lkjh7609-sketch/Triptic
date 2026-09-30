@@ -1,3 +1,4 @@
+import { getAccessToken, LoginRequiredError } from '@/shared/api/authToken';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale, nearbyCacheKeys } from '@/shared/api/aiCacheKeys';
@@ -90,9 +91,12 @@ export function needsServerCoords(recs: ApiRecommendation[]): boolean {
 
 /** /api/recommend — 캐시에 없으면 AI로 생성, 있으면 빠진 좌표를 서버가 채워 캐시에 되돌려 쓴 결과 */
 export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRecommendation[]> {
+  // AI 호출은 로그인 사용자에게만 열려 있다(api/recommend.js) — 토큰이 없으면 서버까지 가지 않는다
+  const token = await getAccessToken();
+  if (!token) throw new LoginRequiredError();
   const res = await fetch(apiUrl('/api/recommend'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       placeName: input.placeName,
       city: input.city,
@@ -103,6 +107,7 @@ export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRe
       placeId: input.placeId ?? undefined,
     }),
   });
+  if (res.status === 401) throw new LoginRequiredError();
   if (!res.ok) throw new Error(`recommend HTTP ${res.status}`);
   const json = (await res.json()) as { recommendations?: ApiRecommendation[] };
   return json.recommendations ?? [];
