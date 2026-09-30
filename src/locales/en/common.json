@@ -25,7 +25,9 @@
     "home": "Home",
     "plan": "Plan",
     "community": "Community",
-    "settings": "Settings"
+    "settings": "Settings",
+    "myTrips": "My trips",
+    "my": "Me"
   },
   "nav": {
     "primary": "Main navigation"

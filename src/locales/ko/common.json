@@ -25,7 +25,9 @@
     "home": "홈",
     "plan": "계획",
     "community": "커뮤니티",
-    "settings": "설정"
+    "settings": "설정",
+    "myTrips": "내 여행",
+    "my": "마이"
   },
   "nav": {
     "primary": "주요 화면 전환"

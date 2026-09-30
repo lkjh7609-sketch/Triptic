@@ -184,6 +184,23 @@ export async function listPosts(opts: {
   return { posts, nextCursor };
 }
 
+/** 홈 "인기 여행기" — 최근 N일 안에 올라온 공개 글을 좋아요 많은 순(같으면 최신 순)으로 */
+export async function listPopularPosts(opts: { sinceDays?: number; limit?: number; viewerId?: string | null } = {}): Promise<Post[]> {
+  const supabase = getSupabaseClient();
+  const since = new Date(Date.now() - (opts.sinceDays ?? 30) * 86_400_000).toISOString();
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .gte('created_at', since)
+    .order('like_count', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(opts.limit ?? 4);
+  if (error) throw error;
+  return enrichPosts((data as Post[]) ?? [], opts.viewerId ?? null);
+}
+
 export async function getPost(postId: string, viewerId: string | null): Promise<Post | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from('posts').select('*').eq('id', postId).maybeSingle();

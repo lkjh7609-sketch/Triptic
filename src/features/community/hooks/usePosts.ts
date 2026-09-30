@@ -7,6 +7,7 @@ import {
   deleteOwnPost,
   getPost,
   likePost,
+  listPopularPosts,
   listPosts,
   listUserPosts,
   unlikePost,
@@ -35,6 +36,15 @@ export function usePostsFeed(opts: {
     initialPageParam: null as PostCursor | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: opts.tab === 'all' || !!opts.viewerId,
+  });
+}
+
+/** 홈 "인기 여행기" — 최근 30일 좋아요 순 상위 글 */
+export function usePopularPosts(opts: { limit?: number; viewerId?: string | null } = {}) {
+  return useQuery({
+    queryKey: ['community', 'popular', opts.limit ?? 4, opts.viewerId ?? ''],
+    queryFn: () => listPopularPosts({ limit: opts.limit, viewerId: opts.viewerId }),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
