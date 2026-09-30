@@ -151,24 +151,6 @@
   object-fit: cover;
 }
 
-.circleShade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
-}
-
-.circleTemp {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 4px;
-  text-align: center;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
 .circleName {
   font-size: 0.8125rem;
   line-height: 1.125rem;
@@ -193,4 +175,22 @@
 
 .toneAccent {
   color: var(--h-accent-text);
+}
+
+/* 기온 글자 + 날씨 아이콘(사진 위가 아니라 글자 줄로) */
+.weatherInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: bottom;
+}
+
+.circleWeather {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  color: var(--h-ink);
 }

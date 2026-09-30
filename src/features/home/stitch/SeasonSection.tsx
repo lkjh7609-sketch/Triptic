@@ -11,6 +11,7 @@ import { cityDescQueryKey, readCachedCityDescriptions } from '../cityDescription
 import { DestinationPreviewModal, type PreviewDestination } from './DestinationPreviewModal';
 import { monthRange } from './homeUtils';
 import { seasonPicksFor, type SeasonPick } from './seasonData';
+import { weatherIcon } from './weatherIcon';
 import { useSeasonTemps } from './useSeasonTemps';
 import shared from './shared.module.css';
 import styles from './SeasonSection.module.css';
@@ -30,7 +31,24 @@ function CityPhoto({ pick, desktop, className }: { pick: SeasonPick; desktop: bo
   return <img src={own ?? fallback} alt="" className={className} loading="lazy" decoding="async" />;
 }
 
-function SquareCard({ pick, temp, onOpen }: { pick: SeasonPick; temp: string | null; onOpen: () => void }) {
+/** 카드에 보여줄 지금 날씨 — 기온 글자("17°C")와 날씨 아이콘용 코드 */
+interface CardWeather {
+  text: string;
+  code: number | null;
+}
+
+/** 기온 글자 + 날씨 아이콘 한 줄 */
+function WeatherLine({ weather, className }: { weather: CardWeather; className: string }) {
+  const Icon = weatherIcon(weather.code);
+  return (
+    <span className={className}>
+      <Icon size={14} aria-hidden="true" />
+      {weather.text}
+    </span>
+  );
+}
+
+function SquareCard({ pick, weather, onOpen }: { pick: SeasonPick; weather: CardWeather | null; onOpen: () => void }) {
   const { t, i18n } = useTranslation('home');
   const country = regionName(pick.city.country, i18n.language);
   return (
@@ -41,26 +59,33 @@ function SquareCard({ pick, temp, onOpen }: { pick: SeasonPick; temp: string | n
       </span>
       <span className={styles.squareBody}>
         <span className={styles.squareName}>{t(`page.season.cities.${pick.id}`)}</span>
-        <span className={styles.squareMeta}>{temp ? `${country} · ${temp}` : country}</span>
+        <span className={styles.squareMeta}>
+          {country}
+          {weather ? (
+            <>
+              {' · '}
+              <WeatherLine weather={weather} className={styles.weatherInline} />
+            </>
+          ) : null}
+        </span>
         <span className={styles.squareDesc}>{t(`page.season.${pick.id}.${pick.entry}.desc`)}</span>
       </span>
     </button>
   );
 }
 
-function CircleCard({ pick, temp, tone, onOpen }: { pick: SeasonPick; temp: string | null; tone: number; onOpen: () => void }) {
+function CircleCard({ pick, weather, tone, onOpen }: { pick: SeasonPick; weather: CardWeather | null; tone: number; onOpen: () => void }) {
   const { t } = useTranslation('home');
   return (
     <button type="button" className={styles.circle} onClick={onOpen}>
       <span className={styles.circleMedia}>
         <CityPhoto pick={pick} desktop={false} className={styles.circlePhoto} />
-        <span className={styles.circleShade} aria-hidden="true" />
-        {temp ? <span className={styles.circleTemp}>{temp}</span> : null}
       </span>
       <span className={styles.circleName}>{t(`page.season.cities.${pick.id}`)}</span>
       <span className={`${styles.circleBadge} ${tone === 0 ? styles.toneHot : tone === 1 ? styles.toneAccent : ''}`}>
         {t(`page.season.${pick.id}.${pick.entry}.badge`)}
       </span>
+      {weather ? <WeatherLine weather={weather} className={styles.circleWeather} /> : null}
     </button>
   );
 }
@@ -95,9 +120,10 @@ export function SeasonSection({ desktop }: { desktop: boolean }) {
     };
   }, [picks, queryClient, locale]);
 
-  function tempOf(id: string): string | null {
-    const value = formatTemp(temps?.[id], unit);
-    return value ? `${value}${unit}` : null;
+  function weatherOf(id: string): CardWeather | null {
+    const current = temps?.[id];
+    const value = formatTemp(current?.temp, unit);
+    return value ? { text: `${value}${unit}`, code: current?.code ?? null } : null;
   }
 
   function photoOf(pick: SeasonPick): string {
@@ -140,13 +166,13 @@ export function SeasonSection({ desktop }: { desktop: boolean }) {
       {desktop ? (
         <div className={styles.squares}>
           {picks.map((pick) => (
-            <SquareCard key={pick.id} pick={pick} temp={tempOf(pick.id)} onOpen={() => open(pick)} />
+            <SquareCard key={pick.id} pick={pick} weather={weatherOf(pick.id)} onOpen={() => open(pick)} />
           ))}
         </div>
       ) : (
         <div className={styles.circles}>
           {picks.map((pick, i) => (
-            <CircleCard key={pick.id} pick={pick} tone={i} temp={tempOf(pick.id)} onOpen={() => open(pick)} />
+            <CircleCard key={pick.id} pick={pick} tone={i} weather={weatherOf(pick.id)} onOpen={() => open(pick)} />
           ))}
         </div>
       )}

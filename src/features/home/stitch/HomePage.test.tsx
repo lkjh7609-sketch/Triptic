@@ -22,7 +22,7 @@ vi.mock('../flightDealsData', async () => ({
   ...(await vi.importActual<typeof import('../flightDealsData')>('../flightDealsData')),
   useFlightDeals: () => ({ data: [], isLoading: false }),
 }));
-vi.mock('./useSeasonTemps', () => ({ useSeasonTemps: () => ({ data: { kyoto: 17.6 } }) }));
+vi.mock('./useSeasonTemps', () => ({ useSeasonTemps: () => ({ data: { kyoto: { temp: 17.6, code: 0 } } }) }));
 vi.mock('../cityDescription', async () => ({
   ...(await vi.importActual<typeof import('../cityDescription')>('../cityDescription')),
   readCachedCityDescriptions: async () => ({}),
@@ -63,6 +63,16 @@ describe('HomePage — 시안(Stitch) 구성', () => {
     expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
     expect(headings()).toEqual(['내 일정 & 추천 샘플', '지금 가기 좋은 여행지', '같이 갈 사람 찾기', '인기 여행기', '트립틱 이렇게 써요']);
     expect(screen.queryByText('지금 바로 다음 여행을 계획해 보세요')).not.toBeInTheDocument();
+  });
+
+  it('모바일: 기온은 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {
+    isDesktop.value = false;
+    renderHome();
+    const temp = screen.getByText('18°C');
+    expect(temp.className).toMatch(/circleWeather/);
+    expect(temp.querySelector('svg')).not.toBeNull();
+    // 사진(동그라미) 안에는 기온 글자가 없다
+    expect(temp.closest('[class*="circleMedia"]')).toBeNull();
   });
 
   it('모바일: 캡슐 탭은 처음엔 아무것도 채워지지 않는다', () => {
