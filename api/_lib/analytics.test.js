@@ -99,9 +99,41 @@ describe('fetchSentryReport', () => {
         const denied = await fetchSentryReport(7, SE, vi.fn().mockResolvedValue(jsonRes({ detail: 'secret detail' }, false, 403)));
         expect(denied).toMatchObject({ status: 'error', httpStatus: 403 });
         expect(JSON.stringify(denied)).not.toContain('secret');
+        expect(denied.tokenHint).toBeUndefined();
     });
 });
 
 it('허용 기간', () => {
     expect(ALLOWED_DAYS).toEqual([7, 30, 90]);
+});
+
+describe('Sentry 토큰 정리와 진단', () => {
+    it('앞뒤 공백·따옴표가 붙은 토큰은 걷어 내고 요청한다', async () => {
+        const f = vi.fn().mockResolvedValue(jsonRes([]));
+        await fetchSentryReport(7, { ...SE, SENTRY_AUTH_TOKEN: '  "sntrys_abc123"\n' }, f);
+        expect(f.mock.calls[0][1].headers.Authorization).toBe('Bearer sntrys_abc123');
+    });
+
+    it('401이면 조직 전용 주소로 한 번 더 시도하고, 그래도 401이면 토큰 모양(값 아님)만 알린다', async () => {
+        const f = vi.fn().mockResolvedValue(jsonRes({ detail: 'bad' }, false, 401));
+        const r = await fetchSentryReport(7, { ...SE, SENTRY_AUTH_TOKEN: 'sntrys_supersecretvalue' }, f);
+        expect(f).toHaveBeenCalledTimes(2);
+        expect(f.mock.calls[1][0]).toContain('https://triptic-kg.sentry.io/api/0/projects/');
+        expect(r).toMatchObject({ status: 'error', httpStatus: 401, tokenHint: { length: 23, prefix: 'sntrys_', hadJunk: false } });
+        expect(JSON.stringify(r)).not.toContain('supersecretvalue');
+    });
+
+    it('아무 접두사도 없는 값은 접두사를 알리지 않고 길이만 알린다(예: 64자 hex — 클라이언트 시크릿일 수 있음)', async () => {
+        const hex = 'a'.repeat(64);
+        const f = vi.fn().mockResolvedValue(jsonRes({}, false, 401));
+        const r = await fetchSentryReport(7, { ...SE, SENTRY_AUTH_TOKEN: hex }, f);
+        expect(r.tokenHint).toEqual({ length: 64, prefix: null, hadJunk: false });
+        expect(JSON.stringify(r)).not.toContain(hex);
+    });
+
+    it('첫 주소에서 성공하면 두 번 부르지 않는다', async () => {
+        const f = vi.fn().mockResolvedValue(jsonRes([]));
+        await fetchSentryReport(7, SE, f);
+        expect(f).toHaveBeenCalledTimes(1);
+    });
 });

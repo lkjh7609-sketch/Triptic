@@ -116,7 +116,10 @@
         "forbidden": "HTTP {{status}}: the key lacks permission. Check the read scopes (PostHog Query, Sentry Project/Issue & Event/Organization).",
         "notFound": "HTTP {{status}}: the organization/project name or ID is wrong.",
         "badRequest": "HTTP {{status}}: request format problem. Tell the developer."
-      }
+      },
+      "tokenShape": "Token stored on the server: {{length}} characters, starts with {{prefix}}. Compare with the value under \"Tokens\" in Sentry.",
+      "noPrefix": "(none)",
+      "tokenJunk": "(Surrounding spaces/quotes were stripped automatically.)"
     }
   },
   "report": {
