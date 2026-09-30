@@ -60,6 +60,7 @@ describe('fetchPosthogReport', () => {
         const f = vi.fn().mockResolvedValue(jsonRes({ detail: 'secret detail' }, false, 401));
         const r = await fetchPosthogReport(30, PH, f);
         expect(r.status).toBe('error');
+        expect(r.httpStatus).toBe(401);
         expect(JSON.stringify(r)).not.toContain('secret');
     });
 });
@@ -86,13 +87,18 @@ describe('fetchSentryReport', () => {
         expect(r.issues[1].permalink).toBeNull();
         const [url, init] = f.mock.calls[0];
         expect(url).toContain('/api/0/projects/triptic-kg/javascript-react/issues/');
-        expect(url).toContain('statsPeriod=7d');
+        expect(decodeURIComponent(url)).toContain('query=is:unresolved lastSeen:-7d');
+        expect(url).not.toContain('statsPeriod');
         expect(init.headers.Authorization).toBe('Bearer t');
     });
 
-    it('Sentry 오류는 error로만 알린다', async () => {
+    it('Sentry 오류는 error로만 알리고, 상대 서버의 HTTP 상태 번호만 덧붙인다', async () => {
         const r = await fetchSentryReport(7, SE, vi.fn().mockRejectedValue(new Error('network')));
         expect(r.status).toBe('error');
+        expect(r.httpStatus).toBeNull();
+        const denied = await fetchSentryReport(7, SE, vi.fn().mockResolvedValue(jsonRes({ detail: 'secret detail' }, false, 403)));
+        expect(denied).toMatchObject({ status: 'error', httpStatus: 403 });
+        expect(JSON.stringify(denied)).not.toContain('secret');
     });
 });
 

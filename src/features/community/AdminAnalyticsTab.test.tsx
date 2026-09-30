@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { AnalyticsReport } from './analyticsService';
+import { fillDailyGaps, type AnalyticsReport } from './analyticsService';
 
 const { fetchAdminAnalytics } = vi.hoisted(() => ({ fetchAdminAnalytics: vi.fn() }));
 vi.mock('./analyticsService', async () => ({
@@ -72,5 +72,39 @@ describe('AdminAnalyticsTab', () => {
     fetchAdminAnalytics.mockRejectedValue(new Error('adminAnalytics HTTP 403'));
     renderTab();
     expect(await screen.findByText('분석 정보를 불러오지 못했어요')).toBeInTheDocument();
+  });
+});
+
+describe('fillDailyGaps', () => {
+  it('방문이 없던 날을 0으로 채워 최근 N일을 모두 만든다', () => {
+    const out = fillDailyGaps([{ day: '2026-09-30', users: 3 }], 7, new Date('2026-09-30T05:00:00Z'));
+    expect(out).toHaveLength(7);
+    expect(out[0]).toEqual({ day: '2026-09-24', users: 0 });
+    expect(out[6]).toEqual({ day: '2026-09-30', users: 3 });
+  });
+
+  it('데이터가 전혀 없어도 오늘까지 N일을 만든다', () => {
+    const out = fillDailyGaps([], 30, new Date('2026-09-30T00:00:00Z'));
+    expect(out).toHaveLength(30);
+    expect(out.every((d) => d.users === 0)).toBe(true);
+    expect(out[29].day).toBe('2026-09-30');
+  });
+
+  it('서버의 시간대가 앞서 내일 날짜가 오면 그 날짜를 끝으로 쓴다', () => {
+    const out = fillDailyGaps([{ day: '2026-10-01', users: 2 }], 3, new Date('2026-09-30T20:00:00Z'));
+    expect(out.map((d) => d.day)).toEqual(['2026-09-29', '2026-09-30', '2026-10-01']);
+  });
+});
+
+describe('오류 원인 안내', () => {
+  it('Sentry가 403이면 권한 안내를 보여 준다', async () => {
+    fetchAdminAnalytics.mockResolvedValue({
+      days: 7,
+      generatedAt: '2026-09-30T01:00:00Z',
+      posthog: { status: 'not_configured', dashboardUrl: null, missing: ['X'] },
+      sentry: { status: 'error', dashboardUrl: 'https://sentry.io/x', httpStatus: 403 },
+    } satisfies AnalyticsReport);
+    renderTab();
+    expect(await screen.findByText(/HTTP 403: 키에 권한이 부족해요/)).toBeInTheDocument();
   });
 });

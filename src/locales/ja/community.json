@@ -108,6 +108,12 @@
         "share_joined": "共有リンクで参加",
         "onboarding_step_done": "はじめの案内を完了",
         "trip_limit_reached": "無料の上限に到達"
+      },
+      "errorHint": {
+        "auth": "HTTP {{status}}: キー（トークン）が正しくありません。もう一度コピーしてください。",
+        "forbidden": "HTTP {{status}}: キーの権限が足りません。読み取り権限（PostHog Query・Sentry Project/Issue&Event/Organization）を確認してください。",
+        "notFound": "HTTP {{status}}: 組織・プロジェクト名またはIDが違います。",
+        "badRequest": "HTTP {{status}}: リクエスト形式の問題です。開発者に知らせてください。"
       }
     }
   },

@@ -1,25 +1,41 @@
 .bars {
   display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  height: 84px;
+  align-items: stretch;
+  gap: 4px;
+  height: 110px;
   margin-top: var(--space-2);
 }
 
 .barCol {
   flex: 1 1 0;
   min-width: 0;
+  max-width: 44px; /* 며칠 안 되는 데이터에서 막대 하나가 전체 폭을 채우지 않게 */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100%;
+  align-items: center;
+}
+
+.barValue {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .bar {
   width: 100%;
-  min-height: 2px;
+  min-height: 3px;
   border-radius: 3px 3px 0 0;
   background: var(--brand);
+}
+
+/* 방문이 0인 날 — 바닥에 얇은 선만 */
+.barZero {
+  width: 100%;
+  height: 2px !important;
+  border-radius: 1px;
+  background: var(--border-strong);
 }
 
 .barAxis {
