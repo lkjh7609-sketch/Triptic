@@ -70,10 +70,12 @@ body {
   line-height: var(--font-body-line);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* 터치 기기에서 입력창 글자는 16px 이상 — iOS Safari는 그보다 작으면 포커스할 때 화면을 확대해 버린다.
