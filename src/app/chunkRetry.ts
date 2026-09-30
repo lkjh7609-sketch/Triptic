@@ -1,6 +1,6 @@
 const RELOAD_FLAG_KEY = 'triptic-chunk-reload';
 
-const CHUNK_LOAD_ERROR_PATTERN =
+export const CHUNK_LOAD_ERROR_PATTERN =
   /Failed to fetch dynamically imported module|error loading dynamically imported module|is not a valid JavaScript MIME type|Importing a module script failed/i;
 
 /**
@@ -28,4 +28,44 @@ export async function retryChunkLoad<T>(loader: () => Promise<T>): Promise<T> {
     }
     throw err;
   }
+}
+
+const GLOBAL_RELOAD_KEY = 'triptic-chunk-reload-at';
+/** 전역 복구는 이 시간 안에 두 번 새로고침하지 않는다(청크가 정말로 깨져 있을 때 무한 새로고침 방지) */
+export const GLOBAL_RELOAD_COOLDOWN_MS = 60_000;
+
+export function shouldReloadForChunkError(reason: unknown, lastReloadAt: number | null, now = Date.now()): boolean {
+  const message = reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : '';
+  if (!CHUNK_LOAD_ERROR_PATTERN.test(message)) return false;
+  return lastReloadAt === null || now - lastReloadAt > GLOBAL_RELOAD_COOLDOWN_MS;
+}
+
+/**
+ * retryChunkLoad는 라우트 lazy import만 감싼다. 그 밖의 동적 import(번역 파일, PDF 내보내기, 모니터링 등)가
+ * 새 배포 뒤 예전 탭에서 실패하면 처리되지 않은 Promise 거부로 남아 Sentry에 "Importing a module script failed"로
+ * 쌓이고 화면은 그대로 멈춘다(9/30 모바일 Safari). 청크 로드 실패로 보이면 한 번(1분에 한 번까지) 새로고침해 최신 배포를 받는다.
+ */
+export function installStaleChunkReload(): void {
+  const reloadOnce = (reason: unknown) => {
+    let last: number | null = null;
+    try {
+      const raw = sessionStorage.getItem(GLOBAL_RELOAD_KEY);
+      last = raw ? Number(raw) : null;
+    } catch {
+      return; // 기록을 못 남기면 무한 새로고침 위험 — 하지 않는다
+    }
+    if (!shouldReloadForChunkError(reason, Number.isFinite(last) ? last : null)) return;
+    try {
+      sessionStorage.setItem(GLOBAL_RELOAD_KEY, String(Date.now()));
+    } catch {
+      return;
+    }
+    window.location.reload();
+  };
+  window.addEventListener('unhandledrejection', (e) => reloadOnce(e.reason));
+  // Vite가 자기 preload 도우미로 감싼 import가 실패할 때 내는 이벤트
+  window.addEventListener('vite:preloadError', (e) => {
+    e.preventDefault();
+    reloadOnce((e as Event & { payload?: unknown }).payload);
+  });
 }
