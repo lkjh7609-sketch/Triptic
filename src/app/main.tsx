@@ -7,7 +7,9 @@ import { applyStoredTheme } from '@/shared/theme';
 import { isNativeApp } from '@/shared/platform';
 import { finishIntro } from '@/shared/intro/introSplash';
 import { App } from './App';
+import { installStaleChunkReload } from './chunkRetry';
 
+installStaleChunkReload();
 initMonitoring();
 applyStoredTheme();
 
