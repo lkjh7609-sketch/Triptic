@@ -376,25 +376,22 @@ export function MyrealtripFlightSearch() {
             </button>
             <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} inputRef={destInputRef} />
           </div>
-          <div className={styles.dates} style={{ gridTemplateColumns: `repeat(${roundTrip ? 2 : 1}, minmax(0, 1fr))` }}>
+          <div className={styles.dates}>
             <button ref={dateButtonRef} type="button" className={styles.dateCell} onClick={() => setShowCalendar(true)}>
-              <span className={styles.fieldLabel}>{t('flights.form.depart')}</span>
+              <span className={styles.fieldLabel}>{roundTrip ? t('flights.form.dates') : t('flights.form.depart')}</span>
               <span className={styles.dateValue}>
                 <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
-                <span className={styles.dateText}>{formatDay(departDate, i18n.language)}</span>
+                <span className={styles.dateText}>
+                  {formatDay(departDate, i18n.language)}
+                  {roundTrip ? (
+                    <>
+                      {' – '}
+                      {returnDate ? formatDay(returnDate, i18n.language) : <span className={styles.datePlaceholder}>{t('flights.form.pickReturn')}</span>}
+                    </>
+                  ) : null}
+                </span>
               </span>
             </button>
-            {roundTrip ? (
-              <button type="button" className={styles.dateCell} onClick={() => setShowCalendar(true)}>
-                <span className={styles.fieldLabel}>{t('flights.form.return')}</span>
-                <span className={styles.dateValue}>
-                  <CalendarDays size={16} aria-hidden="true" className={styles.dateIcon} />
-                  <span className={`${styles.dateText} ${returnDate ? '' : styles.datePlaceholder}`}>
-                    {returnDate ? formatDay(returnDate, i18n.language) : t('flights.form.pickReturn')}
-                  </span>
-                </span>
-              </button>
-            ) : null}
           </div>
         </div>
         <div className={styles.passengers} role="group" aria-label={t('flights.form.passengers')}>
