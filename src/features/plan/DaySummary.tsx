@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Coins, Hotel as HotelIcon, MapPin, Plus, Utensils } from 'lucide-react';
+import { Coins, Hotel as HotelIcon, MapPin, Utensils } from 'lucide-react';
 import { cityDisplayName } from './cityName';
 import { formatMoneyCompact, getDayExpenseTotal } from './expenses';
 import type { DayMeals, ExpenseItem, MealSlot } from './types';
@@ -23,8 +23,8 @@ interface DaySummaryProps {
 }
 
 /**
- * 하루 요약 바 — 도시·숙소·식사·경비를 같은 알약 4개로 늘어놓는 대신, 한 덩어리 안에서 칸마다
- * 지금 채워진 값을 바로 보여준다(비어 있으면 + 표시). 칸을 누르면 각각의 편집 창이 열린다.
+ * 하루 요약 — 도시·숙소·식사·경비를 테두리 없는 아이콘 4개로. 채워진 칸은 브랜드 틴트 원 + 값,
+ * 비어 있는 칸은 회색 원 + "추가". 칸을 누르면 각각의 편집 창이 열린다.
  */
 export function DaySummary({ cityName, hotelName, showHotel, meals, expenses, currency, onCity, onHotel, onMeals, onExpense }: DaySummaryProps) {
   const { t, i18n } = useTranslation('plan');
@@ -38,20 +38,20 @@ export function DaySummary({ cityName, hotelName, showHotel, meals, expenses, cu
     {
       key: 'city',
       weight: 1,
-      icon: <MapPin size={16} aria-hidden="true" />,
+      icon: <MapPin size={18} aria-hidden="true" />,
       label: t('tripDetail.cityLabel'),
       value: cityName ? cityDisplayName(cityName) : null,
       onClick: onCity,
     },
   ];
   if (showHotel) {
-    cells.push({ key: 'hotel', weight: 1.5, icon: <HotelIcon size={16} aria-hidden="true" />, label: t('tripDetail.hotelChipLabel'), value: hotelName, onClick: onHotel });
+    cells.push({ key: 'hotel', weight: 1, icon: <HotelIcon size={18} aria-hidden="true" />, label: t('tripDetail.hotelChipLabel'), value: hotelName, onClick: onHotel });
   }
   cells.push(
     {
       key: 'meals',
-      weight: 0.8,
-      icon: <Utensils size={16} aria-hidden="true" />,
+      weight: 1,
+      icon: <Utensils size={18} aria-hidden="true" />,
       label: t('tripDetail.mealsLabel'),
       value: filledMeals > 0 ? `${filledMeals}/${MEAL_SLOTS.length}` : null,
       onClick: onMeals,
@@ -59,7 +59,7 @@ export function DaySummary({ cityName, hotelName, showHotel, meals, expenses, cu
     {
       key: 'expense',
       weight: 1,
-      icon: <Coins size={16} aria-hidden="true" />,
+      icon: <Coins size={18} aria-hidden="true" />,
       label: t('tripDetail.expenseLabel'),
       value: expenses.length > 0 ? formatMoneyCompact(expenseTotal, currency, i18n.language) : null,
       onClick: onExpense,
@@ -69,18 +69,10 @@ export function DaySummary({ cityName, hotelName, showHotel, meals, expenses, cu
   return (
     <div className={styles.summary} style={{ gridTemplateColumns: cells.map((c) => `minmax(0, ${c.weight}fr)`).join(' ') }}>
       {cells.map((cell) => (
-        <button key={cell.key} type="button" className={styles.cell} onClick={cell.onClick}>
-          <span className={styles.label}>
-            {cell.icon}
-            <span>{cell.label}</span>
-          </span>
-          {cell.value ? (
-            <span className={styles.value}>{cell.value}</span>
-          ) : (
-            <span className={styles.add} aria-label={t('common:action.add')}>
-              <Plus size={16} aria-hidden="true" />
-            </span>
-          )}
+        <button key={cell.key} type="button" className={`${styles.cell} ${cell.value ? styles.filled : ''}`} onClick={cell.onClick}>
+          <span className={styles.iconCircle}>{cell.icon}</span>
+          <span className={styles.label}>{cell.label}</span>
+          {cell.value ? <span className={styles.value}>{cell.value}</span> : <span className={styles.add}>{t('common:action.add')}</span>}
         </button>
       ))}
     </div>
