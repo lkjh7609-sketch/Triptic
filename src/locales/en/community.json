@@ -110,6 +110,12 @@
         "share_joined": "Joined via share link",
         "onboarding_step_done": "Finished a getting-started step",
         "trip_limit_reached": "Hit the free limit"
+      },
+      "errorHint": {
+        "auth": "HTTP {{status}}: the key (token) is invalid. Copy it again.",
+        "forbidden": "HTTP {{status}}: the key lacks permission. Check the read scopes (PostHog Query, Sentry Project/Issue & Event/Organization).",
+        "notFound": "HTTP {{status}}: the organization/project name or ID is wrong.",
+        "badRequest": "HTTP {{status}}: request format problem. Tell the developer."
       }
     }
   },

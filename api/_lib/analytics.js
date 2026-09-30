@@ -63,7 +63,11 @@ async function hogql(cfg, sql, fetchImpl) {
         headers: { Authorization: `Bearer ${cfg.key}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: { kind: 'HogQLQuery', query: sql } }),
     });
-    if (!res.ok) throw new Error(`posthog HTTP ${res.status}`);
+    if (!res.ok) {
+        const err = new Error(`posthog HTTP ${res.status}`);
+        err.httpStatus = res.status;
+        throw err;
+    }
     const json = await res.json();
     return Array.isArray(json?.results) ? json.results : [];
 }
@@ -94,7 +98,7 @@ export async function fetchPosthogReport(days, env = process.env, fetchImpl = fe
         };
     } catch (e) {
         console.warn('[adminAnalytics] posthog failed:', e instanceof Error ? e.message : e);
-        return { ...base, status: 'error' };
+        return { ...base, status: 'error', httpStatus: e?.httpStatus ?? null };
     }
 }
 
@@ -106,9 +110,15 @@ export async function fetchSentryReport(days, env = process.env, fetchImpl = fet
     const n = Number(days);
     if (!ALLOWED_DAYS.includes(n)) throw new Error('invalid days');
     try {
-        const url = `${cfg.host}/api/0/projects/${cfg.org}/${cfg.project}/issues/?query=${encodeURIComponent('is:unresolved')}&statsPeriod=${n}d&sort=freq&limit=10`;
+        // 기간은 statsPeriod가 아니라 검색어(lastSeen:-Nd)로 건다 — 이 프로젝트 이슈 API의 statsPeriod는 24h·14d만 받는다
+        const query = `is:unresolved lastSeen:-${n}d`;
+        const url = `${cfg.host}/api/0/projects/${cfg.org}/${cfg.project}/issues/?query=${encodeURIComponent(query)}&sort=freq&limit=10`;
         const res = await fetchImpl(url, { headers: { Authorization: `Bearer ${cfg.token}` } });
-        if (!res.ok) throw new Error(`sentry HTTP ${res.status}`);
+        if (!res.ok) {
+            const err = new Error(`sentry HTTP ${res.status}`);
+            err.httpStatus = res.status;
+            throw err;
+        }
         const json = await res.json();
         const issues = (Array.isArray(json) ? json : []).map((i) => ({
             id: String(i.id),
@@ -123,6 +133,7 @@ export async function fetchSentryReport(days, env = process.env, fetchImpl = fet
         return { ...base, status: 'ok', issues };
     } catch (e) {
         console.warn('[adminAnalytics] sentry failed:', e instanceof Error ? e.message : e);
-        return { ...base, status: 'error' };
+        // 원인을 좁히도록 상대 서버가 돌려준 HTTP 상태 번호만 알린다(401 토큰·403 권한·404 이름·400 요청 형식)
+        return { ...base, status: 'error', httpStatus: e?.httpStatus ?? null };
     }
 }

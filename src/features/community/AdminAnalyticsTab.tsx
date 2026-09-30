@@ -7,6 +7,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import {
   ANALYTICS_RANGES,
   fetchAdminAnalytics,
+  fillDailyGaps,
   percentOf,
   type AnalyticsRange,
   type PosthogReport,
@@ -37,10 +38,18 @@ function Unavailable({ report }: { report: PosthogReport | SentryReport }) {
   if (report.status === 'not_configured') {
     return <p className={sales.hint}>{t('admin.analytics.notConfigured', { names: (report.missing ?? []).join(', ') })}</p>;
   }
-  return <p className={sales.warning}>{t('admin.analytics.sourceError')}</p>;
+  const status = report.httpStatus ?? null;
+  // 상대 서버가 돌려준 HTTP 상태로 원인을 짚어 준다(값·키는 절대 안 보임)
+  const hint = status === 401 ? 'auth' : status === 403 ? 'forbidden' : status === 404 ? 'notFound' : status === 400 ? 'badRequest' : null;
+  return (
+    <>
+      <p className={sales.warning}>{t('admin.analytics.sourceError')}</p>
+      {hint ? <p className={sales.hint}>{t(`admin.analytics.errorHint.${hint}`, { status })}</p> : status ? <p className={sales.hint}>HTTP {status}</p> : null}
+    </>
+  );
 }
 
-function PosthogSection({ report }: { report: PosthogReport }) {
+function PosthogSection({ report, days }: { report: PosthogReport; days: number }) {
   const { t, i18n } = useTranslation('community');
   const lang = i18n.language;
   const head = <SourceHead name={t('admin.analytics.posthog')} status={report.status} url={report.dashboardUrl} />;
@@ -55,7 +64,7 @@ function PosthogSection({ report }: { report: PosthogReport }) {
   const events = report.events ?? [];
   const stat = (name: string) => events.find((e) => e.event === name) ?? { event: name, events: 0, users: 0 };
   const visitors = stat('screen_view').users;
-  const daily = report.daily ?? [];
+  const daily = fillDailyGaps(report.daily ?? [], days);
   const maxDaily = Math.max(1, ...daily.map((d) => d.users));
   const fmt = (n: number) => n.toLocaleString(lang);
 
@@ -99,23 +108,18 @@ function PosthogSection({ report }: { report: PosthogReport }) {
       </div>
 
       <h3 className={sales.listTitle}>{t('admin.analytics.dailyTitle')}</h3>
-      {daily.length === 0 ? (
-        <p className={sales.hint}>{t('admin.analytics.noData')}</p>
-      ) : (
-        <>
-          <div className={styles.bars} role="img" aria-label={t('admin.analytics.dailyTitle')}>
-            {daily.map((d) => (
-              <div key={d.day} className={styles.barCol} title={`${d.day} · ${fmt(d.users)}`}>
-                <span className={styles.bar} style={{ height: `${(d.users / maxDaily) * 100}%` }} />
-              </div>
-            ))}
+      <div className={styles.bars} role="img" aria-label={t('admin.analytics.dailyTitle')}>
+        {daily.map((d) => (
+          <div key={d.day} className={styles.barCol} title={`${d.day} · ${fmt(d.users)}`}>
+            {daily.length <= 14 ? <span className={styles.barValue}>{d.users > 0 ? fmt(d.users) : ''}</span> : null}
+            <span className={d.users > 0 ? styles.bar : styles.barZero} style={{ height: `${(d.users / maxDaily) * 100}%` }} />
           </div>
-          <div className={styles.barAxis}>
-            <span>{daily[0].day.slice(5)}</span>
-            <span>{daily[daily.length - 1].day.slice(5)}</span>
-          </div>
-        </>
-      )}
+        ))}
+      </div>
+      <div className={styles.barAxis}>
+        <span>{daily[0].day.slice(5)}</span>
+        <span>{daily[daily.length - 1].day.slice(5)}</span>
+      </div>
 
       <h3 className={sales.listTitle}>{t('admin.analytics.screensTitle')}</h3>
       {(report.screens ?? []).length === 0 ? (
@@ -216,7 +220,7 @@ export function AdminAnalyticsTab() {
       ) : (
         <>
           <div className={sales.providers}>
-            <PosthogSection report={query.data.posthog} />
+            <PosthogSection report={query.data.posthog} days={query.data.days} />
             <SentrySection report={query.data.sentry} />
           </div>
           <p className={styles.updated}>

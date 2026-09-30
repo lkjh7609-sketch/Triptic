@@ -108,6 +108,12 @@
         "share_joined": "공유 링크로 참여",
         "onboarding_step_done": "시작 안내 단계 완료",
         "trip_limit_reached": "무료 한도 도달"
+      },
+      "errorHint": {
+        "auth": "HTTP {{status}}: 키(토큰)가 올바르지 않아요. 값을 다시 복사해서 넣어 주세요.",
+        "forbidden": "HTTP {{status}}: 키에 권한이 부족해요. 읽기 권한(PostHog Query·Sentry Project/Issue&Event/Organization)을 확인해 주세요.",
+        "notFound": "HTTP {{status}}: 조직·프로젝트 이름이나 번호가 틀렸어요.",
+        "badRequest": "HTTP {{status}}: 요청 형식 문제예요. 개발자에게 알려 주세요."
       }
     }
   },

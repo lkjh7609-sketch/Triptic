@@ -108,6 +108,12 @@
         "share_joined": "透過分享連結加入",
         "onboarding_step_done": "完成入門步驟",
         "trip_limit_reached": "達到免費上限"
+      },
+      "errorHint": {
+        "auth": "HTTP {{status}}：金鑰（權杖）不正確，請重新複製。",
+        "forbidden": "HTTP {{status}}：金鑰權限不足，請確認讀取權限（PostHog Query、Sentry Project/Issue&Event/Organization）。",
+        "notFound": "HTTP {{status}}：組織或專案名稱／編號有誤。",
+        "badRequest": "HTTP {{status}}：請求格式問題，請告知開發者。"
       }
     }
   },
