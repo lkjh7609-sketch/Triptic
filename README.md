@@ -79,6 +79,7 @@ MYREALTRIP_API_KEY / TRAVELPAYOUTS_API_TOKEN   # 제휴 링크·상품
 WEATHERKIT_*                    # 날씨(Apple 개발자 프로그램 가입 후)
 POSTHOG_PERSONAL_API_KEY / POSTHOG_PROJECT_ID   # 운영 콘솔 분석 탭(PostHog 읽기 전용 개인 키)
 SENTRY_AUTH_TOKEN / SENTRY_ORG / SENTRY_PROJECT     # 운영 콘솔 분석 탭(Sentry 읽기 토큰, 슬러그)
+ADMIN_PIN                       # 관리자 6자리 비밀번호(정확히 6자리 숫자, 뻔한 값 금지, VITE_ 아님)
 ```
 
 ### 주요 스크립트
