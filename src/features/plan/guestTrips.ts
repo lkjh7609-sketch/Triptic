@@ -13,6 +13,7 @@ import { SAMPLE_TRIP_ID } from './sampleTrip';
  */
 const STORAGE_KEY = 'triptic-guest-trips';
 export const GUEST_TRIP_PREFIX = 'guest-';
+const IMPORT_TRIED_PREFIX = 'triptic-guest-import-tried:';
 /** 로그인 전에 이 기기에 만들 수 있는 임시 여행 수 */
 export const GUEST_TRIP_LIMIT = 2;
 
@@ -174,6 +175,7 @@ async function runImport(): Promise<GuestImportResult> {
       deleteGuestTrip(entry.row.id);
       result.imported.push({ guestId: entry.row.id, tripId: saved.id });
       track('guest_trip_saved');
+      track('trip_created', { source: 'guest_import' });
     } catch (err) {
       if (isTripLimit(err)) {
         result.limitReached = true;
@@ -186,6 +188,33 @@ async function runImport(): Promise<GuestImportResult> {
     }
   }
   return result;
+}
+
+/**
+ * 로그인한 접속마다 부르는 진입점 — 한 사용자당 한 접속(세션)에 한 번만 옮겨 본다.
+ * 옮기지 못한 임시 여행(무료 한도·네트워크)이 남아 있어도 앱을 열 때마다 같은 안내와 한도 이벤트가 반복되지 않게.
+ * 못 옮긴 건 다음 접속에 다시 시도한다. 로그아웃하면 표시를 지운다(같은 접속에서 다시 임시 여행을 만들고 로그인하는 경우).
+ */
+export function importGuestTripsOncePerSession(userId: string): Promise<GuestImportResult> | null {
+  if (listGuestTrips().length === 0) return null;
+  const key = `${IMPORT_TRIED_PREFIX}${userId}`;
+  try {
+    if (sessionStorage.getItem(key)) return null;
+    sessionStorage.setItem(key, '1');
+  } catch {
+    // 세션 저장소를 못 쓰는 환경 — 표시 없이 진행(진행 중 중복 방지는 importGuestTrips가 한다)
+  }
+  return importGuestTrips();
+}
+
+export function forgetGuestImportAttempts(): void {
+  try {
+    for (const key of Object.keys(sessionStorage)) {
+      if (key.startsWith(IMPORT_TRIED_PREFIX)) sessionStorage.removeItem(key);
+    }
+  } catch {
+    // 무시
+  }
 }
 
 /** 테스트용 — 모듈 안 메모리 상태를 저장소에서 다시 읽게 한다 */

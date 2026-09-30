@@ -227,6 +227,10 @@ export function useDuplicateTrip() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (tripId: string) => {
+      if (isGuestTripId(tripId)) {
+        showToast(i18next.t('common:guest.draftLocked'));
+        throw new Error('guest_trip_duplicate');
+      }
       const trip = await tripService.getTrip(tripId);
       if (!trip) throw new Error('Trip not found');
       const project = tripService.toLocalProject(trip);

@@ -54,7 +54,11 @@ export function PlanScreen() {
   }, [sessionLoading, user, i18n.language]);
   /** 로그인 전에 이 기기에 만든 임시 여행 — 샘플 위에 보인다 */
   const guestTrips = useGuestTrips();
-  const list = useMemo(() => (user ? (trips ?? []) : [...guestTrips, ...sampleTrips]), [user, trips, guestTrips, sampleTrips]);
+  // 로그인했는데 못 옮긴 임시 여행(무료 한도 등)은 이 기기에 남아 있으니 목록에 계속 보여 준다
+  const list = useMemo(
+    () => (user ? [...(trips ?? []), ...guestTrips] : [...guestTrips, ...sampleTrips]),
+    [user, trips, guestTrips, sampleTrips],
+  );
 
   const grouped = useMemo(() => {
     return {
