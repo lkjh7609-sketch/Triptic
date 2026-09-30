@@ -13,8 +13,8 @@
 .track {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(var(--n), minmax(44px, 1fr));
-  width: max(100%, calc(var(--n) * 44px));
+  grid-template-columns: repeat(var(--n), minmax(60px, 1fr));
+  width: max(100%, calc(var(--n) * 60px));
 }
 
 /* 첫 점 중심 ~ 마지막 점 중심 (열 폭의 절반씩 안쪽) */
@@ -59,8 +59,8 @@
 }
 
 .number {
-  font-size: var(--font-headline-size);
-  line-height: var(--font-headline-line);
+  font-size: 1rem;
+  line-height: 1.5rem;
   font-weight: 600;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;

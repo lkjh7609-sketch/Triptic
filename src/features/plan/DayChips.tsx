@@ -17,8 +17,8 @@ interface DayChipsProps {
 /**
  * 일차 선택 — 날짜마다 알약/카드를 늘어놓는 대신, 한 줄로 이어진 선 위에 날짜마다 점을 찍는다.
  * 선택한 날까지 선이 브랜드색으로 차오르고(애니메이션), 선택한 점은 커지며 후광이 생긴다.
- * 일정이 있는 날은 채운 점, 비어 있는 날은 속 빈 점. 열 하나 최소 44px(눌리는 영역)이라
- * 8일까지는 한 화면에 다 들어가고, 그보다 길면 옆으로 넘긴다. 선택한 날은 자동으로 가운데로 스크롤된다.
+ * 일정이 있는 날은 채운 점, 비어 있는 날은 속 빈 점. 열 하나 최소 60px라
+ * 한 화면에 6일쯤 보이고 그보다 길면 옆으로 넘긴다(7번째 날이 살짝 잘려 스크롤할 수 있다는 걸 알려 준다). 선택한 날은 자동으로 가운데로 스크롤된다.
  */
 export function DayChips({ totalDays, currentDay, onChange, startDate, placeCounts }: DayChipsProps) {
   const { t, i18n } = useTranslation('plan');
