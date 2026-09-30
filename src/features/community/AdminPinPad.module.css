@@ -59,7 +59,7 @@
   text-align: center;
   font-size: var(--font-caption-size);
   line-height: 1.4;
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .pad {

@@ -46,9 +46,9 @@
 
 .categoryBtnActive {
   composes: categoryBtn;
-  background: var(--brand);
+  background: var(--brand-solid);
   border-color: var(--brand);
-  color: #FFFFFF;
+  color: var(--text-on-brand);
   box-shadow: var(--shadow-sm);
 }
 
@@ -73,7 +73,7 @@
   padding: 0 var(--space-3);
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 600;
 }
@@ -120,7 +120,7 @@
 }
 
 .itemAmount {
-  color: var(--brand);
+  color: var(--brand-text);
   font-weight: 700;
   text-align: right;
   white-space: nowrap;
@@ -148,7 +148,7 @@
 }
 
 .grandTotalRow {
-  color: var(--brand);
+  color: var(--brand-text);
   font-weight: 800;
 }
 

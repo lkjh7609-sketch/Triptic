@@ -41,7 +41,7 @@
   height: 40px;
   border-radius: var(--radius-pill);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .usimsaText {

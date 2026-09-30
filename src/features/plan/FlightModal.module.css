@@ -30,7 +30,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-caption-size);
   font-weight: 600;
   padding: 0;
@@ -39,7 +39,7 @@
 
 .manualToggleDanger {
   composes: manualToggle;
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .fieldGrid {
@@ -74,7 +74,7 @@
 .error {
   grid-column: 1 / -1;
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
   margin: 0;
 }
 
@@ -88,7 +88,7 @@
   min-height: 44px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
   cursor: pointer;

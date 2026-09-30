@@ -61,7 +61,7 @@
 
 .badge {
   background: var(--danger-tint);
-  color: var(--danger);
+  color: var(--danger-text);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -121,7 +121,7 @@
 }
 
 .primaryBtn {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
 }
 
@@ -207,7 +207,7 @@
 .planBadgePro {
   composes: planBadge;
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 /* 여행 생성 수 / 무료 한도, 임시 완화 표시 */
@@ -225,7 +225,7 @@
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: 11px;
   font-weight: 700;
   line-height: 18px;
@@ -294,7 +294,7 @@
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: var(--surface-subtle);
-  color: var(--danger);
+  color: var(--danger-text);
   font-size: 11px;
   font-weight: 700;
   line-height: 18px;

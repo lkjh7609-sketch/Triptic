@@ -25,6 +25,6 @@
 
 .chip.active {
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   border-color: var(--brand);
 }

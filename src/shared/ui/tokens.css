@@ -21,11 +21,16 @@
 
   /* 브랜드 (오렌지/핑크 대신 생동감 있는 Teal(청록) 사용) */
   --brand: #0D9488; 
-  --brand-pressed: #0F766E;
+  --brand-pressed: #115E59;
   --brand-tint: #CCFBF1; /* 선택된 칩 배경 */
+  /* 대비 확보용 역할 분리 — --brand(#0D9488)는 흰 글씨 3.74:1·흰 바탕 위 글자 3.62:1이라 글자엔 부족하다.
+     채운 면(버튼·배지)은 --brand-solid(흰 글씨 5.47:1), 밝은 면 위 글자·링크는 --brand-text(모든 표면 4.5:1 이상).
+     --brand는 테두리·아이콘·포커스 링·활성 밑줄 등 글자가 아닌 곳에 그대로 쓴다. */
+  --brand-solid: #0F766E;
+  --brand-text: #0E6F68;
 
   /* 지도 마커 */
-  --marker-fill: #16A34A; 
+  --marker-fill: #15803D; /* 흰 번호 5.02:1 (이전 #16A34A는 3.30:1) */ 
   --marker-fill-active: #0D9488;
   --route-transit: #0D9488; 
   --route-fallback: #57534E; 
@@ -37,6 +42,10 @@
   --warning-tint: #FEF3C7;
   --danger: #DC2626; 
   --danger-tint: #FEE2E2;
+  /* 상태색 글자용 — 기본 상태색은 틴트 배경 위에서 2.9~4.0:1이라 글자엔 진한 단계를 쓴다(틴트 위 4.5:1 이상) */
+  --success-text: #15803D;
+  --warning-text: #92400E;
+  --danger-text: #B91C1C;
 
   /* 경계 */
   --border: #E7E5E4;
@@ -125,6 +134,8 @@
   --brand: #4FC3F7; /* 부드러운 스카이 블루 액센트 */
   --brand-pressed: #38BDF8;
   --brand-tint: rgba(79, 195, 247, 0.15);
+  --brand-solid: var(--brand);
+  --brand-text: var(--brand);
 
   --marker-fill: #34D399;
   --marker-fill-active: #4FC3F7;
@@ -137,6 +148,9 @@
   --warning-tint: #3A2A0A;
   --danger: #F87171;
   --danger-tint: #3A1616;
+  --success-text: var(--success);
+  --warning-text: var(--warning);
+  --danger-text: var(--danger);
 
   --border: #283548;
   --border-strong: #334155;
@@ -162,6 +176,8 @@
     --brand: #4FC3F7; 
     --brand-pressed: #38BDF8;
     --brand-tint: rgba(79, 195, 247, 0.15);
+    --brand-solid: var(--brand);
+    --brand-text: var(--brand);
 
     --marker-fill: #34D399;
     --marker-fill-active: #4FC3F7;
@@ -174,6 +190,9 @@
     --warning-tint: #3A2A0A;
     --danger: #F87171;
     --danger-tint: #3A1616;
+    --success-text: var(--success);
+    --warning-text: var(--warning);
+    --danger-text: var(--danger);
 
     --border: #283548;
     --border-strong: #334155;

@@ -68,7 +68,7 @@
   margin-top: var(--space-1);
   width: fit-content;
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: 11px;
   font-weight: 700;
   padding: 2px var(--space-2);
@@ -244,7 +244,7 @@
 
 .aiButton {
   flex: 1;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   border: none;
   border-radius: var(--radius-md);

@@ -77,7 +77,7 @@
 
 .me {
   font-weight: 700;
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .transferAmount {
@@ -176,13 +176,13 @@
 .chipOn {
   border-color: var(--brand);
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .error {
   margin: 0;
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .formActions {
@@ -203,7 +203,7 @@
 
 .primaryBtn {
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
 }
 

@@ -63,7 +63,7 @@
 /* 비로그인 둘러보기 — 프로필 자리 */
 .signInButton {
   border: 1px solid var(--brand);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
   font: inherit;
   font-size: 14px;
@@ -218,8 +218,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--brand);
-  color: #fff;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   font-size: 14px;
   font-weight: 700;
 }

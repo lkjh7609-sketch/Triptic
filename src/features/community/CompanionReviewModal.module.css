@@ -43,7 +43,7 @@
 
 .choiceActive {
   border-color: var(--brand);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .starOn {
-  color: var(--warning);
+  color: var(--warning-text);
   fill: var(--warning);
 }
 
@@ -101,5 +101,5 @@
 .error {
   margin: 0;
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
 }

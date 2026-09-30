@@ -66,7 +66,7 @@
 .themeToggleActive {
   composes: themeToggleBtn;
   background: var(--surface-card);
-  color: var(--brand);
+  color: var(--brand-text);
   box-shadow: var(--shadow-sm);
 }
 
@@ -81,7 +81,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-body-size);
   text-decoration: none;
   cursor: pointer;
@@ -90,7 +90,7 @@
 
 .dangerLink {
   composes: linkButton;
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .hint {

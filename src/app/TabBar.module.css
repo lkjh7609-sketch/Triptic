@@ -24,7 +24,7 @@
 }
 
 .tab.active {
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .icon {

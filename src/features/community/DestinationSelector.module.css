@@ -45,18 +45,18 @@
 }
 
 .chipCountry.active {
-  background: var(--brand);
-  color: white;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   border-color: var(--brand);
 }
 
 .chipCity {
   border-color: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   background: var(--surface-card);
 }
 
 .chipCity:hover {
-  background: var(--brand);
-  color: white;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
 }

@@ -14,13 +14,13 @@
 
 .warningBadge {
   font-size: var(--font-caption-size);
-  color: var(--warning);
+  color: var(--warning-text);
   font-weight: 600;
 }
 
 .emptyBadge {
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
   font-weight: 600;
 }
 
@@ -52,7 +52,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-caption-size);
   padding: 2px 0;
   cursor: pointer;

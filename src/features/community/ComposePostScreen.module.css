@@ -44,7 +44,7 @@
 }
 
 .submitBtn {
-  color: var(--brand);
+  color: var(--brand-text);
   font-weight: 700;
 }
 .submitBtn:disabled {
@@ -183,7 +183,7 @@
 .errorMessage {
   margin: var(--space-3) var(--space-4) 0;
   font-size: var(--font-caption-size);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .infoMessage {
