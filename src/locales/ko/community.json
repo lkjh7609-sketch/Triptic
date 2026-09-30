@@ -114,7 +114,10 @@
         "forbidden": "HTTP {{status}}: 키에 권한이 부족해요. 읽기 권한(PostHog Query·Sentry Project/Issue&Event/Organization)을 확인해 주세요.",
         "notFound": "HTTP {{status}}: 조직·프로젝트 이름이나 번호가 틀렸어요.",
         "badRequest": "HTTP {{status}}: 요청 형식 문제예요. 개발자에게 알려 주세요."
-      }
+      },
+      "tokenShape": "서버에 저장된 토큰: {{length}}자, 시작 글자 {{prefix}}. Sentry의 \"Tokens\" 항목에서 복사한 값이 맞는지 비교해 보세요.",
+      "noPrefix": "(없음)",
+      "tokenJunk": "(앞뒤 공백·따옴표는 서버가 자동으로 걷어 냈어요.)"
     }
   },
   "report": {

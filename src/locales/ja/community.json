@@ -114,7 +114,10 @@
         "forbidden": "HTTP {{status}}: キーの権限が足りません。読み取り権限（PostHog Query・Sentry Project/Issue&Event/Organization）を確認してください。",
         "notFound": "HTTP {{status}}: 組織・プロジェクト名またはIDが違います。",
         "badRequest": "HTTP {{status}}: リクエスト形式の問題です。開発者に知らせてください。"
-      }
+      },
+      "tokenShape": "サーバーに保存されたトークン: {{length}}文字、先頭 {{prefix}}。SentryのTokensの値と比べてください。",
+      "noPrefix": "（なし）",
+      "tokenJunk": "（前後の空白・引用符は自動で取り除きました。）"
     }
   },
   "report": {

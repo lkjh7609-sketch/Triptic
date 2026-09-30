@@ -114,7 +114,10 @@
         "forbidden": "HTTP {{status}}：金鑰權限不足，請確認讀取權限（PostHog Query、Sentry Project/Issue&Event/Organization）。",
         "notFound": "HTTP {{status}}：組織或專案名稱／編號有誤。",
         "badRequest": "HTTP {{status}}：請求格式問題，請告知開發者。"
-      }
+      },
+      "tokenShape": "伺服器儲存的權杖：{{length}} 個字元，開頭 {{prefix}}。請與 Sentry 的 Tokens 值比對。",
+      "noPrefix": "（無）",
+      "tokenJunk": "（前後的空白與引號已自動移除。）"
     }
   },
   "report": {

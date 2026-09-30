@@ -39,6 +39,8 @@ export interface SentryReport {
   status: SourceStatus;
   dashboardUrl: string | null;
   httpStatus?: number | null;
+  /** 401일 때만 — 토큰 값이 아니라 모양(길이·알려진 접두사·앞뒤 잡글자 여부)만 */
+  tokenHint?: { length: number; prefix: string | null; hadJunk: boolean };
   missing?: string[];
   issues?: SentryIssue[];
 }

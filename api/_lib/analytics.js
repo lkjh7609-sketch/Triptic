@@ -29,6 +29,19 @@ function hostOf(value, fallback) {
     return /^https:\/\/[A-Za-z0-9.-]+$/.test(host) ? host : fallback;
 }
 
+/** 붙여넣다 딸려 온 앞뒤 공백·따옴표를 걷어 낸다 — 환경 변수 값에 이게 섞이면 인증이 무조건 실패한다 */
+function cleanSecret(value) {
+    return String(value ?? '').trim().replace(/^["']+|["']+$/g, '').trim();
+}
+
+/** 토큰 값은 절대 안 내보내고, 어디가 틀렸는지 짐작할 모양 정보만 만든다(관리자 화면 진단용) */
+function tokenShape(value) {
+    const raw = String(value ?? '');
+    const clean = cleanSecret(raw);
+    const prefix = /^(sntry[a-z]?_|phx_|phc_)/.exec(clean)?.[1] ?? null; // 알려진 종류 표시(sntrys_ 등)만
+    return { length: clean.length, prefix, hadJunk: raw !== clean };
+}
+
 export function posthogConfig(env = process.env) {
     const missing = [];
     if (!env.POSTHOG_PERSONAL_API_KEY) missing.push('POSTHOG_PERSONAL_API_KEY');
@@ -36,7 +49,7 @@ export function posthogConfig(env = process.env) {
     if (missing.length) return { missing };
     return {
         missing,
-        key: env.POSTHOG_PERSONAL_API_KEY,
+        key: cleanSecret(env.POSTHOG_PERSONAL_API_KEY),
         projectId: env.POSTHOG_PROJECT_ID,
         host: hostOf(env.POSTHOG_API_HOST, 'https://us.posthog.com'),
     };
@@ -50,7 +63,8 @@ export function sentryConfig(env = process.env) {
     if (missing.length) return { missing };
     return {
         missing,
-        token: env.SENTRY_AUTH_TOKEN,
+        token: cleanSecret(env.SENTRY_AUTH_TOKEN),
+        rawTokenHint: tokenShape(env.SENTRY_AUTH_TOKEN),
         org: env.SENTRY_ORG,
         project: env.SENTRY_PROJECT,
         host: hostOf(env.SENTRY_API_HOST, 'https://sentry.io'),
@@ -112,8 +126,11 @@ export async function fetchSentryReport(days, env = process.env, fetchImpl = fet
     try {
         // 기간은 statsPeriod가 아니라 검색어(lastSeen:-Nd)로 건다 — 이 프로젝트 이슈 API의 statsPeriod는 24h·14d만 받는다
         const query = `is:unresolved lastSeen:-${n}d`;
-        const url = `${cfg.host}/api/0/projects/${cfg.org}/${cfg.project}/issues/?query=${encodeURIComponent(query)}&sort=freq&limit=10`;
-        const res = await fetchImpl(url, { headers: { Authorization: `Bearer ${cfg.token}` } });
+        const path = `/api/0/projects/${cfg.org}/${cfg.project}/issues/?query=${encodeURIComponent(query)}&sort=freq&limit=10`;
+        const call = (host) => fetchImpl(`${host}${path}`, { headers: { Authorization: `Bearer ${cfg.token}` } });
+        let res = await call(cfg.host);
+        // 조직마다 API 주소가 다를 수 있어(리전), 인증·이름 오류면 조직 전용 주소로 한 번 더 시도한다
+        if ([401, 403, 404].includes(res.status) && cfg.host === 'https://sentry.io') res = await call(`https://${cfg.org}.sentry.io`);
         if (!res.ok) {
             const err = new Error(`sentry HTTP ${res.status}`);
             err.httpStatus = res.status;
@@ -134,6 +151,6 @@ export async function fetchSentryReport(days, env = process.env, fetchImpl = fet
     } catch (e) {
         console.warn('[adminAnalytics] sentry failed:', e instanceof Error ? e.message : e);
         // 원인을 좁히도록 상대 서버가 돌려준 HTTP 상태 번호만 알린다(401 토큰·403 권한·404 이름·400 요청 형식)
-        return { ...base, status: 'error', httpStatus: e?.httpStatus ?? null };
+        return { ...base, status: 'error', httpStatus: e?.httpStatus ?? null, tokenHint: e?.httpStatus === 401 ? cfg.rawTokenHint : undefined };
     }
 }

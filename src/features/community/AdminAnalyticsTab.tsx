@@ -45,6 +45,12 @@ function Unavailable({ report }: { report: PosthogReport | SentryReport }) {
     <>
       <p className={sales.warning}>{t('admin.analytics.sourceError')}</p>
       {hint ? <p className={sales.hint}>{t(`admin.analytics.errorHint.${hint}`, { status })}</p> : status ? <p className={sales.hint}>HTTP {status}</p> : null}
+      {'tokenHint' in report && report.tokenHint ? (
+        <p className={sales.hint}>
+          {t('admin.analytics.tokenShape', { length: report.tokenHint.length, prefix: report.tokenHint.prefix ?? t('admin.analytics.noPrefix') })}
+          {report.tokenHint.hadJunk ? ` ${t('admin.analytics.tokenJunk')}` : ''}
+        </p>
+      ) : null}
     </>
   );
 }
