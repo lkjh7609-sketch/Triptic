@@ -38,8 +38,9 @@
   appearance: none;
   border: none;
   background: none;
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 44px; /* 터치 영역 44px — 카드 헤더 높이는 그대로 두려고 음수 마진으로 상쇄 */
+  min-height: 44px;
+  margin: -6px -8px -6px 0;
   font-size: 18px;
   color: var(--text-muted);
   cursor: pointer;

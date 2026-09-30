@@ -40,4 +40,12 @@
   font-size: var(--font-label-size);
   font-weight: 600;
   cursor: pointer;
+  position: relative;
+}
+
+/* 32px 버튼의 눌리는 영역을 44px로 */
+.cta::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
 }
