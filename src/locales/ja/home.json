@@ -280,7 +280,7 @@
       "write": "旅行記を書く",
       "bannerTitle": "最初の旅行記を残してみましょう！",
       "bannerDesc": "写真と旅程表を投稿して、ほかの旅行者と共有しましょう。",
-      "bannerCta": "旅行記を書きに行く"
+      "bannerCta": "旅行記の書き方ガイドを見る"
     },
     "season": {
       "eyebrow": "SEASONAL CURATION",
@@ -458,7 +458,7 @@
       "match": "{{pct}}%一致",
       "recruiting_other": "{{count}}名で募集中",
       "anywhere": "どこでも",
-      "talk": "話してみる",
+      "talk": "応募する",
       "emptyTitle": "募集中の同行はまだありません",
       "emptyDesc": "一緒に行く人を探しているなら、最初の募集を投稿してみましょう。"
     },

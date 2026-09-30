@@ -283,7 +283,7 @@
       "write": "Write a travelogue",
       "bannerTitle": "Share your first travelogue!",
       "bannerDesc": "Post your photos and itinerary to share with other travelers.",
-      "bannerCta": "Write one now"
+      "bannerCta": "View travelogue writing guide"
     },
     "season": {
       "eyebrow": "SEASONAL CURATION",
@@ -462,7 +462,7 @@
       "recruiting_one": "Recruiting {{count}} person",
       "recruiting_other": "Recruiting {{count}} people",
       "anywhere": "Anywhere",
-      "talk": "Chat",
+      "talk": "Apply",
       "emptyTitle": "No companion requests right now",
       "emptyDesc": "Looking for someone to travel with? Post the first request."
     },
