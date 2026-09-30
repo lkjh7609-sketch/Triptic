@@ -228,6 +228,18 @@
   box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.04);
 }
 
+.emptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--space-4);
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
 .emptyMainCard h3 {
   font-family: var(--font-sans, sans-serif);
   font-size: 28px;
