@@ -1,0 +1,104 @@
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 84px;
+  margin-top: var(--space-2);
+}
+
+.barCol {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--brand);
+}
+
+.barAxis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px 64px 64px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--font-caption-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.eventHead {
+  composes: eventRow;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.eventName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.num {
+  text-align: right;
+}
+
+.zero {
+  text-align: right;
+  color: var(--text-muted);
+}
+
+.level {
+  flex: none;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.levelError {
+  composes: level;
+  background: var(--danger-tint, #fbe9e7);
+  color: var(--danger);
+}
+
+.issueLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.issueLink:hover,
+.issueLink:focus-visible {
+  text-decoration: underline;
+}
+
+.updated {
+  margin-top: var(--space-3);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 559px) {
+  .eventRow {
+    grid-template-columns: minmax(0, 1fr) 52px 52px 52px;
+  }
+}

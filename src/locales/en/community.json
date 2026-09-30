@@ -8,7 +8,8 @@
       "companion": "Companions",
       "users": "User plans",
       "feedback": "Feedback",
-      "sales": "Sales"
+      "sales": "Sales",
+      "analytics": "Analytics"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -73,6 +74,42 @@
         "trip_flights": "Trip flights",
         "flights_esim": "Flights tab SIM/eSIM",
         "unknown": "Other link"
+      }
+    },
+    "analytics": {
+      "posthog": "Usage analytics (PostHog)",
+      "sentry": "Errors (Sentry)",
+      "notConfigured": "Not connected yet. Set the server environment variables {{names}} to see data here.",
+      "sourceError": "Couldn't load. Check the key and its permissions.",
+      "loadError": "Couldn't load analytics",
+      "rangeLabel": "Period",
+      "visitors": "Visitors",
+      "signups": "Sign-ups",
+      "tripMakers": "People who made a trip",
+      "eventsTitle": "Feature usage",
+      "colEvent": "Item",
+      "colUsers": "Users",
+      "colCount": "Count",
+      "colRate": "Of visitors",
+      "dailyTitle": "Daily visitors",
+      "screensTitle": "Most viewed screens",
+      "noData": "No data yet",
+      "issuesTitle": "Unresolved errors (most frequent)",
+      "noIssues": "No unresolved errors",
+      "issueMeta": "{{count}} times · {{users}} users · last {{when}}",
+      "updatedAt": "As of {{when}} (cached for 1 minute)",
+      "event": {
+        "screen_view": "Viewed a screen",
+        "signup_completed": "Signed up",
+        "guest_trip_started": "Started a draft trip",
+        "guest_trip_saved": "Draft trip saved to account",
+        "trip_created": "Created a trip",
+        "place_added": "Added a place",
+        "document_uploaded": "Uploaded a booking document",
+        "share_link_created": "Created a share link",
+        "share_joined": "Joined via share link",
+        "onboarding_step_done": "Finished a getting-started step",
+        "trip_limit_reached": "Hit the free limit"
       }
     }
   },

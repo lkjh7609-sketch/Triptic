@@ -79,6 +79,7 @@
 - **측정**: 이벤트 10종(`signup_completed`, `trip_created`, `place_added`, `document_uploaded`, `share_link_created`, `share_joined`, `trip_limit_reached`, `onboarding_step_done`, `guest_trip_started`, `guest_trip_saved`)과 로그인 사용자 연결(무작위 UUID만). 클릭 자동 수집·화면 녹화는 끄고 쿠키 대신 localStorage, Do Not Track 존중. 개인정보처리방침에 PostHog·Sentry(국외 이전)를 추가했습니다. ⚠️ **운영에서 켜려면 Vercel에 `VITE_POSTHOG_KEY`·`VITE_POSTHOG_HOST`·`VITE_SENTRY_DSN`을 넣고 다시 배포해야 합니다**(`VITE_` 값은 빌드 때 들어갑니다). 키가 없으면 이벤트는 조용히 버려집니다.
 - **모바일 첫 경험**: 모바일도 PC처럼 로그인 없이 둘러봅니다(첫 화면 로그인 벽 제거). 하단 탭의 마지막 칸은 비로그인일 때 "설정" 대신 "로그인"입니다. 로그인 전에도 여행을 만들 수 있습니다(임시 여행, 이 기기에 최대 2개). 일정은 고칠 수 있고 항공·서류·공유는 잠깁니다. 로그인하면 계정으로 옮기고 이 기기의 임시본을 지웁니다(`src/features/plan/guestTrips.ts`).
 - **AI 생성 API는 로그인 사용자에게만**: `/api/recommend`·`/api/cityDesc`가 Supabase 토큰을 검증합니다(`api/_lib/auth.js`). 비로그인은 DB에 캐시된 추천·도시 소개만 보고, AI 추천 버튼을 누르면 로그인 창이 뜹니다. 보고서의 보안 1순위(비용 남용) 조치입니다.
+- **운영 콘솔 "분석" 탭**: PostHog 이용 분석(방문자·가입·전환율·일별 방문자·많이 본 화면)과 Sentry 미해결 오류(많이 난 순)를 콘솔에서 봅니다. 서버 `api/adminAnalytics.js`가 관리자만 통과시키고 두 서비스에서 읽어 옵니다(1분 캐시, 키는 서버에만). 키를 안 넣은 쪽은 "연결 전"과 비어 있는 환경 변수 이름만 보입니다. 필요한 서버 환경 변수(`VITE_` 아님): `POSTHOG_PERSONAL_API_KEY`(개인 API 키, Query: Read 권한), `POSTHOG_PROJECT_ID`, `SENTRY_AUTH_TOKEN`(Project·Issue & Event·Organization 읽기), `SENTRY_ORG`, `SENTRY_PROJECT`. 브라우저용 공개 키(`VITE_POSTHOG_KEY` 등)와는 별개입니다.
 - **활성화**: 여행 상세에 "첫 여행 시작하기" 카드(장소 추가 · 예약 확인서 올리기 · 같이 갈 사람 초대, 진행 표시). 완료 여부는 실제 데이터(일정·서류·멤버·공유 링크)로 계산하고, 기기에는 "닫았다"만 저장합니다. 샘플 여행에는 안 보이고, 셋 다 하면 사라집니다.
 
 **결정·교훈**

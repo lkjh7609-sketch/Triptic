@@ -8,7 +8,8 @@
       "companion": "동행찾기",
       "users": "사용자 등급",
       "feedback": "건의함",
-      "sales": "판매"
+      "sales": "판매",
+      "analytics": "분석"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -71,6 +72,42 @@
         "trip_flights": "이 일정으로 항공권",
         "flights_esim": "항공 탭 유심·eSIM",
         "unknown": "기타 링크"
+      }
+    },
+    "analytics": {
+      "posthog": "이용 분석 (PostHog)",
+      "sentry": "오류 (Sentry)",
+      "notConfigured": "아직 연결하지 않았어요. 서버 환경 변수 {{names}}를 넣으면 여기에 보여요.",
+      "sourceError": "불러오지 못했어요. 키·권한을 확인해 주세요.",
+      "loadError": "분석 정보를 불러오지 못했어요",
+      "rangeLabel": "기간",
+      "visitors": "방문한 사람",
+      "signups": "가입한 사람",
+      "tripMakers": "여행을 만든 사람",
+      "eventsTitle": "기능별 사용",
+      "colEvent": "항목",
+      "colUsers": "사용자",
+      "colCount": "횟수",
+      "colRate": "방문 대비",
+      "dailyTitle": "일별 방문자",
+      "screensTitle": "많이 본 화면",
+      "noData": "아직 데이터가 없어요",
+      "issuesTitle": "미해결 오류 (많이 난 순)",
+      "noIssues": "미해결 오류가 없어요",
+      "issueMeta": "{{count}}회 · {{users}}명 · 마지막 {{when}}",
+      "updatedAt": "{{when}} 기준(1분 동안 저장된 값)",
+      "event": {
+        "screen_view": "화면 본 사람",
+        "signup_completed": "가입 완료",
+        "guest_trip_started": "임시 여행 만들기 시작",
+        "guest_trip_saved": "임시 여행 → 계정 저장",
+        "trip_created": "여행 만들기",
+        "place_added": "장소 추가",
+        "document_uploaded": "예약 서류 올리기",
+        "share_link_created": "공유 링크 만들기",
+        "share_joined": "공유 링크로 참여",
+        "onboarding_step_done": "시작 안내 단계 완료",
+        "trip_limit_reached": "무료 한도 도달"
       }
     }
   },

@@ -8,7 +8,8 @@
       "companion": "同行探し",
       "users": "ユーザープラン",
       "feedback": "ご意見",
-      "sales": "販売"
+      "sales": "販売",
+      "analytics": "分析"
     },
     "reportDetail": "通報の詳細: {{detail}}",
     "dismiss": "却下",
@@ -71,6 +72,42 @@
         "trip_flights": "この日程で航空券",
         "flights_esim": "航空タブのSIM・eSIM",
         "unknown": "その他のリンク"
+      }
+    },
+    "analytics": {
+      "posthog": "利用分析 (PostHog)",
+      "sentry": "エラー (Sentry)",
+      "notConfigured": "まだ接続していません。サーバー環境変数 {{names}} を設定するとここに表示されます。",
+      "sourceError": "読み込めませんでした。キーと権限を確認してください。",
+      "loadError": "分析情報を読み込めませんでした",
+      "rangeLabel": "期間",
+      "visitors": "訪問者",
+      "signups": "登録者",
+      "tripMakers": "旅行を作った人",
+      "eventsTitle": "機能別の利用",
+      "colEvent": "項目",
+      "colUsers": "ユーザー",
+      "colCount": "回数",
+      "colRate": "訪問者比",
+      "dailyTitle": "日別訪問者",
+      "screensTitle": "よく見られた画面",
+      "noData": "まだデータがありません",
+      "issuesTitle": "未解決のエラー（多い順）",
+      "noIssues": "未解決のエラーはありません",
+      "issueMeta": "{{count}}回・{{users}}人・最終 {{when}}",
+      "updatedAt": "{{when}} 時点（1分間保存）",
+      "event": {
+        "screen_view": "画面を見た人",
+        "signup_completed": "登録完了",
+        "guest_trip_started": "一時保存の旅行を作成開始",
+        "guest_trip_saved": "一時保存をアカウントに保存",
+        "trip_created": "旅行を作成",
+        "place_added": "場所を追加",
+        "document_uploaded": "予約書類をアップロード",
+        "share_link_created": "共有リンクを作成",
+        "share_joined": "共有リンクで参加",
+        "onboarding_step_done": "はじめの案内を完了",
+        "trip_limit_reached": "無料の上限に到達"
       }
     }
   },
