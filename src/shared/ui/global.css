@@ -57,6 +57,11 @@ body {
   padding: 0;
 }
 
+/* 핀치 확대는 허용하고(접근성) 더블탭 확대만 막는다 — 버튼을 빠르게 두 번 눌러도 화면이 커지지 않게 */
+html {
+  touch-action: manipulation;
+}
+
 body {
   background: var(--surface-page);
   color: var(--text-primary);
