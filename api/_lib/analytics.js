@@ -119,7 +119,8 @@ export async function fetchPosthogReport(days, env = process.env, fetchImpl = fe
 /** 최근 days일 안에 생긴 미해결 오류를 많이 난 순으로 10개 */
 export async function fetchSentryReport(days, env = process.env, fetchImpl = fetch) {
     const cfg = sentryConfig(env);
-    const base = { dashboardUrl: cfg.missing?.length ? null : `${cfg.host}/organizations/${cfg.org}/issues/` };
+    // 조직 전용 주소(<조직>.sentry.io)로 바로 연다 — 예전 sentry.io/organizations/… 형식은 리다이렉트에 의존한다
+    const base = { dashboardUrl: cfg.missing?.length ? null : `https://${cfg.org}.sentry.io/issues/` };
     if (cfg.missing.length) return { ...base, status: 'not_configured', missing: cfg.missing };
     const n = Number(days);
     if (!ALLOWED_DAYS.includes(n)) throw new Error('invalid days');
