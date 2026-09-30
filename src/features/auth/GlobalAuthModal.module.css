@@ -124,8 +124,18 @@
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  font-size: var(--font-caption-size);
+  font-size: var(--font-label-size);
+  line-height: var(--font-label-line);
   color: var(--text-muted);
+}
+
+/* 브라우저 기본 체크박스 대신 브랜드색·20px(안내문 한 줄 높이에 맞춰 위로 정렬) */
+.consent input[type='checkbox'] {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--brand-solid);
 }
 
 .consent a {
