@@ -128,7 +128,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
   font-size: var(--font-caption-size);
   padding: 0 var(--space-1);
   cursor: pointer;

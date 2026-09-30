@@ -95,7 +95,7 @@
 
 .hint {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
   margin: 0 0 var(--space-2);
 }
 
@@ -106,7 +106,7 @@
   justify-content: center;
   text-align: center;
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
 }
 
 .profileHeader {

@@ -99,7 +99,7 @@
 
 .translatedLabel {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
 }
 
 .imageCarousel {
@@ -163,7 +163,7 @@
 
 .commentTime {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
   flex: 1;
 }
 

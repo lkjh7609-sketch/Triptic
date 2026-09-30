@@ -80,7 +80,7 @@
 
 .hint {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
 }
 
 .actions {
