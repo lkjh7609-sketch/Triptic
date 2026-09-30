@@ -56,6 +56,8 @@ export function ComposePostScreen() {
   }, [destinations, initialDestSlug, destinationId]);
   const [body, setBody] = useState('');
   const [tripId, setTripId] = useState('');
+  // 첨부한 일정을 다른 사람이 복사해도 되는가 — 기본은 허용 안 함(0070)
+  const [allowCopy, setAllowCopy] = useState(false);
   const [images, setImages] = useState<PendingImage[]>([]);
   const [uploading, setUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
@@ -116,6 +118,7 @@ export function ComposePostScreen() {
         destinationId,
         body: body.trim(),
         tripId: tripId || null,
+        allowCopy: !!tripId && allowCopy,
         images: images.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
         userId: user!.id,
       });
@@ -199,6 +202,15 @@ export function ComposePostScreen() {
               </option>
             ))}
           </select>
+          {tripId ? (
+            <label className={styles.checkRow}>
+              <input type="checkbox" className={styles.check} checked={allowCopy} onChange={(e) => setAllowCopy(e.target.checked)} />
+              <span>
+                <span className={styles.checkText}>{t('compose.allowCopy')}</span>
+                <span className={styles.checkHint}>{t('compose.allowCopyHint')}</span>
+              </span>
+            </label>
+          ) : null}
         </div>
 
         <div className={styles.field}>

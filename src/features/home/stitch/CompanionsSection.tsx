@@ -7,6 +7,7 @@ import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useCompanionPostsFeed } from '@/features/community/hooks/useCompanionPosts';
 import type { CompanionPost } from '@/features/community/types';
+import { prefsLabel, sanitizeTags } from '@/features/community/companionPrefs';
 import { matchScore } from './matchScore';
 import { useUpcomingTrip } from './useUpcomingTrip';
 import shared from './shared.module.css';
@@ -21,7 +22,10 @@ function md(ymd: string): string {
 }
 
 function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: number | null; desktop: boolean }) {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation(['home', 'community']);
+  // 원하는 동행 — "20대 여성"·"20대·30대 무관". 조건이 없으면 표시하지 않는다
+  const prefText = prefsLabel(post, (key) => t(`community:${key}`));
+  const tags = sanitizeTags(post.tags);
   const author = post.author?.display_name ?? '';
   const destination = post.destination?.name ?? t('page.companions.anywhere');
   const dates = desktop ? `${md(post.start_date)} - ${md(post.end_date)}` : `${md(post.start_date).replace('.', '/')} ~ ${md(post.end_date).replace('.', '/')}`;
@@ -32,7 +36,10 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
         <div className={styles.topRow}>
           <div className={styles.topLeft}>
             {desktop ? (
-              <span className={styles.recruit}>{t('page.companions.recruiting', { count: post.group_size })}</span>
+              <>
+                <span className={styles.recruit}>{t('page.companions.recruiting', { count: post.group_size })}</span>
+                {prefText ? <span className={styles.muted}>{prefText}</span> : null}
+              </>
             ) : pct !== null ? (
               <span className={styles.matchMobile}>
                 <span className={styles.ping} aria-hidden="true" />
@@ -64,11 +71,23 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
           </Link>
         </h3>
         <p className={styles.body}>{post.body}</p>
+        {tags.length > 0 ? (
+          <div className={styles.tags}>
+            {tags.map((tag) => (
+              <span key={tag} className={styles.tag}>
+                #{t(`community:companion.tags.${tag}`)}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className={styles.foot}>
         <span className={styles.author}>
           <span className={styles.avatar}>{author.slice(0, desktop ? 1 : 2)}</span>
-          <span className={styles.authorName}>{author}</span>
+          <span className={styles.authorText}>
+            <span className={styles.authorName}>{author}</span>
+            {!desktop && prefText ? <span className={styles.muted}>{prefText}</span> : null}
+          </span>
         </span>
         <Link to={`/community/companion/${post.id}`} className={styles.talk}>
           {desktop ? null : <MessageCircle size={16} aria-hidden="true" />}

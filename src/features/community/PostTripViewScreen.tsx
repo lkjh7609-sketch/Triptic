@@ -14,7 +14,7 @@ import type { PlaceItem } from '@/features/plan/types';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
-import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { ForkDialog } from './ForkDialog';
 import { usePostTrip, useForkPostTrip } from './hooks/usePosts';
 import type { ItineraryItemRow } from '@/features/plan/itineraryTransform';
 import postDetailStyles from './PostDetailScreen.module.css';
@@ -93,10 +93,10 @@ export function PostTripViewScreen() {
         .map(toPlaceItem)
     : [];
 
-  async function handleFork() {
+  async function handleFork(startDate: string) {
     if (!postId) return;
     try {
-      const row = await forkMutation.mutateAsync({ postId, title: `${payload!.trip.title}${t('postTrip.forkTitleSuffix')}` });
+      const row = await forkMutation.mutateAsync({ postId, title: `${payload!.trip.title}${t('postTrip.forkTitleSuffix')}`, startDate });
       setForkedTripId(row.id);
     } catch (err) {
       captureError(err, { context: 'forkPostTrip' });
@@ -132,6 +132,8 @@ export function PostTripViewScreen() {
       <div className={styles.forkButtonWrap}>
         {forkedTripId ? (
           <p className={styles.forkedNotice}>{t('postTrip.forkSuccess')}</p>
+        ) : payload.allow_copy === false ? (
+          <p className={styles.forkedNotice}>{t('postTrip.copyNotAllowed')}</p>
         ) : (
           <button type="button" className={styles.forkButton} disabled={forkMutation.isPending} onClick={() => requireLogin() && setConfirmFork(true)}>
             {t('postTrip.forkButton')}
@@ -140,11 +142,9 @@ export function PostTripViewScreen() {
       </div>
 
       {confirmFork ? (
-        <ConfirmDialog
-          title={t('postTrip.forkButton')}
-          message={t('postTrip.forkConfirm')}
-          cancelLabel={t('postTrip.forkKeep')}
-          confirmLabel={t('postTrip.forkProceed')}
+        <ForkDialog
+          originalStart={payload.trip.start_date}
+          totalDays={payload.trip.total_days ?? totalDays}
           onConfirm={handleFork}
           onClose={() => setConfirmFork(false)}
         />

@@ -494,5 +494,9 @@
       "document": "Upload",
       "invite": "Invite"
     }
+  },
+  "saved": {
+    "title": "Saved travelogues",
+    "empty": "No saved travelogues yet. Save ones you like in Community."
   }
 }

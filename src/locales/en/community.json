@@ -268,7 +268,9 @@
     "maxImagesError": "You can attach up to {{max}} photos.",
     "uploadImageError": "Couldn't upload the photo.",
     "moderationBlockedError": "Your post was blocked for containing content that violates the community guidelines.",
-    "submitError": "Couldn't publish the post. Please try again shortly."
+    "submitError": "Couldn't publish the post. Please try again shortly.",
+    "allowCopy": "Let others copy the attached itinerary",
+    "allowCopyHint": "If allowed, people viewing this post can copy the itinerary into their own trips. Expenses and booking documents are never copied."
   },
   "shared": {
     "loadError": "This share link has expired or could not be found.",
@@ -288,12 +290,16 @@
     "header": "Attached itinerary",
     "loadError": "Couldn't load this itinerary.",
     "forkButton": "Copy this itinerary to my plans",
-    "forkConfirm": "Copy this itinerary to your own plans? Only dates, places, hotels and flights are copied — you can freely edit it afterward.",
+    "forkConfirm": "Copy this itinerary into your trips? Only places, hotels and flights are copied — never expenses or documents. Pick a start date and the same number of days follows from there.",
     "forkKeep": "Just browsing",
     "forkProceed": "Copy it",
     "forkTitleSuffix": " (copy)",
     "forkSuccess": "Saved to your plans!",
-    "forkError": "Couldn't copy this itinerary."
+    "forkError": "Couldn't copy this itinerary.",
+    "forkDialogTitle": "Copy itinerary",
+    "forkStartLabel": "Start date",
+    "forkRange": "{{start}} – {{end}} ({{days}} days)",
+    "copyNotAllowed": "The author hasn't allowed copying this itinerary."
   },
   "continent": {
     "AS": {
@@ -508,6 +514,45 @@
       "submitError": "Couldn't save your review. Please try again shortly.",
       "doneTitle": "Thanks for your review",
       "doneDesc": "Ratings only show up as an average next to each nickname."
+    },
+    "prefs": {
+      "ageLabel": "Preferred age groups (pick any)",
+      "genderLabel": "Preferred gender",
+      "tagLabel": "Tags (up to {{max}})",
+      "hint": "Optional. For reference only — it doesn't block anyone from applying."
+    },
+    "ages": {
+      "10s": "Teens",
+      "20s": "20s",
+      "30s": "30s",
+      "40s": "40s",
+      "50s": "50s",
+      "60s": "60+"
+    },
+    "gender": {
+      "any": "Any gender",
+      "female": "Women",
+      "male": "Men",
+      "anyShort": "Any"
+    },
+    "tags": {
+      "photo": "Photography",
+      "cafe": "Cafe hopping",
+      "night": "Night tours",
+      "beer": "Drinks",
+      "localfood": "Local eats",
+      "healing": "Relaxing",
+      "tour": "Tours",
+      "shopping": "Shopping",
+      "activity": "Activities",
+      "nature": "Nature",
+      "culture": "Culture & arts",
+      "budget": "Budget"
     }
+  },
+  "bookmark": {
+    "saveAria": "Save travelogue ({{count}} saved)",
+    "savedAria": "Remove from saved ({{count}} saved)",
+    "error": "Couldn't update your saved list. Please try again."
   }
 }

@@ -14,6 +14,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { usePost, useDeletePost, useToggleLike } from './hooks/usePosts';
 import { useComments, useCreateComment, useDeleteComment } from './hooks/useComments';
 import { AuthorName } from './AuthorName';
+import { BookmarkButton } from './BookmarkButton';
 import { PostActionsMenu } from './PostActionsMenu';
 import { getPostImageUrl } from './imageProcessing';
 import { translateText } from './translateClient';
@@ -170,6 +171,7 @@ export function PostDetailScreen() {
             {post.likedByMe ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span> : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Heart size={16} /></span>} {t('detail.like', { count: post.like_count })}
           </button>
           <span className={styles.commentCount}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> {t('detail.comment', { count: post.comment_count })}</span>
+          <BookmarkButton post={post} className={styles.likeBtn} />
         </div>
       </div>
 

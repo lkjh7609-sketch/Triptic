@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, ChevronLeft, ChevronRight, Copy, Heart, MessageCircle, NotebookPen } from 'lucide-react';
+import { Bookmark, BookOpen, ChevronLeft, ChevronRight, Copy, Heart, MessageCircle, NotebookPen } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -23,7 +23,9 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
   const author = post.author?.display_name ?? '';
   const initial = author.slice(0, 1).toUpperCase();
   const destination = post.destination?.name;
-  const canCopy = !!post.trip_id;
+  // 일정이 첨부돼 있고 작성자가 복사를 허용한 글만(허용 여부 값이 아직 없으면 허용으로 본다)
+  const canCopy = !!post.trip_id && post.allow_copy !== false;
+  const bookmarks = (post.bookmark_count ?? 0).toLocaleString(i18n.language);
 
   return (
     <article className={`${shared.card} ${shared.cardLift} ${styles.card}`}>
@@ -55,7 +57,7 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
                 <Heart size={14} aria-hidden="true" /> {post.like_count.toLocaleString(i18n.language)}
               </span>
               <span className={styles.stat}>
-                <MessageCircle size={14} aria-hidden="true" /> {post.comment_count.toLocaleString(i18n.language)}
+                <Bookmark size={14} aria-hidden="true" /> {bookmarks}
               </span>
             </span>
           </span>
@@ -75,6 +77,9 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
             </span>
             <span className={styles.stat}>
               <MessageCircle size={16} aria-hidden="true" /> {post.comment_count.toLocaleString(i18n.language)}
+            </span>
+            <span className={styles.stat}>
+              <Bookmark size={16} aria-hidden="true" /> {bookmarks}
             </span>
             {canCopy ? (
               <Link to={`/community/post/${post.id}/trip`} className={styles.copyLink}>

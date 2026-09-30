@@ -4,7 +4,9 @@
  * supabase.from()/rpc(), 모더레이션이 필요한 생성만 moderate-content 경유.
  */
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
+import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
+import { hasPrefs, type CompanionPrefs } from './companionPrefs';
 import i18next, { normalizeLocale } from '@/shared/i18n';
 import type {
   CommunityProfile,
@@ -196,6 +198,8 @@ export async function createCompanionPost(input: {
   endDate: string; // 'yyyy-MM-dd'
   groupSize: number;
   userId: string;
+  /** 원하는 동행(나이대·성별)·태그(0070) — 없으면 저장하지 않는다 */
+  prefs?: CompanionPrefs;
 }): Promise<CreateCompanionPostResult> {
   // 별도 Feature 플래그 없이 기존 커뮤니티 글쓰기 게이트를 재사용한다(지금은
   // 항상 true지만, 나중에 과금 정책이 생기면 여기 한 곳만 바뀐다).
@@ -215,7 +219,25 @@ export async function createCompanionPost(input: {
     },
   });
   if (error) throw error;
-  return data as CreateCompanionPostResult;
+  const result = data as CreateCompanionPostResult;
+  // 게시는 moderate-content 함수가 하고(이 값들은 그 함수가 모른다), 글이 만들어진 뒤 작성자가 채운다.
+  // 값은 고정 목록의 키라 DB 제약이 검사한다. 실패해도 글은 올라간 상태라 막지 않는다
+  if (input.prefs && hasPrefs(input.prefs) && result.id && result.status !== 'removed') {
+    try {
+      await updateCompanionPrefs(result.id, input.prefs);
+    } catch (err) {
+      captureError(err, { context: 'updateCompanionPrefs' });
+    }
+  }
+  return result;
+}
+
+export async function updateCompanionPrefs(postId: string, prefs: CompanionPrefs): Promise<void> {
+  const { error } = await getSupabaseClient()
+    .from('companion_posts')
+    .update({ pref_ages: prefs.ages, pref_gender: prefs.gender, tags: prefs.tags })
+    .eq('id', postId);
+  if (error) throw error;
 }
 
 export async function cancelCompanionPost(postId: string): Promise<void> {

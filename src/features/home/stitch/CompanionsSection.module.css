@@ -280,3 +280,31 @@
     background: var(--h-accent-hover);
   }
 }
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--h-chip);
+  color: var(--h-ink-2);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.authorText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .tag {
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+}

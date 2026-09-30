@@ -198,3 +198,34 @@
   font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.check {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-solid);
+}
+
+.checkText {
+  display: block;
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.checkHint {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--font-caption-size);
+  color: var(--text-tertiary);
+}

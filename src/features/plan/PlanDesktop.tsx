@@ -25,6 +25,7 @@ import type { TripRow } from '@/shared/api/tripService';
 import { tripService } from '@/shared/api/tripService';
 import { useCityImage } from '@/shared/hooks/useCityImage';
 import { useSession } from '@/shared/hooks/useSession';
+import { SavedTravelogues } from './SavedTravelogues';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import { useWeather } from '@/features/weather/useWeather';
@@ -355,6 +356,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
               </button>
             </div>
           )}
+
+          {/* 커뮤니티에서 저장한 여행기 — 로그인한 사람만 */}
+          {!guest && user ? <SavedTravelogues userId={user.id} /> : null}
         </div>
 
         <NextTripRail

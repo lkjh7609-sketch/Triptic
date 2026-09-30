@@ -7,6 +7,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { useToggleLike } from './hooks/usePosts';
 import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
+import { BookmarkButton } from './BookmarkButton';
 import { getPostImageUrl } from './imageProcessing';
 import type { Post } from './types';
 import styles from './PostCard.module.css';
@@ -81,6 +82,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
         <span className={styles.commentCount} aria-label={t('post.commentAria', { count: post.comment_count })}>
           <MessageCircle size={16} aria-hidden="true" /> {post.comment_count}
         </span>
+        <BookmarkButton post={post} className={styles.likeBtn} />
       </div>
     </Link>
   );

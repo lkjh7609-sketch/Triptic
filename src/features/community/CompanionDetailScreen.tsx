@@ -10,6 +10,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
+import { prefsLabel, sanitizeTags } from './companionPrefs';
 import { CompanionApplyModal } from './CompanionApplyModal';
 import {
   useApplicationsForPost,
@@ -122,7 +123,15 @@ export function CompanionDetailScreen() {
         <div className={styles.meta}>
           <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
           <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>
+          {prefsLabel(post, t) ? <span>{prefsLabel(post, t)}</span> : null}
         </div>
+        {sanitizeTags(post.tags).length > 0 ? (
+          <div className={styles.meta}>
+            {sanitizeTags(post.tags).map((tag) => (
+              <span key={tag}>#{t(`companion.tags.${tag}`)}</span>
+            ))}
+          </div>
+        ) : null}
         <p className={postDetailStyles.body}>{post.body}</p>
 
         {isOwn ? (

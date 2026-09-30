@@ -7,6 +7,7 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { DestinationSelector } from './DestinationSelector';
+import { prefsLabel, sanitizeTags } from './companionPrefs';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
 import type { Destination, MyCompanionPost } from './types';
 import styles from './CompanionFeedList.module.css';
@@ -67,8 +68,16 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
                   <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
                   <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
                   <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>
+                  {prefsLabel(post, t) ? <span>{prefsLabel(post, t)}</span> : null}
                 </div>
                 <p className={styles.cardBody}>{post.body}</p>
+                {sanitizeTags(post.tags).length > 0 ? (
+                  <div className={styles.cardMeta}>
+                    {sanitizeTags(post.tags).map((tag) => (
+                      <span key={tag}>#{t(`companion.tags.${tag}`)}</span>
+                    ))}
+                  </div>
+                ) : null}
               </Link>
             ))}
           </div>
