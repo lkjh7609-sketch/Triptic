@@ -15,7 +15,7 @@
   display: inline-block;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
   text-decoration: none;
@@ -110,6 +110,13 @@
 }
 
 .mineBadgeActive {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
+}
+
+/* 대륙·나라·도시 칩 줄은 가로로 스크롤되는데 좌우 여백이 없어 첫 칩이 화면 왼쪽 끝에 붙었다 — 모바일 여백(16px)에 맞춘다 */
+@media (max-width: 1023px) {
+  .selectorGutter {
+    padding: 0 var(--space-4);
+  }
 }

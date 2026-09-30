@@ -371,7 +371,7 @@ export function TripDetailScreen() {
         </div>
       )}
       <div ref={timelineRef} className={isDesktop ? styles.desktopListRight : undefined}>
-        <div className={styles.heroHeader} style={{ backgroundImage: `linear-gradient(to top, var(--surface-page) 0%, rgba(0,0,0,0.5) 100%), url('${bgImage}')` }}>
+        <div className={styles.heroHeader} style={{ backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.35) 100%), url('${bgImage}')` }}>
           <button
             type="button"
             className={styles.backButton}

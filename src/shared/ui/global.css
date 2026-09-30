@@ -57,6 +57,11 @@ body {
   padding: 0;
 }
 
+/* 핀치 확대는 허용하고(접근성) 더블탭 확대만 막는다 — 버튼을 빠르게 두 번 눌러도 화면이 커지지 않게 */
+html {
+  touch-action: manipulation;
+}
+
 body {
   background: var(--surface-page);
   color: var(--text-primary);
@@ -65,10 +70,21 @@ body {
   line-height: var(--font-body-line);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 터치 기기에서 입력창 글자는 16px 이상 — iOS Safari는 그보다 작으면 포커스할 때 화면을 확대해 버린다.
+   화면별 CSS가 15px·14px·11px로 정한 값을 한 번에 끌어올린다(클래스 선택자보다 :not() 체인이 우선한다). */
+@media (pointer: coarse) {
+  :is(input, textarea, select):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='button']):not([type='submit']) {
+    font-size: max(16px, 1rem);
+    text-overflow: ellipsis; /* 글자가 커진 만큼 좁은 칸에서 잘리면 말줄임으로 */
+  }
 }
 
 /* 포커스 링 제거 금지 (01-design-system.md §8 접근성 체크리스트) */

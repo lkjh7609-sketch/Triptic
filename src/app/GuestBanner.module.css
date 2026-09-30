@@ -1,6 +1,7 @@
+/* 비로그인 안내 배너 — 채도 높은 면 대신 옅은 틴트로 본문(여행 화면)과 경쟁하지 않게 한다.
+   모바일은 스크롤하면 올라가고, PC는 헤더 자리를 대신하므로 계속 붙어 있다. */
 .banner {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 50;
   display: flex;
   flex-wrap: wrap;
@@ -8,9 +9,19 @@
   justify-content: space-between;
   gap: var(--space-2) var(--space-3);
   padding: calc(var(--space-2) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-2);
-  background: var(--brand);
-  color: #fff;
-  font-size: var(--font-caption-size);
+  background: var(--brand-tint);
+  border-bottom: 1px solid var(--border);
+  color: var(--brand-text);
+  font-size: var(--font-label-size);
+  line-height: var(--font-label-line);
+  font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .banner {
+    position: sticky;
+    top: 0;
+  }
 }
 
 .text {
@@ -22,10 +33,19 @@
 .cta {
   min-height: 32px;
   padding: 0 var(--space-3);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 999px;
-  background: transparent;
-  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: var(--font-label-size);
   font-weight: 600;
   cursor: pointer;
+  position: relative;
+}
+
+/* 32px 버튼의 눌리는 영역을 44px로 */
+.cta::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
 }

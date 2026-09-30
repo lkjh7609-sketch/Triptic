@@ -36,7 +36,7 @@
   min-height: 52px;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-lg);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
   font-size: var(--font-body-size);
   font-weight: 700;
@@ -94,7 +94,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: 6px 6px 6px var(--space-4);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-pill);
   background: var(--surface-card);
 }
@@ -126,7 +126,7 @@
   padding: 0 var(--space-4);
   border: none;
   border-radius: var(--radius-pill);
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
   font: inherit;
   font-weight: 700;
@@ -167,7 +167,7 @@
 .providerOn {
   background: var(--surface-card);
   color: var(--text-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .providerOff {
@@ -271,4 +271,16 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.providerOn,
+.providerOff {
+  position: relative;
+}
+.providerOn::after,
+.providerOff::after {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
 }

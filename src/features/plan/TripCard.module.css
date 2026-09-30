@@ -38,8 +38,9 @@
   appearance: none;
   border: none;
   background: none;
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 44px; /* 터치 영역 44px — 카드 헤더 높이는 그대로 두려고 음수 마진으로 상쇄 */
+  min-height: 44px;
+  margin: -6px -8px -6px 0;
   font-size: 18px;
   color: var(--text-muted);
   cursor: pointer;
@@ -73,7 +74,7 @@
   background: var(--surface-subtle);
 }
 .menuItem.danger {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .title {
@@ -88,13 +89,13 @@
   position: absolute;
   top: 8px;
   left: 8px;
-  background: var(--brand);
-  color: #fff;
-  font-size: 10px;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: var(--font-caption-size);
   font-weight: 800;
   padding: 4px 8px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .dates {

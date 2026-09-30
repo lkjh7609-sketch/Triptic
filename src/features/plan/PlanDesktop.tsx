@@ -253,7 +253,8 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         </div>
       </section>
 
-      {statsData ? (
+      {/* 다녀온 여행이 하나도 없으면 0만 가득한 타일이 첫 화면을 차지한다 — 숨긴다 */}
+      {statsData && statsData.tripCount > 0 ? (
         <section className={styles.statsSection}>
           <StatsTiles stats={statsData} />
           <WorldMapCard countries={statsData.countries} />

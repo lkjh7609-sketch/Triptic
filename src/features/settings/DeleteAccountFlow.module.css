@@ -14,7 +14,7 @@
 
 .warningBox {
   background: var(--warning-tint);
-  color: var(--warning);
+  color: var(--warning-text);
   border-radius: var(--radius-md);
   padding: var(--space-4);
   font-size: var(--font-body-size);
@@ -28,7 +28,7 @@
 
 .input {
   min-height: 44px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
   font-size: var(--font-body-size);
@@ -63,5 +63,5 @@
 }
 
 .success {
-  color: var(--success);
+  color: var(--success-text);
 }

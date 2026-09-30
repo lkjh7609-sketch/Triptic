@@ -81,7 +81,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-caption-size);
   font-weight: 600;
   padding: 0;
@@ -99,7 +99,7 @@
 
 .translatedLabel {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
 }
 
 .imageCarousel {
@@ -130,7 +130,8 @@
   background: none;
   color: inherit;
   font-size: var(--font-body-size);
-  padding: 0;
+  padding: 10px 8px; /* 눌리는 영역 44px 이상 */
+  margin: -10px -8px;
   cursor: pointer;
 }
 
@@ -163,7 +164,7 @@
 
 .commentTime {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
   flex: 1;
 }
 
@@ -193,7 +194,7 @@
 .commentInput {
   flex: 1;
   min-height: 40px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-pill);
   padding: 0 var(--space-3);
   font-size: var(--font-body-size);
@@ -202,7 +203,7 @@
 .commentSubmitBtn {
   appearance: none;
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 700;
   padding: 0 var(--space-4);
@@ -226,7 +227,9 @@
   cursor: pointer;
 }
 
-.commentLoginBtn:hover {
-  border-color: var(--brand);
-  color: var(--brand);
+@media (hover: hover) {
+  .commentLoginBtn:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+  }
 }

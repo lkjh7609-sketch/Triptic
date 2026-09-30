@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   background: var(--surface-card);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   padding: 8px 8px 8px 24px;
   box-shadow: 0 20px 48px -8px rgba(15, 41, 66, 0.12), 0 2px 8px 0 rgba(15, 41, 66, 0.04);
   max-width: 800px;
@@ -72,7 +72,7 @@
   background-color: var(--brand, #FF6B4A);
   color: #fff;
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   padding: 12px 24px;
   font-weight: 600;
   font-size: 16px;
@@ -80,9 +80,11 @@
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.searchBtn:hover {
-  filter: brightness(0.92);
-  transform: scale(0.98);
+@media (hover: hover) {
+  .searchBtn:hover {
+    filter: brightness(0.92);
+    transform: scale(0.98);
+  }
 }
 
 .section {
@@ -121,17 +123,19 @@
   width: 320px;
   flex-shrink: 0;
   background: var(--surface-card);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
   border: 1px solid #EFECE6;
   transition: all 0.3s ease;
   cursor: pointer;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
-  border-color: rgba(15, 41, 66, 0.12);
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(15, 41, 66, 0.12);
+  }
 }
 
 .cardImage {
@@ -178,14 +182,16 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(15, 41, 66, 0.08);
+  box-shadow: var(--shadow-md);
   transition: all 0.2s ease;
   color: var(--text-primary);
 }
 
-.sliderBtnLeft:hover, .sliderBtnRight:hover {
-  background: var(--surface-subtle);
-  box-shadow: 0 6px 16px rgba(15, 41, 66, 0.12);
+@media (hover: hover) {
+  .sliderBtnLeft:hover, .sliderBtnRight:hover {
+    background: var(--surface-subtle);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .sliderBtnLeft {
@@ -213,6 +219,8 @@
 }
 
 .footerLink {
+  display: inline-block;
+  padding: 11px 4px; /* 눌리는 높이 44px */
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
@@ -221,13 +229,15 @@
 .footerButton {
   border: none;
   background: none;
-  padding: 0;
+  padding: 11px 4px;
   font: inherit;
   cursor: pointer;
 }
 
-.footerLink:hover {
-  color: var(--text-primary, #0F2942);
+@media (hover: hover) {
+  .footerLink:hover {
+    color: var(--text-primary, #0F2942);
+  }
 }
 
 /* ── 인라인 스타일에서 옮긴 것 + 접근성(버튼/다이얼로그) ─────────────── */
@@ -245,7 +255,7 @@
   position: relative;
 }
 .searchIcon {
-  color: var(--brand);
+  color: var(--brand-text);
   margin-right: 12px;
   flex-shrink: 0;
 }
@@ -261,7 +271,7 @@
   text-align: left;
   background: var(--surface-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
 }
 .suggestion {
@@ -270,8 +280,10 @@
   color: var(--text-primary);
   font-size: 16px;
 }
-.suggestion:hover {
-  background: var(--surface-subtle);
+@media (hover: hover) {
+  .suggestion:hover {
+    background: var(--surface-subtle);
+  }
 }
 .card {
   padding: 0;
@@ -349,9 +361,9 @@
 .modalStart {
   padding: 10px 20px;
   border: none;
-  border-radius: 999px;
-  background: var(--brand);
-  color: #fff;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   font-weight: 600;
   cursor: pointer;
 }
@@ -453,9 +465,11 @@
     line-height: 1.35;
     color: rgba(255, 255, 255, 0.8);
   }
+  @media (hover: hover) {
   .card:hover {
-    transform: none;
-  }
+      transform: none;
+    }
+}
 }
 
 /* 트립틱 시작하기 — 모바일에서만 렌더된다(HomeDesktop.tsx) */
@@ -491,7 +505,7 @@
   margin-bottom: var(--space-3);
   border-radius: 50%;
   background: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: 14px;
   font-weight: 700;
 }

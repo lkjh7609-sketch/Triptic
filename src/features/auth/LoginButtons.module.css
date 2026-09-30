@@ -16,7 +16,7 @@
 }
 
 .consent a {
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 .button {
@@ -46,7 +46,7 @@
 }
 
 .error {
-  color: var(--danger);
+  color: var(--danger-text);
   font-size: var(--font-caption-size);
 }
 

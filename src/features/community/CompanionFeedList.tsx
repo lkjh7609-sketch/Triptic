@@ -31,11 +31,13 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
       {user ? <MyCompanionsSection userId={user.id} /> : null}
 
       {destinations && destinations.length > 0 ? (
-        <DestinationSelector
-          destinations={destinations}
-          selectedDestinationId={destinationId}
-          onCitySelect={(city) => setDestinationId((cur) => (cur === city.id ? undefined : city.id))}
-        />
+        <div className={styles.selectorGutter}>
+          <DestinationSelector
+            destinations={destinations}
+            selectedDestinationId={destinationId}
+            onCitySelect={(city) => setDestinationId((cur) => (cur === city.id ? undefined : city.id))}
+          />
+        </div>
       ) : null}
 
       {feed.isLoading ? (

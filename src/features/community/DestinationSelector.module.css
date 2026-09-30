@@ -30,8 +30,10 @@
   transition: all 0.2s ease;
 }
 
-.chip:hover {
-  background: var(--border);
+@media (hover: hover) {
+  .chip:hover {
+    background: var(--border);
+  }
 }
 
 .chip.active {
@@ -45,18 +47,20 @@
 }
 
 .chipCountry.active {
-  background: var(--brand);
-  color: white;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
   border-color: var(--brand);
 }
 
 .chipCity {
   border-color: var(--brand-tint);
-  color: var(--brand);
+  color: var(--brand-text);
   background: var(--surface-card);
 }
 
-.chipCity:hover {
-  background: var(--brand);
-  color: white;
+@media (hover: hover) {
+  .chipCity:hover {
+    background: var(--brand-solid);
+    color: var(--text-on-brand);
+  }
 }

@@ -64,7 +64,7 @@
 
 .input {
   min-height: 44px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
   font-size: var(--font-body-size);
@@ -82,7 +82,7 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--danger);
   background: var(--danger-tint);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .primary {
@@ -90,13 +90,13 @@
   min-height: 44px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--text-on-brand);
   font-weight: 600;
 }
 
 .directionsLink {
   font-size: var(--font-label-size);
-  color: var(--brand);
+  color: var(--brand-text);
   text-decoration: none;
 }

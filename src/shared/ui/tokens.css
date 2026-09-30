@@ -16,16 +16,22 @@
   --text-primary: #1C1917; 
   --text-body: #292524; 
   --text-muted: #57534E; 
-  --text-placeholder: #A8A29E; 
+  --text-placeholder: #A8A29E; /* 입력창 placeholder 전용(2.5:1) — 글자로 쓰지 말 것 */
+  --text-tertiary: #6B6560; /* 3단계 보조 글자(힌트·글자수·시간). 모든 표면 4.5:1 이상 */
   --text-on-brand: #FFFFFF;
 
   /* 브랜드 (오렌지/핑크 대신 생동감 있는 Teal(청록) 사용) */
   --brand: #0D9488; 
-  --brand-pressed: #0F766E;
+  --brand-pressed: #115E59;
   --brand-tint: #CCFBF1; /* 선택된 칩 배경 */
+  /* 대비 확보용 역할 분리 — --brand(#0D9488)는 흰 글씨 3.74:1·흰 바탕 위 글자 3.62:1이라 글자엔 부족하다.
+     채운 면(버튼·배지)은 --brand-solid(흰 글씨 5.47:1), 밝은 면 위 글자·링크는 --brand-text(모든 표면 4.5:1 이상).
+     --brand는 테두리·아이콘·포커스 링·활성 밑줄 등 글자가 아닌 곳에 그대로 쓴다. */
+  --brand-solid: #0F766E;
+  --brand-text: #0E6F68;
 
   /* 지도 마커 */
-  --marker-fill: #16A34A; 
+  --marker-fill: #15803D; /* 흰 번호 5.02:1 (이전 #16A34A는 3.30:1) */ 
   --marker-fill-active: #0D9488;
   --route-transit: #0D9488; 
   --route-fallback: #57534E; 
@@ -37,11 +43,18 @@
   --warning-tint: #FEF3C7;
   --danger: #DC2626; 
   --danger-tint: #FEE2E2;
+  /* 상태색 글자용 — 기본 상태색은 틴트 배경 위에서 2.9~4.0:1이라 글자엔 진한 단계를 쓴다(틴트 위 4.5:1 이상) */
+  --success-text: #15803D;
+  --warning-text: #92400E;
+  --danger-text: #B91C1C;
 
   /* 경계 */
   --border: #E7E5E4;
   --border-strong: #D6D3D1;
   --border-focus: #0D9488;
+  /* 입력창·선택 컨트롤의 테두리 — 컨트롤을 식별하는 유일한 단서라 비텍스트 대비 3:1 이상(흰·페이지 4.2:1, 회색 채움 3.4:1).
+     --border/--border-strong은 구분선·카드용이라 1.2~1.5:1이다. */
+  --border-control: #7F7A74;
 
   /* ===== §4 간격·모서리·그림자 ===== */
   --space-1: 4px;
@@ -85,9 +98,26 @@
   --font-label-line: 1.125rem; 
   --font-label-weight: 500;
 
-  --font-caption-size: 0.6875rem; 
-  --font-caption-line: 0.875rem; 
+  --font-caption-size: 0.75rem; /* 12px — 11px는 스케일 하한(12px) 미만이라 올렸다 */
+  --font-caption-line: 1rem; 
   --font-caption-weight: 500;
+}
+
+/* ===== 별칭 (이전에 정의 없이 쓰이던 이름) =====
+   여러 화면 CSS가 정의되지 않은 변수를 쓰고 있었다. 정의가 없으면 그 선언이 통째로 무효가 돼
+   테두리·배경(예: --surface-bg는 AI 다음 장소 시트 배경이 투명)이 사라진다.
+   위 실제 토큰을 가리키게만 하고 값은 새로 만들지 않는다 — 다크 모드는 원본이 바뀌므로 자동으로 따라간다. */
+:root {
+  --border-subtle: var(--border);
+  --surface-bg: var(--surface-card);
+  --text-title: var(--text-primary);
+  --text-heading: var(--text-primary);
+  --brand-light: var(--brand-tint);
+  --brand-hover: var(--brand-pressed);
+  --font-hero: var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-h3-size: var(--font-headline-size);
+  --transition-fast: 0.15s ease;
 }
 
 /* ===== §2.2 다크 모드 (Airplane Night Mode) ===== */
@@ -102,11 +132,14 @@
   --text-body: #CBD5E1; 
   --text-muted: #94A3B8;
   --text-placeholder: #64748B;
+  --text-tertiary: #8593A9;
   --text-on-brand: #0B0F19;
 
   --brand: #4FC3F7; /* 부드러운 스카이 블루 액센트 */
   --brand-pressed: #38BDF8;
   --brand-tint: rgba(79, 195, 247, 0.15);
+  --brand-solid: var(--brand);
+  --brand-text: var(--brand);
 
   --marker-fill: #34D399;
   --marker-fill-active: #4FC3F7;
@@ -119,10 +152,14 @@
   --warning-tint: #3A2A0A;
   --danger: #F87171;
   --danger-tint: #3A1616;
+  --success-text: var(--success);
+  --warning-text: var(--warning);
+  --danger-text: var(--danger);
 
   --border: #283548;
   --border-strong: #334155;
   --border-focus: #4FC3F7;
+  --border-control: #64748B;
 }
 
 /* ===== §2.3 테마 적용 규칙 ===== */
@@ -139,11 +176,14 @@
     --text-body: #CBD5E1; 
     --text-muted: #94A3B8;
     --text-placeholder: #64748B;
+    --text-tertiary: #8593A9;
     --text-on-brand: #0B0F19;
 
     --brand: #4FC3F7; 
     --brand-pressed: #38BDF8;
     --brand-tint: rgba(79, 195, 247, 0.15);
+    --brand-solid: var(--brand);
+    --brand-text: var(--brand);
 
     --marker-fill: #34D399;
     --marker-fill-active: #4FC3F7;
@@ -156,10 +196,14 @@
     --warning-tint: #3A2A0A;
     --danger: #F87171;
     --danger-tint: #3A1616;
+    --success-text: var(--success);
+    --warning-text: var(--warning);
+    --danger-text: var(--danger);
 
     --border: #283548;
     --border-strong: #334155;
     --border-focus: #4FC3F7;
+    --border-control: #64748B;
   }
 }
 

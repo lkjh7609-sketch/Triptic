@@ -1,6 +1,7 @@
 /*
- * 계획 탭 데스크톱 디자인 팔레트. 라이트 값은 디자인 원본 그대로이고,
- * 다크 모드(data-theme="dark" 또는 시스템 다크)에서만 아래 값으로 바뀐다.
+ * 계획 탭 팔레트. 회색·잉크 계열(--pd-bg~--pd-muted)은 이 화면 고유 값이고, 강조색(navy·accent·coral)은
+ * 앱 전체 브랜드 토큰을 따른다 — 이전엔 네이비+녹슨 주황+코랄이라 하단 탭바·다른 화면의 teal과 색이 4가지로 갈렸다.
+ * 다크 모드(data-theme="dark" 또는 시스템 다크)에서만 회색 계열이 아래 값으로 바뀐다.
  */
 .container {
   --pd-bg: #faf9f6;
@@ -13,12 +14,12 @@
   --pd-ink: #001428;
   --pd-text: #1a1c1a;
   --pd-muted: #43474d;
-  --pd-subtle: #74777e;
-  --pd-navy: #0f2942;
-  --pd-accent: #ae3115;
-  --pd-accent-deep: #8c1900;
-  --pd-accent-soft: #ffdad2;
-  --pd-coral: #fd6a49;
+  --pd-subtle: var(--text-tertiary); /* 이전 #74777e는 4.26:1 */
+  --pd-navy: var(--brand-solid);
+  --pd-accent: var(--brand-text);
+  --pd-accent-deep: var(--brand-pressed);
+  --pd-accent-soft: var(--brand-tint);
+  --pd-coral: var(--brand-solid);
   --pd-success: #10b981;
   flex: 1;
   width: 100%;
@@ -63,7 +64,7 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--pd-accent);
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -108,7 +109,7 @@
 }
 .btnAi {
   padding: 0.75rem 1.25rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-navy);
   color: var(--pd-navy);
   font-size: 13px;
@@ -120,14 +121,16 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.btnAi:hover {
-  background: var(--pd-line-2);
+@media (hover: hover) {
+  .btnAi:hover {
+    background: var(--pd-line-2);
+  }
 }
 .btnCreate {
   padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--pd-coral);
-  color: #fff;
+  color: var(--text-on-brand);
   font-size: 16px;
   font-weight: 600;
   display: flex;
@@ -135,11 +138,13 @@
   gap: 0.5rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s;
 }
-.btnCreate:hover {
-  background: var(--pd-accent);
+@media (hover: hover) {
+  .btnCreate:hover {
+    background: var(--brand-pressed);
+  }
 }
 
 .metricsBar {
@@ -172,24 +177,32 @@
   gap: 0.5rem;
   min-width: 0;
   padding: 0.5rem 0.625rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-lg);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  box-shadow: 0 2px 8px 0 rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 @media (min-width: 1024px) {
   .metricBadge {
     gap: 0.75rem;
     padding: 0.625rem 1rem;
+    border-radius: var(--radius-pill);
     white-space: nowrap;
   }
 }
 .metricBadge > div {
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 4px;
+  flex-direction: column; /* 모바일: 3칸에 나란히라 라벨이 말줄임되지 않게 숫자 아래에 라벨 */
+  align-items: flex-start;
+  gap: 0;
   min-width: 0;
+}
+@media (min-width: 1024px) {
+  .metricBadge > div {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 4px;
+  }
 }
 .metricValue {
   flex-shrink: 0;
@@ -205,14 +218,15 @@
 .metricLabel {
   display: block;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 10px;
+  line-height: 1.25;
+  font-size: var(--font-caption-size);
   color: var(--pd-muted);
 }
 @media (min-width: 1024px) {
   .metricLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 12px;
   }
 }
@@ -220,9 +234,9 @@
   display: flex;
   align-items: center;
   background: var(--pd-surface);
-  border: 1px solid var(--pd-line);
-  border-radius: 9999px;
-  box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
   padding: 0.375rem 0.375rem 0.375rem 1.25rem;
 }
 .searchInput {
@@ -259,7 +273,7 @@
   height: 36px;
   border-radius: 50%;
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -315,10 +329,10 @@
 }
 .sectionBadge {
   padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--pd-accent-soft);
   color: var(--pd-accent-deep);
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
 }
 .sectionLink {
@@ -345,7 +359,7 @@
 
 .compactCard {
   position: relative;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   padding: 1rem;
@@ -356,9 +370,11 @@
   text-decoration: none;
   color: inherit;
 }
-.compactCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+@media (hover: hover) {
+  .compactCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 .cardTop {
   display: flex;
@@ -369,7 +385,7 @@
   position: relative;
   width: 6rem;
   height: 6rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-soft);
   flex-shrink: 0;
   overflow: hidden;
@@ -385,7 +401,7 @@
   left: 0.375rem;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   background: rgba(0, 20, 40, 0.8);
   backdrop-filter: blur(12px);
@@ -407,7 +423,7 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -418,11 +434,11 @@
   border-radius: 50%;
 }
 .travelersBadge {
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   color: var(--pd-muted);
   background: var(--pd-soft);
   padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 .cardTitle {
   font-family: 'Newsreader', var(--font-sans);
@@ -462,18 +478,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
 }
 .progressBar {
   width: 100%;
   height: 0.375rem;
   background: var(--pd-line-2);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 .progressFill {
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 .logisticsChips {
   display: flex;
@@ -488,7 +504,7 @@
   border-radius: 0.25rem;
   background: var(--pd-soft);
   color: var(--pd-ink);
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
 }
 
@@ -510,7 +526,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   margin-left: -0.375rem;
 }
@@ -519,7 +535,7 @@
 }
 .btnOpen {
   padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 600;
   display: flex;
@@ -537,9 +553,9 @@
 .toolkitWidget {
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   padding: 1.5rem;
-  box-shadow: 0 4px 20px -2px rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -567,7 +583,7 @@
   border-radius: 0.25rem;
   background: var(--pd-soft);
   color: var(--pd-subtle);
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -575,7 +591,7 @@
 
 .toolkitBox {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-bg-2);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -586,7 +602,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   color: var(--pd-subtle);
   text-transform: uppercase;
@@ -615,7 +631,7 @@
 
 .toolkitAlert {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: rgba(253, 106, 73, 0.1);
   border: 1px solid rgba(174, 49, 21, 0.2);
   display: flex;
@@ -625,7 +641,7 @@
 
 .toolkitLink {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -634,13 +650,15 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.toolkitLink:hover {
-  border-color: var(--pd-ink);
+@media (hover: hover) {
+  .toolkitLink:hover {
+    border-color: var(--pd-ink);
+  }
 }
 .toolkitLinkIcon {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-soft);
   display: flex;
   align-items: center;
@@ -648,9 +666,11 @@
   color: var(--pd-ink);
   transition: all 0.2s;
 }
-.toolkitLink:hover .toolkitLinkIcon {
-  background: var(--pd-ink);
-  color: #fff;
+@media (hover: hover) {
+  .toolkitLink:hover .toolkitLinkIcon {
+    background: var(--pd-ink);
+    color: var(--pd-surface); /* 다크에선 ink가 밝은 색이라 흰 글씨가 안 보였다 */
+  }
 }
 
 /* Past Grid / Filter Tabs */
@@ -701,12 +721,12 @@
   gap: 0.25rem;
   background: var(--pd-soft);
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
 }
 .viewToggle {
   padding: 0.25rem 0.625rem;
   border-radius: 0.25rem;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -719,7 +739,7 @@
 .viewToggle.active {
   background: var(--pd-surface);
   color: var(--pd-ink);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .pastGrid {
@@ -733,7 +753,7 @@
   }
 }
 .pastCard {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
   display: flex;
@@ -743,9 +763,11 @@
   text-decoration: none;
   color: inherit;
 }
-.pastCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+@media (hover: hover) {
+  .pastCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 .pastImageWrap {
   position: relative;
@@ -759,8 +781,10 @@
   object-fit: cover;
   transition: transform 0.7s;
 }
-.pastCard:hover .pastImage {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .pastCard:hover .pastImage {
+    transform: scale(1.05);
+  }
 }
 .pastBody {
   padding: 1rem;
@@ -772,7 +796,7 @@
 
 .emptyState {
   border: 2px dashed rgba(195, 198, 206, 0.6);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: rgba(244, 243, 240, 0.5);
   padding: 1.25rem;
   display: flex;
@@ -845,9 +869,11 @@
   color: var(--pd-subtle);
   cursor: pointer;
 }
-.cardMenuButton:hover {
-  background: var(--pd-soft);
-  color: var(--pd-ink);
+@media (hover: hover) {
+  .cardMenuButton:hover {
+    background: var(--pd-soft);
+    color: var(--pd-ink);
+  }
 }
 .cardMenu {
   position: absolute;
@@ -856,10 +882,10 @@
   z-index: 20;
   min-width: 140px;
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.16);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
 }
@@ -873,8 +899,10 @@
   font-size: 13px;
   cursor: pointer;
 }
-.cardMenuItem:hover {
-  background: var(--pd-soft);
+@media (hover: hover) {
+  .cardMenuItem:hover {
+    background: var(--pd-soft);
+  }
 }
 /* 비로그인 샘플 여행 — 흐리게, 누르면 로그인 안내 */
 .cardMenuItemLocked {
@@ -904,7 +932,7 @@
 }
 .avatarPrimary {
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
 }
 .avatar:not(.avatarPrimary) {
   background: var(--pd-line);
@@ -917,7 +945,7 @@
 }
 .btnOpenActive {
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   border-color: var(--pd-navy);
 }
 .btnOpen:is(button) {
@@ -982,8 +1010,8 @@
   top: 10px;
   left: 10px;
   padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 11px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-caption-size);
   background: rgba(0, 20, 40, 0.7);
   backdrop-filter: blur(12px);
   color: #fff;
@@ -992,7 +1020,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   color: var(--pd-subtle);
   text-transform: uppercase;
@@ -1126,11 +1154,11 @@
   height: 28px;
   border-radius: 50%;
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
 }
 .memberName {
@@ -1139,13 +1167,13 @@
   color: var(--pd-ink);
 }
 .memberRole {
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   color: var(--pd-subtle);
 }
 .tipBox {
   background: var(--pd-soft);
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -1155,7 +1183,7 @@
   align-items: center;
   gap: 0.375rem;
   color: var(--pd-accent);
-  font-size: 11px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1179,11 +1207,6 @@
   --pd-text: #e6e8ea;
   --pd-muted: #b4bac1;
   --pd-subtle: #8d949b;
-  --pd-navy: #3b5f86;
-  --pd-accent: #ff8a6a;
-  --pd-accent-deep: #ffb49e;
-  --pd-accent-soft: #3a221c;
-  --pd-coral: #f2643f;
   --pd-success: #34d399;
 }
 @media (prefers-color-scheme: dark) {
@@ -1199,12 +1222,7 @@
     --pd-text: #e6e8ea;
     --pd-muted: #b4bac1;
     --pd-subtle: #8d949b;
-    --pd-navy: #3b5f86;
-    --pd-accent: #ff8a6a;
-    --pd-accent-deep: #ffb49e;
-    --pd-accent-soft: #3a221c;
-    --pd-coral: #f2643f;
-    --pd-success: #34d399;
+              --pd-success: #34d399;
   }
 }
 
@@ -1223,7 +1241,7 @@
   width: 100%;
   min-height: 40px;
   padding: 0.5rem 0.875rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-border);
   background: var(--pd-surface);
   color: var(--pd-ink);
@@ -1233,8 +1251,10 @@
   cursor: pointer;
 }
 
-.findFlightsBtn:hover {
-  border-color: var(--pd-navy);
+@media (hover: hover) {
+  .findFlightsBtn:hover {
+    border-color: var(--pd-navy);
+  }
 }
 
 .findFlightsBtn:disabled {
@@ -1295,7 +1315,7 @@
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  border: 1.5px solid var(--pd-border);
+  border: 1.5px solid var(--border-control);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1304,7 +1324,7 @@
 .checklistBoxDone {
   border-color: var(--pd-navy);
   background: var(--pd-navy);
-  color: #fff;
+  color: var(--text-on-brand);
 }
 
 .checklistTextDone {
@@ -1318,7 +1338,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--pd-border);
   background: var(--pd-surface);
   color: var(--pd-ink);
@@ -1332,4 +1352,14 @@
 .checklistAction:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.cardMenuButton {
+  position: relative;
+}
+.cardMenuButton::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
 }

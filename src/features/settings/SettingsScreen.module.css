@@ -2,6 +2,7 @@
   padding: var(--space-4);
   background: var(--surface-page);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .section {
@@ -66,7 +67,7 @@
 .themeToggleActive {
   composes: themeToggleBtn;
   background: var(--surface-card);
-  color: var(--brand);
+  color: var(--brand-text);
   box-shadow: var(--shadow-sm);
 }
 
@@ -81,7 +82,7 @@
   appearance: none;
   border: none;
   background: none;
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: var(--font-body-size);
   text-decoration: none;
   cursor: pointer;
@@ -90,12 +91,12 @@
 
 .dangerLink {
   composes: linkButton;
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .hint {
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
   margin: 0 0 var(--space-2);
 }
 
@@ -106,7 +107,7 @@
   justify-content: center;
   text-align: center;
   font-size: var(--font-caption-size);
-  color: var(--text-placeholder);
+  color: var(--text-tertiary);
 }
 
 .profileHeader {

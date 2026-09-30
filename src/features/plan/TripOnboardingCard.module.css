@@ -34,7 +34,7 @@
 .progressLabel {
   font-size: 12px;
   font-weight: 600;
-  color: var(--brand);
+  color: var(--brand-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .checkDone {
-  background: var(--brand);
+  background: var(--brand-solid);
   color: var(--surface-card);
 }
 
@@ -128,7 +128,7 @@
   flex: none;
   border: 1px solid var(--brand);
   background: transparent;
-  color: var(--brand);
+  color: var(--brand-text);
   border-radius: var(--radius-pill);
   min-height: 32px;
   padding: 0 14px;
@@ -147,4 +147,14 @@
   .barFill {
     transition: none;
   }
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.action {
+  position: relative;
+}
+.action::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
 }
