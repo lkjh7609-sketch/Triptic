@@ -6,10 +6,12 @@ import {
     isProductUrl,
     isSimProduct,
     kstToday,
+    normalizeDeal,
     normalizeProduct,
     normalizeReservation,
     normalizeRevenue,
     parseFlightQuery,
+    searchFlightDeals,
     searchUrl,
     splitRange,
 } from './myrealtrip.js';
@@ -57,6 +59,12 @@ describe('parseFlightQuery', () => {
         ['아동 음수', { ...base, children: '-1' }],
     ])('거절: %s', (_label, query) => {
         expect(parseFlightQuery(query, TODAY)).toBeNull();
+    });
+
+    it('좌석 등급은 아는 값만 넣는다', () => {
+        expect(parseFlightQuery({ ...base, cabin: 'BUSINESS' }, TODAY)).toMatchObject({ cabin: 'BUSINESS' });
+        expect(parseFlightQuery({ ...base, cabin: 'SUPER' }, TODAY)).not.toHaveProperty('cabin');
+        expect(parseFlightQuery(base, TODAY)).not.toHaveProperty('cabin');
     });
 
     it('시차 대비 어제 출발까지는 받는다', () => {
@@ -267,5 +275,68 @@ describe('fetchSales — 조회 기간 제한대로 나눠 부른다', () => {
         expect(result.failed).toEqual(['flightRevenues']);
         expect(result.revenues).toHaveLength(1);
         expect(result.reservations).toHaveLength(2);
+    });
+});
+
+describe('항공 특가', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.unstubAllEnvs();
+    });
+
+    const row = { fromCity: 'ICN', toCity: 'KIX', period: 5, departureDate: '2026-11-10', returnDate: '2026-11-14', totalPrice: 214800, airline: '7C' };
+
+    it('이름을 아는 도착지만 카드로 — 항공사 이름, 평균 대비 5% 이상 싸면 할인율', () => {
+        const deal = normalizeDeal(row, new Map([['KIX', 300000]]));
+        expect(deal).toMatchObject({ code: 'KIX', city: '오사카', theme: 'japan', price: 214800, airline: '7C', airlineName: '제주항공', average: 300000, discountPct: 28 });
+        expect(normalizeDeal(row, new Map([['KIX', 218000]]))).toMatchObject({ average: 218000, discountPct: null });
+        expect(normalizeDeal(row)).toMatchObject({ average: null, discountPct: null });
+        expect(normalizeDeal({ ...row, toCity: 'ZZZ' })).toBeNull();
+        expect(normalizeDeal({ ...row, totalPrice: 0 })).toBeNull();
+        expect(normalizeDeal({ ...row, departureDate: '2026-13-40' })).toBeNull();
+        expect(normalizeDeal({ ...row, airline: 'XX' })).toMatchObject({ airlineName: 'XX' });
+    });
+
+    it('많이 싼 순으로, 도시 코드(OSA)로 온 평균도 공항 코드로 이어 붙인다', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        const ok = (data) => ({ ok: true, json: async () => ({ data, result: { status: 200, code: 'success' } }) });
+        vi.stubGlobal('fetch', async (url, init) => {
+            const path = new URL(String(url)).pathname;
+            const body = JSON.parse(init.body);
+            if (path.endsWith('/calendar/lowest')) {
+                expect(body.depCityCd).toBe('ICN');
+                expect(body.arrCityCds).toContain('KIX');
+                expect(body.period).toBe(5);
+                return ok([row, { ...row, toCity: 'BKK', totalPrice: 300000, airline: 'TG' }, { ...row, toCity: 'QQQ' }]);
+            }
+            return ok([
+                { toCity: 'OSA', averagePrice: 300000 },
+                { toCity: 'BKK', averagePrice: 310000 },
+            ]);
+        });
+        const deals = await searchFlightDeals('ICN', 5);
+        expect(deals.map((d) => d.code)).toEqual(['KIX', 'BKK']);
+        expect(deals[0].discountPct).toBe(28);
+        expect(deals[1].discountPct).toBeNull();
+    });
+
+    it('전체 목적지(평균) 조회가 실패해도 특가는 돌려준다', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.stubGlobal('fetch', async (url) => {
+            const path = new URL(String(url)).pathname;
+            if (path.endsWith('/bulk-lowest')) return { ok: true, json: async () => ({ data: {}, result: { status: 500, code: 'error' } }) };
+            return { ok: true, json: async () => ({ data: [row], result: { status: 200, code: 'success' } }) };
+        });
+        const deals = await searchFlightDeals('ICN', 5);
+        expect(deals).toHaveLength(1);
+        expect(deals[0].discountPct).toBeNull();
+    });
+
+    it('최저가 조회가 실패하면 던진다(API가 캐시하지 않고 502로)', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        vi.stubGlobal('fetch', async () => ({ ok: true, json: async () => ({ data: {}, result: { status: 400, code: 'bad', message: 'x' } }) }));
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        await expect(searchFlightDeals('ICN', 5)).rejects.toThrow();
     });
 });
