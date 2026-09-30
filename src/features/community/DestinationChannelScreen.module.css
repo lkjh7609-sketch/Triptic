@@ -172,7 +172,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .emptyMainCard h3 {
@@ -191,7 +191,7 @@
   background: var(--brand-solid);
   color: var(--text-on-brand);
   padding: 12px 24px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.2s;
@@ -218,12 +218,12 @@
   background: var(--brand-solid);
   color: var(--text-on-brand);
   padding: 14px 24px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  box-shadow: 0 20px 48px -8px rgba(15, 41, 66, 0.15);
+  box-shadow: var(--shadow-lg);
   text-decoration: none;
   z-index: 100;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -231,7 +231,7 @@
 @media (hover: hover) {
   .fabBtnDesktop:hover {
     transform: translateY(-4px);
-    box-shadow: 0 24px 56px -8px rgba(15, 41, 66, 0.2);
+    box-shadow: var(--shadow-lg);
   }
 }
 @media (max-width: 768px) {
