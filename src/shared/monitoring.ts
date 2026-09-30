@@ -55,6 +55,9 @@ export async function initMonitoring(): Promise<void> {
       release: `triptic@${import.meta.env.VITE_APP_VERSION ?? 'dev'}`,
       environment: import.meta.env.MODE,
       tracesSampleRate: import.meta.env.PROD ? 0.2 : 0,
+      // 광고(애드센스) 스크립트 안에서 나는 오류는 우리 코드가 아니라 고칠 수 없다 — 예: iOS Safari에서
+      // pagead2.googlesyndication.com의 rum_fy2021.js가 던지는 "Error: int64"(2026-09-30). 스택 맨 위가 이 주소면 버린다.
+      denyUrls: [/googlesyndication\.com/i, /doubleclick\.net/i, /googletagservices\.com/i, /adservice\.google\./i],
     });
     sentryModule = Sentry;
   }
