@@ -31,8 +31,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-md);
   background: var(--surface-card);
   color: var(--brand-text);
@@ -47,7 +47,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -65,40 +65,48 @@
   color: var(--text-muted);
 }
 
-.badges {
+.benefits {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  margin: var(--space-2) 0 var(--space-3);
-  padding: 0;
+  gap: var(--space-4);
+  width: 100%;
+  margin: auto 0 0;
+  padding: var(--space-5, 20px);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
   list-style: none;
 }
 
-.badge {
-  display: inline-flex;
+.benefit {
+  display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 6px var(--space-3) 6px 6px;
-  border-radius: var(--radius-pill);
-  background: var(--surface-card);
-  color: var(--text-body);
-  font-size: var(--font-label-size);
-  font-weight: 500;
+  gap: var(--space-3);
 }
 
-.badgeIcon {
+.benefit + .benefit {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.benefitIcon {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--brand-tint);
   color: var(--brand-text);
 }
 
-.badgeStrong {
+.benefitText {
+  font-size: var(--font-body-size);
+  line-height: 1.4;
+  color: var(--text-body);
+}
+
+.benefitStrong {
   font-weight: 700;
   color: var(--brand-text);
 }
@@ -107,8 +115,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 44px;
-  margin-top: auto;
+  min-height: 48px;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--space-1);
   padding: 0 var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -129,14 +139,14 @@
 /* 오른쪽 마이리얼트립 유심·eSIM 상품 카드 */
 .myrealtrip {
   min-width: 0;
-  padding: var(--space-5, 20px);
+  padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   background: var(--surface-card);
 }
 
 .subheading {
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-3);
   font-size: var(--font-headline-size);
   font-weight: 700;
   color: var(--text-primary);
@@ -150,6 +160,6 @@
   }
 
   .usimsa {
-    padding: var(--space-6);
+    padding: var(--space-8);
   }
 }
