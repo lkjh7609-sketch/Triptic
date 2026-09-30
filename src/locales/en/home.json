@@ -117,7 +117,6 @@
     },
     "essentials": {
       "title": "Need a SIM or eSIM?",
-      "subtitle": "Get data for {{city}} ready before you fly",
       "defaultCity": "Japan",
       "usimsaTitle": "Browse SIMs & eSIMs on Usimsa",
       "usimsaDesc": "Compare SIMs and eSIMs by country and get one right away",
@@ -125,7 +124,10 @@
       "seeAll": "See more {{city}} SIMs on MyRealTrip",
       "simSearch": "{{city}} eSIM",
       "eyebrow": "TRAVEL ESSENTIAL",
-      "usimsaCta": "Check eSIM"
+      "usimsaCta": "Check eSIM",
+      "badgeCare": "usimsa Care coverage",
+      "badgeCareAmount": "up to ₩300,000",
+      "badgeData": "Google Maps & ChatGPT data free"
     },
     "esimGlobal": {
       "title": "Need an eSIM for your trip?",

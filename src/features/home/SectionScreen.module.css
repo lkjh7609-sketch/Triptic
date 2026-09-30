@@ -254,6 +254,20 @@
   color: var(--text-primary);
 }
 
+/* 세로를 줄인 상품 카드(항공 탭 유심·eSIM): 사진 2:1, 분류 글 없음, 안쪽 여백 작게 */
+.productGridCompact .productImage {
+  aspect-ratio: 2 / 1;
+}
+
+.productGridCompact .productCategory {
+  display: none;
+}
+
+.productGridCompact .productBody {
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+}
+
 .moreButton {
   text-decoration: none;
   box-sizing: border-box;
@@ -271,6 +285,11 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.moreButtonCompact {
+  min-height: 44px;
+  margin-top: var(--space-2);
 }
 
 /* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */

@@ -20,13 +20,19 @@
   background: var(--surface-subtle);
 }
 
+.usimsaHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .usimsaIcon {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  margin-bottom: var(--space-2);
   border-radius: var(--radius-md);
   background: var(--surface-card);
   color: var(--brand-text);
@@ -59,6 +65,44 @@
   color: var(--text-muted);
 }
 
+.badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3) 6px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-label-size);
+  font-weight: 500;
+}
+
+.badgeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.badgeStrong {
+  font-weight: 700;
+  color: var(--brand-text);
+}
+
 .usimsaButton {
   display: inline-flex;
   align-items: center;
@@ -85,14 +129,14 @@
 /* 오른쪽 마이리얼트립 유심·eSIM 상품 카드 */
 .myrealtrip {
   min-width: 0;
-  padding: var(--space-6);
+  padding: var(--space-5, 20px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   background: var(--surface-card);
 }
 
 .subheading {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-2);
   font-size: var(--font-headline-size);
   font-weight: 700;
   color: var(--text-primary);
@@ -106,6 +150,6 @@
   }
 
   .usimsa {
-    padding: var(--space-8);
+    padding: var(--space-6);
   }
 }

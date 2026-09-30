@@ -116,7 +116,6 @@
     },
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
-      "subtitle": "出發前先準備好在{{city}}使用的網路",
       "defaultCity": "日本",
       "usimsaTitle": "在 Usimsa 查看 SIM 卡與 eSIM",
       "usimsaDesc": "依國家比較 SIM 卡與 eSIM，立即取得",
@@ -124,7 +123,10 @@
       "seeAll": "在 MyRealTrip 查看更多{{city}} SIM 卡",
       "simSearch": "{{city}} eSIM",
       "eyebrow": "TRAVEL ESSENTIAL",
-      "usimsaCta": "查看 eSIM"
+      "usimsaCta": "查看 eSIM",
+      "badgeCare": "usimsa Care 保障額",
+      "badgeCareAmount": "最高30萬韓元",
+      "badgeData": "Google 地圖、ChatGPT 流量免費"
     },
     "esimGlobal": {
       "title": "旅途中也需要 eSIM 嗎？",

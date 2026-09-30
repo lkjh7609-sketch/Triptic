@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Smartphone } from 'lucide-react';
+import { ArrowRight, MapPin, ShieldCheck, Smartphone } from 'lucide-react';
 import { AFFILIATE_LINKS } from '@/shared/config';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { MyrealtripProducts } from './MyrealtripProducts';
@@ -21,15 +21,35 @@ export function FlightsEssentials() {
     <section className={styles.section} aria-labelledby="flights-essentials-title">
       <div className={styles.grid}>
         <div className={styles.usimsa}>
-          <span className={styles.usimsaIcon} aria-hidden="true">
-            <Smartphone size={22} />
-          </span>
-          <span className={styles.eyebrow}>{t('flights.essentials.eyebrow')}</span>
-          <h2 id="flights-essentials-title" className={styles.title}>
-            {t('flights.essentials.title')}
-          </h2>
+          <div className={styles.usimsaHead}>
+            <span className={styles.usimsaIcon} aria-hidden="true">
+              <Smartphone size={22} />
+            </span>
+            <div>
+              <span className={styles.eyebrow}>{t('flights.essentials.eyebrow')}</span>
+              <h2 id="flights-essentials-title" className={styles.title}>
+                {t('flights.essentials.title')}
+              </h2>
+            </div>
+          </div>
           <p className={styles.desc}>{t('flights.essentials.usimsaDesc')}</p>
-          <p className={styles.sub}>{t('flights.essentials.subtitle', { city })}</p>
+          {/* 유심사가 내세우는 혜택(유심사 안내 그대로) */}
+          <ul className={styles.badges}>
+            <li className={styles.badge}>
+              <span className={styles.badgeIcon} aria-hidden="true">
+                <ShieldCheck size={14} />
+              </span>
+              <span>
+                {t('flights.essentials.badgeCare')} <strong className={styles.badgeStrong}>{t('flights.essentials.badgeCareAmount')}</strong>
+              </span>
+            </li>
+            <li className={styles.badge}>
+              <span className={styles.badgeIcon} aria-hidden="true">
+                <MapPin size={14} />
+              </span>
+              <span>{t('flights.essentials.badgeData')}</span>
+            </li>
+          </ul>
           <a href={AFFILIATE_LINKS.usimsa} target="_blank" rel="sponsored noopener" className={styles.usimsaButton}>
             {t('flights.essentials.usimsaCta')}
             <ArrowRight size={16} aria-hidden="true" />
@@ -42,6 +62,7 @@ export function FlightsEssentials() {
             keyword={city}
             kind="sim"
             count={4}
+            compact
             placement="esim"
             seeAll={{ label: t('flights.essentials.seeAll', { city }), keyword: t('flights.essentials.simSearch', { city }), placement: 'esim' }}
           />
