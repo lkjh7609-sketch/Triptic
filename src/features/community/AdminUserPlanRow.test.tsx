@@ -85,3 +85,22 @@ describe('AdminUserPlanRow — 프로 사용자', () => {
     expect(screen.queryByLabelText('한도')).not.toBeInTheDocument();
   });
 });
+
+describe('AdminUserPlanRow — 이용 기록(PostHog)', () => {
+  it('연결 전이면(activity 없음) 이용 기록 줄을 숨긴다', () => {
+    render(<AdminUserPlanRow user={base} onChanged={onChanged} />);
+    expect(screen.queryByText(/마지막 접속/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/접속 기록 없음/)).not.toBeInTheDocument();
+  });
+
+  it('기록이 있으면 활동한 날·화면 조회 수를 보여 준다', () => {
+    const lastSeen = new Date(Date.now() - 3 * 3600_000).toISOString();
+    render(<AdminUserPlanRow user={base} onChanged={onChanged} activity={{ events: 20, views: 14, days: 4, lastSeen }} activityWindowDays={90} />);
+    expect(screen.getByText(/활동 4일 · 화면 조회 14회 \(최근 90일\)/)).toBeInTheDocument();
+  });
+
+  it('기록이 null이면 "기록 없음"', () => {
+    render(<AdminUserPlanRow user={base} onChanged={onChanged} activity={null} activityWindowDays={90} />);
+    expect(screen.getByText(/최근 90일 접속 기록 없음/)).toBeInTheDocument();
+  });
+});

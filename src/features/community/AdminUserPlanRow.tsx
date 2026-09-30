@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatLastSeen, type UserActivity } from './analyticsService';
 import { captureError } from '@/shared/monitoring';
 import { BASE_FREE_TRIP_LIMIT, MAX_TRIP_LIMIT, adminSetTripLimit, adminSetUserPlan, parseLimit, type AdminUserRow } from './adminService';
 import styles from './AdminScreen.module.css';
@@ -11,8 +12,19 @@ const QUICK_ADD = [1, 5, 10] as const;
  * 한도는 "지금까지 만든 수 / 한도 · 남은 수"로 보이고, +1·+5·+10 버튼이나 직접 입력으로 초안을 고친 뒤 저장한다
  * (더하기 요청이 아니라 완성된 값을 서버에 보낸다). 생성 수는 여행을 지워도 줄지 않는 평생 누적이다.
  */
-export function AdminUserPlanRow({ user, onChanged }: { user: AdminUserRow; onChanged: (user: AdminUserRow) => void }) {
-  const { t } = useTranslation(['community', 'common']);
+export function AdminUserPlanRow({
+  user,
+  onChanged,
+  activity,
+  activityWindowDays,
+}: {
+  user: AdminUserRow;
+  onChanged: (user: AdminUserRow) => void;
+  /** PostHog 최근 이용 기록 — undefined면 연결 전이거나 아직 못 읽어 줄을 숨긴다, null이면 기록 없음 */
+  activity?: UserActivity | null;
+  activityWindowDays?: number;
+}) {
+  const { t, i18n } = useTranslation(['community', 'common']);
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState(String(user.trip_limit));
   const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle');
@@ -78,6 +90,18 @@ export function AdminUserPlanRow({ user, onChanged }: { user: AdminUserRow; onCh
             ) : null}
             {user.plan === 'free' && left0 === 0 ? <span className={styles.limitFull}>{t('admin.limit.full')}</span> : null}
           </span>
+          {activity !== undefined ? (
+            <span className={styles.tripUsage}>
+              {activity
+                ? t('admin.activityLine', {
+                    last: formatLastSeen(activity.lastSeen, i18n.language) ?? '-',
+                    days: activity.days,
+                    views: activity.views,
+                    window: activityWindowDays ?? 90,
+                  })
+                : t('admin.activityNone', { window: activityWindowDays ?? 90 })}
+            </span>
+          ) : null}
         </div>
         <button type="button" className={user.plan === 'pro' ? styles.secondaryBtn : styles.primaryBtn} disabled={busy} onClick={handleToggle}>
           {user.plan === 'pro' ? t('admin.revokePro') : t('admin.grantPro')}

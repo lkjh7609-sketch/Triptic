@@ -88,3 +88,40 @@ export function fillDailyGaps(
   }
   return out;
 }
+
+export interface UserActivity {
+  events: number;
+  views: number;
+  days: number;
+  /** PostHog가 준 UTC 시각 문자열 */
+  lastSeen: string | null;
+}
+
+export interface UserActivityReport {
+  status: SourceStatus;
+  windowDays?: number;
+  users?: Record<string, UserActivity>;
+}
+
+/** 운영 콘솔 사용자 목록 — 회원 UUID별 최근 90일 이용 기록(PostHog). 연결 전이면 status만 온다 */
+export async function fetchAdminUserActivity(): Promise<UserActivityReport> {
+  const { data } = await getSupabaseClient().auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error('adminAnalytics: not signed in');
+  const res = await fetch(apiUrl('/api/adminAnalytics?view=users'), { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`adminAnalytics HTTP ${res.status}`);
+  return (await res.json()) as UserActivityReport;
+}
+
+/** "3시간 전" 같은 상대 시각. PostHog 시각은 UTC("2026-09-30 06:00:00")로 읽는다. 읽을 수 없으면 null */
+export function formatLastSeen(lastSeen: string | null, language: string, now: number = Date.now()): string | null {
+  if (!lastSeen) return null;
+  const at = Date.parse(/[zZ]|[+-]\d\d:?\d\d$/.test(lastSeen) ? lastSeen : `${lastSeen.replace(' ', 'T')}Z`);
+  if (Number.isNaN(at)) return null;
+  const diffSec = Math.round((at - now) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(language, { numeric: 'auto' });
+  const abs = Math.abs(diffSec);
+  if (abs < 3600) return rtf.format(Math.round(diffSec / 60), 'minute');
+  if (abs < 86_400) return rtf.format(Math.round(diffSec / 3600), 'hour');
+  return rtf.format(Math.round(diffSec / 86_400), 'day');
+}

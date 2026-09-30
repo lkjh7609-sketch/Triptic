@@ -29,6 +29,8 @@
     "planPro": "유료",
     "tripUsageFree": "여행 {{used}}/{{limit}}개 사용 · 남은 {{left}}개",
     "tripUsagePro": "여행 {{used}}개 생성 · 한도 없음",
+    "activityLine": "마지막 접속 {{last}} · 활동 {{days}}일 · 화면 조회 {{views}}회 (최근 {{window}}일)",
+    "activityNone": "최근 {{window}}일 접속 기록 없음 (로그인한 뒤 기록만 집계)",
     "tripLimitRelaxed": "한도 {{limit}}개 적용 (원래 {{base}}개)",
     "grantPro": "유료 등급 부여",
     "revokePro": "무료로 전환",

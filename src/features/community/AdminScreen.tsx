@@ -31,6 +31,7 @@ import { AdminAnalyticsTab } from './AdminAnalyticsTab';
 import { AdminPinPad } from './AdminPinPad';
 import { AdminArchiveTab } from './AdminArchiveTab';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
+import { fetchAdminUserActivity } from './analyticsService';
 import styles from './AdminScreen.module.css';
 
 type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive';
@@ -47,6 +48,14 @@ function UserPlanTab() {
     queryFn: () => adminSearchUsers(submittedQuery, page, USER_PAGE_SIZE),
   });
   const [overrides, setOverrides] = useState<Record<string, AdminUserRow>>({});
+  // 회원별 이용 기록(PostHog). 연결 전이거나 실패하면 줄을 그냥 숨긴다 — 사용자 목록 자체는 영향받지 않게
+  const activityQuery = useQuery({
+    queryKey: ['admin', 'user-activity'],
+    queryFn: fetchAdminUserActivity,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const activityReady = activityQuery.data?.status === 'ok';
 
   const displayedRows = (usersQuery.data?.rows ?? []).map((r) => overrides[r.id] ?? r);
 
@@ -85,6 +94,8 @@ function UserPlanTab() {
                 key={u.id}
                 user={u}
                 onChanged={(updated) => setOverrides((prev) => ({ ...prev, [updated.id]: updated }))}
+                activity={activityReady ? (activityQuery.data?.users?.[u.id] ?? null) : undefined}
+                activityWindowDays={activityQuery.data?.windowDays}
               />
             ))}
           </div>

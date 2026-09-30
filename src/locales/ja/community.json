@@ -29,6 +29,8 @@
     "planPro": "有料",
     "tripUsageFree": "旅行 {{used}}/{{limit}}件使用・残り{{left}}件",
     "tripUsagePro": "旅行 {{used}}件作成・上限なし",
+    "activityLine": "最終アクセス {{last}}・活動 {{days}}日・画面表示 {{views}}回（直近{{window}}日）",
+    "activityNone": "直近{{window}}日のアクセス記録なし（ログイン後の記録のみ集計）",
     "tripLimitRelaxed": "上限{{limit}}件を適用（元は{{base}}件）",
     "grantPro": "有料プランを付与",
     "revokePro": "無料に戻す",
