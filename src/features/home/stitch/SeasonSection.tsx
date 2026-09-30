@@ -11,7 +11,7 @@ import { cityDescQueryKey, readCachedCityDescriptions } from '../cityDescription
 import { DestinationPreviewModal, type PreviewDestination } from './DestinationPreviewModal';
 import { monthRange } from './homeUtils';
 import { seasonPicksFor, type SeasonPick } from './seasonData';
-import { weatherIcon } from './weatherIcon';
+import { WeatherIcon } from './weatherIcon';
 import { useSeasonTemps } from './useSeasonTemps';
 import shared from './shared.module.css';
 import styles from './SeasonSection.module.css';
@@ -39,10 +39,9 @@ interface CardWeather {
 
 /** 기온 글자 + 날씨 아이콘 한 줄 */
 function WeatherLine({ weather, className }: { weather: CardWeather; className: string }) {
-  const Icon = weatherIcon(weather.code);
   return (
     <span className={className}>
-      <Icon size={14} aria-hidden="true" />
+      <WeatherIcon code={weather.code} />
       {weather.text}
     </span>
   );

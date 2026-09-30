@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { isDesktop, session } = vi.hoisted(() => ({ isDesktop: { value: false }, session: { user: null as null | { id: string } } }));
 vi.mock('@/shared/hooks/useMediaQuery', () => ({ useMediaQuery: () => isDesktop.value }));
@@ -55,6 +55,10 @@ beforeEach(() => {
   session.user = null;
 });
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe('HomePage — 시안(Stitch) 구성', () => {
   it('모바일: 캡슐 탭 → 내 일정 → 지금 가기 좋은 여행지 → 같이 갈 사람 → 인기 여행기 → 이렇게 써요 순서, 큰 히어로·시작 배너 없음', () => {
     isDesktop.value = false;
@@ -66,6 +70,8 @@ describe('HomePage — 시안(Stitch) 구성', () => {
   });
 
   it('모바일: 기온은 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {
+    // 이달 추천 도시는 날짜에 따라 달라지므로(교토는 2·3·4·10·11월) 날짜를 고정한다 — 실행하는 날·서버 시간대와 무관하게
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-15T12:00:00Z') });
     isDesktop.value = false;
     renderHome();
     const temp = screen.getByText('18°C');
