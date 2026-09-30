@@ -6,15 +6,15 @@ const { getUser, maybeSingle, fetchPosthogReport, fetchSentryReport } = vi.hoist
     fetchPosthogReport: vi.fn(),
     fetchSentryReport: vi.fn(),
 }));
-vi.mock('./_lib/supabaseAdmin.js', () => ({
+vi.mock('./supabaseAdmin.js', () => ({
     supabaseAdmin: () => ({
         auth: { getUser },
         from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }),
     }),
 }));
-vi.mock('./_lib/analytics.js', () => ({ ALLOWED_DAYS: [7, 30, 90], fetchPosthogReport, fetchSentryReport }));
+vi.mock('./analytics.js', () => ({ ALLOWED_DAYS: [7, 30, 90], fetchPosthogReport, fetchSentryReport }));
 
-import handler from './adminAnalytics.js';
+import handler from '../adminAnalytics.js';
 
 function makeRes() {
     const res = { statusCode: 0, body: null, headers: {} };
