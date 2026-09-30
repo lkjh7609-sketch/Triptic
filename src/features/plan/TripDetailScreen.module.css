@@ -166,7 +166,7 @@
   justify-content: center;
   gap: 4px;
   padding: 0 var(--space-3);
-  min-height: 32px;
+  min-height: 44px; /* overflow:hidden이라 ::after 확장이 안 돼 실제 높이로 */
   font-size: var(--font-caption-size);
   color: var(--text-body);
   cursor: pointer;

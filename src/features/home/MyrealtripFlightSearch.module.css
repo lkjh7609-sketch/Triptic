@@ -333,3 +333,35 @@
   font-size: 12px;
   color: var(--text-muted);
 }
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.tripOn,
+.tripOff {
+  position: relative;
+}
+.tripOn::after,
+.tripOff::after {
+  content: '';
+  position: absolute;
+  inset: -5px 0;
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.stepButton {
+  position: relative;
+}
+.stepButton::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.swap {
+  position: relative;
+}
+.swap::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
