@@ -16,7 +16,8 @@
   --text-primary: #1C1917; 
   --text-body: #292524; 
   --text-muted: #57534E; 
-  --text-placeholder: #A8A29E; 
+  --text-placeholder: #A8A29E; /* 입력창 placeholder 전용(2.5:1) — 글자로 쓰지 말 것 */
+  --text-tertiary: #6B6560; /* 3단계 보조 글자(힌트·글자수·시간). 모든 표면 4.5:1 이상 */
   --text-on-brand: #FFFFFF;
 
   /* 브랜드 (오렌지/핑크 대신 생동감 있는 Teal(청록) 사용) */
@@ -111,7 +112,6 @@
   --surface-bg: var(--surface-card);
   --text-title: var(--text-primary);
   --text-heading: var(--text-primary);
-  --text-tertiary: var(--text-muted);
   --brand-light: var(--brand-tint);
   --brand-hover: var(--brand-pressed);
   --font-hero: var(--font-sans);
@@ -132,6 +132,7 @@
   --text-body: #CBD5E1; 
   --text-muted: #94A3B8;
   --text-placeholder: #64748B;
+  --text-tertiary: #8593A9;
   --text-on-brand: #0B0F19;
 
   --brand: #4FC3F7; /* 부드러운 스카이 블루 액센트 */
@@ -175,6 +176,7 @@
     --text-body: #CBD5E1; 
     --text-muted: #94A3B8;
     --text-placeholder: #64748B;
+    --text-tertiary: #8593A9;
     --text-on-brand: #0B0F19;
 
     --brand: #4FC3F7; 
