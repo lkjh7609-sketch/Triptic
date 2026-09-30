@@ -72,7 +72,13 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
         </p>
       </header>
 
-      <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
+      <DayChips
+        totalDays={totalDays}
+        currentDay={currentDay}
+        onChange={setCurrentDay}
+        startDate={trip.start_date}
+        placeCounts={Array.from({ length: totalDays }, (_, i) => ((project.data as Record<number, PlaceItem[]> | undefined)?.[i + 1] ?? []).length)}
+      />
 
       <div className={sharedStyles.dayHeader}>
         <span>{t('community:shared.dayLabel', { day: currentDay })}</span>

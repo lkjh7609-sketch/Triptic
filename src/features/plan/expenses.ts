@@ -39,6 +39,17 @@ export function formatMoney(amount: number, currency: string, locale: string = '
   return new Intl.NumberFormat(locale, { style: 'currency', currency: validCurrency }).format(num);
 }
 
+/** 좁은 칸용 축약 금액 — ₩120만, ¥12万, $1.2K처럼 통화 기호는 유지하고 자릿수만 줄인다 */
+export function formatMoneyCompact(amount: number, currency: string, locale: string = 'ko'): string {
+  const validCurrency = CURRENCIES[currency] ? currency : 'KRW';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: validCurrency,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(Number(amount) || 0);
+}
+
 /** 환율 표시용 — 1 JPY = ₩9.0123처럼 작은 값도 의미 있게 보이도록 소수점을 더 둔다 */
 export function formatRate(value: number, currency: string, locale: string = 'ko'): string {
   const validCurrency = CURRENCIES[currency] ? currency : 'KRW';

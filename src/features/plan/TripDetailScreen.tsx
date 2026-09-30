@@ -14,6 +14,7 @@ import { SAMPLE_TRIP_ID } from './sampleTrip';
 import { isGuestTripId } from './guestTrips';
 import { TripOnboardingCard } from './TripOnboardingCard';
 import { DayChips } from './DayChips';
+import { DaySummary } from './DaySummary';
 import { SortableItineraryItem } from './SortableItineraryItem';
 import { TripMapView } from './TripMapView';
 import { AddPlaceModal } from './AddPlaceModal';
@@ -64,7 +65,7 @@ import type {
 import styles from './TripDetailScreen.module.css';
 import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
-import { ExternalLink, MapPin, Hotel as HotelIcon, Utensils, Coins, Plane, FileText, Map, List } from 'lucide-react';
+import { ExternalLink, MapPin, Hotel as HotelIcon, Plane, FileText, Map, List } from 'lucide-react';
 import { cityDisplayName } from './cityName';
 import { isTripDatesLocked } from './tripStatus';
 
@@ -154,6 +155,11 @@ export function TripDetailScreen() {
     return plannerData[currentDay] ?? [];
   }, [project, currentDay]);
   const { startHotel, endHotel } = getDayHotels(currentDay, totalDays, hotelsData);
+  /** 일차 스트립의 점(그날 장소 수) */
+  const placeCounts = useMemo(() => {
+    const plannerData = (project?.data ?? {}) as PlannerData;
+    return Array.from({ length: totalDays }, (_, i) => plannerData[i + 1]?.length ?? 0);
+  }, [project, totalDays]);
   const itineraryText = useMemo(() => {
     if (!project || !trip) return undefined;
     return formatItineraryText({
@@ -449,7 +455,13 @@ export function TripDetailScreen() {
           />
         ) : null}
 
-        <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
+        <DayChips
+          totalDays={totalDays}
+          currentDay={currentDay}
+          onChange={setCurrentDay}
+          startDate={trip.start_date}
+          placeCounts={placeCounts}
+        />
 
         <div className={styles.dayHeader}>
           <div className={styles.dayHeaderTopRow}>
@@ -460,21 +472,18 @@ export function TripDetailScreen() {
             </span>
 
           </div>
-          <div className={styles.dayHeaderActions}>
-            <button type="button" className={styles.hotelButton} onClick={() => setShowDayCityModal(true)}>
-              <MapPin size={16} /> <span className={styles.buttonText}>{currentCity.name ? cityDisplayName(currentCity.name) : t('tripDetail.cityUnset')}</span>
-            </button>
-            {currentDay < totalDays ? (<button type="button" className={styles.hotelButton} onClick={() => setShowHotelModal(true)}>
-              <HotelIcon size={16} /> <span className={styles.buttonText}>{t('tripDetail.hotelChipLabel')}</span>
-            </button>) : null}
-            <button type="button" className={styles.hotelButton} onClick={() => setShowMealsModal(true)}>
-              <Utensils size={16} /> <span className={styles.buttonText}>{t('tripDetail.mealsLabel')}</span>
-            </button>
-            <button type="button" className={styles.hotelButton} onClick={() => setShowExpenseModal(true)}>
-              <Coins size={16} /> <span className={styles.buttonText}>{t('tripDetail.expenseLabel')}</span>
-            </button>
-
-          </div>
+          <DaySummary
+            cityName={currentCity.name || null}
+            hotelName={endHotel?.name ?? null}
+            showHotel={currentDay < totalDays}
+            meals={mealsData[currentDay]}
+            expenses={expensesData[currentDay] ?? []}
+            currency={project?.currency ?? 'KRW'}
+            onCity={() => setShowDayCityModal(true)}
+            onHotel={() => setShowHotelModal(true)}
+            onMeals={() => setShowMealsModal(true)}
+            onExpense={() => setShowExpenseModal(true)}
+          />
         </div>
 
         {!isDesktop && viewMode === 'map' ? (

@@ -1,52 +1,88 @@
+/* 일차 선택 스트립 — 카드가 가로로 스크롤되고, 4일 이하면 폭을 나눠 채운다 */
 .row {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: var(--space-2);
-  flex-wrap: wrap;
   padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
   scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
 }
 
 .chip {
-  flex-shrink: 0;
+  flex: 1 0 68px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
+  min-height: 68px;
+  padding: var(--space-2) 0;
   scroll-snap-align: center;
-  height: 36px;
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-lg);
   background: var(--surface-card);
   border: 1px solid var(--border);
-  color: var(--text-body);
-  font-size: var(--font-label-size);
+  color: var(--text-muted);
   cursor: pointer;
 }
 
 .chip.active {
-  background: var(--brand-tint);
-  color: var(--brand-text);
-  border-color: var(--brand);
+  background: var(--brand-solid);
+  border-color: var(--brand-solid);
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-sm);
 }
 
-/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
-.chip {
-  position: relative;
-}
-.chip::after {
-  content: '';
-  position: absolute;
-  inset: -4px 0;
+.dayLabel {
+  font-size: var(--font-caption-size);
+  line-height: var(--font-caption-line);
+  font-weight: 600;
 }
 
-/* 모바일: 한 줄에 4개씩 좌우 끝까지 균등하게(칩이 내용 폭이라 오른쪽에 여백이 남던 것). 5일째부터는 다음 줄 */
-@media (max-width: 1023px) {
-  .row {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .chip {
-    width: 100%;
-    padding: 0;
-  }
+/* 날짜가 카드의 주인공 — 일차 번호는 작게 위에 */
+.date {
+  font-size: var(--font-headline-size);
+  line-height: var(--font-headline-line);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip.active .date {
+  color: var(--text-on-brand);
+}
+
+.dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-text);
+}
+
+.chip.active .dot {
+  background: var(--text-on-brand);
+}
+
+/* 일정이 없는 날 — 점 대신 작은 점 줄(점 줄과 같은 6px 높이라 카드 안 글자 위치가 어긋나지 않는다) */
+.emptyMark {
+  display: block;
+  width: 18px;
+  height: 6px;
+  color: var(--border-control);
+  background: radial-gradient(circle, currentColor 1.2px, transparent 1.4px) 0 50% / 6px 6px repeat-x;
+}
+
+.chip.active .emptyMark {
+  color: var(--text-on-brand);
 }

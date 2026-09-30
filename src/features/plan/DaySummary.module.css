@@ -1,0 +1,71 @@
+/* 하루 요약 바 — 한 덩어리 카드 안에서 칸을 얇은 선으로 나눈다 */
+.summary {
+  display: grid;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.cell {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 60px;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cell + .cell {
+  border-left: 1px solid var(--border);
+}
+
+.cell:active {
+  background: var(--surface-subtle);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  font-size: var(--font-caption-size);
+  line-height: var(--font-caption-line);
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.label > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-label-size);
+  line-height: var(--font-label-line);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 비어 있으면 값 자리에 + — 눌러서 채우라는 표시 */
+.add {
+  display: inline-flex;
+  align-items: center;
+  height: var(--font-label-line);
+  color: var(--brand-text);
+}

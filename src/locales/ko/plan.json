@@ -212,6 +212,7 @@
     "voucherAria": "바우처 보관함",
     "shareAria": "공유",
     "cityUnset": "도시 미설정",
+    "cityLabel": "도시",
     "hotelUnset": "숙소",
     "hotelChipLabel": "호텔",
     "mealsLabel": "식사",
