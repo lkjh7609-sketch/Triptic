@@ -122,10 +122,15 @@ describe('GET /api/adminPin', () => {
         expect(rpc).not.toHaveBeenCalledWith('admin_pin_begin', expect.anything());
     });
 
-    it('PIN이 꺼져 있으면 enabled=false', async () => {
+    it('PIN이 꺼져 있으면 enabled=false와 이유 종류만(값은 없음)', async () => {
         delete process.env.ADMIN_PIN;
         const res = makeRes();
         await handler({ method: 'GET', headers: {} }, res);
-        expect(res.body.enabled).toBe(false);
+        expect(res.body).toEqual({ enabled: false, reason: 'not_configured', locked: false, retryAfter: 0 });
+        process.env.ADMIN_PIN = '123456';
+        const weak = makeRes();
+        await handler({ method: 'GET', headers: {} }, weak);
+        expect(weak.body.reason).toBe('weak');
+        expect(JSON.stringify(weak.body)).not.toContain('123456');
     });
 });
