@@ -91,7 +91,7 @@
   left: 8px;
   background: var(--brand-solid);
   color: var(--text-on-brand);
-  font-size: 10px;
+  font-size: var(--font-caption-size);
   font-weight: 800;
   padding: 4px 8px;
   border-radius: var(--radius-pill);

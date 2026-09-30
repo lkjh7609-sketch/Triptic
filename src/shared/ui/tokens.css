@@ -98,8 +98,8 @@
   --font-label-line: 1.125rem; 
   --font-label-weight: 500;
 
-  --font-caption-size: 0.6875rem; 
-  --font-caption-line: 0.875rem; 
+  --font-caption-size: 0.75rem; /* 12px — 11px는 스케일 하한(12px) 미만이라 올렸다 */
+  --font-caption-line: 1rem; 
   --font-caption-weight: 500;
 }
 
