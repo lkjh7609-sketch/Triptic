@@ -81,10 +81,10 @@
   "profile": {
     "title": "내 정보 변경",
     "nameLabel": "표시 이름",
-    "namePlaceholder": "다른 여행자에게 보일 이름 (2~16자)",
+    "namePlaceholder": "다른 여행자에게 보일 이름 (한글 4~8자 · 영어·일본어 4~12자 · 중국어 2~6자)",
     "nameHint": "커뮤니티 글과 동행자 목록에 표시돼요.",
     "nameRequired": "이름을 입력해 주세요.",
-    "nameFormatError": "닉네임은 2~16자의 글자·숫자만 가능해요(공백·점·밑줄·하이픈은 가운데에만).",
+    "nameFormatError": "닉네임은 글자·숫자로 한글 4~8자, 영어·일본어 4~12자, 중국어 2~6자예요(공백·점·밑줄·하이픈은 가운데에만).",
     "nameCheckRequired": "중복 확인을 먼저 해주세요.",
     "nameTaken": "이미 사용 중인 닉네임이에요.",
     "nameAvailable": "사용할 수 있는 닉네임이에요.",

@@ -81,10 +81,10 @@
   "profile": {
     "title": "編輯個人資料",
     "nameLabel": "顯示名稱",
-    "namePlaceholder": "其他旅人會看到的名稱（2-16 個字）",
+    "namePlaceholder": "其他旅人會看到的名稱（韓文 4-8・英日文 4-12・中文 2-6 字）",
     "nameHint": "會顯示在社群貼文與同行者清單中。",
     "nameRequired": "請輸入名稱。",
-    "nameFormatError": "暱稱須為 2-16 個字母或數字（空格、點、底線、連字號僅限中間）。",
+    "nameFormatError": "暱稱：韓文 4-8 字、英文或日文 4-12 字、中文 2-6 字（空格、點、底線、連字號僅限中間）。",
     "nameCheckRequired": "請先確認是否重複。",
     "nameTaken": "此暱稱已被使用。",
     "nameAvailable": "此暱稱可以使用。",

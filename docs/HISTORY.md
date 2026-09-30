@@ -19,11 +19,11 @@
 | 배포 | GitHub 저장소 두 곳(`Triptic`=origin, `triptic-further`=further) 모두 Vercel 자동 배포. 푸시는 항상 두 곳에 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0061` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0062` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
-| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안: 로그인 없이 부르는 AI API(가장 큼), 이메일 가입 여부 확인 함수, CSP 강제 전환, 유출 비밀번호 검사, 옛 `api/env.js` 삭제, `search_path` 미고정 함수 6개. 그 밖: pro 계정 정리, 분석 키 등록. 저장소 비공개 전환과 `guard_protected_columns`·`admin_search_users` 정리는 완료 |
+| 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안: 이메일 가입 여부 확인 함수(비로그인 실행), CSP 강제 전환(애드센스 도메인 먼저 허용), 유출 비밀번호 검사, 옛 `api/env.js` 삭제, `search_path` 미고정 함수 6개, 로그인 사용자별 AI 하루 한도. 그 밖: pro 계정 정리, 분석 키 등록. 완료: 저장소 비공개, AI API 로그인 전용, `guard_protected_columns`·`admin_search_users` 정리 |
 
 ---
 
@@ -69,17 +69,18 @@
 ### 2026-09-30
 
 **보고서 1차 개선 (측정 · 무료 한도 · 닉네임 · 모바일 첫 경험 · 활성화)**
-- **닉네임**: 한글 2~7자 → 언어와 무관하게 문자·숫자 2~16자(가운데 공백·점·밑줄·하이픈 허용, 연속 공백 불가). 예약어(관리자·admin·triptic 등)는 대소문자·구분 기호를 무시하고 막고, 중복 확인은 대소문자를 구분하지 않습니다. 서버 트리거와 화면이 같은 규칙입니다(`src/shared/displayName.ts`). 마이그레이션 0060, 운영 적용. `guard_protected_columns`에 `search_path`를 고정했습니다.
+- **닉네임**: 한글 2~7자 → 쓰는 글자별 글자 수. 한글 4~8자, 영어 4~12자, 일본어(가나가 있으면) 4~12자, 중국어(한자만) 2~6자. 한글이 있으면 한글, 아니면 가나, 아니면 한자, 그 밖은 영어 순으로 구분하고 이름 전체(공백·숫자 포함)를 셉니다. 예약어(관리자·admin·triptic 등)는 대소문자·구분 기호를 무시하고 막고, 중복 확인은 대소문자를 구분하지 않습니다. 서버 함수 `is_valid_display_name`(0062)과 화면(`src/shared/displayName.ts`)이 같은 규칙입니다. 이미 있는 이름은 바꿀 때만 검사해서 예전 3자 한글 이름은 그대로 쓸 수 있습니다. 마이그레이션 0060·0062, 운영 적용. `guard_protected_columns`에 `search_path`를 고정했습니다.
 - **무료 한도 2개 → 5개(임시 완화)**: 한도를 사용자별 값(`profiles.trip_limit`, 기본 5)으로 저장합니다. 나중에 기본값을 바꿔도 이미 받은 사람의 한도는 그대로이고, 운영 콘솔 "사용자 등급" 칸에 "여행 n/5개 생성 · 한도 5개 적용(원래 2개)"이 보입니다. 사용자가 자기 한도를 못 바꾸게 보호합니다. 마이그레이션 0061, 운영 적용. `admin_search_users`의 비로그인 실행 권한도 회수했습니다.
 - **측정**: 이벤트 10종(`signup_completed`, `trip_created`, `place_added`, `document_uploaded`, `share_link_created`, `share_joined`, `trip_limit_reached`, `onboarding_step_done`, `guest_trip_started`, `guest_trip_saved`)과 로그인 사용자 연결(무작위 UUID만). 클릭 자동 수집·화면 녹화는 끄고 쿠키 대신 localStorage, Do Not Track 존중. 개인정보처리방침에 PostHog·Sentry(국외 이전)를 추가했습니다. ⚠️ **운영에서 켜려면 Vercel에 `VITE_POSTHOG_KEY`·`VITE_POSTHOG_HOST`·`VITE_SENTRY_DSN`을 넣고 다시 배포해야 합니다**(`VITE_` 값은 빌드 때 들어갑니다). 키가 없으면 이벤트는 조용히 버려집니다.
 - **모바일 첫 경험**: 모바일도 PC처럼 로그인 없이 둘러봅니다(첫 화면 로그인 벽 제거). 하단 탭의 마지막 칸은 비로그인일 때 "설정" 대신 "로그인"입니다. 로그인 전에도 여행을 만들 수 있습니다(임시 여행, 이 기기에 최대 2개). 일정은 고칠 수 있고 항공·서류·공유는 잠깁니다. 로그인하면 계정으로 옮기고 이 기기의 임시본을 지웁니다(`src/features/plan/guestTrips.ts`).
+- **AI 생성 API는 로그인 사용자에게만**: `/api/recommend`·`/api/cityDesc`가 Supabase 토큰을 검증합니다(`api/_lib/auth.js`). 비로그인은 DB에 캐시된 추천·도시 소개만 보고, AI 추천 버튼을 누르면 로그인 창이 뜹니다. 보고서의 보안 1순위(비용 남용) 조치입니다.
 - **활성화**: 여행 상세에 "첫 여행 시작하기" 카드(장소 추가 · 예약 확인서 올리기 · 같이 갈 사람 초대, 진행 표시). 완료 여부는 실제 데이터(일정·서류·멤버·공유 링크)로 계산하고, 기기에는 "닫았다"만 저장합니다. 샘플 여행에는 안 보이고, 셋 다 하면 사라집니다.
 
 **결정·교훈**
 - 임시 여행은 소셜 로그인이 페이지 전체를 새로 여는 이동이라 메모리(샘플 방식)가 아니라 localStorage에 둡니다. 옮길 때 미리 정한 uuid로 저장해서, 도중에 실패해 다시 시도해도 같은 여행을 갱신할 뿐 중복으로 만들지 않습니다. 진행 중이면 한 번만 실행합니다(중복 생성은 곧 한도 낭비).
 - 샘플 여행 id 특별 취급을 `isLocalTripId()`(샘플+임시)로 일반화했습니다. Supabase에 없는 여행은 서버 기능을 못 씁니다.
 - Playwright는 `aria-disabled="true"` 버튼을 "비활성"으로 봐서 클릭이 막힙니다. 잠금 표시 버튼을 테스트할 때는 `force: true`를 씁니다.
-- 마이그레이션 두 개가 같은 함수(`guard_protected_columns`)를 다시 쓰므로, 나중 것이 앞의 변경을 모두 포함해야 합니다(0061은 0060을 포함).
+- 마이그레이션 두 개가 같은 함수(`guard_protected_columns`)를 다시 쓰므로, 나중 것이 앞의 변경을 모두 포함해야 합니다(0061은 0060을, 0062는 0061을 포함).
 
 **남은 것 (사용자가 직접)**: 저장소 두 곳에 푸시, Vercel에 분석 키 3개 등록 후 재배포.
 
