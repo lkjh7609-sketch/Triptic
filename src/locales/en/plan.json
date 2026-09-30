@@ -477,5 +477,20 @@
     "ownerOnlyLink": "Only the trip creator can create a link",
     "conflict": "Another member just changed this trip. We loaded the latest version — please try again.",
     "conflictSelf": "Your changes overlapped with a save in progress. We loaded the latest version — please try again."
+  },
+  "onboarding": {
+    "title": "Get your first trip going",
+    "progress": "{{done}}/{{total}} done",
+    "dismiss": "Dismiss",
+    "step": {
+      "place": "Add a place you want to visit",
+      "document": "Upload a booking confirmation to fill your plan automatically",
+      "invite": "Invite someone to plan together"
+    },
+    "action": {
+      "place": "Add",
+      "document": "Upload",
+      "invite": "Invite"
+    }
   }
 }
