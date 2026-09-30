@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchSeasonTemps, mergeWeather, readLastGood } from './useSeasonTemps';
+import { fetchSeasonTemps, mergeWeather } from './useSeasonTemps';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -43,13 +43,5 @@ describe('마지막으로 잘 받은 값', () => {
   it('새 값이 없는 도시는 이전 값을 그대로 두고, 새 값이 있는 도시만 덮는다', () => {
     const merged = mergeWeather({ kyoto: { temp: 10, code: 1 }, paris: { temp: 5, code: 3 } }, { paris: { temp: 7, code: 0 } });
     expect(merged).toEqual({ kyoto: { temp: 10, code: 1 }, paris: { temp: 7, code: 0 } });
-  });
-
-  it('저장된 값이 없거나 깨져 있으면 빈 객체', () => {
-    expect(readLastGood()).toEqual({});
-    localStorage.setItem('triptic-season-weather-v1', '{not json');
-    expect(readLastGood()).toEqual({});
-    localStorage.setItem('triptic-season-weather-v1', JSON.stringify({ kyoto: { temp: 'x' }, paris: { temp: 7, code: 2 } }));
-    expect(readLastGood()).toEqual({ paris: { temp: 7, code: 2 } });
   });
 });

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { addDays, format } from 'date-fns';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { fetchMyrealtripFlightsLink, openInNewTab, type FlightSearch } from '@/features/plan/partnerLinks';
+import { fetchKeepingLastGood, lastGoodOptions } from '@/shared/api/lastGood';
 
 /** api/partnerProducts.js?kind=deals 카드 한 개 — 인기 노선의 최저가 하나 */
 export interface FlightDeal {
@@ -34,11 +35,15 @@ async function fetchFlightDeals(): Promise<FlightDeal[]> {
   return Array.isArray(json.items) ? (json.items as FlightDeal[]) : [];
 }
 
-/** 특가 목록 — 특가 카드와 테마 카드가 같은 요청을 나눠 쓴다. 실패·빈 목록은 오래 붙잡지 않는다 */
+const DEALS_LAST_GOOD_KEY = `flightDeals:${DEAL_ORIGIN}:${DEAL_PERIOD}`;
+
+/** 특가 목록 — 특가 카드와 테마 카드가 같은 요청을 나눠 쓴다. 실패·빈 목록은 오래 붙잡지 않는다.
+ * 받지 못하거나 빈 목록이 와도 마지막으로 잘 받은 특가를 3일까지 그대로 보여준다(shared/api/lastGood.ts) */
 export function useFlightDeals() {
   return useQuery({
     queryKey: ['flightDeals', DEAL_ORIGIN, DEAL_PERIOD, 'v1'],
-    queryFn: fetchFlightDeals,
+    queryFn: () => fetchKeepingLastGood(DEALS_LAST_GOOD_KEY, fetchFlightDeals, { isEmpty: (deals) => deals.length === 0 }),
+    ...lastGoodOptions<FlightDeal[]>(DEALS_LAST_GOOD_KEY),
     staleTime: (query) => (query.state.data && query.state.data.length > 0 ? 60 * 60 * 1000 : 0),
     retry: 1,
   });

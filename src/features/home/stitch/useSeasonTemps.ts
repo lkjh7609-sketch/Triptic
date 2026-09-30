@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { fetchKeepingLastGood, lastGoodOptions, readLastGood } from '@/shared/api/lastGood';
 import type { SeasonCity } from './seasonData';
 
 interface OpenMeteoCurrent {
@@ -37,69 +38,49 @@ export async function fetchSeasonTemps(cities: { id: string; lat: number; lng: n
   return temps;
 }
 
-// ── 마지막으로 잘 받은 값 — 이 기기 localStorage에 기한 없이 남겨 둔다(오프라인·서비스 장애·캐시 만료에도 홈에서 기온이 사라지지 않게)
-const LAST_GOOD_KEY = 'triptic-season-weather-v1';
-
-export function readLastGood(): Record<string, SeasonWeather> {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(LAST_GOOD_KEY) ?? '{}') as Record<string, Partial<SeasonWeather>>;
-    const out: Record<string, SeasonWeather> = {};
-    for (const [id, w] of Object.entries(parsed)) {
-      if (typeof w?.temp === 'number' && Number.isFinite(w.temp)) out[id] = { temp: w.temp, code: typeof w.code === 'number' ? w.code : null };
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function writeLastGood(values: Record<string, SeasonWeather>) {
-  try {
-    localStorage.setItem(LAST_GOOD_KEY, JSON.stringify(values));
-  } catch {
-    // 저장이 막힌 환경(사생활 보호 모드 등) — 없어도 화면은 동작한다
-  }
-}
-
 function pick(values: Record<string, SeasonWeather>, ids: string[]): Record<string, SeasonWeather> {
   const out: Record<string, SeasonWeather> = {};
   for (const id of ids) if (values[id]) out[id] = values[id];
   return out;
 }
 
+const LAST_GOOD_KEY = 'seasonWeather';
+
 /**
  * 새로 받은 값을 "마지막으로 잘 받은 값"과 합친다 — 이번에 빠진 도시는 이전 값을 그대로 둔다.
  * 새 값이 있는 도시만 덮어쓴다(받지 못한 것 때문에 이전 값이 지워지지 않는다).
  */
-export function mergeWeather(previous: Record<string, SeasonWeather>, fresh: Record<string, SeasonWeather>): Record<string, SeasonWeather> {
+export function mergeWeather(previous: Record<string, SeasonWeather> | undefined, fresh: Record<string, SeasonWeather>): Record<string, SeasonWeather> {
   return { ...previous, ...fresh };
 }
 
 /**
  * 결과는 평범한 객체(오프라인 캐시에 JSON으로 저장되므로 Map 금지). 30분 동안 다시 묻지 않는다.
- * 받지 못해도 홈에서 기온이 빠지지 않는다: ① 쿼리는 실패해도 이전 data를 그대로 들고 있고(빈 값으로 덮지 않음),
- * ② 처음 열 때 캐시가 없으면 마지막으로 잘 받은 값(localStorage)으로 시작하며, ③ 실패하면 잠시 뒤 다시 시도한다.
+ * 받지 못해도 홈에서 기온이 빠지지 않는다 — 마지막으로 잘 받은 값을 3일까지 보여준다(shared/api/lastGood.ts):
+ * 실패는 오류로 던져 이전 data를 유지하고, 캐시가 없으면 저장된 값으로 시작하며, 일부 도시만 받아져도 나머지는 이전 값을 유지한다.
  */
 export function useSeasonTemps(picks: { id: string; city: SeasonCity }[], { retry = 2 }: { retry?: number | false } = {}) {
   const ids = picks.map((p) => p.id);
   const key = ids.join(',');
+  const startValue = () => {
+    const last = pick(readLastGood<Record<string, SeasonWeather>>(LAST_GOOD_KEY) ?? {}, ids);
+    return Object.keys(last).length > 0 ? last : undefined;
+  };
   return useQuery({
     queryKey: ['seasonTemps', key, 'v2'], // 값 모양이 바뀌었으니 예전 기기 캐시(숫자만 있던 것)는 쓰지 않는다
     queryFn: async () => {
-      const fresh = await fetchSeasonTemps(picks.map((p) => ({ id: p.id, lat: p.city.lat, lng: p.city.lng })));
-      const merged = mergeWeather(readLastGood(), fresh);
-      writeLastGood(merged);
+      const merged = await fetchKeepingLastGood<Record<string, SeasonWeather>>(
+        LAST_GOOD_KEY,
+        () => fetchSeasonTemps(picks.map((p) => ({ id: p.id, lat: p.city.lat, lng: p.city.lng }))),
+        { isEmpty: (fresh) => Object.keys(fresh).length === 0, merge: mergeWeather },
+      );
       return pick(merged, ids);
     },
     enabled: picks.length > 0,
     staleTime: 30 * 60 * 1000,
     retry,
     retryDelay: (attempt) => Math.min(30_000, 2_000 * 2 ** attempt),
-    // 캐시가 없을 때의 시작 값 — updatedAt 0이라 곧바로 새로 받아 오되, 그 요청이 실패해도 이 값은 남는다
-    initialData: () => {
-      const last = pick(readLastGood(), ids);
-      return Object.keys(last).length > 0 ? last : undefined;
-    },
-    initialDataUpdatedAt: 0,
+    initialData: startValue,
+    initialDataUpdatedAt: lastGoodOptions(LAST_GOOD_KEY).initialDataUpdatedAt,
   });
 }
