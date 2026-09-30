@@ -55,7 +55,7 @@
   "delete": {
     "stepIndicator": "ステップ {{current}} / {{total}}",
     "warningTitle": "アカウントを削除しますか？",
-    "warningBody": "削除すると、以下のデータがすべて消去されます。30日以内であれば再ログインで復元できます。",
+    "warningBody": "削除すると、以下のデータがすぐにすべて消去されます。削除後は元に戻せません。",
     "impact": {
       "tripsPending": "旅行 …件",
       "trips_other": "旅行 {{count}}件",
@@ -71,12 +71,14 @@
     "reauthButton": "再ログイン",
     "reauthError": "再認証を開始できませんでした。しばらくしてからもう一度お試しください。",
     "confirmTitle": "最終確認",
-    "confirmBody": "下の入力欄に <strong>削除</strong> と入力すると、アカウントの削除が進行します。",
+    "confirmBody": "下の入力欄に <strong>削除</strong> と入力すると、アカウントがすぐに削除されます。元に戻せません。",
     "confirmInputAriaLabel": "削除確認の入力",
     "processing": "処理中…",
     "requestError": "アカウントの削除リクエストを処理できませんでした。しばらくしてからもう一度お試しください。",
-    "doneTitle": "削除リクエストを受け付けました",
-    "doneBody": "30日以内に再度ログインするとアカウントを復元できます。その後、完全に削除されます。"
+    "doneTitle": "アカウントを削除しました",
+    "doneBody": "アカウント、旅行、予約書類などすべてのデータを削除しました。ご利用ありがとうございました。",
+    "staleLogin": "セキュリティのため、ログインし直した直後のみ削除できます。もう一度ログインしてからお試しください。",
+    "adminBlocked": "運営者アカウントはここでは削除できません。"
   },
   "profile": {
     "title": "プロフィールを編集",

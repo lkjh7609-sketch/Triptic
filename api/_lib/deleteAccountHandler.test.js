@@ -1,0 +1,80 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const { requireUser, deleteAccountData, maybeSingle } = vi.hoisted(() => ({ requireUser: vi.fn(), deleteAccountData: vi.fn(), maybeSingle: vi.fn() }));
+vi.mock('./auth.js', () => ({ requireUser }));
+vi.mock('./supabaseAdmin.js', () => ({ supabaseAdmin: () => ({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }) }) }));
+vi.mock('./deleteAccount.js', async () => ({ ...(await vi.importActual('./deleteAccount.js')), deleteAccountData }));
+
+import handler from '../deleteAccount.js';
+
+function makeRes() {
+    const res = { statusCode: 0, body: null };
+    res.status = (c) => ((res.statusCode = c), res);
+    res.json = (b) => ((res.body = b), res);
+    res.end = () => res;
+    res.setHeader = () => res;
+    return res;
+}
+let ip = 0;
+const post = (extra = {}) => ({ method: 'POST', headers: { origin: 'https://triptic.my', authorization: 'Bearer t', 'x-forwarded-for': `10.7.0.${++ip}` }, ...extra });
+const fresh = () => new Date(Date.now() - 60_000).toISOString();
+
+beforeEach(() => {
+    requireUser.mockReset().mockResolvedValue({ id: 'u1', last_sign_in_at: fresh() });
+    deleteAccountData.mockReset().mockResolvedValue({ files: 0 });
+    maybeSingle.mockReset().mockResolvedValue({ data: { role: 'user' } });
+});
+
+describe('POST /api/deleteAccount', () => {
+    it('방금 로그인한 본인이면 삭제하고 200', async () => {
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(200);
+        expect(deleteAccountData).toHaveBeenCalledWith(expect.anything(), 'u1');
+    });
+
+    it('로그인 토큰이 없으면 삭제하지 않는다(401은 requireUser가 응답)', async () => {
+        requireUser.mockImplementation(async (_req, res) => (res.status(401).json({ error: 'login_required' }), null));
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(401);
+        expect(deleteAccountData).not.toHaveBeenCalled();
+    });
+
+    it('오래된 세션(15분 넘게 전 로그인)은 다시 로그인하라고 403', async () => {
+        requireUser.mockResolvedValue({ id: 'u1', last_sign_in_at: new Date(Date.now() - 3600_000).toISOString() });
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(403);
+        expect(res.body).toEqual({ error: 'reauth_required' });
+        expect(deleteAccountData).not.toHaveBeenCalled();
+    });
+
+    it('관리자 계정은 이 경로로 지우지 않는다', async () => {
+        maybeSingle.mockResolvedValue({ data: { role: 'admin' } });
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(403);
+        expect(res.body).toEqual({ error: 'admin_cannot_delete' });
+        expect(deleteAccountData).not.toHaveBeenCalled();
+    });
+
+    it('출처가 없거나 허용 밖이면 403, POST가 아니면 405', async () => {
+        const a = makeRes();
+        await handler(post({ headers: { authorization: 'Bearer t', 'x-forwarded-for': `10.6.0.${++ip}` } }), a);
+        const b = makeRes();
+        await handler(post({ headers: { origin: 'https://evil.example', authorization: 'Bearer t', 'x-forwarded-for': `10.6.1.${++ip}` } }), b);
+        const c = makeRes();
+        await handler({ method: 'GET', headers: {} }, c);
+        expect([a.statusCode, b.statusCode, c.statusCode]).toEqual([403, 403, 405]);
+        expect(deleteAccountData).not.toHaveBeenCalled();
+    });
+
+    it('삭제 중 실패하면 500(상세는 응답에 안 담김)', async () => {
+        deleteAccountData.mockRejectedValue(new Error('purge failed: fk secret detail'));
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(500);
+        expect(JSON.stringify(res.body)).not.toContain('secret');
+    });
+});

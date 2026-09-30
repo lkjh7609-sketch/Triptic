@@ -55,7 +55,7 @@
   "delete": {
     "stepIndicator": "Step {{current}} of {{total}}",
     "warningTitle": "Delete your account?",
-    "warningBody": "Deleting your account removes all the data below. You can undo this by signing back in within 30 days.",
+    "warningBody": "Deleting your account immediately removes all the data below. This cannot be undone.",
     "impact": {
       "tripsPending": "… trips",
       "trips_one": "{{count}} trip",
@@ -74,12 +74,14 @@
     "reauthButton": "Sign in again",
     "reauthError": "Couldn't start re-authentication. Please try again shortly.",
     "confirmTitle": "Final confirmation",
-    "confirmBody": "Type <strong>Delete</strong> in the field below to proceed with account deletion.",
+    "confirmBody": "Type <strong>Delete</strong> in the field below and your account is deleted right away. This cannot be undone.",
     "confirmInputAriaLabel": "Deletion confirmation input",
     "processing": "Processing…",
     "requestError": "Couldn't process the account deletion request. Please try again shortly.",
-    "doneTitle": "Deletion request received",
-    "doneBody": "You can restore your account by signing in again within 30 days. After that, it will be permanently deleted."
+    "doneTitle": "Your account was deleted",
+    "doneBody": "Your account, trips, booking documents and all other data have been deleted. Thank you for using Triptic.",
+    "staleLogin": "For security, you can only delete right after signing in again. Please sign in again and retry.",
+    "adminBlocked": "Admin accounts cannot be deleted here."
   },
   "profile": {
     "title": "Edit profile",

@@ -55,7 +55,7 @@
   "delete": {
     "stepIndicator": "第 {{current}} / {{total}} 步",
     "warningTitle": "確定要刪除帳戶嗎？",
-    "warningBody": "刪除後，以下資料將全部消失。30天內重新登入可撤銷此操作。",
+    "warningBody": "刪除後，以下資料會立即全部消失，且無法復原。",
     "impact": {
       "tripsPending": "…個行程",
       "trips_other": "{{count}}個行程",
@@ -71,12 +71,14 @@
     "reauthButton": "重新登入",
     "reauthError": "未能開始身分驗證，請稍後再試。",
     "confirmTitle": "最終確認",
-    "confirmBody": "在下方輸入框中輸入<strong>刪除</strong>，即可繼續刪除帳號。",
+    "confirmBody": "在下方輸入框中輸入<strong>刪除</strong>，帳號會立即刪除，且無法復原。",
     "confirmInputAriaLabel": "刪除確認文字輸入框",
     "processing": "處理中…",
     "requestError": "未能處理帳戶刪除請求，請稍後再試。",
-    "doneTitle": "刪除請求已提交",
-    "doneBody": "30天內重新登入可恢復帳戶，之後帳戶將被永久刪除。"
+    "doneTitle": "帳號已刪除",
+    "doneBody": "帳號、行程、訂單文件等所有資料都已刪除。感謝您的使用。",
+    "staleLogin": "為了安全，只能在剛重新登入後刪除。請重新登入後再試一次。",
+    "adminBlocked": "管理員帳號無法在此刪除。"
   },
   "profile": {
     "title": "編輯個人資料",
