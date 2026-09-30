@@ -219,6 +219,8 @@
 }
 
 .footerLink {
+  display: inline-block;
+  padding: 11px 4px; /* 눌리는 높이 44px */
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
@@ -227,7 +229,7 @@
 .footerButton {
   border: none;
   background: none;
-  padding: 0;
+  padding: 11px 4px;
   font: inherit;
   cursor: pointer;
 }

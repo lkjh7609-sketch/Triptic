@@ -1353,3 +1353,13 @@
   opacity: 0.6;
   cursor: default;
 }
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.cardMenuButton {
+  position: relative;
+}
+.cardMenuButton::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
