@@ -450,11 +450,13 @@ export class TripService {
       dayCities: content.dayCities,
     };
     const row = await this.saveTrip(project, newTitle);
-    const { error } = await getSupabaseClient()
-      .from('trips')
-      .update({ forked_from_trip_id: payload.trip.id })
-      .eq('id', row.id);
-    if (error) throw error;
+    // 원본 표시는 서버 관리 컬럼이라 직접 UPDATE하면 막힌다(0041) — 0070의 set_forked_from_trip RPC로 남긴다.
+    // 이미 만들어진 사본이 사라지는 게 더 나쁘므로, 표시를 못 남겨도(예: 0070 적용 전) 복사 자체는 성공으로 친다
+    const { error } = await getSupabaseClient().rpc('set_forked_from_trip', { p_trip_id: row.id, p_source_trip_id: payload.trip.id });
+    if (error) {
+      captureError(error, { context: 'setForkedFromTrip' });
+      return row;
+    }
     return { ...row, forked_from_trip_id: payload.trip.id } as TripRow;
   }
 
