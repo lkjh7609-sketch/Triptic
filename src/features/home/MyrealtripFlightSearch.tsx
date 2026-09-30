@@ -1,9 +1,9 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type Ref } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type Ref } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { addDays, format, parseISO } from 'date-fns';
-import { ArrowLeftRight, CalendarDays, ExternalLink, Minus, Plus, Search } from 'lucide-react';
+import { Armchair, ArrowLeftRight, CalendarDays, Check, ChevronDown, History, Minus, PlaneLanding, PlaneTakeoff, Plus, Search, ShieldCheck } from 'lucide-react';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
 import {
@@ -87,7 +87,22 @@ function placeFromParam(value: string | null): Place | null {
   return IATA.test(code) ? { code, type: 'city', name: code, detail: null } : null;
 }
 
-function PlaceField({ label, value, onChange, locale, inputRef }: { label: string; value: Place | null; onChange: (p: Place) => void; locale: string; inputRef?: Ref<HTMLInputElement> }) {
+function PlaceField({
+  label,
+  value,
+  onChange,
+  locale,
+  inputRef,
+  icon,
+}: {
+  label: string;
+  value: Place | null;
+  onChange: (p: Place) => void;
+  locale: string;
+  inputRef?: Ref<HTMLInputElement>;
+  /** PC 칸 오른쪽 끝의 작은 아이콘(이륙·착륙) */
+  icon?: ReactNode;
+}) {
   const { t } = useTranslation('home');
   const listId = useId();
   // 입력 중일 때만 글자를 따로 들고, 아니면 고른 곳 이름을 보여준다
@@ -155,6 +170,11 @@ function PlaceField({ label, value, onChange, locale, inputRef }: { label: strin
         onBlur={() => setEditing(null)}
         onKeyDown={handleKeyDown}
       />
+      {icon ? (
+        <span className={styles.fieldIcon} aria-hidden="true">
+          {icon}
+        </span>
+      ) : null}
       {open ? (
         <ul id={listId} role="listbox" className={styles.options}>
           {options.map((o, i) => (
@@ -236,6 +256,131 @@ function PassengerStepper({
   );
 }
 
+/** 최근 검색(이 기기) — 출발지·도착지만 기억한다. 날짜는 지난 날이 되기 쉬워서 넣지 않는다 */
+interface RecentSearch {
+  origin: Place;
+  destination: Place;
+}
+
+const RECENT_KEY = 'triptic-flights-recent';
+
+function isPlace(v: unknown): v is Place {
+  const p = v as Place | null;
+  return !!p && typeof p.code === 'string' && IATA.test(p.code) && (p.type === 'city' || p.type === 'airport') && typeof p.name === 'string' && p.name.length > 0;
+}
+
+function readRecent(): RecentSearch | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_KEY) ?? 'null') as { origin?: unknown; destination?: unknown } | null;
+    return parsed && isPlace(parsed.origin) && isPlace(parsed.destination) ? { origin: parsed.origin, destination: parsed.destination } : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveRecent(origin: Place, destination: Place): RecentSearch {
+  const value = { origin, destination };
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(value));
+  } catch {
+    // 저장 공간이 없거나 막힌 브라우저 — 이번 접속 동안만 보인다
+  }
+  return value;
+}
+
+type Cabin = 'ECONOMY' | 'PREMIUM_ECONOMY' | 'BUSINESS' | 'FIRST';
+const CABINS: Cabin[] = ['ECONOMY', 'PREMIUM_ECONOMY', 'BUSINESS', 'FIRST'];
+
+/** "성인 1명 · 아동 1명 · 일반석" — 탑승객 요약(칸 값·칩 모두 이 글) */
+function passengerSummary(t: (key: string, opts?: Record<string, unknown>) => string, adults: number, children: number, infants: number, cabin: Cabin): string {
+  const parts = [t('flights.form.adultN', { n: adults })];
+  if (children > 0) parts.push(t('flights.form.childN', { n: children }));
+  if (infants > 0) parts.push(t('flights.form.infantN', { n: infants }));
+  parts.push(t(`flights.form.cabin${cabin}`));
+  return parts.join(' · ');
+}
+
+interface PassengerPickerProps {
+  adults: number;
+  kids: number;
+  infants: number;
+  cabin: Cabin;
+  onAdults: (n: number) => void;
+  onChildren: (n: number) => void;
+  onInfants: (n: number) => void;
+  onCabin: (c: Cabin) => void;
+}
+
+/**
+ * PC 탑승객·좌석 등급 — 요약 한 칸("성인 1명 · 일반석 ⌄")을 누르면 팝오버에서 인원과 등급을 고른다.
+ * 좌석 규칙은 카드 방식(모바일)과 같다: 성인+아동 최대 9석, 유아는 성인 수까지.
+ */
+function PassengerPicker({ adults, kids, infants, cabin, onAdults, onChildren, onInfants, onCabin }: PassengerPickerProps) {
+  const { t } = useTranslation('home');
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className={styles.picker}>
+      <button type="button" className={styles.pickerButton} aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? panelId : undefined} onClick={() => setOpen((o) => !o)}>
+        <span className={styles.pickerIcon} aria-hidden="true">
+          <Armchair size={20} />
+        </span>
+        <span className={styles.pickerText}>
+          <span className={styles.pickerLabel}>{t('flights.form.passengerSummary')}</span>
+          <span className={styles.pickerValue}>
+            {passengerSummary(t, adults, kids, infants, cabin)}
+            <ChevronDown size={16} aria-hidden="true" />
+          </span>
+        </span>
+      </button>
+      {open ? (
+        <div id={panelId} role="dialog" aria-label={t('flights.form.passengerSummary')} className={styles.popover}>
+          <PassengerStepper
+            label={t('flights.form.adult')}
+            hint={t('flights.form.adultHint')}
+            value={adults}
+            min={1}
+            max={MAX_SEATS - kids}
+            onChange={onAdults}
+          />
+          <PassengerStepper label={t('flights.form.child')} hint={t('flights.form.childHint')} value={kids} min={0} max={MAX_SEATS - adults} onChange={onChildren} />
+          <PassengerStepper label={t('flights.form.infant')} hint={t('flights.form.infantHint')} value={infants} min={0} max={adults} onChange={onInfants} />
+          <div className={styles.cabinGroup} role="radiogroup" aria-label={t('flights.form.cabinLabel')}>
+            <span className={styles.cabinLabel}>{t('flights.form.cabinLabel')}</span>
+            {CABINS.map((c) => (
+              <button key={c} type="button" role="radio" aria-checked={cabin === c} className={cabin === c ? styles.cabinOn : styles.cabinOff} onClick={() => onCabin(c)}>
+                {cabin === c ? <Check size={14} aria-hidden="true" /> : null}
+                {t(`flights.form.cabin${c}`)}
+              </button>
+            ))}
+          </div>
+          <button type="button" className={styles.popoverDone} onClick={() => setOpen(false)}>
+            {t('action.confirm', { ns: 'common' })}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /**
  * 항공 탭(한국어) — 마이리얼트립 항공권 검색. 결과는 마이리얼트립 사이트(새 탭)에서 열린다.
  * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults/children/infants를 채워 둔다.
@@ -267,6 +412,8 @@ export function MyrealtripFlightSearch() {
   const [adults, setAdults] = useState(() => paramCount('adults', 1, 1));
   const [children, setChildren] = useState(() => Math.min(paramCount('children', 0, 0), MAX_SEATS - adults));
   const [infants, setInfants] = useState(() => Math.min(paramCount('infants', 0, 0), adults));
+  const [cabin, setCabin] = useState<Cabin>('ECONOMY');
+  const [recent, setRecent] = useState<RecentSearch | null>(() => readRecent());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const originInputRef = useRef<HTMLInputElement>(null);
@@ -301,6 +448,7 @@ export function MyrealtripFlightSearch() {
           adults,
           children,
           infants,
+          ...(cabin !== 'ECONOMY' ? { cabin } : {}),
         }
       : null;
   const flightKey = flight ? JSON.stringify(flight) : '';
@@ -324,6 +472,7 @@ export function MyrealtripFlightSearch() {
       flagInvalid(dateButtonRef.current);
       return;
     }
+    setRecent(saveRecent(effectiveOrigin, destination));
     if (prefetched) {
       openExternal(prefetched);
       return;
@@ -342,6 +491,7 @@ export function MyrealtripFlightSearch() {
             adults,
             children,
             infants,
+            ...(cabin !== 'ECONOMY' ? { cabin } : {}),
           },
           'flights',
         ),
@@ -357,24 +507,53 @@ export function MyrealtripFlightSearch() {
 
   return (
     <form className={styles.card} onSubmit={handleSubmit}>
-      <div className={styles.tripType} role="group" aria-label={t('flights.form.tripType')}>
-        <button type="button" aria-pressed={roundTrip} className={roundTrip ? styles.tripOn : styles.tripOff} onClick={() => setRoundTrip(true)}>
-          {t('flights.form.roundTrip')}
-        </button>
-        <button type="button" aria-pressed={!roundTrip} className={!roundTrip ? styles.tripOn : styles.tripOff} onClick={() => setRoundTrip(false)}>
-          {t('flights.form.oneWay')}
-        </button>
+      <div className={styles.topRow}>
+        <div className={styles.tripType} role="group" aria-label={t('flights.form.tripType')}>
+          <button type="button" aria-pressed={roundTrip} className={roundTrip ? styles.tripOn : styles.tripOff} onClick={() => setRoundTrip(true)}>
+            {t('flights.form.roundTrip')}
+          </button>
+          <button type="button" aria-pressed={!roundTrip} className={!roundTrip ? styles.tripOn : styles.tripOff} onClick={() => setRoundTrip(false)}>
+            {t('flights.form.oneWay')}
+          </button>
+        </div>
+        {recent ? (
+          <button
+            type="button"
+            className={styles.recent}
+            onClick={() => {
+              setOrigin(recent.origin);
+              setDestination(recent.destination);
+            }}
+          >
+            <History size={14} aria-hidden="true" />
+            {t('flights.form.recent', { route: `${recent.origin.name} ⇄ ${recent.destination.name}` })}
+          </button>
+        ) : null}
       </div>
 
       <div className={styles.grid}>
         {/* 출발지·도착지 / 가는 날·오는 날을 선으로 나눈 큰 칸 하나 */}
         <div className={styles.route}>
           <div className={styles.places}>
-            <PlaceField label={t('flights.form.from')} value={effectiveOrigin} onChange={setOrigin} locale={placesLocale} inputRef={originInputRef} />
+            <PlaceField
+              label={t('flights.form.from')}
+              value={effectiveOrigin}
+              onChange={setOrigin}
+              locale={placesLocale}
+              inputRef={originInputRef}
+              icon={<PlaneTakeoff size={20} />}
+            />
             <button type="button" className={styles.swap} onClick={swap} aria-label={t('flights.form.swap')}>
               <ArrowLeftRight size={16} aria-hidden="true" />
             </button>
-            <PlaceField label={t('flights.form.to')} value={destination} onChange={setDestination} locale={placesLocale} inputRef={destInputRef} />
+            <PlaceField
+              label={t('flights.form.to')}
+              value={destination}
+              onChange={setDestination}
+              locale={placesLocale}
+              inputRef={destInputRef}
+              icon={<PlaneLanding size={20} />}
+            />
           </div>
           <div className={styles.dates}>
             <button ref={dateButtonRef} type="button" className={styles.dateCell} onClick={() => setShowCalendar(true)}>
@@ -426,6 +605,28 @@ export function MyrealtripFlightSearch() {
             />
           </div>
         </div>
+        {/* PC: 탑승객·좌석 등급 요약 칸 + 요약 칩(모바일은 위 카드 3장을 쓴다) */}
+        <div className={styles.bottomRow}>
+          <PassengerPicker
+            adults={adults}
+            kids={children}
+            infants={infants}
+            cabin={cabin}
+            onAdults={(n) => {
+              setAdults(n);
+              if (infants > n) setInfants(n);
+            }}
+            onChildren={setChildren}
+            onInfants={setInfants}
+            onCabin={setCabin}
+          />
+          <span className={styles.chips} aria-hidden="true">
+            <span className={styles.chip}>{t('flights.form.adultN', { n: adults })}</span>
+            {children > 0 ? <span className={styles.chip}>{t('flights.form.childN', { n: children })}</span> : null}
+            {infants > 0 ? <span className={styles.chip}>{t('flights.form.infantN', { n: infants })}</span> : null}
+            <span className={styles.chip}>{t(`flights.form.cabin${cabin}`)}</span>
+          </span>
+        </div>
         <button type="submit" className={styles.submit} disabled={busy}>
           <Search size={18} aria-hidden="true" /> {busy ? t('flights.form.searching') : t('flights.form.search')}
         </button>
@@ -466,7 +667,7 @@ export function MyrealtripFlightSearch() {
         </div>
       ) : null}
       <p className={styles.note}>
-        <ExternalLink size={12} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
+        <ShieldCheck size={14} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
       </p>
     </form>
   );

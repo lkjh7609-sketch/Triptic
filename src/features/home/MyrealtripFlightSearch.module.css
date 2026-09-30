@@ -179,19 +179,6 @@
   margin-top: var(--space-4);
 }
 
-/* PC: 윗줄 출발·도착 | 날짜, 아랫줄 인원 | 검색 */
-@media (min-width: 1024px) {
-  .grid {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
-    align-items: end;
-  }
-
-  .submit {
-    align-self: end;
-  }
-}
-
 .field {
   position: relative;
   display: flex;
@@ -366,69 +353,97 @@
   inset: -4px;
 }
 
-/* 출발지·도착지 / 가는 날·오는 날 — 테두리 하나짜리 큰 칸을 얇은 선으로 나눈다(모바일 2줄, PC 한 줄) */
-.route {
-  grid-column: 1 / -1;
-  position: relative;
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-lg);
-  background: var(--surface-card);
+/* ───────── 새로 붙은 조각(모바일 기본은 숨김) ───────── */
+
+.topRow {
+  display: block;
 }
 
-.route:focus-within {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--brand-tint);
+.recent {
+  display: none;
 }
 
-.route .places {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: stretch;
-  gap: 0;
+.fieldIcon {
+  display: none;
 }
 
-.route .field {
-  padding: 10px var(--space-3);
+.bottomRow {
+  display: none;
 }
 
-.route .input {
-  min-height: 28px;
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
+/* ───────── 모바일·태블릿(1024px 미만) — 테두리 하나짜리 큰 칸을 얇은 선으로 나눈다 ───────── */
+@media (max-width: 1023px) {
+  .route {
+    position: relative;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-lg);
+    background: var(--surface-card);
+  }
 
-.route .input:focus {
-  box-shadow: none;
-}
+  .route:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--brand-tint);
+  }
 
-.route .places .field + .swap + .field {
-  border-left: 1px solid var(--border);
-}
+  .route .places {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0;
+  }
 
-/* 선 위에 걸친 교체 버튼(36px)이 양쪽 글자를 가리지 않게 안쪽 여백을 넉넉히 */
-.route .places .field:first-child {
-  padding-right: 26px;
-}
+  .route .field {
+    padding: 10px var(--space-3);
+  }
 
-.route .places .field + .swap + .field {
-  padding-left: 26px;
-}
+  .route .input {
+    min-height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 
-/* 교체 버튼은 두 칸 사이 선 위에 걸쳐 놓는다 */
-.route .swap {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  margin: 0;
-  transform: translate(-50%, -50%);
-}
+  .route .input:focus {
+    box-shadow: none;
+  }
 
-.route .dates {
-  display: grid;
-  border-top: 1px solid var(--border);
+  .route .places .field + .swap + .field {
+    border-left: 1px solid var(--border);
+  }
+
+  /* 선 위에 걸친 교체 버튼(36px)이 양쪽 글자를 가리지 않게 안쪽 여백을 넉넉히 */
+  .route .places .field:first-child {
+    padding-right: 26px;
+  }
+
+  .route .places .field + .swap + .field {
+    padding-left: 26px;
+  }
+
+  /* 교체 버튼은 두 칸 사이 선 위에 걸쳐 놓는다 */
+  .route .swap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .route .dates {
+    display: grid;
+    border-top: 1px solid var(--border);
+  }
+
+  .dateCell {
+    padding: 10px var(--space-3);
+    border: 1px solid transparent; /* 필수 입력 경고(flagInvalid)가 테두리 색을 바꿀 수 있게 자리만 */
+  }
+
+  .dateValue {
+    min-height: 28px;
+  }
 }
 
 .dateCell {
@@ -437,8 +452,6 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-  padding: 10px var(--space-3);
-  border: 1px solid transparent; /* 필수 입력 경고(flagInvalid)가 테두리 색을 바꿀 수 있게 자리만 */
   background: transparent;
   color: var(--text-primary);
   font: inherit;
@@ -451,7 +464,6 @@
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
-  min-height: 28px;
   font-size: var(--font-body-size);
 }
 
@@ -460,62 +472,314 @@
   color: var(--text-tertiary);
 }
 
+/* ───────── PC(1024px 이상) — 시안(Stitch 안 B 균형형 2단)대로 ─────────
+   윗줄: 왕복/편도 탭 · 최근 검색 / 회색 트레이 안에 흰 칸 3개(출발지·도착지·기간)
+   아랫줄: 탑승객·좌석 등급 요약 칸 + 칩 / 큰 검색 버튼 */
 @media (min-width: 1024px) {
-  .route {
+  .card {
+    padding: var(--space-8);
+    border-radius: var(--radius-xl);
+    box-shadow: none;
+  }
+
+  .topRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5, 20px);
+  }
+
+  .tripType {
+    margin: 0;
+    border-radius: var(--radius-md);
+  }
+
+  .tripOn,
+  .tripOff {
+    min-height: 40px;
+    padding: 0 var(--space-5, 20px);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-body-size);
+    font-weight: 600;
+  }
+
+  .tripOn {
+    color: var(--brand-text);
+  }
+
+  .recent {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 var(--space-3);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--surface-subtle);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--font-label-size);
+    cursor: pointer;
+  }
+
+  .grid {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-5, 20px) var(--space-6);
   }
 
-  .route .dates {
-    border-top: none;
-    border-left: 1px solid var(--border);
+  .route {
+    grid-column: 1 / -1;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
+    background: var(--surface-subtle);
   }
-}
 
-/* PC: 인원도 위의 큰 칸(.route)처럼 테두리 하나짜리 칸을 얇은 선으로 나눈다.
-   칸마다 두 줄 — 윗줄 "성인 만 12세 이상", 아랫줄 − 1 + — 그리고 좌우 폭은 줄였다(모바일은 그대로). */
-@media (min-width: 1024px) {
+  .places {
+    display: contents;
+  }
+
+  /* 흰 칸: 라벨(작게) 위, 값(크게) 아래, 오른쪽 끝에 아이콘 */
+  .route .field,
+  .dateCell {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 72px;
+    padding: 12px var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+    justify-content: center;
+  }
+
+  .route .field:focus-within,
+  .dateCell:focus-visible {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--brand-tint);
+  }
+
+  .route .input {
+    min-height: 28px;
+    padding: 0 var(--space-6) 0 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .route .input:focus {
+    box-shadow: none;
+  }
+
+  .fieldIcon {
+    display: inline-flex;
+    position: absolute;
+    right: var(--space-4);
+    bottom: 16px;
+    color: var(--brand-text);
+  }
+
+  /* 교체 버튼은 첫 두 칸 사이 간격 위에 걸친다(양쪽 여백 −22px = 버튼 36px − 간격 8px − 여유) */
+  .route .swap {
+    position: relative;
+    z-index: 2;
+    flex: none;
+    align-self: center;
+    margin: 0 -22px;
+    border: 1px solid var(--border);
+  }
+
+  .dates {
+    display: contents;
+  }
+
+  .dateValue {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    min-height: 28px;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .dateIcon {
+    color: var(--brand-text);
+  }
+
+  /* 카드 3장(모바일 인원)은 숨기고, 아래 요약 칸을 쓴다 */
   .passengers {
-    max-width: 520px;
+    display: none;
   }
 
-  .passengers > .fieldLabel {
-    display: none; /* 칸 안 글로 충분해서 "인원" 캡션은 뺀다(그룹 이름은 aria-label로 남아 있다) */
+  .bottomRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-width: 0;
   }
 
-  .passengerList {
-    gap: 0;
-    height: 78px; /* 위 큰 칸(.route)과 같은 높이 */
-    border: 1px solid var(--border-control);
+  .picker {
+    position: relative;
+  }
+
+  .pickerButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .pickerIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--surface-subtle);
+    color: var(--text-muted);
+  }
+
+  .pickerText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .pickerLabel {
+    font-size: var(--font-caption-size);
+    color: var(--text-muted);
+  }
+
+  .pickerValue {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* 요약 칩(성인 1 · 일반석) */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    background: var(--surface-subtle);
+    color: var(--text-body);
+    font-size: var(--font-caption-size);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* 팝오버 — 인원 3줄(이름·나이 왼쪽, − 1 + 오른쪽) + 좌석 등급 + 확인 */
+  .popover {
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    top: calc(100% + 8px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 340px;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: var(--surface-card);
+    box-shadow: var(--shadow-lg);
   }
 
-  .passenger {
-    justify-content: center;
-    gap: 6px;
-    padding: 0 var(--space-3);
+  .popover .passenger {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
     border: none;
     border-radius: 0;
     background: transparent;
   }
 
-  .passenger + .passenger {
-    border-left: 1px solid var(--border);
-  }
-
-  .passengerText {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .stepper {
-    justify-content: flex-start;
+  .popover .stepper {
     gap: var(--space-3);
   }
-  /* 검색 버튼도 인원 칸과 같은 높이로 맞춘다 */
-  .grid > .submit {
-    align-self: stretch;
+
+  .cabinGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .cabinLabel {
+    width: 100%;
+    font-size: var(--font-caption-size);
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .cabinOn,
+  .cabinOff {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 36px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface-card);
+    color: var(--text-body);
+    font: inherit;
+    font-size: var(--font-label-size);
+    cursor: pointer;
+  }
+
+  .cabinOn {
+    border-color: var(--text-primary);
+    background: var(--text-primary);
+    color: var(--surface-card);
+  }
+
+  .popoverDone {
+    min-height: 44px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--brand-solid);
+    color: var(--text-on-brand);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .submit {
+    min-height: 60px;
+    border-radius: var(--radius-md);
+    font-size: 1.0625rem;
+  }
+
+  .error,
+  .note {
+    grid-column: 1 / -1;
   }
 }
+
+/* 눌리는 영역 — 요약 칸·칩은 이미 크다. 교체 버튼은 위에서 ::after로 넓혔다 */
