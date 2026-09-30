@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import type { UseMutationResult } from '@tanstack/react-query';
-import { DISPLAY_NAME_MAX, isValidDisplayName } from '@/shared/displayName';
+import { DISPLAY_NAME_INPUT_MAX, isValidDisplayName } from '@/shared/displayName';
 import { checkDisplayNameAvailable, type ProfilePatch, type ProfileRow } from '@/shared/api/profileService';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '../plan/AddPlaceModal.module.css';
@@ -129,7 +129,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
                 id="profile-name"
                 className={modalStyles.input}
                 value={name}
-                maxLength={DISPLAY_NAME_MAX}
+                maxLength={DISPLAY_NAME_INPUT_MAX}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder={t('profile.namePlaceholder')}
                 autoComplete="nickname"
