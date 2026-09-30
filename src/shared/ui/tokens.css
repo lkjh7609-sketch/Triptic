@@ -90,6 +90,24 @@
   --font-caption-weight: 500;
 }
 
+/* ===== 별칭 (이전에 정의 없이 쓰이던 이름) =====
+   여러 화면 CSS가 정의되지 않은 변수를 쓰고 있었다. 정의가 없으면 그 선언이 통째로 무효가 돼
+   테두리·배경(예: --surface-bg는 AI 다음 장소 시트 배경이 투명)이 사라진다.
+   위 실제 토큰을 가리키게만 하고 값은 새로 만들지 않는다 — 다크 모드는 원본이 바뀌므로 자동으로 따라간다. */
+:root {
+  --border-subtle: var(--border);
+  --surface-bg: var(--surface-card);
+  --text-title: var(--text-primary);
+  --text-heading: var(--text-primary);
+  --text-tertiary: var(--text-muted);
+  --brand-light: var(--brand-tint);
+  --brand-hover: var(--brand-pressed);
+  --font-hero: var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-h3-size: var(--font-headline-size);
+  --transition-fast: 0.15s ease;
+}
+
 /* ===== §2.2 다크 모드 (Airplane Night Mode) ===== */
 :root[data-theme='dark'] {
   --surface-page: #0B0F19; /* 눈이 편안한 딥 미드나잇/네이비 */
