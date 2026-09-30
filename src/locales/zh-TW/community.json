@@ -118,6 +118,17 @@
       "tokenShape": "伺服器儲存的權杖：{{length}} 個字元，開頭 {{prefix}}。請與 Sentry 的 Tokens 值比對。",
       "noPrefix": "（無）",
       "tokenJunk": "（前後的空白與引號已自動移除。）"
+    },
+    "pin": {
+      "title": "管理員密碼",
+      "hint": "請點選 6 位數密碼",
+      "entered": "已輸入 {{count}}/{{total}} 位",
+      "wrong": "密碼不正確。再錯 {{count}} 次將鎖定 15 分鐘。",
+      "locked": "錯誤次數過多，已鎖定。請於 {{time}} 後再試。",
+      "error": "目前無法驗證，請稍後再試。",
+      "disabled": "目前無法使用密碼登入，請以管理員帳號登入。",
+      "useAccount": "以帳號登入",
+      "erase": "刪除一位"
     }
   },
   "report": {

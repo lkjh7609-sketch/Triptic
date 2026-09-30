@@ -1,0 +1,132 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6, 32px) var(--space-4);
+  color: var(--text-primary);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.dots {
+  display: flex;
+  gap: 14px;
+  margin: var(--space-2) 0;
+}
+
+.dot,
+.dotOn {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+}
+
+.dotOn {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.shake {
+  animation: pin-shake 0.4s ease;
+}
+
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* 안내 문구 자리를 늘 확보해서 문구가 나타나도 키패드가 밀리지 않게 */
+.message {
+  min-height: 40px;
+  margin: 0;
+  max-width: 280px;
+  text-align: center;
+  font-size: var(--font-caption-size);
+  line-height: 1.4;
+  color: var(--danger);
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 14px;
+  justify-content: center;
+}
+
+.key,
+.keyMuted {
+  appearance: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.12s ease, transform 0.12s ease;
+}
+
+.keyMuted {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.key:active:not(:disabled) {
+  background: var(--brand-tint);
+  transform: scale(0.94);
+}
+
+.key:focus-visible,
+.keyMuted:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.key:disabled,
+.keyMuted:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.linkBtn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--font-caption-size);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
+}
