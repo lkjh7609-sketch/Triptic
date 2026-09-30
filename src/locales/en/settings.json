@@ -84,10 +84,10 @@
   "profile": {
     "title": "Edit profile",
     "nameLabel": "Display name",
-    "namePlaceholder": "The name other travelers will see",
+    "namePlaceholder": "The name other travelers will see (2-16 characters)",
     "nameHint": "Shown on your community posts and to travel companions.",
     "nameRequired": "Please enter a name.",
-    "nameFormatError": "Nickname must be 2-7 Korean characters (no numbers or symbols).",
+    "nameFormatError": "Nickname must be 2-16 letters or numbers (spaces, dots, underscores and hyphens only in the middle).",
     "nameCheckRequired": "Please check availability first.",
     "nameTaken": "This nickname is already taken.",
     "nameAvailable": "This nickname is available.",

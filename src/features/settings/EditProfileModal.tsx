@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import type { UseMutationResult } from '@tanstack/react-query';
+import { DISPLAY_NAME_MAX, isValidDisplayName } from '@/shared/displayName';
 import { checkDisplayNameAvailable, type ProfilePatch, type ProfileRow } from '@/shared/api/profileService';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '../plan/AddPlaceModal.module.css';
@@ -12,9 +13,6 @@ interface EditProfileModalProps {
   profile: ProfileRow | undefined;
   updateProfile: UseMutationResult<void, Error, ProfilePatch>;
 }
-
-const MAX_NAME_LENGTH = 7;
-const DISPLAY_NAME_REGEX = /^[가-힣]{2,7}$/; // i18n-exempt: 문자열이 아니라 한글 유니코드 범위를 검사하는 정규식
 
 function getErrorHint(err: unknown): string | undefined {
   if (typeof err === 'object' && err !== null && 'hint' in err) {
@@ -47,7 +45,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
 
   async function handleCheckDuplicate() {
     const trimmed = name.trim();
-    if (!DISPLAY_NAME_REGEX.test(trimmed)) {
+    if (!isValidDisplayName(trimmed)) {
       setError(t('profile.nameFormatError'));
       flagInvalid(nameInputRef.current);
       return;
@@ -84,7 +82,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
       onClose();
       return;
     }
-    if (!DISPLAY_NAME_REGEX.test(trimmed)) {
+    if (!isValidDisplayName(trimmed)) {
       setError(t('profile.nameFormatError'));
       flagInvalid(nameInputRef.current);
       return;
@@ -131,7 +129,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
                 id="profile-name"
                 className={modalStyles.input}
                 value={name}
-                maxLength={MAX_NAME_LENGTH}
+                maxLength={DISPLAY_NAME_MAX}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder={t('profile.namePlaceholder')}
                 autoComplete="nickname"

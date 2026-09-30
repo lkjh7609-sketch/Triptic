@@ -81,10 +81,10 @@
   "profile": {
     "title": "プロフィールを編集",
     "nameLabel": "表示名",
-    "namePlaceholder": "ほかの旅行者に表示される名前",
+    "namePlaceholder": "ほかの旅行者に表示される名前（2〜16文字）",
     "nameHint": "コミュニティの投稿や同行者リストに表示されます。",
     "nameRequired": "名前を入力してください。",
-    "nameFormatError": "ニックネームはハングル2〜7文字のみ使用できます（記号・数字不可）。",
+    "nameFormatError": "ニックネームは文字・数字で2〜16文字にしてください（スペース・ドット・アンダースコア・ハイフンは途中のみ）。",
     "nameCheckRequired": "先に重複確認をしてください。",
     "nameTaken": "このニックネームは既に使われています。",
     "nameAvailable": "このニックネームは使用できます。",
