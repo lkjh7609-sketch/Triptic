@@ -1,8 +1,9 @@
 /**
- * 계정 삭제 (02-screens.md §5.1, supabase/migrations/0011_account_deletion_request.sql)
- * ⚠️ 0011 마이그레이션이 운영 프로젝트에 아직 적용되지 않았으므로, 이 함수들은
- * 마이그레이션 적용 전까지 "함수를 찾을 수 없음" 오류를 반환한다 — 예상된 동작이다.
+ * 계정 삭제 (02-screens.md §5.1) — 즉시 삭제(서버 api/deleteAccount.js, supabase/migrations/0065).
+ * 예전의 "삭제 요청만 기록 + 30일 뒤 삭제"는 30일 뒤 처리를 끝내 만들지 않아 계정이 영영 남았다.
  */
+import { apiUrl } from './apiUrl';
+import { clearOfflineCache } from '@/shared/offline/persister';
 import { getSupabaseClient } from './supabaseClient';
 import { tripService } from './tripService';
 
@@ -23,22 +24,33 @@ export async function getDeletionImpactSummary(): Promise<DeletionImpactSummary>
   return { tripCount: trips.length, voucherCount: voucherCount ?? 0, postCount: 0 };
 }
 
+export class AccountDeletionError extends Error {
+  constructor(readonly code: 'reauth_required' | 'admin_cannot_delete' | 'failed') {
+    super(code);
+    this.name = 'AccountDeletionError';
+  }
+}
+
+/**
+ * 회원 탈퇴 — 서버(api/deleteAccount.js)가 그 자리에서 삭제한다: 예약 서류 파일, 여행·게시글·동행 기록 등 모든 데이터, 로그인 계정.
+ * 되돌릴 수 없다. 방금(15분 안) 다시 로그인한 세션만 받고, 아니면 reauth_required.
+ */
 export async function requestAccountDeletion(): Promise<void> {
   const supabase = getSupabaseClient();
-  const { error } = await supabase.rpc('request_account_deletion');
-  if (error) throw error;
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new AccountDeletionError('failed');
+  const res = await fetch(apiUrl('/api/deleteAccount'), { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+  if (res.ok) return;
+  const json = (await res.json().catch(() => ({}))) as { error?: string };
+  if (json.error === 'reauth_required') throw new AccountDeletionError('reauth_required');
+  if (json.error === 'admin_cannot_delete') throw new AccountDeletionError('admin_cannot_delete');
+  throw new AccountDeletionError('failed');
 }
 
-export async function cancelAccountDeletion(): Promise<void> {
+/** 삭제가 끝난 뒤 이 기기의 로그인 상태와 저장된 캐시를 지운다 — 계정이 이미 없어 서버 로그아웃이 실패해도 이 기기에서는 로그아웃된다 */
+export async function finishLocalSignOutAfterDeletion(): Promise<void> {
   const supabase = getSupabaseClient();
-  const { error } = await supabase.rpc('cancel_account_deletion');
-  if (error) throw error;
-}
-
-export async function getOwnDeletionStatus(): Promise<string | null> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('get_own_deletion_status');
-  if (error) throw error;
-  const row = Array.isArray(data) ? data[0] : data;
-  return row?.deletion_requested_at ?? null;
+  await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+  await clearOfflineCache();
 }

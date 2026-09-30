@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import {
+  AccountDeletionError,
+  finishLocalSignOutAfterDeletion,
   getDeletionImpactSummary,
   requestAccountDeletion,
   type DeletionImpactSummary,
 } from '@/shared/api/accountService';
-import { signInWithProvider, signOut, type AuthProvider } from '@/shared/api/authService';
+import { signInWithProvider, type AuthProvider } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import styles from './DeleteAccountFlow.module.css';
@@ -22,14 +24,12 @@ function isReauthFresh(lastSignInAt: string | undefined): boolean {
 
 /**
  * 계정 삭제 3단계 흐름 (02-screens.md §5.1)
- * [경고 화면] → 재인증 → "삭제" 입력 확인 → 즉시 반영(로그아웃 + 30일 유예 예약)
+ * [경고 화면] → 재인증 → "삭제" 입력 확인 → 즉시 삭제(서버가 모든 데이터와 계정을 지우고, 이 기기는 로그아웃)
  *
  * ⚠️ 재인증은 Supabase OAuth 리다이렉트 기반이라, "다시 로그인" 버튼을 누르면
  * 페이지를 벗어났다가 돌아온다. 돌아온 뒤 세션의 last_sign_in_at이 최근
  * 10분 이내인지로 재인증 성공 여부를 판정한다 — 리다이렉트 흐름을 그대로 유지한
  * 화면 내 상태 보존보다 이 방식이 더 견고하다.
- * ⚠️ 0011_account_deletion_request.sql이 운영 프로젝트에 적용되기 전까지는
- * 마지막 단계에서 실제 RPC 호출이 실패한다 (예상된 동작 — supabase/migrations/README.md 참고).
  */
 export function DeleteAccountFlow() {
   const { t } = useTranslation(['settings', 'common']);
@@ -76,11 +76,12 @@ export function DeleteAccountFlow() {
     setError(null);
     try {
       await requestAccountDeletion();
-      await signOut();
+      await finishLocalSignOutAfterDeletion();
       setStep('done');
     } catch (err) {
-      captureError(err, { context: 'requestAccountDeletion' });
-      setError(t('delete.requestError'));
+      const code = err instanceof AccountDeletionError ? err.code : 'failed';
+      if (code !== 'reauth_required') captureError(err, { context: 'requestAccountDeletion' });
+      setError(code === 'reauth_required' ? t('delete.staleLogin') : code === 'admin_cannot_delete' ? t('delete.adminBlocked') : t('delete.requestError'));
     } finally {
       setSubmitting(false);
     }
