@@ -520,3 +520,28 @@
   line-height: 1.4;
   color: var(--text-muted);
 }
+
+/* PC: 3단계를 카드 세 장이 한 줄에 균등하게(모바일은 위의 가로 스크롤 그대로) */
+@media (min-width: 1024px) {
+  .stepList {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    overflow: visible;
+  }
+
+  .step {
+    flex: none;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+
+  .stepTitle {
+    font-size: 1.125rem;
+  }
+
+  .stepDesc {
+    font-size: var(--font-label-size);
+    line-height: 1.5;
+  }
+}
