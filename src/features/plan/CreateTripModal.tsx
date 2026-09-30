@@ -6,6 +6,9 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCreateTrip } from './hooks/useTrips';
+import { GUEST_TRIP_LIMIT, GuestTripLimitError } from './guestTrips';
+import { requireLogin } from '@/features/auth/loginPrompt';
+import { showToast } from '@/shared/ui/toast';
 import { usePlaceAutocomplete, countryCodeOf, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { currencyForCountry } from './countryCurrency';
 import { captureError } from '@/shared/monitoring';
@@ -175,6 +178,13 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
       onClose();
       navigate(`/plan/${row.id}`);
     } catch (err) {
+      if (err instanceof GuestTripLimitError) {
+        // 임시 여행 한도 — 로그인하면 계정에 저장하고 더 만들 수 있다
+        onClose();
+        showToast(t('common:guest.draftLimit', { count: GUEST_TRIP_LIMIT }));
+        requireLogin();
+        return;
+      }
       captureError(err, { context: 'createTrip' });
     }
   }

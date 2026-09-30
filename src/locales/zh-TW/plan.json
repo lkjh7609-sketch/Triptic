@@ -171,6 +171,7 @@
   "share": {
     "title": "邀請一起編輯的人",
     "sampleMessage": "樣例行程無法分享。建立屬於自己的新行程後即可分享！",
+    "draftMessage": "登入前建立的暫存行程無法分享。登入後會儲存到你的帳號，之後就能分享。",
     "desc": "收到這個連結的人登入後就能和你一起編輯這趟旅行，任何人修改都會立即顯示在彼此的畫面上。",
     "generatingLink": "正在產生…",
     "revoke": "停用連結",
@@ -203,6 +204,7 @@
   "tripDetail": {
     "backAria": "返回",
     "sampleBadge": "體驗樣例",
+    "draftBadge": "暫存",
     "mapViewAria": "檢視地圖",
     "listViewAria": "檢視列表",
     "suggestionsAria": "收到的建議",

@@ -89,7 +89,13 @@
     "loginRequiredTitle": "ログインが必要です",
     "loginRequiredMessage": "この機能を使うにはログインが必要です。ログインしますか？",
     "loginLater": "あとで",
-    "sampleLocked": "サンプル旅行ではこの機能を使えません"
+    "sampleLocked": "サンプル旅行ではこの機能を使えません",
+    "draftLimit": "この端末には一時保存の旅行を{{count}}件まで作れます。ログインするとアカウントに保存して、もっと作れます。",
+    "draftBannerText": "この旅行はこの端末にだけ保存されます — ログインするとアカウントに移されます",
+    "draftBannerCta": "ログインして保存",
+    "importedToast": "一時保存の旅行{{count}}件をアカウントに保存しました",
+    "importLimit": "無料の旅行数の上限に達したため、一部はこの端末に残しました",
+    "importFailed": "一時保存の旅行をアカウントに移せませんでした。次回もう一度試します"
   },
   "menu": {
     "darkMode": "ダークモード",

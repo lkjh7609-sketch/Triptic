@@ -89,7 +89,13 @@
     "loginRequiredTitle": "需要登入",
     "loginRequiredMessage": "登入後才能使用此功能。要現在登入嗎？",
     "loginLater": "稍後再說",
-    "sampleLocked": "樣例行程無法使用此功能"
+    "sampleLocked": "樣例行程無法使用此功能",
+    "draftLimit": "這台裝置最多可建立 {{count}} 個暫存行程。登入後可儲存到帳號並建立更多。",
+    "draftBannerText": "這個行程只儲存在這台裝置 — 登入後會移到你的帳號",
+    "draftBannerCta": "登入並儲存",
+    "importedToast": "已將 {{count}} 個暫存行程儲存到你的帳號",
+    "importLimit": "已達免費行程數量上限，部分暫存行程留在這台裝置",
+    "importFailed": "無法將暫存行程移到帳號，下次會再試一次"
   },
   "menu": {
     "darkMode": "深色模式",

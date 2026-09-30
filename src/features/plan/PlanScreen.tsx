@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
+import { useTrips, useGuestTrips, useRenameTrip, useDuplicateTrip, useDeleteTrip, tripQueryKey } from './hooks/useTrips';
 import { getTripPhase } from './tripStatus';
 import { SAMPLE_TRIP_ID, getSampleTripRow, resetSampleTrip } from './sampleTrip';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -52,7 +52,9 @@ export function PlanScreen() {
     return [getSampleTripRow()];
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 언어가 바뀌면 샘플을 그 언어로 다시 만든다
   }, [sessionLoading, user, i18n.language]);
-  const list = useMemo(() => (user ? (trips ?? []) : sampleTrips), [user, trips, sampleTrips]);
+  /** 로그인 전에 이 기기에 만든 임시 여행 — 샘플 위에 보인다 */
+  const guestTrips = useGuestTrips();
+  const list = useMemo(() => (user ? (trips ?? []) : [...guestTrips, ...sampleTrips]), [user, trips, guestTrips, sampleTrips]);
 
   const grouped = useMemo(() => {
     return {

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, ScrollRestoration, useLocation, useNavigate, useNavigation, useNavigationType } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { TabBar } from './TabBar';
 import { HeaderDesktop } from './HeaderDesktop';
 import { GuestBanner } from './GuestBanner';
@@ -8,6 +9,9 @@ import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { closeLoginPrompt, openLoginPrompt, setSignedIn, useLoginPromptOpen } from '@/features/auth/loginPrompt';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
+import { importGuestTrips, isGuestTripId } from '@/features/plan/guestTrips';
+import { tripsQueryKey } from '@/features/plan/hooks/useTrips';
+import { showToast } from '@/shared/ui/toast';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
@@ -91,7 +95,10 @@ export function AppShell() {
   const navigate = useNavigate();
   const loginPromptOpen = useLoginPromptOpen();
 
-  const isGuestSample = !user && pathname === `/plan/${SAMPLE_TRIP_ID}`;
+  const guestTripId = /^\/plan\/([^/]+)$/.exec(pathname)?.[1];
+  const isGuestDraft = !user && isGuestTripId(guestTripId);
+  // 비로그인 샘플·임시 여행 화면: 헤더·탭바 대신 상단 안내 배너(전체 화면)
+  const isGuestSample = !user && (pathname === `/plan/${SAMPLE_TRIP_ID}` || isGuestDraft);
   const routeNeedsLogin = !user && requiresLogin(pathname);
   // 로그인 여부를 로그인 창 모듈(requireLogin)에 알린다 — 자식 화면이 그려지는 같은 커밋 안에서.
   // 로그인에 성공하면 창도 닫힌다(로그인 필요 화면이었으면 그 화면이 바로 이어서 뜬다)
@@ -102,8 +109,25 @@ export function AppShell() {
   useRedirectFlightsWidgetResults();
   // 함께 편집하는 여행·동행 인원을 실시간으로 맞춘다
   useTripRealtimeSync(user?.id ?? null);
-  // 공유 링크로 들어와 로그인했는데 첫 화면으로 돌아왔으면 그 링크로 이어서 참여한다
+  // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
+  const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
   const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return;
+    void importGuestTrips().then((result) => {
+      if (result.imported.length > 0) {
+        void queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+        showToast(t('guest.importedToast', { count: result.imported.length }));
+        // 옮기던 임시 여행 화면을 보고 있었으면 옮겨진 여행으로 이어 준다
+        const current = result.imported.find((r) => `/plan/${r.guestId}` === window.location.pathname);
+        if (current) navigate(`/plan/${current.tripId}`, { replace: true });
+      }
+      if (result.limitReached) showToast(t('guest.importLimit'));
+      else if (result.failed) showToast(t('guest.importFailed'));
+    });
+  }, [userId, queryClient, navigate, t]);
+  // 공유 링크로 들어와 로그인했는데 첫 화면으로 돌아왔으면 그 링크로 이어서 참여한다
   useEffect(() => {
     if (!userId) return;
     const code = takePendingShare();
@@ -133,7 +157,7 @@ export function AppShell() {
 
   return (
     <div className={`app-shell ${styles.shell}`}>
-      {isGuestSample ? <GuestBanner onLogin={openLoginPrompt} /> : isDesktop && <HeaderDesktop />}
+      {isGuestSample ? <GuestBanner onLogin={openLoginPrompt} draft={isGuestDraft} /> : isDesktop && <HeaderDesktop />}
       <main className={styles.content}>
         {routeNeedsLogin ? null : showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
         {flightsWidgetMounted ? <FlightsWidgetHost visible={onFlights && !showRouteSkeleton} /> : null}

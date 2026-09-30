@@ -89,7 +89,13 @@
     "loginRequiredTitle": "Sign in required",
     "loginRequiredMessage": "You need to sign in to use this. Sign in now?",
     "loginLater": "Not now",
-    "sampleLocked": "This isn't available in the sample trip"
+    "sampleLocked": "This isn't available in the sample trip",
+    "draftLimit": "You can make up to {{count}} draft trips on this device. Sign in to save them to your account and make more.",
+    "draftBannerText": "This trip is saved on this device only — sign in to move it to your account",
+    "draftBannerCta": "Sign in to save",
+    "importedToast": "Saved {{count}} draft trip(s) to your account",
+    "importLimit": "Some drafts stayed on this device because you reached the free trip limit",
+    "importFailed": "Couldn't move your draft trips to your account. We'll try again next time"
   },
   "menu": {
     "darkMode": "Dark mode",

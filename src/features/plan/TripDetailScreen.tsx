@@ -11,6 +11,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-ki
 import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
 import { tripService, type LocalProject } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
+import { isGuestTripId } from './guestTrips';
 import { DayChips } from './DayChips';
 import { SortableItineraryItem } from './SortableItineraryItem';
 import { TripMapView } from './TripMapView';
@@ -76,6 +77,10 @@ export function TripDetailScreen() {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const isSample = tripId === SAMPLE_TRIP_ID;
+  /** 로그인 전에 이 기기에만 만든 임시 여행 — 샘플처럼 서버 기능(항공·서류·공유)은 잠기지만 일정은 고칠 수 있다 */
+  const isDraft = isGuestTripId(tripId);
+  /** Supabase에 없는 여행(샘플 + 임시) */
+  const isLocal = isSample || isDraft;
   const { data: trip, isLoading, isError, refetch } = useTrip(tripId);
   const updateSnapshot = useUpdateTripSnapshot(tripId);
   const [currentDay, setCurrentDay] = useState(1);
@@ -99,7 +104,7 @@ export function TripDetailScreen() {
     if (isSignedIn()) showToast(t('common:guest.sampleLocked'));
     else setShowLoginRequired(true);
   }
-  const pendingBookings = usePendingBookings(isSample ? undefined : tripId);
+  const pendingBookings = usePendingBookings(isLocal ? undefined : tripId);
   // 검수할 예약을 다 처리했으면(다시 불러온 목록이 비었으면) 검수 창을 닫는다 — 예전엔
   // "검수할 예약이 없습니다" 창이 남거나, 인식 직후 목록을 다시 받기 전에 그 창이 떴다
   const pendingCount = pendingBookings.data?.length ?? 0;
@@ -376,7 +381,7 @@ export function TripDetailScreen() {
           <div className={styles.headerInfo}>
             <h1 className={styles.title}>
               {trip.title}
-              {isSample ? <span className={styles.sampleBadge}>{t('tripDetail.sampleBadge')}</span> : null}
+              {isLocal ? <span className={styles.sampleBadge}>{t(isDraft ? 'tripDetail.draftBadge' : 'tripDetail.sampleBadge')}</span> : null}
             </h1>
             <p className={styles.dates}>
               {trip.start_date} ~ {trip.end_date}
@@ -397,20 +402,20 @@ export function TripDetailScreen() {
           {/* 샘플 여행에도 버튼은 그대로 보여 주되 잠가 둔다 — 누르면 로그인하겠냐고 묻는다 */}
           <button
             type="button"
-            className={isSample ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
+            className={isLocal ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
             aria-label={t('flight.title')}
-            aria-disabled={isSample || undefined}
-            onClick={() => (isSample ? handleSampleLocked() : setShowFlightModal(true))}
+            aria-disabled={isLocal || undefined}
+            onClick={() => (isLocal ? handleSampleLocked() : setShowFlightModal(true))}
           >
             <Plane size={18} />
           </button>
           <button
             type="button"
-            className={isSample ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
+            className={isLocal ? `${styles.toggleButton} ${styles.toggleButtonLocked}` : styles.toggleButton}
             aria-label={t('tripDetail.addByDocument')}
-            aria-disabled={isSample || undefined}
+            aria-disabled={isLocal || undefined}
             onClick={() =>
-              isSample
+              isLocal
                 ? handleSampleLocked()
                 : (pendingBookings.data?.length ?? 0) > 0
                   ? setShowReviewSheet(true)
@@ -418,7 +423,7 @@ export function TripDetailScreen() {
             }
           >
             <FileText size={18} />
-            {!isSample && (pendingBookings.data?.length ?? 0) > 0 ? (
+            {!isLocal && (pendingBookings.data?.length ?? 0) > 0 ? (
               <span className={styles.badge}>{pendingBookings.data!.length}</span>
             ) : null}
           </button>
@@ -564,7 +569,8 @@ export function TripDetailScreen() {
           tripId={tripId}
           itineraryText={itineraryText}
           pdfInput={pdfInput}
-          isSample={isSample}
+          isSample={isLocal}
+          isDraft={isDraft}
           ownerId={trip.owner_id}
           onClose={() => setShowShare(false)}
         />
