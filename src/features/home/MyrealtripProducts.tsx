@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink, Star } from 'lucide-react';
 import { apiUrl } from '@/shared/api/apiUrl';
+import { fetchKeepingLastGood, lastGoodOptions } from '@/shared/api/lastGood';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { openMyrealtripPage, openMyrealtripSearch, type PartnerPlacement } from '@/features/plan/partnerLinks';
 import { MyrealtripLink } from './MyrealtripLink';
@@ -58,9 +59,12 @@ interface MyrealtripProductsProps {
 export function MyrealtripProducts({ keyword, kind = 'tna', count = 6, placement = 'product', seeAll }: MyrealtripProductsProps) {
   const { t, i18n } = useTranslation('home');
   const more = seeAll ?? { label: t('activities.seeAllOnMyrealtrip', { keyword }), keyword, placement: 'city' as const };
+  const lastGoodKey = `myrealtripProducts:${kind}:${count}:${keyword.toLowerCase()}`;
   const { data, isLoading } = useQuery({
     queryKey: ['partnerProducts', 'myrealtrip', kind, count, keyword.toLowerCase()],
-    queryFn: () => fetchMyrealtripProducts(keyword, kind, count),
+    // 받지 못하거나 빈 목록이 와도 마지막으로 잘 받은 상품을 3일까지 그대로 보여준다(shared/api/lastGood.ts)
+    queryFn: () => fetchKeepingLastGood(lastGoodKey, () => fetchMyrealtripProducts(keyword, kind, count), { isEmpty: (items) => items.length === 0 }),
+    ...lastGoodOptions<PartnerProduct[]>(lastGoodKey),
     // 빈 목록·실패는 오래 붙잡지 않는다(IndexedDB에도 24시간 저장되므로, 한 번 비면 모바일에서 더보기 버튼만 계속 보였다)
     staleTime: (query) => (query.state.data && query.state.data.length > 0 ? 6 * 60 * 60 * 1000 : 0),
     retry: 1,
