@@ -33,23 +33,25 @@ export function FlightsEssentials() {
             </div>
           </div>
           <p className={styles.desc}>{t('flights.essentials.usimsaDesc')}</p>
-          {/* 유심사가 내세우는 혜택(유심사 안내 그대로) */}
-          <ul className={styles.badges}>
-            <li className={styles.badge}>
-              <span className={styles.badgeIcon} aria-hidden="true">
-                <ShieldCheck size={14} />
+
+          {/* 유심사가 내세우는 혜택(유심사 안내 그대로) — 카드 아래쪽에 한 덩어리로 */}
+          <ul className={styles.benefits}>
+            <li className={styles.benefit}>
+              <span className={styles.benefitIcon} aria-hidden="true">
+                <ShieldCheck size={18} />
               </span>
-              <span>
-                {t('flights.essentials.badgeCare')} <strong className={styles.badgeStrong}>{t('flights.essentials.badgeCareAmount')}</strong>
+              <span className={styles.benefitText}>
+                {t('flights.essentials.badgeCare')} <strong className={styles.benefitStrong}>{t('flights.essentials.badgeCareAmount')}</strong>
               </span>
             </li>
-            <li className={styles.badge}>
-              <span className={styles.badgeIcon} aria-hidden="true">
-                <MapPin size={14} />
+            <li className={styles.benefit}>
+              <span className={styles.benefitIcon} aria-hidden="true">
+                <MapPin size={18} />
               </span>
-              <span>{t('flights.essentials.badgeData')}</span>
+              <span className={styles.benefitText}>{t('flights.essentials.badgeData')}</span>
             </li>
           </ul>
+
           <a href={AFFILIATE_LINKS.usimsa} target="_blank" rel="sponsored noopener" className={styles.usimsaButton}>
             {t('flights.essentials.usimsaCta')}
             <ArrowRight size={16} aria-hidden="true" />
@@ -62,7 +64,6 @@ export function FlightsEssentials() {
             keyword={city}
             kind="sim"
             count={4}
-            compact
             placement="esim"
             seeAll={{ label: t('flights.essentials.seeAll', { city }), keyword: t('flights.essentials.simSearch', { city }), placement: 'esim' }}
           />
