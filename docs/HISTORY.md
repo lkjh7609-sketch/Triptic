@@ -19,7 +19,7 @@
 | 배포 | GitHub 저장소 두 곳(`Triptic`=origin, `triptic-further`=further) 모두 Vercel 자동 배포. 푸시는 항상 두 곳에 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0067` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0067` 운영 적용 완료(`0068` 작성됨·미적용). `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
@@ -74,6 +74,12 @@
 ## 날짜별 기록
 
 ### 2026-09-30
+
+**보관함 보관 기간 · 홈 청크 미리 받기 (로컬 커밋, 운영 적용 대기)**
+- **보관 기간(사용자 결정)**: 삭제·취소한 날부터 **2개월** 뒤 보관함 행 삭제, 게시 **사진 파일은 1개월** 뒤 삭제. 기준은 보관함에 옮긴 날이 아니라 삭제·취소한 날(글 `snapshot.deleted_at`, 모집 `snapshot.updated_at`). 마이그레이션 `0068`(함수 3개 + pg_cron 2개, 롤백 시험 통과) + Edge Function `purge-archive`(저장소 파일은 API로만 지워짐, 비밀값 `PURGE_SECRET`으로 잠금). 사진 목록이 비어야 행을 지우므로 파일이 먼저 지워짐이 보장됩니다. 방침에 기간 명시.
+  - **운영 적용 순서**: `supabase secrets set PURGE_SECRET=…` → `select vault.create_secret('…','purge_secret')` → `supabase functions deploy purge-archive` → 0068 적용. 적용 전까지는 기간이 지켜지지 않습니다(방침 문구는 푸시하면 나감).
+  - 사진 파일이 지워지기 전까지 버킷이 공개라 URL을 알면 접근됩니다(1개월).
+- **홈 청크 미리 받기**: `vite.config.js`의 `preload-home-chunk` 플러그인이 `/`일 때만 HomeScreen 청크와 그 공용 청크(약 20KB, 10개)를 HTML에서 modulepreload 합니다. 구조만 확인(dist/index.html·파일 존재), 느린 회선 실측은 못 함.
 
 **보고서 1차 개선 (측정 · 무료 한도 · 닉네임 · 모바일 첫 경험 · 활성화)**
 - **닉네임**: 한글 2~7자 → 쓰는 글자별 글자 수. 한글 4~8자, 영어 4~12자, 일본어(가나가 있으면) 4~12자, 중국어(한자만) 2~6자. 한글이 있으면 한글, 아니면 가나, 아니면 한자, 그 밖은 영어 순으로 구분하고 이름 전체(공백·숫자 포함)를 셉니다. 예약어(관리자·admin·triptic 등)는 대소문자·구분 기호를 무시하고 막고, 중복 확인은 대소문자를 구분하지 않습니다. 서버 함수 `is_valid_display_name`(0062)과 화면(`src/shared/displayName.ts`)이 같은 규칙입니다. 이미 있는 이름은 바꿀 때만 검사해서 예전 3자 한글 이름은 그대로 쓸 수 있습니다. 마이그레이션 0060·0062, 운영 적용. `guard_protected_columns`에 `search_path`를 고정했습니다.
