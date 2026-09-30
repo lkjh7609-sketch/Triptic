@@ -19,7 +19,7 @@ export default defineConfig({
     globals: true,
     css: false,
     setupFiles: ['./vitest.setup.ts'],
-    include: ['src/**/*.test.{js,ts,tsx}', 'api/**/*.test.js'],
+    include: ['src/**/*.test.{js,ts,tsx}', 'api/**/*.test.js', 'supabase/functions/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{js,ts,tsx}'],
