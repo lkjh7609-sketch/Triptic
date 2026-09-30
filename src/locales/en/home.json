@@ -187,5 +187,316 @@
     },
     "myrealtripDefaultKeyword": "Seoul",
     "seeAllOnMyrealtrip": "See more {{keyword}} on MyRealTrip"
+  },
+  "page": {
+    "all": "View all",
+    "viewAll": "View all",
+    "more": "More",
+    "tabs": {
+      "label": "Jump to flights, hotels and tours",
+      "flights": "Flights",
+      "hotels": "Hotels",
+      "tours": "Tours & activities"
+    },
+    "hero": {
+      "title": "Every moment of your trip, built from one booking confirmation",
+      "sub": "From complex itinerary planning to live group coordination — start it all in Triptic"
+    },
+    "trips": {
+      "title": "My trips & sample",
+      "syncedAt": "Last synced: {{time}}",
+      "dDay": "D-Day",
+      "ongoing": "On the trip",
+      "upcomingLabel": "Coming up",
+      "dayTrip": "Day trip",
+      "nightsDays": "{{nights}} nights, {{days}} days",
+      "withCompanions_one": "Editing with {{count}} companion",
+      "withCompanions_other": "Editing with {{count}} companions",
+      "progress": "Itinerary progress",
+      "progressShort": "Planned",
+      "progressDone": "{{pct}}% done",
+      "edit": "Edit itinerary",
+      "editShort": "Edit",
+      "places_one": "{{count}} place",
+      "places_other": "{{count}} places",
+      "hotelSet": "Hotel added",
+      "flightSet": "Flight added",
+      "nothingYet": "Nothing planned yet",
+      "emptyTitle": "No upcoming trips yet",
+      "emptyDesc": "Upload a booking or pick a city to create your first trip.",
+      "emptyCta": "Create a trip",
+      "sampleTag": "Sample",
+      "sampleTagMobile": "Sample route",
+      "sampleRoute": "Tokyo, 3 nights 4 days",
+      "sampleTitle": "Tokyo in 4 days: the classics",
+      "sampleDesc": "A real route through Shinjuku Gyoen, Shibuya Sky, Senso-ji and Tsukiji Outer Market.",
+      "sampleNote": "Open the sample without signing in and edit it freely. (Changes are not saved.)",
+      "sampleView": "View sample"
+    },
+    "deals": {
+      "badge": "Collected live",
+      "notice": "Prices are saved lowest fares, not live. They can change when you book.",
+      "noticeMobile": "Round-trip total including fuel surcharges, live",
+      "discount": "{{pct}}% off",
+      "direct": "Direct",
+      "basis": "Round-trip total",
+      "won": "₩{{price}}"
+    },
+    "dealCity": {
+      "KIX": "Osaka",
+      "NRT": "Tokyo",
+      "FUK": "Fukuoka",
+      "NGO": "Nagoya",
+      "CTS": "Sapporo",
+      "OKA": "Okinawa",
+      "BKK": "Bangkok",
+      "DAD": "Da Nang",
+      "CXR": "Nha Trang",
+      "PQC": "Phu Quoc",
+      "SGN": "Ho Chi Minh City",
+      "HAN": "Hanoi",
+      "CEB": "Cebu",
+      "BKI": "Kota Kinabalu",
+      "DPS": "Bali",
+      "SIN": "Singapore",
+      "TPE": "Taipei",
+      "HKG": "Hong Kong",
+      "GUM": "Guam",
+      "CDG": "Paris",
+      "LHR": "London",
+      "FCO": "Rome",
+      "BCN": "Barcelona",
+      "JFK": "New York",
+      "LAX": "Los Angeles",
+      "SYD": "Sydney"
+    },
+    "stories": {
+      "eyebrow": "EDITOR'S SELECTION",
+      "title": "Popular travelogues (last 30 days)",
+      "titleMobile": "Popular travelogues",
+      "allFeed": "Full feed",
+      "prev": "Previous travelogues",
+      "next": "Next travelogues",
+      "copy": "Copy itinerary",
+      "emptyTitle": "No popular travelogues yet",
+      "emptyDesc": "Once travelogues are posted, the most-loved ones from the last 30 days will show up here.",
+      "write": "Write a travelogue",
+      "bannerTitle": "Share your first travelogue!",
+      "bannerDesc": "Post your photos and itinerary to share with other travelers.",
+      "bannerCta": "Write one now"
+    },
+    "season": {
+      "eyebrow": "SEASONAL CURATION",
+      "title": "Great places to go now",
+      "sub": "This month's picks, chosen by season and local events",
+      "subMobile": "Pick by live weather and travel theme",
+      "best": "Best in {{range}}",
+      "cities": {
+        "kyoto": "Kyoto",
+        "tokyo": "Tokyo",
+        "sapporo": "Sapporo",
+        "taipei": "Taipei",
+        "bangkok": "Bangkok",
+        "danang": "Da Nang",
+        "bali": "Bali",
+        "sydney": "Sydney",
+        "paris": "Paris",
+        "london": "London",
+        "rome": "Rome",
+        "barcelona": "Barcelona",
+        "newyork": "New York",
+        "interlaken": "Interlaken"
+      },
+      "kyoto": {
+        "spring": {
+          "badge": "Cherry blossoms",
+          "desc": "Quiet temple walks & matcha"
+        },
+        "autumn": {
+          "badge": "Peak fall colors",
+          "desc": "Red maple paths & night openings"
+        },
+        "winter": {
+          "badge": "Winter temples",
+          "desc": "Snowy temples & hot-spring inns"
+        }
+      },
+      "tokyo": {
+        "sakura": {
+          "badge": "Sakura spots",
+          "desc": "Strolling the Nakameguro blossoms"
+        },
+        "walk": {
+          "badge": "Great walking weather",
+          "desc": "Shinjuku shopping & Hakone day trip"
+        },
+        "lights": {
+          "badge": "Winter lights",
+          "desc": "Illuminations & nearby onsen"
+        }
+      },
+      "sapporo": {
+        "snow": {
+          "badge": "Snow festival",
+          "desc": "Odori Park festival & onsen"
+        },
+        "summer": {
+          "badge": "Cool summer",
+          "desc": "Lavender fields & beer gardens"
+        },
+        "autumn": {
+          "badge": "Autumn feasts",
+          "desc": "Seafood & fall-color drives"
+        }
+      },
+      "taipei": {
+        "night": {
+          "badge": "Night-market season",
+          "desc": "Cool evenings & hot springs"
+        },
+        "lantern": {
+          "badge": "Lantern season",
+          "desc": "Lantern festival & hot springs"
+        }
+      },
+      "bangkok": {
+        "dry": {
+          "badge": "Dry season",
+          "desc": "Cooler days & rooftop views"
+        }
+      },
+      "danang": {
+        "beach": {
+          "badge": "Beach season",
+          "desc": "Clear seas & Hoi An nights"
+        }
+      },
+      "bali": {
+        "dry": {
+          "badge": "Dry season",
+          "desc": "Surfing & Ubud rice terraces"
+        }
+      },
+      "sydney": {
+        "summer": {
+          "badge": "Summer beaches",
+          "desc": "Bondi Beach & fireworks"
+        },
+        "jacaranda": {
+          "badge": "Jacaranda bloom",
+          "desc": "Purple streets & harbour cruises"
+        }
+      },
+      "paris": {
+        "picnic": {
+          "badge": "Picnic season",
+          "desc": "Terrace cafés & museum hopping"
+        },
+        "market": {
+          "badge": "Holiday markets",
+          "desc": "Lights & Christmas markets"
+        }
+      },
+      "london": {
+        "sunny": {
+          "badge": "Bright days",
+          "desc": "Park walks & West End shows"
+        },
+        "autumn": {
+          "badge": "Autumn culture",
+          "desc": "Free museums & pubs"
+        },
+        "xmas": {
+          "badge": "Christmas",
+          "desc": "Winter Wonderland & markets"
+        }
+      },
+      "rome": {
+        "food": {
+          "badge": "Food trail",
+          "desc": "Gelato & ancient ruins on foot"
+        },
+        "autumn": {
+          "badge": "Mild autumn",
+          "desc": "Ruins & nearby wineries"
+        }
+      },
+      "barcelona": {
+        "beach": {
+          "badge": "Beach & architecture",
+          "desc": "Gaudí sights & seaside walks"
+        }
+      },
+      "newyork": {
+        "park": {
+          "badge": "Central Park",
+          "desc": "Broadway & rooftop lounges"
+        },
+        "fall": {
+          "badge": "Fall foliage",
+          "desc": "Park colors & museums"
+        },
+        "holiday": {
+          "badge": "Holiday season",
+          "desc": "Tree lighting & holiday markets"
+        }
+      },
+      "interlaken": {
+        "hike": {
+          "badge": "Hiking season",
+          "desc": "Alpine treks & lake cruises"
+        },
+        "snow": {
+          "badge": "Snow scenery",
+          "desc": "Skiing & mountain trains"
+        }
+      }
+    },
+    "companions": {
+      "eyebrow": "SAFE MATCHING",
+      "title": "Find travel companions",
+      "sub": "Companions whose city and dates match your trip come first.",
+      "subMobile": "Safely meet mates who match your city and dates",
+      "write": "Post a companion request",
+      "match": "{{pct}}% match",
+      "recruiting_one": "Recruiting {{count}} person",
+      "recruiting_other": "Recruiting {{count}} people",
+      "anywhere": "Anywhere",
+      "talk": "Chat",
+      "emptyTitle": "No companion requests right now",
+      "emptyDesc": "Looking for someone to travel with? Post the first request."
+    },
+    "steps": {
+      "eyebrow": "HOW IT WORKS",
+      "title": "How Triptic works",
+      "sub": "No more complicated trip prep — drop in your bookings and your trip starts right away.",
+      "subMobile": "Add your booking confirmations and a smart itinerary is ready",
+      "s1Title": "Drag & upload your documents",
+      "s1Desc": "Drop in your e-ticket PDF or booking emails from Agoda or Airbnb as they are. AI reads the dates, cities and check-in times for you.",
+      "m1Desc": "Upload an e-ticket, hotel voucher PDF or screenshot and AI analyzes it right away.",
+      "s2Title": "AI builds your route timeline",
+      "s2Desc": "From airport arrival to hotel check-in, it works out travel times and transit routes and lays out a timeline with no wasted time.",
+      "m2Desc": "It considers check-in and travel times to build an optimized day-by-day timeline map.",
+      "s3Title": "Edit together in real time",
+      "s3Desc": "Invite friends with one chat link, edit the plan together live, and manage must-see places and expenses in one place.",
+      "m3Desc": "Invite friends with one link and share notes, places and expenses live.",
+      "mock1Done": "Analysis complete",
+      "mock2a": "10:30 Land at Kansai Airport",
+      "mock2aSide": "Rapi:t 38 min",
+      "mock2b": "12:15 Drop bags at the Namba hotel",
+      "mock2bSide": "4 min walk",
+      "mock3Initials": "SHM",
+      "mock3Live": "3 editing now",
+      "create": "Create a new trip"
+    },
+    "cta": {
+      "title": "Start planning your next trip now",
+      "desc": "No account needed — open the Tokyo sample and edit it freely. (Changes are not saved.)",
+      "start": "Start for free",
+      "sample": "Browse the sample"
+    },
+    "footer": {
+      "partnership": "Partnerships"
+    }
   }
 }

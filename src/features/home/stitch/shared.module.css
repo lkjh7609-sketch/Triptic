@@ -1,0 +1,217 @@
+/* 홈 시안(Stitch) 공용 조각 — 섹션 머리말·더보기 링크·칩. 색은 HomePage.module.css가 .page에 정의한 --h-* 토큰만 쓴다 */
+
+.section {
+  width: 100%;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.headText {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--h-accent-text);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--h-ink);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sub {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  color: var(--h-ink-3);
+}
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--h-accent-text);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .moreLink:hover {
+    color: var(--h-ink);
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  background: var(--h-chip);
+  color: var(--h-ink-2);
+  white-space: nowrap;
+}
+
+.card {
+  background: var(--h-card);
+  border: 1px solid var(--h-line);
+  border-radius: 12px;
+  box-shadow: var(--h-shadow-sm);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (hover: hover) {
+  .cardLift:hover {
+    box-shadow: var(--h-shadow-md);
+    transform: translateY(-4px);
+  }
+
+  .cardHover:hover {
+    box-shadow: var(--h-shadow-md);
+  }
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--h-accent);
+  color: var(--h-on-accent);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--h-shadow-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .primaryBtn:hover {
+    background: var(--h-accent-hover);
+  }
+}
+
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  text-align: center;
+  border-style: dashed;
+  color: var(--h-ink-2);
+}
+
+.emptyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--h-chip);
+  color: var(--h-accent-text);
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.625rem;
+  font-weight: 600;
+  color: var(--h-ink);
+}
+
+.emptyDesc {
+  margin: 0;
+  max-width: 420px;
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: var(--h-ink-2);
+}
+
+.emptyBtn {
+  margin-top: 8px;
+}
+
+@media (max-width: 1023px) {
+  .head {
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    font-size: 1.125rem;
+    line-height: 1.625rem;
+    letter-spacing: -0.005em;
+  }
+
+  .sub {
+    margin-top: 0;
+    font-size: 0.8125rem;
+    color: var(--h-ink-2);
+  }
+
+  .eyebrow {
+    color: var(--h-accent-text);
+  }
+
+  .moreLink {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    gap: 2px;
+  }
+
+  .card {
+    border-radius: 16px;
+    border: 0;
+    box-shadow: var(--h-shadow-sm);
+  }
+
+  .primaryBtn {
+    border-radius: 9999px;
+  }
+}

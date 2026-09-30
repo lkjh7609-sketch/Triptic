@@ -1,0 +1,178 @@
+/* ===== PC 히어로 ===== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: #1c1917;
+  padding: 48px 0 80px;
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(28, 25, 23, 0.8), rgba(28, 25, 23, 0.4), var(--h-bg));
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  pointer-events: none;
+  color: var(--h-bg);
+}
+
+.wave svg {
+  display: block;
+  width: 100%;
+  height: 64px;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+  text-align: center;
+}
+
+.heroTitle {
+  margin: 32px 0 0;
+  max-width: 100%;
+  font-size: 2.625rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  text-shadow: 0 4px 3px rgba(0, 0, 0, 0.07), 0 2px 2px rgba(0, 0, 0, 0.06);
+  text-wrap: balance;
+}
+
+.heroSub {
+  margin: 12px 0 20px;
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.625rem;
+  font-weight: 300;
+  color: #e7e5e4;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 한국어처럼 짧은 제목은 한 줄로 */
+:global(html:lang(ko)) .heroTitle {
+  white-space: nowrap;
+}
+
+/* ===== 캡슐 탭 (PC 히어로·모바일 본문 공통) ===== */
+.capsule {
+  display: flex;
+  align-items: center;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabIcon {
+  display: none;
+}
+
+.capsuleHero {
+  order: -1;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+}
+
+.capsuleHero .tab {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.capsuleHero .tabOn {
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #134e4a;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+@media (hover: hover) {
+  .capsuleHero .tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .capsuleHero .tabOn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #134e4a;
+  }
+}
+
+/* ===== 모바일 캡슐 ===== */
+.capsuleFlat {
+  padding: 4px;
+  margin-top: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--h-card) 70%, transparent);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.capsuleFlat .tab {
+  flex: 1;
+  padding: 8px 12px;
+  color: var(--h-ink-2);
+}
+
+.capsuleFlat .tabIcon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.capsuleFlat .tabOn {
+  background: var(--h-accent);
+  color: var(--h-on-accent);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.capsuleFlat .tab:active {
+  transform: scale(0.97);
+}

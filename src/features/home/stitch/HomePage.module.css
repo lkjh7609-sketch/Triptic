@@ -1,0 +1,146 @@
+/* 홈 시안(Stitch/Home) 전용 토큰과 골격.
+   라이트는 시안 값 그대로(PC는 stone 계열·진한 청록 #005c55, 모바일은 slate 계열·#0F766E),
+   다크는 앱 공통 토큰을 그대로 따라간다. 이 토큰은 홈 안에서만 쓴다(--h-*). */
+.page {
+  --h-bg: #f8fafc;
+  --h-card: #ffffff;
+  --h-sunken: #fafaf9; /* 카드 아래 띠·모형 상자 */
+  --h-chip: #f5f5f4;
+  --h-line: rgba(231, 229, 228, 0.8);
+  --h-line-soft: #f5f5f4;
+  --h-ink: #1c1917;
+  --h-ink-2: #57534e;
+  --h-ink-3: #6b6560; /* 시안은 stone-400(2.5:1)이라 글자로는 한 단계 진하게 */
+  --h-accent: #005c55;
+  --h-accent-hover: #004e48;
+  --h-accent-text: #005c55;
+  --h-on-accent: #ffffff;
+  --h-badge: #ba1a1a; /* 할인 배지 */
+  --h-badge-text: #ffffff;
+  --h-tint: #f0fdfa;
+  --h-subtle: #ccfbf1;
+  --h-deep: #005c55;
+  --h-sand: #f1f5f2;
+  --h-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --h-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --h-font: 'Plus Jakarta Sans', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+
+  min-height: 100%;
+  background: var(--h-bg);
+  color: var(--h-ink);
+  font-family: var(--h-font);
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+}
+
+/* 모바일(1024px 미만): 시안은 slate 계열 글자 + #0F766E 강조 */
+@media (max-width: 1023px) {
+  .page {
+    --h-bg: #faf8ff;
+    --h-line: transparent;
+    --h-ink: #0f172a;
+    --h-ink-2: #475569;
+    --h-ink-3: #64748b;
+    --h-accent: #0f766e;
+    --h-accent-hover: #115e59;
+    --h-accent-text: #0f766e;
+    --h-badge: #c2410c; /* 시안 #EA580C는 흰 글씨 3.6:1이라 4.5:1 이상으로 한 단계 진하게 */
+    --h-chip: #f9faf8;
+    --h-shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+    --h-shadow-md: 0 8px 18px -4px rgba(0, 92, 85, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  }
+}
+
+/* 다크 모드: 앱 공통 토큰을 그대로 쓴다 */
+:root[data-theme='dark'] .page {
+  --h-bg: var(--surface-page);
+  --h-card: var(--surface-card);
+  --h-sunken: var(--surface-subtle);
+  --h-chip: var(--surface-subtle);
+  --h-line: var(--border);
+  --h-line-soft: var(--border);
+  --h-ink: var(--text-primary);
+  --h-ink-2: var(--text-muted);
+  --h-ink-3: var(--text-tertiary);
+  --h-accent: var(--brand-solid);
+  --h-accent-hover: var(--brand-pressed);
+  --h-accent-text: var(--brand-text);
+  --h-on-accent: var(--text-on-brand);
+  --h-badge: var(--danger);
+  --h-badge-text: #0b0f19;
+  --h-tint: var(--brand-tint);
+  --h-subtle: var(--brand-tint);
+  --h-deep: var(--brand-text);
+  --h-sand: var(--surface-subtle);
+  --h-shadow-sm: var(--shadow-sm);
+  --h-shadow-md: var(--shadow-md);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .page {
+    --h-bg: var(--surface-page);
+    --h-card: var(--surface-card);
+    --h-sunken: var(--surface-subtle);
+    --h-chip: var(--surface-subtle);
+    --h-line: var(--border);
+    --h-line-soft: var(--border);
+    --h-ink: var(--text-primary);
+    --h-ink-2: var(--text-muted);
+    --h-ink-3: var(--text-tertiary);
+    --h-accent: var(--brand-solid);
+    --h-accent-hover: var(--brand-pressed);
+    --h-accent-text: var(--brand-text);
+    --h-on-accent: var(--text-on-brand);
+    --h-badge: var(--danger);
+    --h-badge-text: #0b0f19;
+    --h-tint: var(--brand-tint);
+    --h-subtle: var(--brand-tint);
+    --h-deep: var(--brand-text);
+    --h-sand: var(--surface-subtle);
+    --h-shadow-sm: var(--shadow-sm);
+    --h-shadow-md: var(--shadow-md);
+  }
+}
+
+.page img {
+  display: block;
+}
+
+/* 본문: PC는 최대 1280px·좌우 48px·섹션 사이 64px, 모바일은 좌우 16px·섹션 사이 40px */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-width: 720px; /* 태블릿 세로에서 한 줄이 너무 길어지지 않게 */
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+@media (min-width: 1024px) {
+  .body {
+    gap: 64px;
+    max-width: 1280px;
+    padding: 48px 48px;
+  }
+}
+
+/* 모바일 상단: 로고만(시안의 검색·알림·프로필은 만들지 않기로 했다) */
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+  background: color-mix(in srgb, var(--h-bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+}
+
+.topLogo {
+  height: 36px;
+  width: auto;
+}

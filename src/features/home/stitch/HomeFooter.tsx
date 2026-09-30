@@ -1,0 +1,48 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useRequireLogin } from '@/features/auth/loginPrompt';
+import { FeedbackModal } from '@/features/settings/FeedbackModal';
+import styles from './HomeFooter.module.css';
+
+/** 이용약관 · 개인정보처리방침 · 고객센터 · 제휴문의 + 저작권. 고객센터·제휴문의는 설정의 "문의하기"와 같은 창(비로그인은 로그인부터) */
+export function HomeFooter() {
+  const { t } = useTranslation('home');
+  const requireLogin = useRequireLogin();
+  const [showContact, setShowContact] = useState(false);
+
+  const openContact = () => {
+    if (requireLogin()) setShowContact(true);
+  };
+
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.inner}>
+        <div className={styles.links}>
+          <a href="/terms.html" target="_blank" rel="noopener noreferrer" className={styles.link}>
+            {t('desktop.terms')}
+          </a>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className={`${styles.link} ${styles.strong}`}>
+            {t('desktop.privacy')}
+          </a>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
+          <button type="button" className={styles.link} onClick={openContact}>
+            {t('desktop.contact')}
+          </button>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
+          <button type="button" className={styles.link} onClick={openContact}>
+            {t('page.footer.partnership')}
+          </button>
+        </div>
+        <div className={styles.copy}>&copy; {new Date().getFullYear()} Triptic. All rights reserved.</div>
+      </div>
+      {showContact ? <FeedbackModal onClose={() => setShowContact(false)} /> : null}
+    </footer>
+  );
+}
