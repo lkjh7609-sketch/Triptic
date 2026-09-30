@@ -253,22 +253,20 @@ export function HomeDesktop() {
         </div>
       </section>
 
-      {!isDesktop ? (
-        <section className={`${styles.section} ${styles.stepsSection}`}>
-          <h2 className={styles.sectionTitle}>{t('desktop.stepsTitle')}</h2>
-          <ol className={styles.stepList}>
-            {([1, 2, 3] as const).map((n) => (
-              <li key={n} className={styles.step}>
-                <span className={styles.stepNum} aria-hidden="true">
-                  {n}
-                </span>
-                <div className={styles.stepTitle}>{t(`desktop.step${n}Title`)}</div>
-                <div className={styles.stepDesc}>{t(`desktop.step${n}Desc`)}</div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
+      <section className={`${styles.section} ${styles.stepsSection}`}>
+        <h2 className={styles.sectionTitle}>{t('desktop.stepsTitle')}</h2>
+        <ol className={styles.stepList}>
+          {([1, 2, 3] as const).map((n) => (
+            <li key={n} className={styles.step}>
+              <span className={styles.stepNum} aria-hidden="true">
+                {n}
+              </span>
+              <div className={styles.stepTitle}>{t(`desktop.step${n}Title`)}</div>
+              <div className={styles.stepDesc}>{t(`desktop.step${n}Desc`)}</div>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <footer className={styles.footer}>
         <div className={styles.footerLinks}>
