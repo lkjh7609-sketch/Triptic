@@ -1,0 +1,77 @@
+/* 도시 소개 미리보기 팝업 — 홈 '지금 가기 좋은 여행지' 카드에서 연다(예전 HomeDesktop의 추천 카드 팝업을 그대로 옮김) */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+}
+.modalImage {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.modalBody {
+  padding: var(--space-6);
+}
+.modalTitle {
+  margin: 0 0 var(--space-2);
+  font-size: 1.5rem;
+  color: var(--text-heading);
+}
+.modalDesc {
+  min-height: 60px;
+  margin-bottom: var(--space-6);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.modalLoading {
+  opacity: 0.6;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+.modalCancel {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.modalStart {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-weight: 600;
+  cursor: pointer;
+}

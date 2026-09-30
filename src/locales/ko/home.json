@@ -186,5 +186,313 @@
     },
     "myrealtripDefaultKeyword": "서울",
     "seeAllOnMyrealtrip": "마이리얼트립에서 {{keyword}} 더 보기"
+  },
+  "page": {
+    "all": "전체보기",
+    "viewAll": "전체보기",
+    "more": "더보기",
+    "tabs": {
+      "label": "항공·호텔·투어 바로가기",
+      "flights": "항공",
+      "hotels": "호텔",
+      "tours": "투어·액티비티"
+    },
+    "hero": {
+      "title": "예약서 한 장으로 완성되는 여행의 모든 순간",
+      "sub": "복잡한 일정 계획부터 실시간 동행 관리까지, 트립틱에서 한눈에 시작하세요"
+    },
+    "trips": {
+      "title": "내 일정 & 추천 샘플",
+      "syncedAt": "최근 동기화: {{time}}",
+      "dDay": "D-Day",
+      "ongoing": "여행 중",
+      "upcomingLabel": "다가오는 여정",
+      "dayTrip": "당일",
+      "nightsDays": "{{nights}}박 {{days}}일",
+      "withCompanions_other": "동행자 {{count}}명과 함께 편집 중",
+      "progress": "일정 완성도",
+      "progressShort": "일정 준비율",
+      "progressDone": "{{pct}}% 완료",
+      "edit": "일정 편집하기",
+      "editShort": "편집하기",
+      "places_other": "장소 {{count}}곳",
+      "hotelSet": "숙소 등록",
+      "flightSet": "항공 등록",
+      "nothingYet": "아직 채워진 일정이 없어요",
+      "emptyTitle": "아직 예정된 여행이 없어요",
+      "emptyDesc": "예약서를 올리거나 도시를 골라 첫 여행을 만들어 보세요.",
+      "emptyCta": "새 여행 만들기",
+      "sampleTag": "추천 샘플",
+      "sampleTagMobile": "추천 샘플 코스",
+      "sampleRoute": "도쿄 3박 4일",
+      "sampleTitle": "도쿄 3박 4일 클래식 코스",
+      "sampleDesc": "신주쿠 교엔, 시부야 스카이, 아사쿠사 센소지, 츠키지 장외시장까지 이어지는 실제 동선이에요.",
+      "sampleNote": "로그인 없이 샘플 일정을 열어 자유롭게 편집해 볼 수 있어요. (저장은 되지 않아요)",
+      "sampleView": "샘플 일정 보기"
+    },
+    "deals": {
+      "badge": "실시간 수집",
+      "notice": "가격은 실시간이 아니라 저장된 최저가예요. 예약할 때 달라질 수 있어요.",
+      "noticeMobile": "실시간 유류할증료 포함 왕복 총액",
+      "discount": "{{pct}}% 특가",
+      "direct": "직항",
+      "basis": "왕복 총액 기준",
+      "won": "{{price}}원"
+    },
+    "dealCity": {
+      "KIX": "오사카",
+      "NRT": "도쿄",
+      "FUK": "후쿠오카",
+      "NGO": "나고야",
+      "CTS": "삿포로",
+      "OKA": "오키나와",
+      "BKK": "방콕",
+      "DAD": "다낭",
+      "CXR": "나트랑",
+      "PQC": "푸꾸옥",
+      "SGN": "호치민",
+      "HAN": "하노이",
+      "CEB": "세부",
+      "BKI": "코타키나발루",
+      "DPS": "발리",
+      "SIN": "싱가포르",
+      "TPE": "타이베이",
+      "HKG": "홍콩",
+      "GUM": "괌",
+      "CDG": "파리",
+      "LHR": "런던",
+      "FCO": "로마",
+      "BCN": "바르셀로나",
+      "JFK": "뉴욕",
+      "LAX": "로스앤젤레스",
+      "SYD": "시드니"
+    },
+    "stories": {
+      "eyebrow": "EDITOR'S SELECTION",
+      "title": "인기 여행기 (최근 30일 추천)",
+      "titleMobile": "인기 여행기",
+      "allFeed": "전체 피드",
+      "prev": "이전 여행기",
+      "next": "다음 여행기",
+      "copy": "일정 복사하기",
+      "emptyTitle": "아직 인기 여행기가 없어요",
+      "emptyDesc": "여행기가 올라오면 최근 30일 동안 가장 사랑받은 글이 여기에 모여요.",
+      "write": "여행기 쓰기",
+      "bannerTitle": "첫 여행기를 남겨보세요!",
+      "bannerDesc": "사진과 일정표를 올려 다른 여행자와 나눠 보세요.",
+      "bannerCta": "여행기 쓰러 가기"
+    },
+    "season": {
+      "eyebrow": "SEASONAL CURATION",
+      "title": "지금 가기 좋은 여행지",
+      "sub": "계절과 현지 행사를 기준으로 고른 이달의 추천 도시",
+      "subMobile": "실시간 날씨와 여행 테마로 선택해보세요",
+      "best": "{{range}} 최적기",
+      "cities": {
+        "kyoto": "교토",
+        "tokyo": "도쿄",
+        "sapporo": "삿포로",
+        "taipei": "타이베이",
+        "bangkok": "방콕",
+        "danang": "다낭",
+        "bali": "발리",
+        "sydney": "시드니",
+        "paris": "파리",
+        "london": "런던",
+        "rome": "로마",
+        "barcelona": "바르셀로나",
+        "newyork": "뉴욕",
+        "interlaken": "인터라켄"
+      },
+      "kyoto": {
+        "spring": {
+          "badge": "벚꽃 개화",
+          "desc": "한적한 사찰 산책과 말차"
+        },
+        "autumn": {
+          "badge": "단풍 절정",
+          "desc": "붉은 단풍길과 야간 특별 개방"
+        },
+        "winter": {
+          "badge": "겨울 사찰",
+          "desc": "눈 덮인 사찰과 온천 료칸"
+        }
+      },
+      "tokyo": {
+        "sakura": {
+          "badge": "벚꽃 명소",
+          "desc": "나카메구로 벚꽃길 산책"
+        },
+        "walk": {
+          "badge": "걷기 좋은 날씨",
+          "desc": "신주쿠 쇼핑과 하코네 당일치기"
+        },
+        "lights": {
+          "badge": "겨울 조명",
+          "desc": "일루미네이션과 근교 온천"
+        }
+      },
+      "sapporo": {
+        "snow": {
+          "badge": "눈 축제",
+          "desc": "오도리 공원 눈 축제와 온천"
+        },
+        "summer": {
+          "badge": "시원한 여름",
+          "desc": "라벤더 들판과 맥주 정원"
+        },
+        "autumn": {
+          "badge": "가을 미식",
+          "desc": "해산물과 단풍 드라이브"
+        }
+      },
+      "taipei": {
+        "night": {
+          "badge": "야시장 시즌",
+          "desc": "선선한 밤거리와 온천"
+        },
+        "lantern": {
+          "badge": "등불 축제",
+          "desc": "랜턴 축제와 온천 여행"
+        }
+      },
+      "bangkok": {
+        "dry": {
+          "badge": "건기",
+          "desc": "선선한 건기와 루프탑 야경"
+        }
+      },
+      "danang": {
+        "beach": {
+          "badge": "해변 시즌",
+          "desc": "맑은 바다와 호이안 야경"
+        }
+      },
+      "bali": {
+        "dry": {
+          "badge": "건기",
+          "desc": "서핑과 우붓 논 풍경"
+        }
+      },
+      "sydney": {
+        "summer": {
+          "badge": "여름 해변",
+          "desc": "본다이 해변과 불꽃놀이"
+        },
+        "jacaranda": {
+          "badge": "자카란다",
+          "desc": "보랏빛 꽃길과 항구 크루즈"
+        }
+      },
+      "paris": {
+        "picnic": {
+          "badge": "피크닉 시즌",
+          "desc": "야외 테라스와 미술관 투어"
+        },
+        "market": {
+          "badge": "겨울 마켓",
+          "desc": "조명과 크리스마스 마켓"
+        }
+      },
+      "london": {
+        "sunny": {
+          "badge": "쾌청한 날씨",
+          "desc": "공원 산책과 웨스트엔드 뮤지컬"
+        },
+        "autumn": {
+          "badge": "가을 문화",
+          "desc": "박물관 무료 관람과 펍"
+        },
+        "xmas": {
+          "badge": "크리스마스",
+          "desc": "윈터 원더랜드와 마켓"
+        }
+      },
+      "rome": {
+        "food": {
+          "badge": "미식 탐방",
+          "desc": "젤라또와 고대 유적 도보 여행"
+        },
+        "autumn": {
+          "badge": "선선한 가을",
+          "desc": "유적 답사와 와이너리 근교"
+        }
+      },
+      "barcelona": {
+        "beach": {
+          "badge": "해변과 건축",
+          "desc": "가우디 건축과 해변 산책"
+        }
+      },
+      "newyork": {
+        "park": {
+          "badge": "센트럴파크",
+          "desc": "브로드웨이와 루프탑 라운지"
+        },
+        "fall": {
+          "badge": "가을 단풍",
+          "desc": "공원 단풍과 미술관"
+        },
+        "holiday": {
+          "badge": "홀리데이",
+          "desc": "트리 점등과 홀리데이 마켓"
+        }
+      },
+      "interlaken": {
+        "hike": {
+          "badge": "하이킹 시즌",
+          "desc": "알프스 트레킹과 호수 유람선"
+        },
+        "snow": {
+          "badge": "설경",
+          "desc": "스키와 설산 열차"
+        }
+      }
+    },
+    "companions": {
+      "eyebrow": "SAFE MATCHING",
+      "title": "같이 갈 사람 찾기",
+      "sub": "내 여행과 도시·날짜가 맞는 동행을 먼저 보여드려요.",
+      "subMobile": "도시·날짜가 맞는 메이트와 안전하게",
+      "write": "동행구하기 글쓰기",
+      "match": "{{pct}}% 일치",
+      "recruiting_other": "모집중 {{count}}명",
+      "anywhere": "어디든",
+      "talk": "대화하기",
+      "emptyTitle": "아직 모집 중인 동행이 없어요",
+      "emptyDesc": "함께 갈 사람을 찾고 있다면 첫 모집글을 올려 보세요."
+    },
+    "steps": {
+      "eyebrow": "HOW IT WORKS",
+      "title": "트립틱 이렇게 써요",
+      "sub": "복잡한 여행 준비는 끝, 예약서만 던져두면 여행이 바로 시작됩니다.",
+      "subMobile": "예약 확인서만 넣으면 스마트한 여행 일정이 완성됩니다",
+      "s1Title": "서류 드래그 & 업로드",
+      "s1Desc": "항공권 e-티켓 PDF, 아고다/에어비앤비 예약 확인 메일을 그대로 끌어다 놓으세요. AI가 날짜, 도시, 체크인 시간을 자동 파싱합니다.",
+      "m1Desc": "항공 E-티켓, 호텔 바우처 PDF나 캡처 이미지를 올리면 AI가 즉시 자동 분석합니다.",
+      "s2Title": "AI 동선 타임라인 생성",
+      "s2Desc": "공항 입국 수속부터 호텔 체크인까지의 이동 시간과 대중교통 경로를 계산해 낭비 없는 타임라인을 그려줍니다.",
+      "m2Desc": "체크인 시간과 이동 시간을 고려해 최적화된 하루 단위 타임라인 지도를 제작합니다.",
+      "s3Title": "실시간 동행 공동 편집",
+      "s3Desc": "카톡 링크 하나로 친구를 초대해 일정을 실시간으로 함께 편집하고, 가고 싶은 장소와 경비 내역도 한 번에 관리하세요.",
+      "m3Desc": "링크 하나로 친구를 초대해 메모, 가고 싶은 장소, 가계부를 함께 실시간 공유하세요.",
+      "mock1Done": "자동으로 분석 완료",
+      "mock2a": "10:30 간사이 공항 착륙",
+      "mock2aSide": "라피트 38분",
+      "mock2b": "12:15 난바역 호텔 짐보관",
+      "mock2bSide": "도보 4분",
+      "mock3Initials": "수현민",
+      "mock3Live": "3명 동시 접속 중",
+      "create": "새로운 여행 일정 만들기"
+    },
+    "cta": {
+      "title": "지금 바로 다음 여행을 계획해 보세요",
+      "desc": "회원가입 없이도 도쿄 샘플 일정을 열어 자유롭게 편집해 볼 수 있어요. (저장은 되지 않아요)",
+      "start": "무료로 시작하기",
+      "sample": "샘플 둘러보기"
+    },
+    "footer": {
+      "partnership": "제휴문의"
+    }
   }
 }

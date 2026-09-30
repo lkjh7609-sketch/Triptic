@@ -186,5 +186,313 @@
     },
     "myrealtripDefaultKeyword": "ソウル",
     "seeAllOnMyrealtrip": "MyRealTripで{{keyword}}をもっと見る"
+  },
+  "page": {
+    "all": "すべて見る",
+    "viewAll": "すべて見る",
+    "more": "もっと見る",
+    "tabs": {
+      "label": "航空券・ホテル・ツアーへ",
+      "flights": "航空券",
+      "hotels": "ホテル",
+      "tours": "ツアー・アクティビティ"
+    },
+    "hero": {
+      "title": "予約確認書1枚で完成する、旅のすべての瞬間",
+      "sub": "複雑な旅程づくりからリアルタイムの同行管理まで、Tripticでひと目で始めましょう"
+    },
+    "trips": {
+      "title": "マイ旅程 & おすすめサンプル",
+      "syncedAt": "最終同期：{{time}}",
+      "dDay": "D-Day",
+      "ongoing": "旅行中",
+      "upcomingLabel": "近づく旅",
+      "dayTrip": "日帰り",
+      "nightsDays": "{{nights}}泊{{days}}日",
+      "withCompanions_other": "同行者{{count}}人と一緒に編集中",
+      "progress": "旅程の完成度",
+      "progressShort": "旅程の準備率",
+      "progressDone": "{{pct}}%完了",
+      "edit": "旅程を編集",
+      "editShort": "編集",
+      "places_other": "場所{{count}}か所",
+      "hotelSet": "宿泊先登録済み",
+      "flightSet": "航空券登録済み",
+      "nothingYet": "まだ旅程が入っていません",
+      "emptyTitle": "予定の旅行はまだありません",
+      "emptyDesc": "予約書をアップロードするか都市を選んで、最初の旅行を作りましょう。",
+      "emptyCta": "新しい旅行を作る",
+      "sampleTag": "おすすめサンプル",
+      "sampleTagMobile": "おすすめサンプルコース",
+      "sampleRoute": "東京3泊4日",
+      "sampleTitle": "東京3泊4日 定番コース",
+      "sampleDesc": "新宿御苑、渋谷スカイ、浅草寺、築地場外市場へつながる実際の動線です。",
+      "sampleNote": "ログインなしでサンプル旅程を開き、自由に編集できます。（保存はされません）",
+      "sampleView": "サンプル旅程を見る"
+    },
+    "deals": {
+      "badge": "リアルタイム収集",
+      "notice": "価格はリアルタイムではなく、保存された最安値です。予約時に変わる場合があります。",
+      "noticeMobile": "燃油サーチャージ込みの往復総額（リアルタイム）",
+      "discount": "{{pct}}%お得",
+      "direct": "直行",
+      "basis": "往復総額ベース",
+      "won": "₩{{price}}"
+    },
+    "dealCity": {
+      "KIX": "大阪",
+      "NRT": "東京",
+      "FUK": "福岡",
+      "NGO": "名古屋",
+      "CTS": "札幌",
+      "OKA": "沖縄",
+      "BKK": "バンコク",
+      "DAD": "ダナン",
+      "CXR": "ニャチャン",
+      "PQC": "フーコック島",
+      "SGN": "ホーチミン",
+      "HAN": "ハノイ",
+      "CEB": "セブ",
+      "BKI": "コタキナバル",
+      "DPS": "バリ島",
+      "SIN": "シンガポール",
+      "TPE": "台北",
+      "HKG": "香港",
+      "GUM": "グアム",
+      "CDG": "パリ",
+      "LHR": "ロンドン",
+      "FCO": "ローマ",
+      "BCN": "バルセロナ",
+      "JFK": "ニューヨーク",
+      "LAX": "ロサンゼルス",
+      "SYD": "シドニー"
+    },
+    "stories": {
+      "eyebrow": "EDITOR'S SELECTION",
+      "title": "人気の旅行記（直近30日）",
+      "titleMobile": "人気の旅行記",
+      "allFeed": "フィードをすべて見る",
+      "prev": "前の旅行記",
+      "next": "次の旅行記",
+      "copy": "旅程をコピー",
+      "emptyTitle": "人気の旅行記はまだありません",
+      "emptyDesc": "旅行記が投稿されると、直近30日で最も人気の記事がここに集まります。",
+      "write": "旅行記を書く",
+      "bannerTitle": "最初の旅行記を残してみましょう！",
+      "bannerDesc": "写真と旅程表を投稿して、ほかの旅行者と共有しましょう。",
+      "bannerCta": "旅行記を書きに行く"
+    },
+    "season": {
+      "eyebrow": "SEASONAL CURATION",
+      "title": "今行きたい旅行先",
+      "sub": "季節と現地のイベントをもとに選んだ今月のおすすめ都市",
+      "subMobile": "リアルタイムの天気と旅のテーマで選べます",
+      "best": "{{range}}がおすすめ",
+      "cities": {
+        "kyoto": "京都",
+        "tokyo": "東京",
+        "sapporo": "札幌",
+        "taipei": "台北",
+        "bangkok": "バンコク",
+        "danang": "ダナン",
+        "bali": "バリ島",
+        "sydney": "シドニー",
+        "paris": "パリ",
+        "london": "ロンドン",
+        "rome": "ローマ",
+        "barcelona": "バルセロナ",
+        "newyork": "ニューヨーク",
+        "interlaken": "インターラーケン"
+      },
+      "kyoto": {
+        "spring": {
+          "badge": "桜の開花",
+          "desc": "静かな寺巡りと抹茶"
+        },
+        "autumn": {
+          "badge": "紅葉の見頃",
+          "desc": "紅葉の道と夜の特別拝観"
+        },
+        "winter": {
+          "badge": "冬の寺院",
+          "desc": "雪の寺院と温泉旅館"
+        }
+      },
+      "tokyo": {
+        "sakura": {
+          "badge": "桜の名所",
+          "desc": "目黒川の桜並木散歩"
+        },
+        "walk": {
+          "badge": "散策日和",
+          "desc": "新宿ショッピングと箱根日帰り"
+        },
+        "lights": {
+          "badge": "冬のイルミネーション",
+          "desc": "イルミと近郊の温泉"
+        }
+      },
+      "sapporo": {
+        "snow": {
+          "badge": "雪まつり",
+          "desc": "大通公園の雪まつりと温泉"
+        },
+        "summer": {
+          "badge": "涼しい夏",
+          "desc": "ラベンダー畑とビアガーデン"
+        },
+        "autumn": {
+          "badge": "秋の味覚",
+          "desc": "海鮮と紅葉ドライブ"
+        }
+      },
+      "taipei": {
+        "night": {
+          "badge": "夜市シーズン",
+          "desc": "涼しい夜の街と温泉"
+        },
+        "lantern": {
+          "badge": "ランタン祭り",
+          "desc": "ランタンフェスと温泉"
+        }
+      },
+      "bangkok": {
+        "dry": {
+          "badge": "乾季",
+          "desc": "過ごしやすい乾季とルーフトップ夜景"
+        }
+      },
+      "danang": {
+        "beach": {
+          "badge": "ビーチシーズン",
+          "desc": "澄んだ海とホイアンの夜景"
+        }
+      },
+      "bali": {
+        "dry": {
+          "badge": "乾季",
+          "desc": "サーフィンとウブドの棚田"
+        }
+      },
+      "sydney": {
+        "summer": {
+          "badge": "夏のビーチ",
+          "desc": "ボンダイビーチと花火"
+        },
+        "jacaranda": {
+          "badge": "ジャカランダ",
+          "desc": "紫の花並木とハーバークルーズ"
+        }
+      },
+      "paris": {
+        "picnic": {
+          "badge": "ピクニック日和",
+          "desc": "テラス席と美術館巡り"
+        },
+        "market": {
+          "badge": "ホリデーマーケット",
+          "desc": "イルミとクリスマスマーケット"
+        }
+      },
+      "london": {
+        "sunny": {
+          "badge": "爽やかな晴天",
+          "desc": "公園散策とウエストエンドのミュージカル"
+        },
+        "autumn": {
+          "badge": "秋の文化",
+          "desc": "無料の博物館とパブ"
+        },
+        "xmas": {
+          "badge": "クリスマス",
+          "desc": "ウィンターワンダーランドとマーケット"
+        }
+      },
+      "rome": {
+        "food": {
+          "badge": "グルメ散歩",
+          "desc": "ジェラートと古代遺跡の徒歩旅"
+        },
+        "autumn": {
+          "badge": "爽やかな秋",
+          "desc": "遺跡巡りと近郊ワイナリー"
+        }
+      },
+      "barcelona": {
+        "beach": {
+          "badge": "ビーチと建築",
+          "desc": "ガウディ建築と海辺散歩"
+        }
+      },
+      "newyork": {
+        "park": {
+          "badge": "セントラルパーク",
+          "desc": "ブロードウェイとルーフトップラウンジ"
+        },
+        "fall": {
+          "badge": "紅葉の季節",
+          "desc": "公園の紅葉と美術館"
+        },
+        "holiday": {
+          "badge": "ホリデーシーズン",
+          "desc": "ツリー点灯とホリデーマーケット"
+        }
+      },
+      "interlaken": {
+        "hike": {
+          "badge": "ハイキング",
+          "desc": "アルプスのトレッキングと湖遊覧"
+        },
+        "snow": {
+          "badge": "雪景色",
+          "desc": "スキーと雪山列車"
+        }
+      }
+    },
+    "companions": {
+      "eyebrow": "SAFE MATCHING",
+      "title": "一緒に行く人を探す",
+      "sub": "あなたの旅行と都市・日程が合う同行者を先にご紹介します。",
+      "subMobile": "都市・日程が合う仲間と安心して",
+      "write": "同行募集を書く",
+      "match": "{{pct}}%一致",
+      "recruiting_other": "{{count}}名で募集中",
+      "anywhere": "どこでも",
+      "talk": "話してみる",
+      "emptyTitle": "募集中の同行はまだありません",
+      "emptyDesc": "一緒に行く人を探しているなら、最初の募集を投稿してみましょう。"
+    },
+    "steps": {
+      "eyebrow": "HOW IT WORKS",
+      "title": "Tripticの使い方",
+      "sub": "面倒な旅行準備はここまで。予約書を入れるだけで旅が始まります。",
+      "subMobile": "予約確認書を入れるだけでスマートな旅程が完成します",
+      "s1Title": "書類をドラッグ＆アップロード",
+      "s1Desc": "航空券のeチケットPDFやアゴダ／Airbnbの予約確認メールをそのままドロップ。AIが日付・都市・チェックイン時間を自動で読み取ります。",
+      "m1Desc": "航空券のeチケットやホテルバウチャーのPDF・スクリーンショットを上げると、AIがすぐに自動解析します。",
+      "s2Title": "AIが動線タイムラインを作成",
+      "s2Desc": "空港の入国手続きからホテルのチェックインまでの移動時間と公共交通の経路を計算し、無駄のないタイムラインを描きます。",
+      "m2Desc": "チェックインと移動時間を考慮し、最適化された1日単位のタイムラインマップを作ります。",
+      "s3Title": "リアルタイムで同行者と共同編集",
+      "s3Desc": "チャットのリンク1つで友だちを招待し、旅程をリアルタイムで共同編集。行きたい場所や経費もまとめて管理できます。",
+      "m3Desc": "リンク1つで友だちを招待し、メモ・行きたい場所・家計簿をリアルタイムで共有しましょう。",
+      "mock1Done": "自動解析が完了",
+      "mock2a": "10:30 関西空港に到着",
+      "mock2aSide": "ラピート38分",
+      "mock2b": "12:15 難波のホテルで荷物を預ける",
+      "mock2bSide": "徒歩4分",
+      "mock3Initials": "スヒミ",
+      "mock3Live": "3人が同時接続中",
+      "create": "新しい旅程を作る"
+    },
+    "cta": {
+      "title": "今すぐ次の旅行を計画しましょう",
+      "desc": "会員登録なしでも東京のサンプル旅程を開いて自由に編集できます。（保存はされません）",
+      "start": "無料で始める",
+      "sample": "サンプルを見る"
+    },
+    "footer": {
+      "partnership": "提携のお問い合わせ"
+    }
   }
 }

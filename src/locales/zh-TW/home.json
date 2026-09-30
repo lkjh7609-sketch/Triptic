@@ -186,5 +186,313 @@
     },
     "myrealtripDefaultKeyword": "首爾",
     "seeAllOnMyrealtrip": "在 MyRealTrip 查看更多{{keyword}}"
+  },
+  "page": {
+    "all": "查看全部",
+    "viewAll": "查看全部",
+    "more": "更多",
+    "tabs": {
+      "label": "前往機票、飯店與旅遊",
+      "flights": "機票",
+      "hotels": "飯店",
+      "tours": "旅遊・體驗"
+    },
+    "hero": {
+      "title": "一張訂單確認書，就能完成旅程的每個瞬間",
+      "sub": "從繁雜的行程規劃到即時同行管理，在 Triptic 一覽無遺"
+    },
+    "trips": {
+      "title": "我的行程與推薦範例",
+      "syncedAt": "最近同步：{{time}}",
+      "dDay": "D-Day",
+      "ongoing": "旅程進行中",
+      "upcomingLabel": "即將出發",
+      "dayTrip": "當日來回",
+      "nightsDays": "{{nights}}晚{{days}}天",
+      "withCompanions_other": "與 {{count}} 位同行者一起編輯中",
+      "progress": "行程完成度",
+      "progressShort": "行程準備率",
+      "progressDone": "已完成 {{pct}}%",
+      "edit": "編輯行程",
+      "editShort": "編輯",
+      "places_other": "{{count}} 個地點",
+      "hotelSet": "已加入住宿",
+      "flightSet": "已加入航班",
+      "nothingYet": "尚未安排行程",
+      "emptyTitle": "目前沒有即將出發的旅程",
+      "emptyDesc": "上傳訂單或選擇城市，建立你的第一趟旅程。",
+      "emptyCta": "建立新旅程",
+      "sampleTag": "推薦範例",
+      "sampleTagMobile": "推薦範例路線",
+      "sampleRoute": "東京 3 晚 4 天",
+      "sampleTitle": "東京 3 晚 4 天經典路線",
+      "sampleDesc": "串連新宿御苑、澀谷 SKY、淺草寺與築地場外市場的真實動線。",
+      "sampleNote": "不需登入即可開啟範例行程並自由編輯。（不會儲存）",
+      "sampleView": "查看範例行程"
+    },
+    "deals": {
+      "badge": "即時蒐集",
+      "notice": "價格並非即時，而是已儲存的最低價，預訂時可能會有變動。",
+      "noticeMobile": "含燃油附加費的來回總價（即時）",
+      "discount": "{{pct}}% 特價",
+      "direct": "直飛",
+      "basis": "以來回總價計算",
+      "won": "₩{{price}}"
+    },
+    "dealCity": {
+      "KIX": "大阪",
+      "NRT": "東京",
+      "FUK": "福岡",
+      "NGO": "名古屋",
+      "CTS": "札幌",
+      "OKA": "沖繩",
+      "BKK": "曼谷",
+      "DAD": "峴港",
+      "CXR": "芽莊",
+      "PQC": "富國島",
+      "SGN": "胡志明市",
+      "HAN": "河內",
+      "CEB": "宿霧",
+      "BKI": "亞庇",
+      "DPS": "峇里島",
+      "SIN": "新加坡",
+      "TPE": "台北",
+      "HKG": "香港",
+      "GUM": "關島",
+      "CDG": "巴黎",
+      "LHR": "倫敦",
+      "FCO": "羅馬",
+      "BCN": "巴塞隆納",
+      "JFK": "紐約",
+      "LAX": "洛杉磯",
+      "SYD": "雪梨"
+    },
+    "stories": {
+      "eyebrow": "EDITOR'S SELECTION",
+      "title": "熱門旅行記（近 30 天）",
+      "titleMobile": "熱門旅行記",
+      "allFeed": "完整動態",
+      "prev": "上一則旅行記",
+      "next": "下一則旅行記",
+      "copy": "複製行程",
+      "emptyTitle": "目前還沒有熱門旅行記",
+      "emptyDesc": "旅行記發布後，近 30 天最受喜愛的文章會集中在這裡。",
+      "write": "撰寫旅行記",
+      "bannerTitle": "寫下你的第一篇旅行記吧！",
+      "bannerDesc": "上傳照片與行程表，與其他旅人分享。",
+      "bannerCta": "前往撰寫"
+    },
+    "season": {
+      "eyebrow": "SEASONAL CURATION",
+      "title": "現在最適合出發的旅遊地",
+      "sub": "依季節與當地活動精選的本月推薦城市",
+      "subMobile": "依即時天氣與旅遊主題挑選",
+      "best": "{{range}}最佳時節",
+      "cities": {
+        "kyoto": "京都",
+        "tokyo": "東京",
+        "sapporo": "札幌",
+        "taipei": "台北",
+        "bangkok": "曼谷",
+        "danang": "峴港",
+        "bali": "峇里島",
+        "sydney": "雪梨",
+        "paris": "巴黎",
+        "london": "倫敦",
+        "rome": "羅馬",
+        "barcelona": "巴塞隆納",
+        "newyork": "紐約",
+        "interlaken": "茵特拉肯"
+      },
+      "kyoto": {
+        "spring": {
+          "badge": "櫻花盛開",
+          "desc": "靜謐的寺廟散步與抹茶"
+        },
+        "autumn": {
+          "badge": "楓紅高峰",
+          "desc": "紅葉步道與夜間特別參拜"
+        },
+        "winter": {
+          "badge": "冬日古寺",
+          "desc": "雪中寺院與溫泉旅館"
+        }
+      },
+      "tokyo": {
+        "sakura": {
+          "badge": "賞櫻名所",
+          "desc": "漫步中目黑櫻花道"
+        },
+        "walk": {
+          "badge": "適合散步",
+          "desc": "新宿購物與箱根一日遊"
+        },
+        "lights": {
+          "badge": "冬季燈飾",
+          "desc": "燈海與近郊溫泉"
+        }
+      },
+      "sapporo": {
+        "snow": {
+          "badge": "雪祭",
+          "desc": "大通公園雪祭與溫泉"
+        },
+        "summer": {
+          "badge": "涼爽夏日",
+          "desc": "薰衣草田與啤酒花園"
+        },
+        "autumn": {
+          "badge": "秋日美食",
+          "desc": "海鮮與賞楓兜風"
+        }
+      },
+      "taipei": {
+        "night": {
+          "badge": "夜市季",
+          "desc": "涼爽夜晚與溫泉"
+        },
+        "lantern": {
+          "badge": "燈節",
+          "desc": "元宵燈會與泡湯"
+        }
+      },
+      "bangkok": {
+        "dry": {
+          "badge": "乾季",
+          "desc": "涼爽乾季與高空夜景"
+        }
+      },
+      "danang": {
+        "beach": {
+          "badge": "海灘季",
+          "desc": "清澈海水與會安夜景"
+        }
+      },
+      "bali": {
+        "dry": {
+          "badge": "乾季",
+          "desc": "衝浪與烏布梯田"
+        }
+      },
+      "sydney": {
+        "summer": {
+          "badge": "夏日海灘",
+          "desc": "邦迪海灘與煙火"
+        },
+        "jacaranda": {
+          "badge": "藍花楹盛開",
+          "desc": "紫色花道與港灣遊船"
+        }
+      },
+      "paris": {
+        "picnic": {
+          "badge": "野餐季",
+          "desc": "露天咖啡座與美術館之旅"
+        },
+        "market": {
+          "badge": "耶誕市集",
+          "desc": "燈飾與耶誕市集"
+        }
+      },
+      "london": {
+        "sunny": {
+          "badge": "晴朗好天氣",
+          "desc": "公園漫步與西區音樂劇"
+        },
+        "autumn": {
+          "badge": "秋日文化",
+          "desc": "免費博物館與酒館"
+        },
+        "xmas": {
+          "badge": "耶誕節",
+          "desc": "冬季仙境與市集"
+        }
+      },
+      "rome": {
+        "food": {
+          "badge": "美食之旅",
+          "desc": "義式冰淇淋與古蹟步行"
+        },
+        "autumn": {
+          "badge": "涼爽秋日",
+          "desc": "古蹟探訪與近郊酒莊"
+        }
+      },
+      "barcelona": {
+        "beach": {
+          "badge": "海灘與建築",
+          "desc": "高第建築與海邊散步"
+        }
+      },
+      "newyork": {
+        "park": {
+          "badge": "中央公園",
+          "desc": "百老匯與屋頂酒吧"
+        },
+        "fall": {
+          "badge": "秋葉季",
+          "desc": "公園楓葉與美術館"
+        },
+        "holiday": {
+          "badge": "假期季",
+          "desc": "耶誕樹點燈與假日市集"
+        }
+      },
+      "interlaken": {
+        "hike": {
+          "badge": "健行季",
+          "desc": "阿爾卑斯健行與湖上遊船"
+        },
+        "snow": {
+          "badge": "雪景",
+          "desc": "滑雪與雪山列車"
+        }
+      }
+    },
+    "companions": {
+      "eyebrow": "SAFE MATCHING",
+      "title": "尋找旅伴",
+      "sub": "優先顯示與你的旅程城市、日期相符的旅伴。",
+      "subMobile": "與城市、日期相符的旅伴安心同行",
+      "write": "發布徵旅伴文",
+      "match": "{{pct}}% 吻合",
+      "recruiting_other": "徵求 {{count}} 人",
+      "anywhere": "不限地點",
+      "talk": "聊聊看",
+      "emptyTitle": "目前沒有徵旅伴的貼文",
+      "emptyDesc": "想找人一起出發嗎？發布第一則徵旅伴文吧。"
+    },
+    "steps": {
+      "eyebrow": "HOW IT WORKS",
+      "title": "Triptic 使用方式",
+      "sub": "不必再煩惱繁雜的旅行準備，丟進訂單就能立即展開旅程。",
+      "subMobile": "只要放入訂單確認書，就能完成聰明的行程",
+      "s1Title": "拖曳並上傳文件",
+      "s1Desc": "將機票電子票券 PDF、Agoda／Airbnb 訂單確認信直接拖進來，AI 會自動解析日期、城市與入住時間。",
+      "m1Desc": "上傳機票電子票券、飯店憑證 PDF 或截圖，AI 會立即自動分析。",
+      "s2Title": "AI 自動產生動線時間軸",
+      "s2Desc": "從機場入境到飯店入住，計算移動時間與大眾運輸路線，繪製毫不浪費時間的時間軸。",
+      "m2Desc": "考量入住與移動時間，製作最佳化的每日時間軸地圖。",
+      "s3Title": "即時與旅伴共同編輯",
+      "s3Desc": "用一個聊天連結邀請朋友，即時共同編輯行程，並一次管理想去的地點與花費。",
+      "m3Desc": "用一個連結邀請朋友，即時共享備忘、想去的地點與帳目。",
+      "mock1Done": "自動分析完成",
+      "mock2a": "10:30 抵達關西機場",
+      "mock2aSide": "Rapi:t 38 分鐘",
+      "mock2b": "12:15 難波飯店寄放行李",
+      "mock2bSide": "步行 4 分鐘",
+      "mock3Initials": "修賢民",
+      "mock3Live": "3 人同時上線中",
+      "create": "建立新行程"
+    },
+    "cta": {
+      "title": "現在就開始規劃下一趟旅程",
+      "desc": "不需註冊也能開啟東京範例行程並自由編輯。（不會儲存）",
+      "start": "免費開始",
+      "sample": "瀏覽範例"
+    },
+    "footer": {
+      "partnership": "合作洽詢"
+    }
   }
 }
