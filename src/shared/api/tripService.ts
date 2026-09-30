@@ -53,6 +53,14 @@ export class TripConflictError extends Error {
   }
 }
 
+/** 무료 여행 생성 한도에 걸렸다(서버 트리거 0037·0061이 실제 경계) — 메시지는 화면에 그대로 보여 줄 수 있다 */
+export class TripLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TripLimitError';
+  }
+}
+
 /** trips.snapshot이 갖던 것과 동일한 모양의 콘텐츠 — 이제 DB 컬럼이 아니라
  * 정규화 테이블에서 매번 재구성된다(TripRow.content). */
 export interface TripContent {
@@ -130,7 +138,7 @@ export class TripService {
 
     const isNewTrip = !project.supabaseId;
     if (isNewTrip && !can('trip.create', { userId: user.id })) {
-      throw new Error(i18next.t('plan:errors.tripLimit'));
+      throw new TripLimitError(i18next.t('plan:errors.tripLimit'));
     }
 
     const content: TripContent = {
@@ -160,7 +168,7 @@ export class TripService {
         // 무료 사용자 평생 생성 2개 한도 — 서버 트리거(0037)가 실제 경계다.
         if (res.error.hint === 'trip_limit_reached') {
           track('trip_limit_reached');
-          throw new Error(i18next.t('plan:errors.tripLimit'));
+          throw new TripLimitError(i18next.t('plan:errors.tripLimit'));
         }
         throw res.error;
       }

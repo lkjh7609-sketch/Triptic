@@ -171,6 +171,7 @@
   "share": {
     "title": "함께 편집할 사람 초대",
     "sampleMessage": "샘플 여행은 공유할 수 없습니다. 나만의 새 여행을 만들어 공유해 보세요!",
+    "draftMessage": "로그인 전에 만든 임시 여행은 공유할 수 없어요. 로그인하면 내 계정에 저장되고, 그다음에 공유할 수 있어요.",
     "desc": "이 링크를 받은 사람은 로그인한 뒤 이 여행을 함께 편집할 수 있어요. 누가 고치든 서로 화면에 바로 반영돼요.",
     "generatingLink": "생성하는 중…",
     "revoke": "링크 끊기",
@@ -203,6 +204,7 @@
   "tripDetail": {
     "backAria": "뒤로가기",
     "sampleBadge": "체험용 샘플",
+    "draftBadge": "임시 저장",
     "mapViewAria": "지도 보기",
     "listViewAria": "목록 보기",
     "suggestionsAria": "받은 제안",

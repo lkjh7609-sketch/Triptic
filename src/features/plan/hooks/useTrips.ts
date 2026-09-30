@@ -1,8 +1,20 @@
+import { useSyncExternalStore } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tripService, TripConflictError, type LocalProject, type TripRow } from '@/shared/api/tripService';
 import { showToast } from '@/shared/ui/toast';
 import { track } from '@/shared/monitoring';
 import { SAMPLE_TRIP_ID, getSampleTripRow, updateSampleTripSnapshot } from '../sampleTrip';
+import {
+  createGuestTrip,
+  deleteGuestTrip,
+  getGuestTrip,
+  isGuestTripId,
+  listGuestTrips,
+  renameGuestTrip,
+  subscribeGuestTrips,
+  updateGuestTripContent,
+} from '../guestTrips';
+import { isSignedIn } from '@/features/auth/loginPrompt';
 import { useTranslation } from 'react-i18next';
 import i18next from '@/shared/i18n';
 
@@ -13,6 +25,11 @@ export function useTrips() {
     queryKey: tripsQueryKey,
     queryFn: () => tripService.listTrips(),
   });
+}
+
+/** 로그인 전에 이 기기에 만든 임시 여행 목록(guestTrips.ts) — 만들거나 고치면 바로 다시 그려진다 */
+export function useGuestTrips(): TripRow[] {
+  return useSyncExternalStore(subscribeGuestTrips, listGuestTrips, listGuestTrips);
 }
 
 /** 여행 목록 카드(완성도/장소/호텔/항공 칩)용 요약 — listTrips()와 갱신 타이밍을
@@ -29,9 +46,11 @@ export function useTripSummaries(enabled = true) {
 export function useCreateTrip() {
   const queryClient = useQueryClient();
   return useMutation({
+    // 로그인 전이면 이 기기에만 임시 여행으로 만든다(로그인하면 계정으로 옮겨진다 — guestTrips.ts)
     mutationFn: ({ project, name }: { project: LocalProject; name: string }) =>
-      tripService.saveTrip(project, name),
-    onSuccess: () => {
+      isSignedIn() ? tripService.saveTrip(project, name) : Promise.resolve(createGuestTrip(project, name)),
+    onSuccess: (row) => {
+      if (isGuestTripId(row.id)) return;
       track('trip_created', { source: 'create_modal' });
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
@@ -41,7 +60,10 @@ export function useCreateTrip() {
 export function useDeleteTrip() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (tripId: string) => tripService.deleteTrip(tripId),
+    mutationFn: async (tripId: string) => {
+      if (isGuestTripId(tripId)) return deleteGuestTrip(tripId);
+      return tripService.deleteTrip(tripId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
@@ -86,7 +108,11 @@ export function useTrip(tripId: string | undefined) {
     // 샘플 여행은 표시 언어별로 내용이 달라서 언어를 키에 넣는다(tripQueryKey 접두사는 유지 —
     // removeQueries/setQueryData(tripQueryKey(...))가 그대로 매칭된다)
     queryKey: tripId === SAMPLE_TRIP_ID ? [...tripQueryKey(tripId), i18n.language] : tripQueryKey(tripId ?? ''),
-    queryFn: () => (tripId === SAMPLE_TRIP_ID ? getSampleTripRow() : tripService.getTrip(tripId!)),
+    queryFn: () => {
+      if (tripId === SAMPLE_TRIP_ID) return getSampleTripRow();
+      if (isGuestTripId(tripId)) return getGuestTrip(tripId!);
+      return tripService.getTrip(tripId!);
+    },
     enabled: !!tripId,
   });
 }
@@ -140,9 +166,26 @@ export function useUpdateTripSnapshot(tripId: string | undefined) {
           }),
         );
       }
+      if (isGuestTripId(tripId)) {
+        // 임시 여행 — 이 기기에만 저장한다. 제목은 여기서 안 바뀐다(이름 변경은 useRenameTrip)
+        return Promise.resolve(
+          updateGuestTripContent(tripId!, {
+            data: project.data || {},
+            hotels: project.hotels || {},
+            meals: project.meals || {},
+            expenses: project.expenses || {},
+            flights: project.flights || { outbound: null, return: null },
+            dayCities: project.dayCities || {},
+          }),
+        );
+      }
       return tripService.saveTrip({ ...project, supabaseId: tripId }, name);
     },
     onSuccess: (row) => {
+      if (isGuestTripId(row.id)) {
+        queryClient.setQueryData(tripQueryKey(row.id), row);
+        return;
+      }
       if (row.id === SAMPLE_TRIP_ID) {
         // 샘플은 [..., 언어] 키라 접두사로 매칭해 갱신한다(Supabase·목록과 무관)
         queryClient.setQueriesData({ queryKey: tripQueryKey(row.id) }, row);
@@ -166,6 +209,7 @@ export function useRenameTrip() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ tripId, newTitle }: { tripId: string; newTitle: string }) => {
+      if (isGuestTripId(tripId)) return renameGuestTrip(tripId, newTitle);
       const trip = await tripService.getTrip(tripId);
       if (!trip) throw new Error('Trip not found');
       const project = tripService.toLocalProject(trip);
@@ -173,7 +217,7 @@ export function useRenameTrip() {
     },
     onSuccess: (row) => {
       queryClient.setQueryData(tripQueryKey(row.id), row);
-      queryClient.invalidateQueries({ queryKey: tripsQueryKey });
+      if (!isGuestTripId(row.id)) queryClient.invalidateQueries({ queryKey: tripsQueryKey });
     },
   });
 }

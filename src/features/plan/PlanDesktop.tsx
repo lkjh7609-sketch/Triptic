@@ -40,7 +40,8 @@ import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
-import { useFinalizeTrip, useLeaveTrip, useTrip, useTripSummaries } from './hooks/useTrips';
+import { useFinalizeTrip, useGuestTrips, useLeaveTrip, useTrip, useTripSummaries } from './hooks/useTrips';
+import { GUEST_TRIP_LIMIT, isGuestTripId } from './guestTrips';
 import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMembers';
 import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
@@ -126,10 +127,14 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
     ? { onRename, onDuplicate, onDelete, onLocked: () => setShowLoginRequired(true) }
     : { onRename, onDuplicate, onDelete, onLeave: (id) => leaveTrip.mutate(id), currentUserId: user?.id };
   const statsData = guest ? GUEST_STATS : stats.data;
-  // 비로그인은 여행을 만들 수 없다 — 로그인 창을 연다
+  // 비로그인은 이 기기에 임시 여행을 만든다(GUEST_TRIP_LIMIT개까지) — 로그인하면 계정으로 옮겨진다.
+  // 한도가 차면 로그인 창을 연다
+  const guestTrips = useGuestTrips();
   const openCreate = () => {
-    if (guest) requireLogin();
-    else setShowCreate(true);
+    if (guest && guestTrips.length >= GUEST_TRIP_LIMIT) {
+      showToast(t('common:guest.draftLimit', { count: GUEST_TRIP_LIMIT }));
+      requireLogin();
+    } else setShowCreate(true);
   };
 
   const activeTrips = useMemo(() => [...ongoing, ...[...upcoming].sort(byStartDate)], [ongoing, upcoming]);
@@ -359,7 +364,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
 
       {showLoginRequired ? <LoginRequiredDialog onClose={() => setShowLoginRequired(false)} /> : null}
 
-      {!guest && (showCreate || autoCreateCity) && (
+      {(showCreate || autoCreateCity) && (
         <CreateTripModal
           autoCreateCity={autoCreateCity}
           onClose={() => {
@@ -404,14 +409,18 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
     e.stopPropagation();
   }
 
-  const itemClass = actions.onLocked ? `${styles.cardMenuItem} ${styles.cardMenuItemLocked}` : styles.cardMenuItem;
+  // 임시 여행(이 기기에 저장)은 이름 변경·삭제가 되고, 복제만 로그인이 필요하다. 샘플은 전부 잠금
+  const isDraft = isGuestTripId(trip.id);
+  const lockedFor = (kind: 'rename' | 'duplicate' | 'delete') => !!actions.onLocked && !(isDraft && kind !== 'duplicate');
+  const itemClassFor = (kind: 'rename' | 'duplicate' | 'delete') =>
+    lockedFor(kind) ? `${styles.cardMenuItem} ${styles.cardMenuItemLocked}` : styles.cardMenuItem;
   // 삭제는 소유자만 된다(RLS) — 참여한 여행에서 누르면 아무 일도 안 일어나므로 나가기로 바꾼다
   const isMemberTrip = !!actions.currentUserId && !!actions.onLeave && trip.owner_id !== actions.currentUserId;
   /** 잠긴 메뉴(비로그인 샘플)면 동작 대신 로그인 안내 */
-  function run(e: MouseEvent, action: () => void) {
+  function run(e: MouseEvent, kind: 'rename' | 'duplicate' | 'delete', action: () => void) {
     stop(e);
     setOpen(false);
-    if (actions.onLocked) actions.onLocked();
+    if (lockedFor(kind)) actions.onLocked?.();
     else action();
   }
 
@@ -435,10 +444,10 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
           <button
             type="button"
             role="menuitem"
-            className={itemClass}
-            aria-disabled={actions.onLocked ? true : undefined}
+            className={itemClassFor('rename')}
+            aria-disabled={lockedFor('rename') ? true : undefined}
             onClick={(e) =>
-              run(e, () => {
+              run(e, 'rename', () => {
                 const next = window.prompt(t('tripCard.renamePrompt'), trip.title);
                 if (next && next.trim()) actions.onRename(trip.id, next.trim());
               })
@@ -449,9 +458,9 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
           <button
             type="button"
             role="menuitem"
-            className={itemClass}
-            aria-disabled={actions.onLocked ? true : undefined}
-            onClick={(e) => run(e, () => actions.onDuplicate(trip.id))}
+            className={itemClassFor('duplicate')}
+            aria-disabled={lockedFor('duplicate') ? true : undefined}
+            onClick={(e) => run(e, 'duplicate', () => actions.onDuplicate(trip.id))}
           >
             {t('tripCard.duplicate')}
           </button>
@@ -459,9 +468,9 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
             <button
               type="button"
               role="menuitem"
-              className={`${itemClass} ${styles.cardMenuDanger}`}
+              className={`${itemClassFor('delete')} ${styles.cardMenuDanger}`}
               onClick={(e) =>
-                run(e, () => {
+                run(e, 'delete', () => {
                   if (window.confirm(t('collab.leaveConfirm', { title: trip.title }))) actions.onLeave?.(trip.id);
                 })
               }
@@ -472,10 +481,10 @@ function TripMenu({ trip, actions }: { trip: TripRow; actions: TripActions }) {
             <button
               type="button"
               role="menuitem"
-              className={`${itemClass} ${styles.cardMenuDanger}`}
-              aria-disabled={actions.onLocked ? true : undefined}
+              className={`${itemClassFor('delete')} ${styles.cardMenuDanger}`}
+              aria-disabled={lockedFor('delete') ? true : undefined}
               onClick={(e) =>
-                run(e, () => {
+                run(e, 'delete', () => {
                   if (window.confirm(t('tripCard.deleteConfirm', { title: trip.title }))) actions.onDelete(trip.id);
                 })
               }
@@ -542,7 +551,11 @@ function CompactTripCard({
             </div>
             <div className={styles.cardStatusRight}>
               <span className={styles.travelersBadge}>
-                {trip.id === SAMPLE_TRIP_ID ? t('tripDetail.sampleBadge') : t('desktop.travelers', { count: travelerCount })}
+                {trip.id === SAMPLE_TRIP_ID
+                  ? t('tripDetail.sampleBadge')
+                  : isGuestTripId(trip.id)
+                    ? t('tripDetail.draftBadge')
+                    : t('desktop.travelers', { count: travelerCount })}
               </span>
               <TripMenu trip={trip} actions={actions} />
             </div>

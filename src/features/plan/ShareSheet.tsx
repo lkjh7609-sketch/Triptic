@@ -21,6 +21,8 @@ interface ShareSheetProps {
    * (index.html openShareModal만 SAMPLE_PROJECT_NAME을 검사하고, openExportModal/
    * copyItineraryText/openPdfModal은 검사하지 않는다) */
   isSample?: boolean;
+  /** 로그인 전에 이 기기에만 만든 임시 여행 — isSample과 같이 잠기지만 안내 문구가 다르다 */
+  isDraft?: boolean;
   /** 여행 소유자 — 링크 만들기·끊기·멤버 내보내기는 소유자만(shared_trips/trip_members 정책) */
   ownerId: string;
 }
@@ -31,7 +33,7 @@ interface ShareSheetProps {
  * 실시간으로 함께 고친다. 아래에 함께하는 사람 목록(소유자는 내보내기, 멤버는 나가기)을 둔다.
  * 전체 일정 텍스트 복사·PDF도 같은 시트에 얹었다 — 헤더가 이미 버튼으로 빽빽해서.
  */
-export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample, ownerId }: ShareSheetProps) {
+export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample, isDraft, ownerId }: ShareSheetProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -144,7 +146,7 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
 
         {isSample ? (
           <>
-            <p className={styles.desc}>{t('share.sampleMessage')}</p>
+            <p className={styles.desc}>{t(isDraft ? 'share.draftMessage' : 'share.sampleMessage')}</p>
             <button type="button" className={styles.secondary} onClick={onClose}>
               {t('common:action.close')}
             </button>
