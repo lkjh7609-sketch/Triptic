@@ -130,7 +130,8 @@
   background: none;
   color: inherit;
   font-size: var(--font-body-size);
-  padding: 0;
+  padding: 10px 8px; /* 눌리는 영역 44px 이상 */
+  margin: -10px -8px;
   cursor: pointer;
 }
 

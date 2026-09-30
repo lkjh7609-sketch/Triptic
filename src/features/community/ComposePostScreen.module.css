@@ -161,6 +161,13 @@
   cursor: pointer;
 }
 
+/* 22px 삭제 버튼의 눌리는 영역을 44px로 */
+.removeImageBtn::after {
+  content: '';
+  position: absolute;
+  inset: -11px;
+}
+
 .addImageBtn {
   width: 76px;
   height: 76px;

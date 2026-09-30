@@ -113,7 +113,8 @@
   background: none;
   color: inherit;
   font-size: var(--font-caption-size);
-  padding: 0;
+  padding: 12px 8px; /* 눌리는 영역 44px 이상 — 음수 마진으로 보이는 간격은 그대로 */
+  margin: -12px -8px;
   cursor: pointer;
 }
 .likeBtn:disabled {
