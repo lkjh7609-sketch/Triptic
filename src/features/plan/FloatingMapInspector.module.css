@@ -37,14 +37,14 @@
 }
 
 .title {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
   color: var(--text-primary, #0F2942);
 }
 
 .subtitle {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
@@ -77,7 +77,7 @@
   border: none;
   padding: 8px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;

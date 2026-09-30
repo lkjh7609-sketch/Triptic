@@ -32,7 +32,7 @@
   border-radius: 50%;
   background: var(--marker-fill);
   color: var(--text-on-brand);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -96,7 +96,7 @@
 }
 
 .weatherIcon {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1;
 }
 

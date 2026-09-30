@@ -41,7 +41,7 @@
 
 .heroTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 56px;
+  font-size: 3.5rem;
   font-weight: 500;
   line-height: 1.1;
   margin-bottom: 1.5rem;
@@ -63,7 +63,7 @@
   flex: 1;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--text-primary);
   background: transparent;
 }
@@ -75,7 +75,7 @@
   border-radius: var(--radius-pill);
   padding: 12px 24px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -96,7 +96,7 @@
 
 .sectionTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 500;
   margin-bottom: 2rem;
 }
@@ -148,12 +148,12 @@
   padding: 1.5rem;
 }
 .cardTitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 .cardDesc {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-muted);
 }
 
@@ -207,7 +207,7 @@
   padding: 2rem;
   text-align: center;
   border-top: 1px solid var(--border-subtle, #EFECE6);
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-muted, #718096);
 }
 
@@ -278,7 +278,7 @@
   padding: 12px 24px;
   cursor: pointer;
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: 1rem;
 }
 @media (hover: hover) {
   .suggestion:hover {
@@ -334,7 +334,7 @@
 }
 .modalTitle {
   margin: 0 0 var(--space-2);
-  font-size: 24px;
+  font-size: 1.5rem;
   color: var(--text-heading);
 }
 .modalDesc {
@@ -388,14 +388,14 @@
   }
   .searchBtn {
     padding: 10px 14px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     white-space: nowrap;
   }
   .section {
     padding: var(--space-6) var(--space-4);
   }
   .sectionTitle {
-    font-size: 20px;
+    font-size: 1.25rem;
     margin-bottom: var(--space-4);
   }
   .grid {
@@ -457,11 +457,11 @@
   }
   .cardTitle {
     margin-bottom: var(--space-1);
-    font-size: 20px;
+    font-size: 1.25rem;
     color: #fff;
   }
   .cardDesc {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.35;
     color: rgba(255, 255, 255, 0.8);
   }
@@ -506,17 +506,17 @@
   border-radius: 50%;
   background: var(--brand-tint);
   color: var(--brand-text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 .stepTitle {
   margin-bottom: var(--space-1);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 .stepDesc {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   line-height: 1.4;
   color: var(--text-muted);
 }

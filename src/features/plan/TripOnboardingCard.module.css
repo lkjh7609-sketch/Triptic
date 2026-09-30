@@ -26,13 +26,13 @@
 
 .title {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .progressLabel {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   color: var(--brand-text);
   font-variant-numeric: tabular-nums;
@@ -113,7 +113,7 @@
 .stepTextDone {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.4;
   color: var(--text-primary);
 }
@@ -132,7 +132,7 @@
   border-radius: var(--radius-pill);
   min-height: 32px;
   padding: 0 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
 }

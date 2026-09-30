@@ -47,12 +47,12 @@
   align-items: center;
   gap: 6px;
   margin: var(--space-3) 0 0;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
 .wordmark {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   letter-spacing: -0.3px;
   color: #287dfa;

@@ -51,7 +51,7 @@
 
 .esimTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-primary);
 }

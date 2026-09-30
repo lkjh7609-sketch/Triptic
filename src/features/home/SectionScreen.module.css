@@ -45,7 +45,7 @@
 
 .sectionTitle {
   margin: var(--space-6) 0 var(--space-3);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -84,7 +84,7 @@
   left: var(--space-3);
   bottom: var(--space-3);
   color: #fff;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 800;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
 }
@@ -225,7 +225,7 @@
 }
 
 .productCategory {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
@@ -244,7 +244,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-body);
 }
 

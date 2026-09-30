@@ -216,7 +216,7 @@
 :root:lang(en) {
   word-break: normal;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual; /* 자동 하이픈은 문단(p·li)에만 — global.css 참고 */
 }
 :root:lang(zh) {
   word-break: normal;

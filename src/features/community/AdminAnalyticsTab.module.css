@@ -109,7 +109,7 @@
 
 .updated {
   margin-top: var(--space-3);
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
