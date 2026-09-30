@@ -6,7 +6,7 @@
 }
 
 .fileInput {
-  border: 1px dashed var(--border-strong);
+  border: 1px dashed var(--border-control);
   border-radius: var(--radius-md);
   padding: var(--space-4);
   font-size: var(--font-label-size);
