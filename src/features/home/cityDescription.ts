@@ -45,6 +45,7 @@ export async function fetchCityDescription(city: string, locale: string): Promis
   const res = await fetch(apiUrl(`/api/cityDesc?city=${encodeURIComponent(city)}&locale=${encodeURIComponent(locale)}`), {
     headers: { Authorization: `Bearer ${token}` },
   });
+  if (res.status === 429) return null; // 오늘의 AI 한도를 다 썼다 — 소개는 없이 보인다(다시 시도해도 같아서 오류로 던지지 않음)
   if (!res.ok) throw new Error(`cityDesc HTTP ${res.status}`);
   const json = (await res.json()) as { description?: unknown };
   return typeof json.description === 'string' ? json.description : null;

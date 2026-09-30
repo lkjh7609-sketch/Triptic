@@ -4,6 +4,7 @@
 // ai_recommendation_cache(kind='city_desc')에 언어별로 영구 캐시한다. 같은 도시·언어
 // 조합은 한 번만 LLM을 부른다(만료 없음 — 앱은 0049 RPC로 이 캐시를 먼저 직접 읽는다).
 import { requireUser } from './_lib/auth.js';
+import { DailyLimitError, takeAiQuota } from './_lib/aiQuota.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -44,6 +45,8 @@ export default async function handler(req, res) {
     if (!hasLlmProvider()) return res.status(503).json({ error: 'llm_unavailable' });
 
     try {
+        // 캐시에 없어 LLM을 새로 부르는 경우만 로그인 사용자별 하루 한도에서 센다(캐시로 답하는 요청은 안 셈)
+        await takeAiQuota(db, user.id, 'cityDesc');
         const result = await chatCompletion({
             system: 'You are an expert travel copywriter. Reply with the description text only, no headings or markdown.',
             user: `Write an inviting, useful introduction to "${city}" for travelers in about 3-4 sentences (roughly 300 characters for CJK languages, 80 words for English). Cover the atmosphere, what the city is known for, and what to look forward to. Write it in ${LOCALE_LANGUAGE_NAME[locale]}.`,
@@ -62,6 +65,7 @@ export default async function handler(req, res) {
         res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
         return res.status(200).json({ success: true, description, cached: false });
     } catch (e) {
+        if (e instanceof DailyLimitError) return res.status(429).json({ error: 'daily_limit', limit: e.limit });
         console.warn('[cityDesc] LLM call failed:', e instanceof Error ? e.message : e);
         return res.status(502).json({ error: 'llm_failed' });
     }

@@ -286,7 +286,8 @@
     "confirmAdd": "일정에 추가하기",
     "aiNotice": "AI가 만든 추천이에요. 영업시간·가격은 방문 전에 확인해 주세요.",
     "button": "AI 추천",
-    "buttonTitle": "이 장소 다음에 갈 곳 AI 추천 받기"
+    "buttonTitle": "이 장소 다음에 갈 곳 AI 추천 받기",
+    "dailyLimit": "오늘 쓸 수 있는 AI 추천 {{limit}}회를 모두 썼어요. 내일 다시 이용해 주세요. 프리미엄이면 더 많이 쓸 수 있어요."
   },
   "desktop": {
     "badge": "내 여행",

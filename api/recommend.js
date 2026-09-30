@@ -9,6 +9,7 @@
 // 기본적으로 좌표는 클라이언트(Maps JS PlacesService)가 붙인다. IP 제한 서버 키를
 // GOOGLE_PLACES_SERVER_KEY로 따로 등록하면 서버가 미리 붙이고 place_cache에 저장한다.
 import { requireUser } from './_lib/auth.js';
+import { DailyLimitError, takeAiQuota } from './_lib/aiQuota.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -344,14 +345,15 @@ Respond with JSON only, in this shape:
 }`;
 }
 
-async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceId }) {
+async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceId, takeQuota }) {
     let pool = await readPool(db, bias, locale, basePlaceId);
     if (pool.length >= POOL_TARGET || !hasLlmProvider()) return { recommendations: pool.map(poolRowToRec), cached: true };
 
     const cell = await claimCell(db, locale, bias);
     if (!cell) return { recommendations: pool.map(poolRowToRec), cached: true };
-
     try {
+        // 여기서부터 LLM을 부른다 — 로그인 사용자별 하루 한도. 거절되면 아래 catch가 방금 잡은 칸을 되돌려 다른 사람이 쓸 수 있게 한다
+        await takeQuota();
         const result = await chatCompletion({
             system: 'You are an expert travel assistant. Output ONLY valid JSON.',
             user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name) }),
@@ -410,15 +412,17 @@ export default async function handler(req, res) {
     if (!placeName) return res.status(400).json({ error: 'place_required' });
 
     const db = supabaseAdmin();
+    const takeQuota = () => takeAiQuota(db, user.id, 'recommend');
 
     // 기준 좌표가 있으면 반경 장소 풀로(기준 장소 이름은 저장하지 않는다). 풀을 못 쓰는
     // 환경(서버 Google 키 없음 등)이나 오류면 아래 기존 이름별 캐시 경로로.
     if (db && bias && process.env.GOOGLE_PLACES_SERVER_KEY) {
         try {
             const basePlaceId = typeof req.body?.placeId === 'string' ? req.body.placeId.slice(0, 300) : null;
-            const { recommendations, cached } = await recommendFromPool({ db, bias, locale, placeName, city, basePlaceId });
+            const { recommendations, cached } = await recommendFromPool({ db, bias, locale, placeName, city, basePlaceId, takeQuota });
             return res.status(200).json({ success: true, cached, provider: 'pool', basePlace: placeName, recommendations });
         } catch (e) {
+            if (e instanceof DailyLimitError) return res.status(429).json({ error: 'daily_limit', limit: e.limit });
             console.warn('[recommend] pool path failed, falling back:', e instanceof Error ? e.message : e);
         }
     }
@@ -462,6 +466,8 @@ export default async function handler(req, res) {
 
     if (hasLlmProvider()) {
         try {
+            // LLM 호출 직전: 로그인 사용자별 하루 한도(못 확인하면 LLM을 부르지 않고 아래 큐레이션으로)
+            await takeQuota();
             const result = await chatCompletion({
                 system: 'You are an expert travel assistant. Output ONLY valid JSON.',
                 user: buildPrompt({ placeName, city, category, locale }),
@@ -487,6 +493,7 @@ export default async function handler(req, res) {
                 });
             }
         } catch (e) {
+            if (e instanceof DailyLimitError) return res.status(429).json({ error: 'daily_limit', limit: e.limit });
             console.warn('[recommend] LLM call failed:', e instanceof Error ? e.message : e);
         }
     }

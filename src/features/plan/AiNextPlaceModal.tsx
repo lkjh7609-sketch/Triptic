@@ -11,6 +11,7 @@ import { captureError } from '@/shared/monitoring';
 import { haversineKm, formatDistance } from './map/geo';
 import { resolvePlace } from './resolvePlace';
 import {
+  AiLimitError,
   fetchNearbyRecommendations,
   isOutOfRange,
   nearbyRecsQueryKey,
@@ -44,7 +45,7 @@ interface Recommendation {
   located: Located;
 }
 
-type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready' };
+type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'limit'; limit: number } | { status: 'ready' };
 
 /** 반경 밖 좌표가 붙은 추천(이전 캐시 포함)은 아예 보여주지 않는다 */
 function toRecommendations(list: ApiRecommendation[], base: { lat: number; lng: number } | null): Recommendation[] {
@@ -169,6 +170,10 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
         );
       } catch (err) {
         if (controller.signal.aborted) return;
+        if (err instanceof AiLimitError) {
+          setLoadState({ status: 'limit', limit: err.limit });
+          return;
+        }
         captureError(err, { context: 'aiNextPlace.fetch' });
         setLoadState({ status: 'error' });
       }
@@ -253,6 +258,10 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
                 {[0, 1, 2].map((i) => (
                   <Skeleton key={i} height="120px" />
                 ))}
+              </div>
+            ) : loadState.status === 'limit' ? (
+              <div className={styles.errorState} role="alert">
+                <p>{t('aiNext.dailyLimit', { limit: loadState.limit })}</p>
               </div>
             ) : loadState.status === 'error' ? (
               <div className={styles.errorState} role="alert">

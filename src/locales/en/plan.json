@@ -289,7 +289,8 @@
     "confirmAdd": "Add to plan",
     "aiNotice": "These are AI-generated suggestions. Check opening hours and prices before you go.",
     "button": "AI ideas",
-    "buttonTitle": "Get AI ideas for where to go next"
+    "buttonTitle": "Get AI ideas for where to go next",
+    "dailyLimit": "You've used all {{limit}} AI suggestions for today. Please try again tomorrow. Premium members get more."
   },
   "desktop": {
     "badge": "My journeys",
