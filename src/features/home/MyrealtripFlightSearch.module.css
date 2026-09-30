@@ -446,10 +446,6 @@
   cursor: pointer;
 }
 
-.dateCell + .dateCell {
-  border-left-color: var(--border);
-}
-
 .dateValue {
   display: flex;
   align-items: center;
