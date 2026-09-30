@@ -231,11 +231,11 @@ export class TripService {
       const supabase = getSupabaseClient();
       const { data: profile } = await supabase
         .from('profiles')
-        .select('plan, trips_created_count')
+        .select('plan, trips_created_count, trip_limit')
         .eq('id', userId)
         .maybeSingle();
       if (!profile || profile.plan !== 'free') return;
-      const remaining = Math.max(0, 2 - (profile.trips_created_count as number));
+      const remaining = Math.max(0, (profile.trip_limit as number) - (profile.trips_created_count as number));
       showToast(i18next.t('plan:quota.tripCreatedToast', { remaining }));
     } catch {
       // 안내용 토스트일 뿐이라 실패해도 무시한다.
