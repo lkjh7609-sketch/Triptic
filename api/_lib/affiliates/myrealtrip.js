@@ -74,6 +74,9 @@ export async function createMylink(targetUrl) {
 
 // ── 항공 ────────────────────────────────────────────────────────────────
 
+/** 좌석 등급 — 랜딩 URL API의 cabinClass 값 */
+export const CABINS = ['ECONOMY', 'PREMIUM_ECONOMY', 'BUSINESS', 'FIRST'];
+
 const IATA = /^[A-Z]{3}$/;
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -115,6 +118,8 @@ export function parseFlightQuery(query, today = kstToday()) {
     // 항공 예약 한 번에 좌석 9석(성인+아동), 유아(좌석 없음)는 성인 1명당 1명
     if (adults < 1 || children < 0 || infants < 0 || adults + children > 9 || infants > adults) return null;
     const kind = (value) => (value === 'airport' ? 'airport' : 'city');
+    // 좌석 등급 — 안 주면(또는 모르는 값이면) 지정하지 않는다(마이리얼트립 기본값)
+    const cabin = CABINS.includes(query.cabin) ? query.cabin : null;
     return {
         origin,
         originType: kind(query.origin_type),
@@ -125,6 +130,7 @@ export function parseFlightQuery(query, today = kstToday()) {
         adults,
         children,
         infants,
+        ...(cabin ? { cabin } : {}),
     };
 }
 
@@ -160,6 +166,7 @@ export async function flightLandingUrl(flight) {
                     adult: flight.adults,
                     child: flight.children ?? 0,
                     infant: flight.infants ?? 0,
+                    ...(flight.cabin ? { cabinClass: flight.cabin } : {}),
                 },
             });
             if (isMyrealtripUrl(json.data)) return json.data;
@@ -168,6 +175,112 @@ export async function flightLandingUrl(flight) {
         }
     }
     return airWebResultsUrl(flight);
+}
+
+// ── 항공 특가(출발지별 최저가) ───────────────────────────────────────────
+
+/**
+ * 특가 카드에 올리는 도착지(인기 노선). 마이리얼트립 최저가 조회는 도착 공항 코드를 받고(최대 50개),
+ * 이름은 응답에 없어서 여기서 정한다. 응답에 없는 노선은 그냥 빠진다.
+ * theme: 아래 테마 카드(일본 단거리 japan · 아시아 휴양 sea · 유럽/미주/호주 장거리 far)에 묶이는 그룹.
+ */
+export const DEAL_DESTINATIONS = [
+    { code: 'KIX', city: '오사카', airport: '간사이 국제공항', theme: 'japan' },
+    { code: 'NRT', city: '도쿄', airport: '나리타 국제공항', theme: 'japan' },
+    { code: 'FUK', city: '후쿠오카', airport: '후쿠오카 공항', theme: 'japan' },
+    { code: 'NGO', city: '나고야', airport: '주부 국제공항', theme: 'japan' },
+    { code: 'CTS', city: '삿포로', airport: '신치토세 공항', theme: 'japan' },
+    { code: 'OKA', city: '오키나와', airport: '나하 공항', theme: 'japan' },
+    { code: 'BKK', city: '방콕', airport: '수완나품 국제공항', theme: 'sea' },
+    { code: 'DAD', city: '다낭', airport: '다낭 국제공항', theme: 'sea' },
+    { code: 'CXR', city: '나트랑', airport: '캄란 국제공항', theme: 'sea' },
+    { code: 'PQC', city: '푸꾸옥', airport: '푸꾸옥 국제공항', theme: 'sea' },
+    { code: 'SGN', city: '호치민', airport: '떤선녓 국제공항', theme: 'sea' },
+    { code: 'HAN', city: '하노이', airport: '노이바이 국제공항', theme: 'sea' },
+    { code: 'CEB', city: '세부', airport: '막탄세부 국제공항', theme: 'sea' },
+    { code: 'BKI', city: '코타키나발루', airport: '코타키나발루 국제공항', theme: 'sea' },
+    { code: 'DPS', city: '발리', airport: '응우라라이 국제공항', theme: 'sea' },
+    { code: 'SIN', city: '싱가포르', airport: '창이 공항', theme: 'sea' },
+    { code: 'TPE', city: '타이베이', airport: '타오위안 국제공항', theme: 'sea' },
+    { code: 'HKG', city: '홍콩', airport: '홍콩 국제공항', theme: 'sea' },
+    { code: 'GUM', city: '괌', airport: '앙토니오 B. 원 팟 국제공항', theme: 'sea' },
+    { code: 'CDG', city: '파리', airport: '샤를 드 골 공항', theme: 'far' },
+    { code: 'LHR', city: '런던', airport: '히스로 공항', theme: 'far' },
+    { code: 'FCO', city: '로마', airport: '피우미치노 공항', theme: 'far' },
+    { code: 'BCN', city: '바르셀로나', airport: '엘프라트 공항', theme: 'far' },
+    { code: 'JFK', city: '뉴욕', airport: '존 F. 케네디 국제공항', theme: 'far' },
+    { code: 'LAX', city: '로스앤젤레스', airport: '로스앤젤레스 국제공항', theme: 'far' },
+    { code: 'SYD', city: '시드니', airport: '시드니 공항', theme: 'far' },
+];
+
+// 전체 목적지 조회는 도시 코드로 올 수 있어서(오사카 OSA 등) 공항 코드로 되돌린다
+const DEAL_ALIASES = { OSA: 'KIX', TYO: 'NRT', SPK: 'CTS', PAR: 'CDG', LON: 'LHR', ROM: 'FCO', NYC: 'JFK' };
+
+const AIRLINE_NAMES = {
+    KE: '대한항공', OZ: '아시아나항공', '7C': '제주항공', LJ: '진에어', TW: '티웨이항공', BX: '에어부산', ZE: '이스타항공',
+    RS: '에어서울', YP: '에어프레미아', RF: '에어로케이', JL: '일본항공', NH: '전일본공수', MM: '피치', GK: '젯스타재팬',
+    TG: '타이항공', VN: '베트남항공', VJ: '비엣젯', QH: '뱀부항공', PR: '필리핀항공', '5J': '세부퍼시픽', SQ: '싱가포르항공',
+    CX: '캐세이퍼시픽', BR: '에바항공', CI: '중화항공', AF: '에어프랑스', BA: '영국항공', LH: '루프트한자', AZ: 'ITA 항공',
+    DL: '델타항공', UA: '유나이티드항공', AA: '아메리칸항공', QF: '콴타스항공', KL: 'KLM', TR: '스쿠트',
+};
+
+export function airlineName(code) {
+    return typeof code === 'string' && code ? (AIRLINE_NAMES[code] ?? code) : null;
+}
+
+/** 최저가 조회 한 행 → 특가 카드. 이름을 아는 도착지·유효한 가격과 날짜만 */
+export function normalizeDeal(row, averages = new Map()) {
+    const dest = DEAL_DESTINATIONS.find((d) => d.code === row?.toCity);
+    const price = num(row?.totalPrice);
+    if (!dest || price === null || price <= 0 || !isValidYmd(row.departureDate) || !isValidYmd(row.returnDate)) return null;
+    const average = averages.get(dest.code) ?? null;
+    // 평균보다 5% 이상 싼 것만 "할인"으로 — 비슷한 값은 숫자를 붙이지 않는다
+    const discountPct = average && average > price ? Math.round((1 - price / average) * 100) : null;
+    return {
+        code: dest.code,
+        city: dest.city,
+        airport: dest.airport,
+        theme: dest.theme,
+        price,
+        currency: 'KRW',
+        departDate: row.departureDate,
+        returnDate: row.returnDate,
+        airline: str(row.airline),
+        airlineName: airlineName(row.airline),
+        average,
+        discountPct: discountPct !== null && discountPct >= 5 ? discountPct : null,
+    };
+}
+
+/**
+ * 출발지(기본 인천)에서 인기 노선의 최저가 — 노선마다 가장 싼 출발일 하나.
+ * 최저가는 실시간이 아니라 마이리얼트립이 운임 검색 때 모아 둔 값이다(화면에 그렇게 밝힌다).
+ * 평균가(전체 목적지 조회)는 있으면 "평균 대비 n%"에 쓰고, 그 호출이 실패해도 특가는 보여준다.
+ */
+export async function searchFlightDeals(origin = 'ICN', period = 5) {
+    const [lowest, bulk] = await Promise.allSettled([
+        call('POST', '/v1/products/flight/calendar/lowest', {
+            body: { depCityCd: origin, arrCityCds: DEAL_DESTINATIONS.map((d) => d.code), period },
+        }),
+        call('POST', '/v1/products/flight/calendar/bulk-lowest', { body: { depCityCd: origin, period } }),
+    ]);
+    if (lowest.status !== 'fulfilled') throw lowest.reason;
+    const averages = new Map();
+    if (bulk.status === 'fulfilled' && Array.isArray(bulk.value.data)) {
+        for (const row of bulk.value.data) {
+            const code = DEAL_ALIASES[row?.toCity] ?? row?.toCity;
+            const avg = num(row?.averagePrice);
+            if (avg && !averages.has(code)) averages.set(code, avg);
+        }
+    } else if (bulk.status === 'rejected') {
+        console.warn('[myrealtrip] bulk-lowest failed:', bulk.reason instanceof Error ? bulk.reason.message : bulk.reason);
+    }
+    const rows = Array.isArray(lowest.value.data) ? lowest.value.data : [];
+    return rows
+        .map((row) => normalizeDeal({ ...row, toCity: DEAL_ALIASES[row?.toCity] ?? row?.toCity }, averages))
+        .filter(Boolean)
+        // 많이 싼 순(평균 대비), 평균을 모르는 것은 뒤로 가격순
+        .sort((a, b) => (b.discountPct ?? -1) - (a.discountPct ?? -1) || a.price - b.price);
 }
 
 // ── 투어·티켓 상품 ─────────────────────────────────────────────────────
