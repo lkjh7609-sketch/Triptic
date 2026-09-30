@@ -9,7 +9,8 @@
       "users": "使用者方案",
       "feedback": "建議回饋",
       "sales": "銷售",
-      "analytics": "分析"
+      "analytics": "分析",
+      "archive": "封存區"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -138,6 +139,21 @@
       "invalid": "請輸入 0 到 {{max}} 的數字",
       "preview": "儲存後：上限 {{limit}} 個・剩餘 {{left}} 個",
       "full": "已達上限"
+    },
+    "archive": {
+      "kindPost": "貼文",
+      "kindCompanion": "旅伴徵求",
+      "reason": {
+        "user_deleted": "作者已刪除",
+        "user_cancelled": "作者已取消"
+      },
+      "noText": "（無內容）",
+      "comments": "一併保存 {{count}} 則留言",
+      "view": "查看內容",
+      "close": "收合",
+      "loadError": "無法載入封存區",
+      "empty": "沒有封存的貼文",
+      "note": "使用者刪除的貼文與取消的旅伴徵求。不會對使用者公開，作者退出時會一併刪除。"
     }
   },
   "report": {

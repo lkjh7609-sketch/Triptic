@@ -29,10 +29,11 @@ import type { Report } from './types';
 import { AdminSalesTab } from './AdminSalesTab';
 import { AdminAnalyticsTab } from './AdminAnalyticsTab';
 import { AdminPinPad } from './AdminPinPad';
+import { AdminArchiveTab } from './AdminArchiveTab';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics';
+type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive';
 
 const USER_PAGE_SIZE = 20;
 
@@ -414,9 +415,18 @@ export function AdminScreen() {
         >
           {t('admin.tabs.analytics')}
         </button>
+        <button
+          type="button"
+          className={tab === 'archive' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('archive')}
+        >
+          {t('admin.tabs.archive')}
+        </button>
       </div>
 
-      {tab === 'analytics' ? (
+      {tab === 'archive' ? (
+        <AdminArchiveTab />
+      ) : tab === 'analytics' ? (
         <AdminAnalyticsTab />
       ) : tab === 'sales' ? (
         <AdminSalesTab />
