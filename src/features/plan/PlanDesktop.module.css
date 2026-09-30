@@ -121,8 +121,10 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.btnAi:hover {
-  background: var(--pd-line-2);
+@media (hover: hover) {
+  .btnAi:hover {
+    background: var(--pd-line-2);
+  }
 }
 .btnCreate {
   padding: 0.75rem 1.5rem;
@@ -139,8 +141,10 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   transition: all 0.15s;
 }
-.btnCreate:hover {
-  background: var(--brand-pressed);
+@media (hover: hover) {
+  .btnCreate:hover {
+    background: var(--brand-pressed);
+  }
 }
 
 .metricsBar {
@@ -366,9 +370,11 @@
   text-decoration: none;
   color: inherit;
 }
-.compactCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+@media (hover: hover) {
+  .compactCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+  }
 }
 .cardTop {
   display: flex;
@@ -644,8 +650,10 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.toolkitLink:hover {
-  border-color: var(--pd-ink);
+@media (hover: hover) {
+  .toolkitLink:hover {
+    border-color: var(--pd-ink);
+  }
 }
 .toolkitLinkIcon {
   width: 2.5rem;
@@ -658,9 +666,11 @@
   color: var(--pd-ink);
   transition: all 0.2s;
 }
-.toolkitLink:hover .toolkitLinkIcon {
-  background: var(--pd-ink);
-  color: var(--pd-surface); /* 다크에선 ink가 밝은 색이라 흰 글씨가 안 보였다 */
+@media (hover: hover) {
+  .toolkitLink:hover .toolkitLinkIcon {
+    background: var(--pd-ink);
+    color: var(--pd-surface); /* 다크에선 ink가 밝은 색이라 흰 글씨가 안 보였다 */
+  }
 }
 
 /* Past Grid / Filter Tabs */
@@ -753,9 +763,11 @@
   text-decoration: none;
   color: inherit;
 }
-.pastCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+@media (hover: hover) {
+  .pastCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -4px rgba(15, 41, 66, 0.08);
+  }
 }
 .pastImageWrap {
   position: relative;
@@ -769,8 +781,10 @@
   object-fit: cover;
   transition: transform 0.7s;
 }
-.pastCard:hover .pastImage {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .pastCard:hover .pastImage {
+    transform: scale(1.05);
+  }
 }
 .pastBody {
   padding: 1rem;
@@ -855,9 +869,11 @@
   color: var(--pd-subtle);
   cursor: pointer;
 }
-.cardMenuButton:hover {
-  background: var(--pd-soft);
-  color: var(--pd-ink);
+@media (hover: hover) {
+  .cardMenuButton:hover {
+    background: var(--pd-soft);
+    color: var(--pd-ink);
+  }
 }
 .cardMenu {
   position: absolute;
@@ -883,8 +899,10 @@
   font-size: 13px;
   cursor: pointer;
 }
-.cardMenuItem:hover {
-  background: var(--pd-soft);
+@media (hover: hover) {
+  .cardMenuItem:hover {
+    background: var(--pd-soft);
+  }
 }
 /* 비로그인 샘플 여행 — 흐리게, 누르면 로그인 안내 */
 .cardMenuItemLocked {
@@ -1233,8 +1251,10 @@
   cursor: pointer;
 }
 
-.findFlightsBtn:hover {
-  border-color: var(--pd-navy);
+@media (hover: hover) {
+  .findFlightsBtn:hover {
+    border-color: var(--pd-navy);
+  }
 }
 
 .findFlightsBtn:disabled {

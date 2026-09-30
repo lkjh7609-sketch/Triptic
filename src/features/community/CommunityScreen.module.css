@@ -254,8 +254,10 @@
   text-decoration: none;
   transition: transform 0.2s;
 }
-.emptyCta:hover {
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .emptyCta:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .emptyPreviewCard, .emptyPromptCard {
@@ -325,9 +327,11 @@
   text-decoration: none;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.fabBtnDesktop:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 24px 56px -8px rgba(15, 41, 66, 0.2);
+@media (hover: hover) {
+  .fabBtnDesktop:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 56px -8px rgba(15, 41, 66, 0.2);
+  }
 }
 @media (max-width: 768px) {
   .desktopWrap {

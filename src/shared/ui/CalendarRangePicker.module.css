@@ -27,9 +27,11 @@
   justify-content: center;
 }
 
-.navButton:hover {
-  background: var(--surface-subtle);
-  color: var(--text-primary);
+@media (hover: hover) {
+  .navButton:hover {
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+  }
 }
 
 .weekdays {

@@ -56,8 +56,10 @@
   transition: background-color 0.2s ease;
 }
 
-.profileContainer:hover {
-  background-color: var(--surface-subtle);
+@media (hover: hover) {
+  .profileContainer:hover {
+    background-color: var(--surface-subtle);
+  }
 }
 
 /* 비로그인 둘러보기 — 프로필 자리 */
@@ -74,8 +76,10 @@
   transition: opacity 0.2s ease;
 }
 
-.signInButton:hover {
-  opacity: 0.9;
+@media (hover: hover) {
+  .signInButton:hover {
+    opacity: 0.9;
+  }
 }
 
 .guestActions {
@@ -175,8 +179,10 @@
   cursor: pointer;
 }
 
-.dropdownItem:hover {
-  background-color: var(--surface-subtle);
+@media (hover: hover) {
+  .dropdownItem:hover {
+    background-color: var(--surface-subtle);
+  }
 }
 
 .dropdownDivider {
