@@ -12,6 +12,7 @@ import { useTrip, useUpdateTripSnapshot } from './hooks/useTrips';
 import { tripService, type LocalProject } from '@/shared/api/tripService';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
 import { isGuestTripId } from './guestTrips';
+import { TripOnboardingCard } from './TripOnboardingCard';
 import { DayChips } from './DayChips';
 import { SortableItineraryItem } from './SortableItineraryItem';
 import { TripMapView } from './TripMapView';
@@ -431,6 +432,21 @@ export function TripDetailScreen() {
             <ExternalLink size={18} />
           </button>
         </div>
+
+        {/* 첫 여행 시작 안내(장소 · 예약 확인서 · 초대) — 샘플에는 안 보이고, 셋 다 하면 사라진다 */}
+        {!isSample && tripId ? (
+          <TripOnboardingCard
+            tripId={tripId}
+            hasPlace={Object.values((project?.data ?? {}) as Record<string, unknown[]>).some((items) => Array.isArray(items) && items.length > 0)}
+            isDraft={isDraft}
+            onAddPlace={() => setShowAddPlace(true)}
+            onUploadDocument={() =>
+              (pendingBookings.data?.length ?? 0) > 0 ? setShowReviewSheet(true) : setShowUploadModal(true)
+            }
+            onInvite={() => setShowShare(true)}
+            onLocked={handleSampleLocked}
+          />
+        ) : null}
 
         <DayChips totalDays={totalDays} currentDay={currentDay} onChange={setCurrentDay} />
 

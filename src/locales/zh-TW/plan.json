@@ -462,5 +462,20 @@
     "ownerOnlyLink": "只有建立旅行的人可以建立連結",
     "conflict": "其他同行者剛剛修改了行程。已載入最新行程，請再試一次。",
     "conflictSelf": "儲存時發生重疊，已載入最新行程，請再試一次。"
+  },
+  "onboarding": {
+    "title": "開始你的第一趟旅程",
+    "progress": "已完成 {{done}}/{{total}}",
+    "dismiss": "關閉提示",
+    "step": {
+      "place": "把想去的地點加入行程",
+      "document": "上傳訂單確認書，行程會自動填好",
+      "invite": "邀請同行的人一起編輯"
+    },
+    "action": {
+      "place": "新增",
+      "document": "上傳",
+      "invite": "邀請"
+    }
   }
 }

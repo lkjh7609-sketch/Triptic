@@ -462,5 +462,20 @@
     "ownerOnlyLink": "여행을 만든 사람만 링크를 만들 수 있어요",
     "conflict": "다른 동행자가 방금 일정을 바꿨어요. 최신 일정으로 불러왔으니 다시 한 번 해 주세요.",
     "conflictSelf": "저장이 겹쳐서 최신 일정으로 불러왔어요. 다시 한 번 해 주세요."
+  },
+  "onboarding": {
+    "title": "첫 여행 시작하기",
+    "progress": "{{done}}/{{total}} 완료",
+    "dismiss": "안내 닫기",
+    "step": {
+      "place": "가고 싶은 장소를 일정에 추가해요",
+      "document": "예약 확인서를 올리면 일정이 자동으로 채워져요",
+      "invite": "같이 갈 사람을 초대해 함께 편집해요"
+    },
+    "action": {
+      "place": "추가",
+      "document": "올리기",
+      "invite": "초대"
+    }
   }
 }
