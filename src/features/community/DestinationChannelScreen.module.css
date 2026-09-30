@@ -121,7 +121,7 @@
 
 .subtitle {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 
 .mainTitle {
   font-family: var(--font-hero);
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: 400;
   color: var(--text-heading);
   margin: 0;
@@ -141,7 +141,7 @@
   flex-wrap: wrap;
   gap: var(--space-4);
   justify-content: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-muted);
   margin-top: var(--space-4);
   margin-bottom: var(--space-4);
@@ -177,7 +177,7 @@
 
 .emptyMainCard h3 {
   font-family: var(--font-hero);
-  font-size: 28px;
+  font-size: 1.75rem;
   margin: 0 0 var(--space-2);
   color: var(--text-heading);
 }

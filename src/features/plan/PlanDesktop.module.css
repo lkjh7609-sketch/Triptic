@@ -71,7 +71,7 @@
 }
 .pageTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 1.3;
   letter-spacing: -0.015em;
   color: var(--pd-ink);
@@ -80,7 +80,7 @@
   overflow-wrap: break-word;
 }
 .pageSubtitle {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--pd-muted);
 }
 @media (min-width: 768px) {
@@ -88,11 +88,11 @@
     gap: 2.5rem;
   }
   .pageTitle {
-    font-size: 40px;
+    font-size: 2.5rem;
     line-height: 48px;
   }
   .pageSubtitle {
-    font-size: 16px;
+    font-size: 1rem;
   }
 }
 @media (min-width: 1024px) {
@@ -112,7 +112,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid var(--pd-navy);
   color: var(--pd-navy);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -131,7 +131,7 @@
   border-radius: var(--radius-pill);
   background: var(--pd-coral);
   color: var(--text-on-brand);
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -149,7 +149,7 @@
 
 .metricsBar {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr); /* 안쪽 글이 nowrap이어도 칸이 화면 밖으로 밀리지 않게 */
   gap: 1rem;
   align-items: center;
 }
@@ -182,6 +182,19 @@
   border: 1px solid var(--pd-line);
   box-shadow: var(--shadow-sm);
 }
+/* 모바일은 3칸이 좁아서 장식 아이콘·점을 빼고 그 폭을 라벨에 준다("Planned days"가 세 줄로 꺾이던 것) */
+.metricBadge > svg,
+.metricBadge > .statusDot {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .metricBadge > svg {
+    display: block;
+  }
+  .metricBadge > .statusDot {
+    display: inline-block;
+  }
+}
 @media (min-width: 1024px) {
   .metricBadge {
     gap: 0.75rem;
@@ -206,18 +219,19 @@
 }
 .metricValue {
   flex-shrink: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--pd-ink);
 }
 @media (min-width: 1024px) {
   .metricValue {
-    font-size: 16px;
+    font-size: 1rem;
   }
 }
 .metricLabel {
   display: block;
   min-width: 0;
+  hyphens: none;
   line-height: 1.25;
   font-size: var(--font-caption-size);
   color: var(--pd-muted);
@@ -227,7 +241,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: var(--font-caption-size);
   }
 }
 .searchCapsule {
@@ -243,7 +257,7 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--pd-ink);
   outline: none;
   padding: 0;
@@ -261,7 +275,7 @@
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
   color: var(--pd-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   background: transparent;
   border: none;
@@ -290,7 +304,7 @@
 /* Layout */
 .pageLayout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr); /* 안쪽 글이 nowrap이어도 칸이 화면 밖으로 밀리지 않게 */
   gap: 2rem;
   align-items: start;
 }
@@ -322,7 +336,7 @@
 }
 .sectionTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--pd-ink);
   margin: 0;
@@ -336,7 +350,7 @@
   font-weight: 600;
 }
 .sectionLink {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--pd-accent);
   display: flex;
@@ -348,7 +362,7 @@
 /* Compact Grid */
 .compactGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr); /* 안쪽 글이 nowrap이어도 칸이 화면 밖으로 밀리지 않게 */
   gap: 1rem;
 }
 @media (min-width: 768px) {
@@ -359,6 +373,7 @@
 
 .compactCard {
   position: relative;
+  min-width: 0;
   border-radius: var(--radius-md);
   background: var(--pd-surface);
   border: 1px solid var(--pd-line);
@@ -415,18 +430,31 @@
 }
 .cardStatusRow {
   display: flex;
+  flex-wrap: wrap; /* 영어처럼 글이 길면 배지·메뉴가 다음 줄 오른쪽으로 내려간다(상태 글을 말줄임하지 않고) */
   align-items: center;
   justify-content: space-between;
+  gap: 0.25rem 0.5rem;
   margin-bottom: 0.25rem;
 }
 .statusIndicator {
   display: flex;
   align-items: center;
   gap: 0.375rem;
+  min-width: 0;
   font-size: var(--font-caption-size);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+/* 영어처럼 글이 길어도 "UPCOMING · 8 DAYS"가 두 줄로 꺾이지 않고 한 줄에서 말줄임 */
+.statusIndicator > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.statusDot {
+  flex: none;
 }
 .statusDot {
   width: 0.5rem;
@@ -434,6 +462,9 @@
   border-radius: 50%;
 }
 .travelersBadge {
+  flex: none;
+  white-space: nowrap; /* "1 traveler"가 trav-/eler로 잘려 두 줄이 되던 것 */
+  hyphens: none;
   font-size: var(--font-caption-size);
   color: var(--pd-muted);
   background: var(--pd-soft);
@@ -442,7 +473,7 @@
 }
 .cardTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.2;
   color: var(--pd-ink);
   margin: 0;
@@ -451,7 +482,7 @@
   text-overflow: ellipsis;
 }
 .cardDesc {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--pd-muted);
   margin: 0.125rem 0 0 0;
   white-space: nowrap;
@@ -463,7 +494,7 @@
   align-items: center;
   gap: 0.375rem;
   margin-top: 0.5rem;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-subtle);
 }
 
@@ -536,7 +567,7 @@
 .btnOpen {
   padding: 0.375rem 0.875rem;
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -573,7 +604,7 @@
   gap: 0.5rem;
 }
 .toolkitTitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--pd-ink);
   margin: 0;
@@ -620,12 +651,12 @@
 }
 .toolkitValue {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--pd-ink);
 }
 .toolkitSub {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-muted);
 }
 
@@ -700,7 +731,7 @@
   }
 }
 .tabBtn {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--pd-muted);
   background: none;
@@ -713,7 +744,7 @@
 .tabBtn.active {
   color: var(--pd-ink);
   border-bottom-color: var(--pd-ink);
-  font-size: 16px;
+  font-size: 1rem;
 }
 .viewToggles {
   display: flex;
@@ -744,7 +775,7 @@
 
 .pastGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr); /* 안쪽 글이 nowrap이어도 칸이 화면 밖으로 밀리지 않게 */
   gap: 1rem;
 }
 @media (min-width: 768px) {
@@ -826,13 +857,13 @@
 }
 .btnCreateSmall {
   padding: 0.375rem 1rem;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .statusSelect {
   border: none;
   background: transparent;
   color: var(--pd-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   padding: 0.375rem 0.5rem;
   cursor: pointer;
@@ -853,6 +884,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  margin-left: auto;
 }
 .cardMenuWrap {
   position: relative;
@@ -896,7 +928,7 @@
   border-radius: 0.375rem;
   background: transparent;
   color: var(--pd-ink);
-  font-size: 13px;
+  font-size: 0.8125rem;
   cursor: pointer;
 }
 @media (hover: hover) {
@@ -978,13 +1010,13 @@
   flex-shrink: 0;
 }
 .emptyTitle {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--pd-ink);
   margin: 0 0 4px 0;
 }
 .emptyText {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--pd-muted);
   margin: 0;
 }
@@ -1028,12 +1060,12 @@
 }
 .pastTitle {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--pd-ink);
   margin: 0 0 4px 0;
 }
 .pastDesc {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--pd-muted);
   margin: 0;
   white-space: nowrap;
@@ -1049,14 +1081,14 @@
   border-top: 1px solid var(--pd-line);
 }
 .pastStat {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-muted);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 .pastOpen {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--pd-accent);
   display: flex;
@@ -1072,19 +1104,19 @@
 }
 .toolkitEmpty {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--pd-muted);
 }
 .accentText {
   color: var(--pd-accent);
 }
 .weatherIcon {
-  font-size: 28px;
+  font-size: 1.75rem;
   line-height: 1;
 }
 .weatherPrecip {
   text-align: right;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-subtle);
 }
 .flightIcon {
@@ -1092,13 +1124,13 @@
   flex-shrink: 0;
 }
 .flightNo {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--pd-accent-deep);
   margin-bottom: 4px;
 }
 .flightMeta {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-accent-deep);
   margin: 0;
 }
@@ -1119,12 +1151,12 @@
   gap: 0.75rem;
 }
 .toolkitLinkTitle {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--pd-ink);
 }
 .toolkitLinkSub {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-subtle);
 }
 .membersBlock {
@@ -1138,7 +1170,7 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--pd-ink);
   margin: 0;
@@ -1162,7 +1194,7 @@
   font-weight: 700;
 }
 .memberName {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--pd-ink);
 }
@@ -1189,7 +1221,7 @@
   letter-spacing: 0.05em;
 }
 .tipText {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--pd-muted);
   font-style: italic;
   margin: 0;
@@ -1246,7 +1278,7 @@
   background: var(--pd-surface);
   color: var(--pd-ink);
   font: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1290,7 +1322,7 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--pd-ink);
   cursor: pointer;
 }
@@ -1343,7 +1375,7 @@
   background: var(--pd-surface);
   color: var(--pd-ink);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;

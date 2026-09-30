@@ -62,7 +62,7 @@
 .statusError {
   padding: 2px 8px;
   border-radius: var(--radius-pill);
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
 }
 
@@ -119,12 +119,12 @@
 }
 
 .tileLabel {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
 .tileValue {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 800;
   color: var(--text-primary);
   white-space: nowrap;
@@ -154,7 +154,7 @@
 }
 
 .tileSub {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--danger-text);
 }
 
@@ -186,7 +186,7 @@
 
 .rowDate {
   flex: 0 0 52px;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
@@ -206,7 +206,7 @@
 }
 
 .rowMeta {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 

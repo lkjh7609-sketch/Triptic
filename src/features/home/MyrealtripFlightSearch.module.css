@@ -201,7 +201,7 @@
 }
 
 .fieldLabel {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -288,13 +288,13 @@
 
 .optionCode {
   margin-left: 4px;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   color: var(--text-muted);
 }
 
 .optionDetail {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
@@ -330,7 +330,7 @@
   align-items: center;
   gap: 4px;
   margin: var(--space-3) 0 0;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 

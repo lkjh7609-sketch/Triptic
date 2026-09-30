@@ -153,7 +153,7 @@
 
 .subtitle {
   font-family: var(--font-sans, sans-serif);
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--text-muted);
   letter-spacing: 0.02em;
   margin-bottom: var(--space-4);
@@ -161,7 +161,7 @@
 
 .mainTitle {
   font-family: var(--font-sans, sans-serif);
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text-heading);
@@ -188,7 +188,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-control);
   background: var(--surface-page);
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--text-body);
   outline: none;
   transition: border-color 0.2s;
@@ -242,7 +242,7 @@
 
 .emptyMainCard h3 {
   font-family: var(--font-sans, sans-serif);
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.5;
@@ -252,7 +252,7 @@
 
 .emptyMainCard p {
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.7;
   margin: 0 0 var(--space-6);
 }
@@ -300,11 +300,11 @@
 }
 .emptyPromptCard h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .emptyPromptCard p {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-muted);
 }
 
@@ -354,13 +354,13 @@
     margin-bottom: var(--space-4);
   }
   .subtitle {
-    font-size: 13px;
+    font-size: 0.8125rem;
     margin-bottom: var(--space-1);
   }
   .mainTitle {
     /* 데스크톱용 40px을 모바일에도 그대로 쓰고 있어서 360~390px 화면에서
        제목이 두 줄로 꺾이고 아래 요소와 시각적으로 빽빽해 보였다. */
-    font-size: 24px;
+    font-size: 1.5rem;
     line-height: 1.25;
   }
   .searchBarWrap {
@@ -390,11 +390,11 @@
     padding: var(--space-6) var(--space-4);
   }
   .emptyMainCard h3 {
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-bottom: var(--space-2);
   }
   .emptyMainCard p {
-    font-size: 14px;
+    font-size: 0.875rem;
     margin-bottom: var(--space-4);
   }
   .composeBtnRow {

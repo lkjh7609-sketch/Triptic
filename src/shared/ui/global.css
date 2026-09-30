@@ -38,11 +38,23 @@
 :root:lang(en) {
   word-break: normal;
   overflow-wrap: break-word;
+  /* 버튼·배지·칩 같은 짧은 UI 글이 "trav-/eler"처럼 잘려 두 줄이 되던 것 — 자동 하이픈은 문단에만 */
+  hyphens: manual;
+}
+:root:lang(en) :is(p, li, dd, blockquote) {
   hyphens: auto;
 }
 :root:lang(zh) {
   word-break: normal;
   line-break: normal;
+}
+
+/* 일본어는 한자·가나가 같은 pt에서도 크게 보여서 전체 글자를 두 단계(16→14px, 87.5%) 줄인다.
+   글자 크기는 rem 기준(토큰·CSS 모두)이라 이 한 줄로 화면 전체가 따라간다. */
+:root:lang(ja) {
+  font-size: 87.5%;
+  /* 가장 작은 글자는 그대로 두면 10.5px가 되니 11.4px로 붙든다 */
+  --font-caption-size: 0.8125rem;
 }
 
 *,

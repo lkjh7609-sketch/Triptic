@@ -57,7 +57,7 @@
 }
 
 .totalValue {
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   font-weight: 700;
   color: var(--text-body);
 }

@@ -32,7 +32,7 @@
 .navLink {
   color: var(--text-primary);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 0.9375rem;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -68,7 +68,7 @@
   background: var(--brand-solid);
   color: var(--text-on-brand, #fff);
   font: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   padding: 8px 18px;
   border-radius: var(--radius-pill);
@@ -128,7 +128,7 @@
 }
 
 .userName {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
   max-width: 180px; /* 이름은 최대 16자 — 넘치면 말줄임 */
@@ -169,7 +169,7 @@
   padding: 10px 16px;
   color: var(--text-primary);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   transition: background-color 0.2s;
   background: none;
@@ -226,6 +226,6 @@
   justify-content: center;
   background: var(--brand-solid);
   color: var(--text-on-brand);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 }

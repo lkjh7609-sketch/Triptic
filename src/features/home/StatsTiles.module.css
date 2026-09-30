@@ -77,14 +77,14 @@
 
 .value {
   font-family: 'Newsreader', var(--font-sans);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.15;
 }
 @media (min-width: 640px) {
   .value {
-    font-size: 28px;
+    font-size: 1.75rem;
   }
 }
 
@@ -101,7 +101,7 @@
 }
 @media (min-width: 640px) {
   .label {
-    font-size: 13px;
+    font-size: 0.8125rem;
     letter-spacing: 0.5px;
   }
 }

@@ -286,7 +286,7 @@
 .limitPreview {
   flex-basis: 100%;
   min-height: 16px;
-  font-size: 12px;
+  font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
 
