@@ -366,10 +366,69 @@
   inset: -4px;
 }
 
-/* 출발지·도착지 / 가는 날·오는 날 — 모바일(1024px 미만)은 테두리 하나짜리 큰 칸을 얇은 선으로 나눈다.
-   PC는 예전처럼 칸을 따로 둔다(.route는 display: contents로 사라진다). */
+/* 출발지·도착지 / 가는 날·오는 날 — 테두리 하나짜리 큰 칸을 얇은 선으로 나눈다(모바일 2줄, PC 한 줄) */
 .route {
-  display: contents;
+  grid-column: 1 / -1;
+  position: relative;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.route:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.route .places {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0;
+}
+
+.route .field {
+  padding: 10px var(--space-3);
+}
+
+.route .input {
+  min-height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.route .input:focus {
+  box-shadow: none;
+}
+
+.route .places .field + .swap + .field {
+  border-left: 1px solid var(--border);
+}
+
+/* 선 위에 걸친 교체 버튼(36px)이 양쪽 글자를 가리지 않게 안쪽 여백을 넉넉히 */
+.route .places .field:first-child {
+  padding-right: 26px;
+}
+
+.route .places .field + .swap + .field {
+  padding-left: 26px;
+}
+
+/* 교체 버튼은 두 칸 사이 선 위에 걸쳐 놓는다 */
+.route .swap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
+
+.route .dates {
+  display: grid;
+  border-top: 1px solid var(--border);
 }
 
 .dateCell {
@@ -378,7 +437,8 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-  border: none;
+  padding: 10px var(--space-3);
+  border: 1px solid transparent; /* 필수 입력 경고(flagInvalid)가 테두리 색을 바꿀 수 있게 자리만 */
   background: transparent;
   color: var(--text-primary);
   font: inherit;
@@ -391,6 +451,7 @@
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
+  min-height: 28px;
   font-size: var(--font-body-size);
 }
 
@@ -399,93 +460,14 @@
   color: var(--text-tertiary);
 }
 
-/* PC: 날짜 칸은 라벨 아래에 테두리 있는 입력 상자(예전 모양) */
 @media (min-width: 1024px) {
-  .dateValue {
-    min-height: 48px;
-    padding: 0 var(--space-3);
-    border: 1px solid var(--border-control);
-    border-radius: var(--radius-md);
-    background: var(--surface-card);
-  }
-
-  .dateCell:focus-visible .dateValue {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--brand-tint);
-  }
-}
-
-@media (max-width: 1023px) {
   .route {
-    display: block;
-    position: relative;
-    border: 1px solid var(--border-control);
-    border-radius: var(--radius-lg);
-    background: var(--surface-card);
-  }
-
-  .route:focus-within {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--brand-tint);
-  }
-
-  .route .places {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: stretch;
-    gap: 0;
-  }
-
-  .route .field {
-    padding: 10px var(--space-3);
-  }
-
-  .route .input {
-    min-height: 28px;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .route .input:focus {
-    box-shadow: none;
-  }
-
-  .route .places .field + .swap + .field {
-    border-left: 1px solid var(--border);
-  }
-
-  /* 선 위에 걸친 교체 버튼(36px)이 양쪽 글자를 가리지 않게 안쪽 여백을 넉넉히 */
-  .route .places .field:first-child {
-    padding-right: 26px;
-  }
-
-  .route .places .field + .swap + .field {
-    padding-left: 26px;
-  }
-
-  /* 교체 버튼은 두 칸 사이 선 위에 걸쳐 놓는다 */
-  .route .swap {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 2;
-    margin: 0;
-    transform: translate(-50%, -50%);
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
   }
 
   .route .dates {
-    display: grid;
-    border-top: 1px solid var(--border);
-  }
-
-  .dateCell {
-    padding: 10px var(--space-3);
-    border: 1px solid transparent; /* 필수 입력 경고(flagInvalid)가 테두리 색을 바꿀 수 있게 자리만 */
-  }
-
-  .dateValue {
-    min-height: 28px;
+    border-top: none;
+    border-left: 1px solid var(--border);
   }
 }
