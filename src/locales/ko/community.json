@@ -26,7 +26,7 @@
     "userNoName": "이름 없음",
     "planFree": "무료",
     "planPro": "유료",
-    "tripUsageFree": "여행 {{used}}/{{limit}}개 생성",
+    "tripUsageFree": "여행 {{used}}/{{limit}}개 사용 · 남은 {{left}}개",
     "tripUsagePro": "여행 {{used}}개 생성 · 한도 없음",
     "tripLimitRelaxed": "한도 {{limit}}개 적용 (원래 {{base}}개)",
     "grantPro": "유료 등급 부여",
@@ -129,6 +129,15 @@
       "disabled": "비밀번호 로그인을 지금은 쓸 수 없어요. 관리자 계정으로 로그인해 주세요.",
       "useAccount": "계정으로 로그인",
       "erase": "한 자리 지우기"
+    },
+    "limit": {
+      "label": "한도",
+      "save": "저장",
+      "saved": "저장했어요",
+      "error": "저장하지 못했어요. 다시 시도해 주세요.",
+      "invalid": "0~{{max}} 사이 숫자를 넣어 주세요",
+      "preview": "저장하면 한도 {{limit}}개 · 남은 {{left}}개",
+      "full": "한도 소진"
     }
   },
   "report": {

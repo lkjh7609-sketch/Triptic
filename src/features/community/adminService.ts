@@ -158,6 +158,23 @@ export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Pr
   if (error) throw error;
 }
 
+/** 사용자별 무료 여행 생성 한도를 정한다(0064) — 더하기가 아니라 값 지정이라 두 번 눌려도 이중으로 늘지 않는다 */
+export async function adminSetTripLimit(userId: string, limit: number): Promise<number> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_set_trip_limit', { p_user_id: userId, p_limit: limit });
+  if (error) throw error;
+  return data as number;
+}
+
+export const MAX_TRIP_LIMIT = 1000;
+
+/** 입력칸의 글자를 한도 값으로 — 0~1000의 정수가 아니면 null */
+export function parseLimit(text: string): number | null {
+  if (!/^\d{1,4}$/.test(text.trim())) return null;
+  const n = Number(text);
+  return n >= 0 && n <= MAX_TRIP_LIMIT ? n : null;
+}
+
 // ── 건의하기(0042) — 목록/상태변경 둘 다 SECURITY DEFINER RPC. ──────────────
 export interface AdminFeedbackRow {
   id: string;

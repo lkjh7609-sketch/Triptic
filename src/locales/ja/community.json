@@ -26,7 +26,7 @@
     "userNoName": "名前なし",
     "planFree": "無料",
     "planPro": "有料",
-    "tripUsageFree": "旅行 {{used}}/{{limit}}件作成",
+    "tripUsageFree": "旅行 {{used}}/{{limit}}件使用・残り{{left}}件",
     "tripUsagePro": "旅行 {{used}}件作成・上限なし",
     "tripLimitRelaxed": "上限{{limit}}件を適用（元は{{base}}件）",
     "grantPro": "有料プランを付与",
@@ -129,6 +129,15 @@
       "disabled": "パスコードでのログインは現在使えません。管理者アカウントでログインしてください。",
       "useAccount": "アカウントでログイン",
       "erase": "1桁消す"
+    },
+    "limit": {
+      "label": "上限",
+      "save": "保存",
+      "saved": "保存しました",
+      "error": "保存できませんでした。もう一度お試しください。",
+      "invalid": "0〜{{max}}の数字を入力してください",
+      "preview": "保存後：上限{{limit}}件・残り{{left}}件",
+      "full": "上限に到達"
     }
   },
   "report": {
