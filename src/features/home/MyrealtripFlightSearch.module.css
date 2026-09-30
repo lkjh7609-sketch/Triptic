@@ -85,10 +85,10 @@
 }
 
 .passengerText {
+  /* 성인·아동·유아 모두 이름 아래 줄에 나이 안내 — 폭에 따라 한 줄로 붙었다 떨어졌다 하던 것 */
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 4px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .passengerLabel {
