@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
@@ -16,7 +16,7 @@ import { ACTIVITY_CITIES, type ActivityCity } from './activities/activityCities'
 import { ActivityEmpty, ActivityProductGrid, ProductSkeletonGrid } from './activities/ActivityProductGrid';
 import { ActivityFilterDialog } from './activities/ActivityFilterDialog';
 import { DEFAULT_FILTERS, SORTS, countActiveFilters, type ActivityFilters, type ActivitySort } from './activities/activityFilters';
-import { useActivityList } from './activities/useActivityList';
+import { useActivityList, useActivityPopularTitles } from './activities/useActivityList';
 import styles from './ActivitiesScreen.module.css';
 
 /** 여행도 고른 도시도 없을 때 마이리얼트립에서 보여 줄 도시(마이리얼트립은 한국어 이름으로 찾는다) */
@@ -87,15 +87,8 @@ export function ActivitiesScreen() {
   const visible = list.items.slice(0, shown);
   const filterCount = countActiveFilters(filters);
 
-  // 인기 검색어 — 지금 받은 상품 중 리뷰가 많은 4개의 이름(누르면 마이리얼트립 검색으로 나간다)
-  const popularSearches = useMemo(
-    () =>
-      [...list.items]
-        .sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))
-        .slice(0, POPULAR_SEARCH_COUNT)
-        .map((p) => p.title),
-    [list.items],
-  );
+  // 인기 검색어 — 이 도시 기본 추천 목록 맨 앞 상품 이름(누르면 마이리얼트립 검색으로 나간다)
+  const popularSearches = useActivityPopularTitles(activeCity.ko, isMrt, POPULAR_SEARCH_COUNT);
 
   useEffect(() => {
     trackScreenView('activities');

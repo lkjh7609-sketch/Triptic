@@ -59,8 +59,8 @@ function renderScreen() {
   );
 }
 
-/** 상품 카드(링크) 제목들 — 인기 검색어 칩에도 같은 상품명이 나오므로 카드 안만 본다 */
-const cardTitles = () => screen.queryAllByRole('link').map((a) => a.querySelector('span[class*="title"]')?.textContent).filter(Boolean);
+/** 상품 카드(버튼) 제목들 — 인기 검색어 칩에도 같은 상품명이 나오므로 카드 안만 본다 */
+const cardTitles = () => screen.queryAllByRole('button').map((b) => b.querySelector('span[class*="title"]')?.textContent).filter(Boolean);
 const findCard = (title: string) => waitFor(() => expect(cardTitles()).toContain(title));
 
 const lists = () => calls.filter((p) => p.get('kind') === 'list');
@@ -138,6 +138,47 @@ describe('ActivitiesScreen — 마이리얼트립', () => {
     await findCard('상품 1');
     await userEvent.click(screen.getByRole('button', { name: '낮은 가격순' }));
     await waitFor(() => expect(lists().some((p) => p.get('sort') === 'price_asc')).toBe(true));
+  });
+
+  it('인기 검색어는 기본 추천 목록 맨 앞 4개 — 정렬을 바꿔도 그대로', async () => {
+    stubFetch((p) => {
+      const base = Array.from({ length: 6 }, (_, i) => product(i + 1));
+      return { items: p.get('sort') === 'price_asc' ? [...base].reverse() : base, hasNextPage: false, totalCount: 6 };
+    });
+    renderScreen();
+    await findCard('상품 1');
+    const chips = () => within(screen.getByText('인기 검색어').parentElement!).getAllByRole('button').map((b) => b.textContent);
+    expect(chips()).toEqual(['상품 1', '상품 2', '상품 3', '상품 4']);
+    await userEvent.click(screen.getByRole('button', { name: '낮은 가격순' }));
+    await waitFor(() => expect(cardTitles()[0]).toBe('상품 6'));
+    expect(chips()).toEqual(['상품 1', '상품 2', '상품 3', '상품 4']);
+  });
+
+  it('마이링크는 카드를 누를 때만 만든다(화면에 나올 때는 만들지 않는다)', async () => {
+    stubFetch(() => ({ items: [product(1), product(2)], hasNextPage: false, totalCount: 2 }));
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    renderScreen();
+    await findCard('상품 1');
+    const fetchMock = vi.mocked(fetch);
+    const linkCalls = () => fetchMock.mock.calls.filter(([url]) => String(url).includes('/api/partnerLink'));
+    expect(linkCalls()).toHaveLength(0);
+    await userEvent.click(screen.getAllByRole('button').find((b) => b.querySelector('span[class*="title"]')?.textContent === '상품 2')!);
+    await waitFor(() => expect(linkCalls()).toHaveLength(1));
+    expect(String(linkCalls()[0][0])).toContain('products%2F2');
+    open.mockRestore();
+  });
+
+  it('필터 없는 기본 목록은 받지 못해도 마지막으로 잘 받은 상품을 보여 주고, 필터를 건 결과는 빈 채로 둔다', async () => {
+    stubFetch(() => ({ items: [product(1)], hasNextPage: false, totalCount: 1 }));
+    const first = renderScreen();
+    await findCard('상품 1');
+    first.unmount();
+    // 이번에는 서버가 빈 목록을 준다
+    stubFetch((p) => ({ items: [], hasNextPage: false, totalCount: 0, _p: p.toString() }));
+    renderScreen();
+    await findCard('상품 1');
+    await userEvent.click(screen.getByRole('button', { name: '낮은 가격순' }));
+    expect(await screen.findByText('조건에 맞는 상품이 없어요')).toBeInTheDocument();
   });
 
   it('결과가 없으면 안내와 마이리얼트립 검색으로 가는 길', async () => {

@@ -58,9 +58,9 @@ export function serverMaxPrice(f: ActivityFilters): number | undefined {
   return f.maxPrice < PRICE_MAX ? f.maxPrice : undefined;
 }
 
-/** "한국어 가이드"는 API 필드가 없어 검색어에 붙여 근사한다 */
+/** "한국어 가이드"는 API 필드가 없어 검색어에 "한국어"를 붙여 근사한다 */
 export function searchKeyword(city: string, f: ActivityFilters): string {
-  return f.koreanGuide ? `${city} 한국어 가이드` : city; // i18n-exempt: 마이리얼트립 검색어
+  return f.koreanGuide ? `${city} 한국어` : city; // i18n-exempt: 마이리얼트립 검색어
 }
 
 export const INSTANT_TAG = '즉시 확정'; // i18n-exempt: 마이리얼트립이 상품 tags로 주는 값
