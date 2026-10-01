@@ -13,10 +13,11 @@
 
 .emptyCta {
   display: inline-block;
-  padding: var(--space-2) var(--space-4);
+  padding: calc(var(--space-2) - 1.5px) calc(var(--space-4) - 1.5px);
   border-radius: var(--radius-pill);
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  border: 1.5px solid var(--btn-secondary-border);
   font-weight: 700;
   text-decoration: none;
 }

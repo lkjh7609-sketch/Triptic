@@ -195,9 +195,9 @@
 }
 
 .noticePrimary {
-  border: 0;
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
+  border: 1.5px solid var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
 }
 
 .noticeSecondary {
