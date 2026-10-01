@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Building2, PlaneTakeoff, Ticket } from 'lucide-react';
 import heroImage from '@/assets/home/hero.webp';
+import { useLiquidGlass } from './useLiquidGlass';
 import styles from './HeroTabs.module.css';
 
 const TABS = [
@@ -16,9 +17,19 @@ function CapsuleTabs({ variant }: { variant: 'hero' | 'flat' }) {
   const { t } = useTranslation('home');
   const navigate = useNavigate();
   const [picked, setPicked] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  // 히어로 캡슐만: 뒤 사진이 가장자리에서 휘어 보이는 굴절(크롬 계열). 그 밖의 브라우저는 블러 유리 그대로
+  const glass = useLiquidGlass(navRef);
+  const refract = variant === 'hero' && glass.refracting;
 
   return (
-    <nav className={`${styles.capsule} ${variant === 'hero' ? styles.capsuleHero : styles.capsuleFlat}`} aria-label={t('page.tabs.label')}>
+    <nav
+      ref={navRef}
+      className={`${styles.capsule} ${variant === 'hero' ? styles.capsuleHero : styles.capsuleFlat} ${refract ? styles.capsuleRefract : ''}`}
+      style={refract ? { backdropFilter: `blur(3px) ${glass.filterUrl} saturate(1.5) brightness(1.08)` } : undefined}
+      aria-label={t('page.tabs.label')}
+    >
+      {variant === 'hero' ? glass.svg : null}
       {TABS.map(({ key, to, Icon }) => (
         <button
           key={key}
