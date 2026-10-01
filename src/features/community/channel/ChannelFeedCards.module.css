@@ -1,0 +1,246 @@
+.card {
+  display: block;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.author {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+div.author {
+  cursor: inherit;
+}
+
+.avatar,
+.avatarFallback {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.avatar {
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.avatarFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: var(--font-label-size);
+  font-weight: 700;
+}
+
+.authorText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.authorLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.authorName {
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.time {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.countPill {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+}
+
+.body,
+.bodyWithCover {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.text {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-title-size);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.excerpt {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-body-size);
+  line-height: 1.5;
+  color: var(--text-body);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+}
+
+.stat {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: var(--font-label-size);
+  cursor: pointer;
+}
+
+.stat:disabled {
+  cursor: default;
+}
+
+.stat[aria-pressed='true'] {
+  color: var(--brand-text);
+}
+
+span.stat {
+  cursor: inherit;
+}
+
+.pushRight {
+  margin-left: auto;
+}
+
+.scheduleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  font-size: var(--font-caption-size);
+  color: var(--text-body);
+}
+
+.scheduleInfo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.scheduleInfo svg {
+  flex-shrink: 0;
+  color: var(--brand-text);
+}
+
+.applyBtn {
+  flex-shrink: 0;
+  padding: 8px var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: var(--font-label-size);
+  font-weight: 600;
+}
+
+@media (min-width: 700px) {
+  .card {
+    padding: var(--space-5);
+  }
+
+  .bodyWithCover {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .bodyWithCover .text {
+    flex: 1;
+  }
+
+  .bodyWithCover .thumb {
+    flex-shrink: 0;
+    width: 200px;
+    aspect-ratio: 4 / 3;
+  }
+}

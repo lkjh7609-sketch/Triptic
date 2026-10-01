@@ -694,5 +694,91 @@
     "markEnd": "도착",
     "prevMonth": "이전 달",
     "nextMonth": "다음 달"
+  },
+  "channel": {
+    "breadcrumbAll": "전체 도시 목록",
+    "breadcrumbNav": "위치",
+    "rate": "1 {{currency}} ≈ {{amount}} KRW",
+    "weatherNow": "{{temp}} {{condition}}",
+    "weatherFeels": "(체감 {{temp}})",
+    "weather": {
+      "clear": "맑음",
+      "partly": "구름 조금",
+      "cloudy": "흐림",
+      "fog": "안개",
+      "drizzle": "이슬비",
+      "rain": "비",
+      "snow": "눈",
+      "thunder": "뇌우"
+    },
+    "followers_other": "팔로워 {{count, number}}명",
+    "stories_other": "스토리 {{count, number}}개",
+    "follow": "도시 팔로우",
+    "following": "팔로잉",
+    "followFailed": "팔로우를 바꾸지 못했어요. 잠시 뒤 다시 시도해 주세요.",
+    "createTrip": "{{city}} 일정 만들기",
+    "landmarks": "대표 명소",
+    "landmarkSearch": "\"{{name}}\" 글 찾기",
+    "tabs": "글 분류",
+    "tabAll": "전체",
+    "tabCompanion": "동행 구하기",
+    "searchPlaceholder": "{{city}} 글·동행 검색...",
+    "searchAria": "{{city}} 글 검색",
+    "sortAria": "정렬",
+    "sort": {
+      "latest": "최신순",
+      "popular": "인기순",
+      "comments": "댓글순",
+      "deadline": "출발 임박순"
+    },
+    "loadMore": "더 많은 {{city}} 이야기 보기",
+    "loadMoreCompanion": "더 많은 {{city}} 동행 글 보기",
+    "searchEmpty": "\"{{query}}\"에 맞는 글이 없어요.",
+    "searchClear": "검색 지우기",
+    "companionEmpty": "지금 모집 중인 동행 글이 없어요.",
+    "companionWrite": "동행 구하기 글 쓰기",
+    "recruiting": "동행 모집중",
+    "schedule": "일정",
+    "scheduleTbd": "날짜 협의",
+    "wantedGender": "희망 {{value}}",
+    "applyBtn": "동행 신청하기",
+    "moreMenu": "더보기",
+    "tripCard": {
+      "title": "{{city}} 여행 일정 만들기",
+      "desc": "항공권·호텔 예약 서류를 올리면 일정에 자동으로 정리해 드려요.",
+      "length": "추천 여행 기간",
+      "season": "최적 여행 시기",
+      "timeDiff": "시차",
+      "cta": "일정 만들기"
+    },
+    "timeDiff": {
+      "same": "시차 없음",
+      "behind": "한국보다 {{time}} 느림",
+      "ahead": "한국보다 {{time}} 빠름",
+      "h": "{{h}}시간",
+      "hm": "{{h}}시간 {{m}}분",
+      "m": "{{m}}분"
+    },
+    "fx": {
+      "title": "실시간 환율 계산기",
+      "inputAria": "{{currency}} 금액",
+      "rate": "실시간 환율"
+    },
+    "prices": {
+      "title": "물가 예시",
+      "note": "현지 통화 기준 대략치예요. 원화는 실시간 환율로 환산한 어림값이에요.",
+      "coffee": "스타벅스 아메리카노",
+      "taxi": "택시·차량호출 (시내 기본 거리)",
+      "meal": "현지 식당 한 끼",
+      "notePlain": "현지 통화 기준 대략치예요."
+    },
+    "urgent": {
+      "title": "급구! 동행",
+      "today": "오늘 출발",
+      "tomorrow": "내일 출발",
+      "days_other": "{{count}}일 뒤 출발"
+    },
+    "write": "이야기 쓰기",
+    "recruitCount_other": "{{count}}명 모집"
   }
 }

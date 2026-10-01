@@ -20,6 +20,7 @@ import type { Destination, Post } from './types';
 import type { Tab } from './CommunityScreen';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { stripMarkdown } from './editor/markdownParse';
+import { splitBody } from './channel/channelHelpers';
 
 type Sort = 'latest' | 'likes' | 'comments';
 
@@ -32,16 +33,6 @@ interface Props {
   setTab: (tab: Tab) => void;
   followedCount: number;
   feed: UseInfiniteQueryResult<InfiniteData<PostsPage>>;
-}
-
-/** 본문 첫 줄을 제목처럼, 나머지를 요약으로 (글에는 제목 필드가 따로 없다) */
-function splitBody(body: string): { title: string; excerpt: string } {
-  const trimmed = body.trim();
-  const newline = trimmed.indexOf('\n');
-  const firstLine = newline === -1 ? trimmed : trimmed.slice(0, newline);
-  const title = firstLine.length > 90 ? `${firstLine.slice(0, 90)}…` : firstLine;
-  const excerpt = newline === -1 ? (firstLine.length > 90 ? trimmed.slice(90) : '') : trimmed.slice(newline + 1);
-  return { title, excerpt: excerpt.trim() };
 }
 
 function initialOf(name: string | null | undefined): string {
