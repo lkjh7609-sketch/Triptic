@@ -62,14 +62,12 @@
    Ghost     : 테두리·배경 없이 --btn-ghost-fg 글자 (우선순위 가장 낮은 행동. 예: 취소·이전)
    Destructive: 채움 --danger(위험한 확정) 또는 --danger-text 글자(목록 안 삭제) — 테마색과 무관하게 항상 빨강
    아래 토큰은 라이트·다크가 같이 따라가도록 테마 토큰만 참조한다. */
-:root {
   --btn-secondary-bg: var(--surface-card);
   --btn-secondary-fg: var(--brand-text);
   --btn-secondary-border: var(--brand);
   --btn-secondary-hover-bg: var(--brand-tint);
   --btn-ghost-fg: var(--text-muted);
   --btn-ghost-hover-bg: var(--surface-subtle);
-}
 
 /* ===== §4 간격·모서리·그림자 ===== */
   --space-1: 4px;
