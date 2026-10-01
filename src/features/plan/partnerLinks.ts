@@ -40,7 +40,7 @@ function showRedirecting(tab: Window) {
       'body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;' +
       'font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;' +
       'background:#FDFBF7;color:#57534E;font-size:15px}' +
-      '.spinner{width:28px;height:28px;border:3px solid #E7E5E4;border-top-color:#0D9488;border-radius:50%;animation:spin .8s linear infinite}' +
+      '.spinner{width:28px;height:28px;border:3px solid #E7E5E4;border-top-color:#2E4F4F;border-radius:50%;animation:spin .8s linear infinite}' +
       '@keyframes spin{to{transform:rotate(360deg)}}' +
       '@media (prefers-color-scheme:dark){body{background:#0B0F19;color:#94A3B8}.spinner{border-color:#283548;border-top-color:#4FC3F7}}';
     doc.head.appendChild(style);

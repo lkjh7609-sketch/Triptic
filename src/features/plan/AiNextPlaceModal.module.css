@@ -124,7 +124,7 @@
 }
 
 .reasonBox {
-  background: rgba(13, 148, 136, 0.05);
+  background: color-mix(in srgb, var(--brand) 5%, transparent);
   border-left: 3px solid var(--brand);
   padding: var(--space-3);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;

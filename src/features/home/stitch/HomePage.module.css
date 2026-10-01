@@ -1,5 +1,5 @@
 /* 홈 시안(Stitch/Home) 전용 토큰과 골격.
-   라이트는 시안 값 그대로(PC는 stone 계열·진한 청록 #005c55, 모바일은 slate 계열·#0F766E),
+   라이트는 시안 값 그대로(PC는 stone 계열, 모바일은 slate 계열 — 강조색은 앱 브랜드(포레스트 그린 #2E4F4F)로 통일),
    다크는 앱 공통 토큰을 그대로 따라간다. 이 토큰은 홈 안에서만 쓴다(--h-*). */
 .page {
   --h-bg: #f8fafc;
@@ -11,15 +11,15 @@
   --h-ink: #1c1917;
   --h-ink-2: #57534e;
   --h-ink-3: #6b6560; /* 시안은 stone-400(2.5:1)이라 글자로는 한 단계 진하게 */
-  --h-accent: #005c55;
-  --h-accent-hover: #004e48;
-  --h-accent-text: #005c55;
+  --h-accent: #2e4f4f;
+  --h-accent-hover: #1d3535;
+  --h-accent-text: #2e4f4f;
   --h-on-accent: #ffffff;
   --h-badge: #ba1a1a; /* 할인 배지 */
   --h-badge-text: #ffffff;
-  --h-tint: #f0fdfa;
-  --h-subtle: #ccfbf1;
-  --h-deep: #005c55;
+  --h-tint: #f1f6f5;
+  --h-subtle: #e1ece9;
+  --h-deep: #2e4f4f;
   --h-sand: #f1f5f2;
   --h-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --h-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -33,7 +33,7 @@
   line-height: 1.375rem;
 }
 
-/* 모바일(1024px 미만): 시안은 slate 계열 글자 + #0F766E 강조 */
+/* 모바일(1024px 미만): 시안은 slate 계열 글자 + 포레스트 그린 강조 */
 @media (max-width: 1023px) {
   .page {
     --h-bg: var(--surface-page); /* 다른 화면과 같은 배경(시안 #faf8ff는 쓰지 않음) */
@@ -41,13 +41,13 @@
     --h-ink: #0f172a;
     --h-ink-2: #475569;
     --h-ink-3: #64748b;
-    --h-accent: #0f766e;
-    --h-accent-hover: #115e59;
-    --h-accent-text: #0f766e;
+    --h-accent: #2e4f4f;
+    --h-accent-hover: #1d3535;
+    --h-accent-text: #2e4f4f;
     --h-badge: #c2410c; /* 시안 #EA580C는 흰 글씨 3.6:1이라 4.5:1 이상으로 한 단계 진하게 */
     --h-chip: #f9faf8;
     --h-shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
-    --h-shadow-md: 0 8px 18px -4px rgba(0, 92, 85, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+    --h-shadow-md: 0 8px 18px -4px rgba(46, 79, 79, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
   }
 }
 

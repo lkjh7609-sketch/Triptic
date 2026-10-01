@@ -25,11 +25,11 @@
   --toast-border: rgba(68, 64, 60, 0.4);
   --toast-text: #ffffff;
   --toast-sub: #d6d3d1;
-  --toast-pill-bg: rgba(19, 78, 74, 0.8);
-  --toast-pill-text: #a3faef;
+  --toast-pill-bg: rgba(46, 79, 79, 0.8);
+  --toast-pill-text: #cfe3df;
   --toast-close: #a8a29e;
-  --toast-icon-bg: #0f766e;
-  --toast-icon-fg: #a3faef;
+  --toast-icon-bg: #3f6b6b;
+  --toast-icon-fg: #e1ece9;
 
   display: flex;
   align-items: center;

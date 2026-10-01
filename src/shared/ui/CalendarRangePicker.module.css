@@ -81,13 +81,13 @@
 }
 
 .dayCell.inRange {
-  background: rgba(13, 148, 136, 0.1);
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
 }
 .dayCell.startRange {
-  background: linear-gradient(to right, transparent 50%, rgba(13, 148, 136, 0.1) 50%);
+  background: linear-gradient(to right, transparent 50%, color-mix(in srgb, var(--brand) 10%, transparent) 50%);
 }
 .dayCell.endRange {
-  background: linear-gradient(to right, rgba(13, 148, 136, 0.1) 50%, transparent 50%);
+  background: linear-gradient(to right, color-mix(in srgb, var(--brand) 10%, transparent) 50%, transparent 50%);
 }
 .dayCell.startRange.endRange {
   background: transparent;
