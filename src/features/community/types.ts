@@ -37,6 +37,34 @@ export interface Destination {
   post_count: number;
   /** 현재 로케일 이름(조인 결과, 없으면 slug로 폴백) */
   name: string;
+  /** 영문 이름(도시 채널 제목용, getDestinationBySlug에서만 채움) */
+  nameEn?: string;
+}
+
+/** 한국어·영어 두 벌로 저장되는 문구(일·번체는 영어로 보여준다) */
+export interface LocalizedText {
+  ko: string;
+  en: string;
+}
+
+export type GuidePriceKey = 'coffee' | 'taxi' | 'meal';
+
+/** 물가 예시 한 줄 — 금액은 그 도시 통화 기준, max가 null이면 한 가지 값 */
+export interface GuidePrice {
+  key: GuidePriceKey;
+  /** 식사처럼 도시마다 다른 항목의 이름(없으면 key의 기본 문구) */
+  label?: LocalizedText;
+  min: number;
+  max: number | null;
+}
+
+/** 도시 채널의 안내 내용(0075 destination_guides) */
+export interface DestinationGuide {
+  destination_id: string;
+  landmarks: LocalizedText[];
+  trip_length: LocalizedText | null;
+  best_season: LocalizedText | null;
+  prices: GuidePrice[];
 }
 
 export interface CommunityProfile {
