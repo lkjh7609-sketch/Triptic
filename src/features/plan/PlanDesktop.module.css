@@ -943,7 +943,7 @@
 }
 
 .cardMenuDanger {
-  color: var(--pd-accent);
+  color: var(--danger-text); /* 삭제·나가기는 테마색과 무관하게 빨강 */
 }
 .progressLabel {
   color: var(--pd-muted);

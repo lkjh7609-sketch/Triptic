@@ -265,6 +265,6 @@
   border: none;
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--text-muted);
+  color: var(--danger-text); /* 삭제는 테마색과 무관하게 빨강 */
   cursor: pointer;
 }
