@@ -156,13 +156,6 @@
       "open": "View flights to {{city}}"
     }
   },
-  "sections": {
-    "label": "Home menu",
-    "home": "Home",
-    "flights": "Flights",
-    "hotels": "Hotels",
-    "activities": "Activities"
-  },
   "hotels": {
     "title": "Hotels",
     "subtitle": "Find a place to stay at your destination",

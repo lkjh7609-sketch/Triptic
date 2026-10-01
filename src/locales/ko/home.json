@@ -155,13 +155,6 @@
       "open": "{{city}} 항공권 보기"
     }
   },
-  "sections": {
-    "label": "홈 메뉴",
-    "home": "홈",
-    "flights": "항공",
-    "hotels": "호텔",
-    "activities": "액티비티"
-  },
   "hotels": {
     "title": "숙소",
     "subtitle": "여행지 숙소를 찾아보세요",

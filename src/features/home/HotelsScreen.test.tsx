@@ -1,9 +1,19 @@
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HotelsScreen } from './HotelsScreen';
 
 describe('HotelsScreen', () => {
+  beforeEach(() => {
+    // 상단 유리 캡슐 탭이 화면 크기를 본다(jsdom에는 matchMedia가 없다)
+    window.matchMedia = ((query: string) => ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    })) as unknown as typeof window.matchMedia;
+  });
+
   afterEach(() => {
     vi.useRealTimers();
   });
