@@ -1,0 +1,41 @@
+.root {
+  font-size: var(--font-body-size);
+  line-height: 1.7;
+  color: var(--text-body);
+  word-break: break-word;
+}
+
+.paragraph {
+  margin: 0 0 var(--space-3);
+}
+
+.heading {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 1.125rem;
+  line-height: 1.4;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.list {
+  margin: 0 0 var(--space-3);
+  padding-left: 1.4em;
+}
+
+.quote {
+  margin: 0 0 var(--space-3);
+  padding: 2px 0 2px var(--space-3);
+  border-left: 3px solid var(--border-strong);
+  color: var(--text-muted);
+}
+
+.root a {
+  color: var(--brand-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+
+.root > :last-child {
+  margin-bottom: 0;
+}

@@ -86,6 +86,15 @@
 
 ## 날짜별 기록
 
+### 2026-10-02 — 일반글 쓰기에 텍스트 편집기(굵게·기울임·제목·목록·링크)
+
+- **편집기**: Lexical(MIT) — `src/features/community/editor/RichTextEditor.tsx`. 서식 도구줄(굵게·기울임·제목·글머리 목록·번호 목록·링크) + `# `·`- `·`**굵게**` 직접 입력. **일반글 쓰기에만** 넣음(동행글은 그대로, 사용자 결정). 글쓰기 화면을 열 때만 따로 내려받는다(`React.lazy`, 조각 gzip 약 98KB — Lexical 코어가 절반. 앱 첫 로딩 번들은 그대로).
+- **저장 형식**: `posts.body`에 "가벼운 마크다운"(굵게 `**`·기울임 `*`·제목 `#`·목록 `-`/`1.`·링크 `[글](주소)`·인용 `>`) 문자열. **DB·서버 함수 변경 없음**(2000자 제한은 서기호 포함 길이로 센다). 예전 평문 글은 그대로 읽힌다(줄바꿈 유지). 파서·글자만 뽑기: `editor/markdownParse.ts`, 화면 그리기: `editor/LightMarkdown.tsx`(HTML을 만들지 않고 React 요소로만 그림 — 링크는 http(s)만, `nofollow ugc` 새 탭).
+- **화면 반영**: 글 상세는 서식대로 그림(번역문 포함). 피드 카드·커뮤니티 목록·홈 인기 여행기·저장한 여행기·`api/seo.js`(검색 결과 미리보기)는 서식 기호를 뺀 글자(`stripMarkdown`/`clip`). 관리자 검수 미리보기는 원문 그대로.
+- **글자 수**: 편집기가 저장되는 마크다운 길이 기준으로 한도에서 입력을 막고(한글 조합 중인 글자는 못 막음), 붙여넣기로 넘치면 게시 때 안내("글이 너무 길어요").
+- **확인한 것**: 가짜 한글 조합(CDP `imeSetComposition`)으로 글자·단축 입력·툴바·링크·글자 수 한도·바깥 값 교체(임시저장 이어 쓰기)를 시험함. **실제 휴대폰(iOS·안드로이드) 한글 키보드는 못 시험했다 — 배포 뒤 직접 확인 필요**.
+- **알아 둘 것**: ① 파일 이름 `LightMarkdown.tsx`와 `lightMarkdown.ts`가 대소문자만 달라 macOS에서 충돌해 파서는 `markdownParse.ts`로 함. ② 글쓰기 화면 시험(`ComposePostScreen.test.tsx`)은 편집기를 textarea로 바꿔 끼운 모의로 흐름만 본다(contenteditable은 jsdom에서 다루기 어려움). ③ 번역은 마크다운 기호째 보내므로 번역기가 기호를 망가뜨리면 서식이 안 보일 수 있다.
+
 ### 2026-10-01 (밤 2) — 액티비티 탭을 Stitch 시안대로(Stitch/Home/Activities) + 마이리얼트립 필터
 
 **마이리얼트립 API로 되는 필터(문서 docs.myrealtrip.com 정독)**: `POST /v1/products/tna/search`가 서버에서 거는 건 keyword·category(**도시마다 다른 값** — `POST /v1/products/tna/categories`로 받아 그대로 되돌려 보냄, 1개만)·minPrice·maxPrice·sort(price_asc/price_desc/review_score_desc/selling_count_desc)·page(1부터)·size(1~100). 응답에 hasNextPage·totalCount·tags("즉시 확정")·reviewScore. 원가(할인율)·한국어 가이드 필드는 없습니다.

@@ -35,6 +35,14 @@ vi.mock('./imageProcessing', () => ({
   uploadPostImage: vi.fn(),
 }));
 
+// 본문 편집기(Lexical)는 contenteditable이라 jsdom에서 다루기 어렵다 — 이 시험은 글쓰기 화면의 흐름(필수 입력·임시저장·게시)을 보는 것이라
+// 같은 값·변경 약속(value/onChange/placeholder)을 가진 textarea로 바꿔 끼운다. 편집기 자체는 마크다운 변환 시험과 화면 확인으로 본다.
+vi.mock('./editor/RichTextEditor', () => ({
+  default: ({ value, onChange, placeholder, maxLength }: { value: string; onChange: (v: string) => void; placeholder: string; maxLength: number }) => (
+    <textarea placeholder={placeholder} value={value} maxLength={maxLength} onChange={(e) => onChange(e.target.value)} />
+  ),
+}));
+
 import { ComposePostScreen } from './ComposePostScreen';
 
 function renderScreen() {
@@ -67,11 +75,15 @@ async function advance(ms = 800) {
 }
 
 describe('ComposePostScreen — 시안 구성', () => {
-  it('모바일: 사진 추가 영역 → 여행지 → 내용 → 일정 첨부 순서와 하단 게시하기 버튼', () => {
+  it('모바일: 사진 추가 영역 → 여행지 → 내용 → 일정 첨부 순서와 하단 게시하기 버튼', async () => {
     renderScreen();
     expect(screen.getByRole('heading', { name: '글쓰기' })).toBeInTheDocument();
     expect(screen.getByText('사진 추가')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /여행지를 선택해 주세요/ })).toBeInTheDocument();
+    // 편집기는 따로 내려받는 조각이라 잠깐 뒤에 나온다
+    await act(async () => {
+      await vi.dynamicImportSettled();
+    });
     expect(screen.getByPlaceholderText(/여행 이야기를 들려주세요/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /내 일정 첨부 \(선택\)/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '게시하기' })).toBeInTheDocument();

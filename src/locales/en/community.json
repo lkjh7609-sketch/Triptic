@@ -336,7 +336,8 @@
       "placeholderPc": "Tell us about your trip. Which streets did you walk and what did you taste? Write freely about the moments that mattered to you.",
       "counterPc": "{{count}} / {{max}}",
       "minHint": "At least 10 characters are recommended",
-      "error": "Please write your story"
+      "error": "Please write your story",
+      "tooLong": "Your story is too long. Please keep it under {{max}} characters."
     },
     "trip": {
       "label": "Attach my itinerary (optional)",
@@ -354,7 +355,19 @@
       "days_other": "{{count}} days",
       "empty": "You haven’t created any itineraries yet."
     },
-    "missing": "Please choose a destination and write your story."
+    "missing": "Please choose a destination and write your story.",
+    "editor": {
+      "toolbar": "Text formatting",
+      "bold": "Bold",
+      "italic": "Italic",
+      "heading": "Heading",
+      "bulletList": "Bulleted list",
+      "numberedList": "Numbered list",
+      "link": "Link",
+      "linkRemove": "Remove link",
+      "linkPlaceholder": "Link address (e.g. example.com)",
+      "linkApply": "Apply"
+    }
   },
   "shared": {
     "loadError": "This share link has expired or could not be found.",

@@ -328,7 +328,8 @@
       "placeholderPc": "說說你的旅行吧。你走過哪些小巷、嚐到了什麼？自由記錄那些珍貴瞬間的感受。",
       "counterPc": "{{count}} / {{max}} 字",
       "minHint": "建議至少輸入 10 個字",
-      "error": "請輸入內容"
+      "error": "請輸入內容",
+      "tooLong": "內容太長了,請縮短至 {{max}} 字以內。"
     },
     "trip": {
       "label": "附上我的行程（選填）",
@@ -345,7 +346,19 @@
       "days_other": "{{count}} 天",
       "empty": "你還沒有建立任何行程。"
     },
-    "missing": "請選擇旅遊地並輸入內容。"
+    "missing": "請選擇旅遊地並輸入內容。",
+    "editor": {
+      "toolbar": "文字格式",
+      "bold": "粗體",
+      "italic": "斜體",
+      "heading": "標題",
+      "bulletList": "項目清單",
+      "numberedList": "編號清單",
+      "link": "連結",
+      "linkRemove": "移除連結",
+      "linkPlaceholder": "連結網址(例:example.com)",
+      "linkApply": "套用"
+    }
   },
   "shared": {
     "loadError": "分享連結已過期或找不到。",

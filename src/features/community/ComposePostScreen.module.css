@@ -475,29 +475,6 @@
   position: relative;
 }
 
-.textarea {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 180px;
-  padding: 8px 4px;
-  border: 0;
-  background: transparent;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  resize: none;
-}
-
-.textarea::placeholder {
-  color: var(--text-placeholder);
-}
-
-.textarea:focus {
-  outline: none;
-}
-
 .writingFoot {
   display: flex;
   align-items: center;
@@ -511,6 +488,16 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.75rem;
   color: var(--text-tertiary);
+}
+
+.counterOver {
+  color: var(--danger-text);
+  font-weight: 700;
+}
+
+/* 편집기를 내려받는 동안 자리만 잡는다(글 칸이 갑자기 늘어나지 않게) */
+.editorFallback {
+  min-height: 220px;
 }
 
 .minHint {
@@ -534,13 +521,6 @@
     box-shadow: 0 0 0 3px var(--brand-tint);
   }
 
-  .textarea {
-    min-height: 220px;
-    padding: 0;
-    font-size: 1rem;
-    line-height: 1.7;
-    resize: vertical;
-  }
 
   .writingFoot {
     padding: 8px 0 0;

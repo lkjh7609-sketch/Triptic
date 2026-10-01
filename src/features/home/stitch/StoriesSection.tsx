@@ -12,13 +12,14 @@ import { splitPostBody } from './homeUtils';
 import { relativeTime } from './relativeTime';
 import shared from './shared.module.css';
 import styles from './StoriesSection.module.css';
+import { stripMarkdown } from '@/features/community/editor/markdownParse';
 
 const PC_LIMIT = 8;
 const MOBILE_LIMIT = 2;
 
 function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
   const { t, i18n } = useTranslation('home');
-  const { title, summary } = splitPostBody(post.body);
+  const { title, summary } = splitPostBody(stripMarkdown(post.body));
   const image = post.images?.[0] ? getPostImageUrl(post.images[0].storage_path) : null;
   const author = post.author?.display_name ?? '';
   const initial = author.slice(0, 1).toUpperCase();

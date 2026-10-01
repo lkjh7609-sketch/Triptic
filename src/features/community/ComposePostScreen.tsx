@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, TriangleAlert, X } from 'lucide-react';
@@ -19,6 +19,9 @@ import { formatTripPeriod } from './tripPeriodText';
 import { MAX_POST_IMAGES, photoFromStored, usePostPhotos } from './usePostPhotos';
 import type { Destination } from './types';
 import styles from './ComposePostScreen.module.css';
+
+// 편집기(Lexical)는 글쓰기 화면에서만 필요해서 따로 내려받는다 — 앱 첫 로딩에는 들어가지 않는다
+const RichTextEditor = lazy(() => import('./editor/RichTextEditor'));
 
 const MAX_BODY_LENGTH = 2000;
 const AUTOSAVE_DELAY_MS = 700;
@@ -53,7 +56,7 @@ function ComposeForm({ userId }: { userId: string }) {
   const createPost = useCreatePost();
   const photoState = usePostPhotos(userId);
   const { photos, setPhotos } = photoState;
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const destRef = useRef<HTMLButtonElement>(null);
   const [searchParams] = useSearchParams();
   const initialDestSlug = searchParams.get('destination');
@@ -173,15 +176,23 @@ function ComposeForm({ userId }: { userId: string }) {
   // ── 게시 ────────────────────────────────────────────────────────────────
   const missingDest = showErrors && !destinationId;
   const missingBody = showErrors && !body.trim();
+  // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
+  const tooLong = body.length > MAX_BODY_LENGTH;
   const blocked = blockedBody !== null && blockedBody === body;
   const publishDisabled = createPost.isPending || photoState.uploading || blocked;
 
   async function handlePublish() {
     setSubmitError(null);
+    if (tooLong) {
+      setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
+      return;
+    }
     if (!destinationId || !body.trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
       flagInvalid(!destinationId ? destRef.current : bodyRef.current);
+      // flagInvalid는 칸 안의 첫 버튼(서식 도구)에 포커스를 주므로 글 칸으로 다시 옮긴다
+      if (destinationId) bodyRef.current?.querySelector<HTMLElement>('[contenteditable="true"]')?.focus({ preventScroll: true });
       return;
     }
     try {
@@ -283,11 +294,11 @@ function ComposeForm({ userId }: { userId: string }) {
   const storySection = (
     <section className={`${styles.section} ${desktop ? styles.card : ''}`} aria-labelledby="compose-story-label">
       <div className={styles.labelRow}>
-        <label id="compose-story-label" htmlFor="compose-story" className={styles.label}>
+        <span id="compose-story-label" className={styles.label}>
           {storyLabel} {desktop ? <span className={styles.required}>*</span> : null}
-        </label>
+        </span>
         {desktop ? (
-          <span className={styles.counterTop}>{t('compose.story.counterPc', { count: body.length, max: MAX_BODY_LENGTH })}</span>
+          <span className={`${styles.counterTop} ${tooLong ? styles.counterOver : ''}`}>{t('compose.story.counterPc', { count: body.length, max: MAX_BODY_LENGTH })}</span>
         ) : null}
         {missingBody ? (
           <span className={styles.errorText} role="alert">
@@ -296,22 +307,20 @@ function ComposeForm({ userId }: { userId: string }) {
         ) : null}
       </div>
       <div className={`${styles.writing} ${missingBody ? styles.writingError : ''}`}>
-        <textarea
-          id="compose-story"
-          ref={bodyRef}
-          className={styles.textarea}
-          value={body}
-          maxLength={MAX_BODY_LENGTH}
-          rows={desktop ? 8 : 7}
-          placeholder={desktop ? t('compose.story.placeholderPc') : t('compose.story.placeholder')}
-          onChange={(e) => {
-            setBody(e.target.value);
-            clearInvalid(bodyRef.current);
-          }}
-        />
+        <Suspense fallback={<div className={styles.editorFallback} aria-hidden="true" />}>
+          <RichTextEditor
+            editorRef={bodyRef}
+            value={body}
+            maxLength={MAX_BODY_LENGTH}
+            minHeight={desktop ? 220 : 180}
+            labelledBy="compose-story-label"
+            placeholder={desktop ? t('compose.story.placeholderPc') : t('compose.story.placeholder')}
+            onChange={setBody}
+          />
+        </Suspense>
         <div className={styles.writingFoot}>
           {desktop ? <span className={styles.minHint}>{t('compose.story.minHint')}</span> : <span />}
-          {desktop ? null : <span className={styles.counter}>{body.length}/{MAX_BODY_LENGTH}</span>}
+          {desktop ? null : <span className={`${styles.counter} ${tooLong ? styles.counterOver : ''}`}>{body.length}/{MAX_BODY_LENGTH}</span>}
         </div>
       </div>
     </section>
