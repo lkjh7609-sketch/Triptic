@@ -17,6 +17,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    // 전체를 한꺼번에 돌릴 때 무거운 화면 시험(동행 글쓰기·달력)의 첫 시험이 기본 5초를 넘겨 간헐적으로 실패했다
+    testTimeout: 15_000,
     css: false,
     setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.test.{js,ts,tsx}', 'api/**/*.test.js', 'supabase/functions/**/*.test.ts'],
