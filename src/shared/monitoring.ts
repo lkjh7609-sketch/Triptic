@@ -46,6 +46,14 @@ function flushQueue() {
   for (const item of pending) posthogModule?.capture(item.name, item.props);
 }
 
+/**
+ * 고칠 수 없고 해롭지 않은 오류 — Sentry로 보내지 않는다.
+ * View Transition: 화면 전환 애니메이션을 시작하려는데 그 사이 앱이 백그라운드로 가면 브라우저가 전환만 건너뛰고
+ * "InvalidStateError"를 던진다(문구는 브라우저마다 다름: "Skipping view transition because document visibility state has become hidden." /
+ * "View transition was skipped because document visibility state is hidden."). 화면 이동 자체는 정상으로 끝난다.
+ */
+export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i];
+
 export async function initMonitoring(): Promise<void> {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
   if (sentryDsn && !sentryModule) {
@@ -57,6 +65,7 @@ export async function initMonitoring(): Promise<void> {
       tracesSampleRate: import.meta.env.PROD ? 0.2 : 0,
       // 광고(애드센스) 스크립트 안에서 나는 오류는 우리 코드가 아니라 고칠 수 없다 — 예: iOS Safari에서
       // pagead2.googlesyndication.com의 rum_fy2021.js가 던지는 "Error: int64"(2026-09-30). 스택 맨 위가 이 주소면 버린다.
+      ignoreErrors: IGNORED_ERRORS,
       denyUrls: [/googlesyndication\.com/i, /doubleclick\.net/i, /googletagservices\.com/i, /adservice\.google\./i],
     });
     sentryModule = Sentry;

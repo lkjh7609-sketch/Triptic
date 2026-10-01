@@ -86,6 +86,12 @@
 
 ## 날짜별 기록
 
+### 2026-10-02 (밤 3) — Sentry "View transition … document visibility state is hidden" 오류 정리
+
+- **증상**: Sentry에 `InvalidStateError` 두 건(TRIPTIC-3 "Skipping view transition because document visibility state has become hidden.", TRIPTIC-4 "View transition was skipped because document visibility state is hidden."), 둘 다 iOS 18.7 Mobile Safari·각 1건. 화면 이동 애니메이션(`startViewTransition`)을 시작하려는데 앱이 백그라운드로 가 있어서 브라우저가 전환만 건너뛰며 던지는 오류 — **화면 이동 자체는 정상**(해롭지 않음).
+- **조치**: ① `router.tsx`의 이동 감싸기에서 문서가 보이지 않을 때(`visibilityState !== 'visible'`)는 전환을 켜지 않음. ② 이동을 시작한 뒤 그 사이에 가려지는 경우는 막을 수 없어 `monitoring.ts`의 `IGNORED_ERRORS`(`/view transition.*visibility state/i`)로 Sentry 전송에서 제외(시험 포함). 다른 오류는 그대로 보낸다.
+- **남은 것**: 배포 뒤 같은 이슈가 다시 안 쌓이는지 Sentry에서 확인하고, 두 이슈(TRIPTIC-3·4)는 Resolve 처리하면 됨.
+
 ### 2026-10-02 (밤 2) — 유리 캡슐 자리 통일·더 얇게
 
 - **자리 통일(사용자 요청)**: 홈과 항공·호텔·액티비티 화면에서 캡슐이 같은 자리에 있게. PC는 사진 띠의 위 간격을 홈 히어로와 같은 48px로(측정: 캡슐 top 48px 동일), 모바일은 홈의 상단 로고 줄(`HomeTopBar`, 홈 CSS에서 분리한 공용 부품)을 세 화면에도 넣고 본문 칸(최대 720px·좌우 16px)을 홈 본문과 같게(측정: top 60px·left 16px·폭 368px 동일). 세 화면 모바일 맨 위에 로고 줄이 새로 생김.
