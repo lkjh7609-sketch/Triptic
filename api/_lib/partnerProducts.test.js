@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseListFilters } from './partnerProducts.js';
+import { parseListFilters } from '../partnerProducts.js';
 
 describe('parseListFilters — 액티비티 탭 필터 검증', () => {
     it('안 준 값은 건너뛰고 page는 1', () => {
