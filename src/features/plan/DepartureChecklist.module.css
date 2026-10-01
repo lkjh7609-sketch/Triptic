@@ -148,9 +148,10 @@
 }
 
 .navNextReady {
-  border-color: var(--brand-solid);
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
+  border: 1.5px solid var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  font-weight: 700;
 }
 
 .navButton:disabled {

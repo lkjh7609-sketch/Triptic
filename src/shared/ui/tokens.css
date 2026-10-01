@@ -56,7 +56,22 @@
      --border/--border-strong은 구분선·카드용이라 1.2~1.5:1이다. */
   --border-control: #7F7A74;
 
-  /* ===== §4 간격·모서리·그림자 ===== */
+  /* ===== 버튼 위계(4단계) — 한 화면에 Primary는 1개(많아도 2개), 나머지는 아래로 내린다 =====
+   Primary   : 채움 --brand-solid + --text-on-brand (가장 중요한 단 하나의 행동. 예: 게시하기·검색·여행 만들기)
+   Secondary : 흰 바탕 + --brand 테두리 + --brand-text 글자 (대안·보조 동작. 예: 팔로우·AI 추천·빈 화면 안내)
+   Ghost     : 테두리·배경 없이 --btn-ghost-fg 글자 (우선순위 가장 낮은 행동. 예: 취소·이전)
+   Destructive: 채움 --danger(위험한 확정) 또는 --danger-text 글자(목록 안 삭제) — 테마색과 무관하게 항상 빨강
+   아래 토큰은 라이트·다크가 같이 따라가도록 테마 토큰만 참조한다. */
+:root {
+  --btn-secondary-bg: var(--surface-card);
+  --btn-secondary-fg: var(--brand-text);
+  --btn-secondary-border: var(--brand);
+  --btn-secondary-hover-bg: var(--brand-tint);
+  --btn-ghost-fg: var(--text-muted);
+  --btn-ghost-hover-bg: var(--surface-subtle);
+}
+
+/* ===== §4 간격·모서리·그림자 ===== */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;

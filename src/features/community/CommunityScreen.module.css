@@ -258,9 +258,10 @@
 }
 
 .emptyCta {
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
-  padding: 12px 24px;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  border: 1.5px solid var(--btn-secondary-border);
+  padding: 11px 23px;
   border-radius: var(--radius-pill);
   font-weight: 600;
   text-decoration: none;
@@ -269,6 +270,7 @@
 @media (hover: hover) {
   .emptyCta:hover {
     transform: translateY(-2px);
+    background: var(--btn-secondary-hover-bg);
   }
 }
 
