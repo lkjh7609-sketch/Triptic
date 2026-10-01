@@ -374,12 +374,101 @@
     "findFlightsBusy": "Searching…",
     "checklist": {
       "title": "Pre-departure checklist",
-      "flights": "Book flights",
-      "hotel": "Book a place to stay",
-      "esim": "Get an eSIM / data",
-      "insurance": "Get travel insurance",
-      "passport": "Check passport validity (6+ months)",
-      "money": "Currency & travel card",
+      "pages": {
+        "docs": "Essential documents & payment",
+        "devices": "Electronics & connectivity",
+        "clothes": "Clothing, accessories & toiletries",
+        "meds": "Medicine & handy extras"
+      },
+      "groups": {
+        "docs": "Keep in your carry-on",
+        "devices": "Electronics",
+        "comms": "Connectivity",
+        "clothes": "Clothing & accessories",
+        "hygiene": "Toiletries & cosmetics",
+        "meds": "Medicine",
+        "extras": "Handy extras"
+      },
+      "groupNotes": {
+        "docs": "The most important items — hard to replace or reissue abroad.",
+        "devices": "Power banks and heat-producing devices must go in your carry-on under aviation safety rules.",
+        "clothes": "Pack for the weather and whether you can do laundry.",
+        "hygiene": "Liquids in the cabin: 100 ml or less per container, all in one 1-litre zip bag.",
+        "meds": "Medicine can be hard to find abroad, so bring small amounts of the basics.",
+        "extras": "Optional — you can move on without ticking these."
+      },
+      "optional": "Optional",
+      "carry": {
+        "cabin": "Cabin",
+        "checked": "Checked"
+      },
+      "items": {
+        "flights": "Flights booked",
+        "hotel": "Accommodation booked",
+        "passport": "Passport (valid for at least 6 months after your departure date)",
+        "passportCopy": "Passport copy + 2 passport photos (keep apart from your passport)",
+        "ticketVoucher": "Flight e-ticket and hotel voucher (saved on your phone + 1 printout)",
+        "visa": "Visa / travel authorization (ESTA, eTA, etc.) — re-check if your destination needs one",
+        "card": "Card that works overseas (e.g. a travel card with low fees)",
+        "cash": "A little local currency",
+        "idp": "International driving permit (if renting a car; bring your local licence too)",
+        "insurance": "Travel insurance bought · policy saved on your phone",
+        "powerBank": "Power bank (160 Wh or less, max 2 per person)",
+        "gadgets": "Phone, laptop, tablet, camera",
+        "cables": "Charging cables, wired earphones",
+        "cordlessIron": "Cordless hair iron (if the battery detaches, carry only the battery in the cabin)",
+        "adapter": "Plug adapter (universal)",
+        "powerStrip": "Power strip (if you have many devices)",
+        "corded": "Corded hair dryer / hair iron",
+        "esim": "Connectivity: SIM, eSIM QR code, or pocket Wi-Fi",
+        "clothes": "Tops, bottoms, underwear, socks (days + 1)",
+        "outer": "Outerwear: light cardigan or windbreaker (for cabin and indoor A/C)",
+        "sleepwear": "Sleepwear",
+        "shoes": "Shoes: broken-in sneakers, room slippers, sandals",
+        "accessories": "Seasonal gear: sunglasses, hat, folding umbrella, parasol, swimwear",
+        "skincare": "Skincare: toner, lotion, sunscreen, sheet masks",
+        "toiletries": "Toiletries: toothbrush, toothpaste, cleanser, shampoo, body wash (use travel bottles)",
+        "shaver": "Razor, nail clippers (best in checked baggage)",
+        "hygiene": "Hygiene: wet wipes, pocket tissues, feminine products, lens solution",
+        "basicMeds": "Basics: cold medicine, pain/fever reliever, digestive aid, anti-diarrhea, motion-sickness pills",
+        "topicals": "Topicals: wound ointment, plasters, insect repellent, bite relief",
+        "prescription": "Personal prescriptions (bring the prescription and an English description)",
+        "filter": "Shower filter: for countries with water-quality concerns",
+        "pouch": "Compression pouches / zip bags: save space, store wet clothes",
+        "scale": "Luggage scale: check your bag weight after shopping",
+        "pen": "Pen: for the arrival card on the plane (keep in your cabin bag)",
+        "sleepKit": "Eye mask, earplugs, neck pillow for long flights"
+      },
+      "nav": {
+        "label": "Checklist pages",
+        "prev": "Back",
+        "next": "Next",
+        "page": "{{page}}/{{total}}",
+        "pageDone": "Page {{page}} done",
+        "pageCurrent": "Page {{page}}"
+      },
+      "final": {
+        "title": "Final check before you go",
+        "intro": "One last look so there are no surprises at the airport.",
+        "cabinTitle": "Keep these in your carry-on",
+        "cabin": {
+          "docs": "Essential documents: passport, tickets, vouchers, payment cards",
+          "powerBank": "Power bank (160 Wh or less, max 2 per person)",
+          "gadgets": "Phone, laptop, tablet, camera and their charging cables",
+          "battery": "Cordless hair iron battery, if detachable"
+        },
+        "checkedTitle": "Pack these in checked baggage",
+        "checked": {
+          "adapter": "Plug adapter and power strip",
+          "corded": "Corded hair dryer / hair iron",
+          "shaver": "Razor and nail clippers (recommended)"
+        },
+        "liquidsTitle": "Liquids rule",
+        "liquids": "Liquids in your carry-on: 100 ml or less each, all in one 1-litre zip bag.",
+        "confirm": "I've checked",
+        "confirmed": "All packed",
+        "undo": "Check again"
+      },
       "find": "Find",
       "view": "View"
     }
