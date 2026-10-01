@@ -1,53 +1,169 @@
-.field {
-  padding: var(--space-4);
+/* 선호 조건 — 앱 토큰만 써서 라이트/다크가 같이 따라간다. 모바일은 나이대 2열, PC(1024px~)는 3열 */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.field + .field {
-  border-top: 1px solid var(--border-subtle);
+.field {
+  min-width: 0;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .label {
-  display: block;
-  margin-bottom: var(--space-2);
-  font-size: var(--font-caption-size);
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.labelHint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.counter {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  color: var(--text-muted);
+  color: var(--brand-text);
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+/* 성별 — 한 줄 분할 버튼 */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
 }
 
-.chip {
+.segment {
   min-height: 44px;
-  padding: 0 var(--space-4);
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-pill);
-  background: var(--surface-card);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--text-muted);
   font-family: inherit;
-  font-size: var(--font-label-size);
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
 }
 
-.chipOn {
+.segment:active {
+  transform: scale(0.98);
+}
+
+.segmentOn {
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 나이대 */
+.ages {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .ages {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.age {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.age:active {
+  transform: scale(0.98);
+}
+
+.ageOn {
   border-color: var(--brand);
   background: var(--brand-tint);
   color: var(--brand-text);
   font-weight: 600;
 }
 
-.chip:disabled {
+/* 태그 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9999px;
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.tag:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.tagOn {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.tag:disabled {
   opacity: 0.45;
   cursor: default;
 }
 
-.hint {
-  margin: var(--space-2) 0 0;
-  font-size: var(--font-caption-size);
-  color: var(--text-tertiary);
+@media (hover: hover) {
+  .age:not(.ageOn):hover,
+  .tag:not(.tagOn):not(:disabled):hover {
+    border-color: var(--border-control);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment,
+  .age,
+  .tag {
+    transition: none;
+  }
 }

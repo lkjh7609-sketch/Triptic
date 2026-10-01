@@ -439,20 +439,32 @@
       "needsReview": "日程終了 · レビューを書く"
     },
     "compose": {
-      "title": "同行募集",
+      "title": "同行者を探す",
       "titleLabel": "タイトル",
       "titlePlaceholder": "例：大阪3泊4日を一緒に回りませんか",
       "titleRequiredError": "タイトルを入力してください。",
-      "bodyPlaceholder": "旅程や希望する同行スタイルなどを書いてください。",
-      "dateRequiredError": "旅行日程を選択してください。",
+      "bodyPlaceholder": "行きたい場所、やりたいこと、好みの旅のスタイルを書いてください。",
+      "dateRequiredError": "日程を選んでください。まだ決まっていない場合は「日程未定」を選んでください。",
       "destinationLabel": "旅行先",
       "destinationAny": "どこでも構いません",
-      "dateLabel": "旅行日程",
+      "dateLabel": "日程",
       "datePlaceholder": "日付を選択",
-      "groupSizeLabel": "募集人数(自分を含む)",
+      "groupSizeLabel": "募集人数",
       "groupSizeDecrease": "人数を減らす",
       "groupSizeIncrease": "人数を増やす",
-      "groupSizeValue_other": "{{count}}人"
+      "groupSizeValue_other": "{{count}}人",
+      "introTitle": "何を一緒にしますか？",
+      "introSub": "一緒に行きたい旅程やアクティビティを気軽に書いてください。",
+      "bodyLabel": "詳細",
+      "minHint": "10文字以上を推奨",
+      "infoTitle": "旅行情報",
+      "quick": "おすすめ:",
+      "dateSub": "出発日と帰着日を選んでください",
+      "dateTbdValue": "日程未定・相談可",
+      "groupSizeNote": "（自分を含む）",
+      "submit": "同行者募集を投稿する",
+      "guide": "投稿はコミュニティガイドラインを守る必要があります。",
+      "missing": "タイトル・詳細・日程をすべて入力してください。"
     },
     "detail": {
       "anyDestination": "旅行先未定",
@@ -489,7 +501,8 @@
       "finalizeProceed": "マッチングを確定",
       "withdrawConfirm": "応募を取り消しますか？",
       "withdrawKeep": "応募を続ける",
-      "withdrawProceed": "応募を取り消す"
+      "withdrawProceed": "応募を取り消す",
+      "dateTbd": "日程は相談"
     },
     "apply": {
       "dialogLabel": "同行に応募",
@@ -582,18 +595,21 @@
       "doneDesc": "評価はニックネームの横に平均としてのみ表示されます。"
     },
     "prefs": {
-      "ageLabel": "希望する年代（複数選択可）",
+      "ageLabel": "希望する年代",
       "genderLabel": "希望する性別",
       "tagLabel": "タグ（最大{{max}}個）",
-      "hint": "任意です。参考用で、応募を制限するものではありません。"
+      "hint": "任意です。参考用で、応募を制限するものではありません。",
+      "title": "希望条件",
+      "ageHint": "複数選択可",
+      "genderHint": "1つ選択"
     },
     "ages": {
-      "10s": "10代",
-      "20s": "20代",
-      "30s": "30代",
+      "20s_early": "20代前半",
+      "20s_late": "20代後半",
+      "30s_early": "30代前半",
+      "30s_late": "30代後半",
       "40s": "40代",
-      "50s": "50代",
-      "60s": "60代以上"
+      "50s_plus": "50代以上"
     },
     "gender": {
       "any": "性別不問",
@@ -645,6 +661,25 @@
     "selected": "選択中：",
     "none": "まだ選んでいません",
     "close": "閉じる",
-    "confirm": "選択完了"
+    "confirm": "選択完了",
+    "any": "どこでもOK"
+  },
+  "dateDialog": {
+    "title": "旅行日程の選択",
+    "sub": "出発日と帰着日を順にタップしてください",
+    "tbd": "日程未定 / 相談可",
+    "startLabel": "出発日",
+    "endLabel": "帰着日",
+    "pickDate": "日付を選択",
+    "length": "{{nights}}泊{{days}}日",
+    "sameDay": "日帰り",
+    "confirmRange": "{{range}} 選択完了（{{length}}）",
+    "confirmTbd": "日程未定で選択完了",
+    "confirmNone": "日付を選択してください",
+    "reset": "選択をリセット",
+    "markStart": "出発",
+    "markEnd": "帰着",
+    "prevMonth": "前の月",
+    "nextMonth": "次の月"
   }
 }

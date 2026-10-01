@@ -86,6 +86,19 @@
 
 ## 날짜별 기록
 
+### 2026-10-01 (밤) — 동행 구하기 화면을 Stitch 시안대로(Stitch/community/Companions)
+
+**바뀐 것** (`src/features/community/`: `CompanionComposeScreen`·`CompanionPrefsFields`·`DateRangeDialog`·`dateRangeCalendar`·`companionDraft`, `DestinationPickerModal`에 `onClear`)
+- 구성: 제목(0/100)·상세 내용(0/2000) → 여행 정보(여행지·일정·모집 인원) → 선호 조건(성별 분할 버튼·나이대 칩·태그 최대 3개) → 가이드라인 문구 → 게시. 모바일은 카드 없이 한 줄 + 하단 고정 "동행 모집글 게시하기", PC(1024px~)는 카드 + 위쪽 줄(취소·제목·임시저장됨·임시저장·게시하기)과 맨 아래 큰 버튼. 여행기 글쓰기와 같은 방식(이 기기 자동 임시저장 + 이어 쓰기 묻기, 취소 확인, 제재 안내 + 같은 내용이면 게시 버튼 꺼짐, 필수 항목 흔들림).
+- 사용자 결정으로 시안에서 **뺀 것**: '내 일정 첨부'(동행엔 필요 없음), 모바일 '미리보기', '# 태그 추가'·'장소 핀 연결', 날짜 창의 '빠른 설정' 칩과 '시간대 선호'. 여행지는 선택 사항 유지('어디든 상관없어요', 필수 * 표시 없음) — 여행지 창 위쪽에 같은 이름의 버튼이 있어 누르면 비운다. PC에는 '빠른 추천' 칩(추천 도시 6개).
+- **일정 창(`DateRangeDialog`)**: PC는 두 달 나란히, 모바일은 같은 내용의 하단 시트(달이 세로로 이어짐, 18개월). 출발일 → 복귀일 순서로 누르고(같은 날=당일치기, 앞 날=새 출발일), 위쪽에 출발/복귀 카드와 'N박 M일'. 지난 날짜는 못 고름. '날짜 미정 / 협의 가능'을 켜면 날짜 없이 완료. 완료 버튼은 '10.20(화) - 10.24(토) 선택 완료 (4박 5일)'. 일정 줄은 비워 두면 게시할 수 없다(날짜 미정을 골라야 함).
+- **날짜 미정 글(0072)**: `companion_posts.start_date/end_date`가 null 가능(둘 다 있거나 둘 다 없음). 목록·상세·홈 카드에는 '날짜 협의', 홈 일치율은 도시만 비교, 모임 완료는 주최자가 언제든(0046 함수가 null 안전), 자동 종료(`close_ended_companion_trips`)는 날짜 없는 글을 건드리지 않는다. `moderate-content`는 `datesTbd: true`면 날짜 검사를 건너뛰고 null로 저장 — **함수 배포가 마이그레이션 적용 뒤, 클라이언트 푸시 전**이어야 한다(안 그러면 400).
+- **나이대 키 재정의(0072)**: 20대 초반·20대 후반·30대 초반·30대 후반·40대·50대 이상(`20s_early`…`50s_plus`). 옛 값(10s~60s)은 기존 글이 없어 비우고 제약(`companion_posts_pref_ages_check`)을 새 키로 바꿨다.
+
+**결정·교훈**
+- 0072는 운영 적용 전에 롤백 드라이런(DO 블록 + raise exception)으로 검증: 날짜 미정 행 허용 / 한쪽만 null 거부 / 옛 나이대 키 거부 / 새 키 허용.
+- 날짜 문자열은 `parseISO`(현지 날짜)로 읽는다 — `new Date('2026-10-12')`는 UTC라 시간대에 따라 하루 어긋난다.
+
 ### 2026-10-01 (저녁) — 여행기 글쓰기 화면을 Stitch 시안대로(Stitch/community/Writing, 도시 모달은 Companions 시안)
 
 **바뀐 것** (`src/features/community/`: `ComposePostScreen`·`PhotoSection`·`DestinationPickerModal`·`TripPickerSheet`·`usePostPhotos`·`composeDraft`)
