@@ -1,0 +1,183 @@
+/* 글쓰기 본문 편집기 — 앱 토큰만 써서 라이트/다크가 같이 따라간다 */
+.editor {
+  position: relative;
+}
+
+.toolbarWrap {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.tool,
+.toolOn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.toolOn {
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+@media (hover: hover) {
+  .tool:hover {
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+  }
+}
+
+.tool:focus-visible,
+.toolOn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+}
+
+.linkRow {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 0 var(--space-2);
+}
+
+.linkInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1rem; /* 16px 미만이면 iOS가 입력 때 화면을 확대한다 */
+}
+
+.linkInputError {
+  border-color: var(--danger);
+}
+
+.linkApply {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.surface {
+  position: relative;
+}
+
+.content {
+  display: block;
+  box-sizing: border-box;
+  padding: 8px 4px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  word-break: break-word;
+  outline: none;
+  caret-color: var(--brand-solid);
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 8px 0;
+    font-size: 1rem;
+  }
+}
+
+.placeholder {
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  right: 4px;
+  color: var(--text-placeholder);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .placeholder {
+    left: 0;
+    right: 0;
+    font-size: 1rem;
+  }
+}
+
+.paragraph {
+  margin: 0 0 var(--space-2);
+}
+
+.heading {
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.ul,
+.ol {
+  margin: 0 0 var(--space-2);
+  padding-left: 1.4em;
+}
+
+.li {
+  margin: 0;
+}
+
+.nestedLi {
+  list-style-type: none;
+}
+
+.quote {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--border-strong);
+  color: var(--text-muted);
+}
+
+.link {
+  color: var(--brand-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.italic {
+  font-style: italic;
+}

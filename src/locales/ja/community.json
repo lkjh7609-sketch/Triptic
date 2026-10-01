@@ -328,7 +328,8 @@
       "placeholderPc": "旅の話を聞かせてください。どんな路地を歩き、何を味わいましたか？大切だった瞬間の感想を自由に書いてみましょう。",
       "counterPc": "{{count}} / {{max}}字",
       "minHint": "10文字以上の入力をおすすめします",
-      "error": "内容を入力してください"
+      "error": "内容を入力してください",
+      "tooLong": "文章が長すぎます。{{max}}文字以内にしてください。"
     },
     "trip": {
       "label": "旅程を添付（任意）",
@@ -345,7 +346,19 @@
       "days_other": "{{count}}日",
       "empty": "まだ旅程がありません。"
     },
-    "missing": "旅行先と内容の両方を入力してください。"
+    "missing": "旅行先と内容の両方を入力してください。",
+    "editor": {
+      "toolbar": "文字の書式",
+      "bold": "太字",
+      "italic": "斜体",
+      "heading": "見出し",
+      "bulletList": "箇条書き",
+      "numberedList": "番号付きリスト",
+      "link": "リンク",
+      "linkRemove": "リンクを解除",
+      "linkPlaceholder": "リンクのアドレス(例: example.com)",
+      "linkApply": "適用"
+    }
   },
   "shared": {
     "loadError": "共有リンクの有効期限が切れているか、見つかりません。",

@@ -11,6 +11,7 @@ import { BookmarkButton } from './BookmarkButton';
 import { getPostImageUrl } from './imageProcessing';
 import type { Post } from './types';
 import styles from './PostCard.module.css';
+import { stripMarkdown } from './editor/markdownParse';
 
 interface PostCardProps {
   post: Post;
@@ -57,7 +58,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
         </div>
       </div>
 
-      <p className={styles.body}>{post.body}</p>
+      <p className={styles.body}>{stripMarkdown(post.body)}</p>
 
       {post.images && post.images.length > 0 ? (
         <div className={styles.images}>

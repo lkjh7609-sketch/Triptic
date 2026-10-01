@@ -73,6 +73,10 @@
   word-break: break-word;
 }
 
+.bodyRich {
+  margin: var(--space-3) 0 0;
+}
+
 .translateBlock {
   margin-top: var(--space-2);
 }
@@ -94,7 +98,6 @@
   margin: var(--space-1) 0 0;
   font-size: var(--font-body-size);
   color: var(--text-muted);
-  white-space: pre-wrap;
 }
 
 .translatedLabel {

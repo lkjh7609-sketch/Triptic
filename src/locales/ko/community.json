@@ -328,7 +328,8 @@
       "placeholderPc": "여행 이야기를 들려주세요. 어떤 골목을 걷고 무엇을 맛보셨나요? 소중했던 순간의 감상을 자유롭게 기록해 보세요.",
       "counterPc": "{{count}} / {{max}}자",
       "minHint": "최소 10자 이상 작성을 권장합니다",
-      "error": "이야기를 입력해 주세요"
+      "error": "이야기를 입력해 주세요",
+      "tooLong": "글이 너무 길어요. {{max}}자 이하로 줄여 주세요"
     },
     "trip": {
       "label": "내 일정 첨부 (선택)",
@@ -345,7 +346,19 @@
       "days_other": "{{count}}일",
       "empty": "아직 만든 일정이 없어요."
     },
-    "missing": "여행지와 이야기를 모두 입력해 주세요."
+    "missing": "여행지와 이야기를 모두 입력해 주세요.",
+    "editor": {
+      "toolbar": "글 서식",
+      "bold": "굵게",
+      "italic": "기울임",
+      "heading": "제목",
+      "bulletList": "글머리 목록",
+      "numberedList": "번호 목록",
+      "link": "링크",
+      "linkRemove": "링크 해제",
+      "linkPlaceholder": "링크 주소 (예: example.com)",
+      "linkApply": "적용"
+    }
   },
   "shared": {
     "loadError": "공유 링크가 만료되었거나 찾을 수 없어요.",

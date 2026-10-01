@@ -4,6 +4,7 @@ import { Bookmark } from 'lucide-react';
 import { useBookmarkedPosts } from '@/features/community/hooks/usePosts';
 import { getPostImageUrl } from '@/features/community/imageProcessing';
 import styles from './SavedTravelogues.module.css';
+import { stripMarkdown } from '@/features/community/editor/markdownParse';
 
 /** 내 여행(계획) 탭의 "저장한 여행기" — 커뮤니티에서 저장(북마크)한 글, 최근 저장 순. 글이 지워졌거나 숨겨졌으면 빠진다 */
 export function SavedTravelogues({ userId }: { userId: string }) {
@@ -22,7 +23,7 @@ export function SavedTravelogues({ userId }: { userId: string }) {
       ) : (
         <ul className={styles.list}>
           {posts.map((post) => {
-            const lines = post.body.split('\n').map((l) => l.trim()).filter(Boolean);
+            const lines = stripMarkdown(post.body).split('\n').map((l) => l.trim()).filter(Boolean);
             const image = post.images?.[0] ? getPostImageUrl(post.images[0].storage_path) : null;
             return (
               <li key={post.id}>

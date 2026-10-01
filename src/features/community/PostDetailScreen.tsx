@@ -21,6 +21,7 @@ import { translateText } from './translateClient';
 import type { Locale } from './types';
 import styles from './PostDetailScreen.module.css';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
+import { LightMarkdown } from './editor/LightMarkdown';
 
 export function PostDetailScreen() {
   const { t, i18n } = useTranslation(['community', 'common']);
@@ -126,7 +127,7 @@ export function PostDetailScreen() {
           />
         </div>
 
-        <p className={styles.body}>{post.body}</p>
+        <LightMarkdown text={post.body} className={styles.bodyRich} />
 
         {post.trip_id ? (
           <p style={{ margin: 'var(--space-2) 0 0' }}>
@@ -140,7 +141,7 @@ export function PostDetailScreen() {
           <div className={styles.translateBlock}>
             {translated ? (
               <>
-                <p className={styles.translatedText}>{translated}</p>
+                <LightMarkdown text={translated} className={styles.translatedText} />
                 <span className={styles.translatedLabel}>{t('detail.translatedLabel')}</span>
               </>
             ) : (

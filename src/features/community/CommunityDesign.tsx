@@ -19,6 +19,7 @@ import type { PostsPage } from './communityService';
 import type { Destination, Post } from './types';
 import type { Tab } from './CommunityScreen';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
+import { stripMarkdown } from './editor/markdownParse';
 
 type Sort = 'latest' | 'likes' | 'comments';
 
@@ -404,7 +405,7 @@ function PostArticle({ post }: { post: Post }) {
   const { user } = useSession();
   const navigate = useNavigate();
   const toggleLike = useToggleLike(post.id, user?.id ?? null);
-  const { title, excerpt } = splitBody(post.body);
+  const { title, excerpt } = splitBody(stripMarkdown(post.body));
   const cover = post.images?.[0];
 
   function handleLike(e: MouseEvent) {

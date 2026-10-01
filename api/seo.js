@@ -68,7 +68,12 @@ export function escapeHtml(value) {
 }
 
 function clip(text, max) {
-    const flat = String(text ?? '').replace(/\s+/g, ' ').trim();
+    // 글 본문은 가벼운 마크다운(굵게·기울임·제목·목록·링크)이라 검색 결과·미리보기에 기호가 보이지 않게 서식 기호를 뺀다
+    const plain = String(text ?? '')
+        .replace(/\[([^\]\n]+)\]\([^)\s]+\)/g, '$1')
+        .replace(/\*{1,3}([^*\n]+?)\*{1,3}/g, '$1')
+        .replace(/^\s{0,3}(?:#{1,6}|>|[-*]|\d+[.)])\s+/gm, '');
+    const flat = plain.replace(/\s+/g, ' ').trim();
     return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
 }
 
