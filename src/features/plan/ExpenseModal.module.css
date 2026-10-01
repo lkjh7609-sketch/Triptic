@@ -136,7 +136,7 @@
   flex: 0 0 auto;
   border: none;
   background: none;
-  color: var(--text-muted);
+  color: var(--danger-text); /* 삭제는 테마색과 무관하게 빨강 */
   font-size: var(--font-caption-size);
 }
 
