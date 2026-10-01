@@ -86,6 +86,15 @@
 
 ## 날짜별 기록
 
+### 2026-10-01 (밤 2) — 액티비티 탭을 Stitch 시안대로(Stitch/Home/Activities) + 마이리얼트립 필터
+
+**마이리얼트립 API로 되는 필터(문서 docs.myrealtrip.com 정독)**: `POST /v1/products/tna/search`가 서버에서 거는 건 keyword·category(**도시마다 다른 값** — `POST /v1/products/tna/categories`로 받아 그대로 되돌려 보냄, 1개만)·minPrice·maxPrice·sort(price_asc/price_desc/review_score_desc/selling_count_desc)·page(1부터)·size(1~100). 응답에 hasNextPage·totalCount·tags("즉시 확정")·reviewScore. 원가(할인율)·한국어 가이드 필드는 없습니다.
+- **서버**(`api/partnerProducts.js`에 얹음 — 함수 개수 한도): `kind=list`(검색 한 쪽 + hasNextPage·totalCount), `kind=categories`(도시 카테고리, "전체(all)" 제외). 유료 키를 쓰는 공개 엔드포인트라 `parseListFilters`가 category(`^[a-z0-9_]{1,40}$`, all 불가)·maxPrice(1,000~10,000,000 정수)·sort(허용 4개)·page(1~10)를 좁게 검증하고 틀리면 호출하지 않습니다. 호출 한도 30→60/분(필터 미리보기 때문), 상품에 `tags` 추가. 빈 결과는 CDN에 캐시하지 않습니다.
+- **화면**: 검색창(예약처 토글 옆)·인기 검색어 칩·인기 여행지 원형 8곳·추천 투어(PC 4열 8개/모바일 2열 4개, 더 보기도 같은 수)·정렬 5개·상세 필터(PC 가운데 창/모바일 하단 시트). 코드는 `src/features/home/activities/`(필터 규칙 `activityFilters.ts`, 훅 `useActivityList.ts`, 카드 `ActivityProductGrid`, 모달 `ActivityFilterDialog`). 쿼리 키는 서버가 거는 조건만 담아 모달 미리보기와 화면 목록이 같은 캐시를 씁니다("결과 보기"를 눌러도 다시 안 받음).
+- **필터 구성**: 카테고리(도시별 목록, 단일 선택, 도시가 바뀌면 전체로), 가격(0~350,000+ 최대 핸들 하나, 끝이면 maxPrice를 안 보냄), 최소 평점(4.5·4.8·4.9 — API 필터가 없어 **받은 결과에서 거름**), 혜택 칩 "즉시 확정"(tags에서 거름)·"한국어 가이드"(검색어에 붙여 **근사** — 정확하지 않음). 평점·즉시 확정으로 모자라면 다음 쪽을 이어 받아 채웁니다(최대 5쪽×20개). 모달 아래 "N개 결과 보기"는 서버 총개수(정확) 또는 받아 둔 목록에서 센 값("N개+", 평점·즉시 확정이 켜졌을 때). 필터 버튼 배지=기본값이 아닌 필터 종류 수.
+- **사용자가 정한 것**: 한국어 UI만 기본 예약처가 마이리얼트립(그 외 언어는 Klook, 저장된 선택은 유지) · 검색창은 외부 이동(마이리얼트립/Klook) 유지 · 도시 원형은 마이리얼트립에서 추천 도시를 바꿈(여행이 있어도 덮어씀, Klook에서는 Klook 도시 페이지로 나감) · 인기 검색어는 받은 상품 중 리뷰 많은 4개 이름(누르면 외부 검색, Klook에선 숨김) · 모달은 바깥 클릭으로 안 닫힘(X·Esc) · Klook은 필터·정렬 없이 기존 위젯 · 푸터 없이 "○○ 제공" 문구만 · 할인 배지·취소선·상품별 소형 문구·"할인 특가" 칩은 데이터가 없어 뺌 · 시안 헤더의 "스켈레톤 UI 보기"는 시안용이라 제외.
+- **알아 둘 것**: ① 이 API들은 로컬에 키가 없어 실제 호출로는 시험하지 못했습니다(모의 응답 + 하네스 화면 확인) — **배포 뒤 첫 화면에서 정렬·카테고리·가격이 실제로 먹는지, "한국어 가이드" 근사 결과가 쓸 만한지 확인 필요**. ② 카테고리·검색은 한국어 도시 이름이 필요한데 내 여행 도시는 여행을 만든 언어로 저장돼 있어(영어로 만든 여행은 영어) 카테고리가 비거나 검색이 덜 맞을 수 있습니다(그 경우 카테고리 줄이 숨음). 원형 8곳은 항상 한국어 이름을 씁니다. ③ 상품 카드는 항공 탭 유심(`MyrealtripProducts`)과 따로 만들었습니다. 카드 링크는 기존대로 화면에 나올 때 마이링크를 미리 받습니다(partnerLink 60회/분 한도 — 필터를 빠르게 바꾸면 일부는 누를 때 "이동 중" 탭으로 열림).
+
 ### 2026-10-01 (밤) — 동행 구하기 화면을 Stitch 시안대로(Stitch/community/Companions)
 
 **바뀐 것** (`src/features/community/`: `CompanionComposeScreen`·`CompanionPrefsFields`·`DateRangeDialog`·`dateRangeCalendar`·`companionDraft`, `DestinationPickerModal`에 `onClear`)

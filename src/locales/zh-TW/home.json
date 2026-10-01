@@ -185,7 +185,64 @@
       "myrealtrip": "MyRealTrip"
     },
     "myrealtripDefaultKeyword": "首爾",
-    "seeAllOnMyrealtrip": "在 MyRealTrip 查看更多{{keyword}}"
+    "seeAllOnMyrealtrip": "在 MyRealTrip 查看更多{{keyword}}",
+    "heading": "想體驗什麼?",
+    "providerShort": "預訂平台",
+    "popularSearch": "熱門搜尋",
+    "popularCities": "熱門旅遊地",
+    "popularCitiesHint": "快速前往常去的城市",
+    "recommendedTours": "推薦行程",
+    "subForTrip": "為你接下來的{{city}}之旅精選",
+    "subForCity": "{{city}}熱門行程與票券",
+    "sortLabel": "排序",
+    "sort": {
+      "recommended": "推薦",
+      "popular": "熱門",
+      "priceAsc": "價格由低到高",
+      "priceDesc": "價格由高到低",
+      "rating": "評價最高"
+    },
+    "filter": {
+      "button": "篩選",
+      "title": "詳細篩選",
+      "close": "關閉",
+      "category": "類別",
+      "categoryAll": "全部",
+      "price": "價格範圍(每人)",
+      "priceRange": "最高 {{max}}",
+      "priceAny": "不限",
+      "rating": "最低評分",
+      "ratingAll": "全部",
+      "benefits": "特別優惠",
+      "instant": "即時確認",
+      "koreanGuide": "韓語導覽",
+      "reset": "重設",
+      "apply": "查看結果",
+      "applyCount": "查看 {{count}} 筆結果",
+      "applyCountMore": "查看 {{count}}+ 筆結果"
+    },
+    "card": {
+      "perPerson": "每人",
+      "instant": "即時確認"
+    },
+    "more": "查看更多",
+    "providedBy": "由 {{provider}} 提供",
+    "empty": "沒有符合條件的商品",
+    "emptyHint": "請減少篩選條件或選擇其他城市",
+    "resetFilters": "重設篩選",
+    "error": "無法載入商品",
+    "retry": "重試",
+    "seeAllCity": "在 MyRealTrip 查看{{city}}",
+    "city": {
+      "Kyoto": "京都",
+      "Paris": "巴黎",
+      "NY": "紐約",
+      "London": "倫敦",
+      "Rome": "羅馬",
+      "Tokyo": "東京",
+      "Bangkok": "曼谷",
+      "Danang": "峴港"
+    }
   },
   "page": {
     "all": "查看全部",

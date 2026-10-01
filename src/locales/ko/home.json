@@ -185,7 +185,64 @@
       "myrealtrip": "마이리얼트립"
     },
     "myrealtripDefaultKeyword": "서울",
-    "seeAllOnMyrealtrip": "마이리얼트립에서 {{keyword}} 더 보기"
+    "seeAllOnMyrealtrip": "마이리얼트립에서 {{keyword}} 더 보기",
+    "heading": "어떤 체험을 찾으세요?",
+    "providerShort": "예약처",
+    "popularSearch": "인기 검색어",
+    "popularCities": "인기 여행지",
+    "popularCitiesHint": "자주 찾는 도시 바로가기",
+    "recommendedTours": "추천 투어",
+    "subForTrip": "다음 {{city}} 여행에 맞춰 골랐어요",
+    "subForCity": "{{city}} 인기 투어·티켓",
+    "sortLabel": "정렬",
+    "sort": {
+      "recommended": "추천순",
+      "popular": "인기순",
+      "priceAsc": "낮은 가격순",
+      "priceDesc": "높은 가격순",
+      "rating": "리뷰 높은순"
+    },
+    "filter": {
+      "button": "필터",
+      "title": "상세 필터",
+      "close": "닫기",
+      "category": "카테고리",
+      "categoryAll": "전체",
+      "price": "가격대 (1인 기준)",
+      "priceRange": "{{max}}까지",
+      "priceAny": "제한 없음",
+      "rating": "최소 평점",
+      "ratingAll": "전체",
+      "benefits": "특별 혜택",
+      "instant": "즉시 확정",
+      "koreanGuide": "한국어 가이드",
+      "reset": "초기화",
+      "apply": "결과 보기",
+      "applyCount": "{{count}}개 결과 보기",
+      "applyCountMore": "{{count}}개+ 결과 보기"
+    },
+    "card": {
+      "perPerson": "1인 기준",
+      "instant": "즉시 확정"
+    },
+    "more": "더 보기",
+    "providedBy": "{{provider}} 제공",
+    "empty": "조건에 맞는 상품이 없어요",
+    "emptyHint": "필터를 줄이거나 다른 도시를 골라 보세요",
+    "resetFilters": "필터 초기화",
+    "error": "상품을 불러오지 못했어요",
+    "retry": "다시 시도",
+    "seeAllCity": "마이리얼트립에서 {{city}} 보기",
+    "city": {
+      "Kyoto": "교토",
+      "Paris": "파리",
+      "NY": "뉴욕",
+      "London": "런던",
+      "Rome": "로마",
+      "Tokyo": "도쿄",
+      "Bangkok": "방콕",
+      "Danang": "다낭"
+    }
   },
   "page": {
     "all": "전체보기",
