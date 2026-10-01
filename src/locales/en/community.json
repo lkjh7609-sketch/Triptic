@@ -561,5 +561,32 @@
     "saveAria": "Save travelogue ({{count}} saved)",
     "savedAria": "Remove from saved ({{count}} saved)",
     "error": "Couldn't update your saved list. Please try again."
+  },
+  "picker": {
+    "title": "Find a destination",
+    "searchPlaceholder": "Search countries or cities (e.g. Tokyo, Paris)",
+    "clearSearch": "Clear search",
+    "recent": "Recent:",
+    "removeRecent": "Remove {{name}}",
+    "tabsLabel": "Region",
+    "tabs": {
+      "all": "All",
+      "kr": "Korea",
+      "jp": "Japan",
+      "asia": "Asia",
+      "eu": "Europe",
+      "am": "Americas",
+      "other": "Other"
+    },
+    "popular": "Popular destinations",
+    "tabResults": "{{tab}} destinations",
+    "searchResults": "Search results",
+    "count_one": "{{count}} place",
+    "count_other": "{{count}} places",
+    "empty": "No matching destinations.",
+    "selected": "Selected:",
+    "none": "Nothing selected yet",
+    "close": "Close",
+    "confirm": "Done"
   }
 }

@@ -545,5 +545,31 @@
     "saveAria": "儲存旅行記（已有 {{count}} 人儲存）",
     "savedAria": "取消儲存（已有 {{count}} 人儲存）",
     "error": "無法更新儲存清單，請稍後再試。"
+  },
+  "picker": {
+    "title": "搜尋旅遊地",
+    "searchPlaceholder": "搜尋國家、城市（例：東京、巴黎、峴港）",
+    "clearSearch": "清除搜尋",
+    "recent": "最近選擇：",
+    "removeRecent": "移除 {{name}}",
+    "tabsLabel": "地區",
+    "tabs": {
+      "all": "全部",
+      "kr": "韓國",
+      "jp": "日本",
+      "asia": "亞洲",
+      "eu": "歐洲",
+      "am": "美洲",
+      "other": "其他"
+    },
+    "popular": "熱門推薦旅遊地",
+    "tabResults": "{{tab}}旅遊地",
+    "searchResults": "搜尋結果",
+    "count_other": "{{count}} 處",
+    "empty": "沒有符合的旅遊地。",
+    "selected": "目前選擇：",
+    "none": "尚未選擇",
+    "close": "關閉",
+    "confirm": "完成選擇"
   }
 }

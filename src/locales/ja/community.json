@@ -545,5 +545,31 @@
     "saveAria": "旅行記を保存（保存{{count}}件）",
     "savedAria": "保存を解除（保存{{count}}件）",
     "error": "保存リストを更新できませんでした。しばらくしてからもう一度お試しください。"
+  },
+  "picker": {
+    "title": "旅行先を検索",
+    "searchPlaceholder": "国・都市を検索（例：東京、パリ、ダナン）",
+    "clearSearch": "検索語を消す",
+    "recent": "最近の選択：",
+    "removeRecent": "{{name}}を削除",
+    "tabsLabel": "地域",
+    "tabs": {
+      "all": "すべて",
+      "kr": "韓国",
+      "jp": "日本",
+      "asia": "アジア",
+      "eu": "ヨーロッパ",
+      "am": "アメリカ",
+      "other": "その他"
+    },
+    "popular": "人気のおすすめ旅行先",
+    "tabResults": "{{tab}}の旅行先",
+    "searchResults": "検索結果",
+    "count_other": "{{count}}か所",
+    "empty": "該当する旅行先がありません。",
+    "selected": "選択中：",
+    "none": "まだ選んでいません",
+    "close": "閉じる",
+    "confirm": "選択完了"
   }
 }
