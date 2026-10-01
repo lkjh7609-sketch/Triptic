@@ -1,0 +1,552 @@
+/* 글쓰기 사진 영역 — 앱 토큰만 써서 라이트/다크가 같이 따라간다 */
+.section {
+  --soft: #faf7f2;
+  --soft-hover: #f3efe6;
+  width: 100%;
+}
+
+:root[data-theme='dark'] .section {
+  --soft: var(--surface-subtle);
+  --soft-hover: var(--surface-sunken);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .section {
+    --soft: var(--surface-subtle);
+    --soft-hover: var(--surface-sunken);
+  }
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* PC: 카드 */
+.sectionDesktop {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.04), 0 2px 6px -1px rgba(28, 25, 23, 0.02);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.dragOver {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cardTitleSub {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.cardHint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* 비어 있을 때 */
+.emptyBox,
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--soft);
+  color: var(--text-primary);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.emptyBox:active,
+.dropzone:active {
+  transform: scale(0.99);
+}
+
+@media (hover: hover) {
+  .emptyBox:hover,
+  .dropzone:hover {
+    background: var(--soft-hover);
+  }
+}
+
+.dropzone {
+  padding: 40px 24px;
+  border-radius: var(--radius-md);
+}
+
+.dragOver .dropzone {
+  border-color: var(--brand);
+}
+
+.emptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
+  border-radius: 9999px;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+}
+
+.dropzone .emptyIcon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+}
+
+.emptyTitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+.dropzone .emptyTitle {
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+}
+
+.emptyTitleSub {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.emptyDesc {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  color: var(--text-muted);
+}
+
+.findBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9999px;
+  background: var(--surface-card);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+/* 올리는 중 */
+.uploading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.progressCard {
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--soft);
+  box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.04);
+}
+
+.shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand-solid) 10%, transparent), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.progressTop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progressTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.progressCount {
+  font-weight: 700;
+  color: var(--brand-text);
+}
+
+.ping {
+  position: relative;
+  display: inline-flex;
+  width: 10px;
+  height: 10px;
+}
+
+.pingWave {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--brand);
+  opacity: 0.75;
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.pingDot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--brand);
+}
+
+.cancelUpload {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  margin: -8px -4px -8px 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.progressBody {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ringWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ringTrack {
+  stroke: var(--surface-subtle);
+}
+
+.ringFill {
+  stroke: var(--brand-solid);
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.ringLabel {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-text);
+}
+
+.barWrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.barText {
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--surface-subtle);
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--brand-solid);
+  transition: width 0.3s ease;
+}
+
+/* 썸네일 줄 */
+.filled {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stripHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.stripHint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.strip {
+  display: flex;
+  gap: 12px;
+  padding: 8px 4px 4px;
+  margin: -8px -4px -4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
+
+.thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.06);
+  cursor: grab;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.thumbSmall {
+  width: 96px;
+  height: 96px;
+  cursor: default;
+}
+
+.thumbCover {
+  border-color: color-mix(in srgb, var(--brand-solid) 50%, transparent);
+}
+
+.thumbDragging {
+  z-index: 5;
+  cursor: grabbing;
+  box-shadow: var(--shadow-lg);
+  opacity: 0.92;
+}
+
+.thumb:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.coverBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: rgba(28, 25, 23, 0.62);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* 눌리는 영역을 44px로 넓힌다(보이는 크기는 그대로) */
+.remove::after {
+  content: '';
+  position: absolute;
+  inset: -11px;
+}
+
+.doneMark {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+}
+
+.addTile,
+.tile {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  width: 112px;
+  height: 112px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--soft);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.addTile {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .addTile:hover {
+    background: var(--soft-hover);
+  }
+}
+
+.tile {
+  width: 96px;
+  height: 96px;
+}
+
+.tileBusy {
+  border-color: var(--brand);
+  color: var(--brand-text);
+}
+
+.tileQueued {
+  opacity: 0.6;
+}
+
+.tileLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid color-mix(in srgb, var(--brand) 30%, transparent);
+  border-top-color: var(--brand);
+  border-radius: 9999px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .pingWave,
+  .spinner {
+    animation: none;
+  }
+
+  .ringFill,
+  .barFill {
+    transition: none;
+  }
+}
