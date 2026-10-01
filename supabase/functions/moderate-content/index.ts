@@ -3,7 +3,8 @@
  *
  * POST { kind: 'post', destinationId, tripId?, body, images?: [{storagePath,width,height}] }
  * POST { kind: 'comment', postId, parentId?, body }
- * POST { kind: 'companion_post', destinationId?, title, body, startDate, endDate, groupSize }
+ * POST { kind: 'companion_post', destinationId?, title, body, startDate, endDate, groupSize, datesTbd? }
+ *   datesTbd: true면 날짜 미정 모집글(startDate/endDate 없이 올린다, 0072)
  * POST { kind: 'companion_application', companionPostId, body }
  *
  * 클라이언트는 이 함수를 거치지 않고는 게시물을 만들 수 없다 — 0023에서
@@ -62,6 +63,7 @@ interface RequestBody {
   title?: string; // companion_post
   startDate?: string; // companion_post, 'yyyy-MM-dd'
   endDate?: string; // companion_post, 'yyyy-MM-dd'
+  datesTbd?: boolean; // companion_post: 날짜 미정(날짜 없이 올린다)
   groupSize?: number; // companion_post
   companionPostId?: string; // companion_application
 }
@@ -136,7 +138,8 @@ Deno.serve(async (req) => {
     const title = (payload.title ?? '').trim();
     if (!title || title.length > 100) return jsonResponse({ error: '제목은 1~100자여야 합니다.' }, 400, headers);
     if (!text || text.length > 2000) return jsonResponse({ error: '본문은 1~2000자여야 합니다.' }, 400, headers);
-    if (!payload.startDate || !payload.endDate || payload.startDate > payload.endDate) {
+    // 날짜 미정(datesTbd)이면 날짜를 받지 않는다. 아니면 시작·끝 날짜가 둘 다 있고 순서가 맞아야 한다
+    if (payload.datesTbd !== true && (!payload.startDate || !payload.endDate || payload.startDate > payload.endDate)) {
       return jsonResponse({ error: '날짜를 확인해 주세요.' }, 400, headers);
     }
     const groupSize = payload.groupSize ?? 0;
@@ -231,8 +234,8 @@ Deno.serve(async (req) => {
         p_destination_id: payload.destinationId || null,
         p_title: payload.title!.trim(),
         p_body: text,
-        p_start_date: payload.startDate,
-        p_end_date: payload.endDate,
+        p_start_date: payload.datesTbd === true ? null : payload.startDate,
+        p_end_date: payload.datesTbd === true ? null : payload.endDate,
         p_group_size: payload.groupSize,
         p_status: decision.status,
         p_score: decision.score,
