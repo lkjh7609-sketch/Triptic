@@ -26,7 +26,7 @@ const WIDGET_PARAMS = {
 function themeParams(): Record<string, string> {
   const css = getComputedStyle(document.documentElement);
   const token = (name: string, fallback: string) => css.getPropertyValue(name).trim() || fallback;
-  const brand = token('--brand', '#0D9488');
+  const brand = token('--brand', '#2E4F4F');
   return {
     color_button: brand,
     color_focused: brand,

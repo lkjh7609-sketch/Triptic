@@ -18,7 +18,7 @@
   right: 0;
   height: 40px;
   transform: translateY(-50%);
-  background: rgba(13, 148, 136, 0.1);
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
   pointer-events: none;
   border-top: 1px solid var(--brand);
   border-bottom: 1px solid var(--brand);

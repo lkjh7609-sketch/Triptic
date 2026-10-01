@@ -121,9 +121,9 @@
 }
 
 .cornerBtn {
-  background: rgba(13, 148, 136, 0.1);
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
   color: var(--brand-text);
-  border: 1px solid rgba(13, 148, 136, 0.3);
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   font-size: 0.75rem;

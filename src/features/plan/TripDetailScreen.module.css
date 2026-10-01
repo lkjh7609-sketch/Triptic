@@ -228,14 +228,14 @@
   justify-content: center;
   gap: var(--space-2);
   margin-left: var(--space-2);
-  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 30%, transparent);
   transition: all 0.2s ease;
 }
 
 @media (hover: hover) {
   .aiButton:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 40%, transparent);
   }
 }
 
