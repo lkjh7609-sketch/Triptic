@@ -713,5 +713,95 @@
     "markEnd": "End",
     "prevMonth": "Previous month",
     "nextMonth": "Next month"
+  },
+  "channel": {
+    "breadcrumbAll": "All destinations",
+    "breadcrumbNav": "Location",
+    "rate": "1 {{currency}} ≈ {{amount}} KRW",
+    "weatherNow": "{{temp}} {{condition}}",
+    "weatherFeels": "(feels like {{temp}})",
+    "weather": {
+      "clear": "Clear",
+      "partly": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "drizzle": "Drizzle",
+      "rain": "Rain",
+      "snow": "Snow",
+      "thunder": "Thunderstorm"
+    },
+    "followers_one": "{{count, number}} follower",
+    "followers_other": "{{count, number}} followers",
+    "stories_one": "{{count, number}} story",
+    "stories_other": "{{count, number}} stories",
+    "follow": "Follow city",
+    "following": "Following",
+    "followFailed": "Couldn't update your follow. Please try again in a moment.",
+    "createTrip": "Plan a {{city}} trip",
+    "landmarks": "Top spots",
+    "landmarkSearch": "Find posts about \"{{name}}\"",
+    "tabs": "Post categories",
+    "tabAll": "All",
+    "tabCompanion": "Find a companion",
+    "searchPlaceholder": "Search {{city}} posts & companions...",
+    "searchAria": "Search {{city}} posts",
+    "sortAria": "Sort",
+    "sort": {
+      "latest": "Latest",
+      "popular": "Most liked",
+      "comments": "Most comments",
+      "deadline": "Departing soon"
+    },
+    "loadMore": "See more {{city}} stories",
+    "loadMoreCompanion": "See more {{city}} companion posts",
+    "searchEmpty": "No posts match \"{{query}}\".",
+    "searchClear": "Clear search",
+    "companionEmpty": "No companion posts are open right now.",
+    "companionWrite": "Post a companion request",
+    "recruiting": "Recruiting",
+    "schedule": "Dates",
+    "scheduleTbd": "Dates flexible",
+    "recruitCount_one": "Looking for {{count}}",
+    "recruitCount_other": "Looking for {{count}}",
+    "wantedGender": "Prefers {{value}}",
+    "applyBtn": "Apply to join",
+    "moreMenu": "More",
+    "tripCard": {
+      "title": "Plan your {{city}} trip",
+      "desc": "Upload your flight and hotel bookings and we will organize them into your itinerary.",
+      "length": "Suggested length",
+      "season": "Best time to go",
+      "timeDiff": "Time difference",
+      "cta": "Create a trip"
+    },
+    "timeDiff": {
+      "same": "Same time as Korea",
+      "behind": "{{time}} behind Korea",
+      "ahead": "{{time}} ahead of Korea",
+      "h": "{{h}}h",
+      "hm": "{{h}}h {{m}}m",
+      "m": "{{m}}m"
+    },
+    "fx": {
+      "title": "Live exchange calculator",
+      "inputAria": "{{currency}} amount",
+      "rate": "Live rate"
+    },
+    "prices": {
+      "title": "Price examples",
+      "note": "Rough local-currency prices. The KRW figures are estimates at the live exchange rate.",
+      "coffee": "Starbucks Americano",
+      "taxi": "Taxi / ride-hail (short city ride)",
+      "meal": "Local restaurant meal",
+      "notePlain": "Rough prices in local currency."
+    },
+    "urgent": {
+      "title": "Leaving soon",
+      "today": "Leaves today",
+      "tomorrow": "Leaves tomorrow",
+      "days_one": "Leaves in {{count}} day",
+      "days_other": "Leaves in {{count}} days"
+    },
+    "write": "Write a story"
   }
 }

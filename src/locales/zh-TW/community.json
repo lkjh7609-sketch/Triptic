@@ -694,5 +694,91 @@
     "markEnd": "抵達",
     "prevMonth": "上個月",
     "nextMonth": "下個月"
+  },
+  "channel": {
+    "breadcrumbAll": "所有城市",
+    "breadcrumbNav": "目前位置",
+    "rate": "1 {{currency}} ≈ {{amount}} KRW",
+    "weatherNow": "{{temp}} {{condition}}",
+    "weatherFeels": "(體感 {{temp}})",
+    "weather": {
+      "clear": "晴",
+      "partly": "晴時多雲",
+      "cloudy": "陰",
+      "fog": "霧",
+      "drizzle": "毛毛雨",
+      "rain": "雨",
+      "snow": "雪",
+      "thunder": "雷雨"
+    },
+    "followers_other": "{{count, number}} 位追蹤者",
+    "stories_other": "{{count, number}} 篇故事",
+    "follow": "追蹤城市",
+    "following": "追蹤中",
+    "followFailed": "無法更新追蹤狀態,請稍後再試。",
+    "createTrip": "建立{{city}}行程",
+    "landmarks": "代表景點",
+    "landmarkSearch": "搜尋「{{name}}」相關貼文",
+    "tabs": "貼文分類",
+    "tabAll": "全部",
+    "tabCompanion": "找旅伴",
+    "searchPlaceholder": "搜尋{{city}}貼文、旅伴...",
+    "searchAria": "搜尋{{city}}貼文",
+    "sortAria": "排序",
+    "sort": {
+      "latest": "最新",
+      "popular": "最受歡迎",
+      "comments": "留言最多",
+      "deadline": "即將出發"
+    },
+    "loadMore": "查看更多{{city}}故事",
+    "loadMoreCompanion": "查看更多{{city}}找旅伴貼文",
+    "searchEmpty": "沒有符合「{{query}}」的貼文。",
+    "searchClear": "清除搜尋",
+    "companionEmpty": "目前沒有正在招募的旅伴貼文。",
+    "companionWrite": "發布找旅伴貼文",
+    "recruiting": "招募旅伴中",
+    "schedule": "日期",
+    "scheduleTbd": "日期可協調",
+    "recruitCount_other": "招募 {{count}} 人",
+    "wantedGender": "希望 {{value}}",
+    "applyBtn": "申請同行",
+    "moreMenu": "更多",
+    "tripCard": {
+      "title": "建立{{city}}旅遊行程",
+      "desc": "上傳機票與飯店訂房文件,我們會自動整理進你的行程。",
+      "length": "建議天數",
+      "season": "最佳旅遊時間",
+      "timeDiff": "時差",
+      "cta": "建立行程"
+    },
+    "timeDiff": {
+      "same": "與韓國無時差",
+      "behind": "比韓國慢{{time}}",
+      "ahead": "比韓國快{{time}}",
+      "h": "{{h}}小時",
+      "hm": "{{h}}小時{{m}}分鐘",
+      "m": "{{m}}分鐘"
+    },
+    "fx": {
+      "title": "即時匯率計算機",
+      "inputAria": "{{currency}}金額",
+      "rate": "即時匯率"
+    },
+    "prices": {
+      "title": "物價範例",
+      "note": "當地貨幣的大約價格,韓元為依即時匯率換算的估計值。",
+      "coffee": "星巴克美式咖啡",
+      "taxi": "計程車/叫車(市區基本距離)",
+      "meal": "當地餐廳一餐",
+      "notePlain": "當地貨幣的大約價格。"
+    },
+    "urgent": {
+      "title": "即將出發的旅伴",
+      "today": "今天出發",
+      "tomorrow": "明天出發",
+      "days_other": "{{count}} 天後出發"
+    },
+    "write": "寫故事"
   }
 }

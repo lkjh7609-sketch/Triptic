@@ -694,5 +694,91 @@
     "markEnd": "帰着",
     "prevMonth": "前の月",
     "nextMonth": "次の月"
+  },
+  "channel": {
+    "breadcrumbAll": "すべての都市",
+    "breadcrumbNav": "現在地",
+    "rate": "1 {{currency}} ≈ {{amount}} KRW",
+    "weatherNow": "{{temp}} {{condition}}",
+    "weatherFeels": "(体感 {{temp}})",
+    "weather": {
+      "clear": "晴れ",
+      "partly": "晴れ時々曇り",
+      "cloudy": "曇り",
+      "fog": "霧",
+      "drizzle": "霧雨",
+      "rain": "雨",
+      "snow": "雪",
+      "thunder": "雷雨"
+    },
+    "followers_other": "フォロワー {{count, number}}人",
+    "stories_other": "ストーリー {{count, number}}件",
+    "follow": "都市をフォロー",
+    "following": "フォロー中",
+    "followFailed": "フォローを変更できませんでした。しばらくしてからもう一度お試しください。",
+    "createTrip": "{{city}}の旅行を作成",
+    "landmarks": "代表スポット",
+    "landmarkSearch": "「{{name}}」の投稿を探す",
+    "tabs": "投稿の分類",
+    "tabAll": "すべて",
+    "tabCompanion": "同行者募集",
+    "searchPlaceholder": "{{city}}の投稿・同行者を検索...",
+    "searchAria": "{{city}}の投稿を検索",
+    "sortAria": "並び替え",
+    "sort": {
+      "latest": "新着順",
+      "popular": "人気順",
+      "comments": "コメント順",
+      "deadline": "出発が近い順"
+    },
+    "loadMore": "{{city}}の記事をもっと見る",
+    "loadMoreCompanion": "{{city}}の同行者募集をもっと見る",
+    "searchEmpty": "「{{query}}」に一致する投稿がありません。",
+    "searchClear": "検索をクリア",
+    "companionEmpty": "現在募集中の同行者投稿はありません。",
+    "companionWrite": "同行者募集を書く",
+    "recruiting": "同行者募集中",
+    "schedule": "日程",
+    "scheduleTbd": "日程相談",
+    "recruitCount_other": "{{count}}人募集",
+    "wantedGender": "希望 {{value}}",
+    "applyBtn": "同行を申し込む",
+    "moreMenu": "その他",
+    "tripCard": {
+      "title": "{{city}}の旅行を作成",
+      "desc": "航空券・ホテルの予約書類をアップロードすると、日程に自動でまとめます。",
+      "length": "おすすめ日数",
+      "season": "ベストシーズン",
+      "timeDiff": "時差",
+      "cta": "旅行を作成"
+    },
+    "timeDiff": {
+      "same": "時差なし",
+      "behind": "韓国より{{time}}遅い",
+      "ahead": "韓国より{{time}}早い",
+      "h": "{{h}}時間",
+      "hm": "{{h}}時間{{m}}分",
+      "m": "{{m}}分"
+    },
+    "fx": {
+      "title": "リアルタイム為替計算",
+      "inputAria": "{{currency}}の金額",
+      "rate": "リアルタイムレート"
+    },
+    "prices": {
+      "title": "物価の目安",
+      "note": "現地通貨のおおよその目安です。ウォンはリアルタイムレートでの概算です。",
+      "coffee": "スターバックス アメリカーノ",
+      "taxi": "タクシー・配車(市内の基本距離)",
+      "meal": "現地レストランの食事",
+      "notePlain": "現地通貨でのおおよその目安です。"
+    },
+    "urgent": {
+      "title": "出発間近の同行者",
+      "today": "本日出発",
+      "tomorrow": "明日出発",
+      "days_other": "{{count}}日後に出発"
+    },
+    "write": "記事を書く"
   }
 }

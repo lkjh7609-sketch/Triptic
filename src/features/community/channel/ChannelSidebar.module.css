@@ -1,0 +1,219 @@
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-title-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.titleIcon {
+  flex-shrink: 0;
+  color: var(--brand-text);
+}
+
+.desc {
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-caption-size);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.factRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--font-caption-size);
+}
+
+.factRow dt {
+  color: var(--text-muted);
+}
+
+.factRow dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.primaryBtn {
+  appearance: none;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--space-4);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .primaryBtn:hover {
+    background: var(--brand-pressed);
+  }
+}
+
+.fx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.fxField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  border: 1px solid transparent;
+}
+
+.fxField:focus-within {
+  border-color: var(--border-focus);
+}
+
+.fxCode {
+  flex-shrink: 0;
+  min-width: 36px;
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.fxInput {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  text-align: right;
+  font-size: var(--font-title-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pricesBlock {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.subTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-label-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.priceList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--font-caption-size);
+}
+
+.priceLabel {
+  color: var(--text-muted);
+}
+
+.priceValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+.priceKrw {
+  color: var(--text-muted);
+}
+
+.note {
+  margin: var(--space-3) 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+.urgentList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.urgentItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: var(--space-3) 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.urgentBadge {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--warning-tint);
+  color: var(--warning-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.urgentTitle {
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.urgentMeta {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+@media (hover: hover) {
+  .urgentItem:hover .urgentTitle {
+    color: var(--brand-text);
+  }
+}
