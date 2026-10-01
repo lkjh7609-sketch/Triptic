@@ -18,12 +18,8 @@ function ProductCard({ product }: { product: ActivityProduct }) {
   const { t, i18n } = useTranslation('home');
   const instant = product.tags.includes(INSTANT_TAG);
   return (
-    <MyrealtripLink
-      target={{ kind: 'page', url: product.url }}
-      placement="product"
-      onFallback={() => void openMyrealtripPage(product.url, 'product')}
-      className={styles.card}
-    >
+    // 추적 링크(마이링크, 만들 때마다 유료 호출)는 누를 때만 만든다 — 카드가 화면에 나올 때마다 만들면 필터·더 보기로 호출이 쌓인다
+    <button type="button" className={styles.card} onClick={() => void openMyrealtripPage(product.url, 'product')}>
       <span className={styles.media}>
         {product.imageUrl ? (
           <img
@@ -55,7 +51,7 @@ function ProductCard({ product }: { product: ActivityProduct }) {
           <span className={styles.unit}>{t('activities.card.perPerson')}</span>
         </span>
       </span>
-    </MyrealtripLink>
+    </button>
   );
 }
 

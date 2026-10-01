@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { infiniteQueryOptions, useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { fetchActivityCategories, fetchActivityPage, listParams, type ActivityProduct } from './activityApi';
-import { applyClientFilters, hasClientFilter, type ActivityFilters, type ActivitySort } from './activityFilters';
+import { fetchKeepingLastGood, readLastGood } from '@/shared/api/lastGood';
+import { fetchActivityCategories, fetchActivityPage, listParams, type ActivityPage, type ActivityProduct } from './activityApi';
+import { DEFAULT_FILTERS, PRICE_MAX, applyClientFilters, hasClientFilter, type ActivityFilters, type ActivitySort } from './activityFilters';
 
 /** 평점·즉시 확정처럼 받은 결과에서 거르는 필터가 모자라면 다음 쪽을 이어 받는다 — 이 쪽 수까지(쪽당 20개) */
 export const MAX_API_PAGES = 5;
@@ -13,9 +14,21 @@ const SIX_HOURS = 6 * 60 * 60 * 1000;
  * "결과 보기"를 눌러도 다시 받지 않는다. 평점·즉시 확정은 키에 없다(받은 결과를 다시 거를 뿐).
  */
 export function activityListOptions(city: string, sort: ActivitySort, filters: ActivityFilters) {
+  // 필터·정렬이 없는 기본 목록만 "마지막으로 잘 받은 상품"을 3일까지 지킨다(shared/api/lastGood.ts) — 못 받거나 빈 목록이 와도
+  // 이전 카드를 그대로 보여 준다. 필터·정렬을 건 결과는 정말 0건일 수 있으니 이 안전망을 걸지 않는다
+  const baseline = sort === 'recommended' && !filters.category && filters.maxPrice >= PRICE_MAX && !filters.koreanGuide;
+  const lastGoodKey = `activityList:${city}`;
   return infiniteQueryOptions({
     queryKey: ['activityList', listParams(city, sort, filters, 1).toString()],
-    queryFn: ({ pageParam }) => fetchActivityPage(city, sort, filters, pageParam),
+    queryFn: ({ pageParam }) =>
+      baseline && pageParam === 1
+        ? fetchKeepingLastGood(lastGoodKey, () => fetchActivityPage(city, sort, filters, pageParam), { isEmpty: (page) => page.items.length === 0 })
+        : fetchActivityPage(city, sort, filters, pageParam),
+    initialData: () => {
+      const saved = baseline ? readLastGood<ActivityPage>(lastGoodKey) : undefined;
+      return saved ? { pages: [saved], pageParams: [1] } : undefined;
+    },
+    initialDataUpdatedAt: 0,
     initialPageParam: 1,
     getNextPageParam: (last, pages) => (last.hasNextPage && pages.length < MAX_API_PAGES ? pages.length + 1 : undefined),
     // 빈 목록·실패는 오래 붙잡지 않는다
@@ -57,6 +70,16 @@ export function useActivityList({ city, sort, filters, shown, enabled = true }: 
     isLoadingMore: query.isFetchingNextPage,
     refetch: query.refetch,
   };
+}
+
+/** 인기 검색어 칩 — 이 도시의 기본 추천 목록(추천순·필터 없음) 맨 앞 상품 이름. 필터·정렬을 바꿔도 그대로 */
+export function useActivityPopularTitles(city: string, enabled: boolean, count: number): string[] {
+  const { data } = useInfiniteQuery({
+    ...activityListOptions(city, 'recommended', DEFAULT_FILTERS),
+    enabled,
+    select: (d) => d.pages[0]?.items.slice(0, count).map((p) => p.title) ?? [],
+  });
+  return data ?? [];
 }
 
 function useDebounced<T>(value: T, ms: number): T {

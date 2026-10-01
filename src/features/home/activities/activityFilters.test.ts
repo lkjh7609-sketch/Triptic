@@ -40,9 +40,9 @@ describe('activityFilters', () => {
     expect(serverSort('rating')).toBe('review_score_desc');
   });
 
-  it('한국어 가이드는 검색어에 붙여 근사한다', () => {
+  it('한국어 가이드는 검색어에 "한국어"를 붙여 근사한다', () => {
     expect(searchKeyword('시드니', DEFAULT_FILTERS)).toBe('시드니');
-    expect(searchKeyword('시드니', { ...DEFAULT_FILTERS, koreanGuide: true })).toBe('시드니 한국어 가이드');
+    expect(searchKeyword('시드니', { ...DEFAULT_FILTERS, koreanGuide: true })).toBe('시드니 한국어');
   });
 
   it('받은 결과에서 평점·즉시 확정을 거른다(평점 없는 상품은 평점 필터에서 빠진다)', () => {
@@ -68,7 +68,7 @@ describe('listParams — 서버가 걸어 주는 필터만 요청에 실린다',
       { category: 'tour', maxPrice: 150_000, minRating: 4.9, instant: true, koreanGuide: true },
       3,
     );
-    expect(params.get('q')).toBe('시드니 한국어 가이드');
+    expect(params.get('q')).toBe('시드니 한국어');
     expect(params.get('category')).toBe('tour');
     expect(params.get('maxPrice')).toBe('150000');
     expect(params.get('sort')).toBe('price_asc');
