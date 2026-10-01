@@ -185,7 +185,64 @@
       "myrealtrip": "MyRealTrip"
     },
     "myrealtripDefaultKeyword": "ソウル",
-    "seeAllOnMyrealtrip": "MyRealTripで{{keyword}}をもっと見る"
+    "seeAllOnMyrealtrip": "MyRealTripで{{keyword}}をもっと見る",
+    "heading": "どんな体験をお探しですか?",
+    "providerShort": "予約先",
+    "popularSearch": "人気の検索",
+    "popularCities": "人気の旅行先",
+    "popularCitiesHint": "よく見られる都市へ",
+    "recommendedTours": "おすすめツアー",
+    "subForTrip": "次の{{city}}旅行に合わせて選びました",
+    "subForCity": "{{city}}の人気ツアー・チケット",
+    "sortLabel": "並び替え",
+    "sort": {
+      "recommended": "おすすめ順",
+      "popular": "人気順",
+      "priceAsc": "価格が安い順",
+      "priceDesc": "価格が高い順",
+      "rating": "レビューが高い順"
+    },
+    "filter": {
+      "button": "絞り込み",
+      "title": "詳細フィルター",
+      "close": "閉じる",
+      "category": "カテゴリ",
+      "categoryAll": "すべて",
+      "price": "価格帯(1人あたり)",
+      "priceRange": "{{max}}まで",
+      "priceAny": "上限なし",
+      "rating": "最低評価",
+      "ratingAll": "すべて",
+      "benefits": "特典",
+      "instant": "即時確定",
+      "koreanGuide": "韓国語ガイド",
+      "reset": "リセット",
+      "apply": "結果を見る",
+      "applyCount": "{{count}}件の結果を見る",
+      "applyCountMore": "{{count}}件以上の結果を見る"
+    },
+    "card": {
+      "perPerson": "1人あたり",
+      "instant": "即時確定"
+    },
+    "more": "もっと見る",
+    "providedBy": "{{provider}}提供",
+    "empty": "条件に合う商品がありません",
+    "emptyHint": "絞り込みを減らすか、別の都市を選んでください",
+    "resetFilters": "絞り込みをリセット",
+    "error": "商品を読み込めませんでした",
+    "retry": "再試行",
+    "seeAllCity": "マイリアルトリップで{{city}}を見る",
+    "city": {
+      "Kyoto": "京都",
+      "Paris": "パリ",
+      "NY": "ニューヨーク",
+      "London": "ロンドン",
+      "Rome": "ローマ",
+      "Tokyo": "東京",
+      "Bangkok": "バンコク",
+      "Danang": "ダナン"
+    }
   },
   "page": {
     "all": "すべて見る",

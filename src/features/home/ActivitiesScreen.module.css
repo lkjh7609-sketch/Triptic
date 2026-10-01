@@ -1,0 +1,543 @@
+/* 액티비티 탭 — Stitch/Home/Activities 시안. 색·간격은 앱 토큰으로 */
+.page {
+  min-height: 100%;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) calc(var(--space-6) + 72px);
+}
+
+@media (min-width: 1024px) {
+  .wrap {
+    padding-top: var(--space-10);
+    padding-bottom: calc(var(--space-10) + var(--space-6));
+  }
+}
+
+/* 제목 + 검색 */
+.hero {
+  margin-bottom: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    margin-bottom: 48px;
+  }
+}
+
+.heading {
+  margin: 0 0 var(--space-4);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    margin-bottom: var(--space-5);
+    font-size: 2rem;
+  }
+}
+
+.searchRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 1024px) {
+  .searchRow {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+  }
+}
+
+.searchForm {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 760px;
+  padding: 6px 6px 6px var(--space-4);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 1024px) {
+  .searchForm {
+    padding: 8px 8px 8px var(--space-5);
+  }
+}
+
+.searchForm:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.searchIcon {
+  flex: 0 0 auto;
+  color: var(--text-tertiary);
+}
+
+.searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--font-body-size);
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+}
+
+.searchInput::placeholder {
+  color: var(--text-placeholder);
+}
+
+.searchButton {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .searchButton:hover {
+    background: var(--brand-pressed);
+  }
+}
+
+/* 예약처 선택 */
+.provider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.providerLabel {
+  font-size: var(--font-caption-size);
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.providerToggle {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+}
+
+.providerOn,
+.providerOff {
+  position: relative;
+  min-height: 32px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--font-label-size);
+  cursor: pointer;
+}
+
+.providerOn {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.providerOff {
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* 눌리는 영역만 44px 이상으로 — 보이는 크기는 그대로 */
+.providerOn::after,
+.providerOff::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
+}
+
+/* 인기 검색어 */
+.keywords {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  margin-top: var(--space-3);
+}
+
+.keywordsLabel {
+  flex: 0 0 auto;
+  font-size: var(--font-caption-size);
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.keywordList {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 2px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.keywordList::-webkit-scrollbar {
+  display: none;
+}
+
+.keyword {
+  flex: 0 0 auto;
+  max-width: 220px;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--font-label-size);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .keyword:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+  }
+}
+
+/* 구역 제목 */
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+}
+
+.sectionHint {
+  display: none;
+  font-size: var(--font-label-size);
+  color: var(--text-tertiary);
+}
+
+@media (min-width: 1024px) {
+  .sectionHint {
+    display: inline;
+  }
+}
+
+/* 인기 여행지 원형 */
+.cities {
+  margin-bottom: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .cities {
+    margin-bottom: 48px;
+  }
+}
+
+.cityRow {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0 calc(-1 * var(--space-4));
+  padding: var(--space-2) var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cityRow::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .cityRow {
+    justify-content: center;
+    gap: var(--space-8);
+    margin: 0;
+    padding: var(--space-2);
+  }
+}
+
+.city {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-primary);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cityRing {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border: 3px solid var(--surface-card);
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+  .cityRing {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+@media (hover: hover) {
+  .city:hover .cityRing {
+    transform: scale(1.05);
+  }
+
+  .city:hover .cityName {
+    color: var(--brand-text);
+  }
+}
+
+.city:focus-visible .cityRing {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.cityImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface-sunken);
+}
+
+.cityName {
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .cityName {
+    font-size: 0.875rem;
+  }
+}
+
+/* 선택한 도시 */
+.citySelected .cityRing {
+  border-color: var(--brand);
+}
+
+.citySelected .cityName {
+  color: var(--brand-text);
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cityRing {
+    transition: none;
+  }
+
+  .city:hover .cityRing {
+    transform: none;
+  }
+}
+
+/* 추천 투어 */
+.recommendHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .recommendHead {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+  }
+}
+
+.recommendTitleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (min-width: 1024px) {
+  .recommendTitleRow {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+}
+
+.recommendTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .recommendTitle {
+    font-size: 1.375rem;
+  }
+}
+
+.recommendSub {
+  margin: 0;
+  font-size: var(--font-label-size);
+  color: var(--text-muted);
+}
+
+@media (min-width: 1024px) {
+  .recommendSub {
+    font-size: 0.875rem;
+  }
+}
+
+/* 정렬 + 필터 */
+.tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.sorts {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sorts::-webkit-scrollbar {
+  display: none;
+}
+
+.sortOn,
+.sortOff {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--font-label-size);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sortOn {
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+.sortOff {
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+@media (hover: hover) {
+  .sortOff:hover {
+    color: var(--text-primary);
+  }
+}
+
+.filterButton {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filterButton svg {
+  color: var(--brand-text);
+}
+
+@media (hover: hover) {
+  .filterButton:hover {
+    border-color: var(--brand);
+  }
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.providedBy {
+  margin: var(--space-3) 0 0;
+  text-align: center;
+  font-size: var(--font-caption-size);
+  color: var(--text-tertiary);
+}

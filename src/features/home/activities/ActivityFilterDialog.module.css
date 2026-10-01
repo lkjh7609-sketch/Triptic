@@ -1,0 +1,323 @@
+/* 액티비티 상세 필터 — 창 틀(오버레이·패널·핸들·닫기)은 여행지 선택 창과 같다. 모바일=하단 시트, PC(1024px~)=가운데 창 */
+.overlay {
+  composes: overlay from '../../community/DestinationPickerModal.module.css';
+}
+
+.overlayOut {
+  composes: overlayOut from '../../community/DestinationPickerModal.module.css';
+}
+
+.panel {
+  composes: panel from '../../community/DestinationPickerModal.module.css';
+}
+
+.panelOut {
+  composes: panelOut from '../../community/DestinationPickerModal.module.css';
+}
+
+.handle {
+  composes: handle from '../../community/DestinationPickerModal.module.css';
+}
+
+.iconBtn {
+  composes: iconBtn from '../../community/DestinationPickerModal.module.css';
+}
+
+@media (min-width: 1024px) {
+  .panel.wide {
+    width: 540px;
+    max-height: min(90vh, 760px);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cityBadge {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 0;
+  padding: var(--space-5);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface-page);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.priceValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--brand-text);
+  text-align: right;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip,
+.chipOn {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.chipOn {
+  border-color: var(--brand-solid);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    border-color: var(--brand);
+  }
+}
+
+.chip:focus-visible,
+.chipOn:focus-visible,
+.rating:focus-visible,
+.ratingOn:focus-visible,
+.slider:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* 가격 슬라이더 — 채워진 만큼 브랜드색 */
+.sliderBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.slider {
+  --fill: 0%;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right, var(--brand-solid) var(--fill), var(--surface-subtle) var(--fill));
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+}
+
+.slider::-moz-range-progress {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+}
+
+.slider::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border: 3px solid var(--surface-card);
+  border-radius: 50%;
+  background: var(--brand-solid);
+  box-shadow: var(--shadow-md);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--surface-card);
+  border-radius: 50%;
+  background: var(--brand-solid);
+  box-shadow: var(--shadow-md);
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-caption-size);
+  color: var(--text-tertiary);
+}
+
+.ratings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.rating,
+.ratingOn {
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ratingOn {
+  border-color: var(--brand-solid);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+@media (hover: hover) {
+  .rating:hover {
+    border-color: var(--brand);
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  background: var(--surface-card);
+}
+
+@media (min-width: 1024px) {
+  .footer {
+    padding-bottom: var(--space-4);
+    border-radius: 0 0 20px 20px;
+  }
+}
+
+.reset {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.apply {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.apply:active {
+  transform: scale(0.98);
+  background: var(--brand-pressed);
+}
+
+@media (hover: hover) {
+  .apply:hover {
+    background: var(--brand-pressed);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .chipOn,
+  .apply {
+    transition: none;
+  }
+}
