@@ -121,13 +121,13 @@ export function AppShell() {
     void importGuestTripsOncePerSession(userId)?.then((result) => {
       if (result.imported.length > 0) {
         void queryClient.invalidateQueries({ queryKey: tripsQueryKey });
-        showToast(t('guest.importedToast', { count: result.imported.length }));
+        showToast(t('guest.importedToast', { count: result.imported.length }), { tone: 'success' });
         // 옮기던 임시 여행 화면을 보고 있었으면 옮겨진 여행으로 이어 준다
         const current = result.imported.find((r) => `/plan/${r.guestId}` === window.location.pathname);
         if (current) navigate(`/plan/${current.tripId}`, { replace: true });
       }
       if (result.limitReached) showToast(t('guest.importLimit'));
-      else if (result.failed) showToast(t('guest.importFailed'));
+      else if (result.failed) showToast(t('guest.importFailed'), { tone: 'error' });
     });
   }, [userId, queryClient, navigate, t]);
   // 공유 링크로 들어와 로그인했는데 첫 화면으로 돌아왔으면 그 링크로 이어서 참여한다

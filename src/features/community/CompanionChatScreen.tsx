@@ -87,7 +87,7 @@ export function CompanionChatScreen() {
       await completeTrip.mutateAsync();
     } catch (err) {
       captureError(err, { context: 'completeCompanionTrip' });
-      showToast(t('companion.chat.completeError'));
+      showToast(t('companion.chat.completeError'), { tone: 'error' });
     }
   }
 
