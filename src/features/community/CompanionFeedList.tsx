@@ -66,7 +66,7 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
                 <h3 className={styles.cardTitle}>{post.title}</h3>
                 <div className={styles.cardMeta}>
                   <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
-                  <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
+                  <span>{post.start_date && post.end_date ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date }) : t('companion.detail.dateTbd')}</span>
                   <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>
                   {prefsLabel(post, t) ? <span>{prefsLabel(post, t)}</span> : null}
                 </div>
@@ -132,7 +132,7 @@ function MyCompanionsSection({ userId }: { userId: string }) {
             <h3 className={styles.cardTitle}>{post.title}</h3>
             <div className={styles.cardMeta}>
               <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
-              <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
+              <span>{post.start_date && post.end_date ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date }) : t('companion.detail.dateTbd')}</span>
             </div>
           </Link>
         ))}

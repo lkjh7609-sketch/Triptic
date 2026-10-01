@@ -159,7 +159,7 @@ export async function listMyActiveCompanionPosts(userId: string): Promise<MyComp
     .select('*')
     .in('status', ['recruiting', 'matched', 'closed'])
     .is('deleted_at', null)
-    .order('start_date', { ascending: true });
+    .order('start_date', { ascending: true, nullsFirst: false });
   query = appliedIds.length > 0 ? query.or(`author_id.eq.${userId},id.in.(${appliedIds.join(',')})`) : query.eq('author_id', userId);
 
   const { data, error } = await query;
@@ -194,8 +194,9 @@ export async function createCompanionPost(input: {
   destinationId?: string | null;
   title: string;
   body: string;
-  startDate: string; // 'yyyy-MM-dd'
-  endDate: string; // 'yyyy-MM-dd'
+  /** 'yyyy-MM-dd' — 날짜 미정이면 둘 다 null */
+  startDate: string | null;
+  endDate: string | null;
   groupSize: number;
   userId: string;
   /** 원하는 동행(나이대·성별)·태그(0070) — 없으면 저장하지 않는다 */
@@ -215,6 +216,7 @@ export async function createCompanionPost(input: {
       body: input.body,
       startDate: input.startDate,
       endDate: input.endDate,
+      datesTbd: !input.startDate || !input.endDate,
       groupSize: input.groupSize,
     },
   });

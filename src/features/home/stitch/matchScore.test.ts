@@ -25,4 +25,9 @@ describe('matchScore', () => {
   it('내 여행 날짜가 없으면 도시만 본다', () => {
     expect(matchScore({ destinationName: 'Tokyo', startDate: '2026-10-10', endDate: '2026-10-14' }, { city: 'Tokyo, Japan', startDate: null, endDate: null })).toBe(50);
   });
+
+  it('날짜 미정(협의) 글은 도시만 본다', () => {
+    expect(matchScore({ destinationName: 'Tokyo', startDate: null, endDate: null }, trip)).toBe(50);
+    expect(matchScore({ destinationName: 'Paris', startDate: null, endDate: null }, trip)).toBeNull();
+  });
 });

@@ -2,8 +2,9 @@ import { cityDisplayName } from '@/features/plan/cityName';
 
 export interface MatchPost {
   destinationName?: string | null;
-  startDate: string;
-  endDate: string;
+  /** 날짜 미정(협의) 글은 둘 다 null — 도시만 비교한다 */
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface MatchTrip {
@@ -33,7 +34,7 @@ export function matchScore(post: MatchPost, trip: MatchTrip): number | null {
   const cityScore = post.destinationName && trip.city && sameCity(post.destinationName, trip.city) ? 50 : 0;
 
   let dateScore = 0;
-  if (trip.startDate) {
+  if (trip.startDate && post.startDate && post.endDate) {
     const tripStart = utc(trip.startDate);
     const tripEnd = utc(trip.endDate ?? trip.startDate);
     const postStart = utc(post.startDate);

@@ -18,7 +18,8 @@ export const COMPANION_TAGS = [
 export type CompanionTag = (typeof COMPANION_TAGS)[number];
 export const MAX_COMPANION_TAGS = 3;
 
-export const COMPANION_AGES = ['10s', '20s', '30s', '40s', '50s', '60s'] as const;
+/** 나이대 — DB(0072)의 companion_posts_pref_ages_check와 같은 키 */
+export const COMPANION_AGES = ['20s_early', '20s_late', '30s_early', '30s_late', '40s', '50s_plus'] as const;
 export type CompanionAge = (typeof COMPANION_AGES)[number];
 
 export type CompanionGender = 'any' | 'female' | 'male';

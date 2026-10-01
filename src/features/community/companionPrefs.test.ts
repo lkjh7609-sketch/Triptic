@@ -18,14 +18,14 @@ describe('companionPrefs', () => {
   });
 
   it('나이대는 여러 개를 고를 수 있다', () => {
-    expect(toggleAge(toggleAge([], '30s'), '20s')).toEqual(['20s', '30s']);
-    expect(toggleAge(['20s', '30s'], '20s')).toEqual(['30s']);
+    expect(toggleAge(toggleAge([], '30s_early'), '20s_late')).toEqual(['20s_late', '30s_early']);
+    expect(toggleAge(['20s_late', '30s_early'], '20s_late')).toEqual(['30s_early']);
   });
 
   it('DB에서 온 예상 밖 값은 걸러낸다', () => {
     expect(sanitizeTags(['beer', 'unknown', 'photo'])).toEqual(['photo', 'beer']);
     expect(sanitizeTags(null)).toEqual([]);
-    expect(sanitizeAges(['20s', 'x'])).toEqual(['20s']);
+    expect(sanitizeAges(['20s', '40s', 'x'])).toEqual(['40s']);
   });
 
   it('조건이 없으면 hasPrefs는 false', () => {
