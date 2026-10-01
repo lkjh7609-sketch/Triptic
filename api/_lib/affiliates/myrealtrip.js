@@ -301,14 +301,48 @@ export function normalizeProduct(item) {
         currency: 'KRW',
         rating: num(item.reviewScore),
         reviewCount: num(item.reviewCount),
+        // "즉시 확정" 같은 태그 — 액티비티 탭의 "즉시 확정" 필터가 쓴다
+        tags: Array.isArray(item.tags) ? item.tags.filter((tag) => typeof tag === 'string' && tag) : [],
         url: item.productUrl,
     };
 }
 
+/** 투어티켓 검색 정렬 값(문서 그대로) — 공개 엔드포인트라 이 목록 밖의 값은 서버가 거른다 */
+export const TNA_SORTS = ['price_asc', 'price_desc', 'review_score_desc', 'selling_count_desc'];
+
+/**
+ * 투어티켓 검색 한 쪽 — 필터는 서버(마이리얼트립)가 걸어 준다: category(도시마다 다른 값, listCategories로 받은 것),
+ * maxPrice(원), sort. page는 1부터. 안 준 필터는 요청에 넣지 않는다(기본 동작).
+ */
+export async function searchProductsPage(keyword, { size, page = 1, category, maxPrice, sort } = {}) {
+    const body = { keyword, page, size };
+    if (category) body.category = category;
+    if (maxPrice) body.maxPrice = maxPrice;
+    if (sort) body.sort = sort;
+    const json = await call('POST', '/v1/products/tna/search', { body });
+    const data = json.data ?? {};
+    const items = Array.isArray(data.items) ? data.items : [];
+    return {
+        items: items.map(normalizeProduct).filter(Boolean),
+        hasNextPage: data.hasNextPage === true,
+        totalCount: num(data.totalCount),
+    };
+}
+
 export async function searchProducts(keyword, size) {
-    const json = await call('POST', '/v1/products/tna/search', { body: { keyword, page: 1, size } });
-    const items = Array.isArray(json.data?.items) ? json.data.items : [];
-    return items.map(normalizeProduct).filter(Boolean);
+    return (await searchProductsPage(keyword, { size })).items;
+}
+
+/** 카테고리 값은 도시마다 다르다(문서) — 검색 요청에 그대로 되돌려 쓰는 값이라 모양을 좁게 확인한다 */
+export const CATEGORY_VALUE = /^[a-z0-9_]{1,40}$/;
+
+/** 도시(한글 이름)의 투어티켓 카테고리 — "전체(all)"는 뺀다(검색에서 category를 생략하면 전체) */
+export async function listCategories(city) {
+    const json = await call('POST', '/v1/products/tna/categories', { body: { city } });
+    const rows = Array.isArray(json.data?.categories) ? json.data.categories : [];
+    return rows
+        .filter((row) => str(row?.name) && typeof row.value === 'string' && row.value !== 'all' && CATEGORY_VALUE.test(row.value))
+        .map((row) => ({ name: row.name, value: row.value }));
 }
 
 // 유심·eSIM·포켓와이파이 상품(카테고리 "유심·와이파이" 등) — 도시 이름 + "유심"으로 찾으면 대부분 이것만

@@ -6,12 +6,14 @@ import {
     isProductUrl,
     isSimProduct,
     kstToday,
+    listCategories,
     normalizeDeal,
     normalizeProduct,
     normalizeReservation,
     normalizeRevenue,
     parseFlightQuery,
     searchFlightDeals,
+    searchProductsPage,
     searchUrl,
     splitRange,
 } from './myrealtrip.js';
@@ -167,6 +169,7 @@ describe('normalizers', () => {
             currency: 'KRW',
             rating: 4.83,
             reviewCount: 1250,
+            tags: ['즉시 확정'],
             url: 'https://experiences.myrealtrip.com/products/5869248',
         });
         expect(normalizeProduct({ gid: '1', itemName: 'x', productUrl: 'https://example.com/p' })).toBeNull();
@@ -338,5 +341,65 @@ describe('항공 특가', () => {
         vi.stubGlobal('fetch', async () => ({ ok: true, json: async () => ({ data: {}, result: { status: 400, code: 'bad', message: 'x' } }) }));
         vi.spyOn(console, 'warn').mockImplementation(() => {});
         await expect(searchFlightDeals('ICN', 5)).rejects.toThrow();
+    });
+});
+
+describe('투어티켓 필터 검색', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.unstubAllEnvs();
+        vi.restoreAllMocks();
+    });
+
+    const ok = (data) => ({ ok: true, json: async () => ({ data, result: { status: 200, code: 'success' } }) });
+    const item = (gid, extra = {}) => ({
+        gid,
+        itemName: `상품 ${gid}`,
+        category: '투어',
+        salePrice: 10000,
+        reviewScore: 4.9,
+        reviewCount: 10,
+        imageUrl: 'https://example.cloudfront.net/a.jpg',
+        productUrl: `https://experiences.myrealtrip.com/products/${gid}`,
+        ...extra,
+    });
+
+    it('준 필터만 요청에 넣고, 안 준 것은 보내지 않는다(전체 카테고리는 생략)', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        const bodies = [];
+        vi.stubGlobal('fetch', async (url, init) => {
+            expect(new URL(String(url)).pathname).toBe('/v1/products/tna/search');
+            bodies.push(JSON.parse(init.body));
+            return ok({ items: [item('1', { tags: ['즉시 확정'] })], totalCount: 40, page: 2, perPage: 20, hasNextPage: true });
+        });
+        const result = await searchProductsPage('시드니', { size: 20, page: 2, category: 'tour', maxPrice: 200000, sort: 'price_asc' });
+        expect(bodies[0]).toEqual({ keyword: '시드니', page: 2, size: 20, category: 'tour', maxPrice: 200000, sort: 'price_asc' });
+        expect(result.hasNextPage).toBe(true);
+        expect(result.totalCount).toBe(40);
+        expect(result.items[0].tags).toEqual(['즉시 확정']);
+        await searchProductsPage('시드니', { size: 8 });
+        expect(bodies[1]).toEqual({ keyword: '시드니', page: 1, size: 8 });
+    });
+
+    it('카테고리 목록 — all과 이상한 값은 뺀다', async () => {
+        vi.stubEnv('MYREALTRIP_API_KEY', 'test-key');
+        vi.stubGlobal('fetch', async (url, init) => {
+            expect(new URL(String(url)).pathname).toBe('/v1/products/tna/categories');
+            expect(JSON.parse(init.body)).toEqual({ city: '오사카' });
+            return ok({
+                categories: [
+                    { name: '전체', value: 'all' },
+                    { name: '투어', value: 'tour' },
+                    { name: '티켓·입장권', value: 'ticket_v2' },
+                    { name: '이상', value: 'Bad Value!' },
+                    { name: '', value: 'empty' },
+                ],
+                totalCount: 1019,
+            });
+        });
+        expect(await listCategories('오사카')).toEqual([
+            { name: '투어', value: 'tour' },
+            { name: '티켓·입장권', value: 'ticket_v2' },
+        ]);
     });
 });
