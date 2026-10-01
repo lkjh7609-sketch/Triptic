@@ -79,7 +79,7 @@ export function CompanionChatScreen() {
   const isOrganizer = !!user && user.id === post.author_id;
   const isOpen = post.status === 'matched';
   // 시작 전 종료는 완료가 아니라 모임 취소(서버도 막는다)
-  const canComplete = isOpen && isOrganizer && post.start_date <= format(new Date(), 'yyyy-MM-dd');
+  const canComplete = isOpen && isOrganizer && (!post.start_date || post.start_date <= format(new Date(), 'yyyy-MM-dd'));
   const canLeave = isOpen && (isOrganizer || post.myApplication?.status === 'accepted');
 
   async function handleComplete() {

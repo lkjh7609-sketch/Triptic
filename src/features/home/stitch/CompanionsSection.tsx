@@ -28,7 +28,12 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
   const tags = sanitizeTags(post.tags);
   const author = post.author?.display_name ?? '';
   const destination = post.destination?.name ?? t('page.companions.anywhere');
-  const dates = desktop ? `${md(post.start_date)} - ${md(post.end_date)}` : `${md(post.start_date).replace('.', '/')} ~ ${md(post.end_date).replace('.', '/')}`;
+  const dates =
+    !post.start_date || !post.end_date
+      ? t('community:companion.detail.dateTbd')
+      : desktop
+        ? `${md(post.start_date)} - ${md(post.end_date)}`
+        : `${md(post.start_date).replace('.', '/')} ~ ${md(post.end_date).replace('.', '/')}`;
 
   return (
     <article className={`${shared.card} ${shared.cardHover} ${styles.card}`}>

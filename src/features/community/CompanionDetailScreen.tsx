@@ -121,7 +121,7 @@ export function CompanionDetailScreen() {
 
         <h2 className={styles.title}>{post.title}</h2>
         <div className={styles.meta}>
-          <span>{t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })}</span>
+          <span>{post.start_date && post.end_date ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date }) : t('companion.detail.dateTbd')}</span>
           <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>
           {prefsLabel(post, t) ? <span>{prefsLabel(post, t)}</span> : null}
         </div>

@@ -142,8 +142,9 @@ export interface CompanionPost {
   destination_id: string | null;
   title: string;
   body: string;
-  start_date: string;
-  end_date: string;
+  /** 날짜 미정(협의)이면 start_date·end_date 둘 다 null(0072) */
+  start_date: string | null;
+  end_date: string | null;
   group_size: number;
   status: CompanionPostStatus;
   report_count: number;
