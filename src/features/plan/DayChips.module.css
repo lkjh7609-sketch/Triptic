@@ -1,5 +1,7 @@
 /* 일차 선택 — 이어진 선 위에 날짜마다 점을 찍고, 선택한 날까지 선이 차오른다 */
 .row {
+  /* 세로 flex 칼럼(PC 오른쪽 일정 패널)에서 내용이 길면 overflow가 있는 이 줄만 눌려 날짜·점이 잘렸다 — 줄어들지 않게 */
+  flex-shrink: 0;
   padding: var(--space-3) var(--space-2) var(--space-2);
   overflow-x: auto;
   scroll-snap-type: x proximity;
