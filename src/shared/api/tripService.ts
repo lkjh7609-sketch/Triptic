@@ -248,7 +248,7 @@ export class TripService {
         .maybeSingle();
       if (!profile || profile.plan !== 'free') return;
       const remaining = Math.max(0, (profile.trip_limit as number) - (profile.trips_created_count as number));
-      showToast(i18next.t('plan:quota.tripCreatedToast', { remaining }));
+      showToast(i18next.t('plan:quota.tripCreatedToast', { remaining }), { tone: 'success' });
     } catch {
       // 안내용 토스트일 뿐이라 실패해도 무시한다.
     }

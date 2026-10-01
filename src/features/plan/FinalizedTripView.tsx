@@ -46,7 +46,7 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
   async function handleReopen() {
     try {
       await reopenMutation.mutateAsync();
-      showToast(t('quota.reopenSuccess'));
+      showToast(t('quota.reopenSuccess'), { tone: 'success' });
     } catch (err) {
       captureError(err, { context: 'reopenTrip' });
       showToast(err instanceof Error ? err.message : t('quota.reopenSuccess'));

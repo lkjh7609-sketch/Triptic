@@ -21,7 +21,7 @@ export function BookmarkButton({ post, className }: { post: Post; className?: st
     toggle.mutate(saved, {
       onError: (err) => {
         captureError(err, { context: 'toggleBookmark' });
-        showToast(t('bookmark.error'));
+        showToast(t('bookmark.error'), { tone: 'error' });
       },
     });
   }
