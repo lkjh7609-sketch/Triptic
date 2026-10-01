@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import heroImage from '@/assets/home/hero.webp';
 import { CAPSULE_TABS as TABS, type CapsuleTabKey } from './capsuleTabs';
+import { HomeTopBar } from './HomeTopBar';
 import { useLiquidGlass } from './useLiquidGlass';
 import styles from './HeroTabs.module.css';
 
@@ -92,11 +93,14 @@ export function SectionBandDesktop({ activeKey }: { activeKey?: CapsuleTabKey })
   );
 }
 
-/** 모바일: 항공·호텔·투어 화면 본문 맨 위의 유리 캡슐(스크롤과 함께 올라감) */
+/** 모바일: 항공·호텔·투어 화면 맨 위의 로고 줄 + 유리 캡슐(홈과 같은 자리, 캡슐은 스크롤과 함께 올라감) */
 export function SectionCapsuleMobile({ activeKey }: { activeKey?: CapsuleTabKey }) {
   return (
-    <div className={styles.sectionCapsuleMobile}>
-      <CapsuleTabs variant="flat" activeKey={activeKey} />
-    </div>
+    <>
+      <HomeTopBar />
+      <div className={styles.sectionCapsuleMobile}>
+        <CapsuleTabs variant="flat" activeKey={activeKey} />
+      </div>
+    </>
   );
 }

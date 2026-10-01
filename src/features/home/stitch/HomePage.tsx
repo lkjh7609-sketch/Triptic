@@ -1,6 +1,6 @@
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
-import { BrandLogo } from '@/shared/ui/BrandLogo';
 import { CapsuleMobile, HeroDesktop } from './HeroTabs';
+import { HomeTopBar } from './HomeTopBar';
 import { MyTripsSection } from './MyTripsSection';
 import { DealsSection } from './DealsSection';
 import { StoriesSection } from './StoriesSection';
@@ -26,9 +26,7 @@ export function HomePage() {
       {desktop ? (
         <HeroDesktop />
       ) : (
-        <header className={styles.topBar}>
-          <BrandLogo className={styles.topLogo} introAnchor />
-        </header>
+        <HomeTopBar introAnchor />
       )}
       <div className={styles.body}>
         {desktop ? (

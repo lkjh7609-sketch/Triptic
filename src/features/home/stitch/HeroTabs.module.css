@@ -87,11 +87,12 @@
 }
 
 .tab {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: 34px;
   border: 0;
   border-radius: 9999px;
   background: transparent;
@@ -108,10 +109,17 @@
   display: none;
 }
 
+/* 보이는 칸은 얇게 — 눌리는 영역만 44px 이상으로 */
+.tab::after {
+  content: '';
+  position: absolute;
+  inset: -5px 0;
+}
+
 .capsuleHero {
   order: -1;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 9999px;
   /* 유리: 위가 더 밝은 얇은 막 + 블러·채도 + 가장자리 빛 반사(안쪽 그림자) */
@@ -131,16 +139,15 @@
 }
 
 .capsuleHero .tab {
-  padding: 8px 16px;
+  padding: 6px 16px;
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .capsuleHero .tabOn {
-  padding: 8px 20px;
+  padding: 6px 16px;
   background: rgba(255, 255, 255, 0.9);
   color: #1d3535;
-  font-weight: 600;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
@@ -160,7 +167,7 @@
 .capsuleFlat {
   --glass-hi: rgba(255, 255, 255, 0.95);
   --glass-edge: rgba(255, 255, 255, 0.75);
-  padding: 4px;
+  padding: 3px;
   margin-top: 4px;
   border: 1px solid var(--glass-edge);
   border-radius: 9999px;
@@ -188,7 +195,8 @@
 
 .capsuleFlat .tab {
   flex: 1;
-  padding: 8px 12px;
+  min-height: 36px;
+  padding: 6px 12px;
   color: var(--h-ink-2, var(--text-muted));
 }
 
@@ -209,7 +217,7 @@
 
 /* ===== 항공·호텔·투어 화면 위 얇은 사진 띠(PC) / 본문 맨 위 캡슐(모바일) ===== */
 .band {
-  padding: 32px 0 56px;
+  padding: 48px 0 44px; /* 위 간격은 홈 히어로와 같아 화면을 오가도 캡슐 자리가 안 움직인다 */
   view-transition-name: home-tabs; /* 화면 전환 때 제자리 고정(global.css) */
 }
 
@@ -223,5 +231,8 @@
 }
 
 .sectionCapsuleMobile {
-  padding: var(--space-3) var(--space-4) 0;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px; /* 홈 본문(.body)과 같은 칸 — 캡슐 위 간격은 capsuleFlat의 margin-top */
 }
