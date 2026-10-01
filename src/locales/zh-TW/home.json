@@ -155,13 +155,6 @@
       "open": "查看飛往{{city}}的機票"
     }
   },
-  "sections": {
-    "label": "首頁選單",
-    "home": "首頁",
-    "flights": "機票",
-    "hotels": "飯店",
-    "activities": "活動"
-  },
   "hotels": {
     "title": "住宿",
     "subtitle": "尋找目的地的住宿",

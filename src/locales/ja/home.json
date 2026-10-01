@@ -155,13 +155,6 @@
       "open": "{{city}}の航空券を見る"
     }
   },
-  "sections": {
-    "label": "ホームメニュー",
-    "home": "ホーム",
-    "flights": "航空券",
-    "hotels": "ホテル",
-    "activities": "アクティビティ"
-  },
   "hotels": {
     "title": "宿泊",
     "subtitle": "旅行先の宿を探しましょう",
