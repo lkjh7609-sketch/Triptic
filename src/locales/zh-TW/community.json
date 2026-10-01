@@ -439,20 +439,32 @@
       "needsReview": "行程已結束 · 留下評價"
     },
     "compose": {
-      "title": "找同行",
+      "title": "徵求旅伴",
       "titleLabel": "標題",
       "titlePlaceholder": "例：大阪三天兩夜找旅伴",
       "titleRequiredError": "請輸入標題。",
-      "bodyPlaceholder": "分享你的行程安排和想找的同行類型。",
-      "dateRequiredError": "請選擇旅行日期。",
+      "bodyPlaceholder": "寫下想去的地方、想做的事和喜歡的旅行風格。",
+      "dateRequiredError": "請選擇日期。若尚未決定，請選「日期未定」。",
       "destinationLabel": "旅遊地",
       "destinationAny": "地點不拘",
-      "dateLabel": "旅行日期",
+      "dateLabel": "行程",
       "datePlaceholder": "選擇日期",
-      "groupSizeLabel": "招募人數(含本人)",
+      "groupSizeLabel": "徵求人數",
       "groupSizeDecrease": "減少人數",
       "groupSizeIncrease": "增加人數",
-      "groupSizeValue_other": "{{count}} 人"
+      "groupSizeValue_other": "{{count}} 人",
+      "introTitle": "想一起做什麼？",
+      "introSub": "簡單寫下想找人同行的行程或活動。",
+      "bodyLabel": "詳細內容",
+      "minHint": "建議至少 10 個字",
+      "infoTitle": "旅行資訊",
+      "quick": "快速推薦：",
+      "dateSub": "請選擇出發日與回程日",
+      "dateTbdValue": "日期未定・可商議",
+      "groupSizeNote": "（含本人）",
+      "submit": "發佈旅伴徵求文",
+      "guide": "發佈的徵求文必須遵守社群守則。",
+      "missing": "請填寫標題、詳細內容與行程日期。"
     },
     "detail": {
       "anyDestination": "地點未定",
@@ -489,7 +501,8 @@
       "finalizeProceed": "確定配對",
       "withdrawConfirm": "要取消申請嗎？",
       "withdrawKeep": "保留我的申請",
-      "withdrawProceed": "撤回申請"
+      "withdrawProceed": "撤回申請",
+      "dateTbd": "日期可商議"
     },
     "apply": {
       "dialogLabel": "申請加入同行",
@@ -582,18 +595,21 @@
       "doneDesc": "評分只會以平均值顯示在暱稱旁。"
     },
     "prefs": {
-      "ageLabel": "希望的年齡層（可複選）",
+      "ageLabel": "希望的年齡層",
       "genderLabel": "希望的性別",
       "tagLabel": "標籤（最多 {{max}} 個）",
-      "hint": "非必填，僅供參考，不會限制申請。"
+      "hint": "非必填，僅供參考，不會限制申請。",
+      "title": "偏好條件",
+      "ageHint": "可複選",
+      "genderHint": "單選"
     },
     "ages": {
-      "10s": "10 多歲",
-      "20s": "20 多歲",
-      "30s": "30 多歲",
+      "20s_early": "20 出頭",
+      "20s_late": "20 後半",
+      "30s_early": "30 出頭",
+      "30s_late": "30 後半",
       "40s": "40 多歲",
-      "50s": "50 多歲",
-      "60s": "60 歲以上"
+      "50s_plus": "50 歲以上"
     },
     "gender": {
       "any": "性別不拘",
@@ -645,6 +661,25 @@
     "selected": "目前選擇：",
     "none": "尚未選擇",
     "close": "關閉",
-    "confirm": "完成選擇"
+    "confirm": "完成選擇",
+    "any": "哪裡都可以"
+  },
+  "dateDialog": {
+    "title": "選擇旅行日期",
+    "sub": "請依序點選出發日與回程日",
+    "tbd": "日期未定 / 可商議",
+    "startLabel": "出發日",
+    "endLabel": "回程日",
+    "pickDate": "選擇日期",
+    "length": "{{nights}} 晚 {{days}} 天",
+    "sameDay": "當日往返",
+    "confirmRange": "{{range}} 選擇完成（{{length}}）",
+    "confirmTbd": "以日期未定完成選擇",
+    "confirmNone": "請選擇日期",
+    "reset": "重設選擇",
+    "markStart": "出發",
+    "markEnd": "抵達",
+    "prevMonth": "上個月",
+    "nextMonth": "下個月"
   }
 }

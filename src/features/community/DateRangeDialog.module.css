@@ -1,0 +1,536 @@
+/* 여행 일정 선택 창 — 앱 토큰만 써서 라이트/다크가 같이 따라간다. 모바일(기본)=하단 시트(달이 세로로 이어짐), PC(1024px~)=두 달 가운데 모달 */
+.overlay {
+  composes: overlay from './DestinationPickerModal.module.css';
+}
+
+.overlayOut {
+  composes: overlayOut from './DestinationPickerModal.module.css';
+}
+
+.panel {
+  composes: panel from './DestinationPickerModal.module.css';
+}
+
+.panelOut {
+  composes: panelOut from './DestinationPickerModal.module.css';
+}
+
+.handle {
+  composes: handle from './DestinationPickerModal.module.css';
+}
+
+.iconBtn {
+  composes: iconBtn from './DestinationPickerModal.module.css';
+}
+
+.secondary {
+  composes: secondary from './DestinationPickerModal.module.css';
+}
+
+.panel {
+  --sat: #2563eb;
+  --soft: #faf7f2;
+}
+
+:root[data-theme='dark'] .panel {
+  --sat: #60a5fa;
+  --soft: var(--surface-subtle);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .panel {
+    --sat: #60a5fa;
+    --soft: var(--surface-subtle);
+  }
+}
+
+@media (min-width: 1024px) {
+  .panel.wide {
+    width: 760px;
+    max-height: min(92vh, 780px);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.headerIcon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sub {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-muted);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.tbdBtn {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9999px;
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.tbdOn {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+@media (hover: hover) {
+  .tbdBtn:not(.tbdOn):hover {
+    background: var(--surface-subtle);
+  }
+}
+
+/* ===== 출발일·복귀일 요약 ===== */
+.summary {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--soft);
+}
+
+.summaryCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.summaryEnd {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.summaryLabel {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  color: var(--text-tertiary);
+}
+
+.summaryValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.summaryEmpty {
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--border-strong);
+}
+
+.dotOn {
+  background: var(--brand);
+}
+
+.lengthPill {
+  flex: 0 0 auto;
+  padding: 4px 12px;
+  border: 1px solid var(--brand);
+  border-radius: 9999px;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.lengthEmpty {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-placeholder);
+  animation: none;
+}
+
+/* ===== 달력 ===== */
+.calendarPc {
+  position: relative;
+  padding: 16px 20px 12px;
+}
+
+.monthsPc {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  animation: fadeIn 0.2s ease both;
+}
+
+.nav {
+  position: absolute;
+  top: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.navPrev {
+  left: 16px;
+}
+
+.navNext {
+  right: 16px;
+}
+
+@media (hover: hover) {
+  .nav:not(:disabled):hover {
+    background: var(--surface-subtle);
+  }
+}
+
+.calendarMobile {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 16px 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.month {
+  min-width: 0;
+  padding-bottom: 12px;
+}
+
+.monthTitle {
+  margin: 0 0 6px;
+  padding: 10px 0;
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekday {
+  padding: 6px 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+.sun {
+  color: var(--danger-text);
+}
+
+.sat {
+  color: var(--sat);
+}
+
+.day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-body);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.day.sun {
+  color: var(--danger-text);
+}
+
+.day.sat {
+  color: var(--sat);
+}
+
+.day:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.day:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+/* 출발~복귀 사이를 잇는 띠 */
+.inside {
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.stripRight::before,
+.stripLeft::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: var(--brand-tint);
+}
+
+.stripRight::before {
+  right: 0;
+}
+
+.stripLeft::before {
+  left: 0;
+}
+
+.dayInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+@media (hover: hover) {
+  .day:not(:disabled):not(.picked):hover .dayInner {
+    background: var(--surface-subtle);
+  }
+}
+
+.picked .dayInner {
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-weight: 700;
+  animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dayNum {
+  line-height: 1.125rem;
+}
+
+.mark {
+  font-size: 0.5625rem;
+  line-height: 0.6875rem;
+  font-weight: 600;
+}
+
+.dim {
+  opacity: 0.4;
+}
+
+/* ===== 아래 줄 ===== */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  background: var(--surface-card);
+}
+
+@media (min-width: 1024px) {
+  .footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-radius: 0 0 20px 20px;
+  }
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .resetBtn:hover {
+    color: var(--brand-text);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.secondary {
+  flex: 0 0 auto;
+  min-width: 72px;
+}
+
+.primary {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.12s ease,
+    opacity 0.15s ease;
+}
+
+.primaryText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.primary:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.primary:not(:disabled):active {
+  transform: scale(0.98);
+  background: var(--brand-pressed);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lengthPill,
+  .monthsPc,
+  .picked .dayInner {
+    animation: none;
+  }
+
+  .dayInner,
+  .tbdBtn {
+    transition: none;
+  }
+}

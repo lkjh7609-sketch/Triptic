@@ -439,20 +439,32 @@
       "needsReview": "일정 종료 · 후기 남기기"
     },
     "compose": {
-      "title": "동행 모집",
+      "title": "동행 구하기",
       "titleLabel": "제목",
       "titlePlaceholder": "예: 오사카 3박4일 같이 다니실 분",
       "titleRequiredError": "제목을 입력해 주세요.",
-      "bodyPlaceholder": "여행 일정, 원하는 동행 스타일 등을 적어 주세요.",
-      "dateRequiredError": "여행 날짜를 선택해 주세요.",
+      "bodyPlaceholder": "가고 싶은 곳, 하고 싶은 일, 원하는 여행 스타일을 적어 주세요.",
+      "dateRequiredError": "일정을 선택해 주세요. 아직 정하지 못했다면 '날짜 미정'을 골라 주세요.",
       "destinationLabel": "여행지",
       "destinationAny": "어디든 상관없어요",
-      "dateLabel": "여행 날짜",
+      "dateLabel": "일정",
       "datePlaceholder": "날짜를 선택하세요",
-      "groupSizeLabel": "모집 인원(나 포함)",
+      "groupSizeLabel": "모집 인원",
       "groupSizeDecrease": "인원 줄이기",
       "groupSizeIncrease": "인원 늘리기",
-      "groupSizeValue_other": "{{count}}명"
+      "groupSizeValue_other": "{{count}}명",
+      "introTitle": "무엇을 함께 할까요?",
+      "introSub": "함께 떠나고 싶은 일정이나 활동을 가볍게 적어주세요.",
+      "bodyLabel": "상세 내용",
+      "minHint": "최소 10자 이상 권장",
+      "infoTitle": "여행 정보",
+      "quick": "빠른 추천:",
+      "dateSub": "출발일과 복귀일을 선택해주세요",
+      "dateTbdValue": "날짜 미정 · 협의 가능",
+      "groupSizeNote": "(본인 포함)",
+      "submit": "동행 모집글 게시하기",
+      "guide": "작성된 모집글은 커뮤니티 가이드라인을 준수해야 해요.",
+      "missing": "제목·상세 내용·일정을 모두 입력해 주세요."
     },
     "detail": {
       "anyDestination": "여행지 미정",
@@ -489,7 +501,8 @@
       "finalizeProceed": "매칭 확정하기",
       "withdrawConfirm": "지원을 취소할까요?",
       "withdrawKeep": "계속 지원 유지하기",
-      "withdrawProceed": "지원 취소하기"
+      "withdrawProceed": "지원 취소하기",
+      "dateTbd": "날짜 협의"
     },
     "apply": {
       "dialogLabel": "동행 지원",
@@ -582,18 +595,21 @@
       "doneDesc": "별점은 상대방 닉네임 옆에 평균으로만 표시돼요."
     },
     "prefs": {
-      "ageLabel": "원하는 나이대 (여러 개 선택 가능)",
+      "ageLabel": "원하는 나이대",
       "genderLabel": "원하는 성별",
       "tagLabel": "태그 (최대 {{max}}개)",
-      "hint": "선택 사항이에요. 참고용이고 신청을 막지는 않아요."
+      "hint": "선택 사항이에요. 참고용이고 신청을 막지는 않아요.",
+      "title": "선호 조건",
+      "ageHint": "중복 선택 가능",
+      "genderHint": "단일 선택"
     },
     "ages": {
-      "10s": "10대",
-      "20s": "20대",
-      "30s": "30대",
+      "20s_early": "20대 초반",
+      "20s_late": "20대 후반",
+      "30s_early": "30대 초반",
+      "30s_late": "30대 후반",
       "40s": "40대",
-      "50s": "50대",
-      "60s": "60대 이상"
+      "50s_plus": "50대 이상"
     },
     "gender": {
       "any": "성별 무관",
@@ -645,6 +661,25 @@
     "selected": "선택 현황:",
     "none": "아직 고르지 않았어요",
     "close": "닫기",
-    "confirm": "선택 완료"
+    "confirm": "선택 완료",
+    "any": "어디든 상관없어요"
+  },
+  "dateDialog": {
+    "title": "여행 일정 선택",
+    "sub": "출발일과 복귀일을 차례대로 탭해주세요",
+    "tbd": "날짜 미정 / 협의 가능",
+    "startLabel": "출발일",
+    "endLabel": "복귀일",
+    "pickDate": "날짜 선택",
+    "length": "{{nights}}박 {{days}}일",
+    "sameDay": "당일치기",
+    "confirmRange": "{{range}} 선택 완료 ({{length}})",
+    "confirmTbd": "날짜 미정으로 선택 완료",
+    "confirmNone": "날짜를 선택해 주세요",
+    "reset": "선택 초기화",
+    "markStart": "출발",
+    "markEnd": "도착",
+    "prevMonth": "이전 달",
+    "nextMonth": "다음 달"
   }
 }

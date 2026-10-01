@@ -450,21 +450,33 @@
       "needsReview": "Trip ended · leave a review"
     },
     "compose": {
-      "title": "Find a companion",
+      "title": "Find companions",
       "titleLabel": "Title",
       "titlePlaceholder": "e.g. Looking for company in Osaka, 3N4D",
       "titleRequiredError": "Please enter a title.",
-      "bodyPlaceholder": "Share your itinerary and what kind of companion you're looking for.",
-      "dateRequiredError": "Please select your travel dates.",
+      "bodyPlaceholder": "Tell us where you want to go, what you want to do and the travel style you like.",
+      "dateRequiredError": "Please choose your dates. If they are not set yet, pick \"Dates TBD\".",
       "destinationLabel": "Destination",
       "destinationAny": "Anywhere is fine",
-      "dateLabel": "Travel dates",
+      "dateLabel": "Schedule",
       "datePlaceholder": "Select dates",
-      "groupSizeLabel": "Group size (including you)",
+      "groupSizeLabel": "Group size",
       "groupSizeDecrease": "Decrease group size",
       "groupSizeIncrease": "Increase group size",
       "groupSizeValue_one": "{{count}} person",
-      "groupSizeValue_other": "{{count}} people"
+      "groupSizeValue_other": "{{count}} people",
+      "introTitle": "What would you like to do together?",
+      "introSub": "Briefly describe the trip or activity you want company for.",
+      "bodyLabel": "Details",
+      "minHint": "At least 10 characters recommended",
+      "infoTitle": "Trip info",
+      "quick": "Quick picks:",
+      "dateSub": "Choose your departure and return dates",
+      "dateTbdValue": "Dates TBD · flexible",
+      "groupSizeNote": "(including you)",
+      "submit": "Post companion request",
+      "guide": "Posts must follow the community guidelines.",
+      "missing": "Please fill in the title, details and dates."
     },
     "detail": {
       "anyDestination": "Destination TBD",
@@ -504,7 +516,8 @@
       "finalizeProceed": "Confirm match",
       "withdrawConfirm": "Withdraw your application?",
       "withdrawKeep": "Keep my application",
-      "withdrawProceed": "Withdraw application"
+      "withdrawProceed": "Withdraw application",
+      "dateTbd": "Dates flexible"
     },
     "apply": {
       "dialogLabel": "Apply to join",
@@ -600,18 +613,21 @@
       "doneDesc": "Ratings only show up as an average next to each nickname."
     },
     "prefs": {
-      "ageLabel": "Preferred age groups (pick any)",
+      "ageLabel": "Preferred age",
       "genderLabel": "Preferred gender",
       "tagLabel": "Tags (up to {{max}})",
-      "hint": "Optional. For reference only — it doesn't block anyone from applying."
+      "hint": "Optional. For reference only — it doesn't block anyone from applying.",
+      "title": "Preferences",
+      "ageHint": "Select any",
+      "genderHint": "Select one"
     },
     "ages": {
-      "10s": "Teens",
-      "20s": "20s",
-      "30s": "30s",
+      "20s_early": "Early 20s",
+      "20s_late": "Late 20s",
+      "30s_early": "Early 30s",
+      "30s_late": "Late 30s",
       "40s": "40s",
-      "50s": "50s",
-      "60s": "60+"
+      "50s_plus": "50+"
     },
     "gender": {
       "any": "Any gender",
@@ -664,6 +680,25 @@
     "selected": "Selected:",
     "none": "Nothing selected yet",
     "close": "Close",
-    "confirm": "Done"
+    "confirm": "Done",
+    "any": "Anywhere is fine"
+  },
+  "dateDialog": {
+    "title": "Choose trip dates",
+    "sub": "Tap your departure date, then your return date",
+    "tbd": "Dates TBD / flexible",
+    "startLabel": "Departure",
+    "endLabel": "Return",
+    "pickDate": "Select a date",
+    "length": "{{nights}}N {{days}}D",
+    "sameDay": "Day trip",
+    "confirmRange": "{{range}} confirmed ({{length}})",
+    "confirmTbd": "Confirm: dates TBD",
+    "confirmNone": "Select your dates",
+    "reset": "Reset",
+    "markStart": "Start",
+    "markEnd": "End",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   }
 }

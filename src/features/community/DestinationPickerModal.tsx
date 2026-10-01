@@ -21,6 +21,8 @@ interface DestinationPickerModalProps {
   /** "선택 완료"를 눌렀을 때 */
   onConfirm: (destination: Destination) => void;
   onClose: () => void;
+  /** 있으면 위쪽 줄에 "어디든 상관없어요" 버튼이 생긴다 — 누르면 여행지를 비우고 닫는다(동행 글처럼 여행지가 선택 사항일 때) */
+  onClear?: () => void;
 }
 
 const CLOSE_MS = 200;
@@ -30,7 +32,7 @@ const CLOSE_MS = 200;
  * 검색창 → 최근 선택 칩 → 지역 탭 → 도시 카드(2열) → 하단 "선택 현황 + 닫기 / 선택 완료".
  * 카드를 누르면 임시로 고르고, "선택 완료"를 눌러야 반영된다. 바깥(어두운 배경)을 눌러도 닫히지 않는다 — 닫기 버튼·Esc로만 닫는다.
  */
-export function DestinationPickerModal({ destinations, selectedId, onConfirm, onClose }: DestinationPickerModalProps) {
+export function DestinationPickerModal({ destinations, selectedId, onConfirm, onClose, onClear }: DestinationPickerModalProps) {
   const { t, i18n } = useTranslation('community');
   const [closing, setClosing] = useState(false);
   const closeTimer = useRef<number | undefined>(undefined);
@@ -104,9 +106,16 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
               {t('picker.title')}
             </h2>
           </div>
-          <button type="button" className={styles.iconBtn} onClick={() => requestClose()} aria-label={t('picker.close')}>
-            <X size={20} aria-hidden="true" />
-          </button>
+          <div className={styles.headerActions}>
+            {onClear ? (
+              <button type="button" className={styles.anyBtn} onClick={() => requestClose(onClear)}>
+                {t('picker.any')}
+              </button>
+            ) : null}
+            <button type="button" className={styles.iconBtn} onClick={() => requestClose()} aria-label={t('picker.close')}>
+              <X size={20} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <div className={styles.searchArea}>
