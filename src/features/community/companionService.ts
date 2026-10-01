@@ -8,6 +8,7 @@ import { captureError } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
 import { hasPrefs, type CompanionPrefs } from './companionPrefs';
 import i18next, { normalizeLocale } from '@/shared/i18n';
+import { escapeLike } from './communityService';
 import type {
   CommunityProfile,
   CompanionApplication,
@@ -95,6 +96,22 @@ async function fetchMyApplicationsByPostIds(
 export interface CompanionPostsPage {
   posts: CompanionPost[];
   nextCursor: { created_at: string; id: string } | null;
+  /** 출발 임박순처럼 커서를 못 쓰는 정렬의 다음 시작 위치 */
+  nextOffset?: number | null;
+}
+
+export type CompanionSort = 'latest' | 'deadline';
+
+/** PostgREST or() 안에 넣을 값 — 따옴표로 묶어 쉼표·괄호가 필터 문법으로 읽히지 않게 한다 */
+function orQuoted(value: string): string {
+  return `"${value.replace(/[\\"]/g, (c) => `\\${c}`)}"`;
+}
+
+/** 오늘 날짜(로컬) YYYY-MM-DD — start_date(date) 비교용 */
+function todayLocal(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 export async function listCompanionPosts(opts: {
@@ -102,32 +119,67 @@ export async function listCompanionPosts(opts: {
   viewerId?: string | null;
   cursor?: { created_at: string; id: string } | null;
   limit?: number;
+  /** 제목·내용에 이 글자가 들어 있는 글만 */
+  search?: string;
+  /** deadline = 출발이 가까운 순(이미 지난 출발은 뺀다, 날짜 미정은 맨 뒤). 위치(offset)로 이어 받는다 */
+  sort?: CompanionSort;
+  offset?: number;
 }): Promise<CompanionPostsPage> {
   const supabase = getSupabaseClient();
   const limit = opts.limit ?? 20;
-  let query = supabase
-    .from('companion_posts')
-    .select('*')
-    .eq('status', 'recruiting')
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: false })
-    .limit(limit);
+  const sort = opts.sort ?? 'latest';
+  let query = supabase.from('companion_posts').select('*').eq('status', 'recruiting').is('deleted_at', null);
+
+  if (sort === 'deadline') {
+    query = query.or(`start_date.gte.${todayLocal()},start_date.is.null`).order('start_date', { ascending: true, nullsFirst: false });
+  }
+  query = query.order('created_at', { ascending: false }).order('id', { ascending: false });
 
   if (opts.destinationId) query = query.eq('destination_id', opts.destinationId);
-  if (opts.cursor) {
-    query = query.or(
-      `created_at.lt.${opts.cursor.created_at},and(created_at.eq.${opts.cursor.created_at},id.lt.${opts.cursor.id})`,
-    );
+  const search = opts.search?.trim();
+  if (search) {
+    const pattern = orQuoted(`%${escapeLike(search)}%`);
+    query = query.or(`title.ilike.${pattern},body.ilike.${pattern}`);
+  }
+
+  if (sort === 'latest') {
+    query = query.limit(limit);
+    if (opts.cursor) {
+      query = query.or(
+        `created_at.lt.${opts.cursor.created_at},and(created_at.eq.${opts.cursor.created_at},id.lt.${opts.cursor.id})`,
+      );
+    }
+  } else {
+    const offset = opts.offset ?? 0;
+    query = query.range(offset, offset + limit - 1);
   }
 
   const { data, error } = await query;
   if (error) throw error;
   const rows = (data as CompanionPost[]) ?? [];
   const posts = await enrichCompanionPosts(rows, opts.viewerId ?? null);
+  if (sort === 'deadline') {
+    return { posts, nextCursor: null, nextOffset: rows.length === limit ? (opts.offset ?? 0) + rows.length : null };
+  }
   const last = rows[rows.length - 1];
   const nextCursor = rows.length === limit && last ? { created_at: last.created_at, id: last.id } : null;
   return { posts, nextCursor };
+}
+
+/** 급구 동행 — 출발이 오늘 이후로 가장 가까운 모집 중 글(날짜 미정은 제외) */
+export async function listUrgentCompanionPosts(destinationId: string, limit = 2): Promise<CompanionPost[]> {
+  const { data, error } = await getSupabaseClient()
+    .from('companion_posts')
+    .select('*')
+    .eq('status', 'recruiting')
+    .is('deleted_at', null)
+    .eq('destination_id', destinationId)
+    .gte('start_date', todayLocal())
+    .order('start_date', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return enrichCompanionPosts((data as CompanionPost[]) ?? [], null);
 }
 
 export async function getCompanionPost(postId: string, viewerId: string | null): Promise<CompanionPost | null> {

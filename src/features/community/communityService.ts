@@ -13,6 +13,7 @@ import type {
   CommentStatus,
   CommunityProfile,
   Destination,
+  DestinationGuide,
   Post,
   PostImage,
   PostStatus,
@@ -181,8 +182,30 @@ export async function getDestinationBySlug(slug: string, locale = currentLocale(
   const { data, error } = await supabase.from('destinations').select('*').eq('slug', slug).maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  const nameMap = await fetchDestinationNamesByIds([data.id], locale);
-  return { ...(data as Omit<Destination, 'name'>), name: nameMap.get(data.id) ?? data.slug };
+  const [nameMap, enNameMap] = await Promise.all([
+    fetchDestinationNamesByIds([data.id], locale),
+    locale === 'en' ? Promise.resolve(null) : fetchDestinationNamesByIds([data.id], 'en'),
+  ]);
+  const name = nameMap.get(data.id) ?? data.slug;
+  return { ...(data as Omit<Destination, 'name'>), name, nameEn: (enNameMap ?? nameMap).get(data.id) ?? name };
+}
+
+/** 도시 채널의 안내 내용 — 아직 채워지지 않은 도시는 null(화면이 해당 칸을 숨긴다) */
+export async function getDestinationGuide(destinationId: string): Promise<DestinationGuide | null> {
+  const { data, error } = await getSupabaseClient()
+    .from('destination_guides')
+    .select('destination_id, landmarks, trip_length, best_season, prices')
+    .eq('destination_id', destinationId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as DestinationGuide | null) ?? null;
+}
+
+/** 도시 팔로워 수(누가 팔로우했는지는 노출하지 않는 security definer 함수, 0075) */
+export async function getDestinationFollowerCount(destinationId: string): Promise<number> {
+  const { data, error } = await getSupabaseClient().rpc('destination_follower_count', { p_destination_id: destinationId });
+  if (error) throw error;
+  return typeof data === 'number' ? data : 0;
 }
 
 // ── 피드 (§6 커서 페이지네이션) ─────────────────────────────────────────────
@@ -194,6 +217,15 @@ export interface PostCursor {
 export interface PostsPage {
   posts: Post[];
   nextCursor: PostCursor | null;
+  /** 인기·댓글순(정렬 기준이 시간이 아니라 커서를 못 쓴다)의 다음 시작 위치. 최신순에는 없다 */
+  nextOffset?: number | null;
+}
+
+export type PostSort = 'latest' | 'popular' | 'comments';
+
+/** ilike 패턴에 들어가는 사용자 입력 — 와일드카드(% _)와 이스케이프(\\)를 문자 그대로 찾도록 막는다 */
+export function escapeLike(text: string): string {
+  return text.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
 export async function listPosts(opts: {
@@ -202,9 +234,15 @@ export async function listPosts(opts: {
   viewerId?: string | null;
   cursor?: PostCursor | null;
   limit?: number;
+  /** 본문에 이 글자가 들어 있는 글만(도시 채널 검색) */
+  search?: string;
+  sort?: PostSort;
+  /** 인기·댓글순의 시작 위치 */
+  offset?: number;
 }): Promise<PostsPage> {
   const supabase = getSupabaseClient();
   const limit = opts.limit ?? 20;
+  const sort = opts.sort ?? 'latest';
 
   let destinationIds: string[] | null = null;
   if (opts.followedByUserId) {
@@ -217,21 +255,27 @@ export async function listPosts(opts: {
     if (destinationIds.length === 0) return { posts: [], nextCursor: null };
   }
 
-  let query = supabase
-    .from('posts')
-    .select('*')
-    .eq('status', 'published')
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: false })
-    .limit(limit);
+  let query = supabase.from('posts').select('*').eq('status', 'published').is('deleted_at', null);
+  if (sort === 'popular') query = query.order('like_count', { ascending: false });
+  else if (sort === 'comments') query = query.order('comment_count', { ascending: false });
+  query = query.order('created_at', { ascending: false }).order('id', { ascending: false });
 
   if (opts.destinationId) query = query.eq('destination_id', opts.destinationId);
   if (destinationIds) query = query.in('destination_id', destinationIds);
-  if (opts.cursor) {
-    query = query.or(
-      `created_at.lt.${opts.cursor.created_at},and(created_at.eq.${opts.cursor.created_at},id.lt.${opts.cursor.id})`,
-    );
+  const search = opts.search?.trim();
+  if (search) query = query.ilike('body', `%${escapeLike(search)}%`);
+
+  if (sort === 'latest') {
+    query = query.limit(limit);
+    if (opts.cursor) {
+      query = query.or(
+        `created_at.lt.${opts.cursor.created_at},and(created_at.eq.${opts.cursor.created_at},id.lt.${opts.cursor.id})`,
+      );
+    }
+  } else {
+    // 좋아요·댓글 수로 줄 세우면 (created_at, id) 커서로는 다음 쪽을 이을 수 없어 위치로 넘긴다
+    const offset = opts.offset ?? 0;
+    query = query.range(offset, offset + limit - 1);
   }
 
   const { data, error } = await query;
@@ -239,6 +283,9 @@ export async function listPosts(opts: {
   const rows = (data as Post[]) ?? [];
   const posts = await enrichPosts(rows, opts.viewerId ?? null);
   const last = rows[rows.length - 1];
+  if (sort !== 'latest') {
+    return { posts, nextCursor: null, nextOffset: rows.length === limit ? (opts.offset ?? 0) + rows.length : null };
+  }
   const nextCursor = rows.length === limit && last ? { created_at: last.created_at, id: last.id } : null;
   return { posts, nextCursor };
 }

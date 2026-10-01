@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import type { Destination } from './types';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,12 @@ export function DestinationSelector({
 }: DestinationSelectorProps) {
   const { t, i18n } = useTranslation('community');
   const navigate = useNavigate();
-  const [continent, setContinent] = useState<(typeof CONTINENT_KEYS)[number] | null>(null);
+  const [searchParams] = useSearchParams();
+  // 도시 채널의 브레드크럼('아시아')이 ?continent=AS로 들어오면 그 대륙이 처음부터 펼쳐진다
+  const [continent, setContinent] = useState<(typeof CONTINENT_KEYS)[number] | null>(() => {
+    const fromUrl = searchParams.get('continent');
+    return CONTINENT_KEYS.find((k) => k === fromUrl) ?? null;
+  });
   const [country, setCountry] = useState<string | null>(null);
 
   const regionNames = useMemo(() => {
