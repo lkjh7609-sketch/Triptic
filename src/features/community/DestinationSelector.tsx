@@ -3,19 +3,7 @@ import { useNavigate } from 'react-router';
 import type { Destination } from './types';
 import { useTranslation } from 'react-i18next';
 
-/** 대륙 버킷 — 국가명 자체는 번역 키로 안 들고 Intl.DisplayNames로 표시 언어에
- * 맞춰 그때그때 렌더한다(100개 도시로 늘면서 57개국을 4개 언어로 손으로 번역해
- * 넣는 건 유지비가 너무 크고 오타 위험도 크다 — HomeDesktop.tsx 검색 추천의
- * 국가명 표시와 같은 패턴). 대륙 이름 6개만 번역 키로 둔다. */
-const CONTINENT_KEYS = ['AS', 'EU', 'NA', 'SA', 'AF', 'OC'] as const;
-const COUNTRY_KEYS: Record<(typeof CONTINENT_KEYS)[number], string[]> = {
-  AS: ['KR', 'JP', 'VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'TW', 'HK', 'MO', 'CN', 'KH', 'IN', 'NP', 'MV', 'AE', 'QA', 'IL', 'MN'],
-  EU: ['FR', 'GB', 'IT', 'ES', 'CZ', 'AT', 'CH', 'NL', 'PT', 'TR', 'DE', 'GR', 'HR', 'HU', 'PL', 'DK', 'SE', 'IE', 'BE'],
-  NA: ['US', 'CA', 'MX', 'CU'],
-  SA: ['BR', 'AR', 'PE', 'CL'],
-  AF: ['ZA', 'MA', 'EG', 'KE', 'TZ'],
-  OC: ['AU', 'GU', 'MP', 'NZ', 'FJ'],
-};
+import { CONTINENT_KEYS, COUNTRY_KEYS } from './destinationRegions';
 
 interface DestinationSelectorProps {
   searchElement?: React.ReactNode;

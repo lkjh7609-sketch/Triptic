@@ -545,5 +545,31 @@
     "saveAria": "저장하기 (저장 {{count}}명)",
     "savedAria": "저장 취소 (저장 {{count}}명)",
     "error": "저장 목록을 바꾸지 못했어요. 잠시 뒤 다시 해 주세요."
+  },
+  "picker": {
+    "title": "여행지 검색",
+    "searchPlaceholder": "국가, 도시 검색 (예: 도쿄, 파리, 다낭)",
+    "clearSearch": "검색어 지우기",
+    "recent": "최근 선택:",
+    "removeRecent": "{{name}} 지우기",
+    "tabsLabel": "지역",
+    "tabs": {
+      "all": "전체",
+      "kr": "한국",
+      "jp": "일본",
+      "asia": "아시아",
+      "eu": "유럽",
+      "am": "미주",
+      "other": "기타"
+    },
+    "popular": "인기 추천 여행지",
+    "tabResults": "{{tab}} 여행지",
+    "searchResults": "검색 결과",
+    "count_other": "{{count}}곳",
+    "empty": "맞는 여행지가 없어요.",
+    "selected": "선택 현황:",
+    "none": "아직 고르지 않았어요",
+    "close": "닫기",
+    "confirm": "선택 완료"
   }
 }
