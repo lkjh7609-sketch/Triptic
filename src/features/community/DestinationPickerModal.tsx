@@ -13,6 +13,7 @@ import {
 } from './destinationRegions';
 import type { Destination } from './types';
 import styles from './DestinationPickerModal.module.css';
+import { coverThumbUrl } from './coverThumb';
 
 interface DestinationPickerModalProps {
   destinations: Destination[];
@@ -193,7 +194,7 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
                   <li key={d.id}>
                     <button type="button" className={`${styles.card} ${on ? styles.cardOn : ''}`} onClick={() => setPickedId(d.id)} aria-pressed={on}>
                       {d.cover_url ? (
-                        <img src={d.cover_url} alt="" className={styles.thumb} loading="lazy" decoding="async" />
+                        <img src={coverThumbUrl(d.cover_url)} alt="" className={styles.thumb} loading="lazy" decoding="async" />
                       ) : (
                         <span className={`${styles.thumb} ${styles.thumbEmpty}`} aria-hidden="true">
                           <MapPin size={18} />

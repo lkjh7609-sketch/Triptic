@@ -86,6 +86,13 @@
 
 ## 날짜별 기록
 
+### 2026-10-02 (밤 4) — 도시 대표 사진 100곳 적용
+
+- **사진**: 사용자가 Nano Banana로 만든 78장(`~/Downloads/도시사진`, 1200x896 JPG)을 처리해 Supabase Storage **`destination-covers`**(공개 버킷, 0073)에 올림. 오른쪽 아래의 Gemini 반짝이 표시(약 x1070~1120·y770~815)가 들어오지 않게 **왼쪽 위 1056x792 영역만 쓰고 1024x768 WebP**(품질 78, 평균 약 102KB, 최대 173KB)로. 원본 오른쪽·아래 약 12%가 잘림. 파일은 `슬러그.webp`, 선택 창용 **160x120 썸네일 `thumbs/슬러그.webp`**(평균 3.8KB)도 같이.
+- **DB(운영 적용, 0073·0074)**: `destinations.cover_url` 100곳 전부 채움 — 78곳은 위 사진 주소, 나머지 22곳(서울·도쿄·오사카·후쿠오카·교토·타이페이·다낭·발리·세부·시드니·파리·로마·프라하·마드리드·암스테르담·빈·부다페스트·베네치아·뉴욕·하와이·샌프란시스코·두바이)은 `useCityImage`에 있던 검증된 Unsplash 주소 그대로. 이미 값이 있는 도시는 안 건드림.
+- **앱**: 여행지 선택 창 썸네일은 `coverThumbUrl`(`community/coverThumb.ts`)로 작은 판(우리 사진=thumbs/, Unsplash=w=160)을 씀 — 40px 칸에 100곳이 나오므로 원본 100KB를 안 받게.
+- **알아 둘 것**: ① 공개 주소의 `cache-control`이 `no-cache`(ETag 재검증)로 나옴 — 이 프로젝트 Storage 설정이라 파일 메타는 max-age=1년으로 올렸어도 바뀌지 않음. ② 사진은 AI 생성이고 눈에 보이는 표시는 잘라냈음(보이지 않는 SynthID는 남음) — 서비스 어딘가에 "AI 생성 이미지" 안내가 필요한지 검토 필요. ③ 새 도시를 추가할 때는 같은 방식(`슬러그.webp` + `thumbs/슬러그.webp` 업로드 → `cover_url` 채우기). ④ 전체 시험 중 동행 글쓰기·달력 화면 시험의 첫 시험이 기본 5초를 넘겨 간헐적으로 실패하던 것을 `testTimeout` 15초로 완화.
+
 ### 2026-10-02 (밤 3) — Sentry "View transition … document visibility state is hidden" 오류 정리
 
 - **증상**: Sentry에 `InvalidStateError` 두 건(TRIPTIC-3 "Skipping view transition because document visibility state has become hidden.", TRIPTIC-4 "View transition was skipped because document visibility state is hidden."), 둘 다 iOS 18.7 Mobile Safari·각 1건. 화면 이동 애니메이션(`startViewTransition`)을 시작하려는데 앱이 백그라운드로 가 있어서 브라우저가 전환만 건너뛰며 던지는 오류 — **화면 이동 자체는 정상**(해롭지 않음).
