@@ -36,7 +36,7 @@
 /* 모바일(1024px 미만): 시안은 slate 계열 글자 + #0F766E 강조 */
 @media (max-width: 1023px) {
   .page {
-    --h-bg: #faf8ff;
+    --h-bg: var(--surface-page); /* 다른 화면과 같은 배경(시안 #faf8ff는 쓰지 않음) */
     --h-line: transparent;
     --h-ink: #0f172a;
     --h-ink-2: #475569;
