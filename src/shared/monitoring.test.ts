@@ -12,6 +12,16 @@ describe('monitoring', () => {
     vi.unstubAllEnvs();
   });
 
+  it('View Transition이 가려진 문서에서 건너뛰어진 오류는 Sentry에서 무시한다(브라우저별 두 문구)', async () => {
+    const m = await import('./monitoring');
+    const ignored = (message: string) => m.IGNORED_ERRORS.some((re) => re.test(message));
+    expect(ignored('Skipping view transition because document visibility state has become hidden.')).toBe(true);
+    expect(ignored('View transition was skipped because document visibility state is hidden.')).toBe(true);
+    // 다른 오류는 그대로 보낸다
+    expect(ignored('InvalidStateError: something else')).toBe(false);
+    expect(ignored('Failed to fetch dynamically imported module')).toBe(false);
+  });
+
   it('분석 키가 없으면 이벤트를 조용히 버린다', async () => {
     vi.stubEnv('VITE_POSTHOG_KEY', '');
     const m = await import('./monitoring');

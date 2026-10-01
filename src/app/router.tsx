@@ -178,11 +178,14 @@ export const router = createBrowserRouter(
 // viewTransition 옵션을 일일이 붙이는 대신 여기 한 곳에서 기본값으로 넣는다. 숫자 이동
 // (navigate(-1))과 브라우저 뒤로가기는 react-router가 앞서 적용한 전환을 거꾸로 재생한다.
 // 미지원 브라우저에서는 옵션 자체를 안 넣어야 react-router 경고가 안 뜬다.
+// 앱이 백그라운드(화면이 가려진 상태)일 때는 전환을 켜지 않는다 — 가려진 문서에서 startViewTransition이
+// "InvalidStateError: … document visibility state is hidden"을 던져 Sentry에 쌓였다(2026-10-01, iOS Safari).
+// 화면 이동 자체는 전환 없이 그대로 된다.
 if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
   const navigateWithoutTransition = router.navigate.bind(router);
   router.navigate = ((to: Parameters<typeof router.navigate>[0], opts?: Parameters<typeof router.navigate>[1]) =>
     typeof to === 'number'
       ? navigateWithoutTransition(to)
       : // <Link>는 viewTransition: undefined를 명시적으로 넘기므로 스프레드 기본값이 아니라 ??로
-        navigateWithoutTransition(to, { ...opts, viewTransition: opts?.viewTransition ?? true })) as typeof router.navigate;
+        navigateWithoutTransition(to, { ...opts, viewTransition: document.visibilityState === 'visible' && (opts?.viewTransition ?? true) })) as typeof router.navigate;
 }
