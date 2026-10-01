@@ -19,7 +19,7 @@
 | 배포 | GitHub `Triptic`(**origin**)에 푸시하면 Vercel이 자동 배포합니다. `triptic-further`(further)는 **배포되지 않는** 별도 저장소(백업)입니다 — 예전 문서의 "두 곳 모두 배포"는 틀렸고 2026-09-30에 정정했습니다 |
 | 앱 | React 19 + TypeScript + Vite 7, React Router 7, TanStack Query(IndexedDB 영속화), i18next(ko·en·ja·zh-TW) |
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
-| DB | 마이그레이션 `0000`~`0071` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
+| DB | 마이그레이션 `0000`~`0072` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
 | 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
@@ -96,7 +96,7 @@
 - **나이대 키 재정의(0072)**: 20대 초반·20대 후반·30대 초반·30대 후반·40대·50대 이상(`20s_early`…`50s_plus`). 옛 값(10s~60s)은 기존 글이 없어 비우고 제약(`companion_posts_pref_ages_check`)을 새 키로 바꿨다.
 
 **결정·교훈**
-- 0072는 운영 적용 전에 롤백 드라이런(DO 블록 + raise exception)으로 검증: 날짜 미정 행 허용 / 한쪽만 null 거부 / 옛 나이대 키 거부 / 새 키 허용.
+- 0072는 2026-10-01 사용자 승인 뒤 운영 적용(`apply_migration`) + `moderate-content` 배포(`supabase functions deploy moderate-content --project-ref ifzykfemjzqquyzgpqax`)까지 끝났다. 적용 전에 롤백 드라이런(DO 블록 + raise exception)으로 검증: 날짜 미정 행 허용 / 한쪽만 null 거부 / 옛 나이대 키 거부 / 새 키 허용.
 - 날짜 문자열은 `parseISO`(현지 날짜)로 읽는다 — `new Date('2026-10-12')`는 UTC라 시간대에 따라 하루 어긋난다.
 
 ### 2026-10-01 (저녁) — 여행기 글쓰기 화면을 Stitch 시안대로(Stitch/community/Writing, 도시 모달은 Companions 시안)
