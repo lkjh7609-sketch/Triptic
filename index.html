@@ -181,7 +181,17 @@
           } catch (e) {}
           showFallback();
         }
-        var timer = setTimeout(function () { recover('timeout'); }, 12000);
+        // 12초: 앱 코드가 아예 실행되지 않은 경우(받기 실패·멈춤). 앱 코드가 실행됐으면(main.tsx가 html에 data-app-started)
+        // 느린 회선에서 번역 파일·화면을 받는 중일 수 있어 뼈대가 남아 있어도 30초까지 기다린다 — 진행 중인 로딩을 새로고침하지 않게
+        var timer = setTimeout(function check() {
+          if (booted()) return;
+          var left = 30000 - (Date.now() - started);
+          if (document.documentElement.hasAttribute('data-app-started') && left > 0) {
+            timer = setTimeout(check, left);
+            return;
+          }
+          recover(document.documentElement.hasAttribute('data-app-started') ? 'stuck-after-start' : 'timeout');
+        }, 12000);
         var poll = setInterval(function () {
           if (!booted()) return;
           clearInterval(poll);
