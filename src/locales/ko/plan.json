@@ -40,7 +40,7 @@
     "nameLabel": "여행 이름",
     "namePlaceholder": "도쿄 여행",
     "cityLabel": "목적지 도시 (검색 후 선택)",
-    "cityPlaceholderExample": "예: Kyoto, Japan",
+    "cityPlaceholderExample": "예: 교토, 파리, 뉴욕",
     "cityRequired": "목적지 도시를 검색해서 선택해 주세요.",
     "startLabel": "시작일",
     "endLabel": "종료일",

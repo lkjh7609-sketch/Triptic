@@ -22,7 +22,7 @@
     "nameLabel": "旅行の名前",
     "namePlaceholder": "東京旅行",
     "cityLabel": "目的地の都市 (検索して選択)",
-    "cityPlaceholderExample": "例：Kyoto, Japan",
+    "cityPlaceholderExample": "例: 京都、パリ、ニューヨーク",
     "cityRequired": "目的地の都市を検索して選択してください。",
     "startLabel": "開始日",
     "endLabel": "終了日",

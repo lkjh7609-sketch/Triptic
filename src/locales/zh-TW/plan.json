@@ -40,7 +40,7 @@
     "nameLabel": "行程名稱",
     "namePlaceholder": "東京之旅",
     "cityLabel": "目的地城市（搜尋後選擇）",
-    "cityPlaceholderExample": "例如：Kyoto, Japan",
+    "cityPlaceholderExample": "例如:京都、巴黎、紐約",
     "cityRequired": "請搜尋並選擇目的地城市。",
     "startLabel": "開始日期",
     "endLabel": "結束日期",

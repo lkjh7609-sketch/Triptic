@@ -9,7 +9,8 @@ import { useCreateTrip } from './hooks/useTrips';
 import { GUEST_TRIP_LIMIT, GuestTripLimitError } from './guestTrips';
 import { requireLogin } from '@/features/auth/loginPrompt';
 import { showToast } from '@/shared/ui/toast';
-import { usePlaceAutocomplete, countryCodeOf, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { countryCodeOf, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { CityAutocomplete } from './map/CityAutocomplete';
 import { currencyForCountry } from './countryCurrency';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -76,10 +77,7 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
   const [startDateStr, setStartDateStr] = useState<string>('');
   const [endDateStr, setEndDateStr] = useState<string>('');
   const [showCalendar, setShowCalendar] = useState(false);
-  const { inputRef: cityInputRef } = usePlaceAutocomplete((place) => {
-    setCity(place);
-    setCityError(null);
-  }, { types: ['(cities)'] });
+  const cityInputRef = useRef<HTMLInputElement>(null);
   const trapRef = useFocusTrap<HTMLFormElement>(onClose);
   const titleElRef = useRef<HTMLInputElement | null>(null);
   const dateBoxRef = useRef<HTMLDivElement>(null);
@@ -96,8 +94,6 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
 
   useEffect(() => {
     if (autoCreateCity) {
-      // 도시만 자동입력해주고 나머지는 수동 기입하도록 변경 (자동 생성 방지)
-      if (cityInputRef.current) cityInputRef.current.value = autoCreateCity;
       const resolveCity = async () => {
         try {
           await loadGoogleMapsPlaces();
@@ -138,14 +134,25 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
                   searchByName();
                   return;
                 }
+                const countryCode = countryCodeOf(place.address_components);
+                const types = place.types || [];
+                // 도시 단위 장소면 구글 주소 그대로. 달랏 야시장처럼 도시 대신 중심가 명소를 지정해 둔 곳은 주소가 '거리 이름'이라
+                // 화면·세계지도에 쓸 수 있게 "도시 이름, 나라"로 만든다
+                const cityLike = types.some((type) => ['locality', 'administrative_area_level_1', 'administrative_area_level_2', 'administrative_area_level_3', 'colloquial_area'].includes(type));
+                let countryEn = '';
+                try {
+                  countryEn = countryCode ? (new Intl.DisplayNames(['en'], { type: 'region' }).of(countryCode) ?? '') : '';
+                } catch {
+                  countryEn = '';
+                }
                 const resolved: SelectedPlace = {
-                  name: place.name || autoCreateCity,
-                  address: place.formatted_address || autoCreateCity,
+                  name: cityLike ? place.name || autoCreateCity : autoCreateCity,
+                  address: cityLike ? place.formatted_address || autoCreateCity : countryEn ? `${autoCreateCity}, ${countryEn}` : autoCreateCity,
                   lat: location.lat(),
                   lng: location.lng(),
                   placeId: place.place_id || autoCreatePlaceId,
-                  types: place.types || [],
-                  countryCode: countryCodeOf(place.address_components),
+                  types,
+                  countryCode,
                 };
                 setCity((prev) => prev ?? resolved);
                 resolvedCityRef.current = resolved;
@@ -251,12 +258,20 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
           <label className={styles.label} htmlFor="trip-city">
             {t('createTrip.cityLabel')}
           </label>
-          <input
+          <CityAutocomplete
             id="trip-city"
-            ref={cityInputRef}
+            inputRef={cityInputRef}
             className={styles.input}
             placeholder={t('createTrip.cityPlaceholderExample')}
-            defaultValue={autoCreateCity || ''}
+            initialText={autoCreateCity || ''}
+            value={city}
+            onSelect={(place) => {
+              setCity(place);
+              if (place) {
+                resolvedCityRef.current = null;
+                setCityError(null);
+              }
+            }}
           />
           {cityError ? <span className={styles.error}>{cityError}</span> : null}
         </div>
