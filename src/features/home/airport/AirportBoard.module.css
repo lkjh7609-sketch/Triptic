@@ -73,7 +73,7 @@
 }
 
 .board {
-  overflow: hidden;
+  position: relative;
   border: 1px solid var(--h-line);
   border-radius: 12px;
   background: var(--h-card);
@@ -87,6 +87,7 @@
 }
 
 .notice {
+  border-radius: 12px 12px 0 0;
   margin: 0;
   padding: 10px 16px;
   background: var(--warning-tint);
@@ -95,6 +96,7 @@
 }
 
 .colHead {
+  border-radius: 12px 12px 0 0;
   display: grid;
   grid-template-columns: var(--cols);
   align-items: center;
@@ -110,16 +112,6 @@
 
 .board {
   --cols: 88px minmax(0, 1.1fr) minmax(0, 1.2fr) 96px 72px 112px 20px;
-}
-
-.list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.list > li + li {
-  border-top: 1px solid var(--h-line-soft);
 }
 
 .row {
@@ -297,69 +289,135 @@
   color: var(--h-ink-3);
 }
 
-.pager {
+/* 쪽 넘기기 — 쪽마다 한 장씩 가로로 놓고 밀어서 넘긴다. PC는 보드 양옆 화살표, 점은 보드 맨 아래 */
+.stage {
+  position: relative;
+}
+
+.track {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 12px 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.slide > li + li {
   border-top: 1px solid var(--h-line-soft);
-  background: var(--h-sunken);
 }
 
-.page,
-.pageOn,
-.pageArrow {
-  display: inline-flex;
+.arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: none;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 9999px;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  border: 1px solid var(--h-line-soft);
+  border-radius: 50%;
+  background: var(--h-card);
+  color: var(--h-ink);
+  box-shadow: var(--h-shadow-md);
   cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
-.page,
-.pageArrow {
-  background: transparent;
-  color: var(--h-ink-2);
+.arrowPrev {
+  left: -22px;
 }
 
-.pageOn {
-  background: var(--h-accent);
-  color: var(--h-on-accent);
-  font-weight: 700;
+.arrowNext {
+  right: -22px;
 }
 
-.pageArrow:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.pageGap {
-  min-width: 20px;
-  text-align: center;
-  color: var(--h-ink-3);
+.arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
 }
 
 @media (hover: hover) {
-  .page:hover,
-  .pageArrow:hover:not(:disabled) {
-    background: var(--h-tint);
+  .arrow:hover:not(:disabled) {
+    transform: scale(1.06);
   }
 }
 
-.source {
-  margin: 0;
-  padding: 10px 16px;
+@media (min-width: 1024px) {
+  .arrow {
+    display: inline-flex;
+  }
+}
+
+.dots {
+  border-radius: 0 0 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
   border-top: 1px solid var(--h-line-soft);
-  font-size: 0.6875rem;
-  color: var(--h-ink-3);
+  background: var(--h-card);
+}
+
+.dotHit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--h-ink-3);
+  opacity: 0.35;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.dotOn {
+  width: 22px;
+  background: var(--h-accent);
+  opacity: 1;
+}
+
+.dotEdge {
+  width: 5px;
+  height: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .arrow {
+    transition: none;
+  }
 }
 
 @media (min-width: 1024px) {

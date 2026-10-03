@@ -291,18 +291,15 @@ export function buildPages<T>(
   return { pages: pages.length > 0 ? pages : [[]], initial: before.length };
 }
 
-/** 쪽 번호 줄 — 처음·끝·현재 둘레만 보이고 나머지는 '…'. current는 0부터, 돌려주는 숫자는 1부터 */
-export function pageItems(current: number, total: number): (number | '…')[] {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  const page = current + 1;
-  const set = new Set([1, total, page - 1, page, page + 1].filter((n) => n >= 1 && n <= total));
-  if (page <= 3) [2, 3, 4].forEach((n) => set.add(n));
-  if (page >= total - 2) [total - 3, total - 2, total - 1].forEach((n) => set.add(n));
-  const sorted = [...set].sort((a, b) => a - b);
-  const out: (number | '…')[] = [];
-  sorted.forEach((n, i) => {
-    if (i > 0 && n - sorted[i - 1] > 1) out.push('…');
-    out.push(n);
-  });
-  return out;
+/**
+ * 쪽 표시 점 — 쪽이 많아도 점은 최대 visible개만 현재 둘레로 옮겨 가며 보인다. 앞뒤에 더 있으면 끝 점은 작게(before/after)
+ */
+export function dotWindow(
+  current: number,
+  total: number,
+  visible = 7,
+): { start: number; count: number; before: boolean; after: boolean } {
+  if (total <= visible) return { start: 0, count: total, before: false, after: false };
+  const start = Math.min(Math.max(0, current - Math.floor(visible / 2)), total - visible);
+  return { start, count: visible, before: start > 0, after: start + visible < total };
 }

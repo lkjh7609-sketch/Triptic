@@ -87,7 +87,7 @@ describe('AirportBoard', () => {
     expect(
       screen.getAllByRole('button', { name: /KE\d|OZ\d|OLD/ }).map((r) => r.textContent),
     ).toEqual([expect.stringContaining('OZ2')]);
-    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'true');
     fireEvent.click(screen.getByRole('button', { name: '이전 페이지' }));
     expect(screen.getByRole('button', { name: /KE1/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /OLD/ })).not.toBeInTheDocument();
@@ -138,9 +138,9 @@ describe('AirportBoard', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('8줄씩 쪽으로 넘긴다 — 이전·다음·번호, 첫/끝 쪽에서는 화살표가 꺼진다', () => {
+  it('5줄씩 쪽으로 나뉘고 양옆 화살표와 아래 점으로 넘긴다 — 첫/끝 쪽에서는 화살표가 꺼진다', () => {
     state.data = {
-      departures: Array.from({ length: 20 }, (_, i) =>
+      departures: Array.from({ length: 12 }, (_, i) =>
         f({ id: `KE${i + 10}`, scheduled: '1100', estimated: '1100' }),
       ),
       arrivals: [],
@@ -148,24 +148,73 @@ describe('AirportBoard', () => {
     };
     render(<AirportBoard desktop />);
     const rows = () => screen.getAllByRole('button', { name: /KE\d+/ });
-    expect(rows()).toHaveLength(8);
+    expect(rows()).toHaveLength(5);
     expect(screen.getByRole('button', { name: '이전 페이지' })).toBeDisabled();
+    expect(screen.getAllByRole('button', { name: /^\d+페이지$/ })).toHaveLength(3); // 점 3개(쪽 3개)
     fireEvent.click(screen.getByRole('button', { name: '다음 페이지' }));
-    expect(rows()).toHaveLength(8);
-    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page');
-    fireEvent.click(screen.getByRole('button', { name: '3페이지' }));
-    expect(rows()).toHaveLength(4);
+    expect(rows()).toHaveLength(5);
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'true');
+    fireEvent.click(screen.getByRole('button', { name: '3페이지' })); // 점을 눌러도 간다
+    expect(rows()).toHaveLength(2);
     expect(screen.getByRole('button', { name: '다음 페이지' })).toBeDisabled();
     expect(screen.queryByRole('button', { name: '더 보기' })).not.toBeInTheDocument();
   });
 
-  it('한 쪽이면 쪽 번호 줄이 없다. 탭을 바꾸면 처음 쪽으로 돌아온다', () => {
+  it('쪽 번호 글자는 없다 — 점만', () => {
+    state.data = {
+      departures: Array.from({ length: 12 }, (_, i) =>
+        f({ id: `KE${i + 10}`, scheduled: '1100', estimated: '1100' }),
+      ),
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+    };
+    render(<AirportBoard desktop />);
+    const dots = screen.getByRole('group', { name: '페이지' });
+    expect(dots.textContent).toBe('');
+  });
+
+  it('모바일은 화살표 없이 점과 밀어 넘기기(스크롤 위치로 쪽이 바뀐다)', () => {
+    state.data = {
+      departures: Array.from({ length: 12 }, (_, i) =>
+        f({ id: `KE${i + 10}`, scheduled: '1100', estimated: '1100' }),
+      ),
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+    };
+    const { container } = render(<AirportBoard desktop={false} />);
+    expect(screen.queryByRole('button', { name: '다음 페이지' })).not.toBeInTheDocument();
+    const track = container.querySelector('[class*="track"]') as HTMLElement;
+    Object.defineProperty(track, 'clientWidth', { configurable: true, value: 300 });
+    track.scrollLeft = 300;
+    fireEvent.scroll(track);
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'true');
+    track.scrollLeft = 610;
+    fireEvent.scroll(track);
+    expect(screen.getByRole('button', { name: '3페이지' })).toHaveAttribute('aria-current', 'true');
+  });
+
+  it('지금 보이는 쪽 밖의 줄은 키보드·스크린리더에서 빠진다(inert)', () => {
+    state.data = {
+      departures: Array.from({ length: 12 }, (_, i) =>
+        f({ id: `KE${i + 10}`, scheduled: '1100', estimated: '1100' }),
+      ),
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+    };
+    const { container } = render(<AirportBoard desktop />);
+    const slides = container.querySelectorAll('[class*="slide"]');
+    expect(slides).toHaveLength(3);
+    expect(slides[0]).not.toHaveAttribute('inert');
+    expect(slides[1]).toHaveAttribute('inert');
+  });
+
+  it('한 쪽이면 점이 없다. 탭을 바꾸면 처음 쪽으로 돌아온다', () => {
     render(<AirportBoard desktop />);
     fireEvent.click(screen.getByRole('button', { name: '이전 페이지' }));
     fireEvent.click(screen.getByRole('button', { name: '도착' }));
-    expect(screen.queryByRole('navigation', { name: '페이지' })).not.toBeInTheDocument(); // 도착 1편뿐
+    expect(screen.queryByRole('group', { name: '페이지' })).not.toBeInTheDocument(); // 도착 1편뿐
     fireEvent.click(screen.getByRole('button', { name: '출발' }));
-    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page'); // 다시 +40분 쪽
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'true'); // 다시 +40분 쪽
   });
 
   it('도착은 +40분 기준 없이 맨 앞부터', () => {
