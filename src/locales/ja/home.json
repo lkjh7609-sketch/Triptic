@@ -114,6 +114,10 @@
       "cabinBUSINESS": "ビジネス",
       "cabinFIRST": "ファースト"
     },
+    "comingSoon": {
+      "title": "航空券検索を準備中です",
+      "body": "より多くの航空会社と路線を比較できる新しい航空券検索をまもなく公開します。"
+    },
     "essentials": {
       "title": "SIM・eSIMも必要ですか？",
       "defaultCity": "日本",
@@ -127,10 +131,6 @@
       "badgeCare": "ユーシムサケア 補償額",
       "badgeCareAmount": "最大30万ウォン",
       "badgeData": "Googleマップ・ChatGPTのデータ無料"
-    },
-    "esimGlobal": {
-      "title": "旅行用のeSIMも必要ですか？",
-      "subtitle": "ローミング料金なしで、到着してすぐにつながります"
     },
     "deals": {
       "title": "ソウル(仁川)発 最安値特価",

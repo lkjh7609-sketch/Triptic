@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plane } from 'lucide-react';
+import { Plane, PlaneTakeoff } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { HomeSectionTabs } from './HomeSectionTabs';
@@ -11,9 +11,8 @@ import { FlightThemes } from './FlightThemes';
 import styles from './FlightsScreen.module.css';
 
 /**
- * 항공 탭. 한국어는 마이리얼트립 검색 폼(결과는 마이리얼트립 사이트), 그 외 언어는
- * Travelpayouts 위젯 — 위젯은 AppShell의 FlightsWidgetHost가 이 화면 아래에 계속 붙여 둔다
- * (탭을 오갈 때마다 위젯을 새로 만들면 다시 그려지지 않아서).
+ * 항공 탭. 한국어는 마이리얼트립 검색 폼(결과는 마이리얼트립 사이트), 그 외 언어는 준비 중 안내 —
+ * 트래블페이아웃 위젯을 2026-10-04에 뺐고, 새 항공 검색(Kayak 예정)이 이 자리에 들어온다.
  */
 export function FlightsScreen() {
   const { t, i18n } = useTranslation('home');
@@ -50,7 +49,17 @@ export function FlightsScreen() {
             <FlightsEssentials />
             <FlightThemes />
           </>
-        ) : null}
+        ) : (
+          <section className={styles.comingSoon} aria-labelledby="flights-coming-soon">
+            <span className={styles.comingSoonIcon} aria-hidden="true">
+              <PlaneTakeoff size={24} />
+            </span>
+            <h2 id="flights-coming-soon" className={styles.comingSoonTitle}>
+              {t('flights.comingSoon.title')}
+            </h2>
+            <p className={styles.comingSoonBody}>{t('flights.comingSoon.body')}</p>
+          </section>
+        )}
       </div>
     </>
   );

@@ -115,6 +115,10 @@
       "cabinBUSINESS": "Business",
       "cabinFIRST": "First"
     },
+    "comingSoon": {
+      "title": "Flight search is coming soon",
+      "body": "We're building a new flight search that compares more airlines and routes. Check back soon."
+    },
     "essentials": {
       "title": "Need a SIM or eSIM?",
       "defaultCity": "Japan",
@@ -128,10 +132,6 @@
       "badgeCare": "usimsa Care coverage",
       "badgeCareAmount": "up to ₩300,000",
       "badgeData": "Google Maps & ChatGPT data free"
-    },
-    "esimGlobal": {
-      "title": "Need an eSIM for your trip?",
-      "subtitle": "Get connected the moment you land — no roaming fees"
     },
     "deals": {
       "title": "Lowest fares from Seoul (Incheon)",

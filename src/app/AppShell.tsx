@@ -15,8 +15,6 @@ import { tripsQueryKey } from '@/features/plan/hooks/useTrips';
 import { showToast } from '@/shared/ui/toast';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
-import { FlightsWidgetHost } from '@/features/home/FlightsWidgetHost';
-import { flightsProviderFor } from '@/features/plan/flightsSearchLink';
 import { navDirection } from './navDirection';
 import { requiresLogin } from './guestAccess';
 import { useTripRealtimeSync } from '@/features/plan/hooks/useTripRealtimeSync';
@@ -45,22 +43,6 @@ function useDelayedFlag(flag: boolean, delayMs: number) {
     };
   }, [flag, delayMs]);
   return flag && elapsed;
-}
-
-/**
- * 항공 위젯(Travelpayouts White Label)은 결과 페이지를 대시보드에 등록된 주소(지금 사이트
- * 루트)로 연다 — 특히 "호텔도 보기"가 켜진 왕복 검색은 새 탭을 루트?flightSearch=…로 열어
- * 홈 화면이 떴다. 루트로 들어온 항공 검색 주소는 쿼리를 그대로 들고 /flights로 넘긴다.
- */
-const FLIGHTS_WIDGET_PARAMS = ['flightSearch', 'ticketId'];
-function useRedirectFlightsWidgetResults() {
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (pathname !== '/') return;
-    const params = new URLSearchParams(search);
-    if (FLIGHTS_WIDGET_PARAMS.some((key) => params.has(key))) navigate(`/flights${search}`, { replace: true });
-  }, [pathname, search, navigate]);
 }
 
 /** 새 화면이 그려지는 순간(View Transition 스냅샷 직전) 방향을 html[data-nav]에 적는다 */
@@ -107,7 +89,6 @@ export function AppShell() {
     setSignedIn(!!user);
   }, [user]);
   useNavDirectionAttr();
-  useRedirectFlightsWidgetResults();
   // 함께 편집하는 여행·동행 인원을 실시간으로 맞춘다
   useTripRealtimeSync(user?.id ?? null);
   // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
@@ -137,13 +118,6 @@ export function AppShell() {
     const code = takePendingShare();
     if (code) navigate(`/shared/${code}`, { replace: true });
   }, [userId, navigate]);
-  // 항공 위젯은 처음 들어올 때 만들고 그 뒤로는 숨기기만 한다(FlightsWidgetHost 참고).
-  // 한국어는 마이리얼트립 검색 폼을 쓰므로 위젯을 만들지 않는다
-  const { i18n } = useTranslation();
-  const onFlights = pathname === '/flights' && flightsProviderFor(i18n.language) === 'travelpayouts';
-  const [flightsWidgetMounted, setFlightsWidgetMounted] = useState(onFlights);
-  if (onFlights && !flightsWidgetMounted) setFlightsWidgetMounted(true);
-
   if (loading) {
     // 첫 화면 뼈대 그대로(저장된 로그인이 없을 때 최대 3초, useSession). data-boot-pending: index.html 부팅 안전망이
     // 이 화면을 아직 '안 뜬 것'으로 본다(여기서 멈추면 새로고침·안내)
@@ -166,7 +140,6 @@ export function AppShell() {
       {isGuestSample ? <GuestBanner onLogin={openLoginPrompt} draft={isGuestDraft} /> : isDesktop && <HeaderDesktop />}
       <main className={styles.content}>
         {routeNeedsLogin ? null : showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
-        {flightsWidgetMounted ? <FlightsWidgetHost visible={onFlights && !showRouteSkeleton} /> : null}
       </main>
       {!isGuestSample && !isDesktop && <TabBar guest={!user} />}
       {!user && (routeNeedsLogin || loginPromptOpen) ? (

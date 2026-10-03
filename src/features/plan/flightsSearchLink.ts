@@ -6,12 +6,12 @@ import { fetchMyrealtripFlightsLink, fetchTrackedMyrealtripLink, flightLinkParam
 
 /**
  * 항공 검색 제휴사 — 마이리얼트립은 한국어·원화 사이트뿐이라 한국어 사용자만.
- * 그 외 언어는 Travelpayouts 항공 위젯(영어/달러, FlightsWidgetHost).
+ * 그 외 언어는 지금 항공 검색이 없다(트래블페이아웃 위젯을 2026-10-04에 뺐고 새 항공 검색 준비 중 — 항공 탭은 안내만).
  */
-export type FlightsProvider = 'myrealtrip' | 'travelpayouts';
+export type FlightsProvider = 'myrealtrip' | 'none';
 
 export function flightsProviderFor(language: string): FlightsProvider {
-  return aiLocale(language) === 'ko' ? 'myrealtrip' : 'travelpayouts';
+  return aiLocale(language) === 'ko' ? 'myrealtrip' : 'none';
 }
 
 interface TripForFlights {
@@ -78,23 +78,6 @@ async function resolveTripFlight(trip: TripForFlights): Promise<TripFlight | nul
   return { origin, destination, departDate: trip.start_date, returnDate };
 }
 
-/**
- * 여행 도시·날짜로 항공 탭(/flights) 검색 주소를 만든다 — 항공 위젯은 시작할 때만
- * origin/destination/depart_date/return_date를 읽으므로 같은 창 전체 이동으로 연다.
- * 출발지나 도착지를 못 정하면 빈 항공 탭으로.
- */
-export async function flightsSearchUrlForTrip(trip: TripForFlights): Promise<string> {
-  try {
-    const flight = await resolveTripFlight(trip);
-    if (!flight) return '/flights';
-    const params = new URLSearchParams({ origin: flight.origin, destination: flight.destination, depart_date: flight.departDate, adults: '1' });
-    if (flight.returnDate) params.set('return_date', flight.returnDate);
-    return `/flights?${params.toString()}`;
-  } catch {
-    return '/flights';
-  }
-}
-
 /** 여행 → 마이리얼트립 항공 결과 링크 요청 값(출발·도착은 whereami·places2 도시 코드) */
 async function tripFlightParams(trip: TripForFlights): Promise<Record<string, string> | null> {
   const flight = await resolveTripFlight(trip);
@@ -122,15 +105,15 @@ export function useTripFlightsLink(trip: TripForFlights, language: string, enabl
 /**
  * "이 일정으로 항공권 찾기". 한국어 사용자는 마이리얼트립 검색 결과를 새 탭으로 바로 연다
  * (whereami·places2 코드는 둘 다 도시 코드). 코드를 못 정하거나 링크를 못 받으면 항공 탭
- * 검색 폼으로 — 날짜는 채워 둔다. 그 외 언어는 항공 탭 위젯 검색.
+ * 검색 폼으로 — 날짜는 채워 둔다. 그 외 언어는 항공 탭(준비 중 안내)으로.
  */
 export async function openFlightsSearchForTrip(trip: TripForFlights, language: string, prefetchedUrl?: string | null): Promise<void> {
   if (flightsProviderFor(language) === 'myrealtrip' && prefetchedUrl) {
     openExternal(prefetchedUrl);
     return;
   }
-  if (flightsProviderFor(language) === 'travelpayouts') {
-    window.location.assign(await flightsSearchUrlForTrip(trip));
+  if (flightsProviderFor(language) === 'none') {
+    window.location.assign('/flights');
     return;
   }
   const opened = await openInNewTab(async () => {

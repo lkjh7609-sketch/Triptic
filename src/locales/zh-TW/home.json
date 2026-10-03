@@ -114,6 +114,10 @@
       "cabinBUSINESS": "商務艙",
       "cabinFIRST": "頭等艙"
     },
+    "comingSoon": {
+      "title": "機票搜尋準備中",
+      "body": "我們正在打造能比較更多航空公司與航線的全新機票搜尋，敬請期待。"
+    },
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
       "defaultCity": "日本",
@@ -127,10 +131,6 @@
       "badgeCare": "usimsa Care 保障額",
       "badgeCareAmount": "最高30萬韓元",
       "badgeData": "Google 地圖、ChatGPT 流量免費"
-    },
-    "esimGlobal": {
-      "title": "旅途中也需要 eSIM 嗎？",
-      "subtitle": "免漫遊費，一落地就能上網"
     },
     "deals": {
       "title": "首爾(仁川)出發 最低價特惠",
