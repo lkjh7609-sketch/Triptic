@@ -50,9 +50,10 @@ function flushQueue() {
  * 고칠 수 없고 해롭지 않은 오류 — Sentry로 보내지 않는다.
  * View Transition: 화면 전환 애니메이션을 시작하려는데 그 사이 앱이 백그라운드로 가면 브라우저가 전환만 건너뛰고
  * "InvalidStateError"를 던진다(문구는 브라우저마다 다름: "Skipping view transition because document visibility state has become hidden." /
- * "View transition was skipped because document visibility state is hidden."). 화면 이동 자체는 정상으로 끝난다.
+ * "View transition was skipped because document visibility state is hidden." / Chrome 154: "Transition was aborted because of
+ * invalid state. Document hidden"). 화면 이동 자체는 정상으로 끝난다.
  */
-export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i];
+export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i, /transition was aborted because of invalid state/i];
 
 export async function initMonitoring(): Promise<void> {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
