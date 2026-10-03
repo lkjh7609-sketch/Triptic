@@ -157,10 +157,10 @@
     "summary": {
       "title": "Current travel alerts",
       "count": "{{count}} countries at level 2 or above",
-      "toggleOpen": "Show",
-      "toggleClose": "Hide",
       "level": "Level {{level}} {{name}}",
       "note": "Based on Korea's MOFA open data, refreshed daily at 9 AM KST. Only the country-wide (or remaining-area) level is shown; check each city channel for regional alerts."
-    }
+    },
+    "view": "Details",
+    "close": "Close"
   }
 }
