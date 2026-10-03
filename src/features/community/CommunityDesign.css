@@ -555,12 +555,12 @@
   }
 }
 /* 이 파일의 --font-sans는 global.css와 별개(Tailwind v4 생성 토큰, 독립
- * :root 스코프)라 거기서 :lang(ko)에 SUIT를 넣어도 여기엔 안 먹는다 — 이
- * 파일도 따로 오버라이드해야 --font-label-md 등(전부 var(--font-sans)로
- * 한글 폴백) 데스크톱 커뮤니티 전체가 SUIT로 바뀐다. */
+ * :root 스코프, 기본은 시스템 글꼴)라 이 파일도 따로 오버라이드해야
+ * --font-label-md 등(전부 var(--font-sans)로 한글 폴백) 데스크톱 커뮤니티의
+ * 한글이 Pretendard로 나온다(예전엔 SUIT, 2026-10-04 Pretendard로 통일). */
 @layer theme {
   :root:lang(ko) {
-    --font-sans: 'SUIT Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
       system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   }
 }
