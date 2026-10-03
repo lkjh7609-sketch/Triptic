@@ -1,16 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { openFlightsSearchForTrip } from './flightsSearchLink';
+import type { Airport } from './airports/airportData';
+
+const listAirports = vi.fn<() => Promise<Airport[]>>();
+vi.mock('./airports/airportService', () => ({ listAirports: () => listAirports() }));
+const { openFlightsSearchForTrip, resetFlightAirportsCache } = await import('./flightsSearchLink');
 
 const fetchMock = vi.fn();
 vi.stubGlobal('fetch', fetchMock);
-afterEach(() => fetchMock.mockReset());
+afterEach(() => {
+  fetchMock.mockReset();
+  resetFlightAirportsCache();
+});
 
-function respond(whereami: unknown, places: unknown) {
-  fetchMock.mockImplementation(async (url: string) => ({
-    ok: true,
-    json: async () => (url.includes('whereami') ? whereami : places),
-  }));
-}
+const airport = (iata: string, lat: number, lng: number): Airport => ({ iata, country_code: 'XX', name: { en: iata }, city: { en: iata }, lat, lng, timezone: 'UTC' });
+const AIRPORTS = [airport('ICN', 37.46, 126.44), airport('GMP', 37.56, 126.79), airport('SYD', -33.94, 151.18)];
+beforeEach(() => listAirports.mockResolvedValue(AIRPORTS));
 
 const sydneyTrip = {
   city: '오스트레일리아 뉴사우스웨일스 주 시드니',
@@ -37,16 +41,8 @@ describe('openFlightsSearchForTrip — 한국어는 마이리얼트립', () => {
     Object.defineProperty(window, 'location', { configurable: true, value: realLocation });
   });
 
-  it('누르는 순간 탭을 열고, 도시 코드·날짜로 받은 마이링크로 보낸다', async () => {
-    fetchMock.mockImplementation(async (url: string) => ({
-      ok: true,
-      json: async () =>
-        url.includes('whereami')
-          ? { iata: 'SEL' }
-          : url.includes('places2')
-            ? [{ code: 'SYD', coordinates: { lat: -33.86, lon: 151.2 } }]
-            : { url: 'https://myrealt.rip/abc' },
-    }));
+  it('누르는 순간 탭을 열고, 서울(모든 공항) → 여행지에 가장 가까운 공항·날짜로 받은 마이링크로 보낸다', async () => {
+    fetchMock.mockImplementation(async () => ({ ok: true, json: async () => ({ url: 'https://myrealt.rip/abc' }) }));
     await openFlightsSearchForTrip(sydneyTrip, 'ko');
     expect(window.open).toHaveBeenCalledWith('', '_blank');
     expect(tab.opener).toBeNull();
@@ -59,7 +55,7 @@ describe('openFlightsSearchForTrip — 한국어는 마이리얼트립', () => {
       origin: 'SEL',
       origin_type: 'city',
       destination: 'SYD',
-      destination_type: 'city',
+      destination_type: 'airport',
       depart_date: '2026-10-07',
       return_date: '2026-10-14',
       adults: '1',
@@ -67,8 +63,8 @@ describe('openFlightsSearchForTrip — 한국어는 마이리얼트립', () => {
     });
   });
 
-  it('도착지를 못 정하면 연 탭을 닫고 항공 탭 폼으로(날짜는 채워서)', async () => {
-    respond({ iata: 'SEL' }, []);
+  it('도착지를 못 정하면(150km 안에 공항 없음) 연 탭을 닫고 항공 탭 폼으로(날짜는 채워서)', async () => {
+    listAirports.mockResolvedValue(AIRPORTS.filter((a) => a.iata !== 'SYD'));
     await openFlightsSearchForTrip(sydneyTrip, 'ko');
     expect(tab.close).toHaveBeenCalled();
     expect(assign).toHaveBeenCalledWith('/flights?depart_date=2026-10-07&return_date=2026-10-14');
