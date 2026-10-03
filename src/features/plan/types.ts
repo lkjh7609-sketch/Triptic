@@ -96,7 +96,10 @@ export interface FlightAirportInfo {
 /** 항공편 1건 (index.html flightsData.outbound/return 이식) */
 export interface FlightInfo {
   flightNo: string;
+  /** 출발 공항 현지 날짜(사용자가 적은 날짜). 귀국편이면 상대 공항에서 탑승하는 날 */
   date: string;
+  /** 도착 공항 현지 도착 날짜 — 밤새 비행해 도착일이 date와 다를 때만(자동 입력으로 채움). 귀국편 카드는 이 날의 일차에 보인다 */
+  arrDate?: string;
   airline?: string;
   /** 항공사 IATA 코드(자동 입력으로 채울 때만) — 표시 언어에 맞는 공식 이름을 찾는 데 쓴다 */
   airlineCode?: string;

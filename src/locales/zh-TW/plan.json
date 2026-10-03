@@ -104,7 +104,8 @@
     "totalLabel": "合計"
   },
   "flightCard": {
-    "schedule": "{{depTime}} 出發 → {{arrTime}} 到達"
+    "schedule": "{{depTime}} 出發 → {{arrTime}} 到達",
+    "arriveOnly": "{{arrTime}} 抵達"
   },
   "flight": {
     "title": "航班",
@@ -146,11 +147,12 @@
       "out_of_range": "這個日期沒有這班航班。請確認日期,或在下方自行輸入。",
       "not_published": "這個日期的班表尚未公布。請在下方自行輸入。"
     },
-    "lookupDateShifted": "此航班於 {{date}} 抵達仁川(夜間航班),已調整日期。請確認內容。",
     "manualOpen": "自行輸入",
     "editManual": "自行修改",
     "pickDate": "選擇日期",
-    "dateAria": "航班日期"
+    "dateAria": "航班日期",
+    "lookupArrNextDay": "夜間航班,將於 {{date}} {{time}} 抵達仁川。",
+    "lookupArrNextDayExtend": "夜間航班,將於 {{date}} {{time}} 抵達仁川。套用後旅程結束日會延長到當天。"
   },
   "itemDetail": {
     "mapLink": "在 Google 地圖中檢視",
@@ -251,7 +253,8 @@
     "tripDatesChanged": "已將旅行期間改為 {{start}} ~ {{end}}",
     "tripDatesShrinkTitle": "要變更旅行期間嗎？",
     "tripDatesShrinkMessage": "期間縮短後，第 {{day}} 天起的行程、住宿、餐點與記帳紀錄會被刪除。",
-    "tripDatesShrinkConfirm": "變更"
+    "tripDatesShrinkConfirm": "變更",
+    "flightExtendedTrip": "配合夜間航班,已將旅程結束日延長到 {{date}}"
   },
   "tripMap": {
     "ariaLabel": "行程地圖",

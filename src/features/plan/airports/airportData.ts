@@ -88,3 +88,20 @@ export function airportTitle(
 export function airportSubtitle(a: Airport, language: string): string {
   return `${a.iata} · ${pickName(a.name, language)}`;
 }
+
+/**
+ * 등록된 항공편 카드에 쓰는 공항 표기 — "공항 이름 코드"(예: 인천국제공항 ICN). 공항 목록에서 코드로 찾아 표시 언어의 공식 이름을 쓰고,
+ * 코드가 없거나 목록에 없으면(예전에 Google로 입력한 항공편) 저장된 이름을 그대로 쓴다.
+ */
+export function airportCardLabel(
+  airport: { iata?: string; name?: string },
+  airports: readonly Airport[] | undefined,
+  language: string,
+): string {
+  const hit = airport.iata ? airports?.find((a) => a.iata === airport.iata) : undefined;
+  if (hit) {
+    const name = pickName(hit.name, language) || pickName(hit.city, language);
+    return `${name} ${hit.iata}`.trim();
+  }
+  return airport.name || airport.iata || '?';
+}

@@ -46,6 +46,8 @@ export interface LookupFlight {
   airlineCode: string;
   dep: LookupAirport;
   arr: LookupAirport;
+  /** 도착 공항 현지 도착 날짜 — 상대 공항→인천 편에서 인천 도착일이 출발일과 다를 때(밤새 비행)만 채운다 */
+  arrDate?: string;
   source: 'icn' | 'kac-dom';
 }
 
@@ -170,23 +172,116 @@ export function pickIcnRow(rows: IcnScheduleRow[], ymd: string): IcnScheduleRow 
   return hits.sort((a, b) => b.first_date.localeCompare(a.first_date))[0];
 }
 
+// ---- 시각·시간대 계산 (밤새 날아오는 귀국편의 인천 도착일을 구하는 데 쓴다) ----
+
+/** 그 시각(UTC ms)에 해당 시간대의 UTC 오프셋(분) */
+export function tzOffsetMinutes(timeZone: string, utcMs: number): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(new Date(utcMs));
+  const v = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+  const asUtc = Date.UTC(v('year'), v('month') - 1, v('day'), v('hour'), v('minute'), v('second'));
+  return Math.round((asUtc - utcMs) / 60000);
+}
+
+/** 해당 시간대의 현지 날짜·시각(YYYY-MM-DD, HHMM) → UTC ms */
+export function localToUtcMs(ymd: string, hhmm: string, timeZone: string): number {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const guess = Date.UTC(y, m - 1, d, Number(hhmm.slice(0, 2)), Number(hhmm.slice(2, 4)));
+  let utc = guess - tzOffsetMinutes(timeZone, guess) * 60000;
+  utc = guess - tzOffsetMinutes(timeZone, utc) * 60000; // 서머타임 경계에서 한 번 더 맞춘다
+  return utc;
+}
+
+/** UTC ms → 해당 시간대의 현지 날짜(YYYY-MM-DD) */
+export function ymdInZone(utcMs: number, timeZone: string): string {
+  return new Date(utcMs + tzOffsetMinutes(timeZone, utcMs) * 60000).toISOString().slice(0, 10);
+}
+
 /**
- * 사용자가 적은 날짜로 줄을 찾고, 없으면 도착편(상대 공항→인천)에 한해 하루 뒤도 찾는다.
- * 도착편의 요일·기간은 **인천 도착일** 기준이라 밤새 날아오는 편은 상대 공항 출발일 다음 날이기 때문이다.
- * 반환하는 date가 적은 날짜와 다르면 인천 도착일로 맞춘 것이다.
+ * 출발 공항 현지 날짜·시각과 도착 공항 현지 시각으로 비행시간(분)을 구한다. 도착 날짜는 모르므로 출발보다 뒤이면서 가장 가까운 날로 본다
+ * (24시간을 넘는 비행은 없다고 본다).
  */
-export function pickIcnRowForDate(
+export function flightDurationMin(
+  depYmd: string,
+  depHhmm: string,
+  depTz: string,
+  arrHhmm: string,
+  arrTz: string,
+): number {
+  const depUtc = localToUtcMs(depYmd, depHhmm, depTz);
+  const arrZoneDay = ymdInZone(depUtc, arrTz);
+  for (let k = -1; k <= 2; k++) {
+    const arrUtc = localToUtcMs(addDays(arrZoneDay, k), arrHhmm, arrTz);
+    if (arrUtc > depUtc) return Math.round((arrUtc - depUtc) / 60000);
+  }
+  return 0;
+}
+
+export function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
+export function distanceKm(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number },
+): number {
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLng = (b.lng - a.lng) * rad;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+/** 같은 노선 출발편이 없을 때의 어림 비행시간(분) — 인천 출발 실측 750여 편에 맞춘 값(거리 ÷ 시속 약 790km + 63분, 중앙값 오차 5분·p10/p90 ±38분) */
+export function estimateDurationMin(km: number): number {
+  return Math.round(63 + 0.0756 * km);
+}
+
+export interface ArrivalPick {
+  row: IcnScheduleRow;
+  /** 인천 도착 날짜 */
+  arrDate: string;
+  /** 계산한 상대 공항 출발 날짜가 사용자가 적은 날짜와 맞았는가 — 아니면 적은 날짜 → 하루 뒤 순으로 운항하는 쪽을 쓴 것 */
+  matched: boolean;
+}
+
+/**
+ * 상대 공항→인천 편: 사용자가 적은 날짜(typedYmd)는 **상대 공항에서 탑승하는 날**이다. 스케줄은 인천 도착일 기준이라
+ * 도착일 후보(적은 날, 하루 뒤)마다 "도착 시각 − 비행시간"으로 상대 공항 출발 날짜를 구해 적은 날짜와 맞는 쪽을 고른다.
+ * durationMin/originTz를 모르면(null) 계산 없이 적은 날 → 하루 뒤 순으로 운항하는 쪽을 쓴다.
+ */
+export function pickArrivalForDeparture(
   rows: IcnScheduleRow[],
-  ymd: string,
-): { row: IcnScheduleRow; date: string } | null {
-  const same = pickIcnRow(rows, ymd);
-  if (same) return { row: same, date: ymd };
-  const next = addDays(ymd, 1);
-  const shifted = pickIcnRow(
-    rows.filter((r) => r.direction === 'arr'),
-    next,
-  );
-  return shifted ? { row: shifted, date: next } : null;
+  typedYmd: string,
+  durationMin: number | null,
+  originTz: string | null,
+): ArrivalPick | null {
+  const arrRows = rows.filter((r) => r.direction === 'arr');
+  const candidates = [typedYmd, addDays(typedYmd, 1)]
+    .map((arrDate) => ({ arrDate, row: pickIcnRow(arrRows, arrDate) }))
+    .filter((c): c is { arrDate: string; row: IcnScheduleRow } => !!c.row);
+  if (candidates.length === 0) return null;
+  if (durationMin != null && originTz) {
+    for (const c of candidates) {
+      const arrUtc = localToUtcMs(c.arrDate, c.row.st, 'Asia/Seoul');
+      if (ymdInZone(arrUtc - durationMin * 60000, originTz) === typedYmd)
+        return { ...c, matched: true };
+    }
+  }
+  return { ...candidates[0], matched: false };
 }
 
 /** 편명은 아는데 그 날짜에 운항하지 않을 때의 이유 — 모든 운항 기간이 그 날짜보다 앞서 끝났으면 아직 공개되지 않은(다음 시즌) 날짜로 본다 */
@@ -314,11 +409,41 @@ export function pickDomestic(items: unknown, flightNo: string, ymd: string): Loo
   };
 }
 
+/**
+ * 같은 노선(인천→toCode) 출발편들의 실제 비행시간(분) 중앙값 — 인천 출발 시각(인천 표)과 한국공항공사의 상대 공항 현지 도착 시각으로 구한다.
+ * kacItems는 그 노선·날짜의 한국공항공사 국제선 줄들. 구할 수 있는 편이 없으면 null.
+ */
+export function routeDurationMin(
+  kacItems: unknown,
+  depRows: IcnScheduleRow[],
+  toCode: string,
+  ymd: string,
+  arrTz: string,
+): number | null {
+  const durations: number[] = [];
+  for (const row of depRows) {
+    if (row.direction !== 'dep' || row.other_airport_code !== toCode || !rowCoversDate(row, ymd))
+      continue;
+    const arrival = kacArrivalTime(
+      kacItems,
+      row.master_flight_id || row.flight_id,
+      ICN_CODE,
+      toCode,
+      ymd,
+    );
+    if (!arrival) continue;
+    const minutes = flightDurationMin(ymd, row.st, 'Asia/Seoul', arrival.replace(':', ''), arrTz);
+    if (minutes >= 30 && minutes <= 1000) durations.push(minutes);
+  }
+  return median(durations);
+}
+
 /** 인천 줄 + (출발편이면) 한국공항공사가 준 상대 공항 도착 시각 → 조회 결과 */
 export function buildIcnFlight(
   row: IcnScheduleRow,
   ymd: string,
   otherAirportTime: string,
+  arrDate?: string,
 ): LookupFlight {
   const icn: LookupAirport = {
     iata: ICN_CODE,
@@ -339,6 +464,7 @@ export function buildIcnFlight(
     airlineCode: row.airline_code,
     dep: row.direction === 'dep' ? icn : other,
     arr: row.direction === 'dep' ? other : icn,
+    ...(arrDate && arrDate !== ymd ? { arrDate } : {}),
     source: 'icn',
   };
 }

@@ -138,6 +138,7 @@ function FlightSlotEditor({
   // 편명으로 불러오기 — 조회할 날짜(기본은 여행 첫날·마지막 날, 고칠 수 있다)와 자동으로 채운 값들
   const [flightDate, setFlightDate] = useState(value?.date || date);
   const [airlineCode, setAirlineCode] = useState(value?.airlineCode ?? '');
+  const [arrDate, setArrDate] = useState<string | undefined>(value?.arrDate);
   const [depTerminal, setDepTerminal] = useState<TerminalKey | undefined>(value?.dep.terminal);
   const [arrTerminal, setArrTerminal] = useState<TerminalKey | undefined>(value?.arr.terminal);
   const [autoFilled, setAutoFilled] = useState(!!value && value.manual === false);
@@ -256,12 +257,14 @@ function FlightSlotEditor({
       setAutoFilled(true);
       setLookedUp(true);
       setShowManual(false);
-      // 밤새 인천에 도착하는 귀국편은 스케줄이 인천 도착일 기준이라 날짜를 그날로 맞춘다
-      const shifted = fill.date !== flightDate;
-      if (shifted) setFlightDate(fill.date);
+      // 밤새 날아와 도착일이 다르면(예: 21일 밤 탑승 → 22일 04:35 인천 도착) 도착일을 함께 담고 안내한다
+      setArrDate(fill.arrDate ?? undefined);
       setLookupNote(
-        shifted
-          ? t('flight.lookupDateShifted', { date: fill.date })
+        fill.arrDate
+          ? t(tripEnd && fill.arrDate > tripEnd ? 'flight.lookupArrNextDayExtend' : 'flight.lookupArrNextDay', {
+              date: fill.arrDate,
+              time: fill.arr.time,
+            })
           : fill.dep.time && fill.arr.time
             ? t('flight.lookupDone')
             : t('flight.lookupDonePartial'),
@@ -286,6 +289,7 @@ function FlightSlotEditor({
       setFlightNo(value.flightNo);
       setFlightDate(value.date || date);
       setAirlineCode(value.airlineCode ?? '');
+      setArrDate(value.arrDate);
       setDepTerminal(value.dep.terminal);
       setArrTerminal(value.arr.terminal);
       setAutoFilled(value.manual === false);
@@ -338,6 +342,7 @@ function FlightSlotEditor({
       date: flightDate || value?.date || date,
       airline: airline.trim(),
       ...(airlineCode ? { airlineCode } : {}),
+      ...(arrDate && arrDate !== flightDate ? { arrDate } : {}),
       // 불러오기로 채운 값이면 '직접 입력' 표시를 달지 않는다
       manual: !autoFilled,
       dep: {
@@ -365,13 +370,14 @@ function FlightSlotEditor({
     const draft: FlightInfo = {
       flightNo,
       date: flightDate,
+      arrDate,
       airline,
       airlineCode: airlineCode || undefined,
       dep: { iata: depIata, name: depPlace?.name ?? '', lat: null, lng: null, time: depTime, terminal: depTerminal },
       arr: { iata: arrIata, name: arrPlace?.name ?? '', lat: null, lng: null, time: arrTime, terminal: arrTerminal },
     };
     return flightPreviewText(draft, t, i18n.language);
-  }, [flightNo, flightDate, airline, airlineCode, depIata, depPlace, depTime, depTerminal, arrIata, arrPlace, arrTime, arrTerminal, t, i18n.language]);
+  }, [flightNo, flightDate, arrDate, airline, airlineCode, depIata, depPlace, depTime, depTerminal, arrIata, arrPlace, arrTime, arrTerminal, t, i18n.language]);
 
   const dateLabel = useMemo(() => {
     if (!flightDate) return t('flight.pickDate');
@@ -390,6 +396,7 @@ function FlightSlotEditor({
     setFlightNo('');
     setFlightDate(date);
     setAirlineCode('');
+    setArrDate(undefined);
     setDepTerminal(undefined);
     setArrTerminal(undefined);
     setAutoFilled(false);
@@ -443,6 +450,7 @@ function FlightSlotEditor({
                   setAutoFilled(false);
                   setLookedUp(false);
                   setAirlineCode('');
+                  setArrDate(undefined);
                   setDepTerminal(undefined);
                   setArrTerminal(undefined);
                 }}
@@ -617,6 +625,7 @@ function FlightSlotEditor({
               markEnd={tripEnd}
               onPick={(ymd) => {
                 setFlightDate(ymd);
+                setArrDate(undefined);
                 setAutoFilled(false);
                 setLookedUp(false);
               }}

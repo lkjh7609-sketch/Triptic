@@ -16,6 +16,8 @@ export function airportFromLookup(
 export interface LookupFill {
   flightNo: string;
   date: string;
+  /** 도착일이 date와 다를 때만(밤새 비행) */
+  arrDate: string | null;
   /** 한국어 이름(API 원문) */
   airline: string;
   airlineCode: string;
@@ -31,6 +33,7 @@ export function lookupFill(
   return {
     flightNo: flight.flightNo,
     date: flight.date,
+    arrDate: flight.arrDate ?? null,
     airline: flight.airlineKo,
     airlineCode: flight.airlineCode,
     dep: {

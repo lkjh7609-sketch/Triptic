@@ -68,6 +68,7 @@ import { FinalizedTripView } from './FinalizedTripView';
 import { ExternalLink, MapPin, Hotel as HotelIcon, Plane, FileText, Map, List } from 'lucide-react';
 import { cityDisplayName } from './cityName';
 import { isTripDatesLocked } from './tripStatus';
+import { returnFlightDay, tripEndExtension } from './flights';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -140,14 +141,15 @@ export function TripDetailScreen() {
     : null;
   const dayWeather = dayDateISO ? weather.data?.daily.find((d) => d.date === dayDateISO) : undefined;
   const isFirstDay = currentDay === 1;
-  const isLastDay = currentDay === totalDays;
   /** 첫날 도착 지점/마지막날 출발 지점으로만 표시된다 (index.html renderList flightArrivalPoint/flightDeparturePoint) */
   const flightArrival =
     isFirstDay && flightsData.outbound?.arr.lat != null && flightsData.outbound.arr.lng != null
       ? flightsData.outbound
       : null;
+  // 귀국편 카드는 마지막 날, 밤새 날아와 도착일이 정해진 편(arrDate)은 도착한 날의 일차에 보인다
+  const returnDay = returnFlightDay(flightsData.return, trip?.start_date, totalDays);
   const flightDeparture =
-    isLastDay && flightsData.return?.dep.lat != null && flightsData.return.dep.lng != null
+    currentDay === returnDay && flightsData.return?.dep.lat != null && flightsData.return.dep.lng != null
       ? flightsData.return
       : null;
   const dayItems: PlaceItem[] = useMemo(() => {
@@ -270,8 +272,18 @@ export function TripDetailScreen() {
   /** 항공편 저장 (index.html lookupFlightForModal/saveManualFlight 이식) */
   async function handleSaveFlights(nextFlights: FlightsData) {
     if (!project || !trip) return;
-    const nextProject: LocalProject = { ...project, flights: nextFlights };
+    let nextProject: LocalProject = { ...project, flights: nextFlights };
+    // 밤새 날아와 도착일이 여행 종료일보다 늦으면(예: 21일 밤 탑승 → 22일 새벽 인천 도착) 종료일을 도착일로 늘린다 — 줄이지는 않는다.
+    // 종료일이 이미 한참 지난 여행은 날짜를 못 바꾸므로 건드리지 않는다
+    let extendedTo: string | null = null;
+    const newEnd = tripEndExtension(nextFlights, trip.end_date);
+    if (newEnd && trip.start_date && !isTripDatesLocked(trip.end_date)) {
+      const period: Period = { start: trip.start_date, end: newEnd };
+      nextProject = { ...nextProject, endDate: period.end, totalDays: totalDaysOf(period) };
+      extendedTo = period.end;
+    }
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
+    if (extendedTo) showToast(t('tripDetail.flightExtendedTrip', { date: extendedTo }));
   }
 
   /**

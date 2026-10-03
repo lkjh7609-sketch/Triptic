@@ -86,7 +86,8 @@
     "totalLabel": "合計"
   },
   "flightCard": {
-    "schedule": "{{depTime}} 出発 → {{arrTime}} 到着"
+    "schedule": "{{depTime}} 出発 → {{arrTime}} 到着",
+    "arriveOnly": "{{arrTime}} 到着"
   },
   "flight": {
     "title": "航空便",
@@ -128,11 +129,12 @@
       "out_of_range": "この日付には運航していない便です。日付を確認するか、下に直接入力してください。",
       "not_published": "この日付のスケジュールはまだ公開されていません。下に直接入力してください。"
     },
-    "lookupDateShifted": "この便の仁川到着日は{{date}}です(夜間便)。日付を合わせました。内容をご確認ください。",
     "manualOpen": "直接入力する",
     "editManual": "直接修正",
     "pickDate": "日付を選ぶ",
-    "dateAria": "フライト日"
+    "dateAria": "フライト日",
+    "lookupArrNextDay": "夜間便のため、仁川には{{date}} {{time}}に到着します。",
+    "lookupArrNextDayExtend": "夜間便のため、仁川には{{date}} {{time}}に到着します。適用すると旅行の終了日がその日に延びます。"
   },
   "itemDetail": {
     "mapLink": "Google Mapsで見る",
@@ -233,7 +235,8 @@
     "tripDatesChanged": "旅行期間を{{start}}〜{{end}}に変更しました",
     "tripDatesShrinkTitle": "旅行期間を変更しますか？",
     "tripDatesShrinkMessage": "期間が短くなるため、{{day}}日目以降の予定・宿泊・食事・家計簿の記録が削除されます。",
-    "tripDatesShrinkConfirm": "変更する"
+    "tripDatesShrinkConfirm": "変更する",
+    "flightExtendedTrip": "夜間便に合わせて旅行の終了日を{{date}}に延ばしました"
   },
   "tripMap": {
     "ariaLabel": "スケジュール地図",

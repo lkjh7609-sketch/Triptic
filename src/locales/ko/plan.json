@@ -104,7 +104,8 @@
     "totalLabel": "합계"
   },
   "flightCard": {
-    "schedule": "{{depTime}} 출발 → {{arrTime}} 도착"
+    "schedule": "{{depTime}} 출발 → {{arrTime}} 도착",
+    "arriveOnly": "{{arrTime}} 도착"
   },
   "flight": {
     "title": "항공편",
@@ -146,11 +147,12 @@
       "out_of_range": "이 날짜에는 운항하지 않는 편이에요. 날짜를 확인하거나 아래에 직접 입력해 주세요.",
       "not_published": "이 날짜의 스케줄은 아직 공개되지 않았어요. 아래에 직접 입력해 주세요."
     },
-    "lookupDateShifted": "인천 도착일은 {{date}}이에요(밤새 도착하는 편). 날짜를 그에 맞췄어요. 내용을 확인해 주세요.",
     "manualOpen": "직접 입력하기",
     "editManual": "직접 수정",
     "pickDate": "날짜 선택",
-    "dateAria": "비행 날짜"
+    "dateAria": "비행 날짜",
+    "lookupArrNextDay": "밤새 비행해 인천에는 {{date}} {{time}}에 도착해요.",
+    "lookupArrNextDayExtend": "밤새 비행해 인천에는 {{date}} {{time}}에 도착해요. 적용하면 여행 종료일이 그날로 늘어나요."
   },
   "itemDetail": {
     "mapLink": "Google Maps에서 보기",
@@ -251,7 +253,8 @@
     "tripDatesChanged": "여행 기간을 {{start}} ~ {{end}}(으)로 바꿨어요",
     "tripDatesShrinkTitle": "여행 기간을 바꿀까요?",
     "tripDatesShrinkMessage": "기간이 짧아져서 {{day}}일차부터의 일정·숙소·식사·가계부 기록이 지워져요.",
-    "tripDatesShrinkConfirm": "바꾸기"
+    "tripDatesShrinkConfirm": "바꾸기",
+    "flightExtendedTrip": "밤새 도착하는 항공편에 맞춰 여행 종료일을 {{date}}(으)로 늘렸어요"
   },
   "tripMap": {
     "ariaLabel": "일정 지도",

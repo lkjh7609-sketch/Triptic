@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { LegLabel } from './LegLabel';
 import type { RouteLeg } from './map/useTripRoutes';
 import type { FlightInfo } from './types';
-import { flightAirlineLabel } from './flights';
+import { flightAirlineLabel, flightScheduleText } from './flights';
+import { useAirports } from './airports/useAirports';
+import { airportCardLabel } from './airports/airportData';
 import styles from './FixedPointCard.module.css';
 import { Plane, ExternalLink } from 'lucide-react';
 
@@ -43,6 +45,7 @@ export function FixedPointCard({ icon, label, name, address }: FixedPointCardPro
 /** 항공편 카드 (index.html .fixed-item.flight-item 이식) */
 export function FlightPointCard({ flight }: { flight: FlightInfo }) {
   const { t, i18n } = useTranslation('plan');
+  const { data: airports } = useAirports();
   const airlineName = flightAirlineLabel(flight, i18n.language);
   const airlineTag = airlineName ? ` (${airlineName})` : '';
   return (
@@ -51,14 +54,14 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
       <div className={styles.fixedItem} style={{ margin: 0, flex: 1, zIndex: 1 }}>
         <span className={styles.fixedLabel}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Plane size={16} /> {flight.flightNo}</span></span>
         <span className={styles.fixedName}>
-          {flight.dep.name || flight.dep.iata || '?'}
+          {airportCardLabel(flight.dep, airports, i18n.language)}
           {flight.dep.lat && flight.dep.lng ? (
             <a href={`https://www.google.com/maps/search/?api=1&query=${flight.dep.lat},${flight.dep.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand-text)', textDecoration: 'none' }}>
               <ExternalLink size={12} />
             </a>
           ) : null}
           {" → "}
-          {flight.arr.name || flight.arr.iata || '?'}
+          {airportCardLabel(flight.arr, airports, i18n.language)}
           {flight.arr.lat && flight.arr.lng ? (
             <a href={`https://www.google.com/maps/search/?api=1&query=${flight.arr.lat},${flight.arr.lng}`} target="_blank" rel="noopener" style={{ marginLeft: 4, color: 'var(--brand-text)', textDecoration: 'none' }}>
               <ExternalLink size={12} />
@@ -67,7 +70,7 @@ export function FlightPointCard({ flight }: { flight: FlightInfo }) {
           {airlineTag}
         </span>
         <span className={styles.fixedAddress}>
-          {t('flightCard.schedule', { depTime: flight.dep.time || '', arrTime: flight.arr.time || '' })}
+          {flightScheduleText(flight, t)}
         </span>
       </div>
     </div>
