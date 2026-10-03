@@ -136,3 +136,86 @@
   font-size: var(--font-caption-size);
   color: var(--text-muted);
 }
+
+/* 첫 화면: [편명][날짜] 한 줄 + 불러오기 버튼 */
+.topGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.topGrid .lookupBtn {
+  grid-column: 1 / -1;
+}
+
+.dateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dateText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-caption-size);
+}
+
+.found {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.foundText {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-body-size);
+  color: var(--text-body);
+}
+
+.manualOpen {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 4px 0;
+  color: var(--brand-text);
+  font: inherit;
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+}
+
+/* iPhone Safari의 시간·날짜 입력은 기본 너비가 있어 칸을 뚫고 나온다 — 칸 안에 맞춘다 */
+.fieldGrid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.timeInput {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+}
+
+.timeInput::-webkit-date-and-time-value {
+  text-align: left;
+}

@@ -13,9 +13,25 @@ interface CalendarRangePickerProps {
   endDate: Date | null;
   onChange: (start: Date | null, end: Date | null) => void;
   minDate?: Date;
+  /** 'single'이면 하루만 고른다(startDate에 담김, endDate는 항상 null) */
+  mode?: 'range' | 'single';
+  /** 지난 날짜도 고를 수 있게 한다 */
+  allowPast?: boolean;
+  /** 고르는 값과 별개로 은은하게 표시해 둘 기간(예: 이 여행의 시작~종료일) */
+  markStart?: Date | null;
+  markEnd?: Date | null;
 }
 
-export function CalendarRangePicker({ startDate, endDate, onChange, minDate = new Date() }: CalendarRangePickerProps) {
+export function CalendarRangePicker({
+  startDate,
+  endDate,
+  onChange,
+  minDate = new Date(),
+  mode = 'range',
+  allowPast = false,
+  markStart = null,
+  markEnd = null,
+}: CalendarRangePickerProps) {
   const { t, i18n } = useTranslation('common');
   const locale = i18n.language;
   const [currentMonth, setCurrentMonth] = useState(startDate || new Date());
@@ -24,7 +40,11 @@ export function CalendarRangePicker({ startDate, endDate, onChange, minDate = ne
   const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
 
   const handleDayClick = (day: Date) => {
-    if (minDate && isBefore(startOfDay(day), startOfDay(minDate))) return;
+    if (!allowPast && minDate && isBefore(startOfDay(day), startOfDay(minDate))) return;
+    if (mode === 'single') {
+      onChange(day, null);
+      return;
+    }
 
     if (!startDate || (startDate && endDate)) {
       // 시작일만 선택된 상태로 초기화
@@ -75,10 +95,12 @@ export function CalendarRangePicker({ startDate, endDate, onChange, minDate = ne
           const isSelectedEnd = endDate && isSameDay(day, endDate);
           const isSelected = isSelectedStart || isSelectedEnd;
           const inRange = startDate && endDate && isWithinInterval(day, { start: startDate, end: endDate });
-          const isDisabled = minDate && isBefore(startOfDay(day), startOfDay(minDate));
+          const isDisabled = !allowPast && minDate && isBefore(startOfDay(day), startOfDay(minDate));
+          const marked = markStart && markEnd && isWithinInterval(day, { start: markStart, end: markEnd });
 
           let rangeClass = '';
           if (inRange && !isSelectedStart && !isSelectedEnd) rangeClass = styles.inRange;
+          if (mode === 'single' && marked && !isSelected) rangeClass = styles.marked;
           if (startDate && endDate && isSelectedStart && !isSameDay(startDate, endDate)) rangeClass = styles.startRange;
           if (startDate && endDate && isSelectedEnd && !isSameDay(startDate, endDate)) rangeClass = styles.endRange;
 

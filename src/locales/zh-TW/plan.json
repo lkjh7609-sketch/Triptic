@@ -146,7 +146,11 @@
       "out_of_range": "這個日期沒有這班航班。請確認日期,或在下方自行輸入。",
       "not_published": "這個日期的班表尚未公布。請在下方自行輸入。"
     },
-    "lookupDateShifted": "此航班於 {{date}} 抵達仁川(夜間航班),已調整日期。請確認內容。"
+    "lookupDateShifted": "此航班於 {{date}} 抵達仁川(夜間航班),已調整日期。請確認內容。",
+    "manualOpen": "自行輸入",
+    "editManual": "自行修改",
+    "pickDate": "選擇日期",
+    "dateAria": "航班日期"
   },
   "itemDetail": {
     "mapLink": "在 Google 地圖中檢視",

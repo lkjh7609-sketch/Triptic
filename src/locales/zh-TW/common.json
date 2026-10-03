@@ -162,5 +162,8 @@
     },
     "view": "詳情",
     "close": "關閉"
+  },
+  "datePicker": {
+    "tripRange": "淺色日期為此旅程的期間。"
   }
 }

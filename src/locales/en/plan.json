@@ -148,7 +148,11 @@
       "out_of_range": "This flight doesn't operate on that date. Check the date or enter it below.",
       "not_published": "The schedule for this date isn't published yet. Please enter it below."
     },
-    "lookupDateShifted": "This flight lands in Incheon on {{date}} (overnight flight), so the date was adjusted. Please check the details."
+    "lookupDateShifted": "This flight lands in Incheon on {{date}} (overnight flight), so the date was adjusted. Please check the details.",
+    "manualOpen": "Enter manually",
+    "editManual": "Edit details",
+    "pickDate": "Choose a date",
+    "dateAria": "Flight date"
   },
   "itemDetail": {
     "mapLink": "View on Google Maps",

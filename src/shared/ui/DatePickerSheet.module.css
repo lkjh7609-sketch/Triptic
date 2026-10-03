@@ -1,0 +1,46 @@
+/* 항공편 입력 창 위에 겹쳐 뜨는 시트 */
+.overlay {
+  z-index: 60;
+}
+
+.sheet {
+  max-width: 400px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+}
+
+.close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .close:hover {
+    background: var(--surface-subtle);
+  }
+}
+
+.legend {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  text-align: center;
+}

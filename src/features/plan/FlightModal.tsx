@@ -15,7 +15,8 @@ import { flagInvalid } from '@/shared/ui/invalidField';
 import type { FlightInfo, FlightsData } from './types';
 import styles from './FlightModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
-import { Plane, Pencil, Trash2, CheckCircle, Search } from 'lucide-react';
+import { Plane, Pencil, Trash2, CheckCircle, Search, CalendarDays } from 'lucide-react';
+import { DatePickerSheet } from '@/shared/ui/DatePickerSheet';
 
 interface FlightModalProps {
   flightsData: FlightsData;
@@ -68,6 +69,8 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
           <FlightSlotEditor
             label={t('flight.outboundLabel')}
             date={startDate ?? ''}
+            tripStart={startDate}
+            tripEnd={endDate}
             value={outbound}
             onChange={setOutbound}
             onRequestAirport={setRequestText}
@@ -75,6 +78,8 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
           <FlightSlotEditor
             label={t('flight.returnLabel')}
             date={endDate ?? ''}
+            tripStart={startDate}
+            tripEnd={endDate}
             value={returnFlight}
             onChange={setReturnFlight}
             onRequestAirport={setRequestText}
@@ -108,6 +113,9 @@ export function FlightModal({ flightsData, startDate, endDate, onClose, onSave }
 interface FlightSlotEditorProps {
   label: string;
   date: string;
+  /** 날짜 달력에 은은하게 표시할 이 여행의 기간 */
+  tripStart?: string | null;
+  tripEnd?: string | null;
   value: FlightInfo | null;
   onChange: (flight: FlightInfo | null) => void;
   onRequestAirport: (query: string) => void;
@@ -116,6 +124,8 @@ interface FlightSlotEditorProps {
 function FlightSlotEditor({
   label,
   date,
+  tripStart,
+  tripEnd,
   value,
   onChange,
   onRequestAirport,
@@ -133,6 +143,10 @@ function FlightSlotEditor({
   const [autoFilled, setAutoFilled] = useState(!!value && value.manual === false);
   const [lookupBusy, setLookupBusy] = useState(false);
   const [lookupNote, setLookupNote] = useState<string | null>(null);
+  // 첫 화면은 편명·날짜·불러오기만 — 직접 입력 칸은 [직접 입력하기]를 누르거나, 못 찾았을 때, 이미 저장된 항공편을 고칠 때 펼쳐진다
+  const [showManual, setShowManual] = useState(!!value);
+  const [lookedUp, setLookedUp] = useState(false);
+  const [dateSheetOpen, setDateSheetOpen] = useState(false);
   const [depTime, setDepTime] = useState(value?.dep.time ?? '');
   const [arrTime, setArrTime] = useState(value?.arr.time ?? '');
 
@@ -221,6 +235,8 @@ function FlightSlotEditor({
       const res = await lookupFlightSchedule(flightNo, flightDate);
       if (!res.found) {
         setLookupNote(t(`flight.lookupMiss.${res.reason}`));
+        setLookedUp(false);
+        setShowManual(true);
         return;
       }
       const fill = lookupFill(res.flight, airportList, i18n.language);
@@ -238,6 +254,8 @@ function FlightSlotEditor({
       setDepTerminal(fill.dep.terminal ?? undefined);
       setArrTerminal(fill.arr.terminal ?? undefined);
       setAutoFilled(true);
+      setLookedUp(true);
+      setShowManual(false);
       // 밤새 인천에 도착하는 귀국편은 스케줄이 인천 도착일 기준이라 날짜를 그날로 맞춘다
       const shifted = fill.date !== flightDate;
       if (shifted) setFlightDate(fill.date);
@@ -255,6 +273,8 @@ function FlightSlotEditor({
       }
       if (!(err instanceof FlightLookupError)) captureError(err, { context: 'flightLookup' });
       setLookupNote(t('flight.lookupFailed'));
+      setLookedUp(false);
+      setShowManual(true);
     } finally {
       setLookupBusy(false);
     }
@@ -306,6 +326,8 @@ function FlightSlotEditor({
     const depMissing = !depPlace?.name;
     const arrMissing = !arrPlace?.name;
     if (noMissing || depMissing || arrMissing) {
+      // 요약만 보이는 상태에서 공항이 빠졌으면 입력 칸을 펼쳐 채울 수 있게 한다
+      if (depMissing || arrMissing) setShowManual(true);
       setError(noMissing ? t('flight.flightNoRequired') : t('flight.airportRequired'));
       flagInvalid(noMissing ? flightNoRef.current : null, depMissing ? depInputRef.current : null, arrMissing ? arrInputRef.current : null);
       return;
@@ -338,6 +360,30 @@ function FlightSlotEditor({
     setIsEditing(false);
   }
 
+  /** 불러온(또는 입력 중인) 값의 한 줄 요약 */
+  const draftSummary = useMemo(() => {
+    const draft: FlightInfo = {
+      flightNo,
+      date: flightDate,
+      airline,
+      airlineCode: airlineCode || undefined,
+      dep: { iata: depIata, name: depPlace?.name ?? '', lat: null, lng: null, time: depTime, terminal: depTerminal },
+      arr: { iata: arrIata, name: arrPlace?.name ?? '', lat: null, lng: null, time: arrTime, terminal: arrTerminal },
+    };
+    return flightPreviewText(draft, t, i18n.language);
+  }, [flightNo, flightDate, airline, airlineCode, depIata, depPlace, depTime, depTerminal, arrIata, arrPlace, arrTime, arrTerminal, t, i18n.language]);
+
+  const dateLabel = useMemo(() => {
+    if (!flightDate) return t('flight.pickDate');
+    const d = new Date(`${flightDate}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return flightDate;
+    // "11월 1일 (일)" — 올해가 아니면 연도를 붙인다
+    const withYear = d.getFullYear() !== new Date().getFullYear();
+    const day = new Intl.DateTimeFormat(i18n.language, { ...(withYear ? { year: 'numeric' } : {}), month: 'long', day: 'numeric' }).format(d);
+    const weekday = new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }).format(d);
+    return `${day} (${weekday})`;
+  }, [flightDate, i18n.language, t]);
+
   function handleRemove() {
     onChange(null);
     setIsEditing(true);
@@ -348,6 +394,8 @@ function FlightSlotEditor({
     setArrTerminal(undefined);
     setAutoFilled(false);
     setLookupNote(null);
+    setLookedUp(false);
+    setShowManual(false);
     setAirline('');
     setDepTime('');
     setArrTime('');
@@ -381,7 +429,7 @@ function FlightSlotEditor({
         </>
       ) : (
         <>
-          <div className={styles.fieldGrid}>
+          <div className={styles.topGrid}>
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{t('flight.flightNoLabel')}</span>
               <input
@@ -393,136 +441,188 @@ function FlightSlotEditor({
                   setFlightNo(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
                   // 편명을 고치면 앞서 불러온 값은 더 이상 이 편의 것이 아니다
                   setAutoFilled(false);
+                  setLookedUp(false);
                   setAirlineCode('');
                   setDepTerminal(undefined);
                   setArrTerminal(undefined);
                 }}
               />
             </label>
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.airlineLabel')}</span>
-              <input
-                className={styles.fieldInput}
-                placeholder={t('flight.airlinePlaceholder')}
-                value={airline}
-                onChange={(e) => {
-                  setAirline(e.target.value.toUpperCase());
-                  setAirlineCode('');
-                  setAutoFilled(false);
-                }}
-              />
-            </label>
-
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.dateLabel')}</span>
-              <input
-                type="date"
-                className={styles.fieldInput}
-                value={flightDate}
-                onChange={(e) => {
-                  setFlightDate(e.target.value);
-                  setAutoFilled(false);
-                }}
-              />
-            </label>
             <div className={styles.field}>
-              <span className={styles.fieldLabel} aria-hidden="true">
-                &nbsp;
-              </span>
-              <button type="button" className={styles.lookupBtn} onClick={handleLookup} disabled={lookupBusy}>
-                <Search size={16} aria-hidden="true" />
-                {lookupBusy ? t('flight.lookingUp') : t('flight.lookupFromNo')}
+              <span className={styles.fieldLabel}>{t('flight.dateLabel')}</span>
+              <button
+                type="button"
+                className={`${styles.fieldInput} ${styles.dateBtn}`}
+                aria-label={`${t('flight.dateAria')}: ${dateLabel}`}
+                aria-haspopup="dialog"
+                onClick={() => setDateSheetOpen(true)}
+              >
+                <CalendarDays size={16} aria-hidden="true" />
+                <span className={styles.dateText}>{dateLabel}</span>
               </button>
             </div>
-            {lookupNote ? (
-              <p className={styles.lookupNote} role="status">
-                {lookupNote}
-              </p>
-            ) : null}
-
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.depLabel')}</span>
-              {listMode ? (
-                <AirportPicker
-                  airports={airportList ?? []}
-                  value={depSelected}
-                  onSelect={(a) => changeAirport('dep', a)}
-                  placeholder={t('flight.airportListPlaceholder')}
-                  inputRef={depInputRef}
-                  onRequest={onRequestAirport}
-                />
-              ) : (
-                <input
-                  ref={depInputRef}
-                  className={styles.fieldInput}
-                  placeholder={t('flight.depPlaceholder')}
-                  defaultValue={depPlace?.name}
-                />
-              )}
-            </label>
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.depTimeAria')}</span>
-              <input
-                type="time"
-                className={styles.fieldInput}
-                value={depTime}
-                onChange={(e) => {
-                  setDepTime(e.target.value);
-                  setAutoFilled(false);
-                }}
-              />
-            </label>
-
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.arrLabel')}</span>
-              {listMode ? (
-                <AirportPicker
-                  airports={airportList ?? []}
-                  value={arrSelected}
-                  onSelect={(a) => changeAirport('arr', a)}
-                  placeholder={t('flight.airportListPlaceholder')}
-                  inputRef={arrInputRef}
-                  onRequest={onRequestAirport}
-                />
-              ) : (
-                <input
-                  ref={arrInputRef}
-                  className={styles.fieldInput}
-                  placeholder={t('flight.arrPlaceholder')}
-                  defaultValue={arrPlace?.name}
-                />
-              )}
-            </label>
-            <label className={styles.field}>
-              <span className={styles.fieldLabel}>{t('flight.arrTimeAria')}</span>
-              <input
-                type="time"
-                className={styles.fieldInput}
-                value={arrTime}
-                onChange={(e) => {
-                  setArrTime(e.target.value);
-                  setAutoFilled(false);
-                }}
-              />
-            </label>
-
-            {error ? (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
-            ) : null}
-          </div>
-
-          <div className={styles.formActions}>
-            {value ? (
-              <button type="button" className={styles.cancelManualBtn} onClick={() => setIsEditing(false)}>
-                {t('common:action.cancel')}
-              </button>
-            ) : null}
-            <button type="button" className={styles.applyManualBtn} onClick={handleApply}>
-              {value ? t('flight.applyEdit') : t('flight.applyManual')}
+            <button type="button" className={styles.lookupBtn} onClick={handleLookup} disabled={lookupBusy}>
+              <Search size={16} aria-hidden="true" />
+              {lookupBusy ? t('flight.lookingUp') : t('flight.lookupFromNo')}
             </button>
           </div>
+
+          {lookupNote ? (
+            <p className={styles.lookupNote} role="status">
+              {lookupNote}
+            </p>
+          ) : null}
+
+          {lookedUp && !showManual ? (
+            <div className={styles.found}>
+              <p className={styles.foundText}>
+                <CheckCircle size={14} aria-hidden="true" /> {draftSummary}
+              </p>
+              {error ? (
+                <p className={styles.error} role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <div className={styles.formActions}>
+                <button type="button" className={styles.cancelManualBtn} onClick={() => setShowManual(true)}>
+                  {t('flight.editManual')}
+                </button>
+                <button type="button" className={styles.applyManualBtn} onClick={handleApply}>
+                  {t('flight.applyManual')}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {!showManual && !lookedUp ? (
+            <button type="button" className={styles.manualOpen} onClick={() => setShowManual(true)}>
+              {t('flight.manualOpen')}
+            </button>
+          ) : null}
+
+          {showManual ? (
+            <>
+              <div className={styles.fieldGrid}>
+                <label className={`${styles.field} ${styles.fullRow}`}>
+                  <span className={styles.fieldLabel}>{t('flight.airlineLabel')}</span>
+                  <input
+                    className={styles.fieldInput}
+                    placeholder={t('flight.airlinePlaceholder')}
+                    value={airline}
+                    onChange={(e) => {
+                      setAirline(e.target.value.toUpperCase());
+                      setAirlineCode('');
+                      setAutoFilled(false);
+                    }}
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{t('flight.depLabel')}</span>
+                  {listMode ? (
+                    <AirportPicker
+                      airports={airportList ?? []}
+                      value={depSelected}
+                      onSelect={(a) => changeAirport('dep', a)}
+                      placeholder={t('flight.airportListPlaceholder')}
+                      inputRef={depInputRef}
+                      onRequest={onRequestAirport}
+                    />
+                  ) : (
+                    <input
+                      ref={depInputRef}
+                      className={styles.fieldInput}
+                      placeholder={t('flight.depPlaceholder')}
+                      defaultValue={depPlace?.name}
+                    />
+                  )}
+                </label>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{t('flight.depTimeAria')}</span>
+                  <input
+                    type="time"
+                    className={`${styles.fieldInput} ${styles.timeInput}`}
+                    value={depTime}
+                    onChange={(e) => {
+                      setDepTime(e.target.value);
+                      setAutoFilled(false);
+                    }}
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{t('flight.arrLabel')}</span>
+                  {listMode ? (
+                    <AirportPicker
+                      airports={airportList ?? []}
+                      value={arrSelected}
+                      onSelect={(a) => changeAirport('arr', a)}
+                      placeholder={t('flight.airportListPlaceholder')}
+                      inputRef={arrInputRef}
+                      onRequest={onRequestAirport}
+                    />
+                  ) : (
+                    <input
+                      ref={arrInputRef}
+                      className={styles.fieldInput}
+                      placeholder={t('flight.arrPlaceholder')}
+                      defaultValue={arrPlace?.name}
+                    />
+                  )}
+                </label>
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>{t('flight.arrTimeAria')}</span>
+                  <input
+                    type="time"
+                    className={`${styles.fieldInput} ${styles.timeInput}`}
+                    value={arrTime}
+                    onChange={(e) => {
+                      setArrTime(e.target.value);
+                      setAutoFilled(false);
+                    }}
+                  />
+                </label>
+
+                {error ? (
+                  <p className={styles.error} role="alert">
+                    {error}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className={styles.formActions}>
+                {value ? (
+                  <button type="button" className={styles.cancelManualBtn} onClick={() => setIsEditing(false)}>
+                    {t('common:action.cancel')}
+                  </button>
+                ) : null}
+                <button type="button" className={styles.applyManualBtn} onClick={handleApply}>
+                  {value ? t('flight.applyEdit') : t('flight.applyManual')}
+                </button>
+              </div>
+            </>
+          ) : null}
+
+          {!showManual && !lookedUp && error ? (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          ) : null}
+
+          {dateSheetOpen ? (
+            <DatePickerSheet
+              title={t('flight.pickDate')}
+              value={flightDate}
+              markStart={tripStart}
+              markEnd={tripEnd}
+              onPick={(ymd) => {
+                setFlightDate(ymd);
+                setAutoFilled(false);
+                setLookedUp(false);
+              }}
+              onClose={() => setDateSheetOpen(false)}
+            />
+          ) : null}
         </>
       )}
     </div>
