@@ -26,6 +26,8 @@ interface DestinationPickerModalProps {
   onClose: () => void;
   /** 있으면 위쪽 줄에 "어디든 상관없어요" 버튼이 생긴다 — 누르면 여행지를 비우고 닫는다(동행 글처럼 여행지가 선택 사항일 때) */
   onClear?: () => void;
+  /** 처음 열 때 보여 줄 지역 탭 — 없으면 '전체' */
+  initialTab?: PickerTab;
 }
 
 const CLOSE_MS = 200;
@@ -35,11 +37,11 @@ const CLOSE_MS = 200;
  * 검색창 → 최근 선택 칩 → 지역 탭 → 도시 카드(2열) → 하단 "선택 현황 + 닫기 / 선택 완료".
  * 카드를 누르면 임시로 고르고, "선택 완료"를 눌러야 반영된다. 바깥(어두운 배경)을 눌러도 닫히지 않는다 — 닫기 버튼·Esc로만 닫는다.
  */
-export function DestinationPickerModal({ destinations, selectedId, onConfirm, onClose, onClear }: DestinationPickerModalProps) {
+export function DestinationPickerModal({ destinations, selectedId, onConfirm, onClose, onClear, initialTab }: DestinationPickerModalProps) {
   const { t, i18n } = useTranslation('community');
   const [closing, setClosing] = useState(false);
   const closeTimer = useRef<number | undefined>(undefined);
-  const [tab, setTab] = useState<PickerTab>('all');
+  const [tab, setTab] = useState<PickerTab>(initialTab ?? 'all');
   const [query, setQuery] = useState('');
   // 아시아·유럽·미주·기타 탭에서 고른 하위 지역(없으면 하위 지역 카드를 보여 준다)
   const [region, setRegion] = useState<string | null>(null);

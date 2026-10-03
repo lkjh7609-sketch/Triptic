@@ -688,6 +688,7 @@
     "error": "無法更新儲存清單，請稍後再試。"
   },
   "picker": {
+    "openButton": "選擇城市",
     "title": "搜尋旅遊地",
     "searchPlaceholder": "搜尋國家、城市（例：東京、巴黎、峴港）",
     "clearSearch": "清除搜尋",
