@@ -116,7 +116,18 @@
     "airportListPlaceholder": "都市・空港・コードで検索 (例: 東京、NRT)",
     "airportNone": "リストにない空港です。",
     "airportRequest": "追加をリクエスト",
-    "airportRequestPrefill": "[空港追加リクエスト] {{query}}\n"
+    "airportRequestPrefill": "[空港追加リクエスト] {{query}}\n",
+    "dateLabel": "日付",
+    "dateRequired": "日付を入力してください。",
+    "lookupFromNo": "便名から読み込む",
+    "lookupDone": "読み込みました。内容を確認し、必要なら修正してください。",
+    "lookupDonePartial": "読み込みました。空いている時刻は直接入力してください(相手空港の時刻が提供されない便があります)。",
+    "lookupFailed": "今は読み込めませんでした。しばらくしてからもう一度試すか、下に直接入力してください。",
+    "lookupMiss": {
+      "not_found": "この便名が見つかりませんでした(韓国の空港を発着する便のみ検索できます)。下に直接入力してください。",
+      "out_of_range": "この日付には運航していない便です。日付を確認するか、下に直接入力してください。",
+      "not_published": "この日付のスケジュールはまだ公開されていません。下に直接入力してください。"
+    }
   },
   "itemDetail": {
     "mapLink": "Google Mapsで見る",

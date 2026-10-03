@@ -136,7 +136,18 @@
     "airportListPlaceholder": "Search by city, airport or code (e.g. Tokyo, NRT)",
     "airportNone": "That airport isn’t on our list.",
     "airportRequest": "Request to add it",
-    "airportRequestPrefill": "[Airport request] {{query}}\n"
+    "airportRequestPrefill": "[Airport request] {{query}}\n",
+    "dateLabel": "Date",
+    "dateRequired": "Enter the date.",
+    "lookupFromNo": "Look up by flight number",
+    "lookupDone": "Loaded. Check the details and edit if needed.",
+    "lookupDonePartial": "Loaded. Please enter any empty times yourself (the other airport's time isn't available for some flights).",
+    "lookupFailed": "Couldn't load it right now. Try again later or enter it below.",
+    "lookupMiss": {
+      "not_found": "We couldn't find this flight number (only flights to or from Korea can be looked up). Please enter it below.",
+      "out_of_range": "This flight doesn't operate on that date. Check the date or enter it below.",
+      "not_published": "The schedule for this date isn't published yet. Please enter it below."
+    }
   },
   "itemDetail": {
     "mapLink": "View on Google Maps",

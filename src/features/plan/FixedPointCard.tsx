@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { LegLabel } from './LegLabel';
 import type { RouteLeg } from './map/useTripRoutes';
 import type { FlightInfo } from './types';
+import { flightAirlineLabel } from './flights';
 import styles from './FixedPointCard.module.css';
 import { Plane, ExternalLink } from 'lucide-react';
 
@@ -41,8 +42,9 @@ export function FixedPointCard({ icon, label, name, address }: FixedPointCardPro
 
 /** 항공편 카드 (index.html .fixed-item.flight-item 이식) */
 export function FlightPointCard({ flight }: { flight: FlightInfo }) {
-  const { t } = useTranslation('plan');
-  const airlineTag = flight.airline ? ` (${flight.airline})` : '';
+  const { t, i18n } = useTranslation('plan');
+  const airlineName = flightAirlineLabel(flight, i18n.language);
+  const airlineTag = airlineName ? ` (${airlineName})` : '';
   return (
     <div className={styles.fixedItemWrap}>
       <div className={styles.connectingLine} />
