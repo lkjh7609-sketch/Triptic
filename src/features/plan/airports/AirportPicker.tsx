@@ -11,6 +11,18 @@ export interface SelectedAirport {
   lng: number | null;
 }
 
+/** 목록의 공항 → 선택 항목(이름은 "도시(나라) 코드" 모양) — 선택 창에서 고른 것과 같은 값. 조회 결과로 채울 때도 쓴다 */
+export function selectedAirportOf(a: Airport, language: string): SelectedAirport {
+  let names: Intl.DisplayNames | null = null;
+  try {
+    names = new Intl.DisplayNames([language], { type: 'region' });
+  } catch {
+    names = null;
+  }
+  const countryName = (code: string) => names?.of(code) ?? code;
+  return { iata: a.iata, name: `${airportTitle(a, language, countryName)} ${a.iata}`, lat: a.lat, lng: a.lng };
+}
+
 interface AirportPickerProps {
   airports: readonly Airport[];
   value: SelectedAirport | null;
@@ -63,11 +75,11 @@ export function AirportPicker({
   const showList = open && text.trim().length > 0;
 
   function choose(a: Airport) {
-    const name = `${airportTitle(a, i18n.language, countryName)} ${a.iata}`;
-    setText(name);
+    const picked = selectedAirportOf(a, i18n.language);
+    setText(picked.name);
     setOpen(false);
-    lastValue.current = { iata: a.iata, name, lat: a.lat, lng: a.lng };
-    onSelect(lastValue.current);
+    lastValue.current = picked;
+    onSelect(picked);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {

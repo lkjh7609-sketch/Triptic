@@ -1,5 +1,6 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { flightAirlineLabel } from './flights';
 import { Link, useSearchParams } from 'react-router';
 import {
   Plus,
@@ -845,7 +846,7 @@ function FlightBox({ trip }: { trip: TripRow }) {
     <div className={styles.toolkitAlert}>
       <Plane size={22} color="var(--pd-accent)" className={styles.flightIcon} aria-hidden="true" />
       <div>
-        <div className={styles.flightNo}>{[outbound.airline, outbound.flightNo].filter(Boolean).join(' ')}</div>
+        <div className={styles.flightNo}>{[flightAirlineLabel(outbound), outbound.flightNo].filter(Boolean).join(' ')}</div>
         <p className={styles.flightMeta}>
           {route}
           {times ? ` · ${times}` : ''}

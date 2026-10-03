@@ -20,6 +20,20 @@ vi.mock('./map/usePlaceAutocomplete', () => ({
     return { inputRef: useRef<HTMLInputElement>(null), ready: true };
   },
 }));
+const lookup = vi.hoisted(() => ({
+  signedIn: true,
+  result: null as unknown,
+  calls: [] as unknown[][],
+}));
+vi.mock('./flightLookup/flightLookupService', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./flightLookup/flightLookupService')>()),
+  lookupFlightSchedule: async (no: string, date: string) => {
+    lookup.calls.push([no, date]);
+    if (lookup.result instanceof Error) throw lookup.result;
+    return lookup.result;
+  },
+}));
+vi.mock('@/features/auth/loginPrompt', () => ({ requireLogin: () => lookup.signedIn }));
 vi.mock('@/features/settings/FeedbackModal', () => ({
   FeedbackModal: ({ initialBody }: { initialBody?: string }) => (
     <div data-testid="feedback">{initialBody}</div>
@@ -56,6 +70,9 @@ beforeEach(async () => {
   state.airports = airports;
   state.loading = false;
   state.autocompleteOptions = [];
+  lookup.signedIn = true;
+  lookup.result = null;
+  lookup.calls = [];
 });
 
 function pick(box: HTMLElement, query: string) {
@@ -121,5 +138,75 @@ describe('FlightModal — 공항은 목록에서', () => {
     expect(screen.queryAllByRole('combobox')).toHaveLength(0);
     expect(screen.getAllByPlaceholderText('예: 인천국제공항').length).toBeGreaterThan(0);
     expect((state.autocompleteOptions.at(-1) as { enabled?: boolean }).enabled).toBe(true);
+  });
+});
+
+describe('FlightModal — 편명으로 불러오기', () => {
+  const found = {
+    found: true,
+    flight: {
+      flightNo: 'KE623',
+      date: '2026-11-01',
+      airlineKo: '대한항공',
+      airlineCode: 'KE',
+      dep: { iata: 'ICN', nameKo: '인천', time: '18:50', terminal: 't2' },
+      arr: { iata: 'NRT', nameKo: '나리타', time: '21:05', terminal: null },
+      source: 'icn',
+    },
+  };
+
+  it('불러오면 항공사·공항·시간·터미널이 채워지고, 적용·저장하면 터미널과 항공사 코드가 함께 저장된다', async () => {
+    lookup.result = found;
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" endDate="2026-11-05" onClose={() => {}} onSave={onSave} />);
+    const outboundCard = screen.getByText('출국').closest('div')!.parentElement as HTMLElement;
+    fireEvent.change(screen.getAllByPlaceholderText('예: OZ102')[0], { target: { value: 'ke623' } });
+    fireEvent.click(within(outboundCard).getByRole('button', { name: '편명으로 불러오기' }));
+    expect(await screen.findByText('불러왔어요. 내용을 확인하고 필요하면 고쳐 주세요.')).toBeInTheDocument();
+    expect(lookup.calls).toEqual([['KE623', '2026-11-01']]);
+    fireEvent.click(within(outboundCard).getByRole('button', { name: '이 항공편 정보 적용' }));
+    expect(screen.getByText(/ICN T2 18:50 출발 → NRT 21:05 도착/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '저장' }));
+    await Promise.resolve();
+    const saved = onSave.mock.calls[0][0].outbound;
+    expect(saved).toMatchObject({ flightNo: 'KE623', date: '2026-11-01', airline: '대한항공', airlineCode: 'KE', manual: false });
+    expect(saved.dep).toMatchObject({ iata: 'ICN', time: '18:50', terminal: 't2' });
+    expect(saved.arr).toMatchObject({ iata: 'NRT', time: '21:05' });
+    expect(saved.arr.terminal).toBeUndefined();
+  });
+
+  it('영어 화면에서는 저장된 한국어 대신 항공사 공식 영어 이름이 요약에 나온다', async () => {
+    lookup.result = found;
+    await i18n.changeLanguage('en');
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" onClose={() => {}} onSave={vi.fn()} />);
+    fireEvent.change(screen.getAllByPlaceholderText('e.g. OZ102')[0], { target: { value: 'KE623' } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Look up by flight number' })[0]);
+    await screen.findByText(/Loaded\./);
+    fireEvent.click(screen.getAllByRole('button', { name: /Apply/ })[0]);
+    expect(screen.getByText(/^Korean Air · /)).toBeInTheDocument();
+  });
+
+  it('스케줄이 아직 공개되지 않은 날짜면 안내가 뜨고 입력칸은 그대로 남는다', async () => {
+    lookup.result = { found: false, reason: 'not_published' };
+    render(<FlightModal flightsData={empty} startDate="2027-02-01" onClose={() => {}} onSave={vi.fn()} />);
+    fireEvent.change(screen.getAllByPlaceholderText('예: OZ102')[0], { target: { value: 'KE623' } });
+    fireEvent.click(screen.getAllByRole('button', { name: '편명으로 불러오기' })[0]);
+    expect(await screen.findByText('이 날짜의 스케줄은 아직 공개되지 않았어요. 아래에 직접 입력해 주세요.')).toBeInTheDocument();
+    expect(screen.getAllByRole('combobox')).toHaveLength(4);
+  });
+
+  it('로그인하지 않았으면 조회하지 않고 로그인 안내로 넘어간다', () => {
+    lookup.signedIn = false;
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" onClose={() => {}} onSave={vi.fn()} />);
+    fireEvent.change(screen.getAllByPlaceholderText('예: OZ102')[0], { target: { value: 'KE623' } });
+    fireEvent.click(screen.getAllByRole('button', { name: '편명으로 불러오기' })[0]);
+    expect(lookup.calls).toEqual([]);
+  });
+
+  it('편명을 비워 두면 안내만 뜨고 조회하지 않는다', () => {
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" onClose={() => {}} onSave={vi.fn()} />);
+    fireEvent.click(screen.getAllByRole('button', { name: '편명으로 불러오기' })[0]);
+    expect(screen.getAllByText('편명을 입력해 주세요.').length).toBeGreaterThan(0);
+    expect(lookup.calls).toEqual([]);
   });
 });

@@ -11,6 +11,7 @@ import { jsPDF } from 'jspdf';
 import i18next, { normalizeLocale } from '@/shared/i18n';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { getDayCity } from './dayCities';
+import { flightAirlineLabel } from './flights';
 import type { MealSlot } from './types';
 import { sharedDirectionsCache } from './map/useTripRoutes';
 import { convertToBase, formatMoney, getDayExpenseTotal } from './expenses';
@@ -550,7 +551,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       const fDep = flightArrival.dep;
       const transitInfo = seq.length > 0 ? getTransitToNext(seq[0]) : null;
       const noteParts: string[] = [];
-      if (flightArrival.airline) noteParts.push(flightArrival.airline);
+      if (flightArrival.airline) noteParts.push(flightAirlineLabel(flightArrival, locale));
       if (transitInfo) noteParts.push(L('transitAbout', { duration: transitInfo.duration }));
       tableRows.push({
         time: fArr.time || L('arrival'),
@@ -626,7 +627,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         time: gDep.time || L('departure'),
         type: L('typeFlightDeparture'),
         name: `${flightDeparture.flightNo} (${gDep.iata || gDep.name || '?'} → ${gArr.iata || gArr.name || '?'})`,
-        note: flightDeparture.airline || L('airportDeparture'),
+        note: flightAirlineLabel(flightDeparture, locale) || L('airportDeparture'),
         isFlight: true,
         isBold: true,
       });

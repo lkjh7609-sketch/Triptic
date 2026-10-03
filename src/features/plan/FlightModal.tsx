@@ -2,6 +2,10 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
 import { AirportPicker, type SelectedAirport } from './airports/AirportPicker';
+import { requireLogin } from '@/features/auth/loginPrompt';
+import { FlightLookupError, lookupFlightSchedule } from './flightLookup/flightLookupService';
+import { lookupFill } from './flightLookup/applyLookup';
+import type { TerminalKey } from './flightLookup/schedule';
 import { useAirports } from './airports/useAirports';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import { flightPreviewText } from './flights';
@@ -11,7 +15,7 @@ import { flagInvalid } from '@/shared/ui/invalidField';
 import type { FlightInfo, FlightsData } from './types';
 import styles from './FlightModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
-import { Plane, Pencil, Trash2, CheckCircle } from 'lucide-react';
+import { Plane, Pencil, Trash2, CheckCircle, Search } from 'lucide-react';
 
 interface FlightModalProps {
   flightsData: FlightsData;
@@ -116,11 +120,19 @@ function FlightSlotEditor({
   onChange,
   onRequestAirport,
 }: FlightSlotEditorProps) {
-  const { t } = useTranslation(['plan', 'common']);
+  const { t, i18n } = useTranslation(['plan', 'common']);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(!value);
   const [flightNo, setFlightNo] = useState(value?.flightNo ?? '');
   const [airline, setAirline] = useState(value?.airline ?? '');
+  // 편명으로 불러오기 — 조회할 날짜(기본은 여행 첫날·마지막 날, 고칠 수 있다)와 자동으로 채운 값들
+  const [flightDate, setFlightDate] = useState(value?.date || date);
+  const [airlineCode, setAirlineCode] = useState(value?.airlineCode ?? '');
+  const [depTerminal, setDepTerminal] = useState<TerminalKey | undefined>(value?.dep.terminal);
+  const [arrTerminal, setArrTerminal] = useState<TerminalKey | undefined>(value?.arr.terminal);
+  const [autoFilled, setAutoFilled] = useState(!!value && value.manual === false);
+  const [lookupBusy, setLookupBusy] = useState(false);
+  const [lookupNote, setLookupNote] = useState<string | null>(null);
   const [depTime, setDepTime] = useState(value?.dep.time ?? '');
   const [arrTime, setArrTime] = useState(value?.arr.time ?? '');
 
@@ -182,10 +194,71 @@ function FlightSlotEditor({
     }
   }
 
+  /** 목록에서 직접 공항을 바꾸면 그쪽 터미널은 더 이상 맞지 않으므로 지운다 */
+  function changeAirport(side: 'dep' | 'arr', a: SelectedAirport | null) {
+    if (side === 'dep') setDepTerminal(undefined);
+    else setArrTerminal(undefined);
+    pickAirport(side, a);
+  }
+
+  async function handleLookup() {
+    setError(null);
+    setLookupNote(null);
+    if (!flightNo.trim()) {
+      setError(t('flight.flightNoRequired'));
+      flagInvalid(flightNoRef.current);
+      return;
+    }
+    if (!flightDate) {
+      setError(t('flight.dateRequired'));
+      return;
+    }
+    // 비로그인은 로그인 창을 먼저 — 외부 API 호출 한도를 지키려고 로그인한 사용자만 쓴다
+    if (!requireLogin()) return;
+    setLookupBusy(true);
+    try {
+      const res = await lookupFlightSchedule(flightNo, flightDate);
+      if (!res.found) {
+        setLookupNote(t(`flight.lookupMiss.${res.reason}`));
+        return;
+      }
+      const fill = lookupFill(res.flight, airportList, i18n.language);
+      setFlightNo(fill.flightNo);
+      setAirline(fill.airline);
+      setAirlineCode(fill.airlineCode);
+      pickAirport('dep', fill.dep.airport);
+      pickAirport('arr', fill.arr.airport);
+      if (!listMode) {
+        if (depInputRef.current) depInputRef.current.value = fill.dep.airport.name;
+        if (arrInputRef.current) arrInputRef.current.value = fill.arr.airport.name;
+      }
+      setDepTime(fill.dep.time);
+      setArrTime(fill.arr.time);
+      setDepTerminal(fill.dep.terminal ?? undefined);
+      setArrTerminal(fill.arr.terminal ?? undefined);
+      setAutoFilled(true);
+      setLookupNote(fill.dep.time && fill.arr.time ? t('flight.lookupDone') : t('flight.lookupDonePartial'));
+    } catch (err) {
+      if (err instanceof FlightLookupError && err.code === 'unauthorized') {
+        requireLogin();
+        return;
+      }
+      if (!(err instanceof FlightLookupError)) captureError(err, { context: 'flightLookup' });
+      setLookupNote(t('flight.lookupFailed'));
+    } finally {
+      setLookupBusy(false);
+    }
+  }
+
   useEffect(() => {
     if (!isEditing && value) {
       // eslint-disable-next-line
       setFlightNo(value.flightNo);
+      setFlightDate(value.date || date);
+      setAirlineCode(value.airlineCode ?? '');
+      setDepTerminal(value.dep.terminal);
+      setArrTerminal(value.arr.terminal);
+      setAutoFilled(value.manual === false);
       setAirline(value.airline || '');
       setDepTime(value.dep.time || '');
       setArrTime(value.arr.time || '');
@@ -230,15 +303,18 @@ function FlightSlotEditor({
     setError(null);
     onChange({
       flightNo: flightNo.trim().toUpperCase(),
-      date: value?.date || date,
+      date: flightDate || value?.date || date,
       airline: airline.trim(),
-      manual: true,
+      ...(airlineCode ? { airlineCode } : {}),
+      // 불러오기로 채운 값이면 '직접 입력' 표시를 달지 않는다
+      manual: !autoFilled,
       dep: {
         iata: depIata,
         name: depPlace.name,
         lat: depPlace.lat,
         lng: depPlace.lng,
         time: depTime,
+        ...(depTerminal ? { terminal: depTerminal } : {}),
       },
       arr: {
         iata: arrIata,
@@ -246,6 +322,7 @@ function FlightSlotEditor({
         lat: arrPlace.lat,
         lng: arrPlace.lng,
         time: arrTime,
+        ...(arrTerminal ? { terminal: arrTerminal } : {}),
       },
     });
     setIsEditing(false);
@@ -255,6 +332,12 @@ function FlightSlotEditor({
     onChange(null);
     setIsEditing(true);
     setFlightNo('');
+    setFlightDate(date);
+    setAirlineCode('');
+    setDepTerminal(undefined);
+    setArrTerminal(undefined);
+    setAutoFilled(false);
+    setLookupNote(null);
     setAirline('');
     setDepTime('');
     setArrTime('');
@@ -275,7 +358,7 @@ function FlightSlotEditor({
       {!isEditing && value ? (
         <>
           <p className={styles.preview}>
-            <CheckCircle size={14} aria-hidden="true" /> {flightPreviewText(value, t)}
+            <CheckCircle size={14} aria-hidden="true" /> {flightPreviewText(value, t, i18n.language)}
           </p>
           <div className={styles.previewActions}>
             <button type="button" className={styles.manualToggle} onClick={() => setIsEditing(true)}>
@@ -296,7 +379,14 @@ function FlightSlotEditor({
                 className={styles.fieldInput}
                 placeholder={t('flight.flightNoPlaceholder')}
                 value={flightNo}
-                onChange={(e) => setFlightNo(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                onChange={(e) => {
+                  setFlightNo(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
+                  // 편명을 고치면 앞서 불러온 값은 더 이상 이 편의 것이 아니다
+                  setAutoFilled(false);
+                  setAirlineCode('');
+                  setDepTerminal(undefined);
+                  setArrTerminal(undefined);
+                }}
               />
             </label>
             <label className={styles.field}>
@@ -305,9 +395,36 @@ function FlightSlotEditor({
                 className={styles.fieldInput}
                 placeholder={t('flight.airlinePlaceholder')}
                 value={airline}
-                onChange={(e) => setAirline(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                  setAirline(e.target.value.toUpperCase());
+                  setAirlineCode('');
+                }}
               />
             </label>
+
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('flight.dateLabel')}</span>
+              <input
+                type="date"
+                className={styles.fieldInput}
+                value={flightDate}
+                onChange={(e) => setFlightDate(e.target.value)}
+              />
+            </label>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel} aria-hidden="true">
+                &nbsp;
+              </span>
+              <button type="button" className={styles.lookupBtn} onClick={handleLookup} disabled={lookupBusy}>
+                <Search size={16} aria-hidden="true" />
+                {lookupBusy ? t('flight.lookingUp') : t('flight.lookupFromNo')}
+              </button>
+            </div>
+            {lookupNote ? (
+              <p className={styles.lookupNote} role="status">
+                {lookupNote}
+              </p>
+            ) : null}
 
             <label className={styles.field}>
               <span className={styles.fieldLabel}>{t('flight.depLabel')}</span>
@@ -315,7 +432,7 @@ function FlightSlotEditor({
                 <AirportPicker
                   airports={airportList ?? []}
                   value={depSelected}
-                  onSelect={(a) => pickAirport('dep', a)}
+                  onSelect={(a) => changeAirport('dep', a)}
                   placeholder={t('flight.airportListPlaceholder')}
                   inputRef={depInputRef}
                   onRequest={onRequestAirport}
@@ -345,7 +462,7 @@ function FlightSlotEditor({
                 <AirportPicker
                   airports={airportList ?? []}
                   value={arrSelected}
-                  onSelect={(a) => pickAirport('arr', a)}
+                  onSelect={(a) => changeAirport('arr', a)}
                   placeholder={t('flight.airportListPlaceholder')}
                   inputRef={arrInputRef}
                   onRequest={onRequestAirport}

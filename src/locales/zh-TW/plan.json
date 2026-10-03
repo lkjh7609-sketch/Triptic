@@ -134,7 +134,18 @@
     "airportListPlaceholder": "以城市、機場或代碼搜尋(例:東京、NRT)",
     "airportNone": "清單中沒有這個機場。",
     "airportRequest": "申請新增",
-    "airportRequestPrefill": "[機場新增申請] {{query}}\n"
+    "airportRequestPrefill": "[機場新增申請] {{query}}\n",
+    "dateLabel": "日期",
+    "dateRequired": "請輸入日期。",
+    "lookupFromNo": "用航班編號帶入",
+    "lookupDone": "已帶入。請確認內容,需要的話可以修改。",
+    "lookupDonePartial": "已帶入。空白的時間請自行輸入(部分航班不提供對方機場的時間)。",
+    "lookupFailed": "目前無法帶入。請稍後再試,或在下方自行輸入。",
+    "lookupMiss": {
+      "not_found": "找不到這個航班編號(只能查詢往返韓國機場的航班)。請在下方自行輸入。",
+      "out_of_range": "這個日期沒有這班航班。請確認日期,或在下方自行輸入。",
+      "not_published": "這個日期的班表尚未公布。請在下方自行輸入。"
+    }
   },
   "itemDetail": {
     "mapLink": "在 Google 地圖中檢視",

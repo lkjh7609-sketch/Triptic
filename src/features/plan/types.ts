@@ -89,6 +89,8 @@ export interface FlightAirportInfo {
   lat: number | null;
   lng: number | null;
   time: string;
+  /** 인천 터미널(자동 입력으로 채울 때만) — t1 제1터미널 · t1c 제1터미널 탑승동 · t2 제2터미널 */
+  terminal?: 't1' | 't1c' | 't2';
 }
 
 /** 항공편 1건 (index.html flightsData.outbound/return 이식) */
@@ -96,6 +98,8 @@ export interface FlightInfo {
   flightNo: string;
   date: string;
   airline?: string;
+  /** 항공사 IATA 코드(자동 입력으로 채울 때만) — 표시 언어에 맞는 공식 이름을 찾는 데 쓴다 */
+  airlineCode?: string;
   /** 자동 조회 실패 후 수동 입력한 경우 true (index.html saveManualFlight) */
   manual?: boolean;
   dep: FlightAirportInfo;

@@ -104,3 +104,35 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.lookupBtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--brand-solid);
+  background: transparent;
+  color: var(--brand-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lookupBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .lookupBtn:hover:not(:disabled) {
+    background: var(--surface-subtle);
+  }
+}
+
+.lookupNote {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
