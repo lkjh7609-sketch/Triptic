@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { Bell, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAlertLabels } from '@/features/travelAlerts/useAlertLabels';
 import { useTripNotifications, type TripNotification } from './useTripNotifications';
 import styles from './NotificationBell.module.css';
 
 /** 종 모양 알림 버튼 — PC 헤더(프로필 왼쪽)와 모바일 홈 상단 오른쪽에서 같이 쓴다. 로그인하지 않았으면 그리지 않는다 */
 export function NotificationBell() {
   const { t } = useTranslation('common');
+  const { countryName, levelName } = useAlertLabels();
   const { signedIn, items, unreadCount, markAllRead, dismiss } = useTripNotifications();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -38,10 +40,18 @@ export function NotificationBell() {
 
   if (!signedIn) return null;
 
-  const message = (n: TripNotification) =>
-    n.stage === 'week'
+  const message = (n: TripNotification) => {
+    if (n.kind === 'alert') {
+      return t('travelAlert.bell', {
+        country: countryName({ code: n.countryCode, nameKo: n.countryNameKo }),
+        level: n.level,
+        name: levelName(n.level),
+      });
+    }
+    return n.stage === 'week'
       ? t('notifications.week', { days: n.daysUntil })
       : t(n.stage === 'dayBefore' ? 'notifications.dayBefore' : 'notifications.today');
+  };
 
   return (
     <div className={styles.wrap} ref={wrapRef}>

@@ -129,6 +129,38 @@
     "week": "{{days}} days until you leave",
     "dayBefore": "You leave tomorrow",
     "today": "You leave today! Have a great trip",
-    "note": "We remind you 7 days, 1 day, and the day of your trip — shown only when you open the app."
+    "note": "We remind you 7 days, 1 day, and the day of your trip, plus travel alerts for your destination — shown only when you open the app."
+  },
+  "travelAlert": {
+    "levelName": {
+      "1": "Travel caution",
+      "2": "Travel advisory",
+      "3": "Leave recommended",
+      "4": "Travel ban"
+    },
+    "title": "{{country}} travel alert level {{level}} ({{name}})",
+    "partial": "Some areas level {{level}} ({{name}}): {{remark}}",
+    "source": "Based on Korea's Ministry of Foreign Affairs (0404.go.kr) · details are in Korean",
+    "advice": {
+      "2": "The ministry advises extra caution for your personal safety.",
+      "3": "The ministry recommends cancelling or postponing the trip unless it is urgent.",
+      "4": "The ministry bans travel here and strongly recommends cancelling or postponing. (You can still continue.)"
+    },
+    "dialog": {
+      "title": "Travel alert",
+      "body": "A {{name}} (level {{level}}) alert is in effect for {{country}}.",
+      "more": "Learn more (MOFA 0404)",
+      "back": "Go back",
+      "continue": "I understand, continue"
+    },
+    "bell": "{{country}} has a travel alert: level {{level}} ({{name}})",
+    "summary": {
+      "title": "Current travel alerts",
+      "count": "{{count}} countries at level 2 or above",
+      "toggleOpen": "Show",
+      "toggleClose": "Hide",
+      "level": "Level {{level}} {{name}}",
+      "note": "Based on Korea's MOFA open data, refreshed daily at 9 AM KST. Only the country-wide (or remaining-area) level is shown; check each city channel for regional alerts."
+    }
   }
 }

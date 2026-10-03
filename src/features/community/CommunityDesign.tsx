@@ -11,6 +11,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { DestinationSelector } from './DestinationSelector';
+import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
 import { CompanionFeedList } from './CompanionFeedList';
 import { useToggleLike } from './hooks/usePosts';
 import { AuthorName } from './AuthorName';
@@ -143,6 +144,9 @@ export function CommunityDesignBody({
                 </div>
               }
             />
+            <div className="mt-4">
+              <TravelAlertSummary />
+            </div>
           </div>
           ) : null}
 

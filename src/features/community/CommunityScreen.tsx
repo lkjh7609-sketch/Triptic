@@ -13,6 +13,7 @@ import { useDestinations } from './hooks/useDestinations';
 import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import { DestinationSelector } from './DestinationSelector';
+import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
 import { CompanionFeedList } from './CompanionFeedList';
 import { PendingCompanionReviewPrompt } from './PendingCompanionReviewPrompt';
 import styles from './CommunityScreen.module.css';
@@ -136,6 +137,12 @@ export function CommunityScreen() {
         {tab !== 'companion' && destinations && destinations.length > 0 ? (
           <div className={styles.selectorGutter}>
             <DestinationSelector destinations={destinations} />
+          </div>
+        ) : null}
+
+        {tab !== 'companion' ? (
+          <div className={styles.selectorGutter}>
+            <TravelAlertSummary />
           </div>
         ) : null}
 

@@ -12,6 +12,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ChannelCompanionCard } from './channel/ChannelCompanionCard';
 import { ChannelHeader } from './channel/ChannelHeader';
+import { ChannelAlertBanner } from '@/features/travelAlerts/ChannelAlertBanner';
 import { ChannelPinnedCard } from './channel/ChannelPinnedCard';
 import { ChannelPostCard } from './channel/ChannelPostCard';
 import {
@@ -198,6 +199,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
       </div>
 
       <div className={`${styles.container} ${styles.body}`}>
+        <ChannelAlertBanner countryCode={destination.country_code} />
         <div ref={feedTop} className={styles.toolbar}>
           <div className={styles.tabs} role="group" aria-label={t('channel.tabs')}>
             {TABS.map((key) => {
