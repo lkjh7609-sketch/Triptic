@@ -236,3 +236,46 @@
     color: var(--brand-text);
   }
 }
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.tagChip {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+}
+
+.acceptedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-2);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+}
+
+.acceptBtn {
+  appearance: none;
+  min-height: 36px;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: var(--radius-pill);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  cursor: pointer;
+}

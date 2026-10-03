@@ -2,10 +2,13 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   getDestinationFollowerCount,
   getDestinationGuide,
+  getPinnedPost,
+  listPopularTags,
   listPosts,
   type PostCursor,
   type PostSort,
 } from '../communityService';
+import type { PostCategory } from '../postMeta';
 import {
   listCompanionPosts,
   listUrgentCompanionPosts,
@@ -41,18 +44,42 @@ export function useUrgentCompanions(destinationId: string | undefined) {
   });
 }
 
+/** 도시의 고정 글(트립틱 공식 필독 가이드) */
+export function usePinnedPost(destinationId: string | undefined, viewerId: string | null) {
+  return useQuery({
+    queryKey: ['community', 'pinned', destinationId ?? '', viewerId ?? ''],
+    queryFn: () => getPinnedPost(destinationId!, viewerId),
+    enabled: !!destinationId,
+    staleTime: 60 * 1000,
+  });
+}
+
+/** 도시 인기 태그 상위 6개 */
+export function usePopularTags(destinationId: string | undefined) {
+  return useQuery({
+    queryKey: ['community', 'popular-tags', destinationId ?? ''],
+    queryFn: () => listPopularTags(destinationId!, 6),
+    enabled: !!destinationId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 interface ChannelPostsArgs {
   destinationId: string | undefined;
   viewerId: string | null;
   search: string;
   sort: PostSort;
+  /** 없으면 전체 분류 */
+  category?: PostCategory;
+  /** 없으면 태그 필터 없음 */
+  tag?: string;
 }
 
 type PostsParam = { cursor: PostCursor | null; offset: number };
 const FIRST_PAGE: PostsParam = { cursor: null, offset: 0 };
 
 /** 도시 채널의 글 목록 — 최신순은 커서, 인기·댓글순은 위치로 이어 받는다 */
-export function useChannelPosts({ destinationId, viewerId, search, sort }: ChannelPostsArgs) {
+export function useChannelPosts({ destinationId, viewerId, search, sort, category, tag }: ChannelPostsArgs) {
   return useInfiniteQuery({
     queryKey: [
       'community',
@@ -61,6 +88,8 @@ export function useChannelPosts({ destinationId, viewerId, search, sort }: Chann
       viewerId ?? '',
       search,
       sort,
+      category ?? '',
+      tag ?? '',
     ] as const,
     queryFn: ({ pageParam }: { pageParam: PostsParam }) =>
       listPosts({
@@ -68,6 +97,10 @@ export function useChannelPosts({ destinationId, viewerId, search, sort }: Chann
         viewerId,
         search,
         sort,
+        category,
+        tag,
+        // 고정 글은 목록 맨 위에 따로 보여 주므로 목록에서는 뺀다
+        hidePinned: true,
         cursor: pageParam.cursor,
         offset: pageParam.offset,
       }),

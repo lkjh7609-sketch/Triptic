@@ -16,6 +16,14 @@ import { PhotoSection } from './PhotoSection';
 import { TripPickerSheet, TripThumb } from './TripPickerSheet';
 import { clearDraft, isEmptyDraft, readDraft, writeDraft, type ComposeDraft } from './composeDraft';
 import { formatTripPeriod } from './tripPeriodText';
+import { CATEGORY_ICONS } from './categoryIcons';
+import {
+  MAX_TAGS,
+  MAX_TAG_LENGTH,
+  normalizeTag,
+  POST_CATEGORIES,
+  type PostCategory,
+} from './postMeta';
 import { MAX_POST_IMAGES, photoFromStored, usePostPhotos } from './usePostPhotos';
 import type { Destination } from './types';
 import styles from './ComposePostScreen.module.css';
@@ -58,11 +66,15 @@ function ComposeForm({ userId }: { userId: string }) {
   const { photos, setPhotos } = photoState;
   const bodyRef = useRef<HTMLDivElement>(null);
   const destRef = useRef<HTMLButtonElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const initialDestSlug = searchParams.get('destination');
 
   const [destinationId, setDestinationId] = useState('');
   const [body, setBody] = useState('');
+  const [category, setCategory] = useState<PostCategory | ''>('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagDraft, setTagDraft] = useState('');
   const [tripId, setTripId] = useState('');
   // 첨부한 일정을 다른 사람이 복사해도 되는가 — 기본은 허용 안 함(0070)
   const [allowCopy, setAllowCopy] = useState(false);
@@ -118,8 +130,10 @@ function ComposeForm({ userId }: { userId: string }) {
       tripId,
       allowCopy,
       images: photos.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
+      category,
+      tags,
     }),
-    [destinationId, body, tripId, allowCopy, photos],
+    [destinationId, body, tripId, allowCopy, photos, category, tags],
   );
 
   // 쓰는 대로 잠깐 멈추면 저장한다
@@ -139,7 +153,13 @@ function ComposeForm({ userId }: { userId: string }) {
       setDestinationId(pendingDraft.destinationId);
     }
     setBody(pendingDraft.body);
-    if (!trips || pendingDraft.tripId === '' || myTrips.some((trip) => trip.id === pendingDraft.tripId)) {
+    setCategory(pendingDraft.category);
+    setTags(pendingDraft.tags);
+    if (
+      !trips ||
+      pendingDraft.tripId === '' ||
+      myTrips.some((trip) => trip.id === pendingDraft.tripId)
+    ) {
       setTripId(pendingDraft.tripId);
       setAllowCopy(pendingDraft.allowCopy);
     }
@@ -176,10 +196,43 @@ function ComposeForm({ userId }: { userId: string }) {
   // ── 게시 ────────────────────────────────────────────────────────────────
   const missingDest = showErrors && !destinationId;
   const missingBody = showErrors && !body.trim();
+  const missingCategory = showErrors && !category;
   // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
   const tooLong = body.length > MAX_BODY_LENGTH;
   const blocked = blockedBody !== null && blockedBody === body;
   const publishDisabled = createPost.isPending || photoState.uploading || blocked;
+
+  // ── 태그 입력 ──────────────────────────────────────────────────────────────
+  function addTag(raw: string): boolean {
+    const tag = normalizeTag(raw);
+    if (!tag) return false;
+    if (tags.length >= MAX_TAGS || tags.some((x) => x.toLowerCase() === tag.toLowerCase()))
+      return false;
+    setTags([...tags, tag]);
+    return true;
+  }
+
+  /** 입력 칸에 남아 있는 글자도 태그로 쳐서 게시한다 */
+  function finalTags(): string[] {
+    const pending = normalizeTag(tagDraft);
+    if (
+      pending &&
+      tags.length < MAX_TAGS &&
+      !tags.some((x) => x.toLowerCase() === pending.toLowerCase())
+    )
+      return [...tags, pending];
+    return tags;
+  }
+
+  function onTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.nativeEvent.isComposing) return; // 한글 조합 중 Enter는 글자 확정이다
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (addTag(tagDraft)) setTagDraft('');
+    } else if (e.key === 'Backspace' && tagDraft === '' && tags.length > 0) {
+      setTags(tags.slice(0, -1));
+    }
+  }
 
   async function handlePublish() {
     setSubmitError(null);
@@ -187,12 +240,17 @@ function ComposeForm({ userId }: { userId: string }) {
       setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
       return;
     }
-    if (!destinationId || !body.trim()) {
+    if (!destinationId || !category || !body.trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
-      flagInvalid(!destinationId ? destRef.current : bodyRef.current);
+      flagInvalid(
+        !destinationId ? destRef.current : !category ? categoryRef.current : bodyRef.current,
+      );
       // flagInvalid는 칸 안의 첫 버튼(서식 도구)에 포커스를 주므로 글 칸으로 다시 옮긴다
-      if (destinationId) bodyRef.current?.querySelector<HTMLElement>('[contenteditable="true"]')?.focus({ preventScroll: true });
+      if (destinationId && category)
+        bodyRef.current
+          ?.querySelector<HTMLElement>('[contenteditable="true"]')
+          ?.focus({ preventScroll: true });
       return;
     }
     try {
@@ -201,6 +259,8 @@ function ComposeForm({ userId }: { userId: string }) {
         body: body.trim(),
         tripId: tripId || null,
         allowCopy: !!tripId && allowCopy,
+        category,
+        tags: finalTags(),
         images: photos.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
         userId,
       });
@@ -288,6 +348,99 @@ function ComposeForm({ userId }: { userId: string }) {
           ))}
         </div>
       ) : null}
+    </section>
+  );
+
+  const categorySection = (
+    <section
+      className={`${styles.section} ${desktop ? styles.card : ''}`}
+      aria-labelledby="compose-category-label"
+    >
+      <div className={styles.labelRow}>
+        <h2 id="compose-category-label" className={styles.label}>
+          {t('compose.category.label')} <span className={styles.required}>*</span>
+          <span className={styles.labelSub}> {t('compose.category.hint')}</span>
+        </h2>
+        {missingCategory ? (
+          <span className={styles.errorText} role="alert">
+            {t('compose.category.error')}
+          </span>
+        ) : null}
+      </div>
+      <div
+        ref={categoryRef}
+        className={`${styles.categoryRow} ${missingCategory ? styles.categoryError : ''}`}
+        role="radiogroup"
+        aria-labelledby="compose-category-label"
+      >
+        {POST_CATEGORIES.map((key) => {
+          const Icon = CATEGORY_ICONS[key];
+          const on = category === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              className={on ? styles.categoryChipOn : styles.categoryChip}
+              onClick={() => {
+                setCategory(key);
+                clearInvalid(categoryRef.current);
+              }}
+            >
+              <Icon size={16} aria-hidden="true" />
+              {t(`postCategory.${key}`)}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  const tagsSection = (
+    <section
+      className={`${styles.section} ${desktop ? styles.card : ''}`}
+      aria-labelledby="compose-tags-label"
+    >
+      <div className={styles.labelRow}>
+        <h2 id="compose-tags-label" className={styles.label}>
+          {t('compose.tags.label')}
+          <span className={styles.labelSub}> {t('compose.tags.optional', { max: MAX_TAGS })}</span>
+        </h2>
+        <span className={styles.counter}>
+          {tags.length}/{MAX_TAGS}
+        </span>
+      </div>
+      <div className={styles.tagBox}>
+        {tags.map((tag) => (
+          <span key={tag} className={styles.tagChip}>
+            #{tag}
+            <button
+              type="button"
+              className={styles.tagRemove}
+              aria-label={t('compose.tags.remove', { tag })}
+              onClick={() => setTags(tags.filter((x) => x !== tag))}
+            >
+              <X size={12} aria-hidden="true" />
+            </button>
+          </span>
+        ))}
+        {tags.length < MAX_TAGS ? (
+          <input
+            className={styles.tagInput}
+            value={tagDraft}
+            maxLength={MAX_TAG_LENGTH + 1}
+            placeholder={tags.length === 0 ? t('compose.tags.placeholder') : ''}
+            aria-label={t('compose.tags.label')}
+            onChange={(e) => setTagDraft(e.target.value.replace(/,/g, ''))}
+            onKeyDown={onTagKeyDown}
+            onBlur={() => {
+              if (addTag(tagDraft)) setTagDraft('');
+            }}
+          />
+        ) : null}
+      </div>
+      <p className={styles.tagHint}>{t('compose.tags.hint', { max: MAX_TAG_LENGTH })}</p>
     </section>
   );
 
@@ -453,7 +606,9 @@ function ComposeForm({ userId }: { userId: string }) {
           onMove={photoState.move}
         />
         {destinationSection}
+        {categorySection}
         {storySection}
+        {tagsSection}
         {tripSection}
         {submitError ? (
           <p className={styles.submitError} role="alert">
@@ -464,7 +619,7 @@ function ComposeForm({ userId }: { userId: string }) {
 
       {desktop ? null : (
         <footer className={styles.footer}>
-          {showErrors && (!destinationId || !body.trim()) ? (
+          {showErrors && (!destinationId || !category || !body.trim()) ? (
             <p className={styles.footerWarning} role="alert">
               <TriangleAlert size={14} aria-hidden="true" />
               {t('compose.missing')}

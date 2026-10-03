@@ -243,7 +243,17 @@
     "commentPlaceholder": "コメントを残してみましょう",
     "commentSubmit": "登録",
     "noComments": "まだコメントがありません。",
-    "loginToComment": "ログインしてコメントする"
+    "loginToComment": "ログインしてコメントする",
+    "pin": "都市の公式ガイドに固定",
+    "unpin": "固定を解除",
+    "pinned": "公式ガイドに固定しました。",
+    "unpinned": "固定を解除しました。",
+    "pinFailed": "固定を変更できませんでした。",
+    "accept": "採用",
+    "unaccept": "採用を取り消す",
+    "acceptedBadge": "ベストアンサー",
+    "acceptFailed": "採用を変更できませんでした。",
+    "categoryLabel": "カテゴリ"
   },
   "profile": {
     "loadError": "プロフィールを読み込めませんでした。",
@@ -358,6 +368,18 @@
       "linkRemove": "リンクを解除",
       "linkPlaceholder": "リンクのアドレス(例: example.com)",
       "linkApply": "適用"
+    },
+    "category": {
+      "label": "カテゴリ",
+      "hint": "投稿後は変更できません",
+      "error": "カテゴリを選んでください"
+    },
+    "tags": {
+      "label": "タグ",
+      "optional": "(任意、最大{{max}}個)",
+      "placeholder": "タグを入力してEnter",
+      "remove": "タグ {{tag}} を削除",
+      "hint": "#は付けずに入力します。1つ{{max}}文字まで、投稿後は変更できません。"
     }
   },
   "shared": {
@@ -779,6 +801,28 @@
       "tomorrow": "明日出発",
       "days_other": "{{count}}日後に出発"
     },
-    "write": "記事を書く"
+    "write": "記事を書く",
+    "tagFilter": "#{{tag}} の投稿だけを表示中",
+    "tagFilterClear": "タグ絞り込みを解除",
+    "popularTags": "{{city}}の人気タグ",
+    "pinned": {
+      "label": "トリプティック公式 必読ガイド",
+      "updated": "{{date}} 更新",
+      "views": "閲覧 {{count, number}}",
+      "saves": "保存 {{count, number}}",
+      "comments": "コメント {{count, number}}"
+    },
+    "qna": {
+      "answers_other": "回答 {{count}}件",
+      "answerCta": "回答を書く",
+      "accepted": "{{name}}さんのベストアンサー"
+    },
+    "categoryTime": "{{time}} · {{category}}"
+  },
+  "postCategory": {
+    "story": "旅行記・レビュー",
+    "qna": "質問・Q&A",
+    "tips": "旅行のコツ・両替",
+    "food": "ローカルグルメ・宿"
   }
 }

@@ -243,7 +243,17 @@
     "commentPlaceholder": "寫下你的留言",
     "commentSubmit": "發布",
     "noComments": "還沒有留言。",
-    "loginToComment": "登入後留言"
+    "loginToComment": "登入後留言",
+    "pin": "設為城市官方指南置頂",
+    "unpin": "取消置頂",
+    "pinned": "已設為官方指南置頂。",
+    "unpinned": "已取消置頂。",
+    "pinFailed": "無法變更置頂。",
+    "accept": "採納",
+    "unaccept": "取消採納",
+    "acceptedBadge": "最佳回答",
+    "acceptFailed": "無法變更採納。",
+    "categoryLabel": "分類"
   },
   "profile": {
     "loadError": "未能載入個人資料。",
@@ -358,6 +368,18 @@
       "linkRemove": "移除連結",
       "linkPlaceholder": "連結網址(例:example.com)",
       "linkApply": "套用"
+    },
+    "category": {
+      "label": "分類",
+      "hint": "發布後無法更改",
+      "error": "請選擇分類"
+    },
+    "tags": {
+      "label": "標籤",
+      "optional": "(選填,最多 {{max}} 個)",
+      "placeholder": "輸入標籤後按 Enter",
+      "remove": "移除標籤 {{tag}}",
+      "hint": "輸入時不需加 #。每個標籤最多 {{max}} 字,發布後無法更改。"
     }
   },
   "shared": {
@@ -779,6 +801,28 @@
       "tomorrow": "明天出發",
       "days_other": "{{count}} 天後出發"
     },
-    "write": "寫故事"
+    "write": "寫故事",
+    "tagFilter": "正在顯示 #{{tag}} 標籤的貼文",
+    "tagFilterClear": "清除標籤篩選",
+    "popularTags": "{{city}}熱門標籤",
+    "pinned": {
+      "label": "Triptic 官方必讀指南",
+      "updated": "{{date}} 更新",
+      "views": "{{count, number}} 次瀏覽",
+      "saves": "{{count, number}} 次收藏",
+      "comments": "{{count, number}} 則留言"
+    },
+    "qna": {
+      "answers_other": "{{count}} 則回答",
+      "answerCta": "撰寫回答",
+      "accepted": "{{name}} 的最佳回答"
+    },
+    "categoryTime": "{{time}} · {{category}}"
+  },
+  "postCategory": {
+    "story": "遊記・心得",
+    "qna": "提問・Q&A",
+    "tips": "旅遊小撇步・換匯",
+    "food": "在地美食・住宿"
   }
 }

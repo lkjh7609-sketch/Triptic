@@ -243,7 +243,17 @@
     "commentPlaceholder": "댓글을 남겨보세요",
     "commentSubmit": "등록",
     "noComments": "아직 댓글이 없어요.",
-    "loginToComment": "로그인하고 댓글 남기기"
+    "loginToComment": "로그인하고 댓글 남기기",
+    "pin": "도시 공식 가이드로 고정",
+    "unpin": "고정 해제",
+    "pinned": "공식 가이드로 고정했어요.",
+    "unpinned": "고정을 풀었어요.",
+    "pinFailed": "고정을 바꾸지 못했어요.",
+    "accept": "채택",
+    "unaccept": "채택 취소",
+    "acceptedBadge": "채택된 답변",
+    "acceptFailed": "채택을 바꾸지 못했어요.",
+    "categoryLabel": "분류"
   },
   "profile": {
     "loadError": "프로필을 불러오지 못했어요.",
@@ -358,6 +368,18 @@
       "linkRemove": "링크 해제",
       "linkPlaceholder": "링크 주소 (예: example.com)",
       "linkApply": "적용"
+    },
+    "category": {
+      "label": "분류",
+      "hint": "올린 뒤에는 바꿀 수 없어요",
+      "error": "분류를 골라 주세요"
+    },
+    "tags": {
+      "label": "태그",
+      "optional": "(선택, 최대 {{max}}개)",
+      "placeholder": "태그를 입력하고 Enter",
+      "remove": "{{tag}} 태그 지우기",
+      "hint": "#은 빼고 입력해요. 한 태그는 {{max}}자까지, 올린 뒤에는 바꿀 수 없어요."
     }
   },
   "shared": {
@@ -779,6 +801,28 @@
       "days_other": "{{count}}일 뒤 출발"
     },
     "write": "이야기 쓰기",
-    "recruitCount_other": "{{count}}명 모집"
+    "recruitCount_other": "{{count}}명 모집",
+    "tagFilter": "#{{tag}} 글만 보는 중",
+    "tagFilterClear": "태그 필터 지우기",
+    "popularTags": "{{city}} 인기 태그",
+    "pinned": {
+      "label": "트립틱 공식 필독 가이드",
+      "updated": "{{date}} 업데이트",
+      "views": "조회 {{count, number}}",
+      "saves": "저장 {{count, number}}",
+      "comments": "댓글 {{count, number}}"
+    },
+    "qna": {
+      "answers_other": "답변 {{count}}개",
+      "answerCta": "답변 작성하기",
+      "accepted": "{{name}} 님의 채택 답변"
+    },
+    "categoryTime": "{{time}} · {{category}}"
+  },
+  "postCategory": {
+    "story": "여행기·후기",
+    "qna": "질문·Q&A",
+    "tips": "여행 꿀팁·환전",
+    "food": "로컬 맛집·숙소"
   }
 }
