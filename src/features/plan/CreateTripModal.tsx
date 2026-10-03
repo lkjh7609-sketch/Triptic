@@ -56,6 +56,8 @@ type CreateTripValues = z.infer<ReturnType<typeof buildCreateTripSchema>>;
 interface CreateTripModalProps {
   onClose: () => void;
   autoCreateCity?: string | null;
+  /** 구글 지도의 그 도시 장소 ID(우리 여행지 표에 저장된 값) — 있으면 이름 검색 대신 이 장소를 그대로 불러온다 */
+  autoCreatePlaceId?: string | null;
 }
 
 /**
@@ -64,7 +66,7 @@ interface CreateTripModalProps {
  * 도시는 legacy와 동일하게 Places Autocomplete((cities))로 **반드시 선택**해야
  * 한다(자유 텍스트 금지) — cityLat/cityLng가 있어야 날씨·지도 경로가 동작한다.
  */
-export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProps) {
+export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: CreateTripModalProps) {
   const { t, i18n } = useTranslation(['plan', 'common']);
   const navigate = useNavigate();
   const createTrip = useCreateTrip();
@@ -100,7 +102,7 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
         try {
           await loadGoogleMapsPlaces();
           const service = new google.maps.places.PlacesService(document.createElement('div'));
-          service.textSearch({ query: autoCreateCity } as any, (results, status) => {
+          const searchByName = () => service.textSearch({ query: autoCreateCity } as any, (results, status) => {
              if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
                const place = results[0];
                const resolved: SelectedPlace = {
@@ -126,6 +128,32 @@ export function CreateTripModal({ onClose, autoCreateCity }: CreateTripModalProp
                }
              }
           });
+          if (autoCreatePlaceId) {
+            // 우리 여행지 표에 구글 장소 ID가 저장돼 있으면 그 장소를 정확히 불러온다(이름 검색은 엉뚱한 곳이 잡힐 수 있다). 실패하면 이름 검색으로
+            service.getDetails(
+              { placeId: autoCreatePlaceId, fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types', 'address_components'] },
+              (place, status) => {
+                const location = place?.geometry?.location;
+                if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !location) {
+                  searchByName();
+                  return;
+                }
+                const resolved: SelectedPlace = {
+                  name: place.name || autoCreateCity,
+                  address: place.formatted_address || autoCreateCity,
+                  lat: location.lat(),
+                  lng: location.lng(),
+                  placeId: place.place_id || autoCreatePlaceId,
+                  types: place.types || [],
+                  countryCode: countryCodeOf(place.address_components),
+                };
+                setCity((prev) => prev ?? resolved);
+                resolvedCityRef.current = resolved;
+              },
+            );
+          } else {
+            searchByName();
+          }
         } catch (e) {
           console.error('Failed to resolve city:', e);
         }

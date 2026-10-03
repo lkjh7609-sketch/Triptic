@@ -31,11 +31,12 @@ import { AdminSalesTab } from './AdminSalesTab';
 import { AdminAnalyticsTab } from './AdminAnalyticsTab';
 import { AdminPinPad } from './AdminPinPad';
 import { AdminArchiveTab } from './AdminArchiveTab';
+import { AdminGoogleLinkTab } from './googleLink/AdminGoogleLinkTab';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
 import { fetchAdminUserActivity } from './analyticsService';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive';
+type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive' | 'googleLink';
 
 const USER_PAGE_SIZE = 20;
 
@@ -467,9 +468,18 @@ export function AdminScreen() {
         >
           {t('admin.tabs.archive')}
         </button>
+        <button
+          type="button"
+          className={tab === 'googleLink' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('googleLink')}
+        >
+          {t('admin.tabs.googleLink')}
+        </button>
       </div>
 
-      {tab === 'archive' ? (
+      {tab === 'googleLink' ? (
+        <AdminGoogleLinkTab />
+      ) : tab === 'archive' ? (
         <AdminArchiveTab />
       ) : tab === 'analytics' ? (
         <AdminAnalyticsTab />

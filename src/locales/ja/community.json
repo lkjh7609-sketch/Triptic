@@ -10,7 +10,8 @@
       "feedback": "ご意見",
       "sales": "販売",
       "analytics": "分析",
-      "archive": "保管庫"
+      "archive": "保管庫",
+      "googleLink": "Google連携"
     },
     "reportDetail": "通報の詳細: {{detail}}",
     "dismiss": "却下",
@@ -163,6 +164,20 @@
       "all": "すべて",
       "general": "一般のお問い合わせ",
       "partnership": "提携のお問い合わせ"
+    },
+    "googleLink": {
+      "loadError": "旅行先の状況を読み込めませんでした。マイグレーション0079が適用されているか確認してください。",
+      "summary": "Googleマップ連携 {{linked}} / {{total}}件",
+      "hint": "旅行先ごとにGoogleマップ上のその都市を探して保存します。近い都市が見つかれば自動保存し、曖昧なものだけ下に表示します。完了するまでこの画面を閉じないでください。",
+      "start": "連携を開始({{count}}件)",
+      "allDone": "すべて連携済み",
+      "stop": "停止",
+      "progress": "{{done}} / {{total}}件処理",
+      "reviewTitle": "確認が必要 {{count}}件",
+      "far": "最も近い候補「{{name}}」は{{km}}km離れています。",
+      "none": "都市レベルの場所が見つかりませんでした。",
+      "error": "エラー: {{message}}",
+      "accept": "この場所に連携"
     }
   },
   "report": {
@@ -717,7 +732,8 @@
       "subSaharanAfrica": "東・南アフリカ",
       "oceania": "オセアニア",
       "guamSaipan": "グアム・サイパン",
-      "etc": "その他"
+      "etc": "その他",
+      "centralCaucasus": "中央アジア・コーカサス"
     }
   },
   "dateDialog": {

@@ -134,7 +134,8 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
   function createTrip() {
     // 새 여행 만들기는 로그인해야 한다. 여행 만들기 창은 영문 도시명으로 장소를 찾는다
     if (!requireLogin()) return;
-    navigate(`/plan?autoCreate=${encodeURIComponent(destination!.nameEn ?? destination!.name)}`);
+    const placeId = destination!.google_place_id;
+    navigate(`/plan?autoCreate=${encodeURIComponent(destination!.nameEn ?? destination!.name)}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}`);
   }
 
   function onToggleFollow() {
