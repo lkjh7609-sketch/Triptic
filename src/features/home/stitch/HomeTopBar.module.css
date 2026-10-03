@@ -1,10 +1,11 @@
-/* 모바일 상단: 로고만(시안의 검색·알림·프로필은 만들지 않기로 했다) — 홈과 항공·호텔·액티비티 화면이 같이 쓴다 */
+/* 모바일 상단: 로고 + 오른쪽 알림 종(시안의 검색·프로필은 만들지 않기로 했다) — 홈과 항공·호텔·액티비티 화면이 같이 쓴다 */
 .topBar {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: calc(56px + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) 16px 0;
   background: color-mix(in srgb, var(--h-bg, var(--surface-page)) 80%, transparent);
@@ -16,4 +17,10 @@
 .topLogo {
   height: 36px;
   width: auto;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  margin-right: -8px;
 }

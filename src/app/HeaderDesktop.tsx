@@ -16,6 +16,7 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import { isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { LanguageMenu } from './LanguageMenu';
 import styles from './HeaderDesktop.module.css';
 
@@ -102,6 +103,8 @@ export function HeaderDesktop() {
           </button>
         </div>
       ) : (
+        <div className={styles.userActions}>
+        <NotificationBell />
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <button
             type="button"
@@ -159,6 +162,7 @@ export function HeaderDesktop() {
               <LogOut size={16} /> {t('menu.signOut')}
             </button>
           </div>
+        </div>
         </div>
       )}
 

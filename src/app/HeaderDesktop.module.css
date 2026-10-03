@@ -82,6 +82,12 @@
   }
 }
 
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .guestActions {
   display: flex;
   align-items: center;

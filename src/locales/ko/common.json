@@ -119,5 +119,16 @@
   "partnerRedirect": {
     "title": "이동 중…",
     "loading": "예약 사이트로 이동하고 있어요"
+  },
+  "notifications": {
+    "title": "알림",
+    "aria": "알림",
+    "ariaUnread": "알림 (안 읽음 {{count}}개)",
+    "empty": "새 알림이 없어요.",
+    "dismiss": "{{title}} 알림 지우기",
+    "week": "출발이 {{days}}일 남았어요",
+    "dayBefore": "내일 출발해요",
+    "today": "오늘 출발해요! 즐거운 여행 되세요",
+    "note": "여행 7일 전·하루 전·당일에 알려 드려요. 앱을 열었을 때만 보여요."
   }
 }

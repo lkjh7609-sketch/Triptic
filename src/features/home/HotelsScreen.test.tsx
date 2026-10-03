@@ -3,6 +3,9 @@ import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HotelsScreen } from './HotelsScreen';
 
+// 상단 줄의 알림 종은 세션·쿼리 클라이언트가 필요하다 — 이 시험의 관심사가 아니다
+vi.mock('@/features/notifications/NotificationBell', () => ({ NotificationBell: () => null }));
+
 describe('HotelsScreen', () => {
   beforeEach(() => {
     // 상단 유리 캡슐 탭이 화면 크기를 본다(jsdom에는 matchMedia가 없다)
