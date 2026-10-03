@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -44,6 +44,9 @@ const state = vi.hoisted(() => ({
   fx: undefined as unknown,
   postsArgs: [] as unknown[],
   companionsArgs: [] as unknown[],
+  pinned: null as unknown,
+  popularTags: [] as unknown[],
+  posts: [] as unknown[],
 }));
 
 vi.mock('./hooks/useDestinations', () => ({
@@ -63,10 +66,12 @@ vi.mock('./hooks/useDestinationChannel', () => ({
   useDestinationFollowerCount: () => ({ data: 1248 }),
   useCurrentWeather: () => ({ data: { temp: 29.4, feelsLike: 32, code: 0 } }),
   useUrgentCompanions: () => ({ data: [] }),
+  usePinnedPost: () => ({ data: state.pinned }),
+  usePopularTags: () => ({ data: state.popularTags }),
   useChannelPosts: (args: unknown) => {
     state.postsArgs.push(args);
     return {
-      data: { pages: [{ posts: [] }] },
+      data: { pages: [{ posts: state.posts }] },
       isLoading: false,
       isError: false,
       hasNextPage: false,
@@ -81,6 +86,30 @@ vi.mock('./hooks/useDestinationChannel', () => ({
       hasNextPage: false,
     };
   },
+}));
+// 카드 자체는 따로 시험한다 — 여기서는 화면이 카드를 어떻게 이어 붙이는지만 본다
+vi.mock('./channel/ChannelPostCard', () => ({
+  ChannelPostCard: ({
+    post,
+    onTagClick,
+  }: {
+    post: { id: string; tags: string[] };
+    onTagClick: (t: string) => void;
+  }) => (
+    <div data-testid="post-card">
+      {post.id}
+      {post.tags.map((tag) => (
+        <button key={tag} type="button" onClick={() => onTagClick(tag)}>
+          #{tag}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+vi.mock('./channel/ChannelPinnedCard', () => ({
+  ChannelPinnedCard: ({ post }: { post: { id: string } }) => (
+    <div data-testid="pinned-card">{post.id}</div>
+  ),
 }));
 vi.mock('@/features/plan/useFxRates', () => ({ useFxRates: () => ({ data: state.fx }) }));
 vi.mock('@/shared/hooks/useSession', () => ({ useSession: () => ({ user: null }) }));
@@ -108,6 +137,9 @@ beforeEach(async () => {
   state.fx = { perUsd: { USD: 1, MYR: 4.5, KRW: 1405.8 }, newestAt: null };
   state.postsArgs = [];
   state.companionsArgs = [];
+  state.pinned = null;
+  state.popularTags = [];
+  state.posts = [];
   await i18n.changeLanguage('ko');
 });
 afterEach(() => {
@@ -203,5 +235,61 @@ describe('DestinationChannelScreen', () => {
     expect(screen.getAllByText('Kuala Lumpur')).toHaveLength(2); // 제목 + 브레드크럼
     expect(screen.getByText('3 nights')).toBeInTheDocument();
     expect(screen.getByText('1h behind Korea')).toBeInTheDocument();
+  });
+
+  it('분류 탭은 전체·여행기·Q&A·동행·꿀팁·맛집 순이고, 누르면 그 분류로 글을 조회한다', () => {
+    renderScreen();
+    const tabs = screen.getByRole('group', { name: '글 분류' });
+    expect(Array.from(tabs.querySelectorAll('button')).map((b) => b.textContent)).toEqual([
+      '전체',
+      '여행기·후기',
+      '질문·Q&A',
+      '동행 구하기',
+      '여행 꿀팁·환전',
+      '로컬 맛집·숙소',
+    ]);
+    expect(state.postsArgs.at(-1)).toMatchObject({ category: undefined });
+    fireEvent.click(screen.getByRole('button', { name: '질문·Q&A' }));
+    expect(state.postsArgs.at(-1)).toMatchObject({ category: 'qna' });
+    fireEvent.click(screen.getByRole('button', { name: '전체' }));
+    expect(state.postsArgs.at(-1)).toMatchObject({ category: undefined });
+  });
+
+  it('고정 글(공식 가이드)은 모든 탭에서 맨 위에 보인다', () => {
+    state.pinned = { id: 'pin1', tags: [] };
+    renderScreen();
+    expect(screen.getByTestId('pinned-card')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '질문·Q&A' }));
+    expect(screen.getByTestId('pinned-card')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '동행 구하기' }));
+    expect(screen.getByTestId('pinned-card')).toBeInTheDocument();
+  });
+
+  it('고정 글이 없으면 카드를 그리지 않는다', () => {
+    renderScreen();
+    expect(screen.queryByTestId('pinned-card')).not.toBeInTheDocument();
+  });
+
+  it('카드의 태그를 누르면 그 태그로 조회하고 필터 표시가 뜨며, 지우면 풀린다', () => {
+    state.posts = [{ id: 'p1', tags: ['바투동굴'] }];
+    renderScreen();
+    fireEvent.click(
+      within(screen.getByTestId('post-card')).getByRole('button', { name: '#바투동굴' }),
+    );
+    expect(state.postsArgs.at(-1)).toMatchObject({ tag: '바투동굴' });
+    expect(screen.getByText('#바투동굴 글만 보는 중')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '태그 필터 지우기' }));
+    expect(state.postsArgs.at(-1)).toMatchObject({ tag: undefined });
+  });
+
+  it('인기 태그 카드는 태그가 있을 때만 나오고, 누르면 그 태그로 조회한다', () => {
+    renderScreen();
+    expect(screen.queryByText('쿠알라룸푸르 인기 태그')).not.toBeInTheDocument();
+    cleanup();
+    state.popularTags = [{ tag: 'KLIA익스프레스', uses: 5 }];
+    renderScreen();
+    expect(screen.getByText('쿠알라룸푸르 인기 태그')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '#KLIA익스프레스' }));
+    expect(state.postsArgs.at(-1)).toMatchObject({ tag: 'KLIA익스프레스' });
   });
 });

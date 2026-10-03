@@ -5,18 +5,51 @@ const calls = vi.hoisted(() => ({ log: [] as [string, ...unknown[]][], table: ''
 vi.mock('@/shared/api/supabaseClient', () => {
   // 끝에 await 되는 체인 — 모든 메서드를 기록하고 자기 자신을 돌려준다
   const chain: Record<string, unknown> = {};
-  const methods = ['select', 'eq', 'is', 'in', 'order', 'limit', 'range', 'or', 'ilike', 'gte'];
+  const methods = [
+    'select',
+    'eq',
+    'is',
+    'in',
+    'order',
+    'limit',
+    'range',
+    'or',
+    'ilike',
+    'gte',
+    'contains',
+    'not',
+  ];
   for (const m of methods) {
     chain[m] = (...args: unknown[]) => {
       calls.log.push([m, ...args]);
       return chain;
     };
   }
+  chain.maybeSingle = () => Promise.resolve({ data: null, error: null });
   chain.then = (resolve: (v: unknown) => void) => resolve({ data: [], error: null });
-  return { getSupabaseClient: () => ({ from: (table: string) => ((calls.table = table), chain) }) };
+  return {
+    getSupabaseClient: () => ({
+      from: (table: string) => ((calls.table = table), chain),
+      rpc: (name: string, args: unknown) => {
+        calls.log.push(['rpc', name, args]);
+        return Promise.resolve({
+          data: name === 'destination_popular_tags' ? [{ tag: '바투동굴', uses: '3' }] : null,
+          error: null,
+        });
+      },
+    }),
+  };
 });
 
-import { escapeLike, listPosts } from './communityService';
+import {
+  escapeLike,
+  getPinnedPost,
+  listPopularTags,
+  listPosts,
+  recordPostView,
+  setPostAcceptedComment,
+  setPostPinned,
+} from './communityService';
 import { listCompanionPosts, listUrgentCompanionPosts } from './companionService';
 
 const names = () => calls.log.map((c) => c[0]);
@@ -104,5 +137,59 @@ describe('listCompanionPosts — 도시 채널', () => {
     );
     expect(calls.log.find((c) => c[0] === 'gte')?.[1]).toBe('start_date');
     expect(find('limit')).toEqual(['limit', 2]);
+  });
+});
+
+describe('listPosts — 분류·태그·고정 글(0077)', () => {
+  it('분류는 category 일치로, 태그는 tags 배열 포함으로(본문 검색 ilike와 별개) 건다', async () => {
+    await listPosts({ destinationId: 'kl', category: 'qna', tag: '바투동굴' });
+    expect(find('eq' as never)).toBeDefined();
+    expect(calls.log.some((c) => c[0] === 'eq' && c[1] === 'category' && c[2] === 'qna')).toBe(
+      true,
+    );
+    expect(calls.log.find((c) => c[0] === 'contains')).toEqual(['contains', 'tags', ['바투동굴']]);
+    expect(names()).not.toContain('ilike');
+  });
+
+  it('hidePinned면 고정 글(pinned_at 있는 글)을 목록에서 뺀다', async () => {
+    await listPosts({ destinationId: 'kl', hidePinned: true });
+    expect(calls.log.some((c) => c[0] === 'is' && c[1] === 'pinned_at' && c[2] === null)).toBe(
+      true,
+    );
+    calls.log = [];
+    await listPosts({ destinationId: 'kl' });
+    expect(calls.log.some((c) => c[0] === 'is' && c[1] === 'pinned_at')).toBe(false);
+  });
+
+  it('고정 글 조회는 이 도시의 공개 글 중 pinned_at이 있는 하나', async () => {
+    expect(await getPinnedPost('kl', null)).toBeNull();
+    expect(calls.log.some((c) => c[0] === 'eq' && c[1] === 'destination_id' && c[2] === 'kl')).toBe(
+      true,
+    );
+    expect(calls.log.find((c) => c[0] === 'not')).toEqual(['not', 'pinned_at', 'is', null]);
+  });
+});
+
+describe('서버 함수 호출 — 조회수·고정·채택·인기 태그', () => {
+  it('각각 알맞은 함수와 인자로 부른다', async () => {
+    await recordPostView('p1');
+    await setPostPinned('p1', true);
+    await setPostAcceptedComment('p1', 'c1');
+    await setPostAcceptedComment('p1', null);
+    expect(calls.log.filter((c) => c[0] === 'rpc')).toEqual([
+      ['rpc', 'record_post_view', { p_post_id: 'p1' }],
+      ['rpc', 'set_post_pinned', { p_post_id: 'p1', p_pinned: true }],
+      ['rpc', 'set_post_accepted_comment', { p_post_id: 'p1', p_comment_id: 'c1' }],
+      ['rpc', 'set_post_accepted_comment', { p_post_id: 'p1', p_comment_id: null }],
+    ]);
+  });
+
+  it('인기 태그의 횟수는 숫자로 바꿔 돌려준다(bigint가 문자열로 온다)', async () => {
+    expect(await listPopularTags('kl', 6)).toEqual([{ tag: '바투동굴', uses: 3 }]);
+    expect(calls.log.find((c) => c[0] === 'rpc')).toEqual([
+      'rpc',
+      'destination_popular_tags',
+      { p_destination_id: 'kl', p_limit: 6 },
+    ]);
   });
 });

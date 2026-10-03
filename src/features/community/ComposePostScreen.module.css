@@ -812,3 +812,115 @@
     transition: none;
   }
 }
+
+/* 분류 칩(라디오) */
+.categoryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px;
+  border-radius: var(--radius-md);
+}
+
+.categoryError {
+  outline: 1.5px solid var(--danger);
+  outline-offset: 2px;
+}
+
+.categoryChip,
+.categoryChipOn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.categoryChip {
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-body);
+}
+
+.categoryChipOn {
+  border: 1px solid transparent;
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+}
+
+@media (hover: hover) {
+  .categoryChip:hover {
+    background: var(--brand-tint);
+    color: var(--brand-text);
+  }
+}
+
+/* 태그 입력 */
+.tagBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+.tagBox:focus-within {
+  border-color: var(--border-focus);
+}
+
+.tagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 4px 0 12px;
+  border-radius: 9999px;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.tagRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tagInput {
+  flex: 1;
+  min-width: 120px;
+  min-height: 32px;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.tagInput::placeholder {
+  color: var(--text-placeholder);
+}
+
+.tagHint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

@@ -1,4 +1,5 @@
 /** 06-community.md §3 스키마와 1:1 대응하는 클라이언트 타입 */
+import type { PostCategory } from './postMeta';
 
 export type PostStatus = 'published' | 'pending_review' | 'hidden' | 'removed';
 export type CommentStatus = 'published' | 'hidden' | 'removed';
@@ -114,6 +115,18 @@ export interface Post {
   bookmark_count?: number;
   /** 내가 저장했는지 */
   bookmarkedByMe?: boolean;
+  /** 글 분류(0077) — 올린 뒤에는 바꿀 수 없다 */
+  category: PostCategory;
+  /** 태그(최대 3개, 서버가 심사·정리해서 저장) */
+  tags: string[];
+  /** 조회수(로그인한 사용자만, 글마다 한 번) */
+  view_count: number;
+  /** 관리자가 도시의 '트립틱 공식 필독 가이드'로 고정한 시각 */
+  pinned_at: string | null;
+  /** 질문(qna) 글에서 작성자가 채택한 댓글 */
+  accepted_comment_id: string | null;
+  /** 채택된 댓글(채널 목록 카드용 — 아직 공개 상태인 것만) */
+  accepted_comment?: { id: string; body: string; created_at: string; author?: CommunityProfile };
 }
 
 export interface Comment {

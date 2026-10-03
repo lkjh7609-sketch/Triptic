@@ -1,4 +1,4 @@
-import { PenLine, Search, X } from 'lucide-react';
+import { PenLine, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +12,16 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ChannelCompanionCard } from './channel/ChannelCompanionCard';
 import { ChannelHeader } from './channel/ChannelHeader';
+import { ChannelPinnedCard } from './channel/ChannelPinnedCard';
 import { ChannelPostCard } from './channel/ChannelPostCard';
-import { FxAndPricesCard, TripCard, UrgentCompanionsCard } from './channel/ChannelSidebar';
+import {
+  FxAndPricesCard,
+  PopularTagsCard,
+  TripCard,
+  UrgentCompanionsCard,
+} from './channel/ChannelSidebar';
+import { CATEGORY_ICONS } from './categoryIcons';
+import type { PostCategory } from './postMeta';
 import { useFollowedDestinationIds, useToggleFollow } from './hooks/useCommunitySafety';
 import {
   useChannelCompanions,
@@ -21,6 +29,8 @@ import {
   useCurrentWeather,
   useDestinationFollowerCount,
   useDestinationGuide,
+  usePinnedPost,
+  usePopularTags,
   useUrgentCompanions,
 } from './hooks/useDestinationChannel';
 import { useDestination } from './hooks/useDestinations';
@@ -28,7 +38,9 @@ import type { PostSort } from './communityService';
 import type { CompanionSort } from './companionService';
 import styles from './DestinationChannelScreen.module.css';
 
-type ChannelTab = 'all' | 'companion';
+/** 탭 순서는 시안: 전체 → 여행기 → Q&A → 동행 → 꿀팁 → 맛집 */
+type ChannelTab = 'all' | PostCategory | 'companion';
+const TABS: ChannelTab[] = ['all', 'story', 'qna', 'companion', 'tips', 'food'];
 
 /** 검색 입력을 이만큼 멈췄다가 조회한다 */
 const SEARCH_DEBOUNCE_MS = 350;
@@ -66,9 +78,12 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
   const { data: weather } = useCurrentWeather(destination?.lat, destination?.lng);
   const { data: fxRates } = useFxRates();
   const { data: urgent } = useUrgentCompanions(destination?.id);
+  const { data: pinned } = usePinnedPost(destination?.id, viewerId);
+  const { data: popularTags } = usePopularTags(destination?.id);
 
   const [tab, setTab] = useState<ChannelTab>('all');
   const [draft, setDraft] = useState('');
+  const [tag, setTag] = useState('');
   const [postSort, setPostSort] = useState<PostSort>('latest');
   const [companionSort, setCompanionSort] = useState<CompanionSort>('latest');
   const search = useDebounced(draft.trim(), SEARCH_DEBOUNCE_MS);
@@ -83,6 +98,8 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
     viewerId,
     search,
     sort: postSort,
+    category: tab === 'all' || tab === 'companion' ? undefined : tab,
+    tag: tag || undefined,
   });
   const companions = useChannelCompanions({
     destinationId: destination?.id,
@@ -90,7 +107,8 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
     search,
     sort: companionSort,
   });
-  const feed = tab === 'all' ? posts : companions;
+  const isCompanionTab = tab === 'companion';
+  const feed = isCompanionTab ? companions : posts;
   const isFollowing = !!destination && (followedIds ?? []).includes(destination.id);
 
   if (isLoading) {
@@ -109,10 +127,9 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
     destination.currency && destination.currency !== 'KRW'
       ? getRate(fxRates, destination.currency, 'KRW')
       : null;
-  const writeHref =
-    tab === 'companion'
-      ? `/community/companion/new?destination=${destination.slug}`
-      : `/community/compose?destination=${destination.slug}`;
+  const writeHref = isCompanionTab
+    ? `/community/companion/new?destination=${destination.slug}`
+    : `/community/compose?destination=${destination.slug}`;
 
   function createTrip() {
     // 새 여행 만들기는 로그인해야 한다. 여행 만들기 창은 영문 도시명으로 장소를 찾는다
@@ -130,15 +147,24 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
 
   function searchLandmark(name: string) {
     setTab('all');
+    setTag('');
     setDraft(name);
     feedTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  const sortValue = tab === 'all' ? postSort : companionSort;
-  const sortOptions =
-    tab === 'all'
-      ? (['latest', 'popular', 'comments'] as const)
-      : (['latest', 'deadline'] as const);
+  /** 태그(카드·인기 태그)를 누르면 그 태그가 달린 글만 — 동행 탭이었으면 전체 탭으로 */
+  function filterByTag(name: string) {
+    if (isCompanionTab) setTab('all');
+    setDraft('');
+    setTag(name);
+    feedTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const sortValue = isCompanionTab ? companionSort : postSort;
+  const sortOptions = isCompanionTab
+    ? (['latest', 'deadline'] as const)
+    : (['latest', 'popular', 'comments'] as const);
+  const filterText = search || (tag ? `#${tag}` : '');
   const postItems = posts.data?.pages.flatMap((p) => p.posts) ?? [];
   const companionItems = companions.data?.pages.flatMap((p) => p.posts) ?? [];
 
@@ -165,22 +191,25 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
       <div className={`${styles.container} ${styles.body}`}>
         <div ref={feedTop} className={styles.toolbar}>
           <div className={styles.tabs} role="group" aria-label={t('channel.tabs')}>
-            <button
-              type="button"
-              className={tab === 'all' ? styles.tabOn : styles.tab}
-              aria-pressed={tab === 'all'}
-              onClick={() => setTab('all')}
-            >
-              {t('channel.tabAll')}
-            </button>
-            <button
-              type="button"
-              className={tab === 'companion' ? styles.tabOn : styles.tab}
-              aria-pressed={tab === 'companion'}
-              onClick={() => setTab('companion')}
-            >
-              {t('channel.tabCompanion')}
-            </button>
+            {TABS.map((key) => {
+              const Icon = key === 'all' ? null : key === 'companion' ? Users : CATEGORY_ICONS[key];
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={tab === key ? styles.tabOn : styles.tab}
+                  aria-pressed={tab === key}
+                  onClick={() => setTab(key)}
+                >
+                  {Icon ? <Icon size={16} aria-hidden="true" /> : null}
+                  {key === 'all'
+                    ? t('channel.tabAll')
+                    : key === 'companion'
+                      ? t('channel.tabCompanion')
+                      : t(`postCategory.${key}`)}
+                </button>
+              );
+            })}
           </div>
           <div className={styles.tools}>
             <label className={styles.search}>
@@ -209,9 +238,9 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               value={sortValue}
               aria-label={t('channel.sortAria')}
               onChange={(e) =>
-                tab === 'all'
-                  ? setPostSort(e.target.value as PostSort)
-                  : setCompanionSort(e.target.value as CompanionSort)
+                isCompanionTab
+                  ? setCompanionSort(e.target.value as CompanionSort)
+                  : setPostSort(e.target.value as PostSort)
               }
             >
               {sortOptions.map((key) => (
@@ -225,6 +254,15 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
 
         <div className={styles.columns}>
           <main className={styles.feed}>
+            {pinned ? <ChannelPinnedCard post={pinned} onTagClick={filterByTag} /> : null}
+            {tag && !isCompanionTab ? (
+              <div className={styles.tagFilter} role="status">
+                <span>{t('channel.tagFilter', { tag })}</span>
+                <button type="button" className={styles.tagFilterClear} onClick={() => setTag('')}>
+                  {t('channel.tagFilterClear')}
+                </button>
+              </div>
+            ) : null}
             {feed.isLoading ? (
               <>
                 <Skeleton height="140px" />
@@ -232,34 +270,43 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               </>
             ) : feed.isError ? (
               <ErrorState summary={t('feed.loadError')} onRetry={() => feed.refetch()} />
-            ) : (tab === 'all' ? postItems : companionItems).length === 0 ? (
+            ) : (isCompanionTab ? companionItems : postItems).length === 0 ? (
               <div className={styles.empty}>
                 <h3>
-                  {search
-                    ? t('channel.searchEmpty', { query: search })
-                    : tab === 'companion'
-                      ? t('channel.companionEmpty')
-                      : t('destination.emptyPosts')}
+                  {filterText && !isCompanionTab
+                    ? t('channel.searchEmpty', { query: filterText })
+                    : search
+                      ? t('channel.searchEmpty', { query: search })
+                      : isCompanionTab
+                        ? t('channel.companionEmpty')
+                        : t('destination.emptyPosts')}
                 </h3>
-                {search ? (
-                  <button type="button" className={styles.emptyCta} onClick={() => setDraft('')}>
+                {(search && isCompanionTab) || (filterText && !isCompanionTab) ? (
+                  <button
+                    type="button"
+                    className={styles.emptyCta}
+                    onClick={() => {
+                      setDraft('');
+                      setTag('');
+                    }}
+                  >
                     {t('channel.searchClear')}
                   </button>
                 ) : (
                   <>
-                    {tab === 'all' ? <p>{t('feed.emptySub')}</p> : null}
+                    {isCompanionTab ? null : <p>{t('feed.emptySub')}</p>}
                     <Link to={writeHref} className={styles.emptyCta} onClick={requireLogin}>
-                      {tab === 'companion' ? t('channel.companionWrite') : t('feed.writeFirst')}
+                      {isCompanionTab ? t('channel.companionWrite') : t('feed.writeFirst')}
                     </Link>
                   </>
                 )}
               </div>
             ) : (
               <>
-                {tab === 'all'
-                  ? postItems.map((post) => <ChannelPostCard key={post.id} post={post} />)
-                  : companionItems.map((post) => (
-                      <ChannelCompanionCard key={post.id} post={post} />
+                {isCompanionTab
+                  ? companionItems.map((post) => <ChannelCompanionCard key={post.id} post={post} />)
+                  : postItems.map((post) => (
+                      <ChannelPostCard key={post.id} post={post} onTagClick={filterByTag} />
                     ))}
                 {feed.hasNextPage ? (
                   <div className={styles.loadMoreWrap}>
@@ -271,7 +318,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
                     >
                       {feed.isFetchingNextPage
                         ? t('state.loading', { ns: 'common' })
-                        : t(tab === 'all' ? 'channel.loadMore' : 'channel.loadMoreCompanion', {
+                        : t(isCompanionTab ? 'channel.loadMoreCompanion' : 'channel.loadMore', {
                             city,
                           })}
                     </button>
@@ -296,13 +343,14 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               />
             ) : null}
             <UrgentCompanionsCard posts={urgent ?? []} />
+            <PopularTagsCard city={city} tags={popularTags ?? []} onTagClick={filterByTag} />
           </aside>
         </div>
       </div>
 
       <Link to={writeHref} className={styles.fab} onClick={requireLogin}>
         <PenLine size={20} aria-hidden="true" />
-        <span>{tab === 'companion' ? t('channel.companionWrite') : t('channel.write')}</span>
+        <span>{isCompanionTab ? t('channel.companionWrite') : t('channel.write')}</span>
       </Link>
     </div>
   );

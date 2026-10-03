@@ -1,10 +1,11 @@
-import { MessageCircle, Heart } from 'lucide-react';
+import { BadgeCheck, MessageCircle, Heart, Pin } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
+import { showToast } from '@/shared/ui/toast';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { trackScreenView, captureError } from '@/shared/monitoring';
@@ -13,6 +14,8 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { usePost, useDeletePost, useToggleLike } from './hooks/usePosts';
 import { useComments, useCreateComment, useDeleteComment } from './hooks/useComments';
+import { useIsAdminViewer, useSetAcceptedComment, useSetPostPinned } from './hooks/usePostMeta';
+import { recordPostView } from './communityService';
 import { AuthorName } from './AuthorName';
 import { BookmarkButton } from './BookmarkButton';
 import { PostActionsMenu } from './PostActionsMenu';
@@ -37,6 +40,9 @@ export function PostDetailScreen() {
   const { data: comments } = useComments(postId);
   const createComment = useCreateComment(postId ?? '');
   const deleteComment = useDeleteComment(postId ?? '');
+  const { data: isAdminViewer } = useIsAdminViewer(user?.id ?? null);
+  const setPinned = useSetPostPinned(postId ?? '');
+  const setAccepted = useSetAcceptedComment(postId ?? '');
 
   const [commentBody, setCommentBody] = useState('');
   const commentInputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +52,12 @@ export function PostDetailScreen() {
   useEffect(() => {
     trackScreenView('community_post_detail');
   }, []);
+
+  // 조회수 — 로그인한 사용자만, 글마다 한 번(서버가 중복을 막는다). 비로그인 읽기는 그대로 열려 있고 수에는 안 들어간다
+  const viewedPostId = post?.status === 'published' ? post.id : null;
+  useEffect(() => {
+    if (user && viewedPostId) void recordPostView(viewedPostId);
+  }, [user, viewedPostId]);
 
   if (isLoading) {
     return (
@@ -77,6 +89,21 @@ export function PostDetailScreen() {
     if (!window.confirm(t('detail.deleteConfirm'))) return;
     await deletePost.mutateAsync(post!.id);
     navigate('/community');
+  }
+
+  function togglePinned() {
+    const next = !post!.pinned_at;
+    setPinned.mutate(next, {
+      onSuccess: () =>
+        showToast(t(next ? 'detail.pinned' : 'detail.unpinned'), { tone: 'success' }),
+      onError: () => showToast(t('detail.pinFailed'), { tone: 'error' }),
+    });
+  }
+
+  function toggleAccepted(commentId: string, accepted: boolean) {
+    setAccepted.mutate(accepted ? null : commentId, {
+      onError: () => showToast(t('detail.acceptFailed'), { tone: 'error' }),
+    });
   }
 
   async function handleSubmitComment() {
@@ -114,7 +141,11 @@ export function PostDetailScreen() {
               <div className={styles.authorName}><AuthorName profile={post.author} /></div>
               <div className={styles.time}>
                 {post.destination?.name ? `${post.destination.name} · ` : ''}
-                {formatDistanceToNowStrict(new Date(post.created_at), { addSuffix: true, locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko })}
+                {t(`postCategory.${post.category}`)} ·{' '}
+                {formatDistanceToNowStrict(new Date(post.created_at), {
+                  addSuffix: true,
+                  locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
+                })}
               </div>
             </div>
           </div>
@@ -128,6 +159,27 @@ export function PostDetailScreen() {
         </div>
 
         <LightMarkdown text={post.body} className={styles.bodyRich} />
+
+        {post.tags.length > 0 ? (
+          <div className={styles.tagRow}>
+            {post.tags.map((tag) => (
+              <span key={tag} className={styles.tagChip}>
+                #{tag}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {isAdminViewer && post.status === 'published' && post.destination_id ? (
+          <button
+            type="button"
+            className={styles.translateBtn}
+            disabled={setPinned.isPending}
+            onClick={togglePinned}
+          >
+            <Pin size={14} aria-hidden="true" /> {t(post.pinned_at ? 'detail.unpin' : 'detail.pin')}
+          </button>
+        ) : null}
 
         {post.trip_id ? (
           <p style={{ margin: 'var(--space-2) 0 0' }}>
@@ -191,7 +243,22 @@ export function PostDetailScreen() {
                 onDelete={user?.id === c.author_id ? () => deleteComment.mutate(c.id) : undefined}
               />
             </div>
+            {post.accepted_comment_id === c.id ? (
+              <span className={styles.acceptedBadge}>
+                <BadgeCheck size={14} aria-hidden="true" /> {t('detail.acceptedBadge')}
+              </span>
+            ) : null}
             <p className={styles.commentBody}>{c.body}</p>
+            {isOwn && post.category === 'qna' && c.author_id !== user?.id ? (
+              <button
+                type="button"
+                className={styles.acceptBtn}
+                disabled={setAccepted.isPending}
+                onClick={() => toggleAccepted(c.id, post.accepted_comment_id === c.id)}
+              >
+                {t(post.accepted_comment_id === c.id ? 'detail.unaccept' : 'detail.accept')}
+              </button>
+            ) : null}
           </div>
         ))}
         {(comments ?? []).length === 0 ? <EmptyState icon=<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={16} /></span> message={t('detail.noComments')} /> : null}

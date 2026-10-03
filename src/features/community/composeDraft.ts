@@ -1,4 +1,5 @@
 import type { UploadedPostImage } from './imageProcessing';
+import { isPostCategory, normalizeTags, type PostCategory } from './postMeta';
 
 /** 글쓰기 임시저장 — 이 기기(localStorage)에만, 로그인한 사용자별로 하나. 사진은 이미 올라간 것의 저장 경로만 담는다 */
 export interface ComposeDraft {
@@ -7,14 +8,21 @@ export interface ComposeDraft {
   tripId: string;
   allowCopy: boolean;
   images: UploadedPostImage[];
+  /** 글 분류(0077) — 아직 안 골랐으면 '' */
+  category: PostCategory | '';
+  tags: string[];
   savedAt: number;
 }
 
 const key = (userId: string) => `triptic-compose-draft:${userId}`;
 
 /** 적을 내용이 하나도 없으면 임시저장할 이유가 없다 */
-export function isEmptyDraft(d: Pick<ComposeDraft, 'destinationId' | 'body' | 'tripId' | 'images'>): boolean {
-  return !d.destinationId && !d.body.trim() && !d.tripId && d.images.length === 0;
+export function isEmptyDraft(
+  d: Pick<ComposeDraft, 'destinationId' | 'body' | 'tripId' | 'images' | 'tags'>,
+): boolean {
+  return (
+    !d.destinationId && !d.body.trim() && !d.tripId && d.images.length === 0 && d.tags.length === 0
+  );
 }
 
 export function readDraft(userId: string): ComposeDraft | null {
@@ -33,6 +41,11 @@ export function readDraft(userId: string): ComposeDraft | null {
       tripId: typeof p.tripId === 'string' ? p.tripId : '',
       allowCopy: p.allowCopy === true,
       images,
+      // 분류·태그가 생기기 전에 저장된 임시저장 글은 이 값들이 없다
+      category: isPostCategory(p.category) ? p.category : '',
+      tags: Array.isArray(p.tags)
+        ? normalizeTags(p.tags.filter((t): t is string => typeof t === 'string'))
+        : [],
       savedAt: typeof p.savedAt === 'number' ? p.savedAt : 0,
     };
     return isEmptyDraft(draft) ? null : draft;

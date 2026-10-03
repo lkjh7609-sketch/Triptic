@@ -20,6 +20,7 @@ import type {
   ReportReason,
   ReportTargetType,
 } from './types';
+import type { PostCategory } from './postMeta';
 
 /** 여행지 이름을 표시 언어로 가져온다(호출부가 locale을 넘기지 않아도) */
 function currentLocale(): string {
@@ -92,18 +93,60 @@ async function fetchMyLikedPostIds(postIds: string[], userId: string | null): Pr
   return new Set((data ?? []).map((r) => r.target_id as string));
 }
 
-async function enrichPosts(rows: Post[], viewerId: string | null, locale = currentLocale()): Promise<Post[]> {
+/** 채택된 댓글 본문(목록 카드용). 지워졌거나 가려진 댓글은 빼서 카드에 안 보인다 — 댓글은 소프트 삭제라 FK의 set null이 안 일어난다 */
+async function fetchAcceptedComments(
+  rows: Post[],
+): Promise<Map<string, NonNullable<Post['accepted_comment']>>> {
+  const ids = uniq(rows.map((r) => r.accepted_comment_id).filter((id): id is string => !!id));
+  if (ids.length === 0) return new Map();
+  const { data, error } = await getSupabaseClient()
+    .from('comments')
+    .select('id, author_id, body, created_at')
+    .in('id', ids)
+    .eq('status', 'published')
+    .is('deleted_at', null);
+  if (error) return new Map();
+  const comments =
+    (data as { id: string; author_id: string; body: string; created_at: string }[]) ?? [];
+  const profiles = await fetchProfilesByIds(comments.map((c) => c.author_id)).catch(
+    () => new Map<string, CommunityProfile>(),
+  );
+  return new Map(
+    comments.map((c) => [
+      c.id,
+      { id: c.id, body: c.body, created_at: c.created_at, author: profiles.get(c.author_id) },
+    ]),
+  );
+}
+
+async function enrichPosts(
+  rows: Post[],
+  viewerId: string | null,
+  locale = currentLocale(),
+): Promise<Post[]> {
   if (rows.length === 0) return [];
-  const [profileMap, nameMap, imageMap, likedSet, bookmarkCounts, bookmarkedSet] = await Promise.all([
-    fetchProfilesByIds(rows.map((r) => r.author_id)),
-    fetchDestinationNamesByIds(rows.map((r) => r.destination_id).filter((id): id is string => id !== null), locale),
-    fetchImagesByPostIds(rows.map((r) => r.id)),
-    fetchMyLikedPostIds(rows.map((r) => r.id), viewerId),
-    fetchBookmarkCounts(rows.map((r) => r.id)),
-    fetchMyBookmarkedPostIds(rows.map((r) => r.id), viewerId),
-  ]);
+  const [profileMap, nameMap, imageMap, likedSet, bookmarkCounts, bookmarkedSet, acceptedMap] =
+    await Promise.all([
+      fetchProfilesByIds(rows.map((r) => r.author_id)),
+      fetchDestinationNamesByIds(
+        rows.map((r) => r.destination_id).filter((id): id is string => id !== null),
+        locale,
+      ),
+      fetchImagesByPostIds(rows.map((r) => r.id)),
+      fetchMyLikedPostIds(
+        rows.map((r) => r.id),
+        viewerId,
+      ),
+      fetchBookmarkCounts(rows.map((r) => r.id)),
+      fetchMyBookmarkedPostIds(
+        rows.map((r) => r.id),
+        viewerId,
+      ),
+      fetchAcceptedComments(rows),
+    ]);
   return rows.map((r) => ({
     ...r,
+    accepted_comment: r.accepted_comment_id ? acceptedMap.get(r.accepted_comment_id) : undefined,
     author: profileMap.get(r.author_id),
     destination: r.destination_id ? { id: r.destination_id, slug: '', name: nameMap.get(r.destination_id) ?? '' } : undefined,
     images: imageMap.get(r.id) ?? [],
@@ -165,6 +208,71 @@ export async function listBookmarkedPosts(userId: string): Promise<Post[]> {
 export async function setPostAllowCopy(postId: string, allow: boolean): Promise<void> {
   const { error } = await getSupabaseClient().from('posts').update({ allow_copy: allow }).eq('id', postId);
   if (error) throw error;
+}
+
+// ── 도시 채널 2단계: 고정·조회수·채택 답변·인기 태그(0077) ─────────────────────
+/** 도시의 고정 글(트립틱 공식 필독 가이드) — 없으면 null */
+export async function getPinnedPost(
+  destinationId: string,
+  viewerId: string | null,
+): Promise<Post | null> {
+  const { data, error } = await getSupabaseClient()
+    .from('posts')
+    .select('*')
+    .eq('destination_id', destinationId)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .not('pinned_at', 'is', null)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const [enriched] = await enrichPosts([data as Post], viewerId);
+  return enriched;
+}
+
+/** 글 상세를 열었을 때 한 번 — 로그인한 사용자만, 글마다 한 번 셈(서버가 중복을 막는다). 실패해도 화면은 막지 않는다 */
+export async function recordPostView(postId: string): Promise<void> {
+  const { error } = await getSupabaseClient().rpc('record_post_view', { p_post_id: postId });
+  if (error) captureError(error, { context: 'recordPostView' });
+}
+
+/** 관리자만 — 이 글을 도시의 공식 필독 가이드로 고정(도시당 1개, 기존 고정은 풀림)하거나 해제한다 */
+export async function setPostPinned(postId: string, pinned: boolean): Promise<void> {
+  const { error } = await getSupabaseClient().rpc('set_post_pinned', {
+    p_post_id: postId,
+    p_pinned: pinned,
+  });
+  if (error) throw error;
+}
+
+/** 질문(qna) 글 작성자만 — 댓글 하나를 채택한다(null이면 채택 취소). 자기 댓글은 채택할 수 없다 */
+export async function setPostAcceptedComment(
+  postId: string,
+  commentId: string | null,
+): Promise<void> {
+  const { error } = await getSupabaseClient().rpc('set_post_accepted_comment', {
+    p_post_id: postId,
+    p_comment_id: commentId,
+  });
+  if (error) throw error;
+}
+
+export interface PopularTag {
+  tag: string;
+  uses: number;
+}
+
+/** 이 도시 공개 글의 태그 사용 횟수 상위 N개 */
+export async function listPopularTags(destinationId: string, limit = 6): Promise<PopularTag[]> {
+  const { data, error } = await getSupabaseClient().rpc('destination_popular_tags', {
+    p_destination_id: destinationId,
+    p_limit: limit,
+  });
+  if (error) throw error;
+  return ((data as { tag: string; uses: number | string }[]) ?? []).map((r) => ({
+    tag: r.tag,
+    uses: Number(r.uses),
+  }));
 }
 
 // ── 여행지 ──────────────────────────────────────────────────────────────
@@ -239,6 +347,12 @@ export async function listPosts(opts: {
   sort?: PostSort;
   /** 인기·댓글순의 시작 위치 */
   offset?: number;
+  /** 이 분류의 글만 */
+  category?: PostCategory;
+  /** 이 태그가 달린 글만(태그 칸 정확히 일치 — 본문 검색과 별개) */
+  tag?: string;
+  /** 고정 글(공식 가이드)은 따로 맨 위에 보여줄 때 목록에서 뺀다 */
+  hidePinned?: boolean;
 }): Promise<PostsPage> {
   const supabase = getSupabaseClient();
   const limit = opts.limit ?? 20;
@@ -264,6 +378,9 @@ export async function listPosts(opts: {
   if (destinationIds) query = query.in('destination_id', destinationIds);
   const search = opts.search?.trim();
   if (search) query = query.ilike('body', `%${escapeLike(search)}%`);
+  if (opts.category) query = query.eq('category', opts.category);
+  if (opts.tag) query = query.contains('tags', [opts.tag]);
+  if (opts.hidePinned) query = query.is('pinned_at', null);
 
   if (sort === 'latest') {
     query = query.limit(limit);
@@ -344,6 +461,10 @@ export async function createPost(input: {
   userId: string;
   /** 첨부한 일정을 다른 사람이 복사해도 되는가(0070) — 일정을 첨부했을 때만 의미 있다 */
   allowCopy?: boolean;
+  /** 글 분류(0077). 심사 함수가 저장하고 올린 뒤에는 바꿀 수 없다 */
+  category: PostCategory;
+  /** 태그(최대 3개) — 본문과 함께 심사된 뒤 저장된다 */
+  tags?: string[];
 }): Promise<CreatePostResult> {
   if (!can('community.post', { userId: input.userId })) {
     throw new Error(i18next.t('community:errors.postingUnavailable'));
@@ -356,6 +477,8 @@ export async function createPost(input: {
       body: input.body,
       tripId: input.tripId ?? null,
       images: input.images ?? [],
+      category: input.category,
+      tags: input.tags ?? [],
     },
   });
   if (error) throw error;

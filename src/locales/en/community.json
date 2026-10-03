@@ -250,7 +250,17 @@
     "commentPlaceholder": "Leave a comment",
     "commentSubmit": "Post",
     "noComments": "No comments yet.",
-    "loginToComment": "Sign in to comment"
+    "loginToComment": "Sign in to comment",
+    "pin": "Pin as city official guide",
+    "unpin": "Unpin",
+    "pinned": "Pinned as the official guide.",
+    "unpinned": "Unpinned.",
+    "pinFailed": "Couldn’t change the pin.",
+    "accept": "Accept",
+    "unaccept": "Undo accept",
+    "acceptedBadge": "Accepted answer",
+    "acceptFailed": "Couldn’t change the accepted answer.",
+    "categoryLabel": "Category"
   },
   "profile": {
     "loadError": "Couldn't load the profile.",
@@ -367,6 +377,18 @@
       "linkRemove": "Remove link",
       "linkPlaceholder": "Link address (e.g. example.com)",
       "linkApply": "Apply"
+    },
+    "category": {
+      "label": "Category",
+      "hint": "Can’t be changed after posting",
+      "error": "Please choose a category"
+    },
+    "tags": {
+      "label": "Tags",
+      "optional": "(optional, up to {{max}})",
+      "placeholder": "Type a tag and press Enter",
+      "remove": "Remove tag {{tag}}",
+      "hint": "Type without #. Up to {{max}} characters each; can’t be changed after posting."
     }
   },
   "shared": {
@@ -802,6 +824,29 @@
       "days_one": "Leaves in {{count}} day",
       "days_other": "Leaves in {{count}} days"
     },
-    "write": "Write a story"
+    "write": "Write a story",
+    "tagFilter": "Showing posts tagged #{{tag}}",
+    "tagFilterClear": "Clear tag filter",
+    "popularTags": "Popular {{city}} tags",
+    "pinned": {
+      "label": "Triptic official must-read guide",
+      "updated": "Updated {{date}}",
+      "views": "{{count, number}} views",
+      "saves": "{{count, number}} saves",
+      "comments": "{{count, number}} comments"
+    },
+    "qna": {
+      "answers_one": "{{count}} answer",
+      "answers_other": "{{count}} answers",
+      "answerCta": "Write an answer",
+      "accepted": "Accepted answer by {{name}}"
+    },
+    "categoryTime": "{{time}} · {{category}}"
+  },
+  "postCategory": {
+    "story": "Trip stories & reviews",
+    "qna": "Questions & Q&A",
+    "tips": "Travel tips & money",
+    "food": "Local food & stays"
   }
 }
