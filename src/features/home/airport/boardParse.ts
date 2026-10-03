@@ -256,3 +256,53 @@ export function terminalLabel(code: string): { key: 't1' | 't1c' | 't2' | null; 
   if (code === 'P03') return { key: 't2', raw: code };
   return { key: null, raw: code };
 }
+
+/** 출발 전광판은 지금보다 이만큼(분) 뒤 편에서 시작한다 — 체크인하러 오는 사람이 많아서(사용자 결정). 그 앞 편(탑승중·마감·방금 출발)은 '이전' 쪽 페이지에 있다 */
+export const DEPARTURE_LEAD_MIN = 40;
+
+/** 이미 시각 순으로 정렬된 줄에서 지금 + lead분 이후 첫 줄의 위치. 그런 편이 없으면(늦은 밤) 마지막 한 쪽이 보이도록 끝에서 size개 앞 */
+export function startOffset(
+  flights: readonly BoardFlight[],
+  nowMinutes: number,
+  leadMinutes: number,
+  size: number,
+): number {
+  if (leadMinutes <= 0) return 0;
+  const idx = flights.findIndex((f) => minutesFromNow(f, nowMinutes) >= leadMinutes);
+  return idx === -1 ? Math.max(0, flights.length - size) : idx;
+}
+
+/**
+ * 줄을 쪽으로 나눈다. 쪽은 offset에서 시작해 size개씩 앞으로, offset 앞의 줄은 그 뒤쪽부터 size개씩 거꾸로 묶는다
+ * (맨 앞 쪽만 모자랄 수 있다). initial은 offset이 들어 있는 쪽의 위치(0부터).
+ */
+export function buildPages<T>(
+  items: readonly T[],
+  offset: number,
+  size: number,
+): { pages: T[][]; initial: number } {
+  const start = Math.min(Math.max(0, offset), items.length);
+  const before: T[][] = [];
+  for (let end = start; end > 0; end -= size)
+    before.unshift(items.slice(Math.max(0, end - size), end));
+  const after: T[][] = [];
+  for (let i = start; i < items.length; i += size) after.push(items.slice(i, i + size));
+  const pages = [...before, ...after];
+  return { pages: pages.length > 0 ? pages : [[]], initial: before.length };
+}
+
+/** 쪽 번호 줄 — 처음·끝·현재 둘레만 보이고 나머지는 '…'. current는 0부터, 돌려주는 숫자는 1부터 */
+export function pageItems(current: number, total: number): (number | '…')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const page = current + 1;
+  const set = new Set([1, total, page - 1, page, page + 1].filter((n) => n >= 1 && n <= total));
+  if (page <= 3) [2, 3, 4].forEach((n) => set.add(n));
+  if (page >= total - 2) [total - 3, total - 2, total - 1].forEach((n) => set.add(n));
+  const sorted = [...set].sort((a, b) => a - b);
+  const out: (number | '…')[] = [];
+  sorted.forEach((n, i) => {
+    if (i > 0 && n - sorted[i - 1] > 1) out.push('…');
+    out.push(n);
+  });
+  return out;
+}

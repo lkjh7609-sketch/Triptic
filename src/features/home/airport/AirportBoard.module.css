@@ -297,18 +297,61 @@
   color: var(--h-ink-3);
 }
 
-.more {
-  display: block;
-  width: 100%;
-  min-height: 48px;
-  border: 0;
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 8px;
   border-top: 1px solid var(--h-line-soft);
   background: var(--h-sunken);
-  color: var(--h-accent-text);
+}
+
+.page,
+.pageOn,
+.pageArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9999px;
   font-family: inherit;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+}
+
+.page,
+.pageArrow {
+  background: transparent;
+  color: var(--h-ink-2);
+}
+
+.pageOn {
+  background: var(--h-accent);
+  color: var(--h-on-accent);
+  font-weight: 700;
+}
+
+.pageArrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pageGap {
+  min-width: 20px;
+  text-align: center;
+  color: var(--h-ink-3);
+}
+
+@media (hover: hover) {
+  .page:hover,
+  .pageArrow:hover:not(:disabled) {
+    background: var(--h-tint);
+  }
 }
 
 .source {
