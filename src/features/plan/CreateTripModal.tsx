@@ -19,6 +19,9 @@ import styles from './CreateTripModal.module.css';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { format } from 'date-fns';
 import { loadGoogleMapsPlaces } from '@/shared/api/googleMapsLoader';
+import { isWarned, type CountryAlert, type AlertLevel } from '@/features/travelAlerts/alertInfo';
+import { useTravelAlerts } from '@/features/travelAlerts/useTravelAlerts';
+import { TravelAlertDialog } from '@/features/travelAlerts/TravelAlertDialog';
 
 /**
  * <input type="date">는 정상적인 사용자 입력에서는 항상 YYYY-MM-DD(4자리 연도)를
@@ -78,7 +81,15 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
   const [endDateStr, setEndDateStr] = useState<string>('');
   const [showCalendar, setShowCalendar] = useState(false);
   const cityInputRef = useRef<HTMLInputElement>(null);
-  const trapRef = useFocusTrap<HTMLFormElement>(onClose);
+  const { alerts } = useTravelAlerts();
+  // 목적지 나라가 여행자제(2단계) 이상이면 만들기 전에 경고를 한 번 보여 준다 — 확인하고 계속하면 그대로 만든다
+  const [pendingAlert, setPendingAlert] = useState<{ alert: CountryAlert & { baseLevel: AlertLevel }; values: CreateTripValues } | null>(null);
+  const pendingAlertRef = useRef(false);
+  pendingAlertRef.current = pendingAlert !== null;
+  // 경고창이 떠 있는 동안 Esc는 경고창만 닫는다(입력 중인 여행 만들기 창까지 닫히지 않게)
+  const trapRef = useFocusTrap<HTMLFormElement>(() => {
+    if (!pendingAlertRef.current) onClose();
+  });
   const titleElRef = useRef<HTMLInputElement | null>(null);
   const dateBoxRef = useRef<HTMLDivElement>(null);
   const schema = useMemo(() => buildCreateTripSchema(t), [t, i18n.language]);
@@ -179,11 +190,18 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
     );
   }
 
-  async function onSubmit(values: CreateTripValues) {
+  const onSubmit = (values: CreateTripValues) => submitTrip(values, false);
+
+  async function submitTrip(values: CreateTripValues, skipAlert: boolean) {
     const targetCity = city || resolvedCityRef.current;
     if (!targetCity) {
       setCityError(t('createTrip.cityRequired'));
       flagInvalid(cityInputRef.current);
+      return;
+    }
+    const countryAlert = targetCity.countryCode ? alerts.get(targetCity.countryCode) : undefined;
+    if (!skipAlert && isWarned(countryAlert)) {
+      setPendingAlert({ alert: countryAlert, values });
       return;
     }
     try {
@@ -225,6 +243,7 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
   }
 
   return (
+    <>
     <div className={styles.overlay}>
       <form
         ref={trapRef}
@@ -326,5 +345,13 @@ export function CreateTripModal({ onClose, autoCreateCity, autoCreatePlaceId }: 
         </div>
       </form>
     </div>
+    {pendingAlert ? (
+      <TravelAlertDialog
+        alert={pendingAlert.alert}
+        onContinue={() => void submitTrip(pendingAlert.values, true)}
+        onClose={() => setPendingAlert(null)}
+      />
+    ) : null}
+    </>
   );
 }

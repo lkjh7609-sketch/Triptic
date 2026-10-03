@@ -86,6 +86,16 @@
 
 ## 날짜별 기록
 
+### 2026-10-04 (2) — 여행경보(외교부) 안내: 도시 채널 띠·여행 만들기 경고·종 알림·홈 현황 카드
+
+- **데이터**: data.go.kr '외교부_국가∙지역별 여행경보'(`TravelAlarmService2/getTravelAlarmList2`, 키는 Supabase 비밀값 `MOFA_API_KEY`). 처음 받은 '국가·지역별 안전정보' 키(`CountrySafetyService`)는 단계가 없고 2024-07 이후 공지가 없어 쓰지 않음 — 같은 계정에 두 번째 API를 따로 활용신청해야 했다. 응답은 210줄/145개국, 한 나라가 지역별 여러 줄(단계 1~4), 지역은 자유 문장, 사유·발령일 필드 없음.
+- **저장**: `0082_travel_alerts.sql` — `travel_alerts`(누구나 읽기) + `replace_travel_alerts`(service_role 전체 교체, 빈 목록 거부) + 매일 00:00 UTC(=09:00 KST) 크론. Edge Function `travel-alerts-refresh`(6시간 안에 갱신됐으면 건너뜀, 실패하면 이전 값 유지).
+- **결정(사용자)**: 도시에는 **나라 기본 단계**(그 나라의 '나머지 지역' 줄, 말투 규칙으로 판별 — 기본 줄이 없는 일본은 기본 단계 없음)를 적용하고 더 높은 일부 지역은 문구로 덧붙임 / 2단계 이상부터 경고 / 게시글이 아니라 현재 경보를 읽어 보이는 띠(해제되면 저절로 사라짐) / 이미 만든 여행은 안 떠난 여행의 나라가 2단계 이상이면 종에 표시(단계가 오르면 새 알림). 푸시는 만들지 않음.
+- **화면**: 도시 채널 본문 맨 위 경보 띠(`ChannelAlertBanner`), 여행 만들기 '만들기'를 누를 때 경고창(`TravelAlertDialog` — 4단계도 막지 않고 계속 가능, '다시 표시하지 않기'는 만들지 않음), 종 알림에 경보 항목(`alertNotices`), 커뮤니티 홈 '현재 여행경보 현황' 접이식 카드(`TravelAlertSummary`).
+- **결정(내가 정함)**: 여행에는 나라 코드가 없어 **여행 좌표에서 300km 안의 가장 가까운 우리 여행지의 나라**로 짐작함(없으면 알림 안 함). 경고창의 '자세히 보기'는 외교부 0404.go.kr 링크(경보 사유·발령일이 API에 없어서). 경보 내용(지역 문구)은 외교부 한국어 원문 그대로.
+- **적용 순서(사용자 실행)**: ① `supabase secrets set MOFA_API_KEY=…` ② `supabase functions deploy travel-alerts-refresh --no-verify-jwt` ③ 0082 적용 ④ 함수 한 번 호출해 첫 데이터 채우기(또는 다음 09:00 KST).
+- 못 확인한 것: 실제 사이트에서의 모양과 Edge Function 배포 후 동작(배포 전이라 호출 못 함). 항공편 자동입력(todays.md 기능 1)은 아직 안 만듦.
+
 ### 2026-10-04 (1) — 새 도시 200곳 사진 적용, 도시 채널 머리말에 사진 깔기
 
 - **사진**: 사용자가 만든 200장(1200×896)을 기존 78곳과 같은 방식으로 변환 — 오른쪽 아래 반짝이 표시를 피해 왼쪽 위 1056×792만 잘라 1024×768 WebP(평균 110KB) + 160×120 썸네일. 파일 이름 3개가 슬러그와 달라 직접 매핑(`Hue_Imperial_City_Noon_Gate`→hue, `Perth_skyline_over_Swan_River`→perth, `wroclaw`→wrocaw). 변환본은 `~/Downloads/new-cities-webp/`(`upload.sh`로 Storage에 올림), 주소 채우기는 `0081_destination_covers_200.sql`(이미 값이 있는 도시는 건드리지 않음).

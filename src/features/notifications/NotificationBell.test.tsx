@@ -11,6 +11,11 @@ vi.mock('@/shared/hooks/useSession', () => ({
   useSession: () => ({ user: session.user, loading: false }),
 }));
 vi.mock('@/features/plan/hooks/useTrips', () => ({ useTrips: () => ({ data: trips.data }) }));
+const travel = vi.hoisted(() => ({ alerts: new Map<string, unknown>() }));
+vi.mock('@/features/travelAlerts/useTravelAlerts', () => ({
+  useTravelAlerts: () => ({ alerts: travel.alerts, ready: true }),
+  useDestinationCoords: () => ({ data: [{ country_code: 'AE', lat: 25.2, lng: 55.27 }] }),
+}));
 
 function ymd(offset: number): string {
   const d = new Date();
@@ -52,6 +57,7 @@ beforeEach(() => {
   localStorage.clear();
   session.user = { id: 'u1' };
   trips.data = [];
+  travel.alerts = new Map();
 });
 
 describe('NotificationBell', () => {
@@ -94,5 +100,27 @@ describe('NotificationBell', () => {
     setup();
     fireEvent.click(screen.getByRole('button', { name: '알림' }));
     expect(screen.getByText('새 알림이 없어요.')).toBeInTheDocument();
+  });
+
+  it('목적지 나라가 2단계 이상이면 여행경보 알림이 뜬다', () => {
+    travel.alerts = new Map([
+      ['AE', { code: 'AE', nameKo: '아랍에미리트', nameEn: 'UAE', baseLevel: 3, partials: [] }],
+    ]);
+    trips.data = [
+      {
+        id: 'd1',
+        title: '두바이 여행',
+        city: '두바이',
+        city_lat: 25.1,
+        city_lng: 55.2,
+        start_date: ymd(30),
+        end_date: ymd(33),
+        status: 'planning',
+      },
+    ];
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: /알림/ }));
+    expect(screen.getByText('두바이 여행')).toBeInTheDocument();
+    expect(screen.getByText(/여행경보 3단계\(출국권고\)/)).toBeInTheDocument();
   });
 });

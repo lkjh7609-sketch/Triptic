@@ -4,6 +4,7 @@ import type { TripRow } from '@/shared/api/tripService';
 export type ReminderStage = 'week' | 'dayBefore' | 'today';
 
 export interface TripReminder {
+  kind: 'departure';
   /** `여행id:단계` — 읽음·지우기 기록의 키 */
   id: string;
   tripId: string;
@@ -42,6 +43,7 @@ export function buildTripReminders(trips: TripRow[], todayYmd: string): TripRemi
     const stage = stageFor(daysUntil);
     if (!stage) continue;
     out.push({
+      kind: 'departure',
       id: `${trip.id}:${stage}`,
       tripId: trip.id,
       title: trip.title,
