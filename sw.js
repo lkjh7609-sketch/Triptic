@@ -99,14 +99,35 @@ async function trimCache(name, maxEntries) {
   }
 }
 
-/** 오프라인 폴백 — 캐시된 index.html 반환 */
+/**
+ * 저장해 둔 앱 화면(index.html)이 가리키는 파일까지 이 캐시에 다 있다는 표시 — 설치 때 index.html을 읽어 그 안의
+ * /assets/ 파일(첫 JS·CSS·홈 청크·번역 파일)을 같이 저장하고, 전부 성공하면 남긴다.
+ * 예전엔 index.html만 저장해서, 네트워크가 안 될 때 꺼내 준 화면이 이미 없어진(이전 배포의) 파일을 찾다가
+ * 아무것도 못 그리고 흰 화면으로 멈출 수 있었다(2026-10-04 아이폰 흰 화면 의심 원인).
+ */
+const SHELL_COMPLETE_KEY = './__shell-complete';
+
+/** index.html 안의 /assets/ 파일 주소(모듈 스크립트·CSS·미리받기 목록·번역 파일 목록) */
+function shellAssetUrls(html) {
+  return [...new Set(html.match(/\/assets\/[A-Za-z0-9._-]+\.(?:js|css)/g) || [])];
+}
+
+/** 오프라인·멈춘 연결 폴백 — 파일까지 다 저장된 앱 화면만 돌려준다(아니면 undefined) */
 async function getOfflineFallback() {
   const cache = await caches.open(CACHE_NAME);
+  if (!(await cache.match(SHELL_COMPLETE_KEY))) return undefined;
   return (
     (await cache.match('./index.html')) ||
     (await cache.match('index.html')) ||
     (await cache.match('./'))
   );
+}
+
+/** 이동(페이지) 요청이 이 시간 안에 응답이 없으면 저장해 둔 앱 화면을 먼저 보여 준다(응답은 뒤에서 받아 캐시만 갱신) */
+const NAVIGATION_TIMEOUT_MS = 4000;
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /** Install: Precache app shell and CDN resources */
@@ -134,6 +155,21 @@ self.addEventListener('install', (event) => {
         if (!rootResp) await cache.put('./', indexResp.clone());
         const plainIndex = await cache.match('index.html');
         if (!plainIndex) await cache.put('index.html', indexResp.clone());
+
+        // 이 index.html이 가리키는 파일도 같이 — 해시 이름이라 HTTP 캐시에 있으면 그대로 쓴다(대부분 방금 받은 것)
+        const assets = shellAssetUrls(await indexResp.clone().text());
+        const results = await Promise.allSettled(
+          assets.map(async (url) => {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`${response.status} ${url}`);
+            await cache.put(url, response);
+          })
+        );
+        if (assets.length > 0 && results.every((r) => r.status === 'fulfilled')) {
+          await cache.put(SHELL_COMPLETE_KEY, new Response('1'));
+        } else {
+          console.warn('[SW] App shell assets incomplete — offline fallback disabled for this version');
+        }
       }
     }).then(() => self.skipWaiting())
   );
@@ -175,20 +211,40 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Navigation / HTML: Network-first with offline fallback
+  // 2. Navigation / HTML: Network-first. 응답이 4초 안에 없으면(멈춘 연결) 저장해 둔 앱 화면, 실패하면 한 번 더 시도 후
+  //    저장해 둔 앱 화면. 휴대폰이 잠들었다 깬 직후 첫 요청은 죽은 연결에 실려 멈추거나 바로 실패하곤 한다.
   if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    const fromNetwork = () =>
+      fetch(event.request).then(async (networkResponse) => {
+        if (networkResponse.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(event.request, networkResponse.clone());
+        }
+        return networkResponse;
+      });
     event.respondWith(
-      fetch(event.request)
-        .then(async (networkResponse) => {
-          if (networkResponse.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(event.request, networkResponse.clone());
+      (async () => {
+        const network = fromNetwork();
+        try {
+          const first = await Promise.race([network, delay(NAVIGATION_TIMEOUT_MS).then(() => null)]);
+          if (first) return first;
+          const fallback = await getOfflineFallback();
+          if (fallback) {
+            event.waitUntil(network.catch(() => {}));
+            return fallback;
           }
-          return networkResponse;
-        })
-        .catch(async () => {
-          return await getOfflineFallback();
-        })
+          return await network;
+        } catch {
+          try {
+            await delay(300);
+            return await fromNetwork();
+          } catch (err) {
+            const fallback = await getOfflineFallback();
+            if (fallback) return fallback;
+            throw err;
+          }
+        }
+      })()
     );
     return;
   }
