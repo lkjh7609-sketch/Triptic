@@ -40,6 +40,8 @@ export interface Destination {
   name: string;
   /** 영문 이름(도시 채널 제목용, getDestinationBySlug에서만 채움) */
   nameEn?: string;
+  /** 구글 지도의 그 도시 장소 ID(0079, 관리자 'Google 연동'으로 채움) — 없으면 null */
+  google_place_id?: string | null;
 }
 
 /** 한국어·영어 두 벌로 저장되는 문구(일·번체는 영어로 보여준다) */

@@ -10,7 +10,8 @@
       "feedback": "Feedback",
       "sales": "Sales",
       "analytics": "Analytics",
-      "archive": "Archive"
+      "archive": "Archive",
+      "googleLink": "Google link"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -165,6 +166,20 @@
       "all": "All",
       "general": "General",
       "partnership": "Partnership"
+    },
+    "googleLink": {
+      "loadError": "Couldn’t load the destinations. Check that migration 0079 has been applied.",
+      "summary": "Linked to Google Maps: {{linked}} / {{total}}",
+      "hint": "For each destination this finds the city on Google Maps and saves it. Close matches are saved automatically; unclear ones are listed below for you to decide. Keep this window open until it finishes.",
+      "start": "Start linking ({{count}})",
+      "allDone": "All linked",
+      "stop": "Stop",
+      "progress": "{{done}} / {{total}} processed",
+      "reviewTitle": "{{count}} need a look",
+      "far": "Nearest candidate \"{{name}}\" is {{km}} km away.",
+      "none": "No city-level place found.",
+      "error": "Error: {{message}}",
+      "accept": "Use this place"
     }
   },
   "report": {
@@ -737,7 +752,8 @@
       "subSaharanAfrica": "East & Southern Africa",
       "oceania": "Oceania",
       "guamSaipan": "Guam & Saipan",
-      "etc": "Other"
+      "etc": "Other",
+      "centralCaucasus": "Central Asia & Caucasus"
     }
   },
   "dateDialog": {

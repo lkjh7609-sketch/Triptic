@@ -6,12 +6,12 @@ export const CONTINENT_KEYS = ['AS', 'EU', 'NA', 'SA', 'AF', 'OC'] as const;
 export type ContinentKey = (typeof CONTINENT_KEYS)[number];
 
 export const COUNTRY_KEYS: Record<ContinentKey, string[]> = {
-  AS: ['KR', 'JP', 'VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'TW', 'HK', 'MO', 'CN', 'KH', 'IN', 'NP', 'MV', 'AE', 'QA', 'IL', 'MN'],
-  EU: ['FR', 'GB', 'IT', 'ES', 'CZ', 'AT', 'CH', 'NL', 'PT', 'TR', 'DE', 'GR', 'HR', 'HU', 'PL', 'DK', 'SE', 'IE', 'BE'],
-  NA: ['US', 'CA', 'MX', 'CU'],
-  SA: ['BR', 'AR', 'PE', 'CL'],
-  AF: ['ZA', 'MA', 'EG', 'KE', 'TZ'],
-  OC: ['AU', 'GU', 'MP', 'NZ', 'FJ'],
+  AS: ['KR', 'JP', 'VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'TW', 'HK', 'MO', 'CN', 'KH', 'IN', 'NP', 'MV', 'AE', 'QA', 'IL', 'MN', 'LA', 'MM', 'BN', 'LK', 'UZ', 'KZ', 'KG', 'GE', 'AM', 'AZ', 'OM', 'JO', 'RU'],
+  EU: ['FR', 'GB', 'IT', 'ES', 'CZ', 'AT', 'CH', 'NL', 'PT', 'TR', 'DE', 'GR', 'HR', 'HU', 'PL', 'DK', 'SE', 'IE', 'BE', 'FI', 'NO', 'IS', 'EE', 'LV', 'LT', 'SI', 'SK', 'MT'],
+  NA: ['US', 'CA', 'MX', 'CU', 'PA'],
+  SA: ['BR', 'AR', 'PE', 'CL', 'CO'],
+  AF: ['ZA', 'MA', 'EG', 'KE', 'TZ', 'ET', 'MU', 'ZW'],
+  OC: ['AU', 'GU', 'MP', 'NZ', 'FJ', 'PF', 'PW'],
 };
 
 /** 여행지 선택 창의 탭 — 한국·일본은 따로, 나머지는 대륙 묶음(아시아는 한국·일본을 뺀 나머지) */
@@ -75,26 +75,27 @@ export function isGroupedTab(tab: PickerTab): tab is GroupedTab {
  * 유럽은 한국 여행 상품의 구분을 따랐다(오스트리아·체코·헝가리·폴란드=동유럽, 튀르키예는 남유럽 묶음). */
 export const SUBREGIONS: Record<GroupedTab, { key: string; countries: string[] }[]> = {
   asia: [
-    { key: 'eastAsia', countries: ['TW', 'HK', 'MO', 'CN', 'MN'] },
-    { key: 'southeastAsia', countries: ['VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'KH'] },
-    { key: 'southAsia', countries: ['IN', 'NP', 'MV'] },
-    { key: 'middleEast', countries: ['AE', 'QA', 'IL'] },
+    { key: 'eastAsia', countries: ['TW', 'HK', 'MO', 'CN', 'MN', 'RU'] },
+    { key: 'southeastAsia', countries: ['VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'KH', 'LA', 'MM', 'BN'] },
+    { key: 'southAsia', countries: ['IN', 'NP', 'MV', 'LK'] },
+    { key: 'centralCaucasus', countries: ['UZ', 'KZ', 'KG', 'GE', 'AM', 'AZ'] },
+    { key: 'middleEast', countries: ['AE', 'QA', 'IL', 'OM', 'JO'] },
   ],
   eu: [
     { key: 'westernEurope', countries: ['FR', 'GB', 'IE', 'NL', 'BE', 'DE', 'CH'] },
-    { key: 'northernEurope', countries: ['DK', 'SE'] },
-    { key: 'southernEurope', countries: ['IT', 'ES', 'PT', 'GR', 'HR', 'TR'] },
-    { key: 'easternEurope', countries: ['CZ', 'AT', 'HU', 'PL'] },
+    { key: 'northernEurope', countries: ['DK', 'SE', 'FI', 'NO', 'IS', 'EE', 'LV', 'LT'] },
+    { key: 'southernEurope', countries: ['IT', 'ES', 'PT', 'GR', 'HR', 'TR', 'MT'] },
+    { key: 'easternEurope', countries: ['CZ', 'AT', 'HU', 'PL', 'SI', 'SK'] },
   ],
   am: [
     { key: 'northAmerica', countries: ['US', 'CA'] },
-    { key: 'centralAmerica', countries: ['MX', 'CU'] },
-    { key: 'southAmerica', countries: ['BR', 'AR', 'PE', 'CL'] },
+    { key: 'centralAmerica', countries: ['MX', 'CU', 'PA'] },
+    { key: 'southAmerica', countries: ['BR', 'AR', 'PE', 'CL', 'CO'] },
   ],
   other: [
     { key: 'northAfrica', countries: ['MA', 'EG'] },
-    { key: 'subSaharanAfrica', countries: ['KE', 'TZ', 'ZA'] },
-    { key: 'oceania', countries: ['AU', 'NZ', 'FJ'] },
+    { key: 'subSaharanAfrica', countries: ['KE', 'TZ', 'ZA', 'ET', 'ZW', 'MU'] },
+    { key: 'oceania', countries: ['AU', 'NZ', 'FJ', 'PF', 'PW'] },
     { key: 'guamSaipan', countries: ['GU', 'MP'] },
   ],
 };

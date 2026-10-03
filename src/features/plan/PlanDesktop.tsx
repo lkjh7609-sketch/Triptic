@@ -118,6 +118,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const stats = useHomeStats();
   const [searchParams, setSearchParams] = useSearchParams();
   const autoCreateCity = searchParams.get('autoCreate');
+  const autoCreatePlaceId = searchParams.get('placeId');
   const [filter, setFilter] = useState<StatusFilter>('all');
   const [query, setQuery] = useState('');
   const [pastView, setPastView] = useState<PastView>('grid');
@@ -373,10 +374,12 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
       {(showCreate || autoCreateCity) && (
         <CreateTripModal
           autoCreateCity={autoCreateCity}
+          autoCreatePlaceId={autoCreatePlaceId}
           onClose={() => {
             setShowCreate(false);
             if (autoCreateCity) {
               searchParams.delete('autoCreate');
+              searchParams.delete('placeId');
               setSearchParams(searchParams, { replace: true, preventScrollReset: true });
             }
           }}
