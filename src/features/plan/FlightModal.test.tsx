@@ -209,4 +209,31 @@ describe('FlightModal — 편명으로 불러오기', () => {
     expect(screen.getAllByText('편명을 입력해 주세요.').length).toBeGreaterThan(0);
     expect(lookup.calls).toEqual([]);
   });
+
+  it('불러온 뒤 시간을 고쳐 저장하면 직접 입력으로 표시된다', async () => {
+    lookup.result = found;
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" onClose={() => {}} onSave={onSave} />);
+    const outboundCard = screen.getByText('출국').closest('div')!.parentElement as HTMLElement;
+    fireEvent.change(screen.getAllByPlaceholderText('예: OZ102')[0], { target: { value: 'KE623' } });
+    fireEvent.click(within(outboundCard).getByRole('button', { name: '편명으로 불러오기' }));
+    await screen.findByText('불러왔어요. 내용을 확인하고 필요하면 고쳐 주세요.');
+    fireEvent.change(within(outboundCard).getByLabelText('출발 시각'), { target: { value: '19:10' } });
+    fireEvent.click(within(outboundCard).getByRole('button', { name: '이 항공편 정보 적용' }));
+    fireEvent.click(screen.getByRole('button', { name: '저장' }));
+    await Promise.resolve();
+    expect(onSave.mock.calls[0][0].outbound).toMatchObject({ manual: true });
+    expect(onSave.mock.calls[0][0].outbound.dep.time).toBe('19:10');
+  });
+
+  it('밤새 인천에 도착하는 귀국편은 날짜가 인천 도착일로 맞춰지고 안내가 뜬다', async () => {
+    lookup.result = { ...found, flight: { ...found.flight, flightNo: 'KE644', date: '2026-11-06' } };
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" endDate="2026-11-05" onClose={() => {}} onSave={vi.fn()} />);
+    const returnCard = screen.getByText('귀국').closest('div')!.parentElement as HTMLElement;
+    fireEvent.change(within(returnCard).getByPlaceholderText('예: OZ102'), { target: { value: 'KE644' } });
+    fireEvent.click(within(returnCard).getByRole('button', { name: '편명으로 불러오기' }));
+    expect(await screen.findByText(/인천 도착일은 2026-11-06이에요/)).toBeInTheDocument();
+    expect(lookup.calls).toEqual([['KE644', '2026-11-05']]);
+    expect((within(returnCard).getByLabelText('날짜') as HTMLInputElement).value).toBe('2026-11-06');
+  });
 });

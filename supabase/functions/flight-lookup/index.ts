@@ -17,7 +17,7 @@ import {
   missReason,
   normalizeFlightNo,
   pickDomestic,
-  pickIcnRow,
+  pickIcnRowForDate,
   type IcnScheduleRow,
   type LookupResponse,
 } from '../../../src/features/plan/flightLookup/schedule.ts';
@@ -110,18 +110,20 @@ Deno.serve(async (req) => {
   if (icnError) return json({ error: 'db_read_failed' }, 500, headers);
   const icnRows = (icnData ?? []) as IcnScheduleRow[];
   if (icnRows.length > 0) {
-    const row = pickIcnRow(icnRows, date);
-    if (!row) return json({ found: false, reason: missReason(icnRows, date) } satisfies LookupResponse, 200, headers);
+    const picked = pickIcnRowForDate(icnRows, date);
+    if (!picked) return json({ found: false, reason: missReason(icnRows, date) } satisfies LookupResponse, 200, headers);
+    // 도착편은 인천 도착일로 맞춰질 수 있다(밤새 오는 편) — 돌려주는 flight.date가 그 날짜
+    const { row, date: flightDate } = picked;
     let arrivalTime = '';
     if (row.direction === 'dep') {
       try {
-        const items = await kacCached(admin, 'kac_int', row.master_flight_id || row.flight_id, date, apiKey);
-        arrivalTime = kacArrivalTime(items, row.master_flight_id || row.flight_id, 'ICN', row.other_airport_code, date);
+        const items = await kacCached(admin, 'kac_int', row.master_flight_id || row.flight_id, flightDate, apiKey);
+        arrivalTime = kacArrivalTime(items, row.master_flight_id || row.flight_id, 'ICN', row.other_airport_code, flightDate);
       } catch (err) {
         console.warn('[flight-lookup] kac int failed:', err instanceof Error ? err.message : err);
       }
     }
-    return json({ found: true, flight: buildIcnFlight(row, date, arrivalTime) } satisfies LookupResponse, 200, headers);
+    return json({ found: true, flight: buildIcnFlight(row, flightDate, arrivalTime) } satisfies LookupResponse, 200, headers);
   }
 
   // 인천 표가 아직 비어 있으면(첫 동기화 전) 인천 편을 '없음'으로 잘못 알리지 않도록 준비 중으로 알린다

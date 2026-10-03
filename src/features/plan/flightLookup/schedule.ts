@@ -156,11 +156,37 @@ export function normalizeIcnSchedule(items: unknown, direction: Direction): IcnS
   return rows;
 }
 
+/** YYYY-MM-DD에 n일을 더한다 */
+export function addDays(ymd: string, n: number): string {
+  const d = new Date(`${ymd}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
 /** 편명이 같은 줄들 중 그 날짜에 운항하는 것. 시즌이 겹치는 줄이 여럿이면 시작일이 늦은(더 최근에 정해진) 것 */
 export function pickIcnRow(rows: IcnScheduleRow[], ymd: string): IcnScheduleRow | null {
   const hits = rows.filter((r) => rowCoversDate(r, ymd));
   if (hits.length === 0) return null;
   return hits.sort((a, b) => b.first_date.localeCompare(a.first_date))[0];
+}
+
+/**
+ * 사용자가 적은 날짜로 줄을 찾고, 없으면 도착편(상대 공항→인천)에 한해 하루 뒤도 찾는다.
+ * 도착편의 요일·기간은 **인천 도착일** 기준이라 밤새 날아오는 편은 상대 공항 출발일 다음 날이기 때문이다.
+ * 반환하는 date가 적은 날짜와 다르면 인천 도착일로 맞춘 것이다.
+ */
+export function pickIcnRowForDate(
+  rows: IcnScheduleRow[],
+  ymd: string,
+): { row: IcnScheduleRow; date: string } | null {
+  const same = pickIcnRow(rows, ymd);
+  if (same) return { row: same, date: ymd };
+  const next = addDays(ymd, 1);
+  const shifted = pickIcnRow(
+    rows.filter((r) => r.direction === 'arr'),
+    next,
+  );
+  return shifted ? { row: shifted, date: next } : null;
 }
 
 /** 편명은 아는데 그 날짜에 운항하지 않을 때의 이유 — 모든 운항 기간이 그 날짜보다 앞서 끝났으면 아직 공개되지 않은(다음 시즌) 날짜로 본다 */
