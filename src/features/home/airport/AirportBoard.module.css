@@ -328,9 +328,9 @@
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  margin-top: -22px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
   border: 1px solid var(--h-line-soft);
   border-radius: 50%;
   background: var(--h-card);
@@ -343,11 +343,11 @@
 }
 
 .arrowPrev {
-  left: -22px;
+  left: -48px; /* 보드 바깥(홈 좌우 여백 48px 안) — 시각 칸을 가리지 않게 */
 }
 
 .arrowNext {
-  right: -22px;
+  right: -48px;
 }
 
 .arrow:disabled {
