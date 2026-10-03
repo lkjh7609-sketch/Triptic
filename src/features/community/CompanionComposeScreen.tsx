@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Calendar, ChevronLeft, ChevronRight, MapPin, Minus, Plus, TriangleAlert } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
@@ -59,6 +59,8 @@ function CompanionComposeForm({ userId }: { userId: string }) {
   const navigate = useNavigate();
   const desktop = useMediaQuery('(min-width: 1024px)');
   const { data: destinations } = useDestinations();
+  const [searchParams] = useSearchParams();
+  const initialDestSlug = searchParams.get('destination');
   const createCompanionPost = useCreateCompanionPost();
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -87,6 +89,14 @@ function CompanionComposeForm({ userId }: { userId: string }) {
   useEffect(() => {
     trackScreenView('community_companion_compose');
   }, []);
+
+  // ?destination=slug 로 들어오면 그 도시를 미리 고른다. 이어 쓰기를 고르면 임시저장 글의 도시가 우선한다
+  useEffect(() => {
+    if (!initialDestSlug || !destinations || destinationId) return;
+    const d = destinations.find((x) => x.slug === initialDestSlug);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (d) setDestinationId(d.id);
+  }, [destinations, initialDestSlug, destinationId]);
 
   const selectedDestination = destinations?.find((d) => d.id === destinationId);
   const featured = useMemo(
