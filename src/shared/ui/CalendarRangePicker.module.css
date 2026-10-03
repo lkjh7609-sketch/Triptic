@@ -102,3 +102,8 @@
 .dayCell.today:not(.selected) .dayBtn {
   color: var(--brand-text);
 }
+
+/* 고르는 값과 별개로 표시해 둔 기간(예: 여행 기간) — 은은한 띠 */
+.dayCell.marked {
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+}

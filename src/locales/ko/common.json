@@ -162,5 +162,8 @@
     },
     "view": "자세히",
     "close": "닫기"
+  },
+  "datePicker": {
+    "tripRange": "연한 색 칸은 이 여행 기간이에요."
   }
 }

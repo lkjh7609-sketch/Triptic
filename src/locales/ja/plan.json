@@ -128,7 +128,11 @@
       "out_of_range": "この日付には運航していない便です。日付を確認するか、下に直接入力してください。",
       "not_published": "この日付のスケジュールはまだ公開されていません。下に直接入力してください。"
     },
-    "lookupDateShifted": "この便の仁川到着日は{{date}}です(夜間便)。日付を合わせました。内容をご確認ください。"
+    "lookupDateShifted": "この便の仁川到着日は{{date}}です(夜間便)。日付を合わせました。内容をご確認ください。",
+    "manualOpen": "直接入力する",
+    "editManual": "直接修正",
+    "pickDate": "日付を選ぶ",
+    "dateAria": "フライト日"
   },
   "itemDetail": {
     "mapLink": "Google Mapsで見る",
