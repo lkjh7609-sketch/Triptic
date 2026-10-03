@@ -1,0 +1,2569 @@
+{
+ "NRT": {
+  "country": "JP",
+  "name": {
+   "ko": "도쿄/나리타",
+   "en": "Tokyo Narita",
+   "ja": "東京/成田",
+   "zh-TW": "東京/成田"
+  },
+  "lat": 35.77,
+  "lng": 140.39,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "tokyo",
+  "icnWeekly": 576,
+  "airlines": 23
+ },
+ "KIX": {
+  "country": "JP",
+  "name": {
+   "ko": "오사카/간사이",
+   "en": "Osaka Kansai",
+   "ja": "大阪/関西",
+   "zh-TW": "大阪/關西"
+  },
+  "lat": 34.43,
+  "lng": 135.24,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "osaka",
+  "icnWeekly": 528,
+  "airlines": 19
+ },
+ "FUK": {
+  "country": "JP",
+  "name": {
+   "ko": "후쿠오카",
+   "en": "Fukuoka",
+   "ja": "福岡",
+   "zh-TW": "福岡"
+  },
+  "lat": 33.59,
+  "lng": 130.45,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "fukuoka",
+  "icnWeekly": 376,
+  "airlines": 19
+ },
+ "HKG": {
+  "country": "HK",
+  "name": {
+   "ko": "홍콩",
+   "en": "Hong Kong",
+   "ja": "香港",
+   "zh-TW": "香港"
+  },
+  "lat": 22.31,
+  "lng": 113.91,
+  "timezone": "Asia/Hong_Kong",
+  "destinationSlug": "hongkong",
+  "icnWeekly": 270,
+  "airlines": 17
+ },
+ "TAO": {
+  "country": "CN",
+  "name": {
+   "ko": "칭다오",
+   "en": "Qingdao",
+   "ja": "青島",
+   "zh-TW": "青島"
+  },
+  "lat": 36.27,
+  "lng": 120.37,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 264,
+  "airlines": 10
+ },
+ "PVG": {
+  "country": "CN",
+  "name": {
+   "ko": "상하이/푸동",
+   "en": "Shanghai Pudong",
+   "ja": "上海/浦東",
+   "zh-TW": "上海/浦東"
+  },
+  "lat": 31.14,
+  "lng": 121.81,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": "shanghai",
+  "icnWeekly": 224,
+  "airlines": 9
+ },
+ "BKK": {
+  "country": "TH",
+  "name": {
+   "ko": "방콕/수완나품",
+   "en": "Bangkok Suvarnabhumi",
+   "ja": "バンコク/スワンナプーム",
+   "zh-TW": "曼谷/素萬那普"
+  },
+  "lat": 13.69,
+  "lng": 100.75,
+  "timezone": "Asia/Bangkok",
+  "destinationSlug": "bangkok",
+  "icnWeekly": 192,
+  "airlines": 18
+ },
+ "DAD": {
+  "country": "VN",
+  "name": {
+   "ko": "다낭",
+   "en": "Da Nang",
+   "ja": "ダナン",
+   "zh-TW": "峴港"
+  },
+  "lat": 16.04,
+  "lng": 108.2,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": "danang",
+  "icnWeekly": 182,
+  "airlines": 14
+ },
+ "TPE": {
+  "country": "TW",
+  "name": {
+   "ko": "타이베이",
+   "en": "Taipei Taoyuan",
+   "ja": "台北/桃園",
+   "zh-TW": "台北/桃園"
+  },
+  "lat": 25.08,
+  "lng": 121.23,
+  "timezone": "Asia/Taipei",
+  "destinationSlug": "taipei",
+  "icnWeekly": 176,
+  "airlines": 17
+ },
+ "HAN": {
+  "country": "VN",
+  "name": {
+   "ko": "하노이",
+   "en": "Hanoi",
+   "ja": "ハノイ",
+   "zh-TW": "河內"
+  },
+  "lat": 21.22,
+  "lng": 105.81,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": "hanoi",
+  "icnWeekly": 152,
+  "airlines": 13
+ },
+ "SIN": {
+  "country": "SG",
+  "name": {
+   "ko": "싱가포르",
+   "en": "Singapore",
+   "ja": "シンガポール",
+   "zh-TW": "新加坡"
+  },
+  "lat": 1.36,
+  "lng": 103.99,
+  "timezone": "Asia/Singapore",
+  "destinationSlug": "singapore",
+  "icnWeekly": 148,
+  "airlines": 14
+ },
+ "CTS": {
+  "country": "JP",
+  "name": {
+   "ko": "삿포로",
+   "en": "Sapporo New Chitose",
+   "ja": "札幌/新千歳",
+   "zh-TW": "札幌/新千歲"
+  },
+  "lat": 42.78,
+  "lng": 141.69,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "sapporo",
+  "icnWeekly": 140,
+  "airlines": 14
+ },
+ "MNL": {
+  "country": "PH",
+  "name": {
+   "ko": "마닐라",
+   "en": "Manila",
+   "ja": "マニラ",
+   "zh-TW": "馬尼拉"
+  },
+  "lat": 14.51,
+  "lng": 121.02,
+  "timezone": "Asia/Manila",
+  "destinationSlug": null,
+  "icnWeekly": 140,
+  "airlines": 5
+ },
+ "SGN": {
+  "country": "VN",
+  "name": {
+   "ko": "호찌민",
+   "en": "Ho Chi Minh City",
+   "ja": "ホーチミン",
+   "zh-TW": "胡志明市"
+  },
+  "lat": 10.82,
+  "lng": 106.65,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": "hochiminh",
+  "icnWeekly": 140,
+  "airlines": 9
+ },
+ "CXR": {
+  "country": "VN",
+  "name": {
+   "ko": "나트랑",
+   "en": "Nha Trang (Cam Ranh)",
+   "ja": "ニャチャン",
+   "zh-TW": "芽莊"
+  },
+  "lat": 11.99,
+  "lng": 109.22,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": "nhatrang",
+  "icnWeekly": 134,
+  "airlines": 12
+ },
+ "NGO": {
+  "country": "JP",
+  "name": {
+   "ko": "나고야",
+   "en": "Nagoya Chubu",
+   "ja": "名古屋/中部",
+   "zh-TW": "名古屋/中部"
+  },
+  "lat": 34.86,
+  "lng": 136.81,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "nagoya",
+  "icnWeekly": 120,
+  "airlines": 13
+ },
+ "PEK": {
+  "country": "CN",
+  "name": {
+   "ko": "베이징/서우두",
+   "en": "Beijing Capital",
+   "ja": "北京/首都",
+   "zh-TW": "北京/首都"
+  },
+  "lat": 40.08,
+  "lng": 116.58,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": "beijing",
+  "icnWeekly": 118,
+  "airlines": 5
+ },
+ "PQC": {
+  "country": "VN",
+  "name": {
+   "ko": "푸꾸옥",
+   "en": "Phu Quoc",
+   "ja": "フーコック",
+   "zh-TW": "富國島"
+  },
+  "lat": 10.17,
+  "lng": 103.99,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": null,
+  "icnWeekly": 110,
+  "airlines": 9
+ },
+ "OKA": {
+  "country": "JP",
+  "name": {
+   "ko": "오키나와",
+   "en": "Okinawa Naha",
+   "ja": "沖縄/那覇",
+   "zh-TW": "沖繩/那霸"
+  },
+  "lat": 26.2,
+  "lng": 127.65,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "okinawa",
+  "icnWeekly": 98,
+  "airlines": 11
+ },
+ "YNT": {
+  "country": "CN",
+  "name": {
+   "ko": "옌타이",
+   "en": "Yantai",
+   "ja": "煙台",
+   "zh-TW": "煙台"
+  },
+  "lat": 37.66,
+  "lng": 121.37,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 94,
+  "airlines": 4
+ },
+ "DLC": {
+  "country": "CN",
+  "name": {
+   "ko": "다롄(대련)",
+   "en": "Dalian",
+   "ja": "大連",
+   "zh-TW": "大連"
+  },
+  "lat": 38.97,
+  "lng": 121.54,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 84,
+  "airlines": 5
+ },
+ "SHE": {
+  "country": "CN",
+  "name": {
+   "ko": "선양(심양)",
+   "en": "Shenyang",
+   "ja": "瀋陽",
+   "zh-TW": "瀋陽"
+  },
+  "lat": 41.64,
+  "lng": 123.48,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 84,
+  "airlines": 5
+ },
+ "TSN": {
+  "country": "CN",
+  "name": {
+   "ko": "톈진",
+   "en": "Tianjin",
+   "ja": "天津",
+   "zh-TW": "天津"
+  },
+  "lat": 39.12,
+  "lng": 117.35,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 84,
+  "airlines": 5
+ },
+ "YNJ": {
+  "country": "CN",
+  "name": {
+   "ko": "옌지(연길)",
+   "en": "Yanji",
+   "ja": "延吉",
+   "zh-TW": "延吉"
+  },
+  "lat": 42.88,
+  "lng": 129.45,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 84,
+  "airlines": 6
+ },
+ "CAN": {
+  "country": "CN",
+  "name": {
+   "ko": "광저우",
+   "en": "Guangzhou",
+   "ja": "広州",
+   "zh-TW": "廣州"
+  },
+  "lat": 23.39,
+  "lng": 113.3,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 82,
+  "airlines": 5
+ },
+ "LAX": {
+  "country": "US",
+  "name": {
+   "ko": "로스앤젤레스",
+   "en": "Los Angeles",
+   "ja": "ロサンゼルス",
+   "zh-TW": "洛杉磯"
+  },
+  "lat": 33.94,
+  "lng": -118.41,
+  "timezone": "America/Los_Angeles",
+  "destinationSlug": "losangeles",
+  "icnWeekly": 74,
+  "airlines": 10
+ },
+ "PUS": {
+  "country": "KR",
+  "name": {
+   "ko": "김해",
+   "en": "Busan Gimhae",
+   "ja": "釜山/金海",
+   "zh-TW": "釜山/金海"
+  },
+  "lat": 35.18,
+  "lng": 128.94,
+  "timezone": "Asia/Seoul",
+  "destinationSlug": "busan",
+  "icnWeekly": 72,
+  "airlines": 8
+ },
+ "GUM": {
+  "country": "GU",
+  "name": {
+   "ko": "괌",
+   "en": "Guam",
+   "ja": "グアム",
+   "zh-TW": "關島"
+  },
+  "lat": 13.48,
+  "lng": 144.8,
+  "timezone": "Pacific/Guam",
+  "destinationSlug": "guam",
+  "icnWeekly": 70,
+  "airlines": 4
+ },
+ "UKB": {
+  "country": "JP",
+  "name": {
+   "ko": "고베",
+   "en": "Kobe",
+   "ja": "神戸",
+   "zh-TW": "神戶"
+  },
+  "lat": 34.63,
+  "lng": 135.22,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 70,
+  "airlines": 4
+ },
+ "SFO": {
+  "country": "US",
+  "name": {
+   "ko": "샌프란시스코",
+   "en": "San Francisco",
+   "ja": "サンフランシスコ",
+   "zh-TW": "舊金山"
+  },
+  "lat": 37.62,
+  "lng": -122.38,
+  "timezone": "America/Los_Angeles",
+  "destinationSlug": "sanfrancisco",
+  "icnWeekly": 66,
+  "airlines": 7
+ },
+ "SZX": {
+  "country": "CN",
+  "name": {
+   "ko": "선전",
+   "en": "Shenzhen",
+   "ja": "深セン",
+   "zh-TW": "深圳"
+  },
+  "lat": 22.64,
+  "lng": 113.81,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 63,
+  "airlines": 6
+ },
+ "ATL": {
+  "country": "US",
+  "name": {
+   "ko": "애틀랜타",
+   "en": "Atlanta",
+   "ja": "アトランタ",
+   "zh-TW": "亞特蘭大"
+  },
+  "lat": 33.64,
+  "lng": -84.43,
+  "timezone": "America/New_York",
+  "destinationSlug": null,
+  "icnWeekly": 56,
+  "airlines": 2
+ },
+ "JFK": {
+  "country": "US",
+  "name": {
+   "ko": "뉴욕/존에프케네디",
+   "en": "New York JFK",
+   "ja": "ニューヨーク/JFK",
+   "zh-TW": "紐約/甘迺迪"
+  },
+  "lat": 40.64,
+  "lng": -73.78,
+  "timezone": "America/New_York",
+  "destinationSlug": "newyork",
+  "icnWeekly": 56,
+  "airlines": 7
+ },
+ "MFM": {
+  "country": "MO",
+  "name": {
+   "ko": "마카오",
+   "en": "Macau",
+   "ja": "マカオ",
+   "zh-TW": "澳門"
+  },
+  "lat": 22.15,
+  "lng": 113.59,
+  "timezone": "Asia/Macau",
+  "destinationSlug": "macau",
+  "icnWeekly": 56,
+  "airlines": 5
+ },
+ "TNA": {
+  "country": "CN",
+  "name": {
+   "ko": "지난",
+   "en": "Jinan",
+   "ja": "済南",
+   "zh-TW": "濟南"
+  },
+  "lat": 36.86,
+  "lng": 117.22,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 56,
+  "airlines": 4
+ },
+ "KUL": {
+  "country": "MY",
+  "name": {
+   "ko": "쿠알라룸푸르",
+   "en": "Kuala Lumpur",
+   "ja": "クアラルンプール",
+   "zh-TW": "吉隆坡"
+  },
+  "lat": 2.75,
+  "lng": 101.71,
+  "timezone": "Asia/Kuala_Lumpur",
+  "destinationSlug": "kualalumpur",
+  "icnWeekly": 55,
+  "airlines": 9
+ },
+ "CGK": {
+  "country": "ID",
+  "name": {
+   "ko": "자카르타/수카르노하타",
+   "en": "Jakarta",
+   "ja": "ジャカルタ",
+   "zh-TW": "雅加達"
+  },
+  "lat": -6.13,
+  "lng": 106.66,
+  "timezone": "Asia/Jakarta",
+  "destinationSlug": null,
+  "icnWeekly": 52,
+  "airlines": 6
+ },
+ "XIY": {
+  "country": "CN",
+  "name": {
+   "ko": "시안",
+   "en": "Xi'an",
+   "ja": "西安",
+   "zh-TW": "西安"
+  },
+  "lat": 34.45,
+  "lng": 108.75,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 52,
+  "airlines": 5
+ },
+ "UBN": {
+  "country": "MN",
+  "name": {
+   "ko": "신 울란바타르",
+   "en": "Ulaanbaatar",
+   "ja": "ウランバートル",
+   "zh-TW": "烏蘭巴托"
+  },
+  "lat": 47.65,
+  "lng": 106.82,
+  "timezone": "Asia/Ulaanbaatar",
+  "destinationSlug": "ulaanbaatar",
+  "icnWeekly": 51,
+  "airlines": 7
+ },
+ "YVR": {
+  "country": "CA",
+  "name": {
+   "ko": "밴쿠버",
+   "en": "Vancouver",
+   "ja": "バンクーバー",
+   "zh-TW": "溫哥華"
+  },
+  "lat": 49.19,
+  "lng": -123.18,
+  "timezone": "America/Vancouver",
+  "destinationSlug": "vancouver",
+  "icnWeekly": 50,
+  "airlines": 6
+ },
+ "HGH": {
+  "country": "CN",
+  "name": {
+   "ko": "항저우",
+   "en": "Hangzhou",
+   "ja": "杭州",
+   "zh-TW": "杭州"
+  },
+  "lat": 30.23,
+  "lng": 120.43,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 48,
+  "airlines": 7
+ },
+ "SEA": {
+  "country": "US",
+  "name": {
+   "ko": "시애틀/타코마",
+   "en": "Seattle-Tacoma",
+   "ja": "シアトル",
+   "zh-TW": "西雅圖"
+  },
+  "lat": 47.45,
+  "lng": -122.31,
+  "timezone": "America/Los_Angeles",
+  "destinationSlug": null,
+  "icnWeekly": 48,
+  "airlines": 7
+ },
+ "CDG": {
+  "country": "FR",
+  "name": {
+   "ko": "파리/샤를드골",
+   "en": "Paris Charles de Gaulle",
+   "ja": "パリ/シャルル・ド・ゴール",
+   "zh-TW": "巴黎/戴高樂"
+  },
+  "lat": 49.01,
+  "lng": 2.55,
+  "timezone": "Europe/Paris",
+  "destinationSlug": "paris",
+  "icnWeekly": 46,
+  "airlines": 6
+ },
+ "CGQ": {
+  "country": "CN",
+  "name": {
+   "ko": "창춘",
+   "en": "Changchun",
+   "ja": "長春",
+   "zh-TW": "長春"
+  },
+  "lat": 43.99,
+  "lng": 125.68,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 46,
+  "airlines": 3
+ },
+ "NKG": {
+  "country": "CN",
+  "name": {
+   "ko": "난징",
+   "en": "Nanjing",
+   "ja": "南京",
+   "zh-TW": "南京"
+  },
+  "lat": 31.74,
+  "lng": 118.86,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 46,
+  "airlines": 5
+ },
+ "SYD": {
+  "country": "AU",
+  "name": {
+   "ko": "시드니",
+   "en": "Sydney",
+   "ja": "シドニー",
+   "zh-TW": "雪梨"
+  },
+  "lat": -33.95,
+  "lng": 151.18,
+  "timezone": "Australia/Sydney",
+  "destinationSlug": "sydney",
+  "icnWeekly": 45,
+  "airlines": 12
+ },
+ "CNX": {
+  "country": "TH",
+  "name": {
+   "ko": "치앙마이",
+   "en": "Chiang Mai",
+   "ja": "チェンマイ",
+   "zh-TW": "清邁"
+  },
+  "lat": 18.77,
+  "lng": 98.96,
+  "timezone": "Asia/Bangkok",
+  "destinationSlug": "chiangmai",
+  "icnWeekly": 44,
+  "airlines": 5
+ },
+ "CEB": {
+  "country": "PH",
+  "name": {
+   "ko": "세부",
+   "en": "Cebu",
+   "ja": "セブ",
+   "zh-TW": "宿霧"
+  },
+  "lat": 10.31,
+  "lng": 123.98,
+  "timezone": "Asia/Manila",
+  "destinationSlug": "cebu",
+  "icnWeekly": 42,
+  "airlines": 4
+ },
+ "DPS": {
+  "country": "ID",
+  "name": {
+   "ko": "덴파사르",
+   "en": "Bali Denpasar",
+   "ja": "バリ島/デンパサール",
+   "zh-TW": "峇里島/登巴薩"
+  },
+  "lat": -8.75,
+  "lng": 115.17,
+  "timezone": "Asia/Makassar",
+  "destinationSlug": "bali",
+  "icnWeekly": 42,
+  "airlines": 7
+ },
+ "HND": {
+  "country": "JP",
+  "name": {
+   "ko": "도쿄/하네다",
+   "en": "Tokyo Haneda",
+   "ja": "東京/羽田",
+   "zh-TW": "東京/羽田"
+  },
+  "lat": 35.55,
+  "lng": 139.78,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "tokyo",
+  "icnWeekly": 42,
+  "airlines": 7
+ },
+ "HRB": {
+  "country": "CN",
+  "name": {
+   "ko": "하얼빈",
+   "en": "Harbin",
+   "ja": "ハルビン",
+   "zh-TW": "哈爾濱"
+  },
+  "lat": 45.62,
+  "lng": 126.25,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 42,
+  "airlines": 4
+ },
+ "IST": {
+  "country": "TR",
+  "name": {
+   "ko": "이스탄불",
+   "en": "Istanbul",
+   "ja": "イスタンブール",
+   "zh-TW": "伊斯坦堡"
+  },
+  "lat": 41.27,
+  "lng": 28.74,
+  "timezone": "Europe/Istanbul",
+  "destinationSlug": "istanbul",
+  "icnWeekly": 42,
+  "airlines": 3
+ },
+ "LHR": {
+  "country": "GB",
+  "name": {
+   "ko": "런던/히드로",
+   "en": "London Heathrow",
+   "ja": "ロンドン/ヒースロー",
+   "zh-TW": "倫敦/希斯洛"
+  },
+  "lat": 51.47,
+  "lng": -0.45,
+  "timezone": "Europe/London",
+  "destinationSlug": "london",
+  "icnWeekly": 42,
+  "airlines": 3
+ },
+ "MYJ": {
+  "country": "JP",
+  "name": {
+   "ko": "마쓰야마",
+   "en": "Matsuyama",
+   "ja": "松山",
+   "zh-TW": "松山"
+  },
+  "lat": 33.83,
+  "lng": 132.7,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 42,
+  "airlines": 1
+ },
+ "PKX": {
+  "country": "CN",
+  "name": {
+   "ko": "베이징/다싱",
+   "en": "Beijing Daxing",
+   "ja": "北京/大興",
+   "zh-TW": "北京/大興"
+  },
+  "lat": 39.51,
+  "lng": 116.41,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": "beijing",
+  "icnWeekly": 42,
+  "airlines": 3
+ },
+ "RMQ": {
+  "country": "TW",
+  "name": {
+   "ko": "타이중/칭촨강",
+   "en": "Taichung",
+   "ja": "台中",
+   "zh-TW": "台中"
+  },
+  "lat": 24.26,
+  "lng": 120.62,
+  "timezone": "Asia/Taipei",
+  "destinationSlug": null,
+  "icnWeekly": 42,
+  "airlines": 2
+ },
+ "WEH": {
+  "country": "CN",
+  "name": {
+   "ko": "웨이하이",
+   "en": "Weihai",
+   "ja": "威海",
+   "zh-TW": "威海"
+  },
+  "lat": 37.19,
+  "lng": 122.23,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 42,
+  "airlines": 3
+ },
+ "BKI": {
+  "country": "MY",
+  "name": {
+   "ko": "코타키나발루",
+   "en": "Kota Kinabalu",
+   "ja": "コタキナバル",
+   "zh-TW": "亞庇"
+  },
+  "lat": 5.94,
+  "lng": 116.05,
+  "timezone": "Asia/Kuala_Lumpur",
+  "destinationSlug": null,
+  "icnWeekly": 38,
+  "airlines": 4
+ },
+ "TFU": {
+  "country": "CN",
+  "name": {
+   "ko": "청두/톈푸",
+   "en": "Chengdu Tianfu",
+   "ja": "成都/天府",
+   "zh-TW": "成都/天府"
+  },
+  "lat": 30.31,
+  "lng": 104.44,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 38,
+  "airlines": 4
+ },
+ "CRK": {
+  "country": "PH",
+  "name": {
+   "ko": "클라크필드",
+   "en": "Clark",
+   "ja": "クラーク",
+   "zh-TW": "克拉克"
+  },
+  "lat": 15.19,
+  "lng": 120.56,
+  "timezone": "Asia/Manila",
+  "destinationSlug": null,
+  "icnWeekly": 36,
+  "airlines": 4
+ },
+ "FRA": {
+  "country": "DE",
+  "name": {
+   "ko": "프랑크푸르트",
+   "en": "Frankfurt",
+   "ja": "フランクフルト",
+   "zh-TW": "法蘭克福"
+  },
+  "lat": 50.04,
+  "lng": 8.56,
+  "timezone": "Europe/Berlin",
+  "destinationSlug": null,
+  "icnWeekly": 36,
+  "airlines": 4
+ },
+ "HIJ": {
+  "country": "JP",
+  "name": {
+   "ko": "히로시마",
+   "en": "Hiroshima",
+   "ja": "広島",
+   "zh-TW": "廣島"
+  },
+  "lat": 34.44,
+  "lng": 132.92,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 36,
+  "airlines": 1
+ },
+ "KHH": {
+  "country": "TW",
+  "name": {
+   "ko": "가오슝",
+   "en": "Kaohsiung",
+   "ja": "高雄",
+   "zh-TW": "高雄"
+  },
+  "lat": 22.58,
+  "lng": 120.35,
+  "timezone": "Asia/Taipei",
+  "destinationSlug": "kaohsiung",
+  "icnWeekly": 36,
+  "airlines": 6
+ },
+ "KTI": {
+  "country": "KH",
+  "name": {
+   "ko": "프놈펜/떼조",
+   "en": "Phnom Penh Techo",
+   "ja": "プノンペン/テチョ",
+   "zh-TW": "金邊/德崇"
+  },
+  "lat": 11.55,
+  "lng": 104.92,
+  "timezone": "Asia/Phnom_Penh",
+  "destinationSlug": null,
+  "icnWeekly": 34,
+  "airlines": 5
+ },
+ "TAS": {
+  "country": "UZ",
+  "name": {
+   "ko": "타슈켄트",
+   "en": "Tashkent",
+   "ja": "タシケント",
+   "zh-TW": "塔什干"
+  },
+  "lat": 41.26,
+  "lng": 69.28,
+  "timezone": "Asia/Tashkent",
+  "destinationSlug": null,
+  "icnWeekly": 31,
+  "airlines": 5
+ },
+ "CGO": {
+  "country": "CN",
+  "name": {
+   "ko": "정저우",
+   "en": "Zhengzhou",
+   "ja": "鄭州",
+   "zh-TW": "鄭州"
+  },
+  "lat": 34.52,
+  "lng": 113.84,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 30,
+  "airlines": 4
+ },
+ "HNL": {
+  "country": "US",
+  "name": {
+   "ko": "호놀룰루",
+   "en": "Honolulu",
+   "ja": "ホノルル",
+   "zh-TW": "檀香山"
+  },
+  "lat": 21.32,
+  "lng": -157.92,
+  "timezone": "Pacific/Honolulu",
+  "destinationSlug": "hawaii",
+  "icnWeekly": 30,
+  "airlines": 2
+ },
+ "ALA": {
+  "country": "KZ",
+  "name": {
+   "ko": "알마티",
+   "en": "Almaty",
+   "ja": "アルマトイ",
+   "zh-TW": "阿拉木圖"
+  },
+  "lat": 43.35,
+  "lng": 77.04,
+  "timezone": "Asia/Almaty",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 5
+ },
+ "CKG": {
+  "country": "CN",
+  "name": {
+   "ko": "충칭",
+   "en": "Chongqing",
+   "ja": "重慶",
+   "zh-TW": "重慶"
+  },
+  "lat": 29.72,
+  "lng": 106.64,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 4
+ },
+ "CSX": {
+  "country": "CN",
+  "name": {
+   "ko": "장사",
+   "en": "Changsha",
+   "ja": "長沙",
+   "zh-TW": "長沙"
+  },
+  "lat": 28.19,
+  "lng": 113.22,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 5
+ },
+ "DFW": {
+  "country": "US",
+  "name": {
+   "ko": "댈러스/포트워스",
+   "en": "Dallas/Fort Worth",
+   "ja": "ダラス/フォートワース",
+   "zh-TW": "達拉斯/沃思堡"
+  },
+  "lat": 32.9,
+  "lng": -97.04,
+  "timezone": "America/Chicago",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 4
+ },
+ "EWR": {
+  "country": "US",
+  "name": {
+   "ko": "뉴어크",
+   "en": "Newark",
+   "ja": "ニューアーク",
+   "zh-TW": "紐華克"
+  },
+  "lat": 40.69,
+  "lng": -74.17,
+  "timezone": "America/New_York",
+  "destinationSlug": "newyork",
+  "icnWeekly": 28,
+  "airlines": 2
+ },
+ "FSZ": {
+  "country": "JP",
+  "name": {
+   "ko": "시즈오카",
+   "en": "Shizuoka",
+   "ja": "静岡",
+   "zh-TW": "靜岡"
+  },
+  "lat": 34.8,
+  "lng": 138.19,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 1
+ },
+ "HKT": {
+  "country": "TH",
+  "name": {
+   "ko": "푸켓",
+   "en": "Phuket",
+   "ja": "プーケット",
+   "zh-TW": "普吉島"
+  },
+  "lat": 8.11,
+  "lng": 98.32,
+  "timezone": "Asia/Bangkok",
+  "destinationSlug": "phuket",
+  "icnWeekly": 28,
+  "airlines": 3
+ },
+ "KMJ": {
+  "country": "JP",
+  "name": {
+   "ko": "구마모토",
+   "en": "Kumamoto",
+   "ja": "熊本",
+   "zh-TW": "熊本"
+  },
+  "lat": 32.84,
+  "lng": 130.86,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 4
+ },
+ "TAG": {
+  "country": "PH",
+  "name": {
+   "ko": "보홀 팡라오",
+   "en": "Bohol Panglao",
+   "ja": "ボホール/パングラオ",
+   "zh-TW": "薄荷島/邦勞"
+  },
+  "lat": 9.57,
+  "lng": 123.77,
+  "timezone": "Asia/Manila",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 2
+ },
+ "TAK": {
+  "country": "JP",
+  "name": {
+   "ko": "다카마쓰",
+   "en": "Takamatsu",
+   "ja": "高松",
+   "zh-TW": "高松"
+  },
+  "lat": 34.21,
+  "lng": 134.02,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 2
+ },
+ "XMN": {
+  "country": "CN",
+  "name": {
+   "ko": "샤먼",
+   "en": "Xiamen",
+   "ja": "アモイ",
+   "zh-TW": "廈門"
+  },
+  "lat": 24.54,
+  "lng": 118.13,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 28,
+  "airlines": 3
+ },
+ "YYZ": {
+  "country": "CA",
+  "name": {
+   "ko": "토론토",
+   "en": "Toronto",
+   "ja": "トロント",
+   "zh-TW": "多倫多"
+  },
+  "lat": 43.68,
+  "lng": -79.63,
+  "timezone": "America/Toronto",
+  "destinationSlug": "toronto",
+  "icnWeekly": 28,
+  "airlines": 4
+ },
+ "AMS": {
+  "country": "NL",
+  "name": {
+   "ko": "암스테르담",
+   "en": "Amsterdam",
+   "ja": "アムステルダム",
+   "zh-TW": "阿姆斯特丹"
+  },
+  "lat": 52.31,
+  "lng": 4.76,
+  "timezone": "Europe/Amsterdam",
+  "destinationSlug": "amsterdam",
+  "icnWeekly": 26,
+  "airlines": 4
+ },
+ "DYG": {
+  "country": "CN",
+  "name": {
+   "ko": "장가계",
+   "en": "Zhangjiajie",
+   "ja": "張家界",
+   "zh-TW": "張家界"
+  },
+  "lat": 29.1,
+  "lng": 110.44,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 26,
+  "airlines": 3
+ },
+ "FCO": {
+  "country": "IT",
+  "name": {
+   "ko": "로마",
+   "en": "Rome Fiumicino",
+   "ja": "ローマ/フィウミチーノ",
+   "zh-TW": "羅馬/菲烏米奇諾"
+  },
+  "lat": 41.8,
+  "lng": 12.25,
+  "timezone": "Europe/Rome",
+  "destinationSlug": "rome",
+  "icnWeekly": 25,
+  "airlines": 3
+ },
+ "VTE": {
+  "country": "LA",
+  "name": {
+   "ko": "비엔티안",
+   "en": "Vientiane",
+   "ja": "ビエンチャン",
+   "zh-TW": "永珍"
+  },
+  "lat": 17.99,
+  "lng": 102.56,
+  "timezone": "Asia/Vientiane",
+  "destinationSlug": null,
+  "icnWeekly": 24,
+  "airlines": 2
+ },
+ "AUH": {
+  "country": "AE",
+  "name": {
+   "ko": "아부다비",
+   "en": "Abu Dhabi",
+   "ja": "アブダビ",
+   "zh-TW": "阿布達比"
+  },
+  "lat": 24.43,
+  "lng": 54.65,
+  "timezone": "Asia/Dubai",
+  "destinationSlug": "abudhabi",
+  "icnWeekly": 22,
+  "airlines": 8
+ },
+ "FOC": {
+  "country": "CN",
+  "name": {
+   "ko": "푸저우",
+   "en": "Fuzhou",
+   "ja": "福州",
+   "zh-TW": "福州"
+  },
+  "lat": 25.94,
+  "lng": 119.66,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 22,
+  "airlines": 3
+ },
+ "IAD": {
+  "country": "US",
+  "name": {
+   "ko": "워싱턴",
+   "en": "Washington Dulles",
+   "ja": "ワシントン/ダレス",
+   "zh-TW": "華盛頓/杜勒斯"
+  },
+  "lat": 38.95,
+  "lng": -77.46,
+  "timezone": "America/New_York",
+  "destinationSlug": null,
+  "icnWeekly": 22,
+  "airlines": 3
+ },
+ "WUH": {
+  "country": "CN",
+  "name": {
+   "ko": "우한",
+   "en": "Wuhan",
+   "ja": "武漢",
+   "zh-TW": "武漢"
+  },
+  "lat": 30.78,
+  "lng": 114.21,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 22,
+  "airlines": 5
+ },
+ "BCN": {
+  "country": "ES",
+  "name": {
+   "ko": "바르셀로나",
+   "en": "Barcelona",
+   "ja": "バルセロナ",
+   "zh-TW": "巴塞隆納"
+  },
+  "lat": 41.3,
+  "lng": 2.08,
+  "timezone": "Europe/Madrid",
+  "destinationSlug": "barcelona",
+  "icnWeekly": 20,
+  "airlines": 3
+ },
+ "DEL": {
+  "country": "IN",
+  "name": {
+   "ko": "델리",
+   "en": "Delhi",
+   "ja": "デリー",
+   "zh-TW": "德里"
+  },
+  "lat": 28.56,
+  "lng": 77.1,
+  "timezone": "Asia/Kolkata",
+  "destinationSlug": "delhi",
+  "icnWeekly": 20,
+  "airlines": 4
+ },
+ "DXB": {
+  "country": "AE",
+  "name": {
+   "ko": "두바이",
+   "en": "Dubai",
+   "ja": "ドバイ",
+   "zh-TW": "杜拜"
+  },
+  "lat": 25.25,
+  "lng": 55.36,
+  "timezone": "Asia/Dubai",
+  "destinationSlug": "dubai",
+  "icnWeekly": 20,
+  "airlines": 2
+ },
+ "WUX": {
+  "country": "CN",
+  "name": {
+   "ko": "우시",
+   "en": "Wuxi",
+   "ja": "無錫",
+   "zh-TW": "無錫"
+  },
+  "lat": 31.49,
+  "lng": 120.43,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 20,
+  "airlines": 4
+ },
+ "DOH": {
+  "country": "QA",
+  "name": {
+   "ko": "도하",
+   "en": "Doha",
+   "ja": "ドーハ",
+   "zh-TW": "杜哈"
+  },
+  "lat": 25.27,
+  "lng": 51.61,
+  "timezone": "Asia/Qatar",
+  "destinationSlug": "doha",
+  "icnWeekly": 16,
+  "airlines": 7
+ },
+ "KMG": {
+  "country": "CN",
+  "name": {
+   "ko": "쿤밍",
+   "en": "Kunming",
+   "ja": "昆明",
+   "zh-TW": "昆明"
+  },
+  "lat": 25.1,
+  "lng": 102.93,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 16,
+  "airlines": 3
+ },
+ "BNE": {
+  "country": "AU",
+  "name": {
+   "ko": "브리즈번",
+   "en": "Brisbane",
+   "ja": "ブリスベン",
+   "zh-TW": "布里斯本"
+  },
+  "lat": -27.38,
+  "lng": 153.12,
+  "timezone": "Australia/Brisbane",
+  "destinationSlug": "brisbane",
+  "icnWeekly": 14,
+  "airlines": 9
+ },
+ "BOS": {
+  "country": "US",
+  "name": {
+   "ko": "보스턴",
+   "en": "Boston",
+   "ja": "ボストン",
+   "zh-TW": "波士頓"
+  },
+  "lat": 42.36,
+  "lng": -71.01,
+  "timezone": "America/New_York",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "BUD": {
+  "country": "HU",
+  "name": {
+   "ko": "부다페스트",
+   "en": "Budapest",
+   "ja": "ブダペスト",
+   "zh-TW": "布達佩斯"
+  },
+  "lat": 47.44,
+  "lng": 19.26,
+  "timezone": "Europe/Budapest",
+  "destinationSlug": "budapest",
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "DMK": {
+  "country": "TH",
+  "name": {
+   "ko": "방콕/돈므앙",
+   "en": "Bangkok Don Mueang",
+   "ja": "バンコク/ドンムアン",
+   "zh-TW": "曼谷/廊曼"
+  },
+  "lat": 13.91,
+  "lng": 100.61,
+  "timezone": "Asia/Bangkok",
+  "destinationSlug": "bangkok",
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "DTW": {
+  "country": "US",
+  "name": {
+   "ko": "디트로이트",
+   "en": "Detroit",
+   "ja": "デトロイト",
+   "zh-TW": "底特律"
+  },
+  "lat": 42.21,
+  "lng": -83.35,
+  "timezone": "America/New_York",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "HEL": {
+  "country": "FI",
+  "name": {
+   "ko": "헬싱키",
+   "en": "Helsinki",
+   "ja": "ヘルシンキ",
+   "zh-TW": "赫爾辛基"
+  },
+  "lat": 60.32,
+  "lng": 24.96,
+  "timezone": "Europe/Helsinki",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "HPH": {
+  "country": "VN",
+  "name": {
+   "ko": "하이퐁",
+   "en": "Hai Phong",
+   "ja": "ハイフォン",
+   "zh-TW": "海防"
+  },
+  "lat": 20.82,
+  "lng": 106.72,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "ISG": {
+  "country": "JP",
+  "name": {
+   "ko": "이시가키지마",
+   "en": "Ishigaki",
+   "ja": "石垣島",
+   "zh-TW": "石垣島"
+  },
+  "lat": 24.34,
+  "lng": 124.19,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "KIJ": {
+  "country": "JP",
+  "name": {
+   "ko": "니가타",
+   "en": "Niigata",
+   "ja": "新潟",
+   "zh-TW": "新潟"
+  },
+  "lat": 37.96,
+  "lng": 139.12,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 4
+ },
+ "KKJ": {
+  "country": "JP",
+  "name": {
+   "ko": "키타큐슈",
+   "en": "Kitakyushu",
+   "ja": "北九州",
+   "zh-TW": "北九州"
+  },
+  "lat": 33.84,
+  "lng": 131.03,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "KLO": {
+  "country": "PH",
+  "name": {
+   "ko": "칼리보",
+   "en": "Kalibo (Boracay)",
+   "ja": "カリボ",
+   "zh-TW": "卡里博"
+  },
+  "lat": 11.68,
+  "lng": 122.38,
+  "timezone": "Asia/Manila",
+  "destinationSlug": "boracay",
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "KMQ": {
+  "country": "JP",
+  "name": {
+   "ko": "고마쓰",
+   "en": "Komatsu",
+   "ja": "小松",
+   "zh-TW": "小松"
+  },
+  "lat": 36.39,
+  "lng": 136.41,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 4
+ },
+ "KOJ": {
+  "country": "JP",
+  "name": {
+   "ko": "가고시마",
+   "en": "Kagoshima",
+   "ja": "鹿児島",
+   "zh-TW": "鹿兒島"
+  },
+  "lat": 31.8,
+  "lng": 130.72,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 4
+ },
+ "LAS": {
+  "country": "US",
+  "name": {
+   "ko": "라스베이거스",
+   "en": "Las Vegas",
+   "ja": "ラスベガス",
+   "zh-TW": "拉斯維加斯"
+  },
+  "lat": 36.08,
+  "lng": -115.15,
+  "timezone": "America/Los_Angeles",
+  "destinationSlug": "lasvegas",
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "MDC": {
+  "country": "ID",
+  "name": {
+   "ko": "마나도",
+   "en": "Manado",
+   "ja": "マナド",
+   "zh-TW": "萬鴉老"
+  },
+  "lat": 1.55,
+  "lng": 124.93,
+  "timezone": "Asia/Makassar",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "MSP": {
+  "country": "US",
+  "name": {
+   "ko": "미니애폴리스",
+   "en": "Minneapolis",
+   "ja": "ミネアポリス",
+   "zh-TW": "明尼阿波利斯"
+  },
+  "lat": 44.88,
+  "lng": -93.22,
+  "timezone": "America/Chicago",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "MUC": {
+  "country": "DE",
+  "name": {
+   "ko": "뮌헨",
+   "en": "Munich",
+   "ja": "ミュンヘン",
+   "zh-TW": "慕尼黑"
+  },
+  "lat": 48.35,
+  "lng": 11.79,
+  "timezone": "Europe/Berlin",
+  "destinationSlug": "munich",
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "MXP": {
+  "country": "IT",
+  "name": {
+   "ko": "밀라노",
+   "en": "Milan Malpensa",
+   "ja": "ミラノ/マルペンサ",
+   "zh-TW": "米蘭/馬爾彭薩"
+  },
+  "lat": 45.63,
+  "lng": 8.72,
+  "timezone": "Europe/Rome",
+  "destinationSlug": "milan",
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "ORD": {
+  "country": "US",
+  "name": {
+   "ko": "시카고/오헤어",
+   "en": "Chicago O'Hare",
+   "ja": "シカゴ/オヘア",
+   "zh-TW": "芝加哥/歐海爾"
+  },
+  "lat": 41.98,
+  "lng": -87.9,
+  "timezone": "America/Chicago",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "PRG": {
+  "country": "CZ",
+  "name": {
+   "ko": "프라하",
+   "en": "Prague",
+   "ja": "プラハ",
+   "zh-TW": "布拉格"
+  },
+  "lat": 50.1,
+  "lng": 14.26,
+  "timezone": "Europe/Prague",
+  "destinationSlug": "prague",
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "SHI": {
+  "country": "JP",
+  "name": {
+   "ko": "미야코지마/시모지시마",
+   "en": "Miyako-jima (Shimojishima)",
+   "ja": "宮古島/下地島",
+   "zh-TW": "宮古島/下地島"
+  },
+  "lat": 24.83,
+  "lng": 125.14,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "SLC": {
+  "country": "US",
+  "name": {
+   "ko": "솔트레이크시티",
+   "en": "Salt Lake City",
+   "ja": "ソルトレイクシティ",
+   "zh-TW": "鹽湖城"
+  },
+  "lat": 40.79,
+  "lng": -111.98,
+  "timezone": "America/Denver",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 2
+ },
+ "SPN": {
+  "country": "MP",
+  "name": {
+   "ko": "사이판",
+   "en": "Saipan",
+   "ja": "サイパン",
+   "zh-TW": "塞班"
+  },
+  "lat": 15.12,
+  "lng": 145.73,
+  "timezone": "Pacific/Saipan",
+  "destinationSlug": "saipan",
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "SYX": {
+  "country": "CN",
+  "name": {
+   "ko": "싼야",
+   "en": "Sanya",
+   "ja": "三亜",
+   "zh-TW": "三亞"
+  },
+  "lat": 18.3,
+  "lng": 109.41,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 1
+ },
+ "TAE": {
+  "country": "KR",
+  "name": {
+   "ko": "대구",
+   "en": "Daegu",
+   "ja": "大邱",
+   "zh-TW": "大邱"
+  },
+  "lat": 35.89,
+  "lng": 128.66,
+  "timezone": "Asia/Seoul",
+  "destinationSlug": null,
+  "icnWeekly": 14,
+  "airlines": 6
+ },
+ "ADD": {
+  "country": "ET",
+  "name": {
+   "ko": "아디스아바바/볼레",
+   "en": "Addis Ababa",
+   "ja": "アディスアベバ",
+   "zh-TW": "阿迪斯阿貝巴"
+  },
+  "lat": 8.98,
+  "lng": 38.8,
+  "timezone": "Africa/Addis_Ababa",
+  "destinationSlug": null,
+  "icnWeekly": 12,
+  "airlines": 5
+ },
+ "CPH": {
+  "country": "DK",
+  "name": {
+   "ko": "코펜하겐",
+   "en": "Copenhagen",
+   "ja": "コペンハーゲン",
+   "zh-TW": "哥本哈根"
+  },
+  "lat": 55.62,
+  "lng": 12.65,
+  "timezone": "Europe/Copenhagen",
+  "destinationSlug": "copenhagen",
+  "icnWeekly": 12,
+  "airlines": 1
+ },
+ "KWL": {
+  "country": "CN",
+  "name": {
+   "ko": "구이린",
+   "en": "Guilin",
+   "ja": "桂林",
+   "zh-TW": "桂林"
+  },
+  "lat": 25.22,
+  "lng": 110.04,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 12,
+  "airlines": 2
+ },
+ "WAW": {
+  "country": "PL",
+  "name": {
+   "ko": "바르샤바",
+   "en": "Warsaw",
+   "ja": "ワルシャワ",
+   "zh-TW": "華沙"
+  },
+  "lat": 52.17,
+  "lng": 20.97,
+  "timezone": "Europe/Warsaw",
+  "destinationSlug": "warsaw",
+  "icnWeekly": 12,
+  "airlines": 1
+ },
+ "YYC": {
+  "country": "CA",
+  "name": {
+   "ko": "캘거리",
+   "en": "Calgary",
+   "ja": "カルガリー",
+   "zh-TW": "卡加利"
+  },
+  "lat": 51.11,
+  "lng": -114.02,
+  "timezone": "America/Edmonton",
+  "destinationSlug": null,
+  "icnWeekly": 12,
+  "airlines": 2
+ },
+ "ZRH": {
+  "country": "CH",
+  "name": {
+   "ko": "취리히",
+   "en": "Zurich",
+   "ja": "チューリッヒ",
+   "zh-TW": "蘇黎世"
+  },
+  "lat": 47.46,
+  "lng": 8.55,
+  "timezone": "Europe/Zurich",
+  "destinationSlug": "zurich",
+  "icnWeekly": 12,
+  "airlines": 2
+ },
+ "AOJ": {
+  "country": "JP",
+  "name": {
+   "ko": "아오모리",
+   "en": "Aomori",
+   "ja": "青森",
+   "zh-TW": "青森"
+  },
+  "lat": 40.73,
+  "lng": 140.69,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 10,
+  "airlines": 4
+ },
+ "HFE": {
+  "country": "CN",
+  "name": {
+   "ko": "허페이",
+   "en": "Hefei",
+   "ja": "合肥",
+   "zh-TW": "合肥"
+  },
+  "lat": 31.78,
+  "lng": 117.3,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 10,
+  "airlines": 2
+ },
+ "RGN": {
+  "country": "MM",
+  "name": {
+   "ko": "양곤",
+   "en": "Yangon",
+   "ja": "ヤンゴン",
+   "zh-TW": "仰光"
+  },
+  "lat": 16.91,
+  "lng": 96.13,
+  "timezone": "Asia/Yangon",
+  "destinationSlug": null,
+  "icnWeekly": 10,
+  "airlines": 2
+ },
+ "SDJ": {
+  "country": "JP",
+  "name": {
+   "ko": "센다이",
+   "en": "Sendai",
+   "ja": "仙台",
+   "zh-TW": "仙台"
+  },
+  "lat": 38.14,
+  "lng": 140.92,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 10,
+  "airlines": 3
+ },
+ "YGJ": {
+  "country": "JP",
+  "name": {
+   "ko": "요나고",
+   "en": "Yonago",
+   "ja": "米子",
+   "zh-TW": "米子"
+  },
+  "lat": 35.49,
+  "lng": 133.24,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 10,
+  "airlines": 1
+ },
+ "CIT": {
+  "country": "KZ",
+  "name": {
+   "ko": "쉼켄트",
+   "en": "Shymkent",
+   "ja": "シムケント",
+   "zh-TW": "奇姆肯特"
+  },
+  "lat": 42.36,
+  "lng": 69.48,
+  "timezone": "Asia/Almaty",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 1
+ },
+ "HAK": {
+  "country": "CN",
+  "name": {
+   "ko": "하이커우",
+   "en": "Haikou",
+   "ja": "海口",
+   "zh-TW": "海口"
+  },
+  "lat": 19.93,
+  "lng": 110.46,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 1
+ },
+ "HSG": {
+  "country": "JP",
+  "name": {
+   "ko": "사가",
+   "en": "Saga",
+   "ja": "佐賀",
+   "zh-TW": "佐賀"
+  },
+  "lat": 33.15,
+  "lng": 130.3,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 1
+ },
+ "LIS": {
+  "country": "PT",
+  "name": {
+   "ko": "리스본",
+   "en": "Lisbon",
+   "ja": "リスボン",
+   "zh-TW": "里斯本"
+  },
+  "lat": 38.77,
+  "lng": -9.13,
+  "timezone": "Europe/Lisbon",
+  "destinationSlug": "lisbon",
+  "icnWeekly": 8,
+  "airlines": 2
+ },
+ "MAD": {
+  "country": "ES",
+  "name": {
+   "ko": "마드리드",
+   "en": "Madrid",
+   "ja": "マドリード",
+   "zh-TW": "馬德里"
+  },
+  "lat": 40.49,
+  "lng": -3.57,
+  "timezone": "Europe/Madrid",
+  "destinationSlug": "madrid",
+  "icnWeekly": 8,
+  "airlines": 4
+ },
+ "NQZ": {
+  "country": "KZ",
+  "name": {
+   "ko": "아스타나",
+   "en": "Astana",
+   "ja": "アスタナ",
+   "zh-TW": "阿斯塔納"
+  },
+  "lat": 51.02,
+  "lng": 71.47,
+  "timezone": "Asia/Almaty",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 3
+ },
+ "OIT": {
+  "country": "JP",
+  "name": {
+   "ko": "오이타",
+   "en": "Oita (Beppu)",
+   "ja": "大分",
+   "zh-TW": "大分"
+  },
+  "lat": 33.48,
+  "lng": 131.74,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": "beppu",
+  "icnWeekly": 8,
+  "airlines": 2
+ },
+ "OKJ": {
+  "country": "JP",
+  "name": {
+   "ko": "오카야마",
+   "en": "Okayama",
+   "ja": "岡山",
+   "zh-TW": "岡山"
+  },
+  "lat": 34.76,
+  "lng": 133.86,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 5
+ },
+ "SJW": {
+  "country": "CN",
+  "name": {
+   "ko": "스자좡",
+   "en": "Shijiazhuang",
+   "ja": "石家荘",
+   "zh-TW": "石家莊"
+  },
+  "lat": 38.28,
+  "lng": 114.7,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 8,
+  "airlines": 2
+ },
+ "VIE": {
+  "country": "AT",
+  "name": {
+   "ko": "비엔나",
+   "en": "Vienna",
+   "ja": "ウィーン",
+   "zh-TW": "維也納"
+  },
+  "lat": 48.11,
+  "lng": 16.57,
+  "timezone": "Europe/Vienna",
+  "destinationSlug": "vienna",
+  "icnWeekly": 8,
+  "airlines": 1
+ },
+ "MEX": {
+  "country": "MX",
+  "name": {
+   "ko": "멕시코시티",
+   "en": "Mexico City",
+   "ja": "メキシコシティ",
+   "zh-TW": "墨西哥城"
+  },
+  "lat": 19.44,
+  "lng": -99.07,
+  "timezone": "America/Mexico_City",
+  "destinationSlug": "mexicocity",
+  "icnWeekly": 7,
+  "airlines": 2
+ },
+ "MTY": {
+  "country": "MX",
+  "name": {
+   "ko": "몬테레이",
+   "en": "Monterrey",
+   "ja": "モンテレイ",
+   "zh-TW": "蒙特瑞"
+  },
+  "lat": 25.78,
+  "lng": -100.11,
+  "timezone": "America/Monterrey",
+  "destinationSlug": null,
+  "icnWeekly": 7,
+  "airlines": 2
+ },
+ "BSZ": {
+  "country": "KG",
+  "name": {
+   "ko": "비슈케크",
+   "en": "Bishkek",
+   "ja": "ビシュケク",
+   "zh-TW": "比什凱克"
+  },
+  "lat": 43.06,
+  "lng": 74.48,
+  "timezone": "Asia/Bishkek",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 1
+ },
+ "BWN": {
+  "country": "BN",
+  "name": {
+   "ko": "반다르스리브가완",
+   "en": "Bandar Seri Begawan",
+   "ja": "バンダルスリブガワン",
+   "zh-TW": "斯里巴加灣"
+  },
+  "lat": 4.94,
+  "lng": 114.93,
+  "timezone": "Asia/Brunei",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 1
+ },
+ "KMI": {
+  "country": "JP",
+  "name": {
+   "ko": "미야자키",
+   "en": "Miyazaki",
+   "ja": "宮崎",
+   "zh-TW": "宮崎"
+  },
+  "lat": 31.88,
+  "lng": 131.45,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 5
+ },
+ "NGS": {
+  "country": "JP",
+  "name": {
+   "ko": "나가사키",
+   "en": "Nagasaki",
+   "ja": "長崎",
+   "zh-TW": "長崎"
+  },
+  "lat": 32.92,
+  "lng": 129.91,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 3
+ },
+ "TKS": {
+  "country": "JP",
+  "name": {
+   "ko": "도쿠시마",
+   "en": "Tokushima",
+   "ja": "徳島",
+   "zh-TW": "德島"
+  },
+  "lat": 34.13,
+  "lng": 134.61,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 1
+ },
+ "WNZ": {
+  "country": "CN",
+  "name": {
+   "ko": "원저우",
+   "en": "Wenzhou",
+   "ja": "温州",
+   "zh-TW": "溫州"
+  },
+  "lat": 27.91,
+  "lng": 120.85,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 1
+ },
+ "YUL": {
+  "country": "CA",
+  "name": {
+   "ko": "몬트리올",
+   "en": "Montréal",
+   "ja": "モントリオール",
+   "zh-TW": "蒙特婁"
+  },
+  "lat": 45.47,
+  "lng": -73.74,
+  "timezone": "America/Toronto",
+  "destinationSlug": null,
+  "icnWeekly": 6,
+  "airlines": 1
+ },
+ "AKL": {
+  "country": "NZ",
+  "name": {
+   "ko": "오클랜드(뉴질랜드)",
+   "en": "Auckland",
+   "ja": "オークランド",
+   "zh-TW": "奧克蘭"
+  },
+  "lat": -37.01,
+  "lng": 174.79,
+  "timezone": "Pacific/Auckland",
+  "destinationSlug": "auckland",
+  "icnWeekly": 5,
+  "airlines": 3
+ },
+ "ASB": {
+  "country": "TM",
+  "name": {
+   "ko": "아쉬가바트",
+   "en": "Ashgabat",
+   "ja": "アシガバット",
+   "zh-TW": "阿什哈巴德"
+  },
+  "lat": 37.99,
+  "lng": 58.36,
+  "timezone": "Asia/Ashgabat",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "CMB": {
+  "country": "LK",
+  "name": {
+   "ko": "콜롬보",
+   "en": "Colombo",
+   "ja": "コロンボ",
+   "zh-TW": "可倫坡"
+  },
+  "lat": 7.18,
+  "lng": 79.88,
+  "timezone": "Asia/Colombo",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 2
+ },
+ "KTM": {
+  "country": "NP",
+  "name": {
+   "ko": "카트만두",
+   "en": "Kathmandu",
+   "ja": "カトマンズ",
+   "zh-TW": "加德滿都"
+  },
+  "lat": 27.7,
+  "lng": 85.36,
+  "timezone": "Asia/Kathmandu",
+  "destinationSlug": "kathmandu",
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "LJG": {
+  "country": "CN",
+  "name": {
+   "ko": "리장",
+   "en": "Lijiang",
+   "ja": "麗江",
+   "zh-TW": "麗江"
+  },
+  "lat": 26.68,
+  "lng": 100.25,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "LYI": {
+  "country": "CN",
+  "name": {
+   "ko": "린이",
+   "en": "Linyi",
+   "ja": "臨沂",
+   "zh-TW": "臨沂"
+  },
+  "lat": 35.05,
+  "lng": 118.41,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "NGB": {
+  "country": "CN",
+  "name": {
+   "ko": "닝보",
+   "en": "Ningbo",
+   "ja": "寧波",
+   "zh-TW": "寧波"
+  },
+  "lat": 29.83,
+  "lng": 121.46,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "YIH": {
+  "country": "CN",
+  "name": {
+   "ko": "이창",
+   "en": "Yichang",
+   "ja": "宜昌",
+   "zh-TW": "宜昌"
+  },
+  "lat": 30.67,
+  "lng": 111.44,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "YNZ": {
+  "country": "CN",
+  "name": {
+   "ko": "옌청",
+   "en": "Yancheng",
+   "ja": "塩城",
+   "zh-TW": "鹽城"
+  },
+  "lat": 33.43,
+  "lng": 120.2,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 2
+ },
+ "YTY": {
+  "country": "CN",
+  "name": {
+   "ko": "양저우",
+   "en": "Yangzhou/Taizhou",
+   "ja": "揚州/泰州",
+   "zh-TW": "揚州/泰州"
+  },
+  "lat": 32.56,
+  "lng": 119.72,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 4,
+  "airlines": 1
+ },
+ "JMU": {
+  "country": "CN",
+  "name": {
+   "ko": "자무쓰",
+   "en": "Jiamusi",
+   "ja": "佳木斯",
+   "zh-TW": "佳木斯"
+  },
+  "lat": 46.84,
+  "lng": 130.46,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 2,
+  "airlines": 1
+ },
+ "WRO": {
+  "country": "PL",
+  "name": {
+   "ko": "브로츠와프",
+   "en": "Wrocław",
+   "ja": "ヴロツワフ",
+   "zh-TW": "弗羅茨瓦夫"
+  },
+  "lat": 51.1,
+  "lng": 16.89,
+  "timezone": "Europe/Warsaw",
+  "destinationSlug": null,
+  "icnWeekly": 2,
+  "airlines": 1
+ },
+ "TOY": {
+  "country": "JP",
+  "name": {
+   "ko": "도야마",
+   "en": "Toyama",
+   "ja": "富山",
+   "zh-TW": "富山"
+  },
+  "lat": 36.65,
+  "lng": 137.19,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 1,
+  "airlines": 3
+ },
+ "BAV": {
+  "country": "CN",
+  "name": {
+   "ko": "바우터우",
+   "en": "Baotou",
+   "ja": "包頭",
+   "zh-TW": "包頭"
+  },
+  "lat": 40.56,
+  "lng": 109.99,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "CJU": {
+  "country": "KR",
+  "name": {
+   "ko": "제주",
+   "en": "Jeju",
+   "ja": "済州",
+   "zh-TW": "濟州"
+  },
+  "lat": 33.51,
+  "lng": 126.49,
+  "timezone": "Asia/Seoul",
+  "destinationSlug": "jeju",
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "EVN": {
+  "country": "AM",
+  "name": {
+   "ko": "쯔바르트노츠",
+   "en": "Yerevan",
+   "ja": "エレバン",
+   "zh-TW": "葉里溫"
+  },
+  "lat": 40.15,
+  "lng": 44.4,
+  "timezone": "Asia/Yerevan",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "GMP": {
+  "country": "KR",
+  "name": {
+   "ko": "김포",
+   "en": "Seoul Gimpo",
+   "ja": "ソウル/金浦",
+   "zh-TW": "首爾/金浦"
+  },
+  "lat": 37.56,
+  "lng": 126.79,
+  "timezone": "Asia/Seoul",
+  "destinationSlug": "seoul",
+  "icnWeekly": 0,
+  "airlines": 0,
+  "note": "추가 — 인천 연결 목록이 아니라 국내 출발·도착용"
+ },
+ "HNA": {
+  "country": "JP",
+  "name": {
+   "ko": "하나마키",
+   "en": "Hanamaki (Iwate)",
+   "ja": "花巻",
+   "zh-TW": "花卷"
+  },
+  "lat": 39.43,
+  "lng": 141.14,
+  "timezone": "Asia/Tokyo",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "ICN": {
+  "country": "KR",
+  "name": {
+   "ko": "인천",
+   "en": "Seoul Incheon",
+   "ja": "ソウル/仁川",
+   "zh-TW": "首爾/仁川"
+  },
+  "lat": 37.46,
+  "lng": 126.44,
+  "timezone": "Asia/Seoul",
+  "destinationSlug": "seoul",
+  "icnWeekly": 0,
+  "airlines": 0,
+  "note": "추가 — 인천 연결 목록이 아니라 국내 출발·도착용"
+ },
+ "TBS": {
+  "country": "GE",
+  "name": {
+   "ko": "트빌리시",
+   "en": "Tbilisi",
+   "ja": "トビリシ",
+   "zh-TW": "提比里斯"
+  },
+  "lat": 41.67,
+  "lng": 44.95,
+  "timezone": "Asia/Tbilisi",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "TXN": {
+  "country": "CN",
+  "name": {
+   "ko": "황산",
+   "en": "Huangshan (Tunxi)",
+   "ja": "黄山",
+   "zh-TW": "黃山"
+  },
+  "lat": 29.73,
+  "lng": 118.26,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "URC": {
+  "country": "CN",
+  "name": {
+   "ko": "우루무치",
+   "en": "Urumqi",
+   "ja": "ウルムチ",
+   "zh-TW": "烏魯木齊"
+  },
+  "lat": 43.91,
+  "lng": 87.47,
+  "timezone": "Asia/Urumqi",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ },
+ "WDS": {
+  "country": "CN",
+  "name": {
+   "ko": "쓰옌 무당산",
+   "en": "Shiyan Wudangshan",
+   "ja": "十堰/武当山",
+   "zh-TW": "十堰/武當山"
+  },
+  "lat": 32.59,
+  "lng": 110.91,
+  "timezone": "Asia/Shanghai",
+  "destinationSlug": null,
+  "icnWeekly": 0,
+  "airlines": 1
+ }
+}
