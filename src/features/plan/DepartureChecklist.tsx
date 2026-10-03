@@ -5,7 +5,6 @@ import { Check, ChevronLeft, ChevronRight, ExternalLink, ListChecks, Luggage, Pl
 import { tripService, type TripRow } from '@/shared/api/tripService';
 import { AFFILIATE_LINKS } from '@/shared/config';
 import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
-import { usePartnerLandingLink } from './partnerLinks';
 import {
   CHECKLIST_PAGES,
   FINAL_CABIN,
@@ -89,7 +88,6 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
   const [checked, setChecked] = useState<ItemKey[]>(() => readChecked(trip.id));
   const [acknowledged, setAcknowledged] = useState(() => readAck(trip.id));
   const [findingFlights, setFindingFlights] = useState(false);
-  const esimUrl = usePartnerLandingLink('yesim', AFFILIATE_LINKS.esimFallback);
 
   const project = tripService.toLocalProject(trip);
   const flights = (project.flights ?? { outbound: null, return: null }) as FlightsData;
@@ -157,12 +155,6 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
           <Link to="/hotels" className={styles.checklistAction}>
             {t('desktop.checklist.find')}
           </Link>
-        );
-      case 'esim':
-        return (
-          <a href={esimUrl} target="_blank" rel="sponsored noopener" className={styles.checklistAction}>
-            {t('desktop.checklist.view')} <ExternalLink size={12} aria-hidden="true" />
-          </a>
         );
       case 'insurance':
         return AFFILIATE_LINKS.insurance ? (

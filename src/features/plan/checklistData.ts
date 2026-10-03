@@ -13,7 +13,7 @@ export type ItemKey =
 export type Carry = 'cabin' | 'checked';
 
 /** 일정·제휴 링크와 이어지는 항목: 항공권·숙소는 일정에 있으면 자동 완료, 나머지는 제휴 링크 버튼 */
-export type ItemLink = 'flights' | 'hotel' | 'esim' | 'insurance';
+export type ItemLink = 'flights' | 'hotel' | 'insurance';
 
 export interface ChecklistItem {
   key: ItemKey;
@@ -74,7 +74,8 @@ export const CHECKLIST_PAGES: readonly ChecklistPage[] = [
           { key: 'corded', carry: 'checked' },
         ],
       },
-      { key: 'comms', noNote: true, items: [{ key: 'esim', link: 'esim' }] },
+      // 통신 준비(유심·eSIM·포켓 와이파이)는 챙길 것 알림만 — Yesim 제휴 링크는 2026-10-04에 뺐다(트래블페이아웃)
+      { key: 'comms', noNote: true, items: [{ key: 'esim' }] },
     ],
   },
   {

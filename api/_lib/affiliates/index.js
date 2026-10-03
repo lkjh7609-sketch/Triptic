@@ -3,16 +3,9 @@
 //  - LINK_BRANDS: 앱이 부르는 brand 이름 → 원래 주소 만들기 + 어느 네트워크로 바꿀지
 //  - SALES_PROVIDERS: 관리자 판매 탭에 보이는 회사(fetchSales가 없으면 "연동 전")
 import * as myrealtrip from './myrealtrip.js';
-import * as travelpayouts from './travelpayouts.js';
 import { sanitizeInput } from '../http.js';
 
 export const NETWORKS = {
-    travelpayouts: {
-        isConfigured: travelpayouts.isConfigured,
-        convert: travelpayouts.convert,
-        // 변환을 못 하면 링크를 주지 않는다(앱이 Klook 딜 페이지 등 대체 링크로)
-        passThroughWhenUnavailable: false,
-    },
     myrealtrip: {
         isConfigured: myrealtrip.isConfigured,
         convert: (url) => myrealtrip.createMylink(url),
@@ -42,13 +35,6 @@ export const LINK_BRANDS = {
             return q ? `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(q)}` : null;
         },
     },
-    // 검색어 없이 첫 페이지로(출발 전 체크리스트) — Travelpayouts에서 연결된 브랜드만 변환된다
-    yesim: {
-        network: 'travelpayouts',
-        async target() {
-            return 'https://yesim.app/';
-        },
-    },
     // kind=search(q: 통합 검색) | page(url: 투어·티켓 상품 주소) | flight(항공 검색 결과)
     myrealtrip: {
         network: 'myrealtrip',
@@ -72,14 +58,8 @@ export const SALES_PROVIDERS = [
         fetchSales: myrealtrip.fetchSales,
         dashboardUrl: 'https://partner.myrealtrip.com',
     },
-    {
-        // Klook·Yesim 등 — 판매 내역 API는 아직 붙이지 않았다(대시보드에서 확인)
-        id: 'travelpayouts',
-        name: 'Travelpayouts',
-        isConfigured: travelpayouts.isConfigured,
-        fetchSales: null,
-        dashboardUrl: 'https://app.travelpayouts.com',
-    },
+    // Klook — 제휴 연결 전(일반 링크). 트래블페이아웃을 거쳐 연결하던 것을 2026-10-04에 뺐다
+    { id: 'klook', name: 'Klook', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     // 유심사 — 제휴 링크(usimsa.com/affiliate/…)만 붙어 있다(항공 탭 유심·eSIM). 판매 내역은 유심사 파트너 페이지에서
     { id: 'usimsa', name: '유심사', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     { id: 'tripcom', name: 'Trip.com', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
