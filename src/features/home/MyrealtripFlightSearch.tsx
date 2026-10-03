@@ -1,10 +1,8 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type Ref } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type Ref } from 'react';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { addDays, format, parseISO } from 'date-fns';
 import { Armchair, ArrowLeftRight, CalendarDays, Check, ChevronDown, History, Minus, PlaneLanding, PlaneTakeoff, Plus, Search, ShieldCheck } from 'lucide-react';
-import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { captureError } from '@/shared/monitoring';
 import {
   fetchMyrealtripFlightsLink,
@@ -14,62 +12,29 @@ import {
   useMyrealtripLink,
   type FlightSearch,
 } from '@/features/plan/partnerLinks';
+import { useAirports } from '@/features/plan/airports/useAirports';
+import { DEFAULT_ORIGIN_CODE, flightPlaceForCode, searchFlightPlaces, type FlightPlace } from '@/features/plan/airports/flightPlaces';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import styles from './MyrealtripFlightSearch.module.css';
 
-/** 출발지·도착지 하나 — 도시 코드(SEL)와 공항 코드(ICN)를 구분한다(마이리얼트립 주소의 C./A.) */
-interface Place {
-  code: string;
-  type: 'city' | 'airport';
-  name: string;
-  detail: string | null;
-}
-
-interface Places2Row {
-  code?: unknown;
-  type?: unknown;
-  name?: unknown;
-  city_name?: unknown;
-  country_name?: unknown;
-}
+/** 출발지·도착지 하나 — 도시 코드(SEL)와 공항 코드(ICN)를 구분한다(마이리얼트립 주소의 C./A.). 우리 공항 목록에서 찾는다 */
+type Place = FlightPlace;
 
 const IATA = /^[A-Z]{3}$/;
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Travelpayouts places2(무료·키 없음) — 도시와 공항을 같이 찾는다 */
-async function searchPlaces(term: string, locale: string): Promise<Place[]> {
-  const params = new URLSearchParams({ term, locale });
-  params.append('types[]', 'city');
-  params.append('types[]', 'airport');
-  const res = await fetch(`https://autocomplete.travelpayouts.com/places2?${params.toString()}`);
-  if (!res.ok) return [];
-  const rows = (await res.json()) as Places2Row[];
-  const text = (v: unknown) => (typeof v === 'string' && v ? v : null);
-  return rows
-    .filter((r) => typeof r.code === 'string' && IATA.test(r.code.toUpperCase()) && (r.type === 'city' || r.type === 'airport') && text(r.name))
-    .slice(0, 8)
-    .map((r) => ({
-      code: (r.code as string).toUpperCase(),
-      type: r.type as Place['type'],
-      name: r.name as string,
-      detail: r.type === 'airport' ? [text(r.city_name), text(r.country_name)].filter(Boolean).join(', ') || null : text(r.country_name),
-    }));
-}
-
-/** 접속 위치에서 가까운 도시(출발지 기본값) */
-async function nearestCity(locale: string): Promise<Place | null> {
-  const res = await fetch(`https://www.travelpayouts.com/whereami?locale=${locale}`);
-  if (!res.ok) return null;
-  const json = (await res.json()) as { iata?: unknown; name?: unknown; country_name?: unknown };
-  if (typeof json.iata !== 'string' || !IATA.test(json.iata.toUpperCase())) return null;
-  const code = json.iata.toUpperCase();
-  return {
-    code,
-    type: 'city',
-    name: typeof json.name === 'string' && json.name ? json.name : code,
-    detail: typeof json.country_name === 'string' ? json.country_name : null,
-  };
+/** 나라 이름(표시 언어) — 공항 목록 한 줄의 작은 글씨 */
+function useCountryName(language: string): (code: string) => string {
+  return useMemo(() => {
+    let names: Intl.DisplayNames | null = null;
+    try {
+      names = new Intl.DisplayNames([language], { type: 'region' });
+    } catch {
+      names = null;
+    }
+    return (code: string) => names?.of(code) ?? code;
+  }, [language]);
 }
 
 /** 10월 12일 / Oct 12 — 날짜 칸 한 줄에 가는 날·오는 날이 다 들어가게 짧게 */
@@ -91,20 +56,20 @@ function PlaceField({
   label,
   value,
   onChange,
-  locale,
   inputRef,
   icon,
 }: {
   label: string;
   value: Place | null;
   onChange: (p: Place) => void;
-  locale: string;
   inputRef?: Ref<HTMLInputElement>;
   /** PC 칸 오른쪽 끝의 작은 아이콘(이륙·착륙) */
   icon?: ReactNode;
 }) {
-  const { t } = useTranslation('home');
+  const { t, i18n } = useTranslation('home');
   const listId = useId();
+  const { data: airports = [] } = useAirports();
+  const countryName = useCountryName(i18n.language);
   // 입력 중일 때만 글자를 따로 들고, 아니면 고른 곳 이름을 보여준다
   const [editing, setEditing] = useState<string | null>(null);
   const [term, setTerm] = useState('');
@@ -115,13 +80,10 @@ function PlaceField({
     return () => window.clearTimeout(id);
   }, [editing]);
 
-  const { data: options = [] } = useQuery({
-    queryKey: ['places2', locale, term.toLowerCase()],
-    queryFn: () => searchPlaces(term, locale),
-    enabled: editing !== null && term.length > 0,
-    staleTime: Infinity,
-    retry: false,
-  });
+  const options = useMemo(
+    () => (editing !== null && term.length > 0 ? searchFlightPlaces(airports, term, i18n.language, countryName) : []),
+    [airports, editing, term, i18n.language, countryName],
+  );
   const open = editing !== null && term.length > 0 && options.length > 0;
 
   function pick(place: Place) {
@@ -388,7 +350,6 @@ function PassengerPicker({ adults, kids, infants, cabin, onAdults, onChildren, o
 export function MyrealtripFlightSearch() {
   const { t, i18n } = useTranslation('home');
   const [searchParams] = useSearchParams();
-  const placesLocale = aiLocale(i18n.language) === 'ko' ? 'ko' : 'en';
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const paramDate = (key: string) => {
@@ -420,15 +381,13 @@ export function MyrealtripFlightSearch() {
   const destInputRef = useRef<HTMLInputElement>(null);
   const dateButtonRef = useRef<HTMLButtonElement>(null);
 
-  // 출발지를 안 넘겨받았으면 접속 위치의 도시로
-  const { data: here } = useQuery({
-    queryKey: ['whereami', placesLocale],
-    queryFn: () => nearestCity(placesLocale),
-    enabled: !searchParams.get('origin'),
-    staleTime: Infinity,
-    retry: false,
-  });
-  const effectiveOrigin = origin ?? here ?? null;
+  // 공항 목록이 오면 주소로 넘어온 코드(SEL·SYD)에 이름을 붙이고, 출발지를 안 넘겨받았으면 서울(모든 공항)로
+  const { data: airports = [] } = useAirports();
+  const countryName = useCountryName(i18n.language);
+  const named = (p: Place | null) => (p && p.name === p.code ? (flightPlaceForCode(airports, p.code, i18n.language, countryName) ?? p) : p);
+  const here = searchParams.get('origin') ? null : flightPlaceForCode(airports, DEFAULT_ORIGIN_CODE, i18n.language, countryName);
+  const effectiveOrigin = named(origin) ?? here ?? null;
+  const shownDestination = named(destination);
 
   function swap() {
     setOrigin(destination);
@@ -539,7 +498,6 @@ export function MyrealtripFlightSearch() {
               label={t('flights.form.from')}
               value={effectiveOrigin}
               onChange={setOrigin}
-              locale={placesLocale}
               inputRef={originInputRef}
               icon={<PlaneTakeoff size={20} />}
             />
@@ -548,9 +506,8 @@ export function MyrealtripFlightSearch() {
             </button>
             <PlaceField
               label={t('flights.form.to')}
-              value={destination}
+              value={shownDestination}
               onChange={setDestination}
-              locale={placesLocale}
               inputRef={destInputRef}
               icon={<PlaneLanding size={20} />}
             />
