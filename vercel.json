@@ -112,10 +112,6 @@
         {
           "key": "Permissions-Policy",
           "value": "geolocation=(self), camera=(), microphone=()"
-        },
-        {
-          "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://maps.googleapis.com https://tp-em.com https://tpembd.com https://cdn.klook.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: https:; connect-src 'self' https://api.open-meteo.com https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://us.i.posthog.com https://us-assets.i.posthog.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io; frame-src 'self' https://affiliate.klook.com https://*.trip.com; frame-ancestors 'self'"
         }
       ]
     }
