@@ -10,6 +10,8 @@ import { installStaleChunkReload } from './chunkRetry';
 import { reportBootFailure } from './bootFailure';
 import { captureBootShell } from './bootShellState';
 
+// 앱 코드가 실행됐다는 표시 — index.html 부팅 안전망이 느린 회선의 진행 중인 로딩을 12초에 새로고침하지 않게(30초까지 기다림)
+document.documentElement.setAttribute('data-app-started', '');
 installStaleChunkReload();
 reportBootFailure();
 initMonitoring();
