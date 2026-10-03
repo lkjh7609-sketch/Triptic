@@ -63,6 +63,58 @@ export function filterDestinations(destinations: Destination[], { tab, query, co
   return tab === 'all' ? sorted.filter((d) => d.is_featured) : sorted;
 }
 
+// ── 하위 지역(여행지 선택 창: 아시아·유럽·미주·기타 탭은 먼저 하위 지역 카드를 보여 준다) ──────────
+export type GroupedTab = 'asia' | 'eu' | 'am' | 'other';
+export const GROUPED_TABS: readonly PickerTab[] = ['asia', 'eu', 'am', 'other'];
+
+export function isGroupedTab(tab: PickerTab): tab is GroupedTab {
+  return GROUPED_TABS.includes(tab);
+}
+
+/** 탭별 하위 지역과 그에 속한 나라. 한국·일본은 자기 탭이 따로 있어 아시아 하위 지역에 넣지 않는다.
+ * 유럽은 한국 여행 상품의 구분을 따랐다(오스트리아·체코·헝가리·폴란드=동유럽, 튀르키예는 남유럽 묶음). */
+export const SUBREGIONS: Record<GroupedTab, { key: string; countries: string[] }[]> = {
+  asia: [
+    { key: 'eastAsia', countries: ['TW', 'HK', 'MO', 'CN', 'MN'] },
+    { key: 'southeastAsia', countries: ['VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'KH'] },
+    { key: 'southAsia', countries: ['IN', 'NP', 'MV'] },
+    { key: 'middleEast', countries: ['AE', 'QA', 'IL'] },
+  ],
+  eu: [
+    { key: 'westernEurope', countries: ['FR', 'GB', 'IE', 'NL', 'BE', 'DE', 'CH'] },
+    { key: 'northernEurope', countries: ['DK', 'SE'] },
+    { key: 'southernEurope', countries: ['IT', 'ES', 'PT', 'GR', 'HR', 'TR'] },
+    { key: 'easternEurope', countries: ['CZ', 'AT', 'HU', 'PL'] },
+  ],
+  am: [
+    { key: 'northAmerica', countries: ['US', 'CA'] },
+    { key: 'centralAmerica', countries: ['MX', 'CU'] },
+    { key: 'southAmerica', countries: ['BR', 'AR', 'PE', 'CL'] },
+  ],
+  other: [
+    { key: 'northAfrica', countries: ['MA', 'EG'] },
+    { key: 'subSaharanAfrica', countries: ['KE', 'TZ', 'ZA'] },
+    { key: 'oceania', countries: ['AU', 'NZ', 'FJ'] },
+    { key: 'guamSaipan', countries: ['GU', 'MP'] },
+  ],
+};
+
+/** 어느 하위 지역에도 없는 나라(나중에 새로 생긴 도시)가 들어가는 묶음 */
+export const OTHER_SUBREGION = 'etc';
+
+export function subregionOf(tab: GroupedTab, countryCode: string): string {
+  return SUBREGIONS[tab].find((r) => r.countries.includes(countryCode))?.key ?? OTHER_SUBREGION;
+}
+
+/** 탭 안의 도시를 하위 지역별로 묶는다 — 도시가 하나도 없는 지역은 뺀다. 도시는 추천 → 정렬 순서 */
+export function groupBySubregion(destinations: Destination[], tab: GroupedTab): { key: string; destinations: Destination[] }[] {
+  const inTab = destinations.filter((d) => tabOf(d.country_code) === tab).sort(byFeaturedThenOrder);
+  const keys = [...SUBREGIONS[tab].map((r) => r.key), OTHER_SUBREGION];
+  return keys
+    .map((key) => ({ key, destinations: inTab.filter((d) => subregionOf(tab, d.country_code) === key) }))
+    .filter((g) => g.destinations.length > 0);
+}
+
 // ── 최근 선택한 여행지(이 기기에만 저장, 최대 5개) ─────────────────────────────
 const RECENT_KEY = 'triptic-recent-destinations';
 export const MAX_RECENT = 5;

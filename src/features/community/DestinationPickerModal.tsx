@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Clock, MapPin, Search, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Clock, MapPin, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import {
   PICKER_TABS,
   filterDestinations,
+  groupBySubregion,
+  isGroupedTab,
   forgetRecentDestination,
   readRecentDestinationIds,
   rememberDestination,
@@ -39,6 +41,8 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
   const closeTimer = useRef<number | undefined>(undefined);
   const [tab, setTab] = useState<PickerTab>('all');
   const [query, setQuery] = useState('');
+  // 아시아·유럽·미주·기타 탭에서 고른 하위 지역(없으면 하위 지역 카드를 보여 준다)
+  const [region, setRegion] = useState<string | null>(null);
   const [pickedId, setPickedId] = useState<string | null>(selectedId);
   const [recentIds, setRecentIds] = useState<string[]>(() => readRecentDestinationIds());
 
@@ -58,6 +62,9 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [destinations, tab, query, regionNames],
   );
+  const grouped = isGroupedTab(tab) && !query.trim();
+  const groups = useMemo(() => (isGroupedTab(tab) ? groupBySubregion(destinations, tab) : []), [destinations, tab]);
+  const regionCities = grouped && region ? (groups.find((g) => g.key === region)?.destinations ?? []) : null;
   const picked = pickedId ? byId.get(pickedId) : undefined;
   const recent = recentIds.map((id) => byId.get(id)).filter((d): d is Destination => !!d);
 
@@ -81,11 +88,22 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
     requestClose(() => onConfirm(picked));
   }
 
+  function selectTab(key: PickerTab) {
+    setTab(key);
+    setRegion(null);
+  }
+
   const listTitle = query.trim()
     ? t('picker.searchResults')
-    : tab === 'all'
-      ? t('picker.popular')
-      : t('picker.tabResults', { tab: t(`picker.tabs.${tab}`) });
+    : regionCities
+      ? t(`picker.regions.${region}`)
+      : grouped
+        ? t('picker.chooseRegion', { tab: t(`picker.tabs.${tab}`) })
+        : tab === 'all'
+          ? t('picker.popular')
+          : t('picker.tabResults', { tab: t(`picker.tabs.${tab}`) });
+  const shown = regionCities ?? results;
+  const showCards = grouped && !region;
 
   return createPortal(
     <div className={`${styles.overlay} ${closing ? styles.overlayOut : ''}`}>
@@ -172,7 +190,7 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
               role="tab"
               aria-selected={tab === key}
               className={`${styles.tab} ${tab === key ? styles.tabOn : ''}`}
-              onClick={() => setTab(key)}
+              onClick={() => selectTab(key)}
             >
               {t(`picker.tabs.${key}`)}
             </button>
@@ -180,15 +198,37 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
         </div>
 
         <div className={styles.listArea}>
+          {regionCities ? (
+            <button type="button" className={styles.back} onClick={() => setRegion(null)}>
+              <ChevronLeft size={16} aria-hidden="true" />
+              {t('picker.backTo', { tab: t(`picker.tabs.${tab}`) })}
+            </button>
+          ) : null}
           <div className={styles.listHead}>
             <span className={styles.listTitle}>{listTitle}</span>
-            <span className={styles.count}>{t('picker.count', { count: results.length })}</span>
+            <span className={styles.count}>
+              {showCards ? t('picker.regionCount', { count: groups.length }) : t('picker.count', { count: shown.length })}
+            </span>
           </div>
-          {results.length === 0 ? (
+          {showCards ? (
+            <ul className={styles.grid}>
+              {groups.map((g) => (
+                <li key={g.key}>
+                  <button type="button" className={styles.regionCard} onClick={() => setRegion(g.key)}>
+                    <span className={styles.cardText}>
+                      <span className={styles.cardName}>{t(`picker.regions.${g.key}`)}</span>
+                      <span className={styles.cardSub}>{t('picker.count', { count: g.destinations.length })}</span>
+                    </span>
+                    <ChevronRight size={18} aria-hidden="true" className={styles.regionArrow} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : shown.length === 0 ? (
             <p className={styles.empty}>{t('picker.empty')}</p>
           ) : (
             <ul className={styles.grid}>
-              {results.map((d) => {
+              {shown.map((d) => {
                 const on = pickedId === d.id;
                 return (
                   <li key={d.id}>
