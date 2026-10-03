@@ -21,7 +21,7 @@
 | 서버 | Vercel 함수(`api/`), Supabase(Postgres·RLS·Storage·Realtime·Edge Functions) |
 | DB | 마이그레이션 `0000`~`0072` 운영 적용 완료. `0045`는 SQL 편집기로 직접 적용해서 적용 이력 테이블에는 없음 |
 | AI | DeepSeek 공식 API 먼저, OpenRouter는 대체. 문자 인식은 Google Vision |
-| 제휴·광고 | 마이리얼트립, 트립닷컴, Klook·Airalo(Travelpayouts), 유심사, 애드센스 |
+| 제휴·광고 | 마이리얼트립, 트립닷컴, 유심사, 애드센스. Klook은 일반 링크(제휴 연결 전). 트래블페이아웃은 2026-10-04에 뺐고, 한국어 외 언어의 항공 검색은 준비 중(Kayak 예정) |
 | 사용 규모 | 가입 7명, 여행 3개 (출시 초기) |
 | 다음 할 일 | [구독·성장·보안 보고서](reports/2026-09-30-subscription-growth-security.md)의 남은 것 — 보안 남은 항목은 로컬 전용 문서(`docs/private/`)에 있음, pro 계정 정리, 분석 키 등록·재배포. 완료: 저장소 비공개, 비용이 드는 AI API 로그인 전용·사용자별 하루 한도 |
 
@@ -90,6 +90,15 @@
 ---
 
 ## 날짜별 기록
+
+### 2026-10-04 (10) — 콘솔 오류 정리, 시험 모드 보안 정책 제거, 트래블페이아웃 전부 제거
+
+- **계기(사용자)**: Web Inspector로 보니 기능은 되는데 콘솔 오류가 매우 많음. 트래블페이아웃은 더 안 쓰고 항공은 Kayak API로 바꿀 예정.
+- **오류의 정체**: 대부분 `[Report Only] … connect-src` — 보고 주소(report-to)가 없어 아무 효과 없는 시험 모드 보안 정책이 요청마다 경고만 찍음. 폰트·사진·광고 스크립트가 "connect"로 걸린 건 **서비스 워커가 외부 요청까지 대신 받아서**(서비스 워커의 fetch는 connect-src로 검사됨 — 정책을 실제로 켰다면 다 막혔을 것). `adtrafficquality …sodar … access control`은 서비스 워커가 외부 이미지를 CORS로 받으려다 실패한 것.
+- **변경**: ① 서비스 워커는 우리 파일·웹폰트·콘텐츠 사진만(광고·제휴·분석·지도 스크립트는 브라우저가 직접). ② `Content-Security-Policy-Report-Only` 헤더 제거(사용자 결정). ③ 트래블페이아웃 제거 — Drive 스크립트, 한국어 외 항공 위젯(White Label)·Airalo eSIM 위젯, 서버 링크 변환(`api/_lib/affiliates/travelpayouts.js`), 체크리스트 Yesim 링크, 방침·약관 문구(방침에 10/4 개정 내용).
+- **결정(사용자)**: 한국어 외 항공 탭은 '항공권 검색 준비 중' 안내 / **Klook은 뼈대 유지**(투어 영역·토글·일정 카드 버튼 그대로, 안쪽 연결만 교체 — 지금은 서버 레지스트리의 `direct` 네트워크로 일반 Klook 주소, 위젯 자리는 "Klook에서 보기" 카드) / eSIM 제휴 항목 빼기(체크리스트 '통신 준비'는 챙길 것 알림으로 남김, 유심사는 한국어 항공 탭 그대로).
+- **결정(내가 정함)**: 한국어 항공 검색의 공항 자동완성·기본 출발지가 트래블페이아웃 무료 API(places2·whereami)를 쓰고 있어 우리 공항 목록(airports 292곳)으로 교체 — 공항 여럿인 13개 도시는 '모든 공항'(SEL·TYO·OSA·BKK 등) 먼저, 기본 출발지는 서울(모든 공항, 예전엔 접속 위치), 일정의 "항공권 찾기"는 여행 좌표에서 가장 가까운 공항. 예전에 저장된 트래블페이아웃 변환 링크(partner_links 표·기기 캐시)는 쓰지 않게 함.
+- **남은 것(사용자)**: Vercel 환경변수 `TRAVELPAYOUTS_API_TOKEN`·`TRAVELPAYOUTS_TRS`·`TRAVELPAYOUTS_MARKER`는 지워도 됨. Klook 제휴를 직접 맺으면 `api/_lib/affiliates/index.js`에 네트워크를 만들고 `klook.network`만 바꾸면 됨. Kayak은 `FlightsScreen`의 준비 중 자리와 `flightsProviderFor`(지금 'myrealtrip' | 'none')에 붙이면 됨.
 
 ### 2026-10-04 (9) — (8) 배포 뒤에도 아이폰 순수 흰 화면 재발: 정정과 추가 대비
 
