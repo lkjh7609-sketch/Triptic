@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   boardWindow,
   buildPages,
-  pageItems,
+  dotWindow,
   startOffset,
   delayMinutes,
   cleanHhmm,
@@ -220,11 +220,11 @@ describe('쪽 나누기', () => {
     expect(buildPages([1, 2], 99, 8).pages.flat()).toEqual([1, 2]);
   });
 
-  it('쪽 번호 줄은 7개 이하면 전부, 많으면 처음·끝·현재 둘레만', () => {
-    expect(pageItems(0, 5)).toEqual([1, 2, 3, 4, 5]);
-    expect(pageItems(0, 20)).toEqual([1, 2, 3, 4, '…', 20]);
-    expect(pageItems(9, 20)).toEqual([1, '…', 9, 10, 11, '…', 20]);
-    expect(pageItems(19, 20)).toEqual([1, '…', 17, 18, 19, 20]);
-    expect(pageItems(0, 1)).toEqual([1]);
+  it('점 표시는 7개까지만 현재 둘레로 옮겨 가고, 앞뒤에 더 있으면 알려 준다', () => {
+    expect(dotWindow(0, 1)).toEqual({ start: 0, count: 1, before: false, after: false });
+    expect(dotWindow(2, 5)).toEqual({ start: 0, count: 5, before: false, after: false });
+    expect(dotWindow(0, 20)).toEqual({ start: 0, count: 7, before: false, after: true });
+    expect(dotWindow(10, 20)).toEqual({ start: 7, count: 7, before: true, after: true });
+    expect(dotWindow(19, 20)).toEqual({ start: 13, count: 7, before: true, after: false });
   });
 });
