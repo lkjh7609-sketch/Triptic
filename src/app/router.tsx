@@ -124,7 +124,7 @@ export const router = createBrowserRouter(
           },
         },
         {
-          // 항공권 검색(Travelpayouts White Label 위젯)
+          // 항공권 검색(한국어는 마이리얼트립 검색 폼, 그 외 언어는 준비 중 안내)
           path: 'flights',
           lazy: async () => {
             const { FlightsScreen } = await retryChunkLoad(() => import('@/features/home/FlightsScreen'));

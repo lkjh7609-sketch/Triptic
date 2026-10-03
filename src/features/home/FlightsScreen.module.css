@@ -67,44 +67,41 @@
   color: var(--text-muted);
 }
 
-/* AppShell이 FlightsScreen 바로 아래에 붙이는 위젯 자리 — 같은 폭으로 맞춘다 */
-.widgetHost {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 var(--space-4) calc(var(--space-6) + 72px);
-}
-
-.tickets {
-  margin-top: var(--space-4);
-}
-
-/* 한국어 외 항공 탭 아래 Airalo eSIM */
-.esim {
-  margin-top: var(--space-6);
-}
-
-.esimHead {
+/* 한국어 외 언어: 항공권 검색 준비 중 안내(트래블페이아웃 위젯을 뺀 자리 — 새 항공 검색이 들어올 곳) */
+.comingSoon {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin: var(--space-4) 0 calc(var(--space-6) + 72px);
+  padding: var(--space-8) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  text-align: center;
 }
 
-.esimTitle {
-  margin: 0;
+.comingSoonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.comingSoonTitle {
+  margin: var(--space-2) 0 0;
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.esimSubtitle {
-  margin: var(--space-1) 0 0;
+.comingSoonBody {
+  margin: 0;
+  max-width: 28rem;
   font-size: var(--font-body-size);
   color: var(--text-muted);
-}
-
-.esimWidget {
-  min-height: 160px;
 }

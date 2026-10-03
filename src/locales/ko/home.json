@@ -114,6 +114,10 @@
       "cabinBUSINESS": "비즈니스석",
       "cabinFIRST": "일등석"
     },
+    "comingSoon": {
+      "title": "항공권 검색을 준비하고 있어요",
+      "body": "더 많은 항공사와 노선을 비교할 수 있는 새 항공권 검색을 곧 열어요."
+    },
     "essentials": {
       "title": "유심·eSIM도 필요하신가요?",
       "defaultCity": "일본",
@@ -127,10 +131,6 @@
       "badgeCare": "유심사케어 보장액",
       "badgeCareAmount": "최대 300,000원",
       "badgeData": "구글맵, ChatGPT 데이터 무료"
-    },
-    "esimGlobal": {
-      "title": "여행용 eSIM도 필요하신가요?",
-      "subtitle": "로밍 요금 걱정 없이 도착하자마자 연결하세요"
     },
     "deals": {
       "title": "서울(인천) 출발 최저가 특가",
