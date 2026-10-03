@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from './AppShell';
+import { BootShell } from './BootShell';
 import { retryChunkLoad } from './chunkRetry';
 
 /**
@@ -16,6 +17,8 @@ export const router = createBrowserRouter(
     {
       path: '/',
       element: <AppShell />,
+      // 첫 접속에 화면 청크(lazy)를 받는 동안 — 없으면 react-router가 아무것도 안 그린다(흰 화면)
+      HydrateFallback: BootShell,
       children: [
         {
           index: true,

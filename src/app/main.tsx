@@ -8,6 +8,7 @@ import { isNativeApp } from '@/shared/platform';
 import { App } from './App';
 import { installStaleChunkReload } from './chunkRetry';
 import { reportBootFailure } from './bootFailure';
+import { captureBootShell } from './bootShellState';
 
 installStaleChunkReload();
 reportBootFailure();
@@ -27,6 +28,8 @@ const rootEl = document.getElementById('root');
 if (!rootEl) {
   throw new Error('#root element not found');
 }
+// React가 #root를 비우기 전에 첫 화면 뼈대를 저장해 대기 화면으로 다시 쓴다(BootShell)
+captureBootShell();
 
 if (import.meta.env.DEV) {
   navigator.serviceWorker?.getRegistrations().then((registrations) => {

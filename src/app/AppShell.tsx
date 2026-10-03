@@ -5,6 +5,7 @@ import { TabBar } from './TabBar';
 import { HeaderDesktop } from './HeaderDesktop';
 import { GuestBanner } from './GuestBanner';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { BootShell } from './BootShell';
 import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { closeLoginPrompt, openLoginPrompt, setSignedIn, useLoginPromptOpen } from '@/features/auth/loginPrompt';
@@ -144,10 +145,11 @@ export function AppShell() {
   if (onFlights && !flightsWidgetMounted) setFlightsWidgetMounted(true);
 
   if (loading) {
-    // data-boot-pending: index.html 부팅 안전망이 이 화면을 아직 '안 뜬 것'으로 본다(여기서 멈추면 새로고침·안내)
+    // 첫 화면 뼈대 그대로(저장된 로그인이 없을 때 최대 3초, useSession). data-boot-pending: index.html 부팅 안전망이
+    // 이 화면을 아직 '안 뜬 것'으로 본다(여기서 멈추면 새로고침·안내)
     return (
       <div className={`app-shell ${styles.shell}`} data-boot-pending="">
-        <RouteSkeleton />
+        <BootShell fallback={<RouteSkeleton />} />
       </div>
     );
   }
