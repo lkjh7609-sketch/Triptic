@@ -129,6 +129,9 @@
     "api/parseDocument.js": {
       "maxDuration": 60,
       "includeFiles": "{data/airports.json,node_modules/unpdf/dist/**}"
+    },
+    "api/partnerProducts.js": {
+      "maxDuration": 30
     }
   }
 }
