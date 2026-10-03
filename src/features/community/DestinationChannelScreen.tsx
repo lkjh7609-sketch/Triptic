@@ -172,6 +172,14 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
+        {destination.cover_url ? (
+          <div
+            className={styles.heroCover}
+            style={{ backgroundImage: `url("${destination.cover_url}")` }}
+            aria-hidden="true"
+            data-testid="channel-cover"
+          />
+        ) : null}
         <div className={styles.container}>
           <ChannelHeader
             destination={destination}

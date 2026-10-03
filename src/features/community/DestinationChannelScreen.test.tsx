@@ -158,6 +158,17 @@ describe('DestinationChannelScreen', () => {
     expect(screen.getByText(/체감 32°C/)).toBeInTheDocument();
   });
 
+  it('대표 사진이 있으면 머리말 뒤에 깔고, 없으면 깔지 않는다', () => {
+    const { unmount } = renderScreen();
+    expect(screen.queryByTestId('channel-cover')).not.toBeInTheDocument();
+    unmount();
+    state.destination = { ...KL, cover_url: 'https://example.com/kl.webp' };
+    renderScreen();
+    expect(screen.getByTestId('channel-cover')).toHaveStyle({
+      backgroundImage: 'url("https://example.com/kl.webp")',
+    });
+  });
+
   it('브레드크럼은 전체 목록과 대륙 탭으로 이어진다', () => {
     renderScreen();
     expect(screen.getByRole('link', { name: /전체 도시 목록/ })).toHaveAttribute(
