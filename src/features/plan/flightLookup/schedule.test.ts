@@ -8,8 +8,13 @@ import {
   normalizeIcnSchedule,
   pickDomestic,
   pickIcnRow,
-  pickIcnRowForDate,
-  addDays,
+  pickArrivalForDeparture,
+  flightDurationMin,
+  estimateDurationMin,
+  distanceKm,
+  median,
+  localToUtcMs,
+  ymdInZone,
   rowCoversDate,
   toYmd,
   weekdayIndex,
@@ -182,41 +187,78 @@ describe('한국공항공사', () => {
   });
 });
 
-describe('도착편 날짜 — 인천 도착일 기준', () => {
-  // 인천 도착이 월·화·목·금·토 새벽(상대 공항 출발은 그 전날 밤)인 도착편
-  const arrRow = normalizeIcnSchedule(
-    [
-      raw({
-        flightId: 'OZ322',
-        st: '0445',
-        ynMon: 'Y',
-        ynTue: 'Y',
-        ynWed: 'N',
-        ynThu: 'Y',
-        ynFri: 'Y',
-        ynSat: 'Y',
-        ynSun: 'N',
-        codeshare: 'Master',
-      }),
-    ],
-    'arr',
-  );
-
-  it('적은 날짜에 운항하면 그대로, 아니면 도착편에 한해 하루 뒤(인천 도착일)로 맞춘다', () => {
-    expect(pickIcnRowForDate(arrRow, '2026-10-13')?.date).toBe('2026-10-13'); // 화요일(도착일 그대로)
-    // 수요일 밤 출발 → 목요일 새벽 도착: 적은 날짜(수)엔 없고 하루 뒤(목)에 있다
-    expect(pickIcnRowForDate(arrRow, '2026-10-14')?.date).toBe('2026-10-15');
-    // 일요일 밤 출발 → 월요일 새벽 도착
-    expect(pickIcnRowForDate(arrRow, '2026-10-11')?.date).toBe('2026-10-12');
+describe('시간대·비행시간', () => {
+  it('현지 시각 ↔ UTC, 현지 날짜', () => {
+    // 인천 2026-10-15 18:50 = 09:50 UTC, 마닐라는 UTC+8
+    expect(new Date(localToUtcMs('2026-10-15', '1850', 'Asia/Seoul')).toISOString()).toBe(
+      '2026-10-15T09:50:00.000Z',
+    );
+    expect(ymdInZone(Date.UTC(2026, 9, 15, 17, 30), 'Asia/Seoul')).toBe('2026-10-16');
   });
 
-  it('하루 뒤에도 없으면 못 찾고, 출발편은 하루 뒤를 보지 않는다', () => {
-    expect(pickIcnRowForDate(arrRow, '2026-10-25')).toBeNull(); // 운항 기간(~10/24)이 끝난 뒤
-    const dep = normalizeIcnSchedule(
-      [raw({ ynMon: 'N', ynTue: 'N', ynWed: 'N', ynThu: 'N', ynFri: 'N', ynSun: 'N' })],
-      'dep',
-    ); // 토요일만
-    expect(pickIcnRowForDate(dep, '2026-10-09')).toBeNull(); // 금요일: 하루 뒤(토)엔 있지만 출발편이라 안 봄
-    expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
+  it('인천 출발·상대 공항 현지 도착 시각으로 비행시간을 구한다(KE623 18:50 → 마닐라 22:05 = 4시간 15분)', () => {
+    expect(flightDurationMin('2026-10-15', '1850', 'Asia/Seoul', '2205', 'Asia/Manila')).toBe(255);
+    // 시차가 큰 장거리: 인천 13:00 → 로스앤젤레스 현지 08:00(같은 날) = 11시간
+    expect(
+      flightDurationMin('2026-10-15', '1300', 'Asia/Seoul', '0800', 'America/Los_Angeles'),
+    ).toBe(11 * 60);
+  });
+
+  it('어림값과 보조 함수', () => {
+    expect(estimateDurationMin(0)).toBe(63);
+    expect(estimateDurationMin(2000)).toBe(214);
+    expect(median([3, 1, 2])).toBe(2);
+    expect(median([1, 2, 3, 4])).toBe(3);
+    expect(median([])).toBeNull();
+    expect(
+      Math.round(distanceKm({ lat: 37.46, lng: 126.44 }, { lat: 14.51, lng: 121.02 })),
+    ).toBeGreaterThan(2500);
+  });
+});
+
+describe('상대 공항→인천 편 — 사용자가 적은 날짜는 상대 공항 탑승일', () => {
+  const daily = (st: string, over: Record<string, unknown> = {}) =>
+    normalizeIcnSchedule([raw({ flightId: 'KE624', st, codeshare: 'Master', ...over })], 'arr');
+
+  it('밤새 날아오는 편(마닐라 23:20 출발 → 인천 04:35 도착): 21일 탑승이면 22일 도착', () => {
+    const pick = pickArrivalForDeparture(daily('0435'), '2026-10-21', 255, 'Asia/Manila');
+    expect(pick).toMatchObject({ arrDate: '2026-10-22', matched: true });
+  });
+
+  it('같은 날 도착하는 편(도쿄 12:55 출발 → 인천 15:25 도착): 적은 날 그대로', () => {
+    const pick = pickArrivalForDeparture(daily('1525'), '2026-10-21', 150, 'Asia/Tokyo');
+    expect(pick).toMatchObject({ arrDate: '2026-10-21', matched: true });
+  });
+
+  it('요일이 맞는 날만 후보가 된다 — 인천 도착이 월·화·목·금·토인 편은 수요일 밤 탑승이 목요일 도착', () => {
+    const rows = daily('0445', {
+      ynMon: 'Y',
+      ynTue: 'Y',
+      ynWed: 'N',
+      ynThu: 'Y',
+      ynFri: 'Y',
+      ynSat: 'Y',
+      ynSun: 'N',
+    });
+    // 2026-10-14는 수요일 → 도착 후보: 수(운항 안 함), 목(운항) → 목요일 새벽 도착
+    expect(pickArrivalForDeparture(rows, '2026-10-14', 240, 'Asia/Shanghai')).toMatchObject({
+      arrDate: '2026-10-15',
+      matched: true,
+    });
+  });
+
+  it('비행시간을 모르면 적은 날 → 하루 뒤 순으로 운항하는 쪽(matched=false)', () => {
+    expect(pickArrivalForDeparture(daily('0435'), '2026-10-21', null, null)).toMatchObject({
+      arrDate: '2026-10-21',
+      matched: false,
+    });
+    expect(
+      pickArrivalForDeparture(daily('0435', { lastdate: '20261024' }), '2026-10-25', null, null),
+    ).toBeNull();
+  });
+
+  it('출발편은 대상이 아니다', () => {
+    const dep = normalizeIcnSchedule([raw()], 'dep');
+    expect(pickArrivalForDeparture(dep, '2026-10-15', 255, 'Asia/Manila')).toBeNull();
   });
 });

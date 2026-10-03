@@ -241,15 +241,30 @@ describe('FlightModal — 편명으로 불러오기', () => {
     expect(onSave.mock.calls[0][0].outbound.dep.time).toBe('19:10');
   });
 
-  it('밤새 인천에 도착하는 귀국편은 날짜가 인천 도착일로 맞춰지고 안내가 뜬다', async () => {
-    lookup.result = { ...found, flight: { ...found.flight, flightNo: 'KE644', date: '2026-11-06' } };
-    render(<FlightModal flightsData={empty} startDate="2026-11-01" endDate="2026-11-05" onClose={() => {}} onSave={vi.fn()} />);
+  it('밤새 날아와 도착일이 다른 귀국편: 적은 날짜는 그대로 두고 도착일 안내가 뜨며 도착일이 함께 저장된다', async () => {
+    lookup.result = {
+      ...found,
+      flight: {
+        ...found.flight,
+        flightNo: 'KE624',
+        date: '2026-11-05',
+        arrDate: '2026-11-06',
+        dep: { iata: 'MNL', nameKo: '마닐라', time: '', terminal: null },
+        arr: { iata: 'ICN', nameKo: '인천', time: '04:35', terminal: 't2' },
+      },
+    };
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<FlightModal flightsData={empty} startDate="2026-11-01" endDate="2026-11-05" onClose={() => {}} onSave={onSave} />);
     const returnCard = screen.getByText('귀국').closest('div')!.parentElement as HTMLElement;
-    fireEvent.change(within(returnCard).getByPlaceholderText('예: OZ102'), { target: { value: 'KE644' } });
+    fireEvent.change(within(returnCard).getByPlaceholderText('예: OZ102'), { target: { value: 'KE624' } });
     fireEvent.click(within(returnCard).getByRole('button', { name: '편명으로 불러오기' }));
-    expect(await screen.findByText(/인천 도착일은 2026-11-06이에요/)).toBeInTheDocument();
-    expect(lookup.calls).toEqual([['KE644', '2026-11-05']]);
-    expect(within(returnCard).getByRole('button', { name: /비행 날짜/ })).toHaveTextContent('11월 6일');
+    expect(await screen.findByText(/인천에는 2026-11-06 04:35에 도착해요.*여행 종료일이 그날로 늘어나요/)).toBeInTheDocument();
+    expect(lookup.calls).toEqual([['KE624', '2026-11-05']]);
+    expect(within(returnCard).getByRole('button', { name: /비행 날짜/ })).toHaveTextContent('11월 5일');
+    fireEvent.click(within(returnCard).getByRole('button', { name: '이 항공편 정보 적용' }));
+    fireEvent.click(screen.getByRole('button', { name: '저장' }));
+    await Promise.resolve();
+    expect(onSave.mock.calls[0][0].return).toMatchObject({ flightNo: 'KE624', date: '2026-11-05', arrDate: '2026-11-06' });
   });
 
   it('날짜 칸을 누르면 달력 시트가 열리고, 하루를 고르면 닫히며 그 날짜로 조회한다', async () => {

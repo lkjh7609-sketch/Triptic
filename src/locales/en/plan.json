@@ -106,7 +106,8 @@
     "totalLabel": "Total"
   },
   "flightCard": {
-    "schedule": "Depart {{depTime}} → Arrive {{arrTime}}"
+    "schedule": "Depart {{depTime}} → Arrive {{arrTime}}",
+    "arriveOnly": "Arrives {{arrTime}}"
   },
   "flight": {
     "title": "Flights",
@@ -148,11 +149,12 @@
       "out_of_range": "This flight doesn't operate on that date. Check the date or enter it below.",
       "not_published": "The schedule for this date isn't published yet. Please enter it below."
     },
-    "lookupDateShifted": "This flight lands in Incheon on {{date}} (overnight flight), so the date was adjusted. Please check the details.",
     "manualOpen": "Enter manually",
     "editManual": "Edit details",
     "pickDate": "Choose a date",
-    "dateAria": "Flight date"
+    "dateAria": "Flight date",
+    "lookupArrNextDay": "It's an overnight flight — you land in Incheon on {{date}} at {{time}}.",
+    "lookupArrNextDayExtend": "It's an overnight flight — you land in Incheon on {{date}} at {{time}}. Applying it extends your trip's end date to that day."
   },
   "itemDetail": {
     "mapLink": "View on Google Maps",
@@ -254,7 +256,8 @@
     "tripDatesChanged": "Trip dates changed to {{start}} – {{end}}",
     "tripDatesShrinkTitle": "Change trip dates?",
     "tripDatesShrinkMessage": "The trip gets shorter, so plans, stays, meals and expenses from day {{day}} on will be deleted.",
-    "tripDatesShrinkConfirm": "Change"
+    "tripDatesShrinkConfirm": "Change",
+    "flightExtendedTrip": "Extended your trip's end date to {{date}} for the overnight flight"
   },
   "tripMap": {
     "ariaLabel": "Itinerary map",

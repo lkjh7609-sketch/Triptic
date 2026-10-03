@@ -11,7 +11,7 @@ import { jsPDF } from 'jspdf';
 import i18next, { normalizeLocale } from '@/shared/i18n';
 import { getDayHotels, type Hotel } from './map/hotels';
 import { getDayCity } from './dayCities';
-import { flightAirlineLabel } from './flights';
+import { flightAirlineLabel, returnFlightDay } from './flights';
 import type { MealSlot } from './types';
 import { sharedDirectionsCache } from './map/useTripRoutes';
 import { convertToBase, formatMoney, getDayExpenseTotal } from './expenses';
@@ -500,10 +500,10 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     y += 6.0;
 
     const isFirst = dayNum === 1;
-    const isLast = dayNum === input.totalDays;
     const { startHotel, endHotel } = getDayHotels(dayNum, input.totalDays, input.hotelsData);
     const flightArrival: FlightInfo | null = isFirst ? input.flightsData.outbound : null;
-    const flightDeparture: FlightInfo | null = isLast ? input.flightsData.return : null;
+    const flightDeparture: FlightInfo | null =
+      dayNum === returnFlightDay(input.flightsData.return, input.startDate, input.totalDays) ? input.flightsData.return : null;
     const dayItems: PlaceItem[] = (input.plannerData[dayNum] || []).filter((item) => item && item.name);
     const dayExpenses = input.expensesData[dayNum] || [];
 
