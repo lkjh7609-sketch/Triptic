@@ -14,17 +14,19 @@ interface FeedbackModalProps {
   onClose: () => void;
   /** 'partnership'이면 제목·안내 문구가 "제휴문의"로 바뀌고 제휴문의로 저장된다(0071). 기본은 일반 문의 */
   kind?: FeedbackCategory;
+  /** 처음부터 적어 둘 내용(예: 공항 추가 요청 머리말) */
+  initialBody?: string;
 }
 
 /** 문의하기(고객센터) — 설정 화면과 PC 홈 하단 "고객센터"에서 연다. 텍스트 + 선택적
  * 스크린샷 1장을 바로 작성해서 보내면 운영 콘솔에서 확인할 수 있다. */
-export function FeedbackModal({ onClose, kind = 'general' }: FeedbackModalProps) {
+export function FeedbackModal({ onClose, kind = 'general', initialBody = '' }: FeedbackModalProps) {
   const { t } = useTranslation(['settings', 'common']);
   const partnership = kind === 'partnership';
   const title = partnership ? t('feedback.partnershipTitle') : t('feedback.title');
   const { user } = useSession();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
-  const [body, setBody] = useState('');
+  const [body, setBody] = useState(initialBody);
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);

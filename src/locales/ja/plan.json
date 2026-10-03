@@ -109,10 +109,14 @@
     "preview": "{{dep}} {{depTime}} 発 → {{arr}} {{arrTime}} 着",
     "manualSuffix": "（手動入力）",
     "flightNoRequired": "便名を入力してください。",
-    "airportRequired": "出発・到着空港は検索結果から選んでください。",
+    "airportRequired": "出発・到着空港はリストから選んでください。",
     "applyEdit": "変更を保存",
     "depTimeAria": "出発時刻",
-    "arrTimeAria": "到着時刻"
+    "arrTimeAria": "到着時刻",
+    "airportListPlaceholder": "都市・空港・コードで検索 (例: 東京、NRT)",
+    "airportNone": "リストにない空港です。",
+    "airportRequest": "追加をリクエスト",
+    "airportRequestPrefill": "[空港追加リクエスト] {{query}}\n"
   },
   "itemDetail": {
     "mapLink": "Google Mapsで見る",

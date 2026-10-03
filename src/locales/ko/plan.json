@@ -127,10 +127,14 @@
     "preview": "{{dep}} {{depTime}} 출발 → {{arr}} {{arrTime}} 도착",
     "manualSuffix": "(직접 입력)",
     "flightNoRequired": "편명을 입력해 주세요.",
-    "airportRequired": "출발·도착 공항은 검색 결과 목록에서 선택해 주세요.",
+    "airportRequired": "출발·도착 공항은 목록에서 선택해 주세요.",
     "applyEdit": "수정 완료",
     "depTimeAria": "출발 시각",
-    "arrTimeAria": "도착 시각"
+    "arrTimeAria": "도착 시각",
+    "airportListPlaceholder": "도시·공항·코드로 검색 (예: 도쿄, NRT)",
+    "airportNone": "목록에 없는 공항이에요.",
+    "airportRequest": "추가 요청하기",
+    "airportRequestPrefill": "[공항 추가 요청] {{query}}\n"
   },
   "itemDetail": {
     "mapLink": "Google Maps에서 보기",
