@@ -24,7 +24,7 @@ export function HomePage() {
 
   return (
     <div className={styles.page}>
-      {desktop ? <HeroDesktop /> : <HomeTopBar introAnchor />}
+      {desktop ? <HeroDesktop /> : <HomeTopBar />}
       <div className={styles.body}>
         {desktop ? (
           <>
