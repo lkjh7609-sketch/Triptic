@@ -75,7 +75,7 @@ export function HeaderDesktop() {
     <header className={styles.header}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
         <Link to="/" className={styles.logo} aria-label="Triptic">
-          <BrandLogo className={styles.logoImage} introAnchor />
+          <BrandLogo className={styles.logoImage} />
         </Link>
         
         <nav className={styles.nav}>
