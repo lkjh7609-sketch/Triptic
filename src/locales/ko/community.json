@@ -697,7 +697,28 @@
     "none": "아직 고르지 않았어요",
     "close": "닫기",
     "confirm": "선택 완료",
-    "any": "어디든 상관없어요"
+    "any": "어디든 상관없어요",
+    "chooseRegion": "{{tab}} 지역",
+    "backTo": "{{tab}} 지역 전체",
+    "regionCount_other": "{{count}}개 지역",
+    "regions": {
+      "eastAsia": "동아시아",
+      "southeastAsia": "동남아시아",
+      "southAsia": "남아시아",
+      "middleEast": "중동",
+      "westernEurope": "서유럽",
+      "northernEurope": "북유럽",
+      "southernEurope": "남유럽·튀르키예",
+      "easternEurope": "동유럽",
+      "northAmerica": "북미",
+      "centralAmerica": "중미·카리브",
+      "southAmerica": "남미",
+      "northAfrica": "북아프리카",
+      "subSaharanAfrica": "동·남아프리카",
+      "oceania": "오세아니아",
+      "guamSaipan": "괌·사이판",
+      "etc": "기타"
+    }
   },
   "dateDialog": {
     "title": "여행 일정 선택",

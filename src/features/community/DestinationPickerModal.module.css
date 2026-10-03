@@ -600,3 +600,63 @@
     animation-duration: 0.01ms;
   }
 }
+
+/* 위아래 줄이 창 높이가 낮을 때 눌려 사라지지 않게 — 목록 영역만 줄어든다 */
+.header,
+.searchArea,
+.tabs,
+.footer {
+  flex-shrink: 0;
+}
+
+.back {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 36px;
+  margin: -4px 0 4px -6px;
+  padding: 0 10px 0 4px;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--brand-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.regionCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.regionCard:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .regionCard:hover {
+    border-color: var(--border-strong);
+    background: var(--brand-tint);
+  }
+}
+
+.regionArrow {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
