@@ -14,7 +14,7 @@
 - 🗺️ **구글 지도 연동**: 장소 검색(Google Places), 대중교통·자동차 경로 시각화, 현재 위치 버튼
 - ✨ **AI 주변 추천**: DeepSeek(대체 OpenRouter)로 근처 명소·맛집 추천, 반경 장소 풀과 DB 캐시로 비용 절감
 - 🧾 **예약 서류 자동 인식**: 항공권·호텔 확인서(PDF·사진)를 올리면 검수 후 일정에 자동 반영, 민감정보 가림
-- 🛫 **예약 연결**: 항공(마이리얼트립·Travelpayouts), 호텔(트립닷컴), 투어·액티비티(Klook·마이리얼트립), 유심·eSIM
+- 🛫 **예약 연결**: 항공(마이리얼트립, 한국어 외 언어는 준비 중), 호텔(트립닷컴), 투어·액티비티(마이리얼트립·Klook), 유심(유심사)
 - 📄 **PDF 일정표 내보내기**: 언어별(한/영/중/일) 글꼴을 자동 선택하는 인쇄용 A4 PDF
 - 🔗 **함께 편집**: 공유 링크로 들어온 동행이 로그인하면 같은 일정을 실시간으로 함께 편집
 - 💬 **커뮤니티**: 여행지별 게시판(글·댓글·사진), 팔로우·좋아요, 신고·차단, AI 콘텐츠 자동 검열
@@ -75,7 +75,7 @@ OPENROUTER_API_KEY=             # DeepSeek 실패 시 대체
 SUPABASE_SERVICE_ROLE_KEY=      # 서버 전용 테이블 쓰기(캐시·사용량 기록)
 GOOGLE_PLACES_SERVER_KEY=       # 서버의 장소 좌표 채우기
 GOOGLE_VISION_API_KEY=          # 예약 서류 문자 인식
-MYREALTRIP_API_KEY / TRAVELPAYOUTS_API_TOKEN   # 제휴 링크·상품
+MYREALTRIP_API_KEY   # 제휴 링크·상품
 WEATHERKIT_*                    # 날씨(Apple 개발자 프로그램 가입 후)
 POSTHOG_PERSONAL_API_KEY / POSTHOG_PROJECT_ID   # 운영 콘솔 분석 탭(PostHog 읽기 전용 개인 키)
 SENTRY_AUTH_TOKEN / SENTRY_ORG / SENTRY_PROJECT     # 운영 콘솔 분석 탭(Sentry 읽기 토큰, 슬러그)
