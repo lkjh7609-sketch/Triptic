@@ -12,35 +12,59 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
-        // 홈(/)으로 들어오면 HomeScreen 청크를 HTML 단계에서 미리 받게 한다. 홈은 lazy 라우트라 원래는 메인 JS가 내려받혀
-        // 실행된 뒤에야 청크를 찾기 시작한다(느린 회선에서 그만큼의 직렬 대기). 다른 주소에서는 받지 않는다.
-        // 청크가 다시 가져오는 공용 청크(chunk.imports)도 같이 — 진입 청크만 미리 받으면 대기 사슬이 남는다.
-        name: 'preload-home-chunk',
+        // 첫 화면에 꼭 필요한 파일을 HTML 단계에서 미리 받게 한다. 원래는 메인 JS가 내려받혀 실행된 뒤에야 찾기 시작해서
+        // 느린 회선에서 그만큼 직렬로 기다렸다(메인 JS → 번역 파일·홈 청크·홈 CSS → 화면).
+        // ① 홈(/)이면 HomeScreen 청크 + 그 청크가 가져오는 공용 청크(chunk.imports — 진입 청크만 받으면 대기 사슬이 남는다)
+        //    + 그 청크들의 CSS(rel=preload — 화면을 막지 않고 받아만 둔다, Vite가 나중에 붙일 때 바로 쓴다). 다른 주소에서는 받지 않는다.
+        // ② 모든 주소: 표시 언어의 번역 파일 7개(+ 폴백 언어 ko — i18next가 같이 받는다). 언어는 i18n과 같은 순서로 고른다
+        //    (저장된 값 → 브라우저 언어, src/shared/i18n/index.ts normalizeLocale). 틀리게 고르면 몇 KB를 더 받을 뿐이다.
+        name: 'preload-first-screen',
         apply: 'build',
         transformIndexHtml: {
           order: 'post',
           handler(html, ctx) {
             const bundle = ctx.bundle;
             if (!bundle) return html;
-            const home = Object.values(bundle).find(
-              (c) => c.type === 'chunk' && c.isDynamicEntry && /features\/home\/HomeScreen\.tsx$/.test(c.facadeModuleId ?? '')
-            );
-            if (!home) return html;
-            const entry = Object.values(bundle).find((c) => c.type === 'chunk' && c.isEntry);
-            const seen = new Set();
-            const files = [];
-            const visit = (name) => {
-              if (seen.has(name) || name === entry?.fileName) return;
-              seen.add(name);
-              const c = bundle[name];
-              if (!c || c.type !== 'chunk') return;
-              c.imports.forEach(visit);
-              files.push(c.fileName);
-            };
-            visit(home.fileName);
-            const list = JSON.stringify(files.map((f) => `/${f}`));
-            const tag = `<script>if(location.pathname==='/'){${list}.forEach(function(h){var l=document.createElement('link');l.rel='modulepreload';l.href=h;document.head.appendChild(l)})}</script>`;
-            return html.replace('</head>', `${tag}\n</head>`);
+            const chunks = Object.values(bundle).filter((c) => c.type === 'chunk');
+            const entry = chunks.find((c) => c.isEntry);
+            const tags = [];
+
+            const home = chunks.find((c) => c.isDynamicEntry && /features\/home\/HomeScreen\.tsx$/.test(c.facadeModuleId ?? ''));
+            if (home) {
+              const seen = new Set();
+              const files = [];
+              const css = new Set();
+              const visit = (name) => {
+                if (seen.has(name) || name === entry?.fileName) return;
+                seen.add(name);
+                const c = bundle[name];
+                if (!c || c.type !== 'chunk') return;
+                c.imports.forEach(visit);
+                files.push(c.fileName);
+                c.viteMetadata?.importedCss?.forEach((f) => css.add(f));
+              };
+              visit(home.fileName);
+              const js = JSON.stringify(files.map((f) => `/${f}`));
+              const styles = JSON.stringify([...css].map((f) => `/${f}`));
+              tags.push(
+                `<script>if(location.pathname==='/'){${js}.forEach(function(h){var l=document.createElement('link');l.rel='modulepreload';l.href=h;document.head.appendChild(l)});${styles}.forEach(function(h){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=h;document.head.appendChild(l)})}</script>`,
+              );
+            }
+
+            const locales = {};
+            for (const c of chunks) {
+              const m = /\/locales\/([^/]+)\/[^/]+\.json$/.exec(c.facadeModuleId ?? '');
+              if (m) (locales[m[1]] ??= []).push(`/${c.fileName}`);
+            }
+            if (Object.keys(locales).length) {
+              tags.push(
+                `<script>(function(){var m=${JSON.stringify(locales)},l=null;try{l=localStorage.getItem('triptic-locale')}catch(e){}` +
+                  `l=l||(navigator.languages&&navigator.languages[0])||navigator.language||'ko';var x=l.toLowerCase(),b=x.split(/[-_]/)[0];` +
+                  `var k=m[l]?l:x.indexOf('zh')===0?'zh-TW':m[b]?b:'ko';var f=(m[k]||[]).concat(k==='ko'?[]:m.ko||[]);` +
+                  `f.forEach(function(h){var e=document.createElement('link');e.rel='modulepreload';e.href=h;document.head.appendChild(e)})})()</script>`,
+              );
+            }
+            return tags.length ? html.replace('</head>', `${tags.join('\n')}\n</head>`) : html;
           },
         },
       },
