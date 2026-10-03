@@ -1,39 +1,28 @@
-import { useEffect, useRef } from 'react';
-import { aiLocale } from '@/shared/api/aiCacheKeys';
+import { useTranslation } from 'react-i18next';
+import { ExternalLink, Ticket } from 'lucide-react';
+import { useKlookActivitiesLink } from '@/features/plan/partnerLinks';
 import styles from './SectionScreen.module.css';
 
 /**
- * Klook 투어 위젯(Travelpayouts "Specific City/Category Tours Widget", promo 4497).
- * 임베드 스크립트는 자기 src의 city_id로 Klook <ins>를 만들고 Klook 로더가 iframe으로
- * 그린다 — 그래서 도시가 바뀌거나 화면에 다시 들어올 때마다 컨테이너를 비우고 새 도시
- * 번호로 스크립트를 새로 넣으면 된다(추천 링크 shmarker는 그대로 붙는다).
+ * 액티비티 화면의 Klook 자리 — 그 도시의 Klook 투어·액티비티 검색 결과로 가는 카드.
+ * 예전엔 트래블페이아웃 투어 위젯(tpembd.com)을 넣었는데 트래블페이아웃을 뺐다(2026-10-04). 링크는 서버(api/partnerLink,
+ * brand=klook)가 정하므로, Klook 제휴를 새로 붙이면 서버 레지스트리만 바꾸면 이 카드가 그대로 제휴 링크가 된다.
  */
-const TP_CONTENT_SRC = 'https://tpembd.com/content';
-const WIDGET_PARAMS = {
-  trs: '578749',
-  shmarker: '782766.Hom_Widget',
-  category: '2', // Tours & Sightseeing
-  amount: '3',
-  powered_by: 'true',
-  campaign_id: '137',
-  promo_id: '4497',
-};
-
-export function KlookToursWidget({ cityId, locale, currency = 'KRW' }: { cityId: number; locale: string; currency?: string }) {
-  const hostRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-    host.replaceChildren();
-    const params = new URLSearchParams({ currency, ...WIDGET_PARAMS, locale: aiLocale(locale), city_id: String(cityId) });
-    const script = document.createElement('script');
-    script.async = true;
-    script.charset = 'utf-8';
-    script.src = `${TP_CONTENT_SRC}?${params.toString()}`;
-    host.appendChild(script);
-    return () => host.replaceChildren();
-  }, [cityId, locale, currency]);
-
-  return <div ref={hostRef} className={styles.toursWidget} />;
+export function KlookToursWidget({ city, locale }: { city: string; locale: string }) {
+  const { t } = useTranslation('home');
+  const href = useKlookActivitiesLink(city, locale, 'city');
+  return (
+    <div className={styles.toursWidget}>
+      <div className={styles.klookCard}>
+        <span className={styles.klookIcon} aria-hidden="true">
+          <Ticket size={22} />
+        </span>
+        <p className={styles.klookText}>{t('activities.klookCard.title', { city })}</p>
+        <a className={styles.klookCta} href={href} target="_blank" rel="sponsored noopener">
+          {t('activities.klookCard.cta')}
+          <ExternalLink size={14} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  );
 }

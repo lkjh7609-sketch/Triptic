@@ -235,6 +235,10 @@
       "Tokyo": "東京",
       "Bangkok": "曼谷",
       "Danang": "峴港"
+    },
+    "klookCard": {
+      "title": "在 Klook 找{{city}}的行程與體驗",
+      "cta": "前往 Klook"
     }
   },
   "page": {

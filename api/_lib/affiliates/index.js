@@ -19,6 +19,13 @@ export const NETWORKS = {
         // 마이리얼트립은 대체 링크가 없어서, 변환을 못 하면 원래 주소로라도 보낸다(수수료 없음)
         passThroughWhenUnavailable: true,
     },
+    // 제휴 연결 전 — 원래 주소를 그대로 준다(수수료 없음, 저장된 변환 결과도 쓰지 않음). Klook은 트래블페이아웃을 거쳐
+    // 제휴 링크로 바꾸다가 트래블페이아웃을 뺐다(2026-10-04). Klook 제휴를 새로 붙이면 그 네트워크를 만들어 klook.network만 바꾼다
+    direct: {
+        isConfigured: () => false,
+        convert: null,
+        passThroughWhenUnavailable: true,
+    },
 };
 
 const KLOOK_LOCALE_PATH = { ko: 'ko', en: 'en-US', ja: 'ja', 'zh-TW': 'zh-TW' };
@@ -29,7 +36,7 @@ const KLOOK_LOCALE_PATH = { ko: 'ko', en: 'en-US', ja: 'ja', 'zh-TW': 'zh-TW' };
  */
 export const LINK_BRANDS = {
     klook: {
-        network: 'travelpayouts',
+        network: 'direct',
         async target(query, locale) {
             const q = sanitizeInput(query.q ?? query.city, 80);
             return q ? `https://www.klook.com/${KLOOK_LOCALE_PATH[locale]}/search/result/?query=${encodeURIComponent(q)}` : null;

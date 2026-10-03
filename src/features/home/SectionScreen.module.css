@@ -32,6 +32,56 @@
   min-height: 200px;
 }
 
+/* Klook 자리 — 도시 투어·액티비티 검색으로 가는 카드(트래블페이아웃 위젯을 뺀 자리) */
+.klookCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  text-align: center;
+}
+
+.klookIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.klookText {
+  margin: 0;
+  font-size: var(--font-body-size);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.klookCta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .klookCta:hover {
+    background: var(--brand-pressed);
+  }
+}
+
 /* 마이리얼트립 상품 카드 */
 .productGrid {
   display: grid;

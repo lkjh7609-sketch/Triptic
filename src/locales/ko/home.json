@@ -235,6 +235,10 @@
       "Tokyo": "도쿄",
       "Bangkok": "방콕",
       "Danang": "다낭"
+    },
+    "klookCard": {
+      "title": "{{city}} 투어·액티비티를 Klook에서 찾아보세요",
+      "cta": "Klook에서 보기"
     }
   },
   "page": {

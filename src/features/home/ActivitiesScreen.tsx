@@ -3,12 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { flagInvalid } from '@/shared/ui/invalidField';
-import { useProfile } from '@/shared/hooks/useProfile';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { cityDisplayName } from '@/features/plan/cityName';
 import { openExternal, openKlookSearch, openMyrealtripSearch, useKlookActivitiesLink, useMyrealtripLink } from '@/features/plan/partnerLinks';
 import { ACTIVITY_PROVIDERS, readActivityProvider, saveActivityProvider, type ActivityProvider } from './activityProviders';
-import { DEFAULT_KLOOK_CITY_ID, nearestKlookCityId } from './klookCities';
+import { nearestKlookCityId } from './klookCities';
 import { KlookToursWidget } from './KlookToursWidget';
 import { useNearestTrip } from './useNearestTrip';
 import { HomeSectionTabs } from './HomeSectionTabs';
@@ -59,9 +58,6 @@ export function ActivitiesScreen() {
     provider === 'myrealtrip' && typedKeyword.length >= 2 ? { kind: 'search', q: typedKeyword, placement: 'search' } : null,
   );
   const nearestTrip = useNearestTrip();
-  // 투어 가격은 설정의 기본 통화로, 문구는 앱 언어로(Klook 위젯)
-  const { data: profile } = useProfile();
-  const currency = profile?.base_currency ?? 'KRW';
   const tripCityId = nearestTrip ? nearestKlookCityId(nearestTrip.city_lat!, nearestTrip.city_lng!) : null;
   const tripCity = nearestTrip ? cityDisplayName(nearestTrip.city) : '';
 
@@ -236,7 +232,7 @@ export function ActivitiesScreen() {
               />
             )
           ) : (
-            <KlookToursWidget cityId={tripCityId ?? DEFAULT_KLOOK_CITY_ID} locale={i18n.language} currency={currency} />
+            <KlookToursWidget city={klookCityLabel} locale={i18n.language} />
           )}
           <p className={styles.providedBy}>{t('activities.providedBy', { provider: t(`activities.provider.${provider}`) })}</p>
         </section>
