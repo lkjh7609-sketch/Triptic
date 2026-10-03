@@ -57,7 +57,8 @@ begin
   insert into public.icn_flight_schedule
     (flight_id, direction, first_date, last_date, st, days, terminal, airline_ko, airline_code, master_flight_id, other_airport_code, other_airport_ko)
   select r->>'flight_id', r->>'direction', (r->>'first_date')::date, (r->>'last_date')::date, r->>'st',
-         array(select (d)::boolean from jsonb_array_elements_text(r->'days') d),
+         -- 월~일 순서가 매칭의 핵심이라 배열 원소 순서를 명시한다
+         array(select (t.d)::boolean from jsonb_array_elements_text(r->'days') with ordinality as t(d, i) order by t.i),
          nullif(r->>'terminal', ''), coalesce(r->>'airline_ko', ''), coalesce(r->>'airline_code', ''),
          coalesce(r->>'master_flight_id', ''), coalesce(r->>'other_airport_code', ''), coalesce(r->>'other_airport_ko', '')
   from jsonb_array_elements(p_rows) r;
