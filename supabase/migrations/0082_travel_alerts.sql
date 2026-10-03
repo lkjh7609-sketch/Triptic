@@ -39,7 +39,8 @@ begin
   if p_rows is null or jsonb_typeof(p_rows) <> 'array' or jsonb_array_length(p_rows) = 0 then
     raise exception 'empty travel alerts';
   end if;
-  delete from public.travel_alerts;
+  -- Supabase는 조건 없는 DELETE를 막는다(pg_safeupdate) — where true로 전체 삭제를 분명히 한다
+  delete from public.travel_alerts where true;
   insert into public.travel_alerts (country_code, country_name_ko, country_name_en, alarm_lvl, region_scope, remark, is_base)
   select r->>'country_code', r->>'country_name_ko', coalesce(r->>'country_name_en', ''),
          (r->>'alarm_lvl')::smallint, r->>'region_scope', coalesce(r->>'remark', ''), coalesce((r->>'is_base')::boolean, false)
