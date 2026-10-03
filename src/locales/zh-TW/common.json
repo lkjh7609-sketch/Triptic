@@ -119,5 +119,16 @@
   "partnerRedirect": {
     "title": "前往中…",
     "loading": "正在前往預訂網站"
+  },
+  "notifications": {
+    "title": "通知",
+    "aria": "通知",
+    "ariaUnread": "通知(未讀 {{count}} 則)",
+    "empty": "沒有新通知。",
+    "dismiss": "清除「{{title}}」的通知",
+    "week": "距離出發還有 {{days}} 天",
+    "dayBefore": "明天出發",
+    "today": "今天出發!旅途愉快",
+    "note": "會在旅行前 7 天、前 1 天與當天提醒你,只有開啟 App 時才會顯示。"
   }
 }

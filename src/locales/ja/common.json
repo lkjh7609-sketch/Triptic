@@ -119,5 +119,16 @@
   "partnerRedirect": {
     "title": "移動中…",
     "loading": "予約サイトへ移動しています"
+  },
+  "notifications": {
+    "title": "通知",
+    "aria": "通知",
+    "ariaUnread": "通知(未読{{count}}件)",
+    "empty": "新しい通知はありません。",
+    "dismiss": "{{title}}の通知を消す",
+    "week": "出発まであと{{days}}日です",
+    "dayBefore": "明日出発です",
+    "today": "今日出発です!良い旅を",
+    "note": "旅行の7日前・前日・当日にお知らせします。アプリを開いたときだけ表示されます。"
   }
 }
