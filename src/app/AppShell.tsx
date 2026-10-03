@@ -144,8 +144,9 @@ export function AppShell() {
   if (onFlights && !flightsWidgetMounted) setFlightsWidgetMounted(true);
 
   if (loading) {
+    // data-boot-pending: index.html 부팅 안전망이 이 화면을 아직 '안 뜬 것'으로 본다(여기서 멈추면 새로고침·안내)
     return (
-      <div className={`app-shell ${styles.shell}`}>
+      <div className={`app-shell ${styles.shell}`} data-boot-pending="">
         <RouteSkeleton />
       </div>
     );

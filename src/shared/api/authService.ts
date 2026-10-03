@@ -5,8 +5,8 @@
  * ⚠️ Apple Developer Program 미가입 상태 — Supabase 프로젝트에 Apple OAuth
  * 공급자가 아직 설정되지 않았으므로, 버튼은 동작하되 실제 인증은 완료되지 않는다.
  */
-import type { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
-import { getSupabaseClient } from './supabaseClient';
+import { isAuthRetryableFetchError, type Session, type User, type AuthChangeEvent } from '@supabase/supabase-js';
+import { getSupabaseClient, supabaseAuthStorageKey } from './supabaseClient';
 import { clearOfflineCache } from '@/shared/offline/persister';
 import { isNativeApp } from '@/shared/platform';
 
@@ -49,9 +49,33 @@ export async function getCurrentUser(): Promise<User | null> {
   const client = getSupabaseClient();
   const { data, error } = await client.auth.getUser();
   if (error) {
+    // 서버에 닿지 못한 것(회선 문제)은 로그아웃이 아니다 — 이 기기에 남은 세션을 그대로 쓴다.
+    // 예전엔 null을 돌려줘서 회선이 잠깐 끊기면 로그인한 사람이 비로그인 화면을 봤다
+    if (isAuthRetryableFetchError(error)) {
+      const { data: local } = await client.auth.getSession();
+      return local.session?.user ?? null;
+    }
     return null;
   }
   return data.user;
+}
+
+/**
+ * 이 기기에 저장된 로그인 사용자를 네트워크 없이 바로 읽는다(만료 여부는 보지 않는다). 첫 화면을 로그인 확인
+ * (만료된 세션이면 토큰 갱신 요청)까지 기다리지 않고 그리기 위한 값이라, 진짜 상태는 onAuthStateChange가 이어서 맞춘다.
+ */
+export function readStoredSessionUser(): User | null {
+  const key = supabaseAuthStorageKey();
+  if (!key) return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { user?: User | null; refresh_token?: unknown } | null;
+    const user = parsed?.user;
+    return user && typeof user.id === 'string' && typeof parsed?.refresh_token === 'string' ? user : null;
+  } catch {
+    return null;
+  }
 }
 
 export function onAuthStateChange(
