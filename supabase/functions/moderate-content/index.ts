@@ -1,7 +1,7 @@
 /**
  * Supabase Edge Function: moderate-content (06-community.md §5.1 흐름도)
  *
- * POST { kind: 'post', destinationId, tripId?, body, images?: [{storagePath,width,height}] }
+ * POST { kind: 'post', destinationId, tripId?, body, images?: [{storagePath,width,height}], category?, tags? }
  * POST { kind: 'comment', postId, parentId?, body }
  * POST { kind: 'companion_post', destinationId?, title, body, startDate, endDate, groupSize, datesTbd? }
  *   datesTbd: true면 날짜 미정 모집글(startDate/endDate 없이 올린다, 0072)
@@ -60,6 +60,8 @@ interface RequestBody {
   parentId?: string | null;
   body?: string;
   images?: ImageInput[];
+  category?: string; // post: 'story'|'qna'|'tips'|'food' (0077, 없으면 story — 예전 클라이언트)
+  tags?: unknown; // post: 문자열 최대 3개(0077) — 본문과 함께 심사하고 서버(RPC)가 정리해 저장
   title?: string; // companion_post
   startDate?: string; // companion_post, 'yyyy-MM-dd'
   endDate?: string; // companion_post, 'yyyy-MM-dd'
@@ -80,6 +82,8 @@ async function fetchImageBytes(supabaseUrl: string, storagePath: string): Promis
     return null;
   }
 }
+
+const POST_CATEGORIES = ['story', 'qna', 'tips', 'food'];
 
 Deno.serve(async (req) => {
   const headers = corsHeaders(req.headers.get('origin'));
@@ -134,6 +138,24 @@ Deno.serve(async (req) => {
   }
 
   let classificationText = text; // companion_post는 제목도 검열 대상에 포함시킨다
+  let postCategory = 'story';
+  let postTags: string[] = [];
+  if (kind === 'post') {
+    if (payload.category !== undefined) {
+      if (typeof payload.category !== 'string' || !POST_CATEGORIES.includes(payload.category)) {
+        return jsonResponse({ error: '분류 값이 올바르지 않습니다.' }, 400, headers);
+      }
+      postCategory = payload.category;
+    }
+    if (payload.tags !== undefined) {
+      if (!Array.isArray(payload.tags) || payload.tags.length > 3 || payload.tags.some((t) => typeof t !== 'string' || t.length > 40)) {
+        return jsonResponse({ error: '태그는 3개까지, 한 태그는 20자까지입니다.' }, 400, headers);
+      }
+      postTags = payload.tags as string[];
+    }
+    // 태그는 자유 입력이라 본문과 같은 심사를 거친다
+    if (postTags.length > 0) classificationText = `${text}\n${postTags.map((t) => `#${t}`).join(' ')}`;
+  }
   if (kind === 'companion_post') {
     const title = (payload.title ?? '').trim();
     if (!title || title.length > 100) return jsonResponse({ error: '제목은 1~100자여야 합니다.' }, 400, headers);
@@ -199,6 +221,8 @@ Deno.serve(async (req) => {
 
     if (kind === 'post') {
       const { data: newId, error: rpcErr } = await adminClient.rpc('create_moderated_post', {
+        p_category: postCategory,
+        p_tags: postTags,
         p_author_id: user.id,
         p_destination_id: payload.destinationId || null,
         p_trip_id: payload.tripId ?? null,
