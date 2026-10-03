@@ -45,7 +45,8 @@ export default async function handler(req, res) {
     if (!url) return res.status(400).json({ error: 'invalid_request' });
 
     const db = supabaseAdmin();
-    if (db) {
+    // 변환하지 않는 브랜드(direct)는 예전에 저장된 변환 결과(트래블페이아웃 링크 등)를 쓰지 않는다
+    if (db && network.convert) {
         const { data: hit, error } = await db.from('partner_links').select('partner_url').match({ url, sub_id: subId }).maybeSingle();
         if (error) console.warn('[partnerLink] cache read failed:', error.message);
         if (hit?.partner_url) {

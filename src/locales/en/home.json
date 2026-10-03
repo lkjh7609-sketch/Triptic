@@ -236,6 +236,10 @@
       "Tokyo": "Tokyo",
       "Bangkok": "Bangkok",
       "Danang": "Da Nang"
+    },
+    "klookCard": {
+      "title": "Find tours & activities in {{city}} on Klook",
+      "cta": "View on Klook"
     }
   },
   "page": {
