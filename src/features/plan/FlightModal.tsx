@@ -198,6 +198,7 @@ function FlightSlotEditor({
   function changeAirport(side: 'dep' | 'arr', a: SelectedAirport | null) {
     if (side === 'dep') setDepTerminal(undefined);
     else setArrTerminal(undefined);
+    setAutoFilled(false);
     pickAirport(side, a);
   }
 
@@ -237,7 +238,16 @@ function FlightSlotEditor({
       setDepTerminal(fill.dep.terminal ?? undefined);
       setArrTerminal(fill.arr.terminal ?? undefined);
       setAutoFilled(true);
-      setLookupNote(fill.dep.time && fill.arr.time ? t('flight.lookupDone') : t('flight.lookupDonePartial'));
+      // 밤새 인천에 도착하는 귀국편은 스케줄이 인천 도착일 기준이라 날짜를 그날로 맞춘다
+      const shifted = fill.date !== flightDate;
+      if (shifted) setFlightDate(fill.date);
+      setLookupNote(
+        shifted
+          ? t('flight.lookupDateShifted', { date: fill.date })
+          : fill.dep.time && fill.arr.time
+            ? t('flight.lookupDone')
+            : t('flight.lookupDonePartial'),
+      );
     } catch (err) {
       if (err instanceof FlightLookupError && err.code === 'unauthorized') {
         requireLogin();
@@ -398,6 +408,7 @@ function FlightSlotEditor({
                 onChange={(e) => {
                   setAirline(e.target.value.toUpperCase());
                   setAirlineCode('');
+                  setAutoFilled(false);
                 }}
               />
             </label>
@@ -408,7 +419,10 @@ function FlightSlotEditor({
                 type="date"
                 className={styles.fieldInput}
                 value={flightDate}
-                onChange={(e) => setFlightDate(e.target.value)}
+                onChange={(e) => {
+                  setFlightDate(e.target.value);
+                  setAutoFilled(false);
+                }}
               />
             </label>
             <div className={styles.field}>
@@ -452,7 +466,10 @@ function FlightSlotEditor({
                 type="time"
                 className={styles.fieldInput}
                 value={depTime}
-                onChange={(e) => setDepTime(e.target.value)}
+                onChange={(e) => {
+                  setDepTime(e.target.value);
+                  setAutoFilled(false);
+                }}
               />
             </label>
 
@@ -482,7 +499,10 @@ function FlightSlotEditor({
                 type="time"
                 className={styles.fieldInput}
                 value={arrTime}
-                onChange={(e) => setArrTime(e.target.value)}
+                onChange={(e) => {
+                  setArrTime(e.target.value);
+                  setAutoFilled(false);
+                }}
               />
             </label>
 

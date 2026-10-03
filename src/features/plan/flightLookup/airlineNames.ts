@@ -2,6 +2,7 @@
 /**
  * 항공사 이름 — IATA 코드 → 영어·일본어·번체(대만) 공식(통용) 이름. 한국어 이름은 API가 준 값을 그대로 쓰므로 여기에 없다.
  * 일본어·번체 이름이 따로 없거나 확인하지 못한 항공사는 영어 이름을 쓴다(값을 비워 둔 칸).
+ * 2026-10-04 웹 검색으로 확인·수정: TW는 2026-09-10부로 T'way Air → Trinity Airways(코드 그대로), 4V Fly Gangwon은 Parata Air(WE)로 바뀌었다.
  */
 
 export interface AirlineNames {
@@ -66,7 +67,7 @@ const AIRLINES: Record<string, AirlineNames> = {
   KL: { en: 'KLM Royal Dutch Airlines', ja: 'KLMオランダ航空', zhTW: '荷蘭皇家航空' },
   KQ: { en: 'Kenya Airways', ja: 'ケニア航空', zhTW: '肯亞航空' },
   KU: { en: 'Kuwait Airways', ja: 'クウェート航空', zhTW: '科威特航空' },
-  LA: { en: 'LATAM Airlines' },
+  LA: { en: 'LATAM Airlines', ja: 'LATAM航空', zhTW: '南美航空' },
   LH: { en: 'Lufthansa', ja: 'ルフトハンザ ドイツ航空', zhTW: '漢莎航空' },
   LJ: { en: 'Jin Air', ja: 'ジンエアー', zhTW: '真航空' },
   LO: { en: 'LOT Polish Airlines', ja: 'LOTポーランド航空', zhTW: '波蘭航空' },
@@ -85,7 +86,7 @@ const AIRLINES: Record<string, AirlineNames> = {
   NH: { en: 'All Nippon Airways', ja: '全日本空輸', zhTW: '全日空' },
   NX: { en: 'Air Macau', ja: 'マカオ航空', zhTW: '澳門航空' },
   NZ: { en: 'Air New Zealand', ja: 'ニュージーランド航空', zhTW: '紐西蘭航空' },
-  OD: { en: 'Batik Air Malaysia' },
+  OD: { en: 'Batik Air Malaysia', ja: 'バティック・エア・マレーシア' },
   OM: { en: 'MIAT Mongolian Airlines', ja: 'MIATモンゴル航空', zhTW: '蒙古國民航' },
   OZ: { en: 'Asiana Airlines', ja: 'アシアナ航空', zhTW: '韓亞航空' },
   PR: { en: 'Philippine Airlines', ja: 'フィリピン航空', zhTW: '菲律賓航空' },
@@ -93,7 +94,7 @@ const AIRLINES: Record<string, AirlineNames> = {
   QR: { en: 'Qatar Airways', ja: 'カタール航空', zhTW: '卡達航空' },
   QV: { en: 'Lao Airlines', ja: 'ラオス航空', zhTW: '寮國航空' },
   QW: { en: 'Qingdao Airlines', ja: '青島航空', zhTW: '青島航空' },
-  RF: { en: 'Aero K' },
+  RF: { en: 'Aero K', ja: 'エアロK航空' },
   RJ: { en: 'Royal Jordanian', ja: 'ロイヤル・ヨルダン航空', zhTW: '約旦皇家航空' },
   RS: { en: 'Air Seoul', ja: 'エアソウル', zhTW: '首爾航空' },
   SC: { en: 'Shandong Airlines', ja: '山東航空', zhTW: '山東航空' },
@@ -106,7 +107,7 @@ const AIRLINES: Record<string, AirlineNames> = {
   TN: { en: 'Air Tahiti Nui', ja: 'エア・タヒチ・ヌイ', zhTW: '大溪地航空' },
   TP: { en: 'TAP Air Portugal', ja: 'TAPポルトガル航空', zhTW: '葡萄牙航空' },
   TR: { en: 'Scoot', ja: 'スクート', zhTW: '酷航' },
-  TW: { en: "T'way Air", ja: 'ティーウェイ航空', zhTW: '德威航空' },
+  TW: { en: 'Trinity Airways', zhTW: '泰瑞航空' },
   UA: { en: 'United Airlines', ja: 'ユナイテッド航空', zhTW: '聯合航空' },
   UL: { en: 'SriLankan Airlines', ja: 'スリランカ航空', zhTW: '斯里蘭卡航空' },
   UO: { en: 'HK Express', ja: '香港エクスプレス航空', zhTW: '香港快運航空' },

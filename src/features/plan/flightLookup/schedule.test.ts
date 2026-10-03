@@ -8,6 +8,8 @@ import {
   normalizeIcnSchedule,
   pickDomestic,
   pickIcnRow,
+  pickIcnRowForDate,
+  addDays,
   rowCoversDate,
   toYmd,
   weekdayIndex,
@@ -177,5 +179,44 @@ describe('한국공항공사', () => {
     expect(f?.arr).toEqual({ iata: 'TAE', nameKo: '대구', time: '06:05', terminal: null });
     expect(pickDomestic([dom()], 'KE1493', '2026-10-14')).toBeNull(); // 수요일
     expect(pickDomestic([dom()], 'KE9999', '2026-10-13')).toBeNull();
+  });
+});
+
+describe('도착편 날짜 — 인천 도착일 기준', () => {
+  // 인천 도착이 월·화·목·금·토 새벽(상대 공항 출발은 그 전날 밤)인 도착편
+  const arrRow = normalizeIcnSchedule(
+    [
+      raw({
+        flightId: 'OZ322',
+        st: '0445',
+        ynMon: 'Y',
+        ynTue: 'Y',
+        ynWed: 'N',
+        ynThu: 'Y',
+        ynFri: 'Y',
+        ynSat: 'Y',
+        ynSun: 'N',
+        codeshare: 'Master',
+      }),
+    ],
+    'arr',
+  );
+
+  it('적은 날짜에 운항하면 그대로, 아니면 도착편에 한해 하루 뒤(인천 도착일)로 맞춘다', () => {
+    expect(pickIcnRowForDate(arrRow, '2026-10-13')?.date).toBe('2026-10-13'); // 화요일(도착일 그대로)
+    // 수요일 밤 출발 → 목요일 새벽 도착: 적은 날짜(수)엔 없고 하루 뒤(목)에 있다
+    expect(pickIcnRowForDate(arrRow, '2026-10-14')?.date).toBe('2026-10-15');
+    // 일요일 밤 출발 → 월요일 새벽 도착
+    expect(pickIcnRowForDate(arrRow, '2026-10-11')?.date).toBe('2026-10-12');
+  });
+
+  it('하루 뒤에도 없으면 못 찾고, 출발편은 하루 뒤를 보지 않는다', () => {
+    expect(pickIcnRowForDate(arrRow, '2026-10-25')).toBeNull(); // 운항 기간(~10/24)이 끝난 뒤
+    const dep = normalizeIcnSchedule(
+      [raw({ ynMon: 'N', ynTue: 'N', ynWed: 'N', ynThu: 'N', ynFri: 'N', ynSun: 'N' })],
+      'dep',
+    ); // 토요일만
+    expect(pickIcnRowForDate(dep, '2026-10-09')).toBeNull(); // 금요일: 하루 뒤(토)엔 있지만 출발편이라 안 봄
+    expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
   });
 });
