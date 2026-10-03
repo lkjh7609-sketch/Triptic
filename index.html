@@ -99,7 +99,8 @@
         var reasons = [];
         function booted() {
           var r = document.getElementById('root');
-          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro');
+          // 로그인 확인 중 스켈레톤(AppShell, data-boot-pending)도 아직 안 뜬 것 — 예전엔 여기서 멈춰도 안전망이 안 걸렸다
+          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro' && !r.querySelector('[data-boot-pending]'));
         }
         function note(why) {
           if (reasons.length < 5) reasons.push(String(why).slice(0, 200));
