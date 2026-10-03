@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCityImage } from '@/shared/hooks/useCityImage';
+import { useHomeCityPhoto } from '../homePhotos';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
@@ -27,7 +27,7 @@ function regionName(code: string, locale: string): string {
 function CityPhoto({ pick, desktop, className }: { pick: SeasonPick; desktop: boolean; className: string }) {
   const photo = pick.city.photo;
   const own = desktop ? (photo?.pc ?? photo?.mobile) : (photo?.mobile ?? photo?.pc);
-  const fallback = useCityImage(own ? null : pick.city.en);
+  const fallback = useHomeCityPhoto(own ? null : pick.city.en);
   return <img src={own ?? fallback} alt="" className={className} loading="lazy" decoding="async" />;
 }
 

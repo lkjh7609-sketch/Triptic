@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, Flame } from 'lucide-react';
-import { useCityImage } from '@/shared/hooks/useCityImage';
+import { useHomeCityPhoto } from '../homePhotos';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { captureError } from '@/shared/monitoring';
 import { formatMonthDay, formatWon, openDeal, upcomingDeals, useFlightDeals, type FlightDeal } from '../flightDealsData';
@@ -20,7 +20,7 @@ function regionName(code: string, locale: string): string {
 
 function DealPhoto({ code, desktop }: { code: string; desktop: boolean }) {
   const info = DEAL_CITY_INFO[code];
-  const fallback = useCityImage(DEAL_PHOTOS[code] ? null : info?.en);
+  const fallback = useHomeCityPhoto(DEAL_PHOTOS[code] ? null : info?.en);
   const photo = DEAL_PHOTOS[code];
   const src = photo ? (desktop ? photo.pc : photo.mobile) : fallback;
   return <img src={src} alt="" className={styles.photo} loading="lazy" decoding="async" />;
