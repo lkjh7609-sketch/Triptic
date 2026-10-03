@@ -86,8 +86,17 @@ function isNetworkOnly(url) {
   return false;
 }
 
+/**
+ * 광고·제휴·분석 쪽 요청 — 서비스 워커가 손대지 않는다. 예전엔 이것까지 대신 받아 와서, 애드센스 신호(sodar)를 CORS로
+ * 받으려다 실패한 오류가 콘솔에 쌓였고, 서비스 워커가 끼는 요청만 많아졌다(2026-10-04).
+ */
+const THIRD_PARTY_SKIP = /(^|\.)(googlesyndication\.com|doubleclick\.net|adtrafficquality\.google|googleadservices\.com|google\.com|googletagmanager\.com|posthog\.com|sentry\.io|cloudflareinsights\.com)$/;
+
+/** 우리 파일 말고 서비스 워커가 저장하는 외부 파일은 웹폰트(CSS·글꼴 파일)뿐이다 */
+const FONT_HOSTS = new Set(['cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com']);
+
 function isImageRequest(request, url) {
-  return request.destination === 'image' && url.origin !== self.location.origin;
+  return request.destination === 'image' && url.origin !== self.location.origin && !THIRD_PARTY_SKIP.test(url.hostname);
 }
 
 /** 오래된 항목부터 지워 개수를 제한한다(Cache API의 keys()는 삽입 순서) */
@@ -200,16 +209,8 @@ self.addEventListener('fetch', (event) => {
   // 0. 개인 데이터·동적 API: 캐시 없이 네트워크로만
   if (isNetworkOnly(url)) return;
 
-  // 1. Google Maps API script: bypass cache
-  if (isGoogleMapsScript(url)) {
-    event.respondWith(
-      fetch(event.request).catch((err) => {
-        console.warn('[SW] Google Maps script failed to load (offline):', err.message);
-        return Promise.reject(err);
-      })
-    );
-    return;
-  }
+  // 1. Google Maps 스크립트·광고·분석: 서비스 워커를 거치지 않고 브라우저가 직접
+  if (isGoogleMapsScript(url) || THIRD_PARTY_SKIP.test(url.hostname)) return;
 
   // 2. Navigation / HTML: Network-first. 응답이 4초 안에 없으면(멈춘 연결) 저장해 둔 앱 화면, 실패하면 한 번 더 시도 후
   //    저장해 둔 앱 화면. 휴대폰이 잠들었다 깬 직후 첫 요청은 죽은 연결에 실려 멈추거나 바로 실패하곤 한다.
@@ -298,7 +299,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 5. Static assets: Cache-first
+  // 5. 우리 파일과 웹폰트만 캐시 우선. 그 밖의 외부 요청(제휴 스크립트 등)은 브라우저가 직접 받는다
+  if (url.origin !== self.location.origin && !FONT_HOSTS.has(url.hostname)) return;
   event.respondWith(
     (async () => {
       const cachedResponse = await caches.match(event.request);
