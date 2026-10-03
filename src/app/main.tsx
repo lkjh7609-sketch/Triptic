@@ -7,8 +7,10 @@ import { applyStoredTheme } from '@/shared/theme';
 import { isNativeApp } from '@/shared/platform';
 import { App } from './App';
 import { installStaleChunkReload } from './chunkRetry';
+import { reportBootFailure } from './bootFailure';
 
 installStaleChunkReload();
+reportBootFailure();
 initMonitoring();
 applyStoredTheme();
 

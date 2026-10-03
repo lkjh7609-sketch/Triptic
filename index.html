@@ -89,6 +89,64 @@
         } catch (e) {}
       })();
     </script>
+    <script>
+      /* 부팅 안전망 — 앱이 안 떠서 흰 화면으로 멈추면(예전 index.html이 가리키는 파일이 사라졌거나, 첫 스크립트가 실패하거나, 시작 중 오류)
+         한 번 자동으로 새로고침하고, 그래도 안 되면 새로고침 버튼을 보여 준다. 원인은 localStorage('triptic-boot-fail')에 남겨
+         다음에 앱이 뜨면 모니터링으로 보낸다(src/app/main.tsx). 앱이 뜨면(#root의 첫 요소가 검색 로봇용 #seo-intro가 아니게 되면) 모두 걷는다. */
+      (function () {
+        var FLAG = 'triptic-boot-reload';
+        var started = Date.now();
+        var reasons = [];
+        function booted() {
+          var r = document.getElementById('root');
+          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro');
+        }
+        function note(why) {
+          if (reasons.length < 5) reasons.push(String(why).slice(0, 200));
+        }
+        window.addEventListener('error', function (e) {
+          if (booted()) return;
+          var t = e.target;
+          note(t && t.tagName === 'SCRIPT' ? 'script-error ' + (t.src || '') : 'error ' + (e.message || ''));
+          if (t && t.tagName === 'SCRIPT' && t.type === 'module') recover('module-script');
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          if (!booted()) note('rejection ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+        });
+        function showFallback() {
+          if (document.getElementById('boot-fallback')) return;
+          var ko = /^ko/i.test(navigator.language || '');
+          var box = document.createElement('div');
+          box.id = 'boot-fallback';
+          box.setAttribute('style', 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;font:16px/1.5 system-ui,sans-serif;background:var(--surface-page,#FDFBF7);color:var(--text-primary,#1c1b19)');
+          box.innerHTML = '<p style="margin:0">' + (ko ? '화면을 불러오지 못했어요.' : 'The page failed to load.') + '</p>' +
+            '<button type="button" style="font:inherit;padding:10px 20px;border:0;border-radius:999px;background:#2d5a52;color:#fff" onclick="location.reload()">' + (ko ? '새로고침' : 'Reload') + '</button>';
+          document.body.appendChild(box);
+        }
+        function recover(why) {
+          if (booted()) return;
+          note('recover ' + why + ' after ' + (Date.now() - started) + 'ms');
+          try {
+            localStorage.setItem('triptic-boot-fail', JSON.stringify({ reasons: reasons, ua: navigator.userAgent, at: new Date().toISOString() }));
+            if (!sessionStorage.getItem(FLAG)) {
+              sessionStorage.setItem(FLAG, '1');
+              location.reload();
+              return;
+            }
+          } catch (e) {}
+          showFallback();
+        }
+        var timer = setTimeout(function () { recover('timeout'); }, 12000);
+        var poll = setInterval(function () {
+          if (!booted()) return;
+          clearInterval(poll);
+          clearTimeout(timer);
+          var box = document.getElementById('boot-fallback');
+          if (box) box.remove();
+          try { sessionStorage.removeItem(FLAG); } catch (e) {}
+        }, 500);
+      })();
+    </script>
     <div id="root">
       <!-- 자바스크립트를 실행하지 않는 검색 로봇도 서비스 내용을 읽을 수 있게 둔 소개 — 앱이 뜨면
            React(createRoot)가 통째로 바꾼다. 눈에는 안 보이고(화면 읽기 프로그램과 로봇만) 모든 주소에 같이 나가므로
