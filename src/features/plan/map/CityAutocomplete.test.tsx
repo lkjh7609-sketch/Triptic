@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import '@/shared/i18n';
+import i18n from '@/shared/i18n';
 import { CityAutocomplete } from './CityAutocomplete';
 import type { SelectedPlace } from './usePlaceAutocomplete';
 
@@ -10,7 +12,8 @@ vi.mock('@/shared/api/googleMapsLoader', () => ({
 
 const g = vi.hoisted(() => ({ predictions: vi.fn(), getDetails: vi.fn() }));
 
-beforeEach(() => {
+beforeEach(async () => {
+  await i18n.changeLanguage('en');
   vi.useFakeTimers();
   g.predictions.mockReset();
   g.getDetails.mockReset();
@@ -81,7 +84,41 @@ describe('CityAutocomplete', () => {
       expect.any(Function),
     );
     const options = screen.getAllByRole('option');
-    expect(options.map((o) => o.textContent)).toEqual(['Tokyo(Japan)', 'Tokyo(Ohio, USA)']);
+    expect(options.map((o) => o.textContent)).toEqual(['Tokyo(Japan)', 'Tokyo(USA)']);
+  });
+
+  it('한국어 화면: 교토시(일본 교토부)로 오는 결과를 교토(일본)로 보여 주고, 입력칸에는 교토만 남긴다', async () => {
+    await i18n.changeLanguage('ko');
+    g.predictions.mockImplementation((_req, cb) =>
+      cb([
+        {
+          place_id: 'a',
+          description: '일본 교토부 교토시',
+          structured_formatting: { main_text: '교토시', secondary_text: '일본 교토부' },
+        },
+      ]),
+    );
+    g.getDetails.mockImplementation((_req, cb) =>
+      cb(
+        {
+          name: '교토시',
+          formatted_address: '일본 교토부 교토시',
+          geometry: { location: { lat: () => 35.01, lng: () => 135.77 } },
+          place_id: 'a',
+          types: ['locality'],
+          address_components: [],
+        },
+        'OK',
+      ),
+    );
+    render(<Harness onSelect={() => {}} />);
+    await type('교토');
+    expect(screen.getAllByRole('option')[0]).toHaveTextContent('교토(일본)');
+    fireEvent.mouseDown(screen.getAllByRole('option')[0]);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10);
+    });
+    expect(screen.getByRole('combobox')).toHaveValue('교토');
   });
 
   it('고르면 상세를 받아 예전 위젯과 같은 모양으로 알려 주고, 입력칸에는 도시 이름만 남는다', async () => {

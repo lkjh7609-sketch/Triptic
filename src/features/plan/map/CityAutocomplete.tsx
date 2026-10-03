@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { loadGoogleMapsPlaces } from '@/shared/api/googleMapsLoader';
 import { cityDisplayName } from '../cityName';
-import { cityPredictionLabel, cityPredictionName } from './cityPredictions';
+import { buildCityOptions } from './cityPredictions';
 import { countryCodeOf, type SelectedPlace } from './usePlaceAutocomplete';
 import listStyles from '../airports/AirportPicker.module.css';
 
@@ -32,6 +33,7 @@ export function CityAutocomplete({
   inputRef,
   initialText = '',
 }: CityAutocompleteProps) {
+  const { i18n } = useTranslation();
   const listId = useId();
   const [text, setText] = useState(
     value ? cityDisplayName(value.address || value.name) : initialText,
@@ -40,6 +42,10 @@ export function CityAutocomplete({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const lastValue = useRef(value);
+  const options = useMemo(
+    () => buildCityOptions(predictions, i18n.language),
+    [predictions, i18n.language],
+  );
   const requestId = useRef(0);
   const token = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
 
@@ -84,7 +90,7 @@ export function CityAutocomplete({
   }
 
   async function choose(prediction: google.maps.places.AutocompletePrediction) {
-    setText(cityPredictionName(prediction));
+    setText(options.find((o) => o.placeId === prediction.place_id)?.name ?? prediction.description);
     setOpen(false);
     try {
       await loadGoogleMapsPlaces();
@@ -107,7 +113,7 @@ export function CityAutocomplete({
           const location = place?.geometry?.location;
           if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !location) return;
           const selected: SelectedPlace = {
-            name: place.name || cityPredictionName(prediction),
+            name: place.name || prediction.description,
             address: place.formatted_address || '',
             lat: location.lat(),
             lng: location.lng(),
@@ -163,6 +169,7 @@ export function CityAutocomplete({
       {showList ? (
         <ul id={listId} role="listbox" className={listStyles.list}>
           {predictions.map((p, i) => (
+            // 한 줄: 도시(나라)
             <li
               key={p.place_id}
               id={`${listId}-${i}`}
@@ -175,7 +182,7 @@ export function CityAutocomplete({
               }}
               onMouseEnter={() => setActive(i)}
             >
-              <span className={listStyles.title}>{cityPredictionLabel(p)}</span>
+              <span className={listStyles.title}>{options[i]?.label ?? p.description}</span>
             </li>
           ))}
         </ul>
