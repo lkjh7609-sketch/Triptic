@@ -9,6 +9,7 @@ import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/per
 import { ToastHost } from '@/shared/ui/toast';
 import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
 import { ErrorBoundary } from './ErrorBoundary';
+import { BootShell } from './BootShell';
 import { router } from './router';
 
 const queryClient = new QueryClient({
@@ -84,7 +85,8 @@ export function App() {
           if (refetchAfterRestore) void queryClient.invalidateQueries();
         }}
       >
-        <Suspense fallback={null}>
+        {/* 번역 파일을 기다리는 동안 첫 화면 뼈대 — null이면 index.html의 뼈대가 지워진 뒤 흰 화면이 끼었다 */}
+        <Suspense fallback={<BootShell />}>
           <LocaleSync />
           <RouterProvider router={router} />
           <ToastHost />

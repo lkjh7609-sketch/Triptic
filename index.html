@@ -81,6 +81,47 @@
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
       <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     </noscript>
+    <!-- 첫 화면 뼈대(#boot-shell) — 앱 코드가 받아져 실행되기 전(느린 회선에서 몇 초)에도 홈 모양이 바로 보이게 한다.
+         글자·움직임 없이 로고와 회색 면만(사용자 결정, 2026-10-04). 색은 앱 CSS(tokens, 이 문서의 첫 CSS라 그때 이미 있음)를 그대로 쓴다.
+         React가 #root를 처음 그릴 때 이 마크업을 지우므로, 같은 마크업을 앱의 대기 화면(Suspense·라우터 첫 로딩·로그인 확인)으로도
+         다시 그린다(src/app/BootShell.tsx) — 실제 화면이 나올 때까지 끊기지 않는다. 배치는 실제 홈(390px·1440px)을 재서 맞췄다. -->
+    <style>
+      #boot-shell{position:relative;min-height:100vh;min-height:100dvh;background:var(--surface-page,#FDFBF7)}
+      #boot-shell .bs-home,#boot-shell .bs-act,#boot-shell .bs-hero{display:none}
+      #boot-shell[data-boot=home] .bs-home{display:block}
+      #boot-shell .bs-top{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 16px}
+      #boot-shell .bs-logo{display:block;height:36px;width:auto}
+      :root[data-theme=dark] #boot-shell .bs-logo{filter:brightness(1.9) saturate(1.1)}
+      @media (prefers-color-scheme:dark){:root:not([data-theme=light]):not([data-theme=dark]) #boot-shell .bs-logo{filter:brightness(1.9) saturate(1.1)}}
+      #boot-shell .bs-body{max-width:720px;margin:0 auto;padding:0 16px}
+      #boot-shell .bs-capsule{margin-top:4px;height:44px;border-radius:9999px;background:var(--surface-card,#fff);box-shadow:0 1px 3px rgba(15,23,42,.06)}
+      #boot-shell .bs-head{display:flex;align-items:center;height:44px;margin-top:40px}
+      #boot-shell .bs-head i{display:block;width:140px;height:18px;border-radius:6px;background:var(--surface-subtle,#EBE8E0)}
+      #boot-shell .bs-tall{height:62px}
+      #boot-shell .bs-row{display:flex;gap:16px;margin:12px -16px 0 0;overflow:hidden}
+      #boot-shell .bs-card,#boot-shell .bs-board{border-radius:16px;background:var(--surface-card,#fff);box-shadow:0 1px 3px rgba(15,23,42,.04),0 1px 2px -1px rgba(15,23,42,.03)}
+      #boot-shell .bs-card{flex:0 0 310px;height:242px}
+      #boot-shell .bs-board{margin-top:12px;height:208px;border-radius:12px}
+      #boot-shell .bs-tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;height:56px;padding-bottom:env(safe-area-inset-bottom);background:var(--surface-card,#fff);border-top:1px solid var(--border,#E7E5E4)}
+      #boot-shell .bs-tabbar i{flex:1;display:flex;justify-content:center;padding-top:9px}
+      #boot-shell .bs-tabbar i::before{content:'';width:22px;height:22px;border-radius:7px;background:var(--surface-subtle,#EBE8E0)}
+      @media (min-width:1024px){
+        #boot-shell .bs-top{height:64px;padding:0 32px;background:var(--surface-card,#fff);box-shadow:0 1px 2px rgba(28,25,23,.05)}
+        #boot-shell .bs-logo{height:48px}
+        #boot-shell .bs-act{display:block;width:120px;height:40px;border-radius:9999px;background:var(--surface-subtle,#EBE8E0)}
+        #boot-shell .bs-tabbar,#boot-shell .bs-capsule{display:none}
+        #boot-shell .bs-hero{display:block;height:315px;background:#1C1917}
+        #boot-shell .bs-body{max-width:1280px;padding:48px}
+        #boot-shell .bs-head{height:28px;margin-top:0}
+        #boot-shell .bs-head i{width:180px;height:22px}
+        #boot-shell .bs-tall{margin-top:64px}
+        #boot-shell .bs-row{gap:24px;margin:24px 0 0}
+        #boot-shell .bs-card{flex:1 1 0;height:281px}
+        #boot-shell .bs-card,#boot-shell .bs-board{border-radius:12px;border:1px solid var(--border,#E7E5E4);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+        #boot-shell .bs-board{margin-top:24px;height:250px}
+      }
+      #boot-shell[data-boot=bare] .bs-top,#boot-shell[data-boot=bare] .bs-tabbar{display:none}
+    </style>
   </head>
   <body>
     <script>
@@ -95,15 +136,15 @@
     <script>
       /* 부팅 안전망 — 앱이 안 떠서 흰 화면으로 멈추면(예전 index.html이 가리키는 파일이 사라졌거나, 첫 스크립트가 실패하거나, 시작 중 오류)
          한 번 자동으로 새로고침하고, 그래도 안 되면 새로고침 버튼을 보여 준다. 원인은 localStorage('triptic-boot-fail')에 남겨
-         다음에 앱이 뜨면 모니터링으로 보낸다(src/app/main.tsx). 앱이 뜨면(#root의 첫 요소가 검색 로봇용 #seo-intro가 아니게 되면) 모두 걷는다. */
+         다음에 앱이 뜨면 모니터링으로 보낸다(src/app/main.tsx). 앱이 뜨면(#root에 검색 로봇용 #seo-intro·첫 화면 뼈대가 없어지면) 모두 걷는다. */
       (function () {
         var FLAG = 'triptic-boot-reload';
         var started = Date.now();
         var reasons = [];
         function booted() {
           var r = document.getElementById('root');
-          // 로그인 확인 중 스켈레톤(AppShell, data-boot-pending)도 아직 안 뜬 것 — 예전엔 여기서 멈춰도 안전망이 안 걸렸다
-          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro' && !r.querySelector('[data-boot-pending]'));
+          // 첫 화면 뼈대(#boot-shell)·로그인 확인 중 화면(data-boot-pending)도 아직 안 뜬 것 — 예전엔 로그인 확인에서 멈춰도 안전망이 안 걸렸다
+          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro' && !r.querySelector('#boot-shell, [data-boot-pending]'));
         }
         function note(why) {
           if (reasons.length < 5) reasons.push(String(why).slice(0, 200));
@@ -172,6 +213,27 @@
           <a href="/community">여행 커뮤니티 · 동행 찾기</a>
         </nav>
       </div>
+      <div id="boot-shell" aria-hidden="true" data-boot="bare">
+        <div class="bs-top"><img class="bs-logo" src="/triptic-logo.webp" width="508" height="378" alt="" decoding="async"><b class="bs-act"></b></div>
+        <div class="bs-home">
+          <div class="bs-hero"></div>
+          <div class="bs-body">
+            <div class="bs-capsule"></div>
+            <div class="bs-head"><i></i></div>
+            <div class="bs-row"><div class="bs-card"></div><div class="bs-card"></div></div>
+            <div class="bs-head bs-tall"><i></i></div>
+            <div class="bs-board"></div>
+          </div>
+        </div>
+        <nav class="bs-tabbar"><i></i><i></i><i></i><i></i></nav>
+      </div>
+      <script>
+        /* 주소별 뼈대: 홈은 홈 모양, 4탭 화면은 머리줄·탭바만, 그 밖(여행 상세 등 전체 화면)은 배경만 — src/app/bootShellState.ts와 같은 규칙 */
+        (function () {
+          var p = location.pathname;
+          document.getElementById('boot-shell').setAttribute('data-boot', p === '/' ? 'home' : /^\/(flights|hotels|activities|plan|community)\/?$/.test(p) ? 'shell' : 'bare');
+        })();
+      </script>
     </div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
