@@ -34,7 +34,7 @@
   background: var(--pd-bg);
   color: var(--pd-text);
   /* 두 번째 폴백을 고정된 sans-serif가 아니라 --font-sans 토큰으로 둬야
-     :lang(ko)의 SUIT 오버라이드가 여기까지 적용된다(라틴 문자만 계속 Plus
+     언어별 글꼴(--font-sans)이 여기까지 적용된다(라틴 문자만 계속 Plus
      Jakarta Sans). */
   font-family: 'Plus Jakarta Sans', var(--font-sans);
 }

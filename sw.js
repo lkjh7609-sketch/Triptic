@@ -46,8 +46,7 @@ const APP_SHELL = [
 
 // External CDN resources
 const CDN_ASSETS = [
-  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
-  'https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css'
+  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'
 ];
 
 const PRECACHE_ASSETS = [...APP_SHELL, ...CDN_ASSETS];
