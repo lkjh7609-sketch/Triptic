@@ -41,7 +41,7 @@
     "nameLabel": "Trip name",
     "namePlaceholder": "Tokyo trip",
     "cityLabel": "Destination city (search and select)",
-    "cityPlaceholderExample": "e.g. Kyoto, Japan",
+    "cityPlaceholderExample": "e.g. Kyoto, Paris, New York",
     "cityRequired": "Search for and select a destination city.",
     "startLabel": "Start date",
     "endLabel": "End date",
