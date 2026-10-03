@@ -1,9 +1,13 @@
-import { ChevronRight, PlaneLanding, PlaneTakeoff } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PlaneLanding, PlaneTakeoff } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import shared from '../stitch/shared.module.css';
 import {
+  buildPages,
+  DEPARTURE_LEAD_MIN,
   delayMinutes,
+  pageItems,
+  startOffset,
   formatHhmm,
   statusInfo,
   terminalLabel,
@@ -52,7 +56,8 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
   const nowMin = useKstMinutes();
   const nowMs = useNowMs();
   const [direction, setDirection] = useState<BoardDirection>('departures');
-  const [limit, setLimit] = useState(PAGE);
+  // 사용자가 직접 넘긴 쪽(없으면 처음 쪽 = 출발은 지금+40분 편이 있는 쪽)
+  const [manualPage, setManualPage] = useState<number | null>(null);
   const [selected, setSelected] = useState<{
     flight: BoardFlight;
     direction: BoardDirection;
@@ -86,7 +91,14 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
 
   const TabIcon = direction === 'departures' ? PlaneTakeoff : PlaneLanding;
   const departures = direction === 'departures';
-  const shown = rows.slice(0, limit);
+  // 출발은 지금 +40분 편이 있는 쪽에서 시작하고(앞쪽으로 넘기면 탑승중·방금 출발한 편), 도착은 맨 앞에서 시작
+  const { pages, initial } = buildPages(
+    rows,
+    departures ? startOffset(rows, nowMin, DEPARTURE_LEAD_MIN, PAGE) : 0,
+    PAGE,
+  );
+  const current = Math.min(manualPage ?? initial, pages.length - 1);
+  const shown = pages[current];
 
   return (
     <section className={shared.section} aria-labelledby="home-airport-title">
@@ -110,7 +122,7 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
               aria-pressed={direction === key}
               onClick={() => {
                 setDirection(key);
-                setLimit(PAGE);
+                setManualPage(null);
               }}
             >
               {t(`airport.${key}`)}
@@ -206,10 +218,45 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
           </ul>
         )}
 
-        {rows.length > limit ? (
-          <button type="button" className={styles.more} onClick={() => setLimit((n) => n + PAGE)}>
-            {t('airport.more')}
-          </button>
+        {pages.length > 1 ? (
+          <nav className={styles.pager} aria-label={t('airport.pager.label')}>
+            <button
+              type="button"
+              className={styles.pageArrow}
+              disabled={current === 0}
+              onClick={() => setManualPage(current - 1)}
+              aria-label={t('airport.pager.prev')}
+            >
+              <ChevronLeft size={18} aria-hidden="true" />
+            </button>
+            {pageItems(current, pages.length).map((item, i) =>
+              item === '…' ? (
+                <span key={`gap-${i}`} className={styles.pageGap} aria-hidden="true">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  type="button"
+                  className={item === current + 1 ? styles.pageOn : styles.page}
+                  aria-current={item === current + 1 ? 'page' : undefined}
+                  aria-label={t('airport.pager.goTo', { page: item })}
+                  onClick={() => setManualPage(item - 1)}
+                >
+                  {item}
+                </button>
+              ),
+            )}
+            <button
+              type="button"
+              className={styles.pageArrow}
+              disabled={current === pages.length - 1}
+              onClick={() => setManualPage(current + 1)}
+              aria-label={t('airport.pager.next')}
+            >
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+          </nav>
         ) : null}
         <p className={styles.source}>{t('airport.source')}</p>
       </div>

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   boardWindow,
+  buildPages,
+  pageItems,
+  startOffset,
   delayMinutes,
   cleanHhmm,
   extractItems,
@@ -182,5 +185,46 @@ describe('상태·터미널', () => {
     expect(terminalLabel('P02').key).toBe('t1c');
     expect(terminalLabel('P03').key).toBe('t2');
     expect(terminalLabel('X').key).toBeNull();
+  });
+});
+
+describe('쪽 나누기', () => {
+  const at = (id: string, hhmm: string) => flight({ id, scheduled: hhmm, estimated: hhmm });
+
+  it('지금 +40분 이후 첫 편에서 시작한다. 그런 편이 없으면 마지막 쪽', () => {
+    const list = [
+      at('A', '0955'),
+      at('B', '1000'),
+      at('C', '1030'),
+      at('D', '1039'),
+      at('E', '1041'),
+      at('F', '1100'),
+    ];
+    expect(startOffset(list, 600, 40, 8)).toBe(4); // 10:40 이후 첫 편 = E
+    expect(startOffset(list, 600, 0, 8)).toBe(0);
+    expect(startOffset(list, 900, 40, 4)).toBe(2); // 늦은 밤 — 모두 지나서 끝 4개
+    expect(startOffset([], 600, 40, 8)).toBe(0);
+  });
+
+  it('offset에서 앞으로 size개씩, 그 앞 줄은 거꾸로 묶는다(맨 앞 쪽만 모자람)', () => {
+    const items = Array.from({ length: 21 }, (_, i) => i);
+    const { pages, initial } = buildPages(items, 10, 8);
+    expect(pages.map((p) => p.length)).toEqual([2, 8, 8, 3]); // 앞: 0-1, 2-9 / 뒤: 10-17, 18-20
+    expect(pages[initial][0]).toBe(10);
+    expect(pages.flat()).toEqual(items);
+  });
+
+  it('offset이 0이면 보통의 쪽 나누기, 비어 있으면 빈 쪽 하나', () => {
+    expect(buildPages([1, 2, 3], 0, 2)).toEqual({ pages: [[1, 2], [3]], initial: 0 });
+    expect(buildPages([], 0, 8)).toEqual({ pages: [[]], initial: 0 });
+    expect(buildPages([1, 2], 99, 8).pages.flat()).toEqual([1, 2]);
+  });
+
+  it('쪽 번호 줄은 7개 이하면 전부, 많으면 처음·끝·현재 둘레만', () => {
+    expect(pageItems(0, 5)).toEqual([1, 2, 3, 4, 5]);
+    expect(pageItems(0, 20)).toEqual([1, 2, 3, 4, '…', 20]);
+    expect(pageItems(9, 20)).toEqual([1, '…', 9, 10, 11, '…', 20]);
+    expect(pageItems(19, 20)).toEqual([1, '…', 17, 18, 19, 20]);
+    expect(pageItems(0, 1)).toEqual([1]);
   });
 });

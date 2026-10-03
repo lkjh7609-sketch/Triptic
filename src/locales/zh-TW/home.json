@@ -588,11 +588,10 @@
       "scheduled": "預定"
     },
     "codeshareN_other": "共同營運 {{count}} 班",
-    "more": "顯示更多",
     "emptyDepartures": "目前之後沒有預定出發的航班。",
     "emptyArrivals": "目前之後沒有預定抵達的航班。",
     "staleNotice": "目前無法取得最新資料,顯示 {{time}} 取得的內容。",
-    "source": "資料來源:仁川國際機場公社 · 可能與實際營運不同",
+    "source": "資料來源:仁川國際機場公社",
     "detail": {
       "close": "關閉",
       "routeTo": "目的地",
@@ -606,6 +605,12 @@
       "codeshare": "共同營運航班",
       "note": "依據仁川國際機場公社公開資料,現場狀況可能不同。出發前請務必向航空公司確認。",
       "actual": "實際時間"
+    },
+    "pager": {
+      "label": "頁碼",
+      "prev": "上一頁",
+      "next": "下一頁",
+      "goTo": "第 {{page}} 頁"
     }
   }
 }

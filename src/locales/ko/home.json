@@ -588,11 +588,10 @@
       "scheduled": "예정"
     },
     "codeshareN_other": "공동운항 {{count}}편",
-    "more": "더 보기",
     "emptyDepartures": "지금 이후 출발 예정 편이 없어요.",
     "emptyArrivals": "지금 이후 도착 예정 편이 없어요.",
     "staleNotice": "최근 정보를 받지 못하고 있어요. {{time}}에 받은 내용이에요.",
-    "source": "출처: 인천국제공항공사 · 실제 운항과 다를 수 있어요",
+    "source": "출처: 인천국제공항공사",
     "detail": {
       "close": "닫기",
       "routeTo": "목적지",
@@ -606,6 +605,12 @@
       "codeshare": "공동운항 편",
       "note": "인천국제공항공사 공공데이터 기준이며 현장 사정에 따라 달라질 수 있어요. 출발 전에는 항공사 안내를 꼭 확인하세요.",
       "actual": "실제 시각"
+    },
+    "pager": {
+      "label": "페이지",
+      "prev": "이전 페이지",
+      "next": "다음 페이지",
+      "goTo": "{{page}}페이지"
     }
   }
 }

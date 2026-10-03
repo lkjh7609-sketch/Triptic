@@ -593,11 +593,10 @@
     },
     "codeshareN_one": "{{count}} codeshare",
     "codeshareN_other": "{{count}} codeshares",
-    "more": "Show more",
     "emptyDepartures": "No more departures scheduled for now.",
     "emptyArrivals": "No more arrivals scheduled for now.",
     "staleNotice": "We can’t get the latest data right now. Showing what we received at {{time}}.",
-    "source": "Source: Incheon International Airport Corporation · may differ from actual operations",
+    "source": "Source: Incheon International Airport Corporation",
     "detail": {
       "close": "Close",
       "routeTo": "TO",
@@ -611,6 +610,12 @@
       "codeshare": "Codeshare flights",
       "note": "Based on Incheon Airport public data; conditions on site may differ. Please confirm with your airline before you travel.",
       "actual": "Actual time"
+    },
+    "pager": {
+      "label": "Pages",
+      "prev": "Previous page",
+      "next": "Next page",
+      "goTo": "Page {{page}}"
     }
   }
 }

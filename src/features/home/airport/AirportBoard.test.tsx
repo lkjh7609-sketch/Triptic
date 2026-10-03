@@ -80,15 +80,17 @@ beforeEach(async () => {
 });
 
 describe('AirportBoard', () => {
-  it('지금 이후 편만 시각(변경 시각) 순으로 보여 주고, 지난 지 오래된 편은 뺀다', () => {
+  it('출발은 지금+40분 이후 편에서 시작하고(그 앞 편은 이전 쪽), 지난 지 오래된 편은 빠진다', () => {
     render(<AirportBoard desktop />);
     expect(screen.getByRole('heading', { name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
-    const rows = screen.getAllByRole('button', { name: /KE1|OZ2|OLD/ });
-    expect(rows.map((r) => r.textContent)).toEqual([
-      expect.stringContaining('KE1'),
-      expect.stringContaining('OZ2'),
-    ]);
-    expect(screen.queryByText('OLD')).not.toBeInTheDocument();
+    // 10:00 기준 — KE1(10:10)은 40분 안쪽이라 앞 쪽, OZ2(변경 11:00)부터 첫 화면
+    expect(
+      screen.getAllByRole('button', { name: /KE\d|OZ\d|OLD/ }).map((r) => r.textContent),
+    ).toEqual([expect.stringContaining('OZ2')]);
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(screen.getByRole('button', { name: '이전 페이지' }));
+    expect(screen.getByRole('button', { name: /KE1/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /OLD/ })).not.toBeInTheDocument();
   });
 
   it('늦춰진 편은 예정 시각에 취소선, 변경 시각을 따로 보여 주고 상태 칩에 "지연"', () => {
@@ -136,18 +138,49 @@ describe('AirportBoard', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('8줄씩 보여 주고 "더 보기"로 늘린다', () => {
+  it('8줄씩 쪽으로 넘긴다 — 이전·다음·번호, 첫/끝 쪽에서는 화살표가 꺼진다', () => {
     state.data = {
       departures: Array.from({ length: 20 }, (_, i) =>
-        f({ id: `KE${i + 10}`, scheduled: '1030', estimated: '1030' }),
+        f({ id: `KE${i + 10}`, scheduled: '1100', estimated: '1100' }),
       ),
       arrivals: [],
       fetchedAt: new Date().toISOString(),
     };
     render(<AirportBoard desktop />);
-    expect(screen.getAllByRole('button', { name: /KE\d+/ })).toHaveLength(8);
-    fireEvent.click(screen.getByRole('button', { name: '더 보기' }));
-    expect(screen.getAllByRole('button', { name: /KE\d+/ })).toHaveLength(16);
+    const rows = () => screen.getAllByRole('button', { name: /KE\d+/ });
+    expect(rows()).toHaveLength(8);
+    expect(screen.getByRole('button', { name: '이전 페이지' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: '다음 페이지' }));
+    expect(rows()).toHaveLength(8);
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(screen.getByRole('button', { name: '3페이지' }));
+    expect(rows()).toHaveLength(4);
+    expect(screen.getByRole('button', { name: '다음 페이지' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '더 보기' })).not.toBeInTheDocument();
+  });
+
+  it('한 쪽이면 쪽 번호 줄이 없다. 탭을 바꾸면 처음 쪽으로 돌아온다', () => {
+    render(<AirportBoard desktop />);
+    fireEvent.click(screen.getByRole('button', { name: '이전 페이지' }));
+    fireEvent.click(screen.getByRole('button', { name: '도착' }));
+    expect(screen.queryByRole('navigation', { name: '페이지' })).not.toBeInTheDocument(); // 도착 1편뿐
+    fireEvent.click(screen.getByRole('button', { name: '출발' }));
+    expect(screen.getByRole('button', { name: '2페이지' })).toHaveAttribute('aria-current', 'page'); // 다시 +40분 쪽
+  });
+
+  it('도착은 +40분 기준 없이 맨 앞부터', () => {
+    state.data = {
+      departures: [],
+      arrivals: [
+        f({ id: 'AR1', scheduled: '1005', estimated: '1005', remark: '도착' }),
+        f({ id: 'AR2', scheduled: '1100', estimated: '1100' }),
+      ],
+      fetchedAt: new Date().toISOString(),
+    };
+    render(<AirportBoard desktop />);
+    fireEvent.click(screen.getByRole('button', { name: '도착' }));
+    expect(screen.getAllByRole('button', { name: /AR\d/ })).toHaveLength(2);
+    expect(screen.queryByRole('navigation', { name: '페이지' })).not.toBeInTheDocument();
   });
 
   it('받은 값이 없으면 섹션을 그리지 않는다. 받는 중에는 빈 틀(스켈레톤)만', () => {
@@ -185,7 +218,7 @@ describe('AirportBoard', () => {
 
   it('모바일에서도 같은 줄이 나오고 터미널·게이트는 상태 아래 작은 글씨로', () => {
     render(<AirportBoard desktop={false} />);
-    const row = screen.getByRole('button', { name: /KE1/ });
+    const row = screen.getByRole('button', { name: /OZ2/ }); // 처음 쪽은 지금+40분 편부터
     expect(within(row).getByText('T2 · 254')).toBeInTheDocument();
     expect(screen.queryByText('터미널')).not.toBeInTheDocument(); // 열 머리줄은 PC만
   });
