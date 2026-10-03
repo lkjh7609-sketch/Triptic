@@ -1,0 +1,192 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import '@/shared/i18n';
+import i18n from '@/shared/i18n';
+import type { BoardFlight } from './boardParse';
+
+const state = vi.hoisted(() => ({ data: undefined as unknown, isLoading: false, nowMin: 600 }));
+vi.mock('./useAirportBoard', () => ({
+  useAirportBoard: () => ({ data: state.data, isLoading: state.isLoading }),
+  useKstMinutes: () => state.nowMin,
+  useNowMs: () => Date.now(),
+}));
+
+import { AirportBoard } from './AirportBoard';
+
+const f = (over: Partial<BoardFlight>): BoardFlight => ({
+  id: 'KE1',
+  airline: '대한항공',
+  scheduled: '1010',
+  estimated: '1010',
+  city: '도쿄/나리타',
+  airportCode: 'NRT',
+  terminal: 'P03',
+  gate: '254',
+  counter: 'A01-A08',
+  carousel: '',
+  exit: '',
+  remark: '탑승준비',
+  codeshares: [],
+  stopovers: [],
+  ...over,
+});
+
+function setBoard(
+  over: Partial<{
+    departures: BoardFlight[];
+    arrivals: BoardFlight[];
+    fetchedAt: string | null;
+  }> = {},
+) {
+  state.data = {
+    departures: [
+      f({}),
+      f({
+        id: 'OZ2',
+        airline: '아시아나항공',
+        scheduled: '1020',
+        estimated: '1100',
+        remark: '지연',
+        city: '오사카',
+        airportCode: 'KIX',
+        codeshares: [{ id: 'NH9', airline: '전일본공수' }],
+      }),
+      f({ id: 'OLD', scheduled: '0900', estimated: '0900', remark: '출발' }),
+    ],
+    arrivals: [
+      f({
+        id: 'CX426',
+        airline: '캐세이퍼시픽항공',
+        city: '홍콩',
+        airportCode: 'HKG',
+        carousel: '6',
+        exit: 'B',
+        gate: '24',
+        remark: '도착',
+        scheduled: '0950',
+        estimated: '0950',
+      }),
+    ],
+    fetchedAt: new Date().toISOString(),
+    ...over,
+  };
+}
+
+beforeEach(async () => {
+  await i18n.changeLanguage('ko');
+  state.isLoading = false;
+  state.nowMin = 600; // 10:00
+  setBoard();
+});
+
+describe('AirportBoard', () => {
+  it('지금 이후 편만 시각(변경 시각) 순으로 보여 주고, 지난 지 오래된 편은 뺀다', () => {
+    render(<AirportBoard desktop />);
+    expect(screen.getByRole('heading', { name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
+    const rows = screen.getAllByRole('button', { name: /KE1|OZ2|OLD/ });
+    expect(rows.map((r) => r.textContent)).toEqual([
+      expect.stringContaining('KE1'),
+      expect.stringContaining('OZ2'),
+    ]);
+    expect(screen.queryByText('OLD')).not.toBeInTheDocument();
+  });
+
+  it('늦춰진 편은 예정 시각에 취소선, 변경 시각을 따로 보여 주고 상태 칩에 "지연"', () => {
+    render(<AirportBoard desktop />);
+    const row = screen.getByRole('button', { name: /OZ2/ });
+    expect(within(row).getByText('10:20').className).toMatch(/timeOld/);
+    expect(within(row).getByText('11:00')).toBeInTheDocument();
+    expect(within(row).getByText('지연')).toBeInTheDocument();
+    expect(within(row).getByText(/공동운항 1편/)).toBeInTheDocument();
+  });
+
+  it('앞당겨진 편은 취소선 없이 바뀐 시각만 보여 주고, 이미 떠난 편은 흐리게', () => {
+    state.data = {
+      departures: [f({ id: 'EARLY', scheduled: '1010', estimated: '1005', remark: '출발' })],
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+    };
+    render(<AirportBoard desktop />);
+    const row = screen.getByRole('button', { name: /EARLY/ });
+    expect(within(row).getByText('10:05').className).toMatch(/timeMain/);
+    expect(within(row).queryByText('10:10')).not.toBeInTheDocument();
+    expect(row.className).toMatch(/rowDone/);
+  });
+
+  it('도착 탭으로 바꾸면 도착편과 수취대를 보여 준다', () => {
+    render(<AirportBoard desktop />);
+    fireEvent.click(screen.getByRole('button', { name: '도착' }));
+    const row = screen.getByRole('button', { name: /CX426/ });
+    expect(within(row).getByText('홍콩')).toBeInTheDocument();
+    expect(within(row).getByText('6')).toBeInTheDocument();
+    expect(screen.getByText('수취대')).toBeInTheDocument();
+  });
+
+  it('줄을 누르면 상세가 열리고(공동운항 편 포함), 닫기로 닫힌다. 바깥을 눌러도 닫히지 않는다', () => {
+    render(<AirportBoard desktop />);
+    fireEvent.click(screen.getByRole('button', { name: /OZ2/ }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('OZ2')).toBeInTheDocument();
+    expect(within(dialog).getByText('제2터미널')).toBeInTheDocument();
+    expect(within(dialog).getByText('NH9')).toBeInTheDocument();
+    expect(within(dialog).getByText('체크인 카운터')).toBeInTheDocument();
+    fireEvent.click(dialog.parentElement!);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '닫기' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('8줄씩 보여 주고 "더 보기"로 늘린다', () => {
+    state.data = {
+      departures: Array.from({ length: 20 }, (_, i) =>
+        f({ id: `KE${i + 10}`, scheduled: '1030', estimated: '1030' }),
+      ),
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+    };
+    render(<AirportBoard desktop />);
+    expect(screen.getAllByRole('button', { name: /KE\d+/ })).toHaveLength(8);
+    fireEvent.click(screen.getByRole('button', { name: '더 보기' }));
+    expect(screen.getAllByRole('button', { name: /KE\d+/ })).toHaveLength(16);
+  });
+
+  it('받은 값이 없으면 섹션을 그리지 않는다. 받는 중에는 빈 틀(스켈레톤)만', () => {
+    state.data = undefined;
+    const { container, rerender } = render(<AirportBoard desktop />);
+    expect(container).toBeEmptyDOMElement();
+    state.data = { departures: [], arrivals: [], fetchedAt: null };
+    rerender(<AirportBoard desktop />);
+    expect(container).toBeEmptyDOMElement();
+    state.isLoading = true;
+    rerender(<AirportBoard desktop />);
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+  });
+
+  it('오래 갱신하지 못했으면 마지막으로 받은 시각과 함께 안내한다', () => {
+    setBoard({ fetchedAt: new Date(Date.now() - 40 * 60_000).toISOString() });
+    render(<AirportBoard desktop />);
+    expect(screen.getByText(/최근 정보를 받지 못하고 있어요/)).toBeInTheDocument();
+  });
+
+  it('지금 이후 편이 없으면 안내 문구', () => {
+    state.nowMin = 1300;
+    render(<AirportBoard desktop />);
+    expect(screen.getByText('지금 이후 출발 예정 편이 없어요.')).toBeInTheDocument();
+  });
+
+  it('영어에서는 공항 코드를 크게, 이름(한국어)을 작게 보여 준다', async () => {
+    await i18n.changeLanguage('en');
+    render(<AirportBoard desktop />);
+    const row = screen.getByRole('button', { name: /OZ2/ });
+    expect(within(row).getByText('KIX').className).toMatch(/city/);
+    expect(within(row).getByText('오사카')).toBeInTheDocument();
+    expect(within(row).getByText('Delayed')).toBeInTheDocument();
+  });
+
+  it('모바일에서도 같은 줄이 나오고 터미널·게이트는 상태 아래 작은 글씨로', () => {
+    render(<AirportBoard desktop={false} />);
+    const row = screen.getByRole('button', { name: /KE1/ });
+    expect(within(row).getByText('T2 · 254')).toBeInTheDocument();
+    expect(screen.queryByText('터미널')).not.toBeInTheDocument(); // 열 머리줄은 PC만
+  });
+});

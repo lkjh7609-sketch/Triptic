@@ -3,9 +3,20 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { isDesktop, session } = vi.hoisted(() => ({ isDesktop: { value: false }, session: { user: null as null | { id: string } } }));
+const { isDesktop, session, board } = vi.hoisted(() => ({
+  isDesktop: { value: false },
+  session: { user: null as null | { id: string } },
+  board: { data: undefined as unknown },
+}));
+vi.mock('../airport/useAirportBoard', () => ({
+  useAirportBoard: () => ({ data: board.data, isLoading: false }),
+  useKstMinutes: () => 600,
+  useNowMs: () => Date.now(),
+}));
 vi.mock('@/shared/hooks/useMediaQuery', () => ({ useMediaQuery: () => isDesktop.value }));
-vi.mock('@/shared/hooks/useSession', () => ({ useSession: () => ({ user: session.user, loading: false }) }));
+vi.mock('@/shared/hooks/useSession', () => ({
+  useSession: () => ({ user: session.user, loading: false }),
+}));
 vi.mock('@/shared/hooks/useTempUnit', () => ({ useTempUnit: () => 'C' }));
 vi.mock('@/shared/hooks/useCityImage', () => ({ useCityImage: () => '/city.jpg' }));
 vi.mock('@/features/plan/hooks/useTrips', () => ({
@@ -16,13 +27,19 @@ vi.mock('@/features/plan/hooks/useTripMembers', () => ({
   useTripMembers: () => ({ data: {} }),
   initialsOf: (name: string | null) => (name ?? '?').slice(0, 1),
 }));
-vi.mock('@/features/community/hooks/usePosts', () => ({ usePopularPosts: () => ({ data: [], isLoading: false }) }));
-vi.mock('@/features/community/hooks/useCompanionPosts', () => ({ useCompanionPostsFeed: () => ({ data: { pages: [] }, isLoading: false }) }));
+vi.mock('@/features/community/hooks/usePosts', () => ({
+  usePopularPosts: () => ({ data: [], isLoading: false }),
+}));
+vi.mock('@/features/community/hooks/useCompanionPosts', () => ({
+  useCompanionPostsFeed: () => ({ data: { pages: [] }, isLoading: false }),
+}));
 vi.mock('../flightDealsData', async () => ({
   ...(await vi.importActual<typeof import('../flightDealsData')>('../flightDealsData')),
   useFlightDeals: () => ({ data: [], isLoading: false }),
 }));
-vi.mock('./useSeasonTemps', () => ({ useSeasonTemps: () => ({ data: { kyoto: { temp: 17.6, code: 0 } } }) }));
+vi.mock('./useSeasonTemps', () => ({
+  useSeasonTemps: () => ({ data: { kyoto: { temp: 17.6, code: 0 } } }),
+}));
 vi.mock('../cityDescription', async () => ({
   ...(await vi.importActual<typeof import('../cityDescription')>('../cityDescription')),
   readCachedCityDescriptions: async () => ({}),
@@ -53,6 +70,7 @@ beforeEach(() => {
     removeEventListener: () => {},
   })) as unknown as typeof window.matchMedia;
   session.user = null;
+  board.data = undefined;
 });
 
 afterEach(() => {
@@ -65,8 +83,47 @@ describe('HomePage — 시안(Stitch) 구성', () => {
     renderHome();
     expect(screen.getByRole('button', { name: '항공' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
-    expect(headings()).toEqual(['내 일정 & 추천 샘플', '지금 가기 좋은 여행지', '같이 갈 사람 찾기', '인기 여행기', '트립틱 이렇게 써요']);
+    expect(headings()).toEqual([
+      '내 일정 & 추천 샘플',
+      '지금 가기 좋은 여행지',
+      '같이 갈 사람 찾기',
+      '인기 여행기',
+      '트립틱 이렇게 써요',
+    ]);
     expect(screen.queryByText('지금 바로 다음 여행을 계획해 보세요')).not.toBeInTheDocument();
+  });
+
+  it('인천공항 전광판은 내 일정 바로 아래에 나오고(PC·모바일), 받은 값이 없으면 섹션이 없다', () => {
+    board.data = {
+      departures: [
+        {
+          id: 'KE1',
+          airline: '대한항공',
+          scheduled: '1010',
+          estimated: '1010',
+          city: '도쿄',
+          airportCode: 'NRT',
+          terminal: 'P03',
+          gate: '',
+          counter: '',
+          carousel: '',
+          exit: '',
+          remark: '탑승준비',
+          codeshares: [],
+          stopovers: [],
+        },
+      ],
+      arrivals: [],
+      fetchedAt: new Date().toISOString(),
+      stale: false,
+    };
+    isDesktop.value = false;
+    const mobile = renderHome();
+    expect(headings().slice(0, 2)).toEqual(['내 일정 & 추천 샘플', '인천공항 실시간 출·도착']);
+    mobile.unmount();
+    isDesktop.value = true;
+    renderHome();
+    expect(headings().slice(0, 2)).toEqual(['내 일정 & 추천 샘플', '인천공항 실시간 출·도착']);
   });
 
   it('모바일: 기온은 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {
@@ -92,7 +149,9 @@ describe('HomePage — 시안(Stitch) 구성', () => {
   it('PC: 히어로 제목과 섹션 순서(내 일정 → 인기 여행기 → 지금 가기 좋은 여행지 → 같이 갈 사람 → 이렇게 써요 → 시작 배너)', () => {
     isDesktop.value = true;
     renderHome();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('예약서 한 장으로 완성되는 여행의 모든 순간');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      '예약서 한 장으로 완성되는 여행의 모든 순간',
+    );
     expect(headings()).toEqual([
       '내 일정 & 추천 샘플',
       '인기 여행기 (최근 30일 추천)',

@@ -544,5 +544,68 @@
     "footer": {
       "partnership": "合作洽詢"
     }
+  },
+  "airport": {
+    "title": "仁川機場即時出發・抵達",
+    "updated": "{{time}} 更新(韓國時間)・每 3 分鐘更新",
+    "tabsLabel": "出發・抵達",
+    "departures": "出發",
+    "arrivals": "抵達",
+    "col": {
+      "time": "時間",
+      "flight": "航班",
+      "to": "目的地",
+      "from": "出發地",
+      "terminal": "航廈",
+      "gate": "登機門",
+      "carousel": "行李轉盤",
+      "status": "狀態"
+    },
+    "terminal": {
+      "t1": "第一航廈",
+      "t1c": "第一航廈 登機廊",
+      "t2": "第二航廈"
+    },
+    "terminalShort": {
+      "t1": "T1",
+      "t1c": "T1 登機廊",
+      "t2": "T2"
+    },
+    "status": {
+      "departed": "已起飛",
+      "arrived": "已抵達",
+      "landed": "已降落",
+      "boarding": "登機中",
+      "boardingSoon": "準備登機",
+      "checkinOpen": "開始報到",
+      "checkinClosed": "報到截止",
+      "closingSoon": "即將截止",
+      "gateClosed": "登機截止",
+      "delayed": "延誤",
+      "cancelled": "取消",
+      "returned": "折返",
+      "changed": "變更",
+      "scheduled": "預定"
+    },
+    "codeshareN_other": "共同營運 {{count}} 班",
+    "more": "顯示更多",
+    "emptyDepartures": "目前之後沒有預定出發的航班。",
+    "emptyArrivals": "目前之後沒有預定抵達的航班。",
+    "staleNotice": "目前無法取得最新資料,顯示 {{time}} 取得的內容。",
+    "source": "資料來源:仁川國際機場公社 · 可能與實際營運不同",
+    "detail": {
+      "close": "關閉",
+      "routeTo": "目的地",
+      "routeFrom": "出發地",
+      "scheduled": "預定時間",
+      "estimated": "變更時間",
+      "counter": "報到櫃檯",
+      "gateArr": "抵達登機門",
+      "exit": "出口",
+      "stopovers": "經停",
+      "codeshare": "共同營運航班",
+      "note": "依據仁川國際機場公社公開資料,現場狀況可能不同。出發前請務必向航空公司確認。",
+      "actual": "實際時間"
+    }
   }
 }

@@ -1,0 +1,353 @@
+/* 인천공항 출·도착 전광판 — 홈 카드 톤(--h-*)에 맞춘다. 상태 색은 앱 공통 의미 토큰(성공·경고·위험·브랜드) */
+.head {
+  align-items: center;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleIcon {
+  flex: none;
+  color: var(--h-accent-text);
+}
+
+.live {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+  animation: livePulse 2s ease-out infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live {
+    animation: none;
+  }
+}
+
+.tabs {
+  display: inline-flex;
+  flex: none;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: var(--h-chip);
+}
+
+.tab,
+.tabOn {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab {
+  background: transparent;
+  color: var(--h-ink-2);
+}
+
+.tabOn {
+  background: var(--h-card);
+  color: var(--h-ink);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.board {
+  overflow: hidden;
+  border: 1px solid var(--h-line);
+  border-radius: 12px;
+  background: var(--h-card);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.skeleton {
+  height: 320px;
+  border-radius: 12px;
+  background: var(--h-chip);
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--warning-tint);
+  color: var(--warning-text);
+  font-size: 0.8125rem;
+}
+
+.colHead {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--h-sunken);
+  border-bottom: 1px solid var(--h-line-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--h-ink-3);
+}
+
+.board {
+  --cols: 88px minmax(0, 1.1fr) minmax(0, 1.2fr) 96px 72px 112px 20px;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li + li {
+  border-top: 1px solid var(--h-line-soft);
+}
+
+.row {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'time city status'
+    'time flight status';
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  min-height: 64px;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--h-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--h-accent);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .row:hover {
+    background: var(--h-tint);
+  }
+}
+
+.time {
+  grid-area: time;
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeMain {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.timeOld {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  color: var(--h-ink-3);
+  text-decoration: line-through;
+}
+
+.timeNew {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 800;
+  color: var(--warning-text);
+}
+
+.flightBlock {
+  grid-area: flight;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.flightId {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--h-ink-2);
+}
+
+.sub {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--h-ink-3);
+}
+
+.cityBlock {
+  grid-area: city;
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.city {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.cityBlock .sub {
+  flex: none;
+}
+
+.statusCell {
+  grid-area: status;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.terminal,
+.gate {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--h-ink-2);
+}
+
+.chevron {
+  color: var(--h-ink-3);
+}
+
+/* 상태 칩 — 색만으로 뜻을 전하지 않도록 글자가 항상 같이 있다 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tone_done {
+  background: var(--h-chip);
+  color: var(--h-ink-2);
+}
+
+.tone_active {
+  background: var(--success-tint);
+  color: var(--success-text);
+}
+
+.tone_soon {
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.tone_warn {
+  background: var(--warning-tint);
+  color: var(--warning-text);
+}
+
+.tone_bad {
+  background: var(--danger-tint);
+  color: var(--danger-text);
+}
+
+.tone_neutral {
+  background: var(--h-chip);
+  color: var(--h-ink-2);
+}
+
+.empty {
+  margin: 0;
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--h-ink-3);
+}
+
+.more {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-top: 1px solid var(--h-line-soft);
+  background: var(--h-sunken);
+  color: var(--h-accent-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.source {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--h-line-soft);
+  font-size: 0.6875rem;
+  color: var(--h-ink-3);
+}
+
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: var(--cols);
+    grid-template-areas: none;
+    column-gap: 12px;
+    min-height: 68px;
+    padding: 10px 20px;
+  }
+
+  .time,
+  .flightBlock,
+  .cityBlock,
+  .statusCell {
+    grid-area: auto;
+  }
+
+  .cityBlock {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .statusCell {
+    align-items: flex-start;
+  }
+}
+
+/* 이미 떠난·도착한 편은 한 톤 흐리게 — 앞으로 올 편이 눈에 먼저 들어오게 */
+.rowDone .city,
+.rowDone .flightId,
+.rowDone .timeMain {
+  opacity: 0.55;
+}

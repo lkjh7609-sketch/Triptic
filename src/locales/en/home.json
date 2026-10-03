@@ -548,5 +548,69 @@
     "footer": {
       "partnership": "Partnerships"
     }
+  },
+  "airport": {
+    "title": "Incheon Airport live departures & arrivals",
+    "updated": "As of {{time}} (KST) · refreshes every 3 min",
+    "tabsLabel": "Departures and arrivals",
+    "departures": "Departures",
+    "arrivals": "Arrivals",
+    "col": {
+      "time": "Time",
+      "flight": "Flight",
+      "to": "To",
+      "from": "From",
+      "terminal": "Terminal",
+      "gate": "Gate",
+      "carousel": "Carousel",
+      "status": "Status"
+    },
+    "terminal": {
+      "t1": "Terminal 1",
+      "t1c": "Terminal 1 Concourse",
+      "t2": "Terminal 2"
+    },
+    "terminalShort": {
+      "t1": "T1",
+      "t1c": "T1 Concourse",
+      "t2": "T2"
+    },
+    "status": {
+      "departed": "Departed",
+      "arrived": "Arrived",
+      "landed": "Landed",
+      "boarding": "Boarding",
+      "boardingSoon": "Boarding soon",
+      "checkinOpen": "Check-in open",
+      "checkinClosed": "Check-in closed",
+      "closingSoon": "Closing soon",
+      "gateClosed": "Gate closed",
+      "delayed": "Delayed",
+      "cancelled": "Cancelled",
+      "returned": "Returned",
+      "changed": "Changed",
+      "scheduled": "Scheduled"
+    },
+    "codeshareN_one": "{{count}} codeshare",
+    "codeshareN_other": "{{count}} codeshares",
+    "more": "Show more",
+    "emptyDepartures": "No more departures scheduled for now.",
+    "emptyArrivals": "No more arrivals scheduled for now.",
+    "staleNotice": "We can’t get the latest data right now. Showing what we received at {{time}}.",
+    "source": "Source: Incheon International Airport Corporation · may differ from actual operations",
+    "detail": {
+      "close": "Close",
+      "routeTo": "TO",
+      "routeFrom": "FROM",
+      "scheduled": "Scheduled",
+      "estimated": "Updated time",
+      "counter": "Check-in counters",
+      "gateArr": "Arrival gate",
+      "exit": "Exit",
+      "stopovers": "Stopovers",
+      "codeshare": "Codeshare flights",
+      "note": "Based on Incheon Airport public data; conditions on site may differ. Please confirm with your airline before you travel.",
+      "actual": "Actual time"
+    }
   }
 }
