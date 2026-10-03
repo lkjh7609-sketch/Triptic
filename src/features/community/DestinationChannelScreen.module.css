@@ -8,8 +8,44 @@
 
 /* 머리말은 화면 가로 끝까지 흰 띠, 안쪽 내용만 가운데 정렬 */
 .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--surface-card);
   border-bottom: 1px solid var(--border-subtle);
+}
+
+/* 도시 대표 사진 — 머리말 뒤에 깔고 흰 띠 색으로 덮어 글자가 또렷하게 읽히게 한다.
+   모바일은 위에서 아래로, PC는 사진이 오른쪽에서 왼쪽으로 사라진다 */
+.heroCover {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center 40%;
+}
+
+.heroCover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--surface-card) 62%, transparent) 0%,
+    color-mix(in srgb, var(--surface-card) 86%, transparent) 55%,
+    var(--surface-card) 100%
+  );
+}
+
+@media (min-width: 900px) {
+  .heroCover::after {
+    background: linear-gradient(
+      to right,
+      var(--surface-card) 0%,
+      color-mix(in srgb, var(--surface-card) 90%, transparent) 38%,
+      color-mix(in srgb, var(--surface-card) 35%, transparent) 100%
+    );
+  }
 }
 
 .container {
