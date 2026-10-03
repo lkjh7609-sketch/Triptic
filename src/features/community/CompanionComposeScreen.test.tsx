@@ -9,24 +9,47 @@ const { desktop, navigate, mutateAsync } = vi.hoisted(() => ({
   mutateAsync: vi.fn(),
 }));
 
-vi.mock('react-router', async () => ({ ...(await vi.importActual<typeof import('react-router')>('react-router')), useNavigate: () => navigate }));
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual<typeof import('react-router')>('react-router')),
+  useNavigate: () => navigate,
+}));
 vi.mock('@/shared/hooks/useMediaQuery', () => ({ useMediaQuery: () => desktop.value }));
-vi.mock('@/shared/hooks/useSession', () => ({ useSession: () => ({ user: { id: 'u1' }, loading: false }) }));
+vi.mock('@/shared/hooks/useSession', () => ({
+  useSession: () => ({ user: { id: 'u1' }, loading: false }),
+}));
 vi.mock('./hooks/useDestinations', () => ({
   useDestinations: () => ({
     data: [
-      { id: 'kyoto', name: '교토', slug: 'kyoto', country_code: 'JP', is_featured: true, sort_order: 1, cover_url: null },
-      { id: 'paris', name: '파리', slug: 'paris', country_code: 'FR', is_featured: true, sort_order: 2, cover_url: null },
+      {
+        id: 'kyoto',
+        name: '교토',
+        slug: 'kyoto',
+        country_code: 'JP',
+        is_featured: true,
+        sort_order: 1,
+        cover_url: null,
+      },
+      {
+        id: 'paris',
+        name: '파리',
+        slug: 'paris',
+        country_code: 'FR',
+        is_featured: true,
+        sort_order: 2,
+        cover_url: null,
+      },
     ],
   }),
 }));
-vi.mock('./hooks/useCompanionPosts', () => ({ useCreateCompanionPost: () => ({ mutateAsync, isPending: false }) }));
+vi.mock('./hooks/useCompanionPosts', () => ({
+  useCreateCompanionPost: () => ({ mutateAsync, isPending: false }),
+}));
 
 import { CompanionComposeScreen } from './CompanionComposeScreen';
 
-function renderScreen() {
+function renderScreen(entry = '/') {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[entry]}>
       <CompanionComposeScreen />
     </MemoryRouter>,
   );
@@ -55,8 +78,12 @@ async function advance(ms = 800) {
 }
 
 function fillText() {
-  fireEvent.change(screen.getByPlaceholderText('예: 오사카 3박4일 같이 다니실 분'), { target: { value: '  오사카 같이 가요  ' } });
-  fireEvent.change(screen.getByPlaceholderText(/가고 싶은 곳, 하고 싶은 일/), { target: { value: '  먹방 위주  ' } });
+  fireEvent.change(screen.getByPlaceholderText('예: 오사카 3박4일 같이 다니실 분'), {
+    target: { value: '  오사카 같이 가요  ' },
+  });
+  fireEvent.change(screen.getByPlaceholderText(/가고 싶은 곳, 하고 싶은 일/), {
+    target: { value: '  먹방 위주  ' },
+  });
 }
 
 describe('CompanionComposeScreen — 시안 구성', () => {
@@ -69,13 +96,20 @@ describe('CompanionComposeScreen — 시안 구성', () => {
     expect(screen.getByRole('button', { name: /어디든 상관없어요/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /날짜를 선택하세요/ })).toBeInTheDocument();
     expect(screen.getByText('2명')).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: '성별 무관' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: '성별 무관' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
     expect(screen.getByRole('button', { name: '20대 초반' })).toBeInTheDocument();
     expect(screen.getByText('0/3')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '동행 모집글 게시하기' })).toBeInTheDocument();
-    expect(screen.getByText('작성된 모집글은 커뮤니티 가이드라인을 준수해야 해요.')).toBeInTheDocument();
+    expect(
+      screen.getByText('작성된 모집글은 커뮤니티 가이드라인을 준수해야 해요.'),
+    ).toBeInTheDocument();
     // 합의한 대로 뺀 것(내 일정 첨부·태그 추가/장소 핀·미리보기·빠른 추천)
-    expect(screen.queryByText(/내 일정 첨부|태그 추가|장소 핀|미리보기|빠른 추천/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/내 일정 첨부|태그 추가|장소 핀|미리보기|빠른 추천/),
+    ).not.toBeInTheDocument();
   });
 
   it('PC: 위쪽 줄에 임시저장·게시하기, 빠른 추천 칩, 맨 아래 게시 버튼', () => {
@@ -102,6 +136,38 @@ describe('CompanionComposeScreen — 시안 구성', () => {
     expect(screen.getByRole('button', { name: '인원 줄이기' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: '인원 늘리기' }));
     expect(screen.getByText('3명')).toBeInTheDocument();
+  });
+});
+
+describe('CompanionComposeScreen — 도시 미리 선택(?destination=)', () => {
+  it('도시 채널에서 들어오면 그 도시가 골라져 있다', () => {
+    renderScreen('/community/companion/new?destination=paris');
+    expect(screen.getByRole('button', { name: /파리, 프랑스/ })).toBeInTheDocument();
+  });
+
+  it('없는 도시 주소면 비워 둔다', () => {
+    renderScreen('/community/companion/new?destination=nowhere');
+    expect(screen.queryByRole('button', { name: /프랑스|일본/ })).not.toBeInTheDocument();
+  });
+
+  it('임시저장 글이 있으면 이어 쓰기를 고를 때 그 글의 도시가 우선한다', () => {
+    localStorage.setItem(
+      'triptic-companion-draft:u1',
+      JSON.stringify({
+        title: '교토 가요',
+        body: '같이',
+        destinationId: 'kyoto',
+        startDate: null,
+        endDate: null,
+        datesTbd: true,
+        groupSize: 2,
+        prefs: {},
+        savedAt: Date.now(),
+      }),
+    );
+    renderScreen('/community/companion/new?destination=paris');
+    fireEvent.click(screen.getByRole('button', { name: /이어/ }));
+    expect(screen.getByRole('button', { name: /교토, 일본/ })).toBeInTheDocument();
   });
 });
 
@@ -147,7 +213,9 @@ describe('CompanionComposeScreen — 게시', () => {
     fireEvent.click(screen.getByRole('button', { name: /2026년 10월 24일/ }));
     fireEvent.click(screen.getByRole('button', { name: /선택 완료 \(4박 5일\)/ }));
     await advance(300);
-    expect(screen.getByRole('button', { name: /10\.20\(화\) ~ 10\.24\(토\) · 4박 5일/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /10\.20\(화\) ~ 10\.24\(토\) · 4박 5일/ }),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '인원 늘리기' }));
     fireEvent.click(screen.getByRole('radio', { name: '여성' }));
@@ -197,13 +265,18 @@ describe('CompanionComposeScreen — 임시저장·취소', () => {
     fillText();
     fireEvent.click(screen.getByRole('radio', { name: '남성' }));
     await advance(800);
-    expect(JSON.parse(localStorage.getItem('triptic-companion-draft:u1')!)).toMatchObject({ title: '  오사카 같이 가요  ', prefs: { gender: 'male' } });
+    expect(JSON.parse(localStorage.getItem('triptic-companion-draft:u1')!)).toMatchObject({
+      title: '  오사카 같이 가요  ',
+      prefs: { gender: 'male' },
+    });
     first.unmount();
 
     renderScreen();
     expect(screen.getByText('이어 쓰던 글이 있어요')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이어 쓰기' }));
-    expect(screen.getByPlaceholderText('예: 오사카 3박4일 같이 다니실 분')).toHaveValue('  오사카 같이 가요  ');
+    expect(screen.getByPlaceholderText('예: 오사카 3박4일 같이 다니실 분')).toHaveValue(
+      '  오사카 같이 가요  ',
+    );
     expect(screen.getByRole('radio', { name: '남성' })).toHaveAttribute('aria-checked', 'true');
   });
 

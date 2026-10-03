@@ -111,7 +111,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
       : null;
   const writeHref =
     tab === 'companion'
-      ? '/community/companion/new'
+      ? `/community/companion/new?destination=${destination.slug}`
       : `/community/compose?destination=${destination.slug}`;
 
   function createTrip() {
