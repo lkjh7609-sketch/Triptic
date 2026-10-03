@@ -544,5 +544,68 @@
     "footer": {
       "partnership": "提携のお問い合わせ"
     }
+  },
+  "airport": {
+    "title": "仁川空港 出発・到着情報",
+    "updated": "{{time}}時点(韓国時間)・3分ごとに更新",
+    "tabsLabel": "出発・到着",
+    "departures": "出発",
+    "arrivals": "到着",
+    "col": {
+      "time": "時刻",
+      "flight": "便名",
+      "to": "行き先",
+      "from": "出発地",
+      "terminal": "ターミナル",
+      "gate": "搭乗ゲート",
+      "carousel": "受取所",
+      "status": "状況"
+    },
+    "terminal": {
+      "t1": "第1ターミナル",
+      "t1c": "第1ターミナル 搭乗棟",
+      "t2": "第2ターミナル"
+    },
+    "terminalShort": {
+      "t1": "T1",
+      "t1c": "T1 搭乗棟",
+      "t2": "T2"
+    },
+    "status": {
+      "departed": "出発済み",
+      "arrived": "到着",
+      "landed": "着陸",
+      "boarding": "搭乗中",
+      "boardingSoon": "搭乗準備",
+      "checkinOpen": "チェックイン開始",
+      "checkinClosed": "チェックイン終了",
+      "closingSoon": "締切間近",
+      "gateClosed": "搭乗締切",
+      "delayed": "遅延",
+      "cancelled": "欠航",
+      "returned": "引き返し",
+      "changed": "変更",
+      "scheduled": "予定"
+    },
+    "codeshareN_other": "共同運航 {{count}}便",
+    "more": "もっと見る",
+    "emptyDepartures": "この後の出発予定便はありません。",
+    "emptyArrivals": "この後の到着予定便はありません。",
+    "staleNotice": "最新の情報を取得できていません。{{time}}に取得した内容です。",
+    "source": "出典:仁川国際空港公社 · 実際の運航と異なる場合があります",
+    "detail": {
+      "close": "閉じる",
+      "routeTo": "行き先",
+      "routeFrom": "出発地",
+      "scheduled": "予定時刻",
+      "estimated": "変更時刻",
+      "counter": "チェックインカウンター",
+      "gateArr": "到着ゲート",
+      "exit": "出口",
+      "stopovers": "経由地",
+      "codeshare": "共同運航便",
+      "note": "仁川国際空港公社の公共データに基づきます。現地の状況により異なる場合があります。出発前に必ず航空会社の案内をご確認ください。",
+      "actual": "実際の時刻"
+    }
   }
 }

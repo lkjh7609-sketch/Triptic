@@ -544,5 +544,68 @@
     "footer": {
       "partnership": "제휴문의"
     }
+  },
+  "airport": {
+    "title": "인천공항 실시간 출·도착",
+    "updated": "{{time}} 기준 · 3분마다 갱신",
+    "tabsLabel": "출발·도착",
+    "departures": "출발",
+    "arrivals": "도착",
+    "col": {
+      "time": "시각",
+      "flight": "편명",
+      "to": "목적지",
+      "from": "출발지",
+      "terminal": "터미널",
+      "gate": "탑승 게이트",
+      "carousel": "수취대",
+      "status": "상태"
+    },
+    "terminal": {
+      "t1": "제1터미널",
+      "t1c": "제1터미널 탑승동",
+      "t2": "제2터미널"
+    },
+    "terminalShort": {
+      "t1": "T1",
+      "t1c": "T1 탑승동",
+      "t2": "T2"
+    },
+    "status": {
+      "departed": "출발",
+      "arrived": "도착",
+      "landed": "착륙",
+      "boarding": "탑승중",
+      "boardingSoon": "탑승 준비",
+      "checkinOpen": "체크인 오픈",
+      "checkinClosed": "체크인 마감",
+      "closingSoon": "마감 예정",
+      "gateClosed": "탑승 마감",
+      "delayed": "지연",
+      "cancelled": "결항",
+      "returned": "회항",
+      "changed": "변경",
+      "scheduled": "예정"
+    },
+    "codeshareN_other": "공동운항 {{count}}편",
+    "more": "더 보기",
+    "emptyDepartures": "지금 이후 출발 예정 편이 없어요.",
+    "emptyArrivals": "지금 이후 도착 예정 편이 없어요.",
+    "staleNotice": "최근 정보를 받지 못하고 있어요. {{time}}에 받은 내용이에요.",
+    "source": "출처: 인천국제공항공사 · 실제 운항과 다를 수 있어요",
+    "detail": {
+      "close": "닫기",
+      "routeTo": "목적지",
+      "routeFrom": "출발지",
+      "scheduled": "예정 시각",
+      "estimated": "변경 시각",
+      "counter": "체크인 카운터",
+      "gateArr": "도착 게이트",
+      "exit": "출구",
+      "stopovers": "경유지",
+      "codeshare": "공동운항 편",
+      "note": "인천국제공항공사 공공데이터 기준이며 현장 사정에 따라 달라질 수 있어요. 출발 전에는 항공사 안내를 꼭 확인하세요.",
+      "actual": "실제 시각"
+    }
   }
 }

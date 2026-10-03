@@ -86,6 +86,14 @@
 
 ## 날짜별 기록
 
+### 2026-10-03 (3) — 홈 '인천공항 실시간 출·도착' 전광판
+
+- **위치**: 홈 '내 일정 & 추천 샘플' 바로 아래(PC·모바일 공통). 출발/도착 탭, 지금 이후(최근 10분 전 ~ 5시간 뒤) 편을 변경 시각 순으로 8줄씩(더 보기), 줄을 누르면 상세(예정·변경 시각, 터미널, 게이트·체크인 카운터 / 수취대·출구, 경유지, 공동운항 편). 상태 칩(탑승중·탑승 마감·지연·결항 …), 늦춰진 편은 예정 시각에 취소선, 이미 떠난 편은 흐리게. 받은 값이 없으면 섹션 자체를 안 그림. 한국어는 도시 이름이 크게, 그 밖의 언어는 공항 코드(NRT)가 크게(이름·항공사는 한국어로만 받음).
+- **데이터**: 인천국제공항공사 **'여객기 운항 현황 조회 서비스(다국어)'**(`StatusOfPassengerFlightsOdp`, 실시간 상태·게이트 포함). ※ 처음 받으신 '여객기 정기운항편 조회(관광플랫폼용)'은 시즌 시간표(상태·게이트 없음)라 쓰지 않음(사용자 결정).
+- **호출 한도(하루 1,000회) 대책**: 화면이 3분마다 Edge Function `incheon-board`에 묻고, 함수는 표 `airport_board`의 마지막 값을 돌려준다. 표가 3분 넘게 묵었을 때만 DB 함수 `claim_airport_refresh`로 갱신 권한을 **한 요청에게만** 받아 외부(출발+도착 2회)를 부름 → 보는 사람이 몇 명이든 3분에 2회, 하루 상한 900회(`airport_api_usage`), 보는 사람이 없으면 호출도 없음. 외부가 실패하면 마지막 값 유지(15분 넘게 못 받으면 화면에 안내).
+- **적용(운영, 사용자가 직접)**: ① `supabase db query --linked -f supabase/migrations/0078_airport_board.sql` ② `supabase secrets set INCHEON_API_KEY=<data.go.kr 일반 인증키>`(키는 레포에 없음) ③ `supabase functions deploy incheon-board`. 그 전에는 함수가 없어 섹션이 안 보임(오류 없음).
+- **코드**: `src/features/home/airport/`(`boardParse.ts`=서버·화면 공용 순수 함수+테스트, `AirportBoard`, `FlightDetailDialog`, `useAirportBoard`), `supabase/functions/incheon-board/`.
+
 ### 2026-10-03 (2) — 여행지 선택 창 하위 지역 카드·뒤로 가기, 액티비티·eSIM 간격
 
 - **증상**: 여행지 선택 창에서 '아시아'를 누르면 29곳이 한꺼번에 나오고, 낮은 창에서는 탭 줄이 눌려 사라져 돌아갈 방법이 없었음(`.tabs`가 세로 flex 칼럼 안에서 `flex-shrink` 기본값으로 줄어듦 — DayChips와 같은 원인).
