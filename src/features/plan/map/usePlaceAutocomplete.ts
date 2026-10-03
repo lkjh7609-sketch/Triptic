@@ -25,6 +25,8 @@ export function countryCodeOf(components: google.maps.GeocoderAddressComponent[]
 export interface UsePlaceAutocompleteOptions {
   /** Google Places Autocomplete의 types 제한 (예: 도시만 검색하려면 ['(cities)']) */
   types?: string[];
+  /** false면 Google 스크립트를 부르지 않는다(항공편 공항처럼 목록으로 대신하는 칸) — 기본 true */
+  enabled?: boolean;
 }
 
 export function usePlaceAutocomplete(
@@ -38,8 +40,10 @@ export function usePlaceAutocomplete(
     onSelectRef.current = onSelect;
   }, [onSelect]);
   const types = options?.types;
+  const enabled = options?.enabled ?? true;
 
   useEffect(() => {
+    if (!enabled) return;
     let cancelled = false;
     let autocomplete: google.maps.places.Autocomplete | null = null;
 
@@ -72,7 +76,7 @@ export function usePlaceAutocomplete(
     // types는 onSelect처럼 이 훅을 쓰는 컴포넌트 생애주기 동안 값이 바뀌지 않는 정적
     // 옵션이므로 마운트 시점 값만 쓰고 재구독하지 않는다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [enabled]);
 
   return { inputRef, ready };
 }

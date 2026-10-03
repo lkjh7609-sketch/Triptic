@@ -129,10 +129,14 @@
     "preview": "{{dep}} {{depTime}} → {{arr}} {{arrTime}}",
     "manualSuffix": "(entered manually)",
     "flightNoRequired": "Please enter the flight number.",
-    "airportRequired": "Pick the departure and arrival airports from the search results.",
+    "airportRequired": "Please choose the departure and arrival airports from the list.",
     "applyEdit": "Save changes",
     "depTimeAria": "Departure time",
-    "arrTimeAria": "Arrival time"
+    "arrTimeAria": "Arrival time",
+    "airportListPlaceholder": "Search by city, airport or code (e.g. Tokyo, NRT)",
+    "airportNone": "That airport isn’t on our list.",
+    "airportRequest": "Request to add it",
+    "airportRequestPrefill": "[Airport request] {{query}}\n"
   },
   "itemDetail": {
     "mapLink": "View on Google Maps",

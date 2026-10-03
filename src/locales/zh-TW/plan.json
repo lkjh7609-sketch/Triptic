@@ -127,10 +127,14 @@
     "preview": "{{dep}} {{depTime}} 出發 → {{arr}} {{arrTime}} 抵達",
     "manualSuffix": "（手動輸入）",
     "flightNoRequired": "請輸入航班編號。",
-    "airportRequired": "請從搜尋結果中選擇出發與抵達機場。",
+    "airportRequired": "請從清單中選擇出發與抵達機場。",
     "applyEdit": "完成修改",
     "depTimeAria": "出發時間",
-    "arrTimeAria": "抵達時間"
+    "arrTimeAria": "抵達時間",
+    "airportListPlaceholder": "以城市、機場或代碼搜尋(例:東京、NRT)",
+    "airportNone": "清單中沒有這個機場。",
+    "airportRequest": "申請新增",
+    "airportRequestPrefill": "[機場新增申請] {{query}}\n"
   },
   "itemDetail": {
     "mapLink": "在 Google 地圖中檢視",
