@@ -1,6 +1,5 @@
 // Vercel Serverless Function: 제휴 링크(여러 제휴사 — api/_lib/affiliates 레지스트리)
 // Endpoint: GET /api/partnerLink?brand=klook&q=Osaka&locale=ko&placement=trip|search|city|ticket
-//           GET /api/partnerLink?brand=yesim&placement=checklist (검색어 없는 브랜드 첫 페이지)
 //           GET /api/partnerLink?brand=myrealtrip&kind=search&q=오사카&placement=search
 //           GET /api/partnerLink?brand=myrealtrip&kind=page&url=https://experiences.myrealtrip.com/products/<id>&placement=product
 //           GET /api/partnerLink?brand=myrealtrip&kind=flight&origin=SEL&origin_type=city&destination=OSA
@@ -21,7 +20,6 @@ const SUB_ID = {
     search: 'activities_search',
     city: 'activities_city',
     ticket: 'place_ticket',
-    checklist: 'checklist',
     product: 'activities_product',
     flights: 'flights_search',
     trip_flights: 'trip_flights',

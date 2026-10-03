@@ -8,7 +8,6 @@ vi.mock('@/shared/api/tripService', () => ({
   tripService: { toLocalProject: () => ({ flights: { outbound: null, return: null }, hotels: {} }) },
 }));
 vi.mock('./flightsSearchLink', () => ({ openFlightsSearchForTrip: async () => {}, useTripFlightsLink: () => undefined }));
-vi.mock('./partnerLinks', () => ({ usePartnerLandingLink: () => 'https://esim.example' }));
 
 import { DepartureChecklist } from './DepartureChecklist';
 
