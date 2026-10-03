@@ -36,7 +36,8 @@ export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
           <DestinationSelector
             destinations={destinations}
             selectedDestinationId={destinationId}
-            onCitySelect={(city) => setDestinationId((cur) => (cur === city.id ? undefined : city.id))}
+            onCitySelect={(city) => setDestinationId(city.id)}
+            onClear={() => setDestinationId(undefined)}
           />
         </div>
       ) : null}

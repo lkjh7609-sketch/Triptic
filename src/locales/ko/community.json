@@ -688,6 +688,7 @@
     "error": "저장 목록을 바꾸지 못했어요. 잠시 뒤 다시 해 주세요."
   },
   "picker": {
+    "openButton": "도시 선택",
     "title": "여행지 검색",
     "searchPlaceholder": "국가, 도시 검색 (예: 도쿄, 파리, 다낭)",
     "clearSearch": "검색어 지우기",

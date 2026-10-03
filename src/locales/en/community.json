@@ -706,6 +706,7 @@
     "error": "Couldn't update your saved list. Please try again."
   },
   "picker": {
+    "openButton": "Choose a city",
     "title": "Find a destination",
     "searchPlaceholder": "Search countries or cities (e.g. Tokyo, Paris)",
     "clearSearch": "Clear search",
