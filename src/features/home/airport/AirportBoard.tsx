@@ -131,7 +131,7 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
     direction: BoardDirection;
   } | null>(null);
   const korean = i18n.language.startsWith('ko');
-  const [trackEl, setTrackEl] = useState<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const currentRef = useRef(0);
 
   const rows = useMemo(
@@ -152,9 +152,12 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
     currentRef.current = current;
   });
   // 줄이 새로 그려질 때(처음·탭 바꿈) 현재 쪽 자리로 바로 가 있는다
+  const hasRows = rows.length > 0;
+  const hasData = data !== undefined;
   useLayoutEffect(() => {
-    if (trackEl) trackEl.scrollLeft = currentRef.current * trackEl.clientWidth;
-  }, [trackEl]);
+    const el = trackRef.current;
+    if (el) el.scrollLeft = currentRef.current * el.clientWidth;
+  }, [direction, hasRows, hasData]);
 
   function handleScroll(e: React.UIEvent<HTMLDivElement>) {
     const el = e.currentTarget;
@@ -167,7 +170,8 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
     const next = Math.min(Math.max(0, index), pages.length - 1);
     setManualPage(next);
     const smooth = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    trackEl?.scrollTo?.({ left: next * trackEl.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+    const el = trackRef.current;
+    el?.scrollTo?.({ left: next * el.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
   }
 
   const dots = dotWindow(current, pages.length);
@@ -251,7 +255,7 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
         ) : (
           <div className={styles.stage}>
             {/* 쪽마다 한 장씩 가로로 놓고 손가락으로 밀어 넘긴다(scroll-snap). PC는 양옆 화살표 */}
-            <div key={direction} ref={setTrackEl} className={styles.track} onScroll={handleScroll}>
+            <div key={direction} ref={trackRef} className={styles.track} onScroll={handleScroll}>
               {pages.map((page, i) => (
                 <ul
                   key={i}
