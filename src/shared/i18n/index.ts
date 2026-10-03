@@ -50,10 +50,19 @@ export const LOCALE_STORAGE_KEY = 'triptic-locale';
 
 const pseudoEnabled = isPseudoLocaleEnabled();
 
-/** 언어를 한 번도 정한 적 없는 첫 방문인지 — 초기화가 감지한 언어를 저장하기 전에 확인해야 한다 */
-function isFirstVisit(): boolean {
+/** 2026-09-29~10-04에는 Cloudflare 때문에 한국 접속이 홍콩·일본으로 잡혀 번체·일본어가 저장됐다(api/_lib/geo.js) */
+const GEO_RECHECK_KEY = 'triptic-locale-geo-recheck';
+
+/** 접속 국가로 언어를 정할지 — 언어를 정한 적 없는 첫 방문, 또는 위 기간에 저장된 언어가 브라우저 언어와 달라
+ * 한 번 다시 맞춰 보는 경우. 초기화가 감지한 언어를 저장하기 전에 확인해야 한다 */
+function shouldDetectByIp(): boolean {
   try {
-    return !localStorage.getItem(LOCALE_STORAGE_KEY);
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+    const rechecked = localStorage.getItem(GEO_RECHECK_KEY);
+    localStorage.setItem(GEO_RECHECK_KEY, '1');
+    if (!stored) return true;
+    if (rechecked) return false;
+    return normalizeLocale(stored) !== normalizeLocale(navigator.language);
   } catch {
     return false;
   }
@@ -62,7 +71,7 @@ function isFirstVisit(): boolean {
 // 첫 방문이면 접속 국가로 언어를 정한다(한국·일본·대만은 그 나라 말, 그 밖은 영어). 초기화와 동시에 물어
 // 첫 화면(인트로가 덮고 있는 동안)에 바로 바꾼다. 네이티브 앱은 기기 언어를 따른다.
 const ipLocale =
-  isFirstVisit() && !isNativeApp() && !pseudoEnabled && import.meta.env.MODE !== 'test' ? detectLocaleByIp() : null;
+  !isNativeApp() && !pseudoEnabled && import.meta.env.MODE !== 'test' && shouldDetectByIp() ? detectLocaleByIp() : null;
 
 const instance = i18next.use(ViteGlobBackend).use(LanguageDetector).use(initReactI18next);
 if (pseudoEnabled) instance.use(pseudoPostProcessor);
