@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { localeForCountry } from './geoLocale';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { detectLocaleByIp, localeForCountry } from './geoLocale';
 
 describe('localeForCountry', () => {
   it('한국 IP는 한국어', () => {
@@ -24,5 +24,35 @@ describe('localeForCountry', () => {
     expect(localeForCountry(null)).toBeNull();
     expect(localeForCountry(undefined)).toBeNull();
     expect(localeForCountry('')).toBeNull();
+  });
+});
+
+describe('detectLocaleByIp', () => {
+  afterEach(() => {
+    delete window.__prefetch;
+    vi.unstubAllGlobals();
+  });
+
+  it('index.html이 미리 요청해 둔 결과가 있으면 새로 요청하지 않고 그 나라로 정한다', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    window.__prefetch = { '/api/geo': Promise.resolve({ country: 'KR' }) };
+    expect(await detectLocaleByIp()).toBe('ko');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('미리 요청한 게 없거나 실패했으면 평소처럼 요청한다', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ country: 'JP' }) });
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await detectLocaleByIp()).toBe('ja');
+    window.__prefetch = { '/api/geo': Promise.reject(new Error('net')) };
+    expect(await detectLocaleByIp()).toBe('ja');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('오래 걸리면 null — 시간 제한 안에 끝난다', async () => {
+    vi.stubGlobal('fetch', vi.fn());
+    window.__prefetch = { '/api/geo': new Promise(() => {}) };
+    expect(await detectLocaleByIp(20)).toBeNull();
   });
 });
