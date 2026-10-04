@@ -3,7 +3,8 @@ import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import type { UseMutationResult } from '@tanstack/react-query';
 import { DISPLAY_NAME_INPUT_MAX, isValidDisplayName } from '@/shared/displayName';
-import { checkDisplayNameAvailable, type ProfilePatch, type ProfileRow } from '@/shared/api/profileService';
+import { checkDisplayNameAvailable, type MemberAgeBand, type MemberGender, type ProfilePatch, type ProfileRow } from '@/shared/api/profileService';
+import { DemographicsFields } from '@/features/community/DemographicsFields';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '../plan/AddPlaceModal.module.css';
 import styles from './EditProfileModal.module.css';
@@ -22,7 +23,8 @@ function getErrorHint(err: unknown): string | undefined {
 }
 
 /**
- * 내 정보 변경 — 표시 이름(profiles.display_name). 커뮤니티 글·동행자 목록에 보이는 이름이다.
+ * 내 정보 변경 — 표시 이름(profiles.display_name, 커뮤니티 글·동행자 목록에 보이는 이름)과 선택 입력인 성별·나잇대
+ * (동행 모집글·지원 화면에 표기된다. 2026-10-05 설정 화면의 '내 정보' 칸을 이 창으로 옮겼다).
  * (예전 화면의 휴대폰 인증은 실제 발송 없이 '1234'만 통과시키는 목업이었고, 존재하지 않는
  * nickname/phone 컬럼에 저장하려다 실패하고 있었다 — 제거)
  */
@@ -36,6 +38,9 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
   const checkedNameRef = useRef<string | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const nameChanged = name.trim() !== (profile?.display_name ?? '');
+  const [gender, setGender] = useState<MemberGender | null>(profile?.gender ?? null);
+  const [ageBand, setAgeBand] = useState<MemberAgeBand | null>(profile?.age_band ?? null);
+  const demographicsChanged = gender !== (profile?.gender ?? null) || ageBand !== (profile?.age_band ?? null);
 
   function handleNameChange(value: string) {
     setName(value);
@@ -78,22 +83,27 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
       flagInvalid(nameInputRef.current);
       return;
     }
-    if (!nameChanged) {
+    if (!nameChanged && !demographicsChanged) {
       onClose();
       return;
     }
-    if (!isValidDisplayName(trimmed)) {
-      setError(t('profile.nameFormatError'));
-      flagInvalid(nameInputRef.current);
-      return;
-    }
-    if (checkState !== 'available' || checkedNameRef.current !== trimmed) {
-      setError(t('profile.nameCheckRequired'));
-      flagInvalid(nameInputRef.current);
-      return;
+    if (nameChanged) {
+      if (!isValidDisplayName(trimmed)) {
+        setError(t('profile.nameFormatError'));
+        flagInvalid(nameInputRef.current);
+        return;
+      }
+      if (checkState !== 'available' || checkedNameRef.current !== trimmed) {
+        setError(t('profile.nameCheckRequired'));
+        flagInvalid(nameInputRef.current);
+        return;
+      }
     }
     updateProfile.mutate(
-      { display_name: trimmed },
+      {
+        ...(nameChanged ? { display_name: trimmed } : {}),
+        ...(demographicsChanged ? { gender, age_band: ageBand } : {}),
+      },
       {
         onSuccess: onClose,
         onError: (err) => {
@@ -152,6 +162,11 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
                 {error}
               </p>
             ) : null}
+          </div>
+          <div className={modalStyles.field}>
+            <span className={modalStyles.label}>{t('demographics.settingsTitle', { ns: 'community' })}</span>
+            <DemographicsFields gender={gender} ageBand={ageBand} onChange={(next) => { setGender(next.gender); setAgeBand(next.ageBand); }} />
+            <p className={modalStyles.hint}>{t('demographics.settingsHint', { ns: 'community' })}</p>
           </div>
           <div className={modalStyles.actions}>
             <button type="button" className={modalStyles.secondary} onClick={onClose}>

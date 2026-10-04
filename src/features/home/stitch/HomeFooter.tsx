@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { useSession } from '@/shared/hooks/useSession';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import styles from './HomeFooter.module.css';
 
@@ -10,15 +10,16 @@ import styles from './HomeFooter.module.css';
 export function HomeFooter() {
   const { t } = useTranslation('home');
   const requireLogin = useRequireLogin();
-  // 모바일에는 푸터를 두지 않는다 — 같은 링크가 설정 > 정보에 모두 있다(2026-10-05 사용자 결정)
-  const desktop = useMediaQuery('(min-width: 1024px)');
+  // 푸터는 로그인하지 않은 사람에게만(PC·모바일 모두) — 로그인하면 같은 링크가 설정 > 정보에 모두 있다(2026-10-05 사용자 결정).
+  // 로그인 여부를 확인하는 동안에도 그리지 않아, 로그인한 사람에게 잠깐 보였다 사라지지 않게 한다
+  const { user, loading } = useSession();
   const [contactKind, setContactKind] = useState<'general' | 'partnership' | null>(null);
 
   const openContact = (kind: 'general' | 'partnership') => {
     if (requireLogin()) setContactKind(kind);
   };
 
-  if (!desktop) return null;
+  if (loading || user) return null;
 
   return (
     <footer className={styles.footer}>
