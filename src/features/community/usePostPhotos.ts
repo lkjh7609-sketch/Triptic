@@ -30,12 +30,12 @@ export function photoFromStored(stored: UploadedPostImage): PostPhoto {
  * 취소하면 지금 올라가는 한 장까지만 마치고 멈춘다(이미 올라간 것은 남는다). 첫 사진이 대표(커버)다.
  * 끝나면 "사진 n장이 추가되었어요" 토스트(처음 올린 거면 커버 안내 포함)를 띄운다.
  */
-export function usePostPhotos(userId: string) {
+export function usePostPhotos(userId: string, initial: PostPhoto[] = []) {
   const { t } = useTranslation('community');
-  const [photos, setPhotos] = useState<PostPhoto[]>([]);
+  const [photos, setPhotos] = useState<PostPhoto[]>(initial);
   const [progress, setProgress] = useState<UploadProgress | null>(null);
   const cancelRef = useRef(false);
-  const photosRef = useRef<PostPhoto[]>([]);
+  const photosRef = useRef<PostPhoto[]>(initial);
   // 올리는 동안·화면을 떠날 때 최신 목록을 읽기 위한 사본(렌더 중에는 건드리지 않는다)
   useEffect(() => {
     photosRef.current = photos;

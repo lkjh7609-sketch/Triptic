@@ -404,6 +404,19 @@
       "placeholder": "Type a tag and press Enter",
       "remove": "Remove tag {{tag}}",
       "hint": "Type without #. Up to {{max}} characters each; can’t be changed after posting."
+    },
+    "postTitle": {
+      "label": "Title",
+      "placeholder": "Enter a title",
+      "error": "Please enter a title"
+    },
+    "edit": {
+      "title": "Edit post",
+      "submit": "Save changes",
+      "done": "Post updated",
+      "loading": "Loading post…",
+      "lockedLabel": "Fixed details",
+      "lockedHint": "Destination, category and attached trip can't be changed after posting."
     }
   },
   "shared": {

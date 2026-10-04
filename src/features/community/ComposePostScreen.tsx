@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, TriangleAlert, X } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
@@ -10,7 +10,7 @@ import { showToast } from '@/shared/ui/toast';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { useDestinations } from './hooks/useDestinations';
-import { useCreatePost } from './hooks/usePosts';
+import { useCreatePost, usePost, useUpdatePost } from './hooks/usePosts';
 import { DestinationPickerModal } from './DestinationPickerModal';
 import { PhotoSection } from './PhotoSection';
 import { TripPickerSheet, TripThumb } from './TripPickerSheet';
@@ -19,13 +19,15 @@ import { formatTripPeriod } from './tripPeriodText';
 import { CATEGORY_ICONS } from './categoryIcons';
 import {
   MAX_TAGS,
+  MAX_TITLE_LENGTH,
   MAX_TAG_LENGTH,
   normalizeTag,
   POST_CATEGORIES,
+  postTitleOf,
   type PostCategory,
 } from './postMeta';
 import { MAX_POST_IMAGES, photoFromStored, usePostPhotos } from './usePostPhotos';
-import type { Destination } from './types';
+import type { Destination, Post } from './types';
 import styles from './ComposePostScreen.module.css';
 
 // 편집기(Lexical)는 글쓰기 화면에서만 필요해서 따로 내려받는다 — 앱 첫 로딩에는 들어가지 않는다
@@ -55,29 +57,56 @@ export function ComposePostScreen() {
   return <ComposeForm key={user.id} userId={user.id} />;
 }
 
-function ComposeForm({ userId }: { userId: string }) {
+/** 글 수정 — 같은 폼에 올린 글을 채워 연다. 본인 글이 아니면 글 화면으로 돌려보낸다 */
+export function EditPostScreen() {
+  const { t } = useTranslation('community');
+  const { user } = useSession();
+  const { postId } = useParams();
+  const navigate = useNavigate();
+  const { data: post, isLoading } = usePost(postId, user?.id ?? null);
+  const editable = !!post && !!user && post.author_id === user.id && !post.deleted_at && post.status !== 'removed';
+  useEffect(() => {
+    if (!isLoading && postId && !editable) navigate(`/community/post/${postId}`, { replace: true });
+  }, [isLoading, editable, postId, navigate]);
+  if (!user || !post || !editable) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.loginHint}>{!user ? t('compose.loginRequired') : t('compose.edit.loading')}</p>
+      </div>
+    );
+  }
+  return <ComposeForm key={`${user.id}:${post.id}`} userId={user.id} editing={post} />;
+}
+
+function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const { t, i18n } = useTranslation(['community', 'common']);
   const navigate = useNavigate();
   const desktop = useMediaQuery('(min-width: 1024px)');
   const { data: destinations } = useDestinations();
   const { data: trips } = useTrips();
   const createPost = useCreatePost();
-  const photoState = usePostPhotos(userId);
+  const updatePost = useUpdatePost();
+  const photoState = usePostPhotos(
+    userId,
+    editing?.images?.slice().sort((a, b) => a.position - b.position).map((i) => photoFromStored({ storagePath: i.storage_path, width: i.width ?? 0, height: i.height ?? 0 })),
+  );
   const { photos, setPhotos } = photoState;
   const bodyRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
   const destRef = useRef<HTMLButtonElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const initialDestSlug = searchParams.get('destination');
 
-  const [destinationId, setDestinationId] = useState('');
-  const [body, setBody] = useState('');
-  const [category, setCategory] = useState<PostCategory | ''>('');
-  const [tags, setTags] = useState<string[]>([]);
+  const [destinationId, setDestinationId] = useState(editing?.destination_id ?? '');
+  const [title, setTitle] = useState(editing?.title ?? (editing ? postTitleOf(editing) : ''));
+  const [body, setBody] = useState(editing?.body ?? '');
+  const [category, setCategory] = useState<PostCategory | ''>(editing?.category ?? '');
+  const [tags, setTags] = useState<string[]>(editing?.tags ?? []);
   const [tagDraft, setTagDraft] = useState('');
-  const [tripId, setTripId] = useState('');
+  const [tripId, setTripId] = useState(editing?.trip_id ?? '');
   // 첨부한 일정을 다른 사람이 복사해도 되는가 — 기본은 허용 안 함(0070)
-  const [allowCopy, setAllowCopy] = useState(false);
+  const [allowCopy, setAllowCopy] = useState(editing?.allow_copy ?? false);
   const [showErrors, setShowErrors] = useState(false);
   // 제재로 막힌 글 — 같은 내용으로는 다시 게시할 수 없다(고치면 풀린다)
   const [blockedBody, setBlockedBody] = useState<string | null>(null);
@@ -87,10 +116,11 @@ function ComposeForm({ userId }: { userId: string }) {
 
   // ── 임시저장 ─────────────────────────────────────────────────────────────
   // 처음 열 때 저장된 글이 있으면 이어 쓸지 묻는다(답하기 전에는 자동 저장을 켜지 않아 이전 글을 덮어쓰지 않는다)
-  const [pendingDraft, setPendingDraft] = useState<ComposeDraft | null>(() => readDraft(userId));
+  const [pendingDraft, setPendingDraft] = useState<ComposeDraft | null>(() => (editing ? null : readDraft(userId)));
   const [autosaveReady, setAutosaveReady] = useState(() => pendingDraft === null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
-  const publishedRef = useRef(false);
+  // 수정할 때는 새 글 임시저장을 건드리지 않는다
+  const publishedRef = useRef(!!editing);
 
   useEffect(() => {
     trackScreenView('community_compose');
@@ -126,6 +156,7 @@ function ComposeForm({ userId }: { userId: string }) {
   const current = useCallback(
     (): Omit<ComposeDraft, 'savedAt'> => ({
       destinationId,
+      title,
       body,
       tripId,
       allowCopy,
@@ -133,7 +164,7 @@ function ComposeForm({ userId }: { userId: string }) {
       category,
       tags,
     }),
-    [destinationId, body, tripId, allowCopy, photos, category, tags],
+    [destinationId, title, body, tripId, allowCopy, photos, category, tags],
   );
 
   // 쓰는 대로 잠깐 멈추면 저장한다
@@ -152,6 +183,7 @@ function ComposeForm({ userId }: { userId: string }) {
     if (!destinations || pendingDraft.destinationId === '' || destinations.some((d) => d.id === pendingDraft.destinationId)) {
       setDestinationId(pendingDraft.destinationId);
     }
+    setTitle(pendingDraft.title);
     setBody(pendingDraft.body);
     setCategory(pendingDraft.category);
     setTags(pendingDraft.tags);
@@ -181,7 +213,7 @@ function ComposeForm({ userId }: { userId: string }) {
     if (saved) showToast(t('compose.draft.savedToast'), { tone: 'success' });
   }
 
-  const hasContent = !isEmptyDraft(current());
+  const hasContent = !editing && !isEmptyDraft(current());
 
   function handleCancel() {
     if (hasContent) setLeaveOpen(true);
@@ -194,13 +226,14 @@ function ComposeForm({ userId }: { userId: string }) {
   }
 
   // ── 게시 ────────────────────────────────────────────────────────────────
+  const missingTitle = showErrors && !title.trim();
   const missingDest = showErrors && !destinationId;
   const missingBody = showErrors && !body.trim();
   const missingCategory = showErrors && !category;
   // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
   const tooLong = body.length > MAX_BODY_LENGTH;
   const blocked = blockedBody !== null && blockedBody === body;
-  const publishDisabled = createPost.isPending || photoState.uploading || blocked;
+  const publishDisabled = createPost.isPending || updatePost.isPending || photoState.uploading || blocked;
 
   // ── 태그 입력 ──────────────────────────────────────────────────────────────
   function addTag(raw: string): boolean {
@@ -240,22 +273,41 @@ function ComposeForm({ userId }: { userId: string }) {
       setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
       return;
     }
-    if (!destinationId || !category || !body.trim()) {
+    if (!title.trim() || !destinationId || !category || !body.trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
       flagInvalid(
-        !destinationId ? destRef.current : !category ? categoryRef.current : bodyRef.current,
+        !destinationId
+          ? destRef.current
+          : !category
+            ? categoryRef.current
+            : !title.trim()
+              ? titleRef.current
+              : bodyRef.current,
       );
       // flagInvalid는 칸 안의 첫 버튼(서식 도구)에 포커스를 주므로 글 칸으로 다시 옮긴다
-      if (destinationId && category)
+      if (destinationId && category && title.trim())
         bodyRef.current
           ?.querySelector<HTMLElement>('[contenteditable="true"]')
           ?.focus({ preventScroll: true });
       return;
     }
     try {
+      if (editing) {
+        await updatePost.mutateAsync({
+          postId: editing.id,
+          title: title.trim(),
+          body: body.trim(),
+          tags: finalTags(),
+          images: photos.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
+        });
+        showToast(t('compose.edit.done'), { tone: 'success' });
+        navigate(`/community/post/${editing.id}`, { replace: true });
+        return;
+      }
       const result = await createPost.mutateAsync({
         destinationId,
+        title: title.trim(),
         body: body.trim(),
         tripId: tripId || null,
         allowCopy: !!tripId && allowCopy,
@@ -281,7 +333,8 @@ function ComposeForm({ userId }: { userId: string }) {
     }
   }
 
-  const publishLabel = createPost.isPending ? t('compose.submitting') : t('compose.submit');
+  const pending = createPost.isPending || updatePost.isPending;
+  const publishLabel = pending ? t('compose.submitting') : editing ? t('compose.edit.submit') : t('compose.submit');
   const storyLabel = desktop ? t('compose.story.labelPc') : t('compose.story.label');
 
   const destinationSection = (
@@ -444,6 +497,59 @@ function ComposeForm({ userId }: { userId: string }) {
     </section>
   );
 
+  const titleSection = (
+    <section className={`${styles.section} ${desktop ? styles.card : ''}`} aria-labelledby="compose-title-label">
+      <div className={styles.labelRow}>
+        <h2 id="compose-title-label" className={styles.label}>
+          {t('compose.postTitle.label')} <span className={styles.required}>*</span>
+        </h2>
+        {missingTitle ? (
+          <span className={styles.errorText} role="alert">
+            {t('compose.postTitle.error')}
+          </span>
+        ) : (
+          <span className={styles.counter}>
+            {title.length}/{MAX_TITLE_LENGTH}
+          </span>
+        )}
+      </div>
+      <input
+        ref={titleRef}
+        className={`${styles.titleInput} ${missingTitle ? styles.titleInputError : ''}`}
+        value={title}
+        maxLength={MAX_TITLE_LENGTH}
+        placeholder={t('compose.postTitle.placeholder')}
+        aria-labelledby="compose-title-label"
+        onChange={(e) => {
+          setTitle(e.target.value.replace(/[\r\n]+/g, ' '));
+          clearInvalid(titleRef.current);
+        }}
+      />
+    </section>
+  );
+
+  // 수정할 때 도시·분류·첨부 일정은 바꿀 수 없다 — 보기만 한다
+  const lockedSection = editing ? (
+    <section className={`${styles.section} ${desktop ? styles.card : ''}`} aria-label={t('compose.edit.lockedLabel')}>
+      <div className={styles.lockedRow}>
+        {selectedDestination ? (
+          <span className={styles.lockedChip}>
+            <MapPin size={14} aria-hidden="true" />
+            {destLabel(selectedDestination)}
+          </span>
+        ) : null}
+        {category ? <span className={styles.lockedChip}>{t(`postCategory.${category}`)}</span> : null}
+        {editing.trip_id ? (
+          <span className={styles.lockedChip}>
+            <CalendarDays size={14} aria-hidden="true" />
+            {selectedTrip?.title ?? t('compose.trip.attached')}
+          </span>
+        ) : null}
+      </div>
+      <p className={styles.tagHint}>{t('compose.edit.lockedHint')}</p>
+    </section>
+  ) : null;
+
   const storySection = (
     <section className={`${styles.section} ${desktop ? styles.card : ''}`} aria-labelledby="compose-story-label">
       <div className={styles.labelRow}>
@@ -553,7 +659,7 @@ function ComposeForm({ userId }: { userId: string }) {
             {desktop ? <ChevronLeft size={18} aria-hidden="true" /> : null}
             {t('action.cancel', { ns: 'common' })}
           </button>
-          <h1 className={styles.title}>{t('compose.title')}</h1>
+          <h1 className={styles.title}>{editing ? t('compose.edit.title') : t('compose.title')}</h1>
           <div className={styles.topActions}>
             {desktop && savedAt ? (
               <span className={styles.savedLabel}>
@@ -605,11 +711,12 @@ function ComposeForm({ userId }: { userId: string }) {
           onRemove={photoState.remove}
           onMove={photoState.move}
         />
-        {destinationSection}
-        {categorySection}
+        {editing ? lockedSection : destinationSection}
+        {editing ? null : categorySection}
+        {titleSection}
         {storySection}
         {tagsSection}
-        {tripSection}
+        {editing ? null : tripSection}
         {submitError ? (
           <p className={styles.submitError} role="alert">
             {submitError}
@@ -619,7 +726,7 @@ function ComposeForm({ userId }: { userId: string }) {
 
       {desktop ? null : (
         <footer className={styles.footer}>
-          {showErrors && (!destinationId || !category || !body.trim()) ? (
+          {showErrors && (!title.trim() || !destinationId || !category || !body.trim()) ? (
             <p className={styles.footerWarning} role="alert">
               <TriangleAlert size={14} aria-hidden="true" />
               {t('compose.missing')}

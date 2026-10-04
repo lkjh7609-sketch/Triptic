@@ -395,6 +395,19 @@
       "placeholder": "태그를 입력하고 Enter",
       "remove": "{{tag}} 태그 지우기",
       "hint": "#은 빼고 입력해요. 한 태그는 {{max}}자까지, 올린 뒤에는 바꿀 수 없어요."
+    },
+    "postTitle": {
+      "label": "제목",
+      "placeholder": "제목을 입력해 주세요",
+      "error": "제목을 입력해 주세요"
+    },
+    "edit": {
+      "title": "글 수정",
+      "submit": "수정 완료",
+      "done": "글을 수정했어요",
+      "loading": "글을 불러오는 중…",
+      "lockedLabel": "바꿀 수 없는 정보",
+      "lockedHint": "여행지·분류·첨부 일정은 올린 뒤에는 바꿀 수 없어요."
     }
   },
   "shared": {

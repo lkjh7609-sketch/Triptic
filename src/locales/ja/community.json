@@ -395,6 +395,19 @@
       "placeholder": "タグを入力してEnter",
       "remove": "タグ {{tag}} を削除",
       "hint": "#は付けずに入力します。1つ{{max}}文字まで、投稿後は変更できません。"
+    },
+    "postTitle": {
+      "label": "タイトル",
+      "placeholder": "タイトルを入力してください",
+      "error": "タイトルを入力してください"
+    },
+    "edit": {
+      "title": "投稿を編集",
+      "submit": "変更を保存",
+      "done": "投稿を編集しました",
+      "loading": "投稿を読み込み中…",
+      "lockedLabel": "変更できない情報",
+      "lockedHint": "旅行先・カテゴリ・添付した旅程は投稿後に変更できません。"
     }
   },
   "shared": {

@@ -395,6 +395,19 @@
       "placeholder": "輸入標籤後按 Enter",
       "remove": "移除標籤 {{tag}}",
       "hint": "輸入時不需加 #。每個標籤最多 {{max}} 字,發布後無法更改。"
+    },
+    "postTitle": {
+      "label": "標題",
+      "placeholder": "請輸入標題",
+      "error": "請輸入標題"
+    },
+    "edit": {
+      "title": "編輯貼文",
+      "submit": "儲存變更",
+      "done": "已修改貼文",
+      "loading": "載入貼文中…",
+      "lockedLabel": "無法變更的資訊",
+      "lockedHint": "目的地、分類與附加行程發布後無法變更。"
     }
   },
   "shared": {

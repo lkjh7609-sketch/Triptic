@@ -24,6 +24,7 @@ describe('requiresLogin — PC 비로그인 둘러보기', () => {
     '/settings',
     '/settings/',
     '/community/compose',
+    '/community/post/p1/edit',
     '/community/companion/new',
     '/community/companion/c1/match',
     '/community/companion/c1/chat',

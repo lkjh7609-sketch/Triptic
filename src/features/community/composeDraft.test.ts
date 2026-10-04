@@ -5,6 +5,7 @@ afterEach(() => localStorage.clear());
 
 const base = {
   destinationId: '',
+  title: '',
   body: '',
   tripId: '',
   allowCopy: false,
@@ -19,6 +20,7 @@ describe('composeDraft', () => {
     expect(saved).toBe(true);
     expect(readDraft('u1')).toEqual({
       destinationId: 'd1',
+      title: '',
       body: '교토 다녀왔어요',
       tripId: '',
       allowCopy: false,
@@ -27,6 +29,11 @@ describe('composeDraft', () => {
       tags: [],
       savedAt: 1000,
     });
+  });
+
+  it('제목만 있어도 저장한다', () => {
+    expect(writeDraft('u1', { ...base, title: '교토' })).toBe(true);
+    expect(readDraft('u1')?.title).toBe('교토');
   });
 
   it('비어 있으면 저장하지 않고 이전 저장도 지운다', () => {
