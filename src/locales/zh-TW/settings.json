@@ -123,5 +123,99 @@
     "partnershipTitle": "合作洽詢",
     "partnershipPlaceholder": "請填寫公司（服務）名稱、合作提案內容與聯絡方式。",
     "partnershipSuccess": "合作洽詢已送出，我們會審閱後與你聯絡，謝謝！"
+  },
+  "desktop": {
+    "title": "偏好設定",
+    "subtitle": "在電腦上輕鬆管理帳號資訊、旅伴資料與各項偏好。",
+    "nav": {
+      "account": "帳號管理",
+      "display": "顯示與語言",
+      "matching": "旅伴配對資訊",
+      "notifications": "通知接收設定",
+      "data": "資料與儲存空間",
+      "community": "社群與資訊"
+    },
+    "pro": {
+      "title": "Pro 權益已啟用",
+      "trips": "無限建立行程",
+      "pdf": "無限產生 PDF",
+      "ai": "無限使用 AI"
+    },
+    "account": {
+      "edit": "編輯個人資料",
+      "passwordTitle": "密碼管理",
+      "passwordDesc": "定期更換密碼，保護帳號安全。",
+      "passwordBtn": "變更密碼",
+      "sessionTitle": "登入工作階段",
+      "sessionDesc": "目前使用的裝置：{{device}}",
+      "dangerTitle": "危險區域",
+      "dangerDesc": "所有行程與資料將被永久刪除。",
+      "dangerBtn": "申請退會"
+    },
+    "display": {
+      "title": "顯示與偏好設定",
+      "desc": "設定畫面主題、旅遊單位與語言。",
+      "theme": "畫面主題",
+      "themeDesc": "跟隨系統設定，或自行選擇主題。"
+    },
+    "matching": {
+      "title": "性別與年齡層"
+    },
+    "notifications": {
+      "title": "通知設定",
+      "desc": "可自行選擇想接收的消息。",
+      "note": "變更會立即儲存。",
+      "preDeparture": {
+        "title": "出發前提醒",
+        "desc": "出發前 7 天、前一天與當天通知你。"
+      },
+      "flightChanges": {
+        "title": "航班異動與延誤通知",
+        "desc": "已登記的航班有變動時通知你（準備中）。"
+      },
+      "communityReplies": {
+        "title": "社群留言・回覆・按讚",
+        "desc": "有人對你的貼文或留言留言、回覆或按讚時，會以鈴鐺通知。"
+      },
+      "marketing": {
+        "title": "行銷與優惠消息",
+        "desc": "優惠與新功能消息（準備中）。"
+      }
+    },
+    "data": {
+      "title": "資料與本機快取",
+      "desc": "管理離線行程快取資料與帳號備份檔案。",
+      "cacheLabel": "離線地圖與行程快取容量",
+      "clear": "清除快取"
+    },
+    "community": {
+      "title": "封鎖與社群設定",
+      "desc": "可查看在聊天與旅伴申請中封鎖的使用者，或解除封鎖。",
+      "supportTitle": "客服與服務資訊",
+      "guideDesc": "逐步了解 Triptic 的使用方式",
+      "noticesDesc": "App 更新內容與營運消息",
+      "contact": "聯絡我們",
+      "contactDesc": "留下問題或意見",
+      "partnershipDesc": "合作提案",
+      "termsDesc": "服務條款說明",
+      "privacyDesc": "資料保護與保存規定",
+      "licensesDesc": "開源軟體聲明"
+    }
+  },
+  "password": {
+    "title": "變更密碼",
+    "newLabel": "新密碼",
+    "confirmLabel": "確認新密碼",
+    "hint": "請輸入至少 {{min}} 個字元。",
+    "change": "變更",
+    "tooShort": "密碼至少需要 {{min}} 個字元。",
+    "mismatch": "兩次輸入的密碼不一致。",
+    "done": "已變更密碼。",
+    "failed": "無法變更密碼，請稍後再試。",
+    "social": {
+      "google": "你是以 Google 註冊的。密碼由 Google 管理，無法在此變更。",
+      "kakao": "你是以 Kakao 註冊的。密碼由 Kakao 管理，無法在此變更。",
+      "apple": "你是以 Apple 註冊的。密碼由 Apple 管理，無法在此變更。"
+    }
   }
 }

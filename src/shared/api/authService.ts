@@ -123,3 +123,15 @@ export async function isEmailAvailable(email: string): Promise<boolean> {
   if (error) throw error;
   return data === true;
 }
+
+/** 비밀번호 변경 — 이메일로 가입한 회원만(소셜 로그인 회원은 비밀번호가 없다). 로그인한 세션에서 바로 바꾼다 */
+export async function changePassword(newPassword: string): Promise<void> {
+  const client = getSupabaseClient();
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+
+/** 어떤 방법으로 가입·로그인했는지 — 'email' | 'google' | 'kakao' | 'apple' 등. 모르면 null */
+export function signInProviderOf(user: { app_metadata?: { provider?: string } | null } | null | undefined): string | null {
+  return user?.app_metadata?.provider ?? null;
+}

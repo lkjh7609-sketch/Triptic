@@ -123,5 +123,99 @@
     "partnershipTitle": "제휴문의",
     "partnershipPlaceholder": "회사(서비스) 이름, 제안하고 싶은 내용, 연락받을 방법을 적어주세요.",
     "partnershipSuccess": "제휴문의가 전달됐어요. 검토 후 연락드릴게요. 감사합니다!"
+  },
+  "desktop": {
+    "title": "환경설정",
+    "subtitle": "계정 정보, 동행 매칭 프로필 및 사용자 환경설정을 데스크톱에서 편리하게 맞춤 설정하세요.",
+    "nav": {
+      "account": "계정 관리",
+      "display": "디스플레이 & 언어",
+      "matching": "동행 매칭 정보",
+      "notifications": "알림 수신 설정",
+      "data": "데이터 & 저장공간",
+      "community": "커뮤니티 및 정보"
+    },
+    "pro": {
+      "title": "Pro 혜택 활성화됨",
+      "trips": "여행 무제한 생성 가능",
+      "pdf": "PDF 무제한 생성 가능",
+      "ai": "AI 무제한 사용 가능"
+    },
+    "account": {
+      "edit": "내 정보 수정",
+      "passwordTitle": "비밀번호 관리",
+      "passwordDesc": "주기적인 변경으로 계정을 안전하게 보호하세요.",
+      "passwordBtn": "비밀번호 변경하기",
+      "sessionTitle": "로그인 세션",
+      "sessionDesc": "현재 사용 중인 기기: {{device}}",
+      "dangerTitle": "위험 구역",
+      "dangerDesc": "모든 여행 일정 및 데이터가 영구 삭제됩니다.",
+      "dangerBtn": "계정 탈퇴 신청"
+    },
+    "display": {
+      "title": "디스플레이 및 환경설정",
+      "desc": "사용자 화면 테마와 글로벌 여행 표준 단위 및 언어를 지정합니다.",
+      "theme": "화면 테마",
+      "themeDesc": "시스템 설정 연동 또는 원하는 테마를 직접 선택하세요."
+    },
+    "matching": {
+      "title": "성별 및 나이대"
+    },
+    "notifications": {
+      "title": "알림 설정",
+      "desc": "받고 싶은 소식을 직접 정할 수 있어요.",
+      "note": "바꾸는 즉시 저장돼요.",
+      "preDeparture": {
+        "title": "출발 전 리마인더",
+        "desc": "여행 출발 7일 전·하루 전·당일에 알려 줘요."
+      },
+      "flightChanges": {
+        "title": "항공편 변경 및 지연 알림",
+        "desc": "등록한 항공편에 변동이 생기면 알려 드리는 기능이에요(준비 중)."
+      },
+      "communityReplies": {
+        "title": "커뮤니티 댓글·답글·좋아요",
+        "desc": "내 글·댓글에 댓글, 답글, 좋아요가 달리면 종 알림으로 알려 줘요."
+      },
+      "marketing": {
+        "title": "마케팅 및 특가 소식",
+        "desc": "특가와 새 기능 소식을 받는 기능이에요(준비 중)."
+      }
+    },
+    "data": {
+      "title": "데이터 및 로컬 캐시 관리",
+      "desc": "오프라인 여행 계획 캐시 데이터 및 계정 백업 파일을 관리합니다.",
+      "cacheLabel": "오프라인 지도 및 일정 캐시 용량",
+      "clear": "캐시 비우기"
+    },
+    "community": {
+      "title": "차단 및 커뮤니티 설정",
+      "desc": "채팅 및 동행 신청에서 차단한 사용자를 확인하거나 차단을 해제할 수 있습니다.",
+      "supportTitle": "고객지원 및 서비스 정보",
+      "guideDesc": "트립틱 사용법을 단계별로 살펴보기",
+      "noticesDesc": "앱 업데이트 내용과 운영 소식",
+      "contact": "1:1 문의하기",
+      "contactDesc": "궁금한 점·불편한 점 남기기",
+      "partnershipDesc": "서비스 제휴·협업 제안",
+      "termsDesc": "서비스 이용 약관 안내",
+      "privacyDesc": "데이터 보호 및 보관 규정",
+      "licensesDesc": "오픈소스 소프트웨어 고지"
+    }
+  },
+  "password": {
+    "title": "비밀번호 변경",
+    "newLabel": "새 비밀번호",
+    "confirmLabel": "새 비밀번호 확인",
+    "hint": "{{min}}자 이상으로 입력해 주세요.",
+    "change": "변경하기",
+    "tooShort": "비밀번호는 {{min}}자 이상이어야 해요.",
+    "mismatch": "두 비밀번호가 달라요.",
+    "done": "비밀번호를 바꿨어요.",
+    "failed": "비밀번호를 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "social": {
+      "google": "구글로 가입했어요. 비밀번호는 구글에서 관리돼서 여기서는 바꿀 수 없어요.",
+      "kakao": "카카오로 가입했어요. 비밀번호는 카카오에서 관리돼서 여기서는 바꿀 수 없어요.",
+      "apple": "애플로 가입했어요. 비밀번호는 애플에서 관리돼서 여기서는 바꿀 수 없어요."
+    }
   }
 }

@@ -123,5 +123,99 @@
     "partnershipTitle": "提携のお問い合わせ",
     "partnershipPlaceholder": "会社（サービス）名、ご提案の内容、ご連絡方法をご記入ください。",
     "partnershipSuccess": "提携のお問い合わせを送信しました。確認のうえご連絡します。ありがとうございます！"
+  },
+  "desktop": {
+    "title": "環境設定",
+    "subtitle": "アカウント情報、同行プロフィール、各種設定をデスクトップで快適に管理できます。",
+    "nav": {
+      "account": "アカウント管理",
+      "display": "表示と言語",
+      "matching": "同行マッチング情報",
+      "notifications": "通知の受信設定",
+      "data": "データとストレージ",
+      "community": "コミュニティと情報"
+    },
+    "pro": {
+      "title": "Pro特典が有効です",
+      "trips": "旅行を無制限に作成",
+      "pdf": "PDFを無制限に作成",
+      "ai": "AIを無制限に利用"
+    },
+    "account": {
+      "edit": "プロフィールを編集",
+      "passwordTitle": "パスワード管理",
+      "passwordDesc": "定期的に変更してアカウントを守りましょう。",
+      "passwordBtn": "パスワードを変更",
+      "sessionTitle": "ログインセッション",
+      "sessionDesc": "現在使用中のデバイス：{{device}}",
+      "dangerTitle": "危険ゾーン",
+      "dangerDesc": "すべての旅行データが完全に削除されます。",
+      "dangerBtn": "退会する"
+    },
+    "display": {
+      "title": "表示と環境設定",
+      "desc": "テーマ、旅行の単位、言語を設定します。",
+      "theme": "テーマ",
+      "themeDesc": "システム設定に合わせるか、お好みのテーマを選んでください。"
+    },
+    "matching": {
+      "title": "性別と年代"
+    },
+    "notifications": {
+      "title": "通知設定",
+      "desc": "受け取りたいお知らせを選べます。",
+      "note": "変更はすぐに保存されます。",
+      "preDeparture": {
+        "title": "出発前のリマインダー",
+        "desc": "出発の7日前・前日・当日にお知らせします。"
+      },
+      "flightChanges": {
+        "title": "航空便の変更・遅延",
+        "desc": "登録した航空便に変更があったときの通知です（準備中）。"
+      },
+      "communityReplies": {
+        "title": "コミュニティのコメント・返信・いいね",
+        "desc": "自分の投稿・コメントにコメント、返信、いいねがつくとベル通知でお知らせします。"
+      },
+      "marketing": {
+        "title": "マーケティング・特価情報",
+        "desc": "特価や新機能のお知らせです（準備中）。"
+      }
+    },
+    "data": {
+      "title": "データとローカルキャッシュ",
+      "desc": "オフラインのキャッシュとアカウントのバックアップを管理します。",
+      "cacheLabel": "オフライン地図・旅程のキャッシュ容量",
+      "clear": "キャッシュを消去"
+    },
+    "community": {
+      "title": "ブロックとコミュニティ設定",
+      "desc": "チャットや同行申請でブロックしたユーザーの確認・解除ができます。",
+      "supportTitle": "サポートとサービス情報",
+      "guideDesc": "Tripticの使い方をステップで確認",
+      "noticesDesc": "アプリの更新内容と運営からのお知らせ",
+      "contact": "お問い合わせ",
+      "contactDesc": "ご質問・ご意見を送る",
+      "partnershipDesc": "提携・協業のご提案",
+      "termsDesc": "利用規約のご案内",
+      "privacyDesc": "データの保護と保管について",
+      "licensesDesc": "オープンソースソフトウェアの表記"
+    }
+  },
+  "password": {
+    "title": "パスワード変更",
+    "newLabel": "新しいパスワード",
+    "confirmLabel": "新しいパスワード（確認）",
+    "hint": "{{min}}文字以上で入力してください。",
+    "change": "変更する",
+    "tooShort": "パスワードは{{min}}文字以上にしてください。",
+    "mismatch": "2つのパスワードが一致しません。",
+    "done": "パスワードを変更しました。",
+    "failed": "パスワードを変更できませんでした。もう一度お試しください。",
+    "social": {
+      "google": "Googleで登録しました。パスワードはGoogleで管理されるため、ここでは変更できません。",
+      "kakao": "Kakaoで登録しました。パスワードはKakaoで管理されるため、ここでは変更できません。",
+      "apple": "Appleで登録しました。パスワードはAppleで管理されるため、ここでは変更できません。"
+    }
   }
 }

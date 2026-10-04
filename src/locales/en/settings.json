@@ -126,5 +126,99 @@
     "partnershipTitle": "Partnership inquiry",
     "partnershipPlaceholder": "Tell us your company or service name, what you would like to propose, and how we can reach you.",
     "partnershipSuccess": "Your partnership inquiry was sent. We will review it and get back to you. Thank you!"
+  },
+  "desktop": {
+    "title": "Preferences",
+    "subtitle": "Manage your account, companion profile and preferences comfortably on desktop.",
+    "nav": {
+      "account": "Account",
+      "display": "Display & language",
+      "matching": "Companion info",
+      "notifications": "Notifications",
+      "data": "Data & storage",
+      "community": "Community & info"
+    },
+    "pro": {
+      "title": "Pro benefits active",
+      "trips": "Unlimited trips",
+      "pdf": "Unlimited PDF exports",
+      "ai": "Unlimited AI use"
+    },
+    "account": {
+      "edit": "Edit profile",
+      "passwordTitle": "Password",
+      "passwordDesc": "Change it regularly to keep your account safe.",
+      "passwordBtn": "Change password",
+      "sessionTitle": "Sign-in session",
+      "sessionDesc": "Current device: {{device}}",
+      "dangerTitle": "Danger zone",
+      "dangerDesc": "All your trips and data will be permanently deleted.",
+      "dangerBtn": "Delete account"
+    },
+    "display": {
+      "title": "Display & preferences",
+      "desc": "Choose your theme, travel units and language.",
+      "theme": "Theme",
+      "themeDesc": "Follow the system setting or pick a theme."
+    },
+    "matching": {
+      "title": "Gender & age range"
+    },
+    "notifications": {
+      "title": "Notification settings",
+      "desc": "Choose which updates you want to receive.",
+      "note": "Changes are saved instantly.",
+      "preDeparture": {
+        "title": "Pre-departure reminders",
+        "desc": "We remind you 7 days, 1 day and on the day of departure."
+      },
+      "flightChanges": {
+        "title": "Flight changes & delays",
+        "desc": "Alerts when a registered flight changes (coming soon)."
+      },
+      "communityReplies": {
+        "title": "Community comments, replies & likes",
+        "desc": "The bell tells you when someone comments, replies or likes your posts and comments."
+      },
+      "marketing": {
+        "title": "Marketing & deals",
+        "desc": "News about deals and new features (coming soon)."
+      }
+    },
+    "data": {
+      "title": "Data & local cache",
+      "desc": "Manage offline trip cache data and account backups.",
+      "cacheLabel": "Offline map & itinerary cache",
+      "clear": "Clear cache"
+    },
+    "community": {
+      "title": "Blocked users & community",
+      "desc": "See the users you blocked in chats and companion requests, or unblock them.",
+      "supportTitle": "Support & service info",
+      "guideDesc": "Walk through how Triptic works",
+      "noticesDesc": "App updates and news from the team",
+      "contact": "Contact us",
+      "contactDesc": "Leave a question or feedback",
+      "partnershipDesc": "Partnership and collaboration",
+      "termsDesc": "Terms of service",
+      "privacyDesc": "Data protection and retention",
+      "licensesDesc": "Open-source software notices"
+    }
+  },
+  "password": {
+    "title": "Change password",
+    "newLabel": "New password",
+    "confirmLabel": "Confirm new password",
+    "hint": "Use at least {{min}} characters.",
+    "change": "Change",
+    "tooShort": "Password must be at least {{min}} characters.",
+    "mismatch": "The two passwords don't match.",
+    "done": "Password changed.",
+    "failed": "Couldn't change the password. Please try again.",
+    "social": {
+      "google": "You signed up with Google. Your password is managed by Google, so it can't be changed here.",
+      "kakao": "You signed up with Kakao. Your password is managed by Kakao, so it can't be changed here.",
+      "apple": "You signed up with Apple. Your password is managed by Apple, so it can't be changed here."
+    }
   }
 }
