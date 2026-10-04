@@ -4,11 +4,15 @@ import '@/shared/i18n';
 import i18n from '@/shared/i18n';
 import type { BoardFlight } from './boardParse';
 
-const state = vi.hoisted(() => ({ data: undefined as unknown, isLoading: false, nowMin: 600 }));
+const state = vi.hoisted(() => ({ data: undefined as unknown, isLoading: false, nowMin: 600, kac: undefined as unknown }));
 vi.mock('./useAirportBoard', () => ({
   useAirportBoard: () => ({ data: state.data, isLoading: state.isLoading }),
   useKstMinutes: () => state.nowMin,
   useNowMs: () => Date.now(),
+}));
+
+vi.mock('./useKacBoard', () => ({
+  useKacBoard: () => ({ data: state.kac, isLoading: false }),
 }));
 
 import { AirportBoard } from './AirportBoard';
@@ -270,5 +274,36 @@ describe('AirportBoard', () => {
     const row = screen.getByRole('button', { name: /OZ2/ }); // 처음 쪽은 지금+40분 편부터
     expect(within(row).getByText('T2 · 254')).toBeInTheDocument();
     expect(screen.queryByText('터미널')).not.toBeInTheDocument(); // 열 머리줄은 PC만
+  });
+
+  it('김포 등 한국공항공사 공항 — 제목·출처가 그 공항으로, 터미널 칸은 국내선/국제선, 도착 칸은 게이트', async () => {
+    state.kac = {
+      boards: {
+        GMP: {
+          departures: [f({ id: 'LJ513', airline: '진에어', city: '제주', airportCode: 'CJU', terminal: 'DOM', gate: '6', counter: '', remark: '수속중', codeshares: [{ id: 'KE5213', airline: '대한항공' }] })],
+          arrivals: [f({ id: '7C130', airline: '제주항공', city: '제주', airportCode: 'CJU', terminal: 'DOM', gate: '4', carousel: '', exit: '', remark: '도착', scheduled: '0950', estimated: '0950' })],
+        },
+      },
+      fetchedAt: new Date().toISOString(),
+      stale: false,
+    };
+    render(<AirportBoard desktop airport="gmp" />);
+    expect(screen.getByRole('heading', { level: 2, name: '김포국제공항 실시간 출·도착' })).toBeInTheDocument();
+    expect(screen.getByText(/출처: 한국공항공사/)).toBeInTheDocument();
+    const row = screen.getByRole('button', { name: /LJ513/ });
+    expect(row).toHaveTextContent('국내선');
+    expect(row).toHaveTextContent('수속 중');
+    expect(row).toHaveTextContent('공동운항 1편');
+    fireEvent.click(screen.getByRole('button', { name: '도착' }));
+    expect(screen.getByText('게이트')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /7C130/ })).toHaveTextContent('4');
+    fireEvent.click(screen.getByRole('button', { name: /7C130/ }));
+    expect(within(screen.getByRole('dialog')).getByText(/한국공항공사 공공데이터 기준/)).toBeInTheDocument();
+  });
+
+  it('한국공항공사 응답에 그 공항이 없으면(지금 운항 없음) 빈 전광판 안내', () => {
+    state.kac = { boards: {}, fetchedAt: new Date().toISOString(), stale: false };
+    render(<AirportBoard desktop airport="tae" />);
+    expect(screen.getByText('지금 이후 출발 예정 편이 없어요.')).toBeInTheDocument();
   });
 });

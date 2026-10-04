@@ -39,13 +39,14 @@ export async function fetchAirportBoard(): Promise<AirportBoardData> {
   };
 }
 
-/** 인천공항 출·도착 전광판 — 3분마다 다시 받는다. 실패하면 직전 값을 그대로 둔다(react-query 기본 동작) */
-export function useAirportBoard() {
+/** 인천공항 출·도착 전광판 — 3분마다 다시 받는다(enabled=false면 받지 않는다 — 다른 공항 탭). 실패하면 직전 값을 그대로 둔다(react-query 기본 동작) */
+export function useAirportBoard(enabled = true) {
   return useQuery({
     queryKey: airportBoardQueryKey,
     queryFn: fetchAirportBoard,
+    enabled,
     staleTime: BOARD_REFRESH_MS,
-    refetchInterval: BOARD_REFRESH_MS,
+    refetchInterval: enabled ? BOARD_REFRESH_MS : false,
     refetchIntervalInBackground: false,
     retry: 1,
   });

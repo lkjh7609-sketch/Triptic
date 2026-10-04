@@ -16,6 +16,8 @@ interface FlightDetailDialogProps {
   flight: BoardFlight;
   direction: BoardDirection;
   korean: boolean;
+  /** 데이터 출처 — 아래 안내 문구(인천국제공항공사 / 한국공항공사) */
+  source?: 'icn' | 'kac';
   onClose: () => void;
 }
 
@@ -24,6 +26,7 @@ export function FlightDetailDialog({
   flight,
   direction,
   korean,
+  source = 'icn',
   onClose,
 }: FlightDetailDialogProps) {
   const { t } = useTranslation('home');
@@ -137,7 +140,7 @@ export function FlightDetailDialog({
           </div>
         ) : null}
 
-        <p className={styles.note}>{t('airport.detail.note')}</p>
+        <p className={styles.note}>{t(source === 'kac' ? 'airport.detail.noteKac' : 'airport.detail.note')}</p>
       </div>
     </div>,
     document.body,

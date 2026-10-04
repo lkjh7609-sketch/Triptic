@@ -731,12 +731,11 @@
         "rentalCar": "租車接駁",
         "tower": "塔台"
       }
-    },
-    "soon": "{{name}}即時出入境航班資訊準備中",
-    "soonDesc": "韓國機場公社資料串接完成後,將立即在此提供。"
+    }
   },
   "airport": {
     "title": "仁川機場即時出發・抵達",
+    "titleOf": "{{name}} 即時出入境航班",
     "updated": "{{time}} 更新(韓國時間)・每 3 分鐘更新",
     "tabsLabel": "出發・抵達",
     "departures": "出發",
@@ -750,19 +749,28 @@
       "terminal": "航廈",
       "gate": "登機門",
       "carousel": "行李轉盤",
+      "arrGate": "登機門",
       "status": "狀態"
     },
     "terminal": {
+      "domestic": "國內線",
+      "international": "國際線",
       "t1": "第一航廈",
       "t1c": "第一航廈 登機廊",
       "t2": "第二航廈"
     },
     "terminalShort": {
+      "domestic": "國內線",
+      "international": "國際線",
       "t1": "T1",
       "t1c": "T1 登機廊",
       "t2": "T2"
     },
     "status": {
+      "processing": "辦理報到中",
+      "gateChange": "登機門變更",
+      "goToGate": "前往登機門",
+      "loading": "行李裝載中",
       "departed": "已起飛",
       "arrived": "已抵達",
       "landed": "已降落",
@@ -783,6 +791,7 @@
     "emptyArrivals": "目前之後沒有預定抵達的航班。",
     "staleNotice": "目前無法取得最新資料,顯示 {{time}} 取得的內容。",
     "source": "資料來源:仁川國際機場公社",
+    "sourceKac": "資料來源:韓國機場公社",
     "detail": {
       "close": "關閉",
       "routeTo": "目的地",
@@ -795,6 +804,7 @@
       "stopovers": "經停",
       "codeshare": "共同營運航班",
       "note": "依據仁川國際機場公社公開資料,現場狀況可能不同。出發前請務必向航空公司確認。",
+      "noteKac": "依據韓國機場公社公開資料,實際情況可能不同。共用班號航班會合併顯示,代表班號可能與實際執飛航班不同。出發前請務必確認航空公司公告。",
       "actual": "實際時間"
     },
     "pager": {
