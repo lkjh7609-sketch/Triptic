@@ -6,6 +6,12 @@
 .head {
   align-items: center;
   flex-wrap: wrap;
+  row-gap: 16px;
+}
+
+/* 제목 아래 '기준 시각·출처' 줄 — 제목과 붙어 보이지 않게 */
+.head p {
+  margin-top: 6px;
 }
 
 .titleRow {
@@ -55,7 +61,7 @@
 }
 
 .total {
-  margin: -12px 0 16px;
+  margin: 0 0 20px;
   font-size: 1rem;
   font-weight: 700;
   color: var(--h-ink);
@@ -357,7 +363,7 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -585,7 +591,7 @@ button.row:active {
 .stackList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;

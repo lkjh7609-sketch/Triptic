@@ -65,7 +65,7 @@ describe('AirportScreen — 공항 메뉴', () => {
     renderScreen();
     fireEvent.click(screen.getByRole('button', { name: '김해' }));
     expect(screen.getByRole('button', { name: '김해' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('heading', { level: 2, name: '김해국제공항 실시간 출·도착' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: '김해공항 실시간 출·도착' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '인천공항 실시간 출·도착' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '인천국제공항' }));
     expect(screen.getByRole('heading', { level: 2, name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('AirportScreen — 공항 메뉴', () => {
     renderScreen();
     fireEvent.click(screen.getByRole('button', { name: '김포' }));
     const h2 = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
-    expect(h2).toEqual(['김포국제공항 실시간 출·도착', '주차장 실시간']);
+    expect(h2).toEqual(['김포공항 실시간 출·도착', '주차장 실시간']);
     expect(screen.getByRole('button', { name: /^국내선 제1주차장, 남은 자리 222대, 혼잡/ })).toBeInTheDocument();
   });
 });
