@@ -668,14 +668,84 @@
     "label": "Choose airport",
     "tabs": {
       "icn": "Incheon Intl.",
+      "gmp": "Gimpo",
       "tae": "Daegu",
       "pus": "Gimhae",
       "cju": "Jeju"
     },
     "full": {
+      "gmp": "Gimpo International Airport",
       "tae": "Daegu International Airport",
       "pus": "Gimhae International Airport",
       "cju": "Jeju International Airport"
+    },
+    "parking": {
+      "title": "Live parking",
+      "sub": "As of {{time}} · updated every 2 min",
+      "source": {
+        "kac": "Source: Korea Airports Corporation",
+        "icn": "Source: Incheon International Airport Corporation"
+      },
+      "total": "{{count, number}} spaces left in passenger lots",
+      "left": "{{count, number}}",
+      "leftLabel": "Spaces left",
+      "occupancy": "{{pct}}% full",
+      "congestion": {
+        "smooth": "Available",
+        "busy": "Busy",
+        "full": "Full"
+      },
+      "updated": "Updated {{time}}",
+      "close": "Close",
+      "others": "Other lots",
+      "empty": "We couldn't load parking info yet. Please check again in a moment.",
+      "stale": "Slightly old data (as of {{time}}).",
+      "legend": "Congestion",
+      "planLabel": "Choose terminal",
+      "hint": "Tap a lot to see details",
+      "floors": "By floor / section",
+      "aria": "{{name}}, {{count, number}} spaces left, {{status}}",
+      "map": "{{airport}} parking map",
+      "plan": {
+        "t1": "Terminal 1",
+        "t2": "Terminal 2"
+      },
+      "lot": {
+        "t1Short": "Short-term",
+        "t1P1": "P1 Long-term",
+        "t1P1Tower": "P1 Tower",
+        "t1P2": "P2 Long-term",
+        "t1P2Tower": "P2 Tower",
+        "t1P3": "P3 Long-term",
+        "t1P5": "P5 Reserved",
+        "t2Short": "Short-term",
+        "t2Long": "Long-term",
+        "t2Towers": "Long-term towers",
+        "t2Reserved": "Reserved",
+        "gmpD1": "Domestic Lot 1",
+        "gmpD2": "Domestic Lot 2",
+        "gmpIntlBldg": "Intl. parking building",
+        "gmpIntlUnder": "Intl. underground",
+        "taeLot": "Passenger lot",
+        "pusP1": "P1 Domestic",
+        "pusP2": "P2 International",
+        "pusP3": "P3 Passenger (cargo)",
+        "cjuP1": "P1 Lot",
+        "cjuP2": "P2 Long-term"
+      },
+      "place": {
+        "t1Terminal": "Terminal 1",
+        "t1P4": "P4 Staff parking",
+        "t2Terminal": "Terminal 2",
+        "domestic": "Domestic",
+        "international": "International",
+        "terminal": "Terminal",
+        "kac": "KAC",
+        "lotteMall": "Lotte Mall",
+        "cargo": "Cargo terminal",
+        "rentalCar": "Rental car shuttle",
+        "tower": "Control tower"
+      }
     },
     "soon": "Live departures & arrivals for {{name}} are coming soon",
     "soonDesc": "We'll show them here as soon as the Korea Airports Corporation data is connected."

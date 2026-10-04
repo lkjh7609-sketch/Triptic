@@ -653,14 +653,84 @@
     "label": "공항 선택",
     "tabs": {
       "icn": "인천국제공항",
+      "gmp": "김포",
       "tae": "대구",
       "pus": "김해",
       "cju": "제주"
     },
     "full": {
+      "gmp": "김포국제공항",
       "tae": "대구국제공항",
       "pus": "김해국제공항",
       "cju": "제주국제공항"
+    },
+    "parking": {
+      "title": "주차장 실시간",
+      "sub": "{{time}} 기준 · 2분마다 갱신",
+      "source": {
+        "kac": "출처: 한국공항공사",
+        "icn": "출처: 인천국제공항공사"
+      },
+      "total": "여객 주차장 남은 자리 {{count, number}}대",
+      "left": "{{count, number}}대",
+      "leftLabel": "남은 자리",
+      "occupancy": "점유율 {{pct}}%",
+      "congestion": {
+        "smooth": "원활",
+        "busy": "혼잡",
+        "full": "만차"
+      },
+      "updated": "{{time}} 갱신",
+      "close": "닫기",
+      "others": "기타 주차장",
+      "empty": "주차 정보를 아직 받지 못했어요. 잠시 뒤 다시 확인해 주세요.",
+      "stale": "잠시 전 정보예요({{time}} 기준).",
+      "legend": "혼잡도",
+      "planLabel": "터미널 선택",
+      "hint": "주차장을 누르면 자세히 보여요",
+      "floors": "층·구역별 현황",
+      "aria": "{{name}}, 남은 자리 {{count, number}}대, {{status}}",
+      "map": "{{airport}} 주차장 배치도",
+      "plan": {
+        "t1": "제1여객터미널",
+        "t2": "제2여객터미널"
+      },
+      "lot": {
+        "t1Short": "단기주차장",
+        "t1P1": "P1 장기주차장",
+        "t1P1Tower": "P1 주차타워",
+        "t1P2": "P2 장기주차장",
+        "t1P2Tower": "P2 주차타워",
+        "t1P3": "P3 장기주차장",
+        "t1P5": "P5 예약주차장",
+        "t2Short": "단기주차장",
+        "t2Long": "장기주차장",
+        "t2Towers": "장기주차타워",
+        "t2Reserved": "예약주차장",
+        "gmpD1": "국내선 제1주차장",
+        "gmpD2": "국내선 제2주차장",
+        "gmpIntlBldg": "국제선 주차빌딩",
+        "gmpIntlUnder": "국제선 지하주차장",
+        "taeLot": "여객주차장",
+        "pusP1": "P1 국내선 주차장",
+        "pusP2": "P2 국제선 주차장",
+        "pusP3": "P3 여객(화물)주차장",
+        "cjuP1": "P1 주차장",
+        "cjuP2": "P2 장기주차장"
+      },
+      "place": {
+        "t1Terminal": "제1여객터미널",
+        "t1P4": "P4 상주직원 주차장",
+        "t2Terminal": "제2여객터미널",
+        "domestic": "국내선",
+        "international": "국제선",
+        "terminal": "여객청사",
+        "kac": "한국공항공사",
+        "lotteMall": "롯데몰",
+        "cargo": "화물청사",
+        "rentalCar": "렌터카 셔틀",
+        "tower": "관제탑"
+      }
     },
     "soon": "{{name}} 실시간 출·도착은 준비 중이에요",
     "soonDesc": "한국공항공사 공공데이터를 연결하는 대로 이곳에서 보여 드릴게요."

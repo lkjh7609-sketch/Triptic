@@ -10,7 +10,17 @@ vi.mock('./useAirportBoard', () => ({
   useKstMinutes: () => 600,
   useNowMs: () => Date.now(),
 }));
-vi.mock('@/shared/hooks/useMediaQuery', () => ({ useMediaQuery: () => state.desktop }));
+vi.mock('./useAirportParking', () => ({
+  useAirportParking: () => ({
+    data: {
+      lots: [{ airport: 'GMP', name: '국내선 제1주차장', total: 2279, occupied: 2057, congestion: 'busy', updatedAt: '2026-10-04T19:32:00+09:00' }],
+      fetchedAt: { kac: '2026-10-04T10:32:00Z', icn: '2026-10-04T10:32:00Z' },
+      stale: { kac: false, icn: false },
+    },
+    isLoading: false,
+  }),
+}));
+vi.mock('@/shared/hooks/useMediaQuery', () => ({ useMediaQuery: (q: string) => (q.includes('reduced-motion') ? true : state.desktop) }));
 vi.mock('@/shared/hooks/useSession', () => ({ useSession: () => ({ user: null, loading: false }) }));
 
 import { AirportScreen } from './AirportScreen';
@@ -37,10 +47,10 @@ beforeEach(() => {
 });
 
 describe('AirportScreen — 공항 메뉴', () => {
-  it('공항 칸은 인천국제공항·대구·김해·제주 순이고, 처음엔 인천이 골라져 인천 전광판이 보인다', () => {
+  it('공항 칸은 인천국제공항·김포·대구·김해·제주 순이고, 처음엔 인천이 골라져 인천 전광판이 보인다', () => {
     renderScreen();
-    const tabs = screen.getAllByRole('button').filter((b) => ['인천국제공항', '대구', '김해', '제주'].includes(b.textContent ?? ''));
-    expect(tabs.map((b) => b.textContent)).toEqual(['인천국제공항', '대구', '김해', '제주']);
+    const tabs = screen.getAllByRole('button').filter((b) => ['인천국제공항', '김포', '대구', '김해', '제주'].includes(b.textContent ?? ''));
+    expect(tabs.map((b) => b.textContent)).toEqual(['인천국제공항', '김포', '대구', '김해', '제주']);
     expect(screen.getByRole('button', { name: '인천국제공항' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('heading', { level: 2, name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
   });
@@ -61,5 +71,13 @@ describe('AirportScreen — 공항 메뉴', () => {
     renderScreen();
     expect(screen.getByText('전광판 정보를 아직 받지 못했어요. 잠시 뒤 다시 확인해 주세요.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '제주' })).toBeInTheDocument();
+  });
+
+  it('주차장은 각 공항 출·도착 아래에 — 김포는 준비 중 안내 아래에 김포 주차장 평면도', () => {
+    renderScreen();
+    fireEvent.click(screen.getByRole('button', { name: '김포' }));
+    const h2 = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(h2).toEqual(['김포국제공항 실시간 출·도착은 준비 중이에요', '주차장 실시간']);
+    expect(screen.getByRole('button', { name: /^국내선 제1주차장, 남은 자리 222대, 혼잡/ })).toBeInTheDocument();
   });
 });

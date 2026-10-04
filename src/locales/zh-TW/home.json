@@ -653,14 +653,84 @@
     "label": "選擇機場",
     "tabs": {
       "icn": "仁川國際機場",
+      "gmp": "金浦",
       "tae": "大邱",
       "pus": "金海",
       "cju": "濟州"
     },
     "full": {
+      "gmp": "金浦國際機場",
       "tae": "大邱國際機場",
       "pus": "金海國際機場",
       "cju": "濟州國際機場"
+    },
+    "parking": {
+      "title": "停車場即時資訊",
+      "sub": "{{time}} 更新 · 每 2 分鐘更新",
+      "source": {
+        "kac": "資料來源:韓國機場公社",
+        "icn": "資料來源:仁川國際機場公社"
+      },
+      "total": "旅客停車場剩餘 {{count, number}} 個車位",
+      "left": "{{count, number}} 位",
+      "leftLabel": "剩餘車位",
+      "occupancy": "使用率 {{pct}}%",
+      "congestion": {
+        "smooth": "順暢",
+        "busy": "擁擠",
+        "full": "已滿"
+      },
+      "updated": "{{time}} 更新",
+      "close": "關閉",
+      "others": "其他停車場",
+      "empty": "尚未取得停車資訊,請稍後再試。",
+      "stale": "這是稍早的資訊({{time}})。",
+      "legend": "擁擠程度",
+      "planLabel": "選擇航廈",
+      "hint": "點選停車場查看詳情",
+      "floors": "各樓層・區域",
+      "aria": "{{name}},剩餘 {{count, number}} 個車位,{{status}}",
+      "map": "{{airport}}停車場配置圖",
+      "plan": {
+        "t1": "第一航廈",
+        "t2": "第二航廈"
+      },
+      "lot": {
+        "t1Short": "短期停車場",
+        "t1P1": "P1 長期停車場",
+        "t1P1Tower": "P1 停車塔",
+        "t1P2": "P2 長期停車場",
+        "t1P2Tower": "P2 停車塔",
+        "t1P3": "P3 長期停車場",
+        "t1P5": "P5 預約停車場",
+        "t2Short": "短期停車場",
+        "t2Long": "長期停車場",
+        "t2Towers": "長期停車塔",
+        "t2Reserved": "預約停車場",
+        "gmpD1": "國內線 第1停車場",
+        "gmpD2": "國內線 第2停車場",
+        "gmpIntlBldg": "國際線 停車大樓",
+        "gmpIntlUnder": "國際線 地下停車場",
+        "taeLot": "旅客停車場",
+        "pusP1": "P1 國內線停車場",
+        "pusP2": "P2 國際線停車場",
+        "pusP3": "P3 旅客(貨運)停車場",
+        "cjuP1": "P1 停車場",
+        "cjuP2": "P2 長期停車場"
+      },
+      "place": {
+        "t1Terminal": "第一航廈",
+        "t1P4": "P4 駐場員工停車場",
+        "t2Terminal": "第二航廈",
+        "domestic": "國內線",
+        "international": "國際線",
+        "terminal": "航廈",
+        "kac": "韓國機場公社",
+        "lotteMall": "樂天購物中心",
+        "cargo": "貨運航廈",
+        "rentalCar": "租車接駁",
+        "tower": "塔台"
+      }
     },
     "soon": "{{name}}即時出入境航班資訊準備中",
     "soonDesc": "韓國機場公社資料串接完成後,將立即在此提供。"
