@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { takePrefetch } from '@/shared/api/prefetch';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { kstNow, type BoardFlight } from './boardParse';
 
@@ -20,8 +21,13 @@ export const airportBoardQueryKey = ['airport', 'incheon'] as const;
 const isFlights = (v: unknown): v is BoardFlight[] => Array.isArray(v);
 
 export async function fetchAirportBoard(): Promise<AirportBoardData> {
-  const { data, error } = await getSupabaseClient().functions.invoke('incheon-board', { body: {} });
-  if (error) throw error;
+  // 홈 첫 화면에서는 index.html이 이 요청을 이미 시작해 뒀다(shared/api/prefetch.ts)
+  let data = await takePrefetch<unknown>('incheon-board');
+  if (!data) {
+    const result = await getSupabaseClient().functions.invoke('incheon-board', { body: {} });
+    if (result.error) throw result.error;
+    data = result.data;
+  }
   const board = data as Partial<AirportBoardData> | null;
   if (!board || !isFlights(board.departures) || !isFlights(board.arrivals))
     throw new Error('incheon-board: unexpected response');

@@ -78,6 +78,38 @@ export default defineConfig(({ mode }) => {
         },
       },
       {
+        // 홈(/) 첫 화면 데이터(항공 특가·인천공항 전광판)를 JS보다 먼저 요청한다 — 자세한 설명은 src/shared/api/prefetch.ts.
+        // 키(요청 주소)는 화면 코드가 만드는 주소와 같아야 쓰인다(어긋나면 그냥 안 쓰고 새로 받는다).
+        // 웹(http/https)에서만 — 네이티브 앱(capacitor://)은 /api가 상대 주소로 안 통한다.
+        name: 'prefetch-home-data',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const supa = (env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '');
+            const key = env.VITE_SUPABASE_ANON_KEY ?? '';
+            const api = (env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+            const reqs = [[`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, null]];
+            if (supa && key) {
+              reqs.push([
+                'incheon-board',
+                {
+                  url: `${supa}/functions/v1/incheon-board`,
+                  init: { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` }, body: '{}' },
+                },
+              ]);
+            }
+            const list = JSON.stringify(
+              reqs.map(([k, v]) => (v ? { k, u: v.url, i: v.init } : { k, u: k })),
+            );
+            const script =
+              `<script>(function(){if(location.pathname!=='/'||location.protocol.indexOf('http')!==0)return;var p=window.__prefetch={};` +
+              `${list}.forEach(function(r){try{var q=fetch(r.u,r.i).then(function(x){if(!x.ok)throw 0;return x.json()});q.catch(function(){});p[r.k]=q}catch(e){}})})()</script>`;
+            return html.replace('</head>', `${script}\n</head>`);
+          },
+        },
+      },
+      {
         // 로컬 개발 서버에서 api/*.js(Vercel 서버리스 함수)를 그대로 실행하는 어댑터.
         // Vercel 런타임이 주는 req.query/req.body/res.status().json()만 흉내낸다.
         // 키는 .env.local에서 읽는다(VITE_ 접두사 없는 서버 전용 키 포함).
