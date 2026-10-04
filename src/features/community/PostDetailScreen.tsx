@@ -302,7 +302,7 @@ export function PostDetailScreen() {
   }
 
   const trip = tripPayload?.trip;
-  const destinationName = post.destination?.name;
+  const destinationName = post.destination?.name ?? t('board.free');
 
   return (
     <div className={styles.page}>
@@ -317,7 +317,13 @@ export function PostDetailScreen() {
         {destinationName ? (
           <>
             <span className={styles.crumbSep} aria-hidden="true">/</span>
-            <span className={styles.crumbCurrent}>{destinationName}</span>
+            {post.destination ? (
+              <span className={styles.crumbCurrent}>{destinationName}</span>
+            ) : (
+              <Link to="/community/board" className={styles.crumbLink}>
+                {destinationName}
+              </Link>
+            )}
           </>
         ) : null}
       </nav>

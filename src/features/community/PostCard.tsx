@@ -56,7 +56,7 @@ export function PostCard({ post, showDestination = true }: PostCardProps) {
 
       <span className={styles.main}>
         <span className={styles.chips}>
-          {showDestination && post.destination?.name ? <span className={styles.chip}>{post.destination.name}</span> : null}
+          {showDestination ? <span className={styles.chip}>{post.destination?.name ?? t('board.free')}</span> : null}
           <span className={styles.chipMuted}>{t(`postCategory.${post.category}`)}</span>
         </span>
         <span className={styles.title}>{postTitleOf(post)}</span>

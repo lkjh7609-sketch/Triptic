@@ -436,6 +436,10 @@
       "loading": "글을 불러오는 중…",
       "lockedLabel": "바꿀 수 없는 정보",
       "lockedHint": "여행지·분류·첨부 일정은 올린 뒤에는 바꿀 수 없어요."
+    },
+    "board": {
+      "freeButton": "자유게시판에 쓰기 (도시 없음)",
+      "freeChosen": "자유게시판"
     }
   },
   "shared": {
@@ -898,5 +902,13 @@
     "settingsSaved": "저장했어요.",
     "settingsHint": "동행 모집글·지원 화면에 나잇대와 성별로 표기돼요. 비워 두면 표기되지 않아요.",
     "companionBadge": "{{age}} · {{gender}}"
+  },
+  "board": {
+    "free": "자유게시판",
+    "subtitle": "도시와 상관없이 여행 이야기·질문·정보를 자유롭게 나눠요.",
+    "searchPlaceholder": "자유게시판에서 검색",
+    "empty": "아직 자유게시판에 글이 없어요.",
+    "loadMore": "자유게시판 글 더 보기",
+    "link": "자유게시판"
   }
 }

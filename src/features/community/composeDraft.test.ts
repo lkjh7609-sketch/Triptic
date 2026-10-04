@@ -5,6 +5,7 @@ afterEach(() => localStorage.clear());
 
 const base = {
   destinationId: '',
+  freeBoard: false,
   title: '',
   body: '',
   tripId: '',
@@ -20,6 +21,7 @@ describe('composeDraft', () => {
     expect(saved).toBe(true);
     expect(readDraft('u1')).toEqual({
       destinationId: 'd1',
+      freeBoard: false,
       title: '',
       body: '교토 다녀왔어요',
       tripId: '',
@@ -29,6 +31,11 @@ describe('composeDraft', () => {
       tags: [],
       savedAt: 1000,
     });
+  });
+
+  it('자유게시판만 골라도 저장한다', () => {
+    expect(writeDraft('u1', { ...base, freeBoard: true })).toBe(true);
+    expect(readDraft('u1')?.freeBoard).toBe(true);
   });
 
   it('제목만 있어도 저장한다', () => {

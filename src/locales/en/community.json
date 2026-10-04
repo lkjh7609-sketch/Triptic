@@ -445,6 +445,10 @@
       "loading": "Loading post…",
       "lockedLabel": "Fixed details",
       "lockedHint": "Destination, category and attached trip can't be changed after posting."
+    },
+    "board": {
+      "freeButton": "Post to the free board (no city)",
+      "freeChosen": "Free board"
     }
   },
   "shared": {
@@ -923,5 +927,13 @@
     "settingsSaved": "Saved.",
     "settingsHint": "Shown as age range and gender on companion posts and applications. Leave blank to show nothing.",
     "companionBadge": "{{age}} · {{gender}}"
+  },
+  "board": {
+    "free": "Free board",
+    "subtitle": "Share travel stories, questions and tips — not tied to any city.",
+    "searchPlaceholder": "Search the free board",
+    "empty": "No posts on the free board yet.",
+    "loadMore": "Load more posts",
+    "link": "Free board"
   }
 }

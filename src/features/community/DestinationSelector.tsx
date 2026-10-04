@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
-import { ChevronDown, MapPin } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
+import { ChevronDown, MapPin, MessagesSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Destination } from './types';
 import { DestinationPickerModal } from './DestinationPickerModal';
@@ -62,6 +62,13 @@ export function DestinationSelector({
           </span>
           <ChevronDown size={18} aria-hidden="true" className="shrink-0" />
         </button>
+        <Link
+          to="/community/board"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant"
+        >
+          <MessagesSquare size={18} aria-hidden="true" className="shrink-0" />
+          <span>{t('board.link')}</span>
+        </Link>
         {trailing}
       </div>
       {searchElement && <div className="w-full lg:w-auto shrink-0">{searchElement}</div>}

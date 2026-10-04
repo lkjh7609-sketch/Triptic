@@ -66,6 +66,8 @@ export function usePopularTags(destinationId: string | undefined) {
 
 interface ChannelPostsArgs {
   destinationId: string | undefined;
+  /** 도시 대신 자유게시판(도시 없는 글) */
+  freeBoard?: boolean;
   viewerId: string | null;
   search: string;
   sort: PostSort;
@@ -79,12 +81,12 @@ type PostsParam = { cursor: PostCursor | null; offset: number };
 const FIRST_PAGE: PostsParam = { cursor: null, offset: 0 };
 
 /** 도시 채널의 글 목록 — 최신순은 커서, 인기·댓글순은 위치로 이어 받는다 */
-export function useChannelPosts({ destinationId, viewerId, search, sort, category, tag }: ChannelPostsArgs) {
+export function useChannelPosts({ destinationId, freeBoard, viewerId, search, sort, category, tag }: ChannelPostsArgs) {
   return useInfiniteQuery({
     queryKey: [
       'community',
       'channel-feed',
-      destinationId ?? '',
+      freeBoard ? 'free' : (destinationId ?? ''),
       viewerId ?? '',
       search,
       sort,
@@ -94,6 +96,7 @@ export function useChannelPosts({ destinationId, viewerId, search, sort, categor
     queryFn: ({ pageParam }: { pageParam: PostsParam }) =>
       listPosts({
         destinationId,
+        freeBoard,
         viewerId,
         search,
         sort,
@@ -110,7 +113,7 @@ export function useChannelPosts({ destinationId, viewerId, search, sort, categor
       if (last.nextOffset != null) return { cursor: null, offset: last.nextOffset };
       return undefined;
     },
-    enabled: !!destinationId,
+    enabled: !!destinationId || !!freeBoard,
   });
 }
 

@@ -436,6 +436,10 @@
       "loading": "載入貼文中…",
       "lockedLabel": "無法變更的資訊",
       "lockedHint": "目的地、分類與附加行程發布後無法變更。"
+    },
+    "board": {
+      "freeButton": "發佈到自由討論版（不選城市）",
+      "freeChosen": "自由討論版"
     }
   },
   "shared": {
@@ -898,5 +902,13 @@
     "settingsSaved": "已儲存。",
     "settingsHint": "會在旅伴招募貼文與申請畫面以年齡層與性別顯示。留空則不顯示。",
     "companionBadge": "{{age}} · {{gender}}"
+  },
+  "board": {
+    "free": "自由討論版",
+    "subtitle": "不限城市，自由分享旅行故事、問題與資訊。",
+    "searchPlaceholder": "搜尋自由討論版",
+    "empty": "自由討論版還沒有貼文。",
+    "loadMore": "載入更多貼文",
+    "link": "自由討論版"
   }
 }

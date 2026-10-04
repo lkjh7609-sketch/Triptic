@@ -343,6 +343,8 @@ function orQuoted(value: string): string {
 
 export async function listPosts(opts: {
   destinationId?: string;
+  /** 도시가 없는 글만(자유게시판, 2026-10-05) */
+  freeBoard?: boolean;
   followedByUserId?: string;
   viewerId?: string | null;
   cursor?: PostCursor | null;
@@ -380,6 +382,7 @@ export async function listPosts(opts: {
   query = query.order('created_at', { ascending: false }).order('id', { ascending: false });
 
   if (opts.destinationId) query = query.eq('destination_id', opts.destinationId);
+  else if (opts.freeBoard) query = query.is('destination_id', null);
   if (destinationIds) query = query.in('destination_id', destinationIds);
   const search = opts.search?.trim();
   if (search) {
