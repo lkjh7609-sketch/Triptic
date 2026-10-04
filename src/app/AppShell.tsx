@@ -17,6 +17,7 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { navDirection } from './navDirection';
 import { requiresLogin } from './guestAccess';
+import { useActivityPing } from '@/shared/hooks/useActivityPing';
 import { DemographicsPrompt } from '@/features/community/DemographicsPrompt';
 import { useTripRealtimeSync } from '@/features/plan/hooks/useTripRealtimeSync';
 import { takePendingShare } from '@/features/shared/pendingShare';
@@ -92,6 +93,8 @@ export function AppShell() {
   useNavDirectionAttr();
   // 함께 편집하는 여행·동행 인원을 실시간으로 맞춘다
   useTripRealtimeSync(user?.id ?? null);
+  // 최근 접속·접속 국가를 서버에 남긴다(운영자 회원 관리용, 30분에 한 번)
+  useActivityPing(user?.id ?? null);
   // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
   const queryClient = useQueryClient();
   const { t } = useTranslation('common');

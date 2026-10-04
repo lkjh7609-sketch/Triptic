@@ -131,26 +131,82 @@ export interface AdminUserRow {
   trip_limit: number;
 }
 
-/** 원래 무료 한도. 사용자별 한도가 이보다 크면 임시 완화를 적용받은 것으로 표시한다 */
-export const BASE_FREE_TRIP_LIMIT = 2;
+/** 운영 '회원' 탭 한 줄(0088·0089 admin_list_members) — 이메일·접속 기록은 운영자만 본다 */
+export interface AdminMemberRow {
+  id: string;
+  display_name: string | null;
+  handle: string | null;
+  email: string | null;
+  plan: 'free' | 'pro';
+  gender: 'female' | 'male' | null;
+  age_band: string | null;
+  created_at: string;
+  /** 마지막 로그인(auth) */
+  last_sign_in_at: string | null;
+  /** 앱을 마지막으로 연 시각(앱이 로그인한 채 열릴 때 기록) */
+  last_seen_at: string | null;
+  /** 접속 때 IP로 짐작한 국가 코드·도시(대략) */
+  last_country: string | null;
+  last_city: string | null;
+  trips_created_count: number;
+  trip_limit: number;
+  avatar_url: string | null;
+  total_count: number;
+}
 
-/** query가 빈 문자열이면 전체 사용자를 표시 이름순으로 페이지네이션한다.
- * hasMore를 별도 COUNT 없이 알아내려고 limit보다 1개 더 요청해서 잘라낸다. */
-export async function adminSearchUsers(
-  query: string,
+export interface AdminMemberFilters {
+  query: string;
+  /** 'female' | 'male' | 'none'(미입력) | '' (전체) */
+  gender: string;
+  ageBand: string;
+  plan: string;
+  joinedFrom: string;
+  joinedTo: string;
+}
+
+export async function adminListMembers(
+  f: AdminMemberFilters,
   page: number,
   pageSize: number,
-): Promise<{ rows: AdminUserRow[]; hasMore: boolean }> {
+): Promise<{ rows: AdminMemberRow[]; total: number }> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc('admin_search_users', {
-    p_query: query,
+  const { data, error } = await supabase.rpc('admin_list_members', {
+    p_query: f.query,
+    p_gender: f.gender || null,
+    p_age_band: f.ageBand || null,
+    p_plan: f.plan || null,
+    p_joined_from: f.joinedFrom || null,
+    p_joined_to: f.joinedTo || null,
     p_offset: page * pageSize,
-    p_limit: pageSize + 1,
+    p_limit: pageSize,
   });
   if (error) throw error;
-  const rows = (data as AdminUserRow[]) ?? [];
-  return { rows: rows.slice(0, pageSize), hasMore: rows.length > pageSize };
+  const rows = ((data as (AdminMemberRow & { total_count: number | string })[]) ?? []).map((r) => ({ ...r, total_count: Number(r.total_count) }));
+  return { rows, total: rows[0]?.total_count ?? 0 };
 }
+
+export interface AdminMemberTrip {
+  id: string;
+  title: string;
+  city: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  total_days: number | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export async function adminMemberTrips(userId: string): Promise<AdminMemberTrip[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_member_trips', { p_user_id: userId });
+  if (error) throw error;
+  return (data as AdminMemberTrip[]) ?? [];
+}
+
+/** 원래 무료 한도. 사용자별 한도가 이보다 크면 임시 완화를 적용받은 것으로 표시한다 */
+export const BASE_FREE_TRIP_LIMIT = 2;
 
 export async function adminSetUserPlan(userId: string, plan: 'free' | 'pro'): Promise<void> {
   const supabase = getSupabaseClient();
