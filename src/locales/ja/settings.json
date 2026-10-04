@@ -42,7 +42,9 @@
     "pdfHint": "旅行ごとのPDFエクスポートは、旅行詳細の共有(↗)ボタンから行えます。"
   },
   "about": {
-    "version": "バージョン {{version}}"
+    "version": "バージョン {{version}}",
+    "guide": "使い方ガイド",
+    "notices": "お知らせ・アップデート"
   },
   "licenses": {
     "title": "オープンソースライセンス"

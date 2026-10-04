@@ -42,7 +42,9 @@
     "pdfHint": "You can export a per-trip PDF from the share (↗) button on the trip detail screen."
   },
   "about": {
-    "version": "Version {{version}}"
+    "version": "Version {{version}}",
+    "guide": "User guide",
+    "notices": "Notices & updates"
   },
   "licenses": {
     "title": "Open source licenses"

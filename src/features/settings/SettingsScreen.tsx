@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import { normalizeLocale } from '@/shared/i18n';
 import { LANGUAGE_AUTONYMS } from '@/shared/i18n/languageNames';
 import { useTranslation } from 'react-i18next';
@@ -273,6 +274,16 @@ export function SettingsScreen() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}><Info size={18}/> {t('section.about')}</h2>
         <div className={styles.card}>
+        <div className={styles.row}>
+          <Link to="/guide" className={styles.linkButton}>
+            {t('about.guide')}
+          </Link>
+        </div>
+        <div className={styles.row}>
+          <Link to="/notices" className={styles.linkButton}>
+            {t('about.notices')}
+          </Link>
+        </div>
         <div className={styles.row}>
           <a href="/terms.html" target="_blank" rel="noopener" className={styles.linkButton}>
             {t('legal.terms', { ns: 'common' })}

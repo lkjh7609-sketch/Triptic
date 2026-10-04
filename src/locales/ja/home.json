@@ -691,7 +691,9 @@
       "sample": "サンプルを見る"
     },
     "footer": {
-      "partnership": "提携のお問い合わせ"
+      "partnership": "提携のお問い合わせ",
+      "guide": "使い方ガイド",
+      "notices": "お知らせ"
     }
   },
   "airportPage": {

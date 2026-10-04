@@ -42,7 +42,9 @@
     "pdfHint": "可在行程詳情頁的分享（↗）按鈕中匯出該行程的PDF。"
   },
   "about": {
-    "version": "版本 {{version}}"
+    "version": "版本 {{version}}",
+    "guide": "使用指南",
+    "notices": "公告與更新"
   },
   "licenses": {
     "title": "開源許可證"

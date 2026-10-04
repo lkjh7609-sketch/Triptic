@@ -691,7 +691,9 @@
       "sample": "샘플 둘러보기"
     },
     "footer": {
-      "partnership": "제휴문의"
+      "partnership": "제휴문의",
+      "guide": "사용 가이드",
+      "notices": "공지사항"
     }
   },
   "airportPage": {
