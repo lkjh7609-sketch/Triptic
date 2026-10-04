@@ -1,13 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ArchivedItem } from './adminService';
 
-const { adminListArchived, adminGetArchived } = vi.hoisted(() => ({ adminListArchived: vi.fn(), adminGetArchived: vi.fn() }));
+const { adminListArchived, adminGetArchived, adminDeleteArchived } = vi.hoisted(() => ({ adminListArchived: vi.fn(), adminGetArchived: vi.fn(), adminDeleteArchived: vi.fn() }));
+vi.mock('@/shared/ui/toast', () => ({ showToast: vi.fn() }));
 vi.mock('./adminService', async () => ({
   ...(await vi.importActual<typeof import('./adminService')>('./adminService')),
   adminListArchived,
   adminGetArchived,
+  adminDeleteArchived,
 }));
 
 import { AdminArchiveTab } from './AdminArchiveTab';
@@ -29,6 +31,7 @@ function renderTab() {
 beforeEach(() => {
   adminListArchived.mockReset();
   adminGetArchived.mockReset();
+  adminDeleteArchived.mockReset().mockResolvedValue(1);
 });
 
 describe('AdminArchiveTab', () => {
@@ -61,5 +64,34 @@ describe('AdminArchiveTab', () => {
     adminListArchived.mockRejectedValue(new Error('forbidden'));
     renderTab();
     expect(await screen.findByText('보관함을 불러오지 못했어요')).toBeInTheDocument();
+  });
+
+  it('선택한 글만 영구 삭제한다(확인 창을 거쳐, 선택한 id만 보낸다)', async () => {
+    adminListArchived.mockResolvedValue({ rows: [item, { ...item, id: 8, preview: '다른 글' }], hasMore: false });
+    renderTab();
+    await screen.findByText('오사카 3박 후기');
+    const boxes = screen.getAllByRole('checkbox', { name: '선택' });
+    fireEvent.click(boxes[1]);
+    fireEvent.click(screen.getByRole('button', { name: '선택 삭제 (1)' }));
+    expect(adminDeleteArchived).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '삭제' }));
+    await waitFor(() => expect(adminDeleteArchived).toHaveBeenCalledWith([8]));
+  });
+
+  it('전체 비우기는 확인 뒤 null(전부)로 지운다', async () => {
+    adminListArchived.mockResolvedValue({ rows: [item], hasMore: false });
+    renderTab();
+    await screen.findByText('오사카 3박 후기');
+    fireEvent.click(screen.getByRole('button', { name: '전체 비우기' }));
+    expect(screen.getByText(/보관함을 전부 비울까요/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '삭제' }));
+    await waitFor(() => expect(adminDeleteArchived).toHaveBeenCalledWith(null));
+  });
+
+  it('아무것도 고르지 않으면 선택 삭제 버튼은 눌리지 않는다', async () => {
+    adminListArchived.mockResolvedValue({ rows: [item], hasMore: false });
+    renderTab();
+    await screen.findByText('오사카 3박 후기');
+    expect(screen.getByRole('button', { name: '선택 삭제 (0)' })).toBeDisabled();
   });
 });

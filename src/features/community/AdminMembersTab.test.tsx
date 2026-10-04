@@ -3,11 +3,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
 
-const state = vi.hoisted(() => ({ list: vi.fn(), trips: vi.fn() }));
+const state = vi.hoisted(() => ({ list: vi.fn(), trips: vi.fn(), remove: vi.fn(), tripView: vi.fn() }));
+vi.mock('@/shared/ui/toast', () => ({ showToast: vi.fn() }));
 
 vi.mock('./adminService', () => ({
   adminListMembers: (...args: unknown[]) => state.list(...args),
   adminMemberTrips: (...args: unknown[]) => state.trips(...args),
+  adminRemoveMember: (...args: unknown[]) => state.remove(...args),
+  adminGetTrip: (...args: unknown[]) => state.tripView(...args),
+  AdminRemoveMemberError: class extends Error {
+    constructor(readonly code: string) {
+      super(code);
+    }
+  },
 }));
 vi.mock('./analyticsService', () => ({ fetchAdminUserActivity: async () => ({ status: 'not_configured' }) }));
 vi.mock('./AdminUserPlanRow', () => ({ AdminUserPlanRow: () => <div>등급 줄</div> }));
@@ -42,6 +50,14 @@ function renderTab() {
 }
 
 beforeEach(() => {
+  state.remove.mockReset().mockResolvedValue(undefined);
+  state.tripView.mockReset().mockResolvedValue({
+    trip: { id: 't1', owner_id: 'u1', title: '도쿄 3박 4일', city: 'Tokyo', start_date: '2026-10-15', end_date: '2026-10-18', total_days: 4, base_currency: 'JPY', created_at: '', updated_at: '', deleted_at: null, owner_name: '여행자', owner_handle: 'abc12', member_count: 1 },
+    days: [{ id: 'd1', day_index: 1, date: '2026-10-15', city_name: 'Tokyo', note: null }],
+    items: [{ id: 'i1', day_id: 'd1', position: 0, type: 'place', title: '시부야 스카이', subtitle: null, category: 'sight', address: '도쿄', start_local: '2026-10-15T10:30:00', end_local: null, memo: '노을 시간에' }],
+    hotels: [{ id: 'h1', day: 1, name: '그레이서리 신주쿠', address: null }],
+    flights: [],
+  });
   state.list.mockReset().mockResolvedValue({ rows: [member], total: 1 });
   state.trips.mockReset().mockResolvedValue([
     { id: 't1', title: '도쿄 3박 4일', city: 'Tokyo', start_date: '2026-10-15', end_date: '2026-10-18', total_days: 4, status: 'planning', created_at: '2026-09-02T00:00:00Z', updated_at: '', deleted_at: null },
@@ -70,5 +86,25 @@ describe('AdminMembersTab', () => {
     await waitFor(() =>
       expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim', gender: 'male', ageBand: 'none' }), 0, 20),
     );
+  });
+
+  it('여행의 "내용 보기"를 누르면 읽기 전용으로 일차별 장소·메모·숙소가 보인다', async () => {
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '내용 보기' }));
+    expect(await screen.findByText('읽기 전용')).toBeInTheDocument();
+    expect(await screen.findByText('시부야 스카이')).toBeInTheDocument();
+    expect(screen.getByText('노을 시간에')).toBeInTheDocument();
+    expect(screen.getByText(/그레이서리 신주쿠/)).toBeInTheDocument();
+    expect(screen.getByText('10:30')).toBeInTheDocument();
+  });
+
+  it('강제 탈퇴는 확인 창을 거쳐야 서버에 요청한다', async () => {
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
+    fireEvent.click(screen.getByRole('button', { name: '강제 탈퇴' }));
+    expect(state.remove).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1'));
   });
 });

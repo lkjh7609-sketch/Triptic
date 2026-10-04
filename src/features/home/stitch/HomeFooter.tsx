@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import styles from './HomeFooter.module.css';
 
@@ -9,11 +10,15 @@ import styles from './HomeFooter.module.css';
 export function HomeFooter() {
   const { t } = useTranslation('home');
   const requireLogin = useRequireLogin();
+  // 모바일에는 푸터를 두지 않는다 — 같은 링크가 설정 > 정보에 모두 있다(2026-10-05 사용자 결정)
+  const desktop = useMediaQuery('(min-width: 1024px)');
   const [contactKind, setContactKind] = useState<'general' | 'partnership' | null>(null);
 
   const openContact = (kind: 'general' | 'partnership') => {
     if (requireLogin()) setContactKind(kind);
   };
+
+  if (!desktop) return null;
 
   return (
     <footer className={styles.footer}>

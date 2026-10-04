@@ -1,17 +1,23 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, MapPin, RotateCcw, Search } from 'lucide-react';
+import { ChevronDown, Eye, MapPin, RotateCcw, Search, UserX } from 'lucide-react';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { showToast } from '@/shared/ui/toast';
+import { captureError } from '@/shared/monitoring';
 import {
   adminListMembers,
   adminMemberTrips,
+  adminRemoveMember,
+  AdminRemoveMemberError,
   type AdminMemberFilters,
   type AdminMemberRow,
   type AdminUserRow,
 } from './adminService';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
+import { AdminTripViewer } from './AdminTripViewer';
 import { COMPANION_AGES } from './companionPrefs';
 import { fetchAdminUserActivity } from './analyticsService';
 import styles from './AdminScreen.module.css';
@@ -31,6 +37,7 @@ function countryName(code: string | null, language: string): string {
 
 function MemberTrips({ userId }: { userId: string }) {
   const { t } = useTranslation('community');
+  const [viewing, setViewing] = useState<string | null>(null);
   const trips = useQuery({ queryKey: ['admin', 'member-trips', userId], queryFn: () => adminMemberTrips(userId) });
   if (trips.isLoading) return <Skeleton height="40px" />;
   if (!trips.data || trips.data.length === 0) return <p className={memberStyles.muted}>{t('admin.members.noTrips')}</p>;
@@ -48,8 +55,12 @@ function MemberTrips({ userId }: { userId: string }) {
             {t('admin.members.tripCreated', { date: trip.created_at.slice(0, 10) })}
             {trip.deleted_at ? ` · ${t('admin.members.tripDeleted')}` : ''}
           </span>
+          <button type="button" className={memberStyles.viewBtn} onClick={() => setViewing(trip.id)}>
+            <Eye size={14} aria-hidden="true" /> {t('admin.members.tripView.view')}
+          </button>
         </li>
       ))}
+      {viewing ? <AdminTripViewer tripId={viewing} onClose={() => setViewing(null)} /> : null}
     </ul>
   );
 }
@@ -67,6 +78,8 @@ function MemberRow({
 }) {
   const { t, i18n } = useTranslation('community');
   const [open, setOpen] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const queryClient = useQueryClient();
   const lang = i18n.language;
   const location = [countryName(member.last_country, lang), member.last_city].filter(Boolean).join(' · ');
   const dt = (iso: string | null) => (iso ? new Date(iso).toLocaleString(lang) : '—');
@@ -82,6 +95,18 @@ function MemberRow({
     trips_created_count: member.trips_created_count,
     trip_limit: member.trip_limit,
   };
+
+  async function removeMember() {
+    try {
+      await adminRemoveMember(member.id);
+      showToast(t('admin.members.remove.done'), { tone: 'success' });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'members'] });
+    } catch (err) {
+      const code = err instanceof AdminRemoveMemberError ? err.code : 'failed';
+      if (code === 'failed') captureError(err, { context: 'adminRemoveMember' });
+      showToast(code === 'reauth_required' ? t('admin.members.remove.reauth') : code === 'admin_cannot_delete' ? t('admin.members.remove.adminBlocked') : t('admin.members.remove.failed'), { tone: 'error' });
+    }
+  }
 
   return (
     <article className={memberStyles.card}>
@@ -148,7 +173,23 @@ function MemberRow({
           <MemberTrips userId={member.id} />
           <h3 className={memberStyles.sectionTitle}>{t('admin.members.planTitle')}</h3>
           <AdminUserPlanRow compact user={userRow} onChanged={onChanged} activity={activity} activityWindowDays={activityWindowDays} />
+          <div className={memberStyles.dangerZone}>
+            <button type="button" className={memberStyles.dangerBtn} onClick={() => setConfirmRemove(true)}>
+              <UserX size={16} aria-hidden="true" /> {t('admin.members.remove.button')}
+            </button>
+          </div>
         </div>
+      ) : null}
+      {confirmRemove ? (
+        <ConfirmDialog
+          danger
+          title={t('admin.members.remove.title', { name: member.display_name || member.handle || member.id.slice(0, 6) })}
+          message={t('admin.members.remove.message')}
+          cancelLabel={t('admin.members.remove.cancel')}
+          confirmLabel={t('admin.members.remove.confirm')}
+          onConfirm={() => void removeMember()}
+          onClose={() => setConfirmRemove(false)}
+        />
       ) : null}
     </article>
   );

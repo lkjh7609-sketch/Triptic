@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { Destination } from './types';
 import { DestinationPickerModal } from './DestinationPickerModal';
 import type { PickerTab } from './destinationRegions';
+import rowStyles from './DestinationSelectorRow.module.css';
 
 interface DestinationSelectorProps {
   searchElement?: React.ReactNode;
@@ -49,11 +50,11 @@ export function DestinationSelector({
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
-      <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+      <div className={`flex flex-wrap items-center gap-3 w-full lg:w-auto ${rowStyles.row}`}>
         <button
           type="button"
           aria-haspopup="dialog"
-          className={`w-full lg:w-auto inline-flex items-center justify-between lg:justify-start gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm ${selected ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant'}`}
+          className={`${rowStyles.half} ${rowStyles.cityHalf} w-full lg:w-auto inline-flex items-center justify-between lg:justify-start gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm ${selected ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant'}`}
           onClick={() => setOpen(true)}
         >
           <span className="inline-flex items-center gap-2 min-w-0">
@@ -64,7 +65,7 @@ export function DestinationSelector({
         </button>
         <Link
           to="/community/board"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant"
+          className={`${rowStyles.half} inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant`}
         >
           <MessagesSquare size={18} aria-hidden="true" className="shrink-0" />
           <span>{t('board.link')}</span>

@@ -44,7 +44,9 @@
   "about": {
     "version": "Version {{version}}",
     "guide": "User guide",
-    "notices": "Notices & updates"
+    "notices": "Notices & updates",
+    "partnership": "Partnership inquiries",
+    "operator": "Operator: Ben Lee · admin@triptic.my · Hosting service provider: Vercel Inc. · © 2026 Triptic"
   },
   "licenses": {
     "title": "Open source licenses"
