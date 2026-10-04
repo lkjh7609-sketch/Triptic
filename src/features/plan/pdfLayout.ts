@@ -264,3 +264,52 @@ export function ellipsize(text: string, fits: (s: string) => boolean): string {
   }
   return lo > 0 ? `${text.slice(0, lo).trimEnd()}…` : '';
 }
+
+// ── 지도: 배경 그림(Static Maps)과 같은 투영 ────────────────────────────
+
+export interface MercatorFit {
+  center: LatLng;
+  zoom: number;
+  /** 위경도 → 그림 안의 픽셀(왼쪽 위 0,0, 그림 크기 w×h 기준) */
+  toPx: (p: LatLng) => { x: number; y: number };
+}
+
+function worldPx(p: LatLng, zoom: number): { x: number; y: number } {
+  const scale = 256 * 2 ** zoom;
+  const sin = Math.min(Math.max(Math.sin((p.lat * Math.PI) / 180), -0.9999), 0.9999);
+  return { x: ((p.lng + 180) / 360) * scale, y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale };
+}
+
+function fromWorldPx(x: number, y: number, zoom: number): LatLng {
+  const scale = 256 * 2 ** zoom;
+  const lng = (x / scale) * 360 - 180;
+  const n = Math.PI - (2 * Math.PI * y) / scale;
+  return { lat: (180 / Math.PI) * Math.atan(Math.sinh(n)), lng };
+}
+
+/**
+ * Static Maps(Web Mercator, 정수 줌)에 점들을 맞춘다 — 여백을 뺀 칸에 다 들어가는 가장 큰 줌(최대 maxZoom).
+ * 점이 하나면 maxZoom. 핀은 같은 투영으로 그려야 배경 지도와 자리가 맞는다.
+ */
+export function mercatorFit(points: LatLng[], w: number, h: number, pad: { x: number; y: number }, maxZoom = 16, minZoom = 3): MercatorFit {
+  let zoom = maxZoom;
+  if (points.length > 1) {
+    for (zoom = maxZoom; zoom > minZoom; zoom -= 1) {
+      const px = points.map((p) => worldPx(p, zoom));
+      const spanX = Math.max(...px.map((q) => q.x)) - Math.min(...px.map((q) => q.x));
+      const spanY = Math.max(...px.map((q) => q.y)) - Math.min(...px.map((q) => q.y));
+      if (spanX <= w - pad.x * 2 && spanY <= h - pad.y * 2) break;
+    }
+  } else zoom = Math.min(maxZoom, 15);
+  const px = points.length ? points.map((p) => worldPx(p, zoom)) : [worldPx({ lat: 0, lng: 0 }, zoom)];
+  const cx = (Math.min(...px.map((q) => q.x)) + Math.max(...px.map((q) => q.x))) / 2;
+  const cy = (Math.min(...px.map((q) => q.y)) + Math.max(...px.map((q) => q.y))) / 2;
+  return {
+    center: fromWorldPx(cx, cy, zoom),
+    zoom,
+    toPx: (p) => {
+      const q = worldPx(p, zoom);
+      return { x: q.x - cx + w / 2, y: q.y - cy + h / 2 };
+    },
+  };
+}

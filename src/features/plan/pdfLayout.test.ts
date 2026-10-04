@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityRuns, ellipsize, hasCoord, hotelStays, nearCluster, niceScale, placeLabels, project, rowBudget, spreadOverlaps } from './pdfLayout';
+import { cityRuns, ellipsize, hasCoord, hotelStays, mercatorFit, nearCluster, niceScale, placeLabels, project, rowBudget, spreadOverlaps } from './pdfLayout';
 
 describe('표지', () => {
   it('일차별 도시는 이어지는 같은 도시를 묶는다', () => {
@@ -114,5 +114,31 @@ describe('하루 한 쪽', () => {
   it('말줄임', () => {
     expect(ellipsize('짧은 메모', () => true)).toBe('짧은 메모');
     expect(ellipsize('아주 긴 메모 내용입니다', (s) => s.length <= 6)).toBe('아주 긴…');
+  });
+
+  it('배경 지도(Web Mercator)에 맞춘 투영 — 정수 줌, 모든 점이 여백 안, 가운데가 중심', () => {
+    const tokyo = [
+      { lat: 35.7556, lng: 139.6286 },
+      { lat: 35.6896, lng: 139.7006 },
+      { lat: 35.658, lng: 139.7016 },
+      { lat: 35.6717, lng: 139.765 },
+    ];
+    const fit = mercatorFit(tokyo, 640, 288, { x: 70, y: 40 });
+    expect(Number.isInteger(fit.zoom)).toBe(true);
+    for (const p of tokyo) {
+      const q = fit.toPx(p);
+      expect(q.x).toBeGreaterThanOrEqual(70 - 1e-6);
+      expect(q.x).toBeLessThanOrEqual(570 + 1e-6);
+      expect(q.y).toBeGreaterThanOrEqual(40 - 1e-6);
+      expect(q.y).toBeLessThanOrEqual(248 + 1e-6);
+    }
+    const c = fit.toPx(fit.center);
+    expect(c.x).toBeCloseTo(320, 3);
+    expect(c.y).toBeCloseTo(144, 3);
+    // 한 단계 더 확대하면 안 들어간다(가장 큰 줌)
+    const tighter = mercatorFit(tokyo, 640, 288, { x: 70, y: 40 }, fit.zoom + 1, fit.zoom + 1);
+    const xs = tokyo.map((p) => tighter.toPx(p).x);
+    const ys = tokyo.map((p) => tighter.toPx(p).y);
+    expect(Math.max(...xs) - Math.min(...xs) > 500 || Math.max(...ys) - Math.min(...ys) > 208).toBe(true);
   });
 });
