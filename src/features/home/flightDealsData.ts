@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { addDays, format } from 'date-fns';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { fetchMyrealtripFlightsLink, openInNewTab, type FlightSearch } from '@/features/plan/partnerLinks';
+import { takePrefetch } from '@/shared/api/prefetch';
 import { fetchKeepingLastGood, lastGoodOptions } from '@/shared/api/lastGood';
 
 /** api/partnerProducts.js?kind=deals 카드 한 개 — 인기 노선의 최저가 하나 */
@@ -29,9 +30,14 @@ const DEAL_PERIOD = 5;
 
 async function fetchFlightDeals(): Promise<FlightDeal[]> {
   const params = new URLSearchParams({ provider: 'myrealtrip', kind: 'deals', origin: DEAL_ORIGIN, period: String(DEAL_PERIOD) });
-  const res = await fetch(apiUrl(`/api/partnerProducts?${params.toString()}`));
-  if (!res.ok) throw new Error(`flightDeals HTTP ${res.status}`);
-  const json = (await res.json()) as { items?: unknown };
+  const url = apiUrl(`/api/partnerProducts?${params.toString()}`);
+  // 홈 첫 화면에서는 index.html이 이 요청을 이미 시작해 뒀다(shared/api/prefetch.ts)
+  let json = await takePrefetch<{ items?: unknown }>(url);
+  if (!json) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`flightDeals HTTP ${res.status}`);
+    json = (await res.json()) as { items?: unknown };
+  }
   return Array.isArray(json.items) ? (json.items as FlightDeal[]) : [];
 }
 
