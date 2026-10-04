@@ -447,7 +447,53 @@
       "write": "Write a travelogue",
       "bannerTitle": "Share your first travelogue!",
       "bannerDesc": "Post your photos and itinerary to share with other travelers.",
-      "bannerCta": "View travelogue writing guide"
+      "bannerCta": "View travelogue writing guide",
+      "guide": {
+        "eyebrow": "WRITING GUIDE",
+        "title": "Travelogue writing guide",
+        "lead": "First time? No problem. Follow these steps to write a post that helps fellow travelers.",
+        "steps": {
+          "place": {
+            "title": "Where is it about?",
+            "body": "Pick a destination, or post to the 'Free board' if it isn't about one city. You can't change the destination or category after posting, so double-check."
+          },
+          "category": {
+            "title": "Choose a category",
+            "body": "Trip stories & reviews, Questions & Q&A, Travel tips & currency, or Local food & stays. On question posts you can mark a helpful comment as the accepted answer."
+          },
+          "title": {
+            "title": "A one-line title",
+            "body": "Up to 100 characters. Lists show only the title, so make it clear what the post is about. e.g. 'Kyoto in 4 days — a rainy-day route'"
+          },
+          "body": {
+            "title": "Write the story",
+            "body": "Up to 2,000 characters. Be specific about places, time spent, prices and how it felt. Bold, italic, headings, lists and links are supported. Even one line is fine."
+          },
+          "photos": {
+            "title": "Add photos",
+            "body": "Up to 10 photos; the first is the cover. Drag to reorder."
+          },
+          "tags": {
+            "title": "Add tags",
+            "body": "Up to 3 tags, e.g. #tokyo #4days #food — so people can browse posts with the same tag."
+          },
+          "trip": {
+            "title": "Attach your itinerary (optional)",
+            "body": "Attach your trip so readers can see your route. Turn on 'Allow copying' to let others copy it into their own trip (expenses and booking documents are not copied). It's off by default."
+          },
+          "after": {
+            "title": "After posting",
+            "body": "You can edit the title, body, tags and photos anytime, or delete the post. Don't include personal details like phone numbers or booking codes. Report anything inappropriate and an admin will review it."
+          }
+        },
+        "tipsTitle": "Tips for a great post",
+        "tip1": "Include things readers can follow: prices, times and locations.",
+        "tip2": "Use 3+ photos and pick your best one first.",
+        "tip3": "Share the downsides as honestly as the highlights.",
+        "tip4": "Attach your itinerary to help even more people.",
+        "close": "Close",
+        "write": "Write a post"
+      }
     },
     "season": {
       "eyebrow": "SEASONAL CURATION",

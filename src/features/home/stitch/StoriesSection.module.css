@@ -380,3 +380,79 @@
   line-height: 1.375rem;
   color: var(--h-ink-2);
 }
+
+/* 모바일: 인기 여행기는 한 줄에 두 장(왼쪽 하나·오른쪽 하나) — 좁은 카드에 맞춰 사진 비율·글자·여백을 줄인다 */
+@media (max-width: 1023px) {
+  .track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mediaFoot {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .chipDark {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.6875rem;
+  }
+
+  /* 좋아요 숫자는 좁은 사진 위에 못 담아 카드 아래(작성자 옆)로 내린다 */
+  .mStats {
+    display: none;
+  }
+
+  .body {
+    padding: 12px;
+  }
+
+  .title {
+    min-height: calc(2 * 1.35em);
+    margin-bottom: 8px;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+
+  .mFoot {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+.mLikes {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mLikes {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--h-ink-2);
+    font-size: 0.75rem;
+  }
+
+  .mAuthor {
+    font-size: 0.75rem;
+    max-width: 100%;
+  }
+
+  .mAuthor .mAvatar {
+    display: none;
+  }
+
+  /* 두 장이 나란히라 '일정 복사하기'는 한 줄을 다 쓰게 */
+  .mCopy {
+    min-height: 32px;
+    font-size: 0.75rem;
+  }
+}

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Bookmark, BookOpen, ChevronLeft, ChevronRight, Copy, Heart, MessageCircle, NotebookPen } from 'lucide-react';
@@ -9,6 +9,7 @@ import { usePopularPosts } from '@/features/community/hooks/usePosts';
 import { getPostImageUrl } from '@/features/community/imageProcessing';
 import type { Post } from '@/features/community/types';
 import { relativeTime } from './relativeTime';
+import { WritingGuideDialog } from './WritingGuideDialog';
 import shared from './shared.module.css';
 import styles from './StoriesSection.module.css';
 import { postTitleOf } from '@/features/community/postMeta';
@@ -93,6 +94,9 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
               <span className={styles.mAvatar}>{initial}</span>
               {author}
             </span>
+            <span className={styles.mLikes}>
+              <Heart size={13} aria-hidden="true" /> {post.like_count.toLocaleString(i18n.language)}
+            </span>
             {canCopy ? (
               <Link to={`/community/post/${post.id}/trip`} className={styles.mCopy}>
                 {t('page.stories.copy')}
@@ -133,6 +137,7 @@ export function StoriesSection({ desktop }: { desktop: boolean }) {
   const navigate = useNavigate();
   const requireLogin = useRequireLogin();
   const trackRef = useRef<HTMLDivElement>(null);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { data, isLoading } = usePopularPosts({ limit: PC_LIMIT, viewerId: user?.id ?? null });
   const posts = (data ?? []).slice(0, desktop ? PC_LIMIT : MOBILE_LIMIT);
 
@@ -162,7 +167,7 @@ export function StoriesSection({ desktop }: { desktop: boolean }) {
           </div>
         ) : (
           <Link to="/community" className={shared.moreLink}>
-            {t('page.stories.allFeed')}
+            {t('page.more')}
             <ChevronRight size={14} aria-hidden="true" />
           </Link>
         )}
@@ -197,17 +202,20 @@ export function StoriesSection({ desktop }: { desktop: boolean }) {
               <div className={styles.bannerDesc}>{t('page.stories.bannerDesc')}</div>
             </div>
           </div>
-          <button
-            type="button"
-            className={shared.moreLink}
-            onClick={() => {
-              if (requireLogin()) navigate('/community/compose');
-            }}
-          >
+          <button type="button" className={shared.moreLink} onClick={() => setGuideOpen(true)}>
             {t('page.stories.bannerCta')}
             <ChevronRight size={18} aria-hidden="true" />
           </button>
         </div>
+      ) : null}
+      {guideOpen ? (
+        <WritingGuideDialog
+          onClose={() => setGuideOpen(false)}
+          onWrite={() => {
+            setGuideOpen(false);
+            if (requireLogin()) navigate('/community/compose');
+          }}
+        />
       ) : null}
     </section>
   );

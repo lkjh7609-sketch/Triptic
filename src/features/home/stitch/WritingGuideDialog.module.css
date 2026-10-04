@@ -1,0 +1,154 @@
+.sheet {
+  animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+}
+
+@media (max-width: 640px) {
+  .sheet {
+    max-height: 92vh;
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--brand-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.lead {
+  margin: var(--space-2) 0 0;
+  color: var(--text-muted);
+  font-size: var(--font-body-size);
+  line-height: 1.6;
+}
+
+.close {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.stepIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.stepText {
+  min-width: 0;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.stepNo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.stepBody {
+  margin: 4px 0 0;
+  color: var(--text-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.tips {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+}
+
+.tipsTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.tipList {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--text-body);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
