@@ -9,9 +9,10 @@
   row-gap: 16px;
 }
 
-/* 제목 아래 '기준 시각·출처' 줄 — 제목과 붙어 보이지 않게 */
+/* 제목 아래 '기준 시각·출처' 줄 — 제목과 붙어 보이지 않게, 한 줄로 */
 .head p {
   margin-top: 6px;
+  white-space: nowrap;
 }
 
 .titleRow {

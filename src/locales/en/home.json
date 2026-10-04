@@ -681,7 +681,7 @@
     },
     "parking": {
       "title": "Live parking",
-      "sub": "As of {{time}} · updated every 2 min",
+      "sub": "As of {{time}}",
       "source": {
         "kac": "Source: Korea Airports Corporation",
         "icn": "Source: Incheon International Airport Corporation"
@@ -751,7 +751,7 @@
   "airport": {
     "title": "Incheon Airport live departures & arrivals",
     "titleOf": "{{name}} live departures & arrivals",
-    "updated": "As of {{time}} (KST) · refreshes every 3 min",
+    "updated": "As of {{time}} (KST)",
     "tabsLabel": "Departures and arrivals",
     "departures": "Departures",
     "unavailable": "We couldn't load the board yet. Please check again in a moment.",

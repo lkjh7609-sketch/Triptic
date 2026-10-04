@@ -3,6 +3,19 @@
   align-items: center;
 }
 
+/* 공용 머리말(shared.head)의 아래 여백 24px보다 우선 — 바로 아래 기준 시각 줄이 붙는다 */
+div.head {
+  margin-bottom: 6px;
+}
+
+/* 제목·탭 줄 아래 기준 시각·출처 — 한 줄 */
+.meta {
+  margin: 0 0 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .titleRow {
   display: flex;
   align-items: center;

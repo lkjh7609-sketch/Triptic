@@ -235,9 +235,6 @@ export function AirportBoard({ desktop, standalone = false, airport = 'icn' }: {
             </h2>
             <span className={styles.live} aria-hidden="true" />
           </div>
-          <p className={shared.sub}>
-            {t('airport.updated', { time: updatedLabel })} · {t(isIcn ? 'airport.source' : 'airport.sourceKac')}
-          </p>
         </div>
         <div className={styles.tabs} role="group" aria-label={t('airport.tabsLabel')}>
           {(['departures', 'arrivals'] as const).map((key) => (
@@ -256,6 +253,10 @@ export function AirportBoard({ desktop, standalone = false, airport = 'icn' }: {
           ))}
         </div>
       </div>
+      {/* 기준 시각·출처 — 휴대폰에서도 한 줄로 쓰려고 제목·탭 줄 아래 전체 폭에 둔다 */}
+      <p className={`${shared.sub} ${styles.meta}`}>
+        {t('airport.updated', { time: updatedLabel })} · {t(isIcn ? 'airport.source' : 'airport.sourceKac')}
+      </p>
 
       <div className={styles.board}>
         {ageMin > STALE_NOTICE_MIN ? (
