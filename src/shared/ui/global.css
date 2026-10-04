@@ -96,6 +96,50 @@ body {
   }
 }
 
+/* 글자만 선택·끌어 가기 — 링크·버튼·그림은 끌면 주소가 따라 보이거나 그림이 저장되어서 막는다(사용자 결정).
+   파이어폭스는 -webkit-user-drag를 몰라 src/app/contentGuards.ts가 dragstart로도 막는다.
+   본문 글자·입력칸·글 편집기(contenteditable)는 선택이 그대로 된다. */
+a,
+img,
+svg,
+picture,
+video,
+canvas,
+button {
+  -webkit-user-drag: none;
+}
+
+button,
+[role='button'],
+[role='tab'],
+[role='menuitem'],
+[role='radio'],
+[role='switch'],
+summary,
+img,
+svg,
+picture,
+video,
+canvas {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 아이폰·안드로이드에서 그림을 길게 눌러 저장·공유 메뉴가 뜨는 것 */
+img,
+picture,
+video {
+  -webkit-touch-callout: none;
+}
+
+/* 입력 중인 글은 어디서든 선택된다(버튼 안에 든 입력칸 등) */
+input,
+textarea,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* 포커스 링 제거 금지 (01-design-system.md §8 접근성 체크리스트) */
 :focus-visible {
   outline: 2px solid var(--border-focus);
