@@ -130,7 +130,14 @@
     "week": "{{days}} days until you leave",
     "dayBefore": "You leave tomorrow",
     "today": "You leave today! Have a great trip",
-    "note": "We remind you 7 days, 1 day, and the day of your trip, plus travel alerts for your destination — shown only when you open the app."
+    "note": "You'll see comments, replies and likes, plus 7 days / 1 day / day-of trip reminders and travel alerts for your destination. Trip reminders only show when you open the app.",
+    "community": {
+      "post_comment": "{{name}} commented on your post",
+      "comment_reply": "{{name}} replied to your comment",
+      "post_like": "{{name}} liked your post",
+      "comment_like": "{{name}} liked your comment",
+      "someone": "Someone"
+    }
   },
   "travelAlert": {
     "levelName": {

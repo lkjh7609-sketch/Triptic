@@ -41,6 +41,7 @@ export function NotificationBell() {
   if (!signedIn) return null;
 
   const message = (n: TripNotification) => {
+    if (n.kind === 'community') return t(`notifications.community.${n.type}`, { name: n.actorName || t('notifications.community.someone') });
     if (n.kind === 'alert') {
       return t('travelAlert.bell', {
         country: countryName({ code: n.countryCode, nameKo: n.countryNameKo }),
@@ -85,13 +86,13 @@ export function NotificationBell() {
               {items.map((n) => (
                 <li key={n.id} className={styles.item}>
                   <Link
-                    to={`/plan/${n.tripId}`}
+                    to={n.kind === 'community' ? `/community/post/${n.postId}${n.commentId ? `#comment-${n.commentId}` : ''}` : `/plan/${n.tripId}`}
                     className={styles.itemLink}
                     onClick={() => setOpen(false)}
                   >
                     {n.unread ? <span className={styles.dot} aria-hidden="true" /> : null}
                     <span className={styles.itemText}>
-                      <span className={styles.itemTitle}>{n.title}</span>
+                      <span className={styles.itemTitle}>{n.kind === 'community' ? n.postTitle : n.title}</span>
                       <span className={styles.itemMessage}>{message(n)}</span>
                     </span>
                   </Link>
@@ -99,7 +100,7 @@ export function NotificationBell() {
                     type="button"
                     className={styles.remove}
                     onClick={() => dismiss(n.id)}
-                    aria-label={t('notifications.dismiss', { title: n.title })}
+                    aria-label={t('notifications.dismiss', { title: n.kind === 'community' ? n.postTitle : n.title })}
                   >
                     <X size={16} aria-hidden="true" />
                   </button>
