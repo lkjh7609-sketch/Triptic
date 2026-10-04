@@ -26,7 +26,7 @@ const CONTINENT_TAB: Record<string, PickerTab> = {
   NA: 'am',
   SA: 'am',
   AF: 'other',
-  OC: 'other',
+  OC: 'oc',
 };
 
 /** 커뮤니티 도시 고르기 — 버튼 하나를 누르면 글쓰기·동행 글과 같은 여행지 선택 창이 열린다 */

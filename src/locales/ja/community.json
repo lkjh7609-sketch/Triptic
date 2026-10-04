@@ -702,6 +702,7 @@
       "asia": "アジア",
       "eu": "ヨーロッパ",
       "am": "アメリカ",
+      "oc": "オセアニア",
       "other": "その他"
     },
     "popular": "人気のおすすめ旅行先",
@@ -714,28 +715,9 @@
     "close": "閉じる",
     "confirm": "選択完了",
     "any": "どこでもOK",
-    "chooseRegion": "{{tab}}のエリア",
-    "backTo": "{{tab}}のエリア一覧",
-    "regionCount_other": "{{count}}エリア",
-    "regions": {
-      "eastAsia": "東アジア",
-      "southeastAsia": "東南アジア",
-      "southAsia": "南アジア",
-      "middleEast": "中東",
-      "westernEurope": "西ヨーロッパ",
-      "northernEurope": "北ヨーロッパ",
-      "southernEurope": "南ヨーロッパ・トルコ",
-      "easternEurope": "東ヨーロッパ",
-      "northAmerica": "北米",
-      "centralAmerica": "中米・カリブ",
-      "southAmerica": "南米",
-      "northAfrica": "北アフリカ",
-      "subSaharanAfrica": "東・南アフリカ",
-      "oceania": "オセアニア",
-      "guamSaipan": "グアム・サイパン",
-      "etc": "その他",
-      "centralCaucasus": "中央アジア・コーカサス"
-    }
+    "chooseRegion": "{{tab}}の国",
+    "backTo": "{{tab}}の国一覧",
+    "regionCount_other": "{{count}}か国"
   },
   "dateDialog": {
     "title": "旅行日程の選択",

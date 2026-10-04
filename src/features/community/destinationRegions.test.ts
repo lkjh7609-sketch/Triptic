@@ -4,10 +4,8 @@ import catalog from '../../../supabase/data/destination_catalog.json';
 import {
   COUNTRY_KEYS,
   MAX_RECENT,
-  OTHER_SUBREGION,
-  groupBySubregion,
+  groupByCountry,
   isGroupedTab,
-  subregionOf,
   filterDestinations,
   forgetRecentDestination,
   readRecentDestinationIds,
@@ -73,7 +71,11 @@ describe('tabOf', () => {
     expect(tabOf('FR')).toBe('eu');
     expect(tabOf('US')).toBe('am');
     expect(tabOf('BR')).toBe('am');
-    expect(tabOf('AU')).toBe('other');
+    expect(tabOf('AU')).toBe('oc');
+    expect(tabOf('NZ')).toBe('oc');
+    expect(tabOf('GU')).toBe('am'); // 괌·사이판은 미주 안
+    expect(tabOf('MP')).toBe('am');
+    expect(tabOf('KE')).toBe('other');
     expect(tabOf('ZZ')).toBe('other');
   });
 });
@@ -90,7 +92,7 @@ describe('filterDestinations', () => {
       filterDestinations(list, { tab: 'jp', query: '', countryName }).map((d) => d.id),
     ).toEqual(['tokyo', 'osaka']);
     expect(
-      filterDestinations(list, { tab: 'other', query: '', countryName }).map((d) => d.id),
+      filterDestinations(list, { tab: 'oc', query: '', countryName }).map((d) => d.id),
     ).toEqual(['sydney']);
   });
 
@@ -130,72 +132,40 @@ describe('최근 선택', () => {
   });
 });
 
-describe('하위 지역', () => {
-  it('등록하려는 여행지 300곳의 모든 나라가 대륙·하위 지역에 들어 있다 — 새 나라를 넣고 빠뜨리면 여기서 걸린다', () => {
+describe('나라별 묶음', () => {
+  it('등록하려는 여행지 300곳의 모든 나라가 대륙 목록에 들어 있다 — 새 나라를 넣고 빠뜨리면 여기서 걸린다', () => {
+    const known = new Set(Object.values(COUNTRY_KEYS).flat());
     const countries = [...new Set(catalog.cities.map((c) => c.country))];
-    for (const code of countries) {
-      if (code === 'KR' || code === 'JP') continue;
-      const tab = tabOf(code);
-      expect(isGroupedTab(tab), code).toBe(true);
-      if (isGroupedTab(tab)) expect(subregionOf(tab, code), code).not.toBe(OTHER_SUBREGION);
-    }
+    for (const code of countries) expect(known.has(code), code).toBe(true);
   });
 
-  it('앱에 등록된 모든 나라(한국·일본 제외)가 어느 하위 지역엔가 들어 있다 — 새 나라를 넣고 빠뜨리면 여기서 걸린다', () => {
-    for (const codes of Object.values(COUNTRY_KEYS)) {
-      for (const code of codes.filter((c) => c !== 'KR' && c !== 'JP')) {
-        const tab = tabOf(code);
-        expect(isGroupedTab(tab), code).toBe(true);
-        if (isGroupedTab(tab)) expect(subregionOf(tab, code), code).not.toBe(OTHER_SUBREGION);
-      }
-    }
-  });
-
-  it('한 나라가 두 하위 지역에 겹쳐 있지 않다', () => {
+  it('한 나라는 한 탭에만 있고, 한국·일본 말고는 모두 나라 카드 탭(아시아·유럽·미주·오세아니아·기타)이다', () => {
     const seen = new Set<string>();
-    for (const tab of ['asia', 'eu', 'am', 'other'] as const) {
-      for (const code of [
-        'TW',
-        'HK',
-        'VN',
-        'IN',
-        'AE',
-        'FR',
-        'AT',
-        'TR',
-        'US',
-        'MX',
-        'BR',
-        'MA',
-        'KE',
-        'AU',
-        'GU',
-      ]) {
-        if (tabOf(code) === tab) {
-          expect(seen.has(code)).toBe(false);
-          seen.add(code);
-        }
-      }
+    for (const code of Object.values(COUNTRY_KEYS).flat()) {
+      expect(seen.has(code), code).toBe(false);
+      seen.add(code);
+      if (code !== 'KR' && code !== 'JP') expect(isGroupedTab(tabOf(code)), code).toBe(true);
     }
-    expect(subregionOf('asia', 'MN')).toBe('eastAsia');
-    expect(subregionOf('eu', 'AT')).toBe('easternEurope');
-    expect(subregionOf('other', 'GU')).toBe('guamSaipan');
   });
 
-  it('탭 안의 도시를 하위 지역별로 묶고 비어 있는 지역은 뺀다. 모르는 나라는 마지막 "기타" 묶음', () => {
+  it('탭 안의 도시를 나라별로 묶고, 나라는 이름 순(가나다), 도시는 추천 도시가 먼저', () => {
+    const names: Record<string, string> = { TH: '태국', VN: '베트남', TW: '대만', JP: '일본' };
     const cities = [
       dest({ id: 'bkk', name: '방콕', country_code: 'TH', is_featured: true, sort_order: 2 }),
+      dest({ id: 'cnx', name: '치앙마이', country_code: 'TH', sort_order: 1 }),
       dest({ id: 'dad', name: '다낭', country_code: 'VN', sort_order: 1 }),
       dest({ id: 'tpe', name: '타이페이', country_code: 'TW', sort_order: 3 }),
       dest({ id: 'tok', name: '도쿄', country_code: 'JP' }),
     ];
-    const groups = groupBySubregion(cities, 'asia');
-    expect(groups.map((g) => g.key)).toEqual(['eastAsia', 'southeastAsia']);
-    expect(groups[1].destinations.map((d) => d.id)).toEqual(['bkk', 'dad']); // 추천 도시가 먼저
+    const groups = groupByCountry(cities, 'asia', (c) => names[c] ?? c, 'ko');
+    expect(groups.map((g) => g.code)).toEqual(['TW', 'VN', 'TH']); // 대만 < 베트남 < 태국
+    expect(groups.find((g) => g.code === 'TH')!.destinations.map((d) => d.id)).toEqual(['bkk', 'cnx']);
+  });
+
+  it('도시가 없는 나라는 카드에 나오지 않고, 모르는 나라(ZZ)는 기타 탭에 묶인다', () => {
+    expect(groupByCountry([dest({ id: 'x', name: '어딘가', country_code: 'ZZ' })], 'asia', (c) => c)).toEqual([]);
     expect(
-      groupBySubregion([dest({ id: 'x', name: '어딘가', country_code: 'ZZ' })], 'other').map(
-        (g) => g.key,
-      ),
-    ).toEqual([OTHER_SUBREGION]);
+      groupByCountry([dest({ id: 'x', name: '어딘가', country_code: 'ZZ' })], 'other', (c) => c).map((g) => g.code),
+    ).toEqual(['ZZ']);
   });
 });

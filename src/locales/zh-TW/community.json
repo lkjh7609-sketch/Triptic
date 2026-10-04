@@ -702,6 +702,7 @@
       "asia": "亞洲",
       "eu": "歐洲",
       "am": "美洲",
+      "oc": "大洋洲",
       "other": "其他"
     },
     "popular": "熱門推薦旅遊地",
@@ -714,28 +715,9 @@
     "close": "關閉",
     "confirm": "完成選擇",
     "any": "哪裡都可以",
-    "chooseRegion": "{{tab}}地區",
-    "backTo": "返回{{tab}}地區",
-    "regionCount_other": "{{count}} 個地區",
-    "regions": {
-      "eastAsia": "東亞",
-      "southeastAsia": "東南亞",
-      "southAsia": "南亞",
-      "middleEast": "中東",
-      "westernEurope": "西歐",
-      "northernEurope": "北歐",
-      "southernEurope": "南歐・土耳其",
-      "easternEurope": "東歐",
-      "northAmerica": "北美",
-      "centralAmerica": "中美・加勒比海",
-      "southAmerica": "南美",
-      "northAfrica": "北非",
-      "subSaharanAfrica": "東・南非",
-      "oceania": "大洋洲",
-      "guamSaipan": "關島・塞班",
-      "etc": "其他",
-      "centralCaucasus": "中亞・高加索"
-    }
+    "chooseRegion": "{{tab}}國家",
+    "backTo": "返回{{tab}}國家",
+    "regionCount_other": "{{count}} 個國家"
   },
   "dateDialog": {
     "title": "選擇旅行日期",
