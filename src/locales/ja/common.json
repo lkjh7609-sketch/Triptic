@@ -137,6 +137,10 @@
       "post_like": "{{name}}さんがあなたの投稿にいいねしました",
       "comment_like": "{{name}}さんがあなたのコメントにいいねしました",
       "someone": "誰か"
+    },
+    "announcement": {
+      "notice": "新しいお知らせがあります",
+      "update": "新しいアップデート {{version}}"
     }
   },
   "travelAlert": {

@@ -137,6 +137,10 @@
       "post_like": "{{name}} 喜歡你的貼文",
       "comment_like": "{{name}} 喜歡你的留言",
       "someone": "某人"
+    },
+    "announcement": {
+      "notice": "有新的公告",
+      "update": "有新的更新 {{version}}"
     }
   },
   "travelAlert": {

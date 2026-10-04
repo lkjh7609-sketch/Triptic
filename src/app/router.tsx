@@ -42,6 +42,13 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'notices',
+          lazy: async () => {
+            const { default: NoticesScreen } = await retryChunkLoad(() => import('@/features/notices/NoticesScreen'));
+            return { Component: NoticesScreen };
+          },
+        },
+        {
           path: 'guide',
           lazy: async () => {
             const { default: GuideScreen } = await retryChunkLoad(() => import('@/features/guide/GuideScreen'));

@@ -11,7 +11,8 @@
       "sales": "銷售",
       "analytics": "分析",
       "archive": "封存區",
-      "googleLink": "Google 連結"
+      "googleLink": "Google 連結",
+      "notices": "公告"
     },
     "reportDetail": "舉報詳情：{{detail}}",
     "dismiss": "駁回",
@@ -178,6 +179,28 @@
       "none": "找不到城市層級的地點。",
       "error": "錯誤:{{message}}",
       "accept": "使用此地點"
+    },
+    "notices": {
+      "title": "公告與更新管理",
+      "kind": "類型",
+      "kindNotice": "公告",
+      "kindUpdate": "更新",
+      "titleLabel": "標題",
+      "versionLabel": "App 版本（更新時填寫，選填）",
+      "bodyLabel": "內容（支援粗體、清單與連結）",
+      "pinned": "置頂",
+      "published": "公開（取消勾選為草稿）",
+      "save": "儲存",
+      "saveNew": "發佈公告",
+      "edit": "編輯",
+      "delete": "刪除",
+      "deleteConfirm": "要刪除這則公告嗎？",
+      "cancelEdit": "回到新增公告",
+      "saved": "已儲存。",
+      "saveFailed": "無法儲存。",
+      "draft": "草稿",
+      "empty": "沒有公告。",
+      "editing": "正在編輯公告"
     }
   },
   "report": {
@@ -910,5 +933,22 @@
     "empty": "自由討論版還沒有貼文。",
     "loadMore": "載入更多貼文",
     "link": "自由討論版"
+  },
+  "notices": {
+    "title": "公告",
+    "subtitle": "收錄 App 更新內容與營運團隊的消息。",
+    "filterAria": "公告類型",
+    "filter": {
+      "all": "全部",
+      "notice": "公告",
+      "update": "更新"
+    },
+    "kind": {
+      "notice": "公告",
+      "update": "更新"
+    },
+    "pinned": "置頂",
+    "empty": "目前沒有公告。",
+    "loadError": "無法載入公告。"
   }
 }

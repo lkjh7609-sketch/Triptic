@@ -11,6 +11,7 @@ import {
 } from './notificationStore';
 import { useDestinationCoords, useTravelAlerts } from '@/features/travelAlerts/useTravelAlerts';
 import { buildAlertNotices, type AlertNotice } from './alertNotices';
+import { useAnnouncements } from '@/features/notices/useAnnouncements';
 import { buildTripReminders, type TripReminder } from './tripReminders';
 import {
   COMMUNITY_ID_PREFIX,
@@ -20,7 +21,22 @@ import {
   type CommunityNotice,
 } from './communityNotices';
 
-export type TripNotification = ((TripReminder | AlertNotice) & { unread: boolean }) | CommunityNotice;
+/** 운영자가 올린 공지·업데이트(0088) — 읽음·지움은 이 기기에 기록한다 */
+export interface AnnouncementNotice {
+  kind: 'announcement';
+  id: string;
+  announcementId: string;
+  title: string;
+  noticeKind: 'notice' | 'update';
+  version: string | null;
+  unread: boolean;
+}
+
+export type TripNotification = ((TripReminder | AlertNotice) & { unread: boolean }) | CommunityNotice | AnnouncementNotice;
+
+/** 종 알림에 올리는 공지는 최근 한 달 안의 것만, 최대 5개 */
+const ANNOUNCEMENT_DAYS = 30;
+const ANNOUNCEMENT_MAX = 5;
 
 const communityKey = (userId: string | null) => ['notifications', 'community', userId ?? ''] as const;
 
@@ -57,6 +73,7 @@ export function useTripNotifications() {
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
   });
+  const { data: announcements } = useAnnouncements(!!userId);
   const markCommunityRead = useMutation({
     mutationFn: () => markCommunityNoticesRead(userId!),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: communityKey(userId) }),
@@ -82,9 +99,24 @@ export function useTripNotifications() {
     const local = all
       .filter((r) => !state.dismissed.includes(r.id))
       .map((r) => ({ ...r, unread: !state.read.includes(r.id) }));
-    // 사람들이 남긴 반응이 가장 새로운 소식이라 맨 위에
-    return [...(community ?? []), ...local];
-  }, [userId, state, trips, coords, alerts, todayYmd, community]);
+    const since = Date.now() - ANNOUNCEMENT_DAYS * 86_400_000;
+    const notices: AnnouncementNotice[] = (announcements ?? [])
+      .filter((a) => new Date(a.published_at).getTime() >= since)
+      .slice(0, ANNOUNCEMENT_MAX)
+      .map((a) => ({
+        kind: 'announcement' as const,
+        id: `announcement:${a.id}`,
+        announcementId: a.id,
+        title: a.title,
+        noticeKind: a.kind,
+        version: a.version,
+        unread: false,
+      }))
+      .filter((n) => !state.dismissed.includes(n.id))
+      .map((n) => ({ ...n, unread: !state.read.includes(n.id) }));
+    // 사람들이 남긴 반응이 가장 새로운 소식이라 맨 위에, 그다음 공지
+    return [...(community ?? []), ...notices, ...local];
+  }, [userId, state, trips, coords, alerts, todayYmd, community, announcements]);
 
   return {
     signedIn: !!userId,

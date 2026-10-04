@@ -41,6 +41,7 @@ export function NotificationBell() {
   if (!signedIn) return null;
 
   const message = (n: TripNotification) => {
+    if (n.kind === 'announcement') return t(`notifications.announcement.${n.noticeKind}`, { version: n.version ?? '' });
     if (n.kind === 'community') return t(`notifications.community.${n.type}`, { name: n.actorName || t('notifications.community.someone') });
     if (n.kind === 'alert') {
       return t('travelAlert.bell', {
@@ -86,7 +87,13 @@ export function NotificationBell() {
               {items.map((n) => (
                 <li key={n.id} className={styles.item}>
                   <Link
-                    to={n.kind === 'community' ? `/community/post/${n.postId}${n.commentId ? `#comment-${n.commentId}` : ''}` : `/plan/${n.tripId}`}
+                    to={
+                      n.kind === 'community'
+                        ? `/community/post/${n.postId}${n.commentId ? `#comment-${n.commentId}` : ''}`
+                        : n.kind === 'announcement'
+                          ? `/notices?open=${n.announcementId}`
+                          : `/plan/${n.tripId}`
+                    }
                     className={styles.itemLink}
                     onClick={() => setOpen(false)}
                   >
