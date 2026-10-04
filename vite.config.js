@@ -91,7 +91,7 @@ export default defineConfig(({ mode }) => {
             const api = (env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
             // geo는 언어를 정한 적 없는 첫 방문에서만(n:1) — i18n이 접속 국가로 첫 언어를 정하는 요청(src/shared/i18n/geoLocale.ts)을 앞당겨,
             // 영어로 먼저 그렸다가 한국어로 바뀌는 순간을 줄인다
-            // p: 이 경로에서만 시작한다 — 홈(/)은 특가·접속 국가, 공항(/airports)은 인천공항 전광판
+            // p: 이 경로에서만 시작한다 — 홈(/)은 특가·접속 국가, 공항(/airports)은 인천공항 전광판·주차장
             const reqs = [
               [`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, { url: `${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, path: '/' }],
               [`${api}/api/geo`, { url: `${api}/api/geo`, init: { cache: 'no-store' }, first: true, path: '/' }],
@@ -101,6 +101,14 @@ export default defineConfig(({ mode }) => {
                 'incheon-board',
                 {
                   url: `${supa}/functions/v1/incheon-board`,
+                  init: { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` }, body: '{}' },
+                  path: '/airports',
+                },
+              ]);
+              reqs.push([
+                'airport-parking',
+                {
+                  url: `${supa}/functions/v1/airport-parking`,
                   init: { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` }, body: '{}' },
                   path: '/airports',
                 },
