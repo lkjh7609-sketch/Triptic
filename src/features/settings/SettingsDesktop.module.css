@@ -640,3 +640,53 @@
   font-size: 0.75rem;
   text-align: center;
 }
+
+/* 프로필 사진 변경 */
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cameraBtn {
+  appearance: none;
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--surface-card);
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  cursor: pointer;
+}
+
+.cameraBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.fileInput {
+  display: none;
+}
+
+.photoRemove {
+  appearance: none;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.limitFull {
+  color: var(--danger-text);
+  font-weight: 700;
+}

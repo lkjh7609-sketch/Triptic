@@ -150,7 +150,17 @@
       "sessionDesc": "현재 사용 중인 기기: {{device}}",
       "dangerTitle": "위험 구역",
       "dangerDesc": "모든 여행 일정 및 데이터가 영구 삭제됩니다.",
-      "dangerBtn": "계정 탈퇴 신청"
+      "dangerBtn": "계정 탈퇴 신청",
+      "photoChange": "프로필 사진 변경",
+      "photoRemove": "사진 삭제",
+      "photoDone": "프로필 사진을 바꿨어요.",
+      "photoRemoved": "프로필 사진을 지웠어요.",
+      "photoError": {
+        "not_image": "사진 파일만 고를 수 있어요.",
+        "too_large": "사진이 너무 커요. 15MB 이하로 골라 주세요.",
+        "decode_failed": "이 사진은 읽을 수 없어요. JPG·PNG 사진을 골라 주세요.",
+        "upload_failed": "사진을 올리지 못했어요. 잠시 후 다시 시도해 주세요."
+      }
     },
     "display": {
       "title": "디스플레이 및 환경설정",
@@ -200,6 +210,12 @@
       "termsDesc": "서비스 이용 약관 안내",
       "privacyDesc": "데이터 보호 및 보관 규정",
       "licensesDesc": "오픈소스 소프트웨어 고지"
+    },
+    "free": {
+      "title": "무료 티어",
+      "used": "여행 생성 {{used}} / {{limit}}개 사용",
+      "left": "남은 여행 생성 {{left}}개",
+      "full": "여행 생성 한도를 모두 썼어요"
     }
   },
   "password": {

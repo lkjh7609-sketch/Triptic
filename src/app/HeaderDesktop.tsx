@@ -58,7 +58,7 @@ export function HeaderDesktop() {
     user?.user_metadata?.full_name ||
     t('account.fallbackName', { ns: 'settings' });
   // 소셜 로그인 아바타가 없으면 외부 서비스(이름을 URL로 전송) 대신 이니셜로 표시한다
-  const avatarUrl: string | undefined = user?.user_metadata?.avatar_url || undefined;
+  const avatarUrl: string | undefined = profile?.avatar_url || user?.user_metadata?.avatar_url || undefined;
 
   // 설정 화면과 같은 경로로 로그아웃한다 — 오프라인 캐시(IndexedDB)까지 지워야 다음 사용자에게
   // 이전 사용자의 여행 데이터가 남지 않는다
