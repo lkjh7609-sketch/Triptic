@@ -19,6 +19,31 @@
   cursor: pointer;
 }
 
+/* PC: 도시 선택 버튼 옆 알약 — 크기·모양은 DestinationSelector의 도시 버튼과 같게(px-5 py-2.5, 풀 라운드, 테두리) */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  padding: 10px 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  color: var(--text-body);
+  font: inherit;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pill:hover {
+  background: var(--surface-subtle);
+}
+
 .icon {
   flex: none;
   color: var(--warning);
