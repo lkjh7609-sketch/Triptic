@@ -35,6 +35,8 @@ export function CommunityScreen() {
 
   const feed = usePostsFeed({ tab: tab === 'following' ? 'following' : 'all', viewerId: user?.id ?? null });
   const [searchQuery, setSearchQuery] = useState('');
+  // 동행 탭에서 고른 도시(그 도시 모집글만 보여 준다) — 선택 버튼은 전체·구독 탭과 같은 자리에 둔다
+  const [companionDestinationId, setCompanionDestinationId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const handleSearch = () => {
     if (!searchQuery) return;
@@ -67,6 +69,8 @@ export function CommunityScreen() {
           setTab={setTab}
           followedCount={followedDestinations.length}
           feed={feed}
+          companionDestinationId={companionDestinationId}
+          setCompanionDestinationId={setCompanionDestinationId}
         />
       </div>
     );
@@ -134,9 +138,18 @@ export function CommunityScreen() {
           </button>
         </div>
 
-        {tab !== 'companion' && destinations && destinations.length > 0 ? (
+        {destinations && destinations.length > 0 ? (
           <div className={styles.selectorGutter}>
-            <DestinationSelector destinations={destinations} />
+            {tab === 'companion' ? (
+              <DestinationSelector
+                destinations={destinations}
+                selectedDestinationId={companionDestinationId}
+                onCitySelect={(city) => setCompanionDestinationId(city.id)}
+                onClear={() => setCompanionDestinationId(undefined)}
+              />
+            ) : (
+              <DestinationSelector destinations={destinations} />
+            )}
           </div>
         ) : null}
 
@@ -158,7 +171,7 @@ export function CommunityScreen() {
       </div>
 
       {tab === 'companion' ? (
-        <CompanionFeedList destinations={destinations} />
+        <CompanionFeedList destinationId={companionDestinationId} />
       ) : tab === 'following' && !user ? (
         <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('feed.loginToFollow')} />
       ) : feed.isLoading ? (
