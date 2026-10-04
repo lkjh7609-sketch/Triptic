@@ -924,3 +924,51 @@
   font-size: 0.75rem;
   color: var(--text-muted);
 }
+
+/* 글 제목 한 줄 */
+.titleInput {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.titleInput::placeholder {
+  color: var(--text-placeholder);
+  font-weight: 500;
+}
+
+.titleInput:focus {
+  outline: 0;
+  border-color: var(--border-focus);
+}
+
+.titleInputError {
+  border-color: var(--danger-text);
+}
+
+/* 수정 화면 — 바꿀 수 없는 도시·분류·일정 */
+.lockedRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lockedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: var(--surface-sunken, var(--brand-tint));
+  color: var(--text-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

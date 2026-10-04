@@ -29,7 +29,11 @@ vi.mock('./hooks/useDestinations', () => ({
     ],
   }),
 }));
-vi.mock('./hooks/usePosts', () => ({ useCreatePost: () => ({ mutateAsync, isPending: false }) }));
+vi.mock('./hooks/usePosts', () => ({
+  useCreatePost: () => ({ mutateAsync, isPending: false }),
+  useUpdatePost: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  usePost: () => ({ data: undefined, isLoading: false }),
+}));
 vi.mock('./imageProcessing', () => ({
   getPostImageUrl: (p: string) => `https://img.test/${p}`,
   uploadPostImage: vi.fn(),
@@ -74,6 +78,10 @@ async function advance(ms = 800) {
   });
 }
 
+function fillTitle(value = '교토 새벽 산책') {
+  fireEvent.change(screen.getByPlaceholderText('제목을 입력해 주세요'), { target: { value } });
+}
+
 function pickCategory(name = '여행기·후기') {
   fireEvent.click(screen.getByRole('radio', { name }));
 }
@@ -115,6 +123,19 @@ describe('ComposePostScreen — 시안 구성', () => {
     expect(screen.getByText('필수 항목입니다')).toBeInTheDocument();
   });
 
+  it('제목이 비어 있으면 게시하지 않고 제목 칸에 안내한다', async () => {
+    renderScreen();
+    fireEvent.click(screen.getByRole('button', { name: /여행지를 선택해 주세요/ }));
+    fireEvent.click(screen.getByText('교토'));
+    fireEvent.click(screen.getByRole('button', { name: '선택 완료' }));
+    await advance(300);
+    pickCategory();
+    fireEvent.change(screen.getByPlaceholderText(/여행 이야기를 들려주세요/), { target: { value: '본문만 있어요' } });
+    fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
+    expect(mutateAsync).not.toHaveBeenCalled();
+    expect(screen.getByText('제목을 입력해 주세요', { selector: 'span' })).toBeInTheDocument();
+  });
+
   it('여행지를 고르고 글을 써서 게시하면 글 화면으로 간다(복사 허용은 일정이 없으면 보내지 않는다)', async () => {
     mutateAsync.mockResolvedValue({ id: 'p1', status: 'published' });
     renderScreen();
@@ -125,10 +146,11 @@ describe('ComposePostScreen — 시안 구성', () => {
     expect(screen.getByRole('button', { name: /교토, 일본/ })).toBeInTheDocument();
     fireEvent.change(screen.getByPlaceholderText(/여행 이야기를 들려주세요/), { target: { value: '  새벽 산책이 좋았어요  ' } });
     pickCategory('질문·Q&A');
+    fillTitle();
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
     expect(mutateAsync).toHaveBeenCalled();
-    expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: 'kyoto', body: '새벽 산책이 좋았어요', tripId: null, allowCopy: false, userId: 'u1', category: 'qna', tags: [] });
+    expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: 'kyoto', title: '교토 새벽 산책', body: '새벽 산책이 좋았어요', tripId: null, allowCopy: false, userId: 'u1', category: 'qna', tags: [] });
     expect(navigate).toHaveBeenCalledWith('/community/post/p1');
     expect(localStorage.getItem('triptic-compose-draft:u1')).toBeNull();
   });
@@ -149,6 +171,7 @@ describe('ComposePostScreen — 시안 구성', () => {
     await advance(300);
     fireEvent.change(screen.getByPlaceholderText(/여행 이야기를 들려주세요/), { target: { value: '글' } });
     pickCategory();
+    fillTitle();
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
     expect(mutateAsync).toHaveBeenCalled();
@@ -165,6 +188,7 @@ describe('ComposePostScreen — 시안 구성', () => {
     const box = screen.getByPlaceholderText(/여행 이야기를 들려주세요/);
     fireEvent.change(box, { target: { value: '오픈채팅으로 연락 주세요' } });
     pickCategory();
+    fillTitle();
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
     expect(screen.getByText(/부적절한 표현이나 개인 연락처를 수정해 주세요/)).toBeInTheDocument();
@@ -191,6 +215,7 @@ describe('ComposePostScreen — 분류·태그', () => {
     expect(mutateAsync).not.toHaveBeenCalled();
     expect(screen.getByText('분류를 골라 주세요')).toBeInTheDocument();
     pickCategory();
+    fillTitle();
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
     expect(mutateAsync).toHaveBeenCalled();
@@ -201,6 +226,7 @@ describe('ComposePostScreen — 분류·태그', () => {
     renderScreen();
     await fillRequired();
     pickCategory('로컬 맛집·숙소');
+    fillTitle();
     const input = () => screen.getByPlaceholderText('태그를 입력하고 Enter');
     fireEvent.change(input(), { target: { value: '#바투 동굴' } });
     fireEvent.keyDown(input(), { key: 'Enter' });

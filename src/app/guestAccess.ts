@@ -9,6 +9,7 @@ export function requiresLogin(pathname: string): boolean {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (path === '/settings' || path.startsWith('/settings/')) return true;
   if (path === '/community/compose' || path === '/community/companion/new') return true;
+  if (/^\/community\/post\/[^/]+\/edit$/.test(path)) return true;
   if (/^\/community\/companion\/[^/]+\/(match|chat|expenses)$/.test(path)) return true;
   // 내 여행 상세는 로그인이 필요하다. 샘플과 이 기기에 만든 임시 여행(guest-…)은 예외
   const trip = /^\/plan\/([^/]+)$/.exec(path);

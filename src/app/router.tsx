@@ -49,6 +49,13 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'community/post/:postId/edit',
+          lazy: async () => {
+            const { EditPostScreen } = await retryChunkLoad(() => import('@/features/community/ComposePostScreen'));
+            return { Component: EditPostScreen };
+          },
+        },
+        {
           path: 'community/compose',
           lazy: async () => {
             const { ComposePostScreen } = await retryChunkLoad(() => import('@/features/community/ComposePostScreen'));
