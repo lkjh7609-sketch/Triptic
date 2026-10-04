@@ -7,11 +7,10 @@ import { useSession } from '@/shared/hooks/useSession';
 import { AuthorName } from '../AuthorName';
 import { BookmarkButton } from '../BookmarkButton';
 import { PostActionsMenu } from '../PostActionsMenu';
-import { stripMarkdown } from '../editor/markdownParse';
+import { postTitleOf } from '../postMeta';
 import { useToggleLike } from '../hooks/usePosts';
 import { getPostImageUrl } from '../imageProcessing';
 import type { Post } from '../types';
-import { splitBody } from './channelHelpers';
 import styles from './ChannelFeedCards.module.css';
 
 /** 도시 채널의 글 카드 — 본문 첫 줄이 제목, 나머지가 발췌, 첫 사진이 오른쪽 썸네일. 질문(qna) 글은 답변 수·채택 답변이 붙는다 */
@@ -26,7 +25,8 @@ export function ChannelPostCard({
   const { user } = useSession();
   const navigate = useNavigate();
   const toggleLike = useToggleLike(post.id, user?.id ?? null);
-  const { title, excerpt } = splitBody(stripMarkdown(post.body));
+  // 목록에는 제목만 — 본문은 글을 열어야 보인다
+  const title = postTitleOf(post);
   const cover = post.images?.[0];
   const name = post.author?.display_name ?? '';
 
@@ -89,7 +89,6 @@ export function ChannelPostCard({
       <div className={cover ? styles.bodyWithCover : styles.body}>
         <div className={styles.text}>
           <h3 className={styles.title}>{title}</h3>
-          {excerpt ? <p className={styles.excerpt}>{excerpt}</p> : null}
         </div>
         {cover ? (
           <img
