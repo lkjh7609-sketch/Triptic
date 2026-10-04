@@ -55,7 +55,15 @@ function flushQueue() {
  */
 export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i, /transition was aborted because of invalid state/i];
 
-export async function initMonitoring(): Promise<void> {
+let initPromise: Promise<void> | null = null;
+
+/** 두 번 불려도 한 번만 받는다 — 오류가 먼저 터져 앞당겨 부르는 경우와 예약된 호출이 겹칠 수 있다 */
+export function initMonitoring(): Promise<void> {
+  initPromise ??= loadMonitoring();
+  return initPromise;
+}
+
+async function loadMonitoring(): Promise<void> {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
   if (sentryDsn && !sentryModule) {
     const Sentry = await import('@sentry/react');
@@ -91,6 +99,7 @@ export async function initMonitoring(): Promise<void> {
     posthogModule = posthog;
   }
   flushQueue();
+  flushErrors();
 }
 
 function capture(name: string, props?: Record<string, unknown>): void {
@@ -125,10 +134,50 @@ export function resetIdentity(): void {
   sentryModule?.setUser(null);
 }
 
+/** Sentry가 준비되기 전에 난 오류 — 준비되면 내보낸다 */
+let errorQueue: { error: unknown; context?: Record<string, unknown> }[] = [];
+const ERROR_QUEUE_MAX = 20;
+
+function flushErrors() {
+  const pending = errorQueue;
+  errorQueue = [];
+  for (const item of pending) sentryModule?.captureException(item.error, { extra: item.context });
+}
+
 export function captureError(error: unknown, context?: Record<string, unknown>): void {
   if (sentryModule) {
     sentryModule.captureException(error, { extra: context });
-  } else if (import.meta.env.DEV) {
-    console.error('[monitoring:dev-only]', error, context);
+  } else {
+    if (import.meta.env.DEV) console.error('[monitoring:dev-only]', error, context);
+    // 첫 화면이 그려질 때까지 SDK 내려받기를 미루는 동안(scheduleMonitoring) 난 오류는 모아 두고, 오류가 났으니 SDK를 바로 받아 내보낸다
+    // (DSN이 없으면 initMonitoring이 아무것도 안 받고 끝나 모은 것은 flushErrors에서 버려진다)
+    if (errorQueue.length < ERROR_QUEUE_MAX) errorQueue.push({ error, context });
+    void initMonitoring();
   }
+}
+
+/**
+ * 부팅 때 바로 SDK(Sentry ~150KB + PostHog ~100KB)를 받으면 첫 화면 그리기와 같은 회선·메인 스레드를 다툰다(Lighthouse 측정 2026-10-04).
+ * 그래서 페이지 load가 끝나고 브라우저가 한가할 때 받는다(최대 5초 안). 그 전에 난 처리 안 된 오류는 captureError로 모았다가
+ * SDK가 준비되면 내보낸다(오류가 나면 기다리지 않고 바로 받는다).
+ */
+export function scheduleMonitoring(): void {
+  if (initPromise) return;
+  const onError = (e: ErrorEvent) => captureError(e.error ?? e.message);
+  const onRejection = (e: PromiseRejectionEvent) => captureError(e.reason);
+  window.addEventListener('error', onError);
+  window.addEventListener('unhandledrejection', onRejection);
+  const start = () => {
+    // 이 시점부터는 Sentry가 자기 전역 핸들러를 달기 때문에 우리 것은 뗀다(중복 보고 방지)
+    void initMonitoring().finally(() => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    });
+  };
+  const idle = () => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 5000 });
+    else setTimeout(start, 2000);
+  };
+  if (document.readyState === 'complete') idle();
+  else window.addEventListener('load', idle, { once: true });
 }
