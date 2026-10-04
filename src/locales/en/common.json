@@ -137,6 +137,10 @@
       "post_like": "{{name}} liked your post",
       "comment_like": "{{name}} liked your comment",
       "someone": "Someone"
+    },
+    "announcement": {
+      "notice": "A new notice was posted",
+      "update": "New update {{version}}"
     }
   },
   "travelAlert": {

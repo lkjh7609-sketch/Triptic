@@ -11,7 +11,8 @@
       "sales": "판매",
       "analytics": "분석",
       "archive": "보관함",
-      "googleLink": "Google 연동"
+      "googleLink": "Google 연동",
+      "notices": "공지"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -178,6 +179,28 @@
       "none": "도시 단위 장소를 찾지 못했어요.",
       "error": "오류: {{message}}",
       "accept": "이 장소로 연결"
+    },
+    "notices": {
+      "title": "공지사항·업데이트 관리",
+      "kind": "분류",
+      "kindNotice": "공지",
+      "kindUpdate": "업데이트",
+      "titleLabel": "제목",
+      "versionLabel": "앱 버전 (업데이트일 때, 선택)",
+      "bodyLabel": "내용 (굵게·목록·링크 가능)",
+      "pinned": "맨 위에 고정",
+      "published": "공개(체크 해제하면 초안)",
+      "save": "저장",
+      "saveNew": "새 공지 올리기",
+      "edit": "고치기",
+      "delete": "삭제",
+      "deleteConfirm": "이 공지를 삭제할까요?",
+      "cancelEdit": "새로 쓰기로 돌아가기",
+      "saved": "저장했어요.",
+      "saveFailed": "저장하지 못했어요.",
+      "draft": "초안",
+      "empty": "등록한 공지가 없어요.",
+      "editing": "공지 고치는 중"
     }
   },
   "report": {
@@ -910,5 +933,22 @@
     "empty": "아직 자유게시판에 글이 없어요.",
     "loadMore": "자유게시판 글 더 보기",
     "link": "자유게시판"
+  },
+  "notices": {
+    "title": "공지사항",
+    "subtitle": "앱 업데이트 내용과 운영자가 전하는 소식을 모았어요.",
+    "filterAria": "공지 분류",
+    "filter": {
+      "all": "전체",
+      "notice": "공지",
+      "update": "업데이트"
+    },
+    "kind": {
+      "notice": "공지",
+      "update": "업데이트"
+    },
+    "pinned": "고정",
+    "empty": "아직 등록된 공지가 없어요.",
+    "loadError": "공지를 불러오지 못했어요."
   }
 }

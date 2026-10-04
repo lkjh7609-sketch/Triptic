@@ -25,6 +25,12 @@ export function HomeFooter() {
           <span className={styles.sep} aria-hidden="true">
             ·
           </span>
+          <Link to="/notices" className={styles.link}>
+            {t('page.footer.notices')}
+          </Link>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
           <a href="/terms.html" target="_blank" rel="noopener noreferrer" className={styles.link}>
             {t('desktop.terms')}
           </a>

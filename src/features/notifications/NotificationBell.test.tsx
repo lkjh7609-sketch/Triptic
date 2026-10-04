@@ -7,6 +7,8 @@ import { NotificationBell } from './NotificationBell';
 
 const session = vi.hoisted(() => ({ user: { id: 'u1' } as { id: string } | null }));
 const trips = vi.hoisted(() => ({ data: [] as unknown[] }));
+const announce = vi.hoisted(() => ({ rows: [] as unknown[] }));
+vi.mock('@/features/notices/useAnnouncements', () => ({ useAnnouncements: () => ({ data: announce.rows }) }));
 const community = vi.hoisted(() => ({ rows: [] as unknown[], markRead: vi.fn(), remove: vi.fn() }));
 vi.mock('./communityNotices', async () => {
   const actual = await vi.importActual<typeof import('./communityNotices')>('./communityNotices');
@@ -71,6 +73,7 @@ beforeEach(() => {
   session.user = { id: 'u1' };
   trips.data = [];
   community.rows = [];
+  announce.rows = [];
   community.markRead.mockClear();
   community.remove.mockClear();
   travel.alerts = new Map();
@@ -166,5 +169,18 @@ describe('NotificationBell', () => {
     fireEvent.click(await screen.findByRole('button', { name: '알림 (안 읽음 1개)' }));
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(community.markRead).toHaveBeenCalled());
+  });
+
+  it('최근 공지·업데이트가 알림에 뜨고, 누르면 공지 페이지의 그 공지로 간다', async () => {
+    announce.rows = [
+      { id: 'a1', kind: 'update', title: '3.1.0 업데이트', body: '내용', version: '3.1.0', pinned: false, published: true, published_at: new Date().toISOString(), updated_at: '' },
+      { id: 'a2', kind: 'notice', title: '오래된 공지', body: '내용', version: null, pinned: false, published: true, published_at: new Date(Date.now() - 90 * 86_400_000).toISOString(), updated_at: '' },
+    ];
+    setup();
+    fireEvent.click(await screen.findByRole('button', { name: '알림 (안 읽음 1개)' }));
+    expect(screen.getByText('3.1.0 업데이트')).toBeInTheDocument();
+    expect(screen.getByText('새 업데이트 소식이에요 3.1.0')).toBeInTheDocument();
+    expect(screen.queryByText('오래된 공지')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link')[0]).toHaveAttribute('href', '/notices?open=a1');
   });
 });

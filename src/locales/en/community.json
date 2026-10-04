@@ -11,7 +11,8 @@
       "sales": "Sales",
       "analytics": "Analytics",
       "archive": "Archive",
-      "googleLink": "Google link"
+      "googleLink": "Google link",
+      "notices": "Notices"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -180,6 +181,28 @@
       "none": "No city-level place found.",
       "error": "Error: {{message}}",
       "accept": "Use this place"
+    },
+    "notices": {
+      "title": "Manage notices & updates",
+      "kind": "Type",
+      "kindNotice": "Notice",
+      "kindUpdate": "Update",
+      "titleLabel": "Title",
+      "versionLabel": "App version (for updates, optional)",
+      "bodyLabel": "Body (bold, lists and links supported)",
+      "pinned": "Pin to top",
+      "published": "Published (uncheck for draft)",
+      "save": "Save",
+      "saveNew": "Post notice",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this notice?",
+      "cancelEdit": "Back to new notice",
+      "saved": "Saved.",
+      "saveFailed": "Couldn't save.",
+      "draft": "Draft",
+      "empty": "No notices yet.",
+      "editing": "Editing notice"
     }
   },
   "report": {
@@ -935,5 +958,22 @@
     "empty": "No posts on the free board yet.",
     "loadMore": "Load more posts",
     "link": "Free board"
+  },
+  "notices": {
+    "title": "Notices",
+    "subtitle": "App update notes and news from the team.",
+    "filterAria": "Notice type",
+    "filter": {
+      "all": "All",
+      "notice": "Notices",
+      "update": "Updates"
+    },
+    "kind": {
+      "notice": "Notice",
+      "update": "Update"
+    },
+    "pinned": "Pinned",
+    "empty": "No notices yet.",
+    "loadError": "Couldn't load notices."
   }
 }
