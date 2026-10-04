@@ -100,6 +100,15 @@
   white-space: nowrap;
 }
 
+/* 영어 제목은 글자가 길어(62자) 42px로는 두 줄이 된다 — 첫 방문에서 영어로 먼저 그려졌다가 접속 국가로 한국어로 바뀔 때
+   히어로가 52px 줄어들며 아래 화면 전체가 밀렸다(Lighthouse CLS 0.297, 2026-10-04). 크기를 줄여 한 줄로 두고
+   줄 높이는 한국어 제목(2.625rem × 1.25)과 같게 맞춰 언어가 바뀌어도 히어로 높이가 같다. */
+:global(html:lang(en)) .heroTitle {
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+  line-height: 3.28125rem;
+  white-space: nowrap;
+}
+
 /* ===== 캡슐 탭 (PC 히어로·모바일 본문 공통) ===== */
 .capsule {
   display: flex;
