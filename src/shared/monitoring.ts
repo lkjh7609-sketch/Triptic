@@ -91,6 +91,8 @@ async function loadMonitoring(): Promise<void> {
       // 화면 글자·입력이 새어 나가지 않게: 클릭 자동 수집과 화면 녹화는 끄고, 위에서 정한 이벤트만 보낸다
       autocapture: false,
       disable_session_recording: true,
+      // 설문 기능은 안 쓴다 — 켜 두면 초기화 직후 surveys.js(33KB)를 따로 받는다(Lighthouse 2026-10-04)
+      disable_surveys: true,
       // 쿠키 대신 브라우저 저장소(localStorage)만 쓴다
       persistence: 'localStorage',
       // 브라우저의 "추적 안 함" 설정을 켠 사용자는 이용 분석 이벤트를 보내지 않는다(방침 1번에 안내)
