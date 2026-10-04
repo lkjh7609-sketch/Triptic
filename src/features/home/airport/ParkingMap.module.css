@@ -1,0 +1,654 @@
+/* 공항 주차장 평면도 — 홈 카드 톤(--h-*)과 앱 공통 의미 색(원활=success, 혼잡=warning, 만차=danger). 다크 모드는 토큰이 따라간다 */
+.section {
+  margin-top: 40px;
+}
+
+.head {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleIcon {
+  color: var(--h-accent-text);
+}
+
+/* ── 터미널 전환(인천) ── */
+.planTabs {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 9999px;
+  background: var(--h-chip);
+}
+
+.planOn,
+.planOff {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9999px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.planOn {
+  background: var(--h-card);
+  color: var(--h-ink);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.planOff {
+  background: transparent;
+  color: var(--h-ink-2);
+}
+
+.planOff:hover {
+  color: var(--h-ink);
+}
+
+.total {
+  margin: -12px 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--h-ink);
+}
+
+.notice {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--warning-tint);
+  color: var(--warning-text);
+  font-size: 0.8125rem;
+}
+
+.empty {
+  margin: 0;
+  padding: 32px 16px;
+  border-radius: 16px;
+  background: var(--h-card);
+  color: var(--h-ink-2);
+  text-align: center;
+}
+
+.skeleton {
+  height: 320px;
+  border-radius: 16px;
+  background: var(--h-sunken);
+}
+
+/* ── 배치: PC는 평면도 | 오른쪽 상세·목록, 모바일은 위아래 ── */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.mapCard {
+  overflow: hidden;
+  border: 1px solid var(--h-line);
+  border-radius: 16px;
+  background: var(--h-card);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--h-sunken);
+  font-family: var(--h-font);
+  touch-action: manipulation;
+}
+
+/* 확대는 평면도 전체(<g>)를 옮기고 키운다 — 좌표는 viewBox 단위 */
+.zoom,
+.zoomStill {
+  transform-origin: 0 0;
+  transform-box: view-box;
+}
+
+.zoom {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.road {
+  fill: none;
+  stroke: var(--h-line-soft);
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:root[data-theme='dark'] .road {
+  stroke: var(--border);
+}
+
+.terminal {
+  fill: #c8c6c1;
+}
+
+.muted {
+  fill: #e4e2dd;
+}
+
+:root[data-theme='dark'] .terminal {
+  fill: #3a4252;
+}
+
+:root[data-theme='dark'] .muted {
+  fill: #252c3a;
+}
+
+.contextText {
+  fill: var(--h-ink-2);
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.compass {
+  fill: var(--h-ink-3);
+  font-weight: 800;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* ── 주차장 블록(누를 수 있음) ── */
+.block {
+  cursor: pointer;
+  outline: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.18s ease, opacity 0.25s ease, filter 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shape {
+  stroke-width: 3;
+  stroke-linejoin: round;
+  transition: stroke-width 0.18s ease, fill 0.4s ease;
+}
+
+.tone_smooth {
+  --tone: var(--success);
+}
+
+.tone_busy {
+  --tone: var(--warning);
+}
+
+.tone_full {
+  --tone: var(--danger);
+}
+
+.tone_none {
+  --tone: var(--h-ink-3);
+}
+
+.block .shape {
+  fill: color-mix(in srgb, var(--tone) 24%, var(--h-card));
+  stroke: var(--tone);
+}
+
+.hatch {
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.hatchLine {
+  stroke: var(--danger);
+  stroke-width: 4;
+}
+
+.blockName,
+.blockCount {
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--h-card);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+.blockName {
+  fill: var(--h-ink-2);
+  font-weight: 600;
+}
+
+.blockCount {
+  fill: var(--h-ink);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) {
+  .block:hover {
+    transform: scale(1.03);
+    filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.16));
+  }
+
+  .block:hover .shape {
+    stroke-width: 5;
+  }
+}
+
+.block:active {
+  transform: scale(0.97);
+}
+
+.block:focus-visible .shape {
+  stroke-width: 7;
+}
+
+.blockOn .shape {
+  stroke-width: 6;
+  fill: color-mix(in srgb, var(--tone) 38%, var(--h-card));
+}
+
+.blockDim {
+  opacity: 0.45;
+}
+
+/* 선택한 블록 둘레가 한 번 퍼지며 사라지는 고리 */
+.ring,
+.ringStill {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 4;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ring {
+  animation: ring 1.4s ease-out infinite;
+}
+
+.ringStill {
+  opacity: 0;
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
+/* ── 범례 ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--h-line);
+  font-size: 0.8125rem;
+  color: var(--h-ink-2);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--tone);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--tone) 24%, var(--h-card));
+}
+
+.hint {
+  margin-left: auto;
+  color: var(--h-ink-3);
+}
+
+/* ── 오른쪽(모바일은 아래): 상세 + 목록 ── */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--h-line);
+  border-radius: 12px;
+  background: var(--h-card);
+  color: var(--h-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+li.row {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  button.row:hover {
+    border-color: var(--h-accent);
+    box-shadow: var(--h-shadow-sm);
+  }
+}
+
+button.row:active {
+  transform: scale(0.98);
+}
+
+.rowOn {
+  border-color: var(--h-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--h-accent) 25%, transparent);
+}
+
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+
+.rowName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.rowLeft {
+  flex: none;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.chip_smooth {
+  background: var(--success-tint);
+  color: var(--success-text);
+}
+
+.chip_busy {
+  background: var(--warning-tint);
+  color: var(--warning-text);
+}
+
+.chip_full {
+  background: var(--danger-tint);
+  color: var(--danger-text);
+}
+
+/* ── 상세 ── */
+.detail {
+  padding: 16px;
+  border: 1px solid var(--h-line);
+  border-radius: 16px;
+  background: var(--h-card);
+  box-shadow: var(--h-shadow-md);
+  animation: detailIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes detailIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.detailName {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--h-ink);
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -8px -8px -8px 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--h-ink-2);
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: var(--h-chip);
+}
+
+.bigRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.big {
+  font-size: 2.5rem;
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--h-ink);
+}
+
+.text_smooth {
+  color: var(--success-text);
+}
+
+.text_busy {
+  color: var(--warning-text);
+}
+
+.text_full {
+  color: var(--danger-text);
+}
+
+.bigUnit {
+  font-weight: 600;
+  color: var(--h-ink-2);
+}
+
+.bigRow .chip {
+  margin-left: auto;
+  align-self: center;
+}
+
+.bar {
+  height: 10px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--h-chip);
+}
+
+.barFill,
+.floorFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fill_smooth {
+  background: var(--success);
+}
+
+.fill_busy {
+  background: var(--warning);
+}
+
+.fill_full {
+  background: var(--danger);
+}
+
+.detailMeta {
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+  color: var(--h-ink-2);
+}
+
+.stack {
+  margin-top: 16px;
+}
+
+.stackTitle {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--h-ink-2);
+}
+
+.stackList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 층 하나 — 위에서 아래로 차례로 들어온다 */
+.floor {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: var(--h-sunken);
+  animation: floorIn 0.35s ease both;
+}
+
+@keyframes floorIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.floorTag {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--h-ink);
+}
+
+.floorBar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--h-chip);
+}
+
+.floorLeft {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+}
+
+.others {
+  margin-top: 16px;
+}
+
+.othersTitle {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--h-ink-2);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block,
+  .shape,
+  .row,
+  .barFill,
+  .floorFill,
+  .detail,
+  .floor,
+  .planOn,
+  .planOff {
+    transition: none;
+    animation: none;
+  }
+}

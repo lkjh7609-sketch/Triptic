@@ -653,14 +653,84 @@
     "label": "空港を選ぶ",
     "tabs": {
       "icn": "仁川国際空港",
+      "gmp": "金浦",
       "tae": "大邱",
       "pus": "金海",
       "cju": "済州"
     },
     "full": {
+      "gmp": "金浦国際空港",
       "tae": "大邱国際空港",
       "pus": "金海国際空港",
       "cju": "済州国際空港"
+    },
+    "parking": {
+      "title": "駐車場リアルタイム",
+      "sub": "{{time}}時点 · 2分ごとに更新",
+      "source": {
+        "kac": "出典: 韓国空港公社",
+        "icn": "出典: 仁川国際空港公社"
+      },
+      "total": "旅客駐車場の空き {{count, number}}台",
+      "left": "{{count, number}}台",
+      "leftLabel": "空き",
+      "occupancy": "使用率 {{pct}}%",
+      "congestion": {
+        "smooth": "空いています",
+        "busy": "混雑",
+        "full": "満車"
+      },
+      "updated": "{{time}} 更新",
+      "close": "閉じる",
+      "others": "その他の駐車場",
+      "empty": "駐車場情報をまだ取得できていません。しばらくしてからもう一度ご確認ください。",
+      "stale": "少し前の情報です({{time}}時点)。",
+      "legend": "混雑度",
+      "planLabel": "ターミナルを選ぶ",
+      "hint": "駐車場をタップすると詳細が見られます",
+      "floors": "階・区域別",
+      "aria": "{{name}}、空き{{count, number}}台、{{status}}",
+      "map": "{{airport}}駐車場配置図",
+      "plan": {
+        "t1": "第1旅客ターミナル",
+        "t2": "第2旅客ターミナル"
+      },
+      "lot": {
+        "t1Short": "短期駐車場",
+        "t1P1": "P1 長期駐車場",
+        "t1P1Tower": "P1 駐車タワー",
+        "t1P2": "P2 長期駐車場",
+        "t1P2Tower": "P2 駐車タワー",
+        "t1P3": "P3 長期駐車場",
+        "t1P5": "P5 予約駐車場",
+        "t2Short": "短期駐車場",
+        "t2Long": "長期駐車場",
+        "t2Towers": "長期駐車タワー",
+        "t2Reserved": "予約駐車場",
+        "gmpD1": "国内線 第1駐車場",
+        "gmpD2": "国内線 第2駐車場",
+        "gmpIntlBldg": "国際線 駐車ビル",
+        "gmpIntlUnder": "国際線 地下駐車場",
+        "taeLot": "旅客駐車場",
+        "pusP1": "P1 国内線駐車場",
+        "pusP2": "P2 国際線駐車場",
+        "pusP3": "P3 旅客(貨物)駐車場",
+        "cjuP1": "P1 駐車場",
+        "cjuP2": "P2 長期駐車場"
+      },
+      "place": {
+        "t1Terminal": "第1旅客ターミナル",
+        "t1P4": "P4 常駐職員駐車場",
+        "t2Terminal": "第2旅客ターミナル",
+        "domestic": "国内線",
+        "international": "国際線",
+        "terminal": "旅客ターミナル",
+        "kac": "韓国空港公社",
+        "lotteMall": "ロッテモール",
+        "cargo": "貨物ターミナル",
+        "rentalCar": "レンタカーシャトル",
+        "tower": "管制塔"
+      }
     },
     "soon": "{{name}}のリアルタイム発着情報は準備中です",
     "soonDesc": "韓国空港公社のデータを接続でき次第、こちらでご案内します。"

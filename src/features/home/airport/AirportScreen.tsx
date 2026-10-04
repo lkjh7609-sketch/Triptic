@@ -7,16 +7,16 @@ import { SectionBandDesktop, SectionCapsuleMobile, type CapsuleCustom } from '..
 import pageStyles from '../stitch/HomePage.module.css';
 import { HomeFooter } from '../stitch/HomeFooter';
 import { AirportBoard } from './AirportBoard';
+import { ParkingMap } from './ParkingMap';
 import styles from './AirportScreen.module.css';
 
-/** 공항 탭의 칸 — 인천이 처음에 보이고, 나머지는 한국공항공사 데이터를 연결하는 대로 채운다 */
-export const AIRPORT_KEYS = ['icn', 'tae', 'pus', 'cju'] as const;
+/** 공항 탭의 칸 — 인천이 처음. 출·도착은 아직 인천만 있고(나머지는 준비 중), 주차장은 다섯 곳 모두 */
+export const AIRPORT_KEYS = ['icn', 'gmp', 'tae', 'pus', 'cju'] as const;
 export type AirportKey = (typeof AIRPORT_KEYS)[number];
 
 /**
- * 공항 화면 — 맨 위 메뉴의 "공항". 홈의 유리 캡슐과 같은 모양으로 공항을 고르고(인천·대구·김해·제주, 인천이 처음),
- * 고른 공항의 실시간 출·도착 전광판을 보여 준다. 인천 말고는 아직 데이터가 없어 준비 중 안내.
- * (앞으로 주차장 실시간 정보 같은 공항 정보가 이 화면에 더해진다)
+ * 공항 화면 — 맨 위 메뉴의 "공항". 홈의 유리 캡슐과 같은 모양으로 공항을 고르고(인천·김포·대구·김해·제주, 인천이 처음),
+ * 고른 공항의 실시간 출·도착 전광판(인천 말고는 아직 준비 중 안내)과 그 아래 주차장 평면도(ParkingMap)를 보여 준다.
  */
 export function AirportScreen() {
   const { t } = useTranslation('home');
@@ -52,6 +52,8 @@ export function AirportScreen() {
             <p className={styles.soonDesc}>{t('airportPage.soonDesc')}</p>
           </section>
         )}
+        {/* 주차장 남은 자리·혼잡도 — 각 공항 실시간 출·도착 아래(사용자 결정). 공항을 바꾸면 선택·확대를 처음부터 */}
+        <ParkingMap key={airport} airport={airport} />
       </div>
       <HomeFooter />
     </div>
