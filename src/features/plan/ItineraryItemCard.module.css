@@ -151,3 +151,16 @@
   position: absolute;
   inset: -10px 0;
 }
+
+/* 아침·점심·저녁 표시 — 식사 항목에만 */
+.mealBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}

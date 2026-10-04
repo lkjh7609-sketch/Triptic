@@ -39,6 +39,7 @@ export function ItineraryItemCard({ index, item, onClick, onAiSuggest, weather }
         <div className={styles.body}>
           <div className={styles.topRow}>
             {item.time ? <span className={styles.time}>{item.time}</span> : null}
+            {item.mealType ? <span className={styles.mealBadge}>{t(`mealSlot.${item.mealType}`)}</span> : null}
           </div>
           <p className={styles.name}>{item.name}</p>
           {item.memo ? <p className={styles.memo}><span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Search size={16} /> {item.memo}</span></p> : null}

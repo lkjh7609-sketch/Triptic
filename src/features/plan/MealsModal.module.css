@@ -33,3 +33,31 @@
   color: var(--text-muted);
   white-space: nowrap;
 }
+
+/* 방문 시간 묻는 단계 */
+.timeHint {
+  margin: 0 0 var(--space-3);
+  color: var(--text-body);
+  font-weight: 600;
+}
+
+.timeBlock {
+  margin-bottom: var(--space-3);
+}
+
+.timeLabel {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+.timePlace {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--font-caption-size);
+}

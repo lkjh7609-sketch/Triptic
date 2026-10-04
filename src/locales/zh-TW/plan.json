@@ -164,7 +164,10 @@
     "title": "當天的用餐",
     "searchPlaceholder": "搜尋{{meal}}餐廳",
     "skip": "跳過",
-    "saving": "正在儲存…"
+    "saving": "正在儲存…",
+    "timeTitle": "預計幾點前往？",
+    "back": "返回",
+    "confirm": "確認"
   },
   "mealSlot": {
     "breakfast": "早餐",
@@ -266,7 +269,9 @@
   "inspector": {
     "focusMove": "在行程清單中查看",
     "unnamedPlace": "未命名地點",
-    "noAddress": "沒有地址資訊"
+    "noAddress": "沒有地址資訊",
+    "collapse": "收合卡片",
+    "expand": "展開「{{name}}」卡片"
   },
   "currency": {
     "KRW": "韓元",

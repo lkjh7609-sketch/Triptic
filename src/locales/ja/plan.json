@@ -146,7 +146,10 @@
     "title": "この日の食事",
     "searchPlaceholder": "{{meal}}のレストランを検索",
     "skip": "スキップ",
-    "saving": "保存中…"
+    "saving": "保存中…",
+    "timeTitle": "何時に訪れる予定ですか？",
+    "back": "戻る",
+    "confirm": "確認"
   },
   "mealSlot": {
     "breakfast": "朝食",
@@ -248,7 +251,9 @@
   "inspector": {
     "focusMove": "予定リストで見る",
     "unnamedPlace": "名前のない場所",
-    "noAddress": "住所情報がありません"
+    "noAddress": "住所情報がありません",
+    "collapse": "カードを閉じる",
+    "expand": "{{name}}のカードを開く"
   },
   "currency": {
     "KRW": "韓国ウォン",

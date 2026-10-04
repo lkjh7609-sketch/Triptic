@@ -166,7 +166,10 @@
     "title": "Meals for this day",
     "searchPlaceholder": "Search {{meal}} spot",
     "skip": "Skip",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "timeTitle": "What time will you visit?",
+    "back": "Back",
+    "confirm": "Confirm"
   },
   "mealSlot": {
     "breakfast": "Breakfast",
@@ -269,7 +272,9 @@
   "inspector": {
     "focusMove": "Show in itinerary",
     "unnamedPlace": "Unnamed place",
-    "noAddress": "No address"
+    "noAddress": "No address",
+    "collapse": "Collapse card",
+    "expand": "Expand card for {{name}}"
   },
   "currency": {
     "KRW": "South Korean Won",
