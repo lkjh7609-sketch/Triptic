@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
@@ -6,41 +5,29 @@ import { useSession } from '@/shared/hooks/useSession';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
-import { DestinationSelector } from './DestinationSelector';
 import { prefsLabel, sanitizeTags } from './companionPrefs';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
-import type { Destination, MyCompanionPost } from './types';
+import type { MyCompanionPost } from './types';
 import styles from './CompanionFeedList.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 interface CompanionFeedListProps {
-  destinations?: Destination[];
+  /** 도시 선택은 전체·구독 탭과 같은 자리(탭 위·아래 공통 줄)에 있어서 부모가 들고 있다 */
+  destinationId?: string;
 }
 
 /** 동행찾기 탭 본문 — 모집중인 글만 보여준다(0032). 전체/구독 피드와 같은 탭
  * 안에서 상태만 전환되고, 별도 라우트는 없다(글쓰기/상세/매칭만 라우트). */
-export function CompanionFeedList({ destinations }: CompanionFeedListProps) {
+export function CompanionFeedList({ destinationId }: CompanionFeedListProps) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
   const requireLogin = useRequireLogin();
-  const [destinationId, setDestinationId] = useState<string | undefined>(undefined);
   const feed = useCompanionPostsFeed({ destinationId, viewerId: user?.id ?? null });
   const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
 
   return (
     <div className={styles.wrap}>
       {user ? <MyCompanionsSection userId={user.id} /> : null}
-
-      {destinations && destinations.length > 0 ? (
-        <div className={styles.selectorGutter}>
-          <DestinationSelector
-            destinations={destinations}
-            selectedDestinationId={destinationId}
-            onCitySelect={(city) => setDestinationId(city.id)}
-            onClear={() => setDestinationId(undefined)}
-          />
-        </div>
-      ) : null}
 
       {feed.isLoading ? (
         <div className={styles.loadingWrap}>

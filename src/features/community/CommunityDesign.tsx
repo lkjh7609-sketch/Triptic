@@ -35,6 +35,9 @@ interface Props {
   setTab: (tab: Tab) => void;
   followedCount: number;
   feed: UseInfiniteQueryResult<InfiniteData<PostsPage>>;
+  /** 동행 탭에서 고른 도시 — 도시 선택 줄은 세 탭이 같은 자리를 쓴다 */
+  companionDestinationId?: string;
+  setCompanionDestinationId: (id: string | undefined) => void;
 }
 
 function initialOf(name: string | null | undefined): string {
@@ -54,6 +57,8 @@ export function CommunityDesignBody({
   setTab,
   followedCount,
   feed,
+  companionDestinationId,
+  setCompanionDestinationId,
 }: Props) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
@@ -124,10 +129,16 @@ export function CommunityDesignBody({
             </div>
           </div>
 
-          {tab !== 'companion' ? (
           <div className="mt-8 w-full">
             <DestinationSelector
               destinations={destinations || []}
+              {...(tab === 'companion'
+                ? {
+                    selectedDestinationId: companionDestinationId,
+                    onCitySelect: (city: Destination) => setCompanionDestinationId(city.id),
+                    onClear: () => setCompanionDestinationId(undefined),
+                  }
+                : {})}
               trailing={<TravelAlertSummary variant="button" />}
               searchElement={
                 <div className="relative w-full shrink-0" style={{ maxWidth: '24rem', minWidth: '20rem' }}>
@@ -147,7 +158,6 @@ export function CommunityDesignBody({
               }
             />
           </div>
-          ) : null}
 
           <div className="mt-6 pt-4 flex items-center justify-between border-t border-surface-container-high text-body-md">
             <div className="flex items-center gap-6" role="tablist">
@@ -223,7 +233,7 @@ export function CommunityDesignBody({
         </section>
 
         {tab === 'companion' ? (
-          <CompanionFeedList destinations={destinations} />
+          <CompanionFeedList destinationId={companionDestinationId} />
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 flex flex-col gap-6">
