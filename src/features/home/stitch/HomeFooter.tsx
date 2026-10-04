@@ -53,6 +53,7 @@ export function HomeFooter() {
             {t('page.footer.partnership')}
           </button>
         </div>
+        <div className={styles.copy}>{t('page.footer.operator')}</div>
         <div className={styles.copy}>&copy; {new Date().getFullYear()} Triptic. All rights reserved.</div>
       </div>
       {contactKind ? <FeedbackModal kind={contactKind} onClose={() => setContactKind(null)} /> : null}
