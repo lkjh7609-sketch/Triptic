@@ -15,6 +15,8 @@ import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
 import { clearOfflineCache } from '@/shared/offline/persister';
 import type { NotificationPrefs } from '@/shared/api/profileService';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { SettingsDesktop } from './SettingsDesktop';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
@@ -62,6 +64,8 @@ export function SettingsScreen() {
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
   const trips = useTrips();
+  // PC(1024px~)는 Stitch/setting 시안의 별도 화면(SettingsDesktop), 모바일은 아래 화면 그대로
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [showDeleteFlow, setShowDeleteFlow] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
   const [showLicenses, setShowLicenses] = useState(false);
@@ -84,6 +88,8 @@ export function SettingsScreen() {
       if (mb != null) setCacheUsageMB(mb);
     });
   }, []);
+
+  if (isDesktop && user) return <SettingsDesktop />;
 
   if (showDeleteFlow) {
     return <DeleteAccountFlow />;
