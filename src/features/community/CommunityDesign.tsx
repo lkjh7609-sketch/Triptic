@@ -21,6 +21,7 @@ import type { Destination, Post } from './types';
 import type { Tab } from './CommunityScreen';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { postTitleOf } from './postMeta';
+import tileStyles from './PostTile.module.css';
 import { CATEGORY_ICONS } from './categoryIcons';
 
 type Sort = 'latest' | 'likes' | 'comments';
@@ -252,7 +253,7 @@ export function CommunityDesignBody({
               />
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className={tileStyles.grid}>
                   {posts.map((post) => (
                     <PostArticle key={post.id} post={post} />
                   ))}
@@ -419,44 +420,39 @@ function PostArticle({ post }: { post: Post }) {
 
   // 작은 카드 — 사진(없으면 분류 아이콘 자리) · 도시·분류 칩 · 제목(최대 2줄) · 작성자·시간 · 숫자. 본문은 글을 열어야 보인다
   return (
-    <Link
-      to={`/community/post/${post.id}`}
-      className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_20px_-2px_rgba(15,41,66,0.04)] hover:shadow-[0_12px_32px_-4px_rgba(15,41,66,0.08)] transition-all duration-300 flex flex-col min-w-0"
-    >
-      <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-container flex items-center justify-center">
+    <Link to={`/community/post/${post.id}`} className={tileStyles.tile}>
+      <div className={tileStyles.cover}>
         {cover ? (
-          <img alt="" className="w-full h-full object-cover" loading="lazy" src={getPostImageUrl(cover.storage_path)} />
+          <img alt="" className={tileStyles.coverImg} loading="lazy" src={getPostImageUrl(cover.storage_path)} />
         ) : (
-          <CategoryIcon size={30} className="text-outline" aria-hidden="true" />
+          <CategoryIcon size={30} className={tileStyles.coverIcon} aria-hidden="true" />
         )}
-        {post.images && post.images.length > 1 ? (
-          <span className="absolute right-2 bottom-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[11px] font-bold">+{post.images.length - 1}</span>
-        ) : null}
+        {post.images && post.images.length > 1 ? <span className={tileStyles.photoCount}>+{post.images.length - 1}</span> : null}
       </div>
 
-      <div className="p-4 flex flex-col flex-1 gap-2 min-w-0">
-        <div className="flex flex-wrap gap-1.5">
-          {post.destination?.name ? (
-            <span className="px-2 py-0.5 rounded-md bg-surface-container text-primary text-[11px] font-bold">{post.destination.name}</span>
-          ) : null}
-          <span className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-[11px] font-bold">{t(`postCategory.${post.category}`)}</span>
+      <div className={tileStyles.body}>
+        <div className={tileStyles.chips}>
+          {post.destination?.name ? <span className={tileStyles.chip}>{post.destination.name}</span> : null}
+          <span className={tileStyles.chipMuted}>{t(`postCategory.${post.category}`)}</span>
         </div>
-        <h2 className="font-title-md text-title-md text-primary leading-snug line-clamp-2 break-words">{title}</h2>
+        <h2 className={tileStyles.title}>{title}</h2>
 
-        <div className="mt-auto pt-3 flex items-center justify-between gap-2 text-on-surface-variant">
-          <button type="button" className="flex flex-col items-start text-left min-w-0" onClick={handleAuthor}>
-            <span className="font-label-sm text-label-sm text-primary truncate max-w-full"><AuthorName profile={post.author} /></span>
-            <span className="font-body-sm text-body-sm text-outline">
+        <div className={tileStyles.foot}>
+          <button type="button" className={tileStyles.authorBtn} onClick={handleAuthor}>
+            <span className={tileStyles.authorName}>
+              <AuthorName profile={post.author} />
+            </span>
+            <span className={tileStyles.time}>
               {formatDistanceToNowStrict(new Date(post.created_at), {
                 addSuffix: true,
                 locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
               })}
             </span>
           </button>
-          <div className="flex items-center gap-3 text-label-md font-label-md shrink-0">
+          <div className={tileStyles.counts}>
             <button
               type="button"
-              className={`flex items-center gap-1 transition-colors ${post.likedByMe ? 'text-secondary' : 'hover:text-secondary'}`}
+              className={`${tileStyles.countBtn} ${post.likedByMe ? tileStyles.countOn : ''}`}
               onClick={handleLike}
               disabled={!user}
               aria-pressed={!!post.likedByMe}
@@ -465,7 +461,7 @@ function PostArticle({ post }: { post: Post }) {
               <Heart size={16} fill={post.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
               <span>{post.like_count}</span>
             </button>
-            <span className="flex items-center gap-1" aria-label={t('post.commentAria', { count: post.comment_count })}>
+            <span className={tileStyles.count} aria-label={t('post.commentAria', { count: post.comment_count })}>
               <MessageCircle size={16} aria-hidden="true" />
               <span>{post.comment_count}</span>
             </span>
