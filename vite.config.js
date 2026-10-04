@@ -51,6 +51,15 @@ export default defineConfig(({ mode }) => {
               );
             }
 
+            // ③ PC 홈의 히어로 사진(LCP) — 원래는 JS가 화면을 그린 뒤에야 요청이 시작돼 사진 요청까지 1.2초를 기다렸다(Lighthouse 2026-10-04).
+            //    HTML 단계에서 받게 한다. 홈(/)이고 PC 폭(1024px 이상, HeroDesktop과 같은 기준)일 때만 — 모바일·다른 주소에서는 받지 않는다.
+            const hero = Object.values(bundle).find((a) => a.type === 'asset' && /^assets\/hero-[^/]+\.webp$/.test(a.fileName));
+            if (hero) {
+              tags.push(
+                `<script>if(location.pathname==='/'&&matchMedia('(min-width:1024px)').matches){var l=document.createElement('link');l.rel='preload';l.as='image';l.href='/${hero.fileName}';l.setAttribute('fetchpriority','high');document.head.appendChild(l)}</script>`,
+              );
+            }
+
             const locales = {};
             for (const c of chunks) {
               const m = /\/locales\/([^/]+)\/[^/]+\.json$/.exec(c.facadeModuleId ?? '');
