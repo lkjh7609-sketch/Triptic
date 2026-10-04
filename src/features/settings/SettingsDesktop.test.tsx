@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
 
 const state = vi.hoisted(() => ({
-  profile: { id: 'u1', display_name: '관리자', handle: 'dfxrj', plan: 'pro', locale: 'ko', temp_unit: 'c', distance_unit: 'km', base_currency: 'KRW', notification_prefs: { preDeparture: true, flightChanges: false, communityReplies: true, marketing: false }, gender: null, age_band: null, demographics_skips: 0 } as Record<string, unknown>,
+  profile: { id: 'u1', display_name: '관리자', handle: 'dfxrj', plan: 'pro', locale: 'ko', temp_unit: 'c', distance_unit: 'km', base_currency: 'KRW', notification_prefs: { preDeparture: true, flightChanges: false, communityReplies: true, marketing: false }, gender: null, age_band: null, demographics_skips: 0, avatar_url: null, trips_created_count: 3, trip_limit: 5 } as Record<string, unknown>,
   mutate: vi.fn(),
 }));
 
@@ -61,6 +61,30 @@ describe('SettingsDesktop', () => {
     state.profile.plan = 'free';
     renderPage();
     expect(screen.queryByText('Pro 혜택 활성화됨')).not.toBeInTheDocument();
+  });
+
+  it('무료 회원에게는 무료 티어와 남은 여행 생성 개수가 보이고, 다 쓰면 소진 안내가 나온다', () => {
+    state.profile.plan = 'free';
+    const { unmount } = renderPage();
+    expect(screen.getByText('무료 티어')).toBeInTheDocument();
+    expect(screen.getByText('여행 생성 3 / 5개 사용')).toBeInTheDocument();
+    expect(screen.getByText('남은 여행 생성 2개')).toBeInTheDocument();
+    unmount();
+    state.profile.trips_created_count = 5;
+    renderPage();
+    expect(screen.getByText('여행 생성 한도를 모두 썼어요')).toBeInTheDocument();
+    state.profile.trips_created_count = 3;
+  });
+
+  it('프로필 사진 변경 버튼이 있고, 올린 사진이 있을 때만 사진 삭제가 보인다', () => {
+    const { unmount } = renderPage();
+    expect(screen.getByRole('button', { name: '프로필 사진 변경' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '사진 삭제' })).not.toBeInTheDocument();
+    unmount();
+    state.profile.avatar_url = 'https://x.supabase.co/storage/v1/object/public/avatars/u1/avatar.webp?v=1';
+    renderPage();
+    expect(screen.getByRole('button', { name: '사진 삭제' })).toBeInTheDocument();
+    state.profile.avatar_url = null;
   });
 
   it('로그인 세션 카드는 현재 기기만 보여 주고, 카카오 가입자의 비밀번호 변경은 안내 창이 뜬다', () => {

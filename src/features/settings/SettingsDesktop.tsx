@@ -1,9 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   BadgeCheck,
   Bell,
+  Camera,
   BookOpen,
   ChevronRight,
   Code2,
@@ -54,6 +55,8 @@ import { EditProfileModal } from './EditProfileModal';
 import { FeedbackModal } from './FeedbackModal';
 import { PasswordChangeDialog } from './PasswordChangeDialog';
 import { currentDeviceLabel } from './deviceInfo';
+import { AvatarError, isUploadedAvatar, removeAvatarFiles, uploadAvatar } from './avatar';
+import { showToast } from '@/shared/ui/toast';
 import styles from './SettingsDesktop.module.css';
 
 const APP_VERSION = '1.0.2';
@@ -122,6 +125,8 @@ export function SettingsDesktop() {
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [feedbackKind, setFeedbackKind] = useState<'general' | 'partnership' | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     trackScreenView('settings_desktop');
@@ -135,8 +140,42 @@ export function SettingsDesktop() {
   if (!user) return null;
 
   const isPro = profile?.plan === 'pro';
+  const freeLeft = Math.max(0, (profile?.trip_limit ?? 0) - (profile?.trips_created_count ?? 0));
   const unitValue = `${profile?.temp_unit ?? 'c'}-${profile?.distance_unit ?? 'km'}`;
   const prefs: NotificationPrefs = profile?.notification_prefs ?? { preDeparture: true, flightChanges: true, communityReplies: true, marketing: false };
+
+  /** 프로필 사진 — 고른 사진을 작은 정사각형으로 줄여 올린 뒤 적용한다 */
+  async function changePhoto(file: File | undefined) {
+    if (!file || !user) return;
+    setPhotoBusy(true);
+    try {
+      const url = await uploadAvatar(user.id, file);
+      await updateProfile.mutateAsync({ avatar_url: url });
+      showToast(t('desktop.account.photoDone'), { tone: 'success' });
+    } catch (err) {
+      const code = err instanceof AvatarError ? err.code : 'upload_failed';
+      if (code === 'upload_failed') captureError(err, { context: 'uploadAvatar' });
+      showToast(t(`desktop.account.photoError.${code}`), { tone: 'error' });
+    } finally {
+      setPhotoBusy(false);
+      if (photoInputRef.current) photoInputRef.current.value = '';
+    }
+  }
+
+  async function removePhoto() {
+    if (!user) return;
+    setPhotoBusy(true);
+    try {
+      await removeAvatarFiles(user.id);
+      await updateProfile.mutateAsync({ avatar_url: null });
+      showToast(t('desktop.account.photoRemoved'), { tone: 'success' });
+    } catch (err) {
+      captureError(err, { context: 'removeAvatar' });
+      showToast(t('desktop.account.photoError.upload_failed'), { tone: 'error' });
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
 
   function changeTheme(next: ThemePreference) {
     setTheme(next);
@@ -208,6 +247,21 @@ export function SettingsDesktop() {
             ))}
           </nav>
 
+          {!isPro && profile ? (
+            <div className={styles.proBox}>
+              <ShieldCheck size={20} aria-hidden="true" />
+              <div>
+                <h4 className={styles.proTitle}>{t('desktop.free.title')}</h4>
+                <ul className={styles.proList}>
+                  <li>{t('desktop.free.used', { used: profile.trips_created_count ?? 0, limit: profile.trip_limit ?? 0 })}</li>
+                  <li className={freeLeft === 0 ? styles.limitFull : undefined}>
+                    {freeLeft === 0 ? t('desktop.free.full') : t('desktop.free.left', { left: freeLeft })}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : null}
+
           {isPro ? (
             <div className={styles.proBox}>
               <ShieldCheck size={20} aria-hidden="true" />
@@ -228,11 +282,31 @@ export function SettingsDesktop() {
             <section className={styles.card} aria-label={t('desktop.nav.account')}>
               <div className={styles.profileRow}>
                 <div className={styles.profile}>
-                  <img
-                    src={user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/notionists/svg?seed=' + user.email}
-                    alt=""
-                    className={styles.avatar}
-                  />
+                  <div className={styles.avatarWrap}>
+                    <img
+                      src={profile?.avatar_url || user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/notionists/svg?seed=' + user.email}
+                      alt=""
+                      className={styles.avatar}
+                    />
+                    <button
+                      type="button"
+                      className={styles.cameraBtn}
+                      disabled={photoBusy}
+                      onClick={() => photoInputRef.current?.click()}
+                      aria-label={t('desktop.account.photoChange')}
+                      title={t('desktop.account.photoChange')}
+                    >
+                      <Camera size={14} aria-hidden="true" />
+                    </button>
+                    <input
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*"
+                      className={styles.fileInput}
+                      aria-label={t('desktop.account.photoChange')}
+                      onChange={(e) => void changePhoto(e.target.files?.[0])}
+                    />
+                  </div>
                   <div>
                     <p className={styles.nameRow}>
                       <span className={styles.name}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
@@ -243,6 +317,11 @@ export function SettingsDesktop() {
                       {profile?.handle ? <span aria-hidden="true">•</span> : null}
                       <span>{user.email}</span>
                     </p>
+                    {isUploadedAvatar(profile?.avatar_url) ? (
+                      <button type="button" className={styles.photoRemove} disabled={photoBusy} onClick={() => void removePhoto()}>
+                        {t('desktop.account.photoRemove')}
+                      </button>
+                    ) : null}
                   </div>
                 </div>
                 <button type="button" className={styles.primaryBtn} onClick={() => setShowEdit(true)}>

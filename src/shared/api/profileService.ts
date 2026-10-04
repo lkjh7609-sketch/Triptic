@@ -36,6 +36,11 @@ export interface ProfileRow {
   age_band: MemberAgeBand | null;
   /** '나중에'를 누른 횟수 — 서버가 센다. 2번이면 더 묻지 않는다 */
   demographics_skips: number;
+  /** 프로필 사진 — 직접 올린 사진(avatars 버킷, 0092)이 있으면 그 주소, 없으면 null(소셜 로그인 사진을 쓴다) */
+  avatar_url: string | null;
+  /** 지금까지 만든 여행 수(삭제해도 안 줄어듦)와 무료 여행 생성 한도(0061) — 프로는 한도를 쓰지 않는다 */
+  trips_created_count: number;
+  trip_limit: number;
 }
 
 const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
@@ -45,7 +50,7 @@ const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   marketing: false,
 };
 
-const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs, gender, age_band, demographics_skips';
+const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs, gender, age_band, demographics_skips, avatar_url, trips_created_count, trip_limit';
 
 export async function getMyProfile(userId: string): Promise<ProfileRow> {
   const supabase = getSupabaseClient();
@@ -58,7 +63,7 @@ export async function getMyProfile(userId: string): Promise<ProfileRow> {
 }
 
 export type ProfilePatch = Partial<
-  Pick<ProfileRow, 'display_name' | 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs' | 'gender' | 'age_band'>
+  Pick<ProfileRow, 'display_name' | 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs' | 'gender' | 'age_band' | 'avatar_url'>
 >;
 
 export async function updateMyProfile(userId: string, patch: ProfilePatch): Promise<void> {

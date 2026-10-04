@@ -4,7 +4,7 @@
 // 어느 단계에서 멈춰도 사용자가 다시 요청하면 이어서 끝난다(각 단계가 없는 대상에는 아무 일도 안 한다).
 
 /** 사용자 파일이 들어 있는 저장소 — 경로는 항상 <사용자 id>/… 로 시작한다 */
-export const USER_BUCKETS = ['vouchers', 'post-images', 'feedback-screenshots'];
+export const USER_BUCKETS = ['vouchers', 'post-images', 'feedback-screenshots', 'avatars'];
 const MAX_DEPTH = 5;
 const PAGE = 100;
 

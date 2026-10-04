@@ -153,7 +153,17 @@
       "sessionDesc": "Current device: {{device}}",
       "dangerTitle": "Danger zone",
       "dangerDesc": "All your trips and data will be permanently deleted.",
-      "dangerBtn": "Delete account"
+      "dangerBtn": "Delete account",
+      "photoChange": "Change profile photo",
+      "photoRemove": "Remove photo",
+      "photoDone": "Profile photo updated.",
+      "photoRemoved": "Profile photo removed.",
+      "photoError": {
+        "not_image": "Please choose an image file.",
+        "too_large": "That photo is too large. Choose one under 15MB.",
+        "decode_failed": "This photo can't be read. Please choose a JPG or PNG.",
+        "upload_failed": "Couldn't upload the photo. Please try again."
+      }
     },
     "display": {
       "title": "Display & preferences",
@@ -203,6 +213,12 @@
       "termsDesc": "Terms of service",
       "privacyDesc": "Data protection and retention",
       "licensesDesc": "Open-source software notices"
+    },
+    "free": {
+      "title": "Free tier",
+      "used": "{{used}} / {{limit}} trips created",
+      "left": "{{left}} trips left to create",
+      "full": "You've used all your trip creations"
     }
   },
   "password": {

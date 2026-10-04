@@ -150,7 +150,17 @@
       "sessionDesc": "目前使用的裝置：{{device}}",
       "dangerTitle": "危險區域",
       "dangerDesc": "所有行程與資料將被永久刪除。",
-      "dangerBtn": "申請退會"
+      "dangerBtn": "申請退會",
+      "photoChange": "變更大頭貼",
+      "photoRemove": "刪除照片",
+      "photoDone": "已更換大頭貼。",
+      "photoRemoved": "已刪除大頭貼。",
+      "photoError": {
+        "not_image": "請選擇圖片檔案。",
+        "too_large": "照片太大，請選擇 15MB 以下的照片。",
+        "decode_failed": "無法讀取這張照片，請選擇 JPG 或 PNG。",
+        "upload_failed": "無法上傳照片，請稍後再試。"
+      }
     },
     "display": {
       "title": "顯示與偏好設定",
@@ -200,6 +210,12 @@
       "termsDesc": "服務條款說明",
       "privacyDesc": "資料保護與保存規定",
       "licensesDesc": "開源軟體聲明"
+    },
+    "free": {
+      "title": "免費方案",
+      "used": "已建立 {{used}} / {{limit}} 個行程",
+      "left": "還可建立 {{left}} 個行程",
+      "full": "行程建立次數已用完"
     }
   },
   "password": {

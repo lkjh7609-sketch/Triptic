@@ -150,7 +150,17 @@
       "sessionDesc": "現在使用中のデバイス：{{device}}",
       "dangerTitle": "危険ゾーン",
       "dangerDesc": "すべての旅行データが完全に削除されます。",
-      "dangerBtn": "退会する"
+      "dangerBtn": "退会する",
+      "photoChange": "プロフィール写真を変更",
+      "photoRemove": "写真を削除",
+      "photoDone": "プロフィール写真を変更しました。",
+      "photoRemoved": "プロフィール写真を削除しました。",
+      "photoError": {
+        "not_image": "画像ファイルを選んでください。",
+        "too_large": "写真が大きすぎます。15MB以下のものを選んでください。",
+        "decode_failed": "この写真は読み込めません。JPGまたはPNGを選んでください。",
+        "upload_failed": "写真をアップロードできませんでした。もう一度お試しください。"
+      }
     },
     "display": {
       "title": "表示と環境設定",
@@ -200,6 +210,12 @@
       "termsDesc": "利用規約のご案内",
       "privacyDesc": "データの保護と保管について",
       "licensesDesc": "オープンソースソフトウェアの表記"
+    },
+    "free": {
+      "title": "無料プラン",
+      "used": "旅行作成 {{used}} / {{limit}}件",
+      "left": "残り作成可能 {{left}}件",
+      "full": "旅行の作成上限に達しました"
     }
   },
   "password": {
