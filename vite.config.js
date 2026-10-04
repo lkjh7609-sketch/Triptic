@@ -89,7 +89,12 @@ export default defineConfig(({ mode }) => {
             const supa = (env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '');
             const key = env.VITE_SUPABASE_ANON_KEY ?? '';
             const api = (env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-            const reqs = [[`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, null]];
+            // geo는 언어를 정한 적 없는 첫 방문에서만(n:1) — i18n이 접속 국가로 첫 언어를 정하는 요청(src/shared/i18n/geoLocale.ts)을 앞당겨,
+            // 영어로 먼저 그렸다가 한국어로 바뀌는 순간을 줄인다
+            const reqs = [
+              [`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, null],
+              [`${api}/api/geo`, { url: `${api}/api/geo`, init: { cache: 'no-store' }, first: true }],
+            ];
             if (supa && key) {
               reqs.push([
                 'incheon-board',
@@ -100,11 +105,11 @@ export default defineConfig(({ mode }) => {
               ]);
             }
             const list = JSON.stringify(
-              reqs.map(([k, v]) => (v ? { k, u: v.url, i: v.init } : { k, u: k })),
+              reqs.map(([k, v]) => (v ? { k, u: v.url, i: v.init, n: v.first ? 1 : 0 } : { k, u: k })),
             );
             const script =
               `<script>(function(){if(location.pathname!=='/'||location.protocol.indexOf('http')!==0)return;var p=window.__prefetch={};` +
-              `${list}.forEach(function(r){try{var q=fetch(r.u,r.i).then(function(x){if(!x.ok)throw 0;return x.json()});q.catch(function(){});p[r.k]=q}catch(e){}})})()</script>`;
+              `${list}.forEach(function(r){try{if(r.n&&localStorage.getItem('triptic-locale'))return;var q=fetch(r.u,r.i).then(function(x){if(!x.ok)throw 0;return x.json()});q.catch(function(){});p[r.k]=q}catch(e){}})})()</script>`;
             return html.replace('</head>', `${script}\n</head>`);
           },
         },
