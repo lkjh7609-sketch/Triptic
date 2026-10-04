@@ -8,8 +8,8 @@ import styles from './TravelAlertSummary.module.css';
 
 const LEVELS: AlertLevel[] = [4, 3, 2];
 
-/** 커뮤니티 홈의 '현재 여행경보 현황' 한 줄 — 누르면 팝업에서 여행자제(2단계) 이상인 나라를 단계별로 보여 준다. 글이 아니라 현재 경보를 읽어 보여 주므로 매일 갱신·해제가 저절로 반영된다 */
-export function TravelAlertSummary() {
+/** 커뮤니티 홈의 '현재 여행경보 현황' 한 줄(variant bar, 모바일) 또는 도시 선택 버튼 옆의 알약 버튼(variant button, PC) — 누르면 팝업에서 여행자제(2단계) 이상인 나라를 단계별로 보여 준다. 글이 아니라 현재 경보를 읽어 보여 주므로 매일 갱신·해제가 저절로 반영된다 */
+export function TravelAlertSummary({ variant = 'bar' }: { variant?: 'bar' | 'button' }) {
   const { alerts } = useTravelAlerts();
   const { t, countryName, levelName } = useAlertLabels();
   const [open, setOpen] = useState(false);
@@ -24,6 +24,44 @@ export function TravelAlertSummary() {
   const total = [...byLevel.values()].reduce((n, l) => n + l.length, 0);
   if (total === 0) return null;
 
+  const popup = open ? (
+    <AlertPopup title={t('travelAlert.summary.title')} onClose={() => setOpen(false)}>
+      {LEVELS.filter((level) => byLevel.has(level)).map((level) => (
+        <div key={level} className={styles.group}>
+          <h3 className={`${styles.level} ${styles[`tone${level}`]}`}>
+            {t('travelAlert.summary.level', { level, name: levelName(level) })}
+          </h3>
+          <p className={styles.countries}>
+            {byLevel
+              .get(level)!
+              .map((a) => countryName(a))
+              .sort((a, b) => a.localeCompare(b))
+              .join(' · ')}
+          </p>
+        </div>
+      ))}
+      <p className={styles.note}>{t('travelAlert.summary.note')}</p>
+    </AlertPopup>
+  ) : null;
+
+  if (variant === 'button') {
+    return (
+      <>
+        <button
+          type="button"
+          className={styles.pill}
+          aria-haspopup="dialog"
+          aria-label={`${t('travelAlert.summary.title')} ${t('travelAlert.summary.count', { count: total })}`}
+          onClick={() => setOpen(true)}
+        >
+          <TriangleAlert size={18} aria-hidden="true" className={styles.icon} />
+          <span>{t('travelAlert.summary.short', { count: total })}</span>
+        </button>
+        {popup}
+      </>
+    );
+  }
+
   return (
     <section className={styles.card} aria-label={t('travelAlert.summary.title')}>
       <button
@@ -37,25 +75,7 @@ export function TravelAlertSummary() {
         <span className={styles.count}>{t('travelAlert.summary.count', { count: total })}</span>
         <ChevronRight size={18} aria-hidden="true" className={styles.chevron} />
       </button>
-      {open ? (
-        <AlertPopup title={t('travelAlert.summary.title')} onClose={() => setOpen(false)}>
-          {LEVELS.filter((level) => byLevel.has(level)).map((level) => (
-            <div key={level} className={styles.group}>
-              <h3 className={`${styles.level} ${styles[`tone${level}`]}`}>
-                {t('travelAlert.summary.level', { level, name: levelName(level) })}
-              </h3>
-              <p className={styles.countries}>
-                {byLevel
-                  .get(level)!
-                  .map((a) => countryName(a))
-                  .sort((a, b) => a.localeCompare(b))
-                  .join(' · ')}
-              </p>
-            </div>
-          ))}
-          <p className={styles.note}>{t('travelAlert.summary.note')}</p>
-        </AlertPopup>
-      ) : null}
+      {popup}
     </section>
   );
 }

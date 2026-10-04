@@ -78,4 +78,14 @@ describe('TravelAlertSummary', () => {
     expect(dialog).toHaveTextContent('2단계 여행자제');
     expect(dialog).toHaveTextContent('필리핀');
   });
+
+  it('PC에서는 도시 선택 옆의 짧은 알약 버튼이고, 눌렀을 때 같은 팝업이 열린다', () => {
+    renderWith(<TravelAlertSummary variant="button" />);
+    expect(screen.getByText('여행경보 2개국')).toBeInTheDocument();
+    expect(screen.queryByText('2단계 이상 2개국')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /현재 여행경보 현황/ }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent('3단계 출국권고');
+    expect(dialog).toHaveTextContent('필리핀');
+  });
 });

@@ -121,10 +121,8 @@ export function CommunityDesignBody({
           <div className="mt-8 w-full">
             <DestinationSelector
               destinations={destinations || []}
+              trailing={<TravelAlertSummary variant="button" />}
             />
-            <div className="mt-4">
-              <TravelAlertSummary />
-            </div>
           </div>
           ) : null}
 
