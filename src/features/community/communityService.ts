@@ -377,7 +377,10 @@ export async function listPosts(opts: {
   if (opts.destinationId) query = query.eq('destination_id', opts.destinationId);
   if (destinationIds) query = query.in('destination_id', destinationIds);
   const search = opts.search?.trim();
-  if (search) query = query.ilike('body', `%${escapeLike(search)}%`);
+  if (search) {
+    const like = `%${escapeLike(search)}%`;
+    query = query.or(`title.ilike.${like},body.ilike.${like}`);
+  }
   if (opts.category) query = query.eq('category', opts.category);
   if (opts.tag) query = query.contains('tags', [opts.tag]);
   if (opts.hidePinned) query = query.is('pinned_at', null);
@@ -455,6 +458,8 @@ export interface CreatePostResult {
 
 export async function createPost(input: {
   destinationId?: string | null;
+  /** 제목(0086) — 서버는 비어도 받지만 글쓰기 화면은 필수로 받는다 */
+  title?: string;
   body: string;
   tripId?: string | null;
   images?: { storagePath: string; width?: number; height?: number }[];
@@ -474,6 +479,7 @@ export async function createPost(input: {
     body: {
       kind: 'post',
       destinationId: input.destinationId,
+      title: input.title ?? '',
       body: input.body,
       tripId: input.tripId ?? null,
       images: input.images ?? [],
@@ -495,6 +501,45 @@ export async function createPost(input: {
   return result;
 }
 
+/** 글 수정 — 제목·본문·태그·사진(도시·분류·첨부 일정은 못 바꾼다). 작성자 본인만(서버 RPC가 확인) */
+export async function updatePost(input: {
+  postId: string;
+  title: string;
+  body: string;
+  tags: string[];
+  /** 주면 사진을 이 목록으로 바꾼다(순서 포함), 안 주면 그대로 */
+  images?: { storagePath: string; width?: number; height?: number }[];
+}): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.functions.invoke('moderate-content', {
+    body: { kind: 'post_edit', postId: input.postId, title: input.title, body: input.body, tags: input.tags, images: input.images },
+  });
+  if (error) throw error;
+}
+
+/**
+ * 이전·다음 글(같은 도시 안, 도시가 없는 글은 전체) — 더 오래된 글이 이전, 더 새 글이 다음. 제목만 쓰는 가벼운 조회
+ */
+export async function getAdjacentPosts(post: Pick<Post, 'id' | 'destination_id' | 'created_at'>): Promise<{
+  prev: Pick<Post, 'id' | 'title' | 'body'> | null;
+  next: Pick<Post, 'id' | 'title' | 'body'> | null;
+}> {
+  const supabase = getSupabaseClient();
+  const base = () => {
+    let q = supabase.from('posts').select('id, title, body').eq('status', 'published').is('deleted_at', null);
+    q = post.destination_id ? q.eq('destination_id', post.destination_id) : q.is('destination_id', null);
+    return q;
+  };
+  const [older, newer] = await Promise.all([
+    base().lt('created_at', post.created_at).order('created_at', { ascending: false }).limit(1),
+    base().gt('created_at', post.created_at).order('created_at', { ascending: true }).limit(1),
+  ]);
+  return {
+    prev: ((older.data ?? [])[0] as Pick<Post, 'id' | 'title' | 'body'> | undefined) ?? null,
+    next: ((newer.data ?? [])[0] as Pick<Post, 'id' | 'title' | 'body'> | undefined) ?? null,
+  };
+}
+
 /** 본인 글 소프트 삭제(soft delete own posts RLS) */
 export async function deleteOwnPost(postId: string): Promise<void> {
   const supabase = getSupabaseClient();
@@ -503,7 +548,7 @@ export async function deleteOwnPost(postId: string): Promise<void> {
 }
 
 // ── 댓글 ────────────────────────────────────────────────────────────────
-export async function listComments(postId: string): Promise<Comment[]> {
+export async function listComments(postId: string, viewerId: string | null = null): Promise<Comment[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('comments')
@@ -513,8 +558,42 @@ export async function listComments(postId: string): Promise<Comment[]> {
     .order('created_at', { ascending: true });
   if (error) throw error;
   const rows = (data as Comment[]) ?? [];
-  const profileMap = await fetchProfilesByIds(rows.map((r) => r.author_id));
-  return rows.map((r) => ({ ...r, author: profileMap.get(r.author_id) }));
+  const [profileMap, liked] = await Promise.all([
+    fetchProfilesByIds(rows.map((r) => r.author_id)),
+    fetchMyLikedCommentIds(rows.map((r) => r.id), viewerId),
+  ]);
+  return rows.map((r) => ({ ...r, author: profileMap.get(r.author_id), likedByMe: liked.has(r.id) }));
+}
+
+async function fetchMyLikedCommentIds(commentIds: string[], viewerId: string | null): Promise<Set<string>> {
+  if (!viewerId || commentIds.length === 0) return new Set();
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('target_id')
+    .eq('user_id', viewerId)
+    .eq('target_type', 'comment')
+    .in('target_id', commentIds);
+  if (error) return new Set();
+  return new Set((data ?? []).map((r) => r.target_id as string));
+}
+
+/** 댓글 좋아요(0086 — reactions target_type='comment', 수는 트리거가 comments.like_count에 센다) */
+export async function likeComment(commentId: string, userId: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from('reactions').insert({ user_id: userId, target_type: 'comment', target_id: commentId });
+  if (error && error.code !== '23505') throw error;
+}
+
+export async function unlikeComment(commentId: string, userId: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase
+    .from('reactions')
+    .delete()
+    .eq('user_id', userId)
+    .eq('target_type', 'comment')
+    .eq('target_id', commentId);
+  if (error) throw error;
 }
 
 export interface CreateCommentResult {
