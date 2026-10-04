@@ -59,7 +59,7 @@
     "pdf": {
       "title": "Export to PDF",
       "badge": "Our pride",
-      "lead": "Turn your finished itinerary into a beautiful PDF you can print and carry. Open the share sheet on the itinerary screen and tap 'Save trip PDF' — that's it!",
+      "lead": "Turn your finished itinerary into a beautiful PDF you can print and carry. Tap 'Full itinerary PDF' in the share sheet on the itinerary screen — that's it! On desktop you can also use the 'Save trip as PDF' card next to the itinerary.",
       "p1": "Cover: city photo, travel mates, city flow by day, flight and hotel summary",
       "p2": "One page per day: route map + timeline + transit mode and time between places",
       "p3": "A notes area at the bottom of each page, a pre-departure checklist and an empty expense log",
