@@ -31,9 +31,16 @@ async function fetchProfilesByIds(ids: string[]): Promise<Map<string, CommunityP
   const supabase = getSupabaseClient();
   const distinct = uniq(ids);
   if (distinct.length === 0) return new Map();
-  const { data, error } = await supabase.from('community_profiles').select('*').in('id', distinct);
+  const [{ data, error }, info] = await Promise.all([
+    supabase.from('community_profiles').select('*').in('id', distinct),
+    // 나잇대·성별은 동행 활동을 하는 회원만 뷰에 나온다 — 못 읽어도 화면은 이름만으로 그대로 뜬다
+    supabase.from('companion_member_info').select('id, gender, age_band').in('id', distinct),
+  ]);
   if (error) throw error;
-  return new Map((data as CommunityProfile[]).map((p) => [p.id, p]));
+  const infoById = new Map(((info.data as { id: string; gender: 'female' | 'male' | null; age_band: string | null }[] | null) ?? []).map((r) => [r.id, r]));
+  return new Map(
+    (data as CommunityProfile[]).map((p) => [p.id, { ...p, gender: infoById.get(p.id)?.gender ?? null, age_band: infoById.get(p.id)?.age_band ?? null }]),
+  );
 }
 
 async function fetchDestinationNamesByIds(ids: string[], locale = currentLocale()): Promise<Map<string, string>> {

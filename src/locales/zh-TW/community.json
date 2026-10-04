@@ -885,5 +885,18 @@
     "qna": "提問・Q&A",
     "tips": "旅遊小撇步・換匯",
     "food": "在地美食・住宿"
+  },
+  "demographics": {
+    "title": "請告訴我們你的年齡層與性別",
+    "reason": "因為「旅伴招募」功能會在貼文與申請畫面顯示發文者與申請者的年齡層與性別，所以需要這些資料。僅對參與旅伴活動的會員顯示，不填寫也可使用社群。可隨時在設定中修改或刪除。",
+    "genderLabel": "性別",
+    "ageLabel": "年齡層",
+    "save": "儲存",
+    "later": "稍後",
+    "saveError": "無法儲存，請稍後再試。",
+    "settingsTitle": "我的資料（選填）",
+    "settingsSaved": "已儲存。",
+    "settingsHint": "會在旅伴招募貼文與申請畫面以年齡層與性別顯示。留空則不顯示。",
+    "companionBadge": "{{age}} · {{gender}}"
   }
 }

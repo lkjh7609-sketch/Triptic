@@ -67,39 +67,6 @@
       "destination": "/api/seo?route=page&path=/airports"
     },
     {
-      "source": "/community",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
-        }
-      ],
-      "destination": "/api/seo?route=page&path=/community"
-    },
-    {
-      "source": "/community/d/:slug",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
-        }
-      ],
-      "destination": "/api/seo?route=dest&slug=:slug"
-    },
-    {
-      "source": "/community/post/:id",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
-        }
-      ],
-      "destination": "/api/seo?route=post&id=:id"
-    },
-    {
       "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }

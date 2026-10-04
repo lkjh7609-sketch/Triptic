@@ -17,6 +17,7 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { navDirection } from './navDirection';
 import { requiresLogin } from './guestAccess';
+import { DemographicsPrompt } from '@/features/community/DemographicsPrompt';
 import { useTripRealtimeSync } from '@/features/plan/hooks/useTripRealtimeSync';
 import { takePendingShare } from '@/features/shared/pendingShare';
 import styles from './AppShell.module.css';
@@ -142,6 +143,8 @@ export function AppShell() {
         {routeNeedsLogin ? null : showRouteSkeleton ? <RouteSkeleton /> : <Outlet />}
       </main>
       {!isGuestSample && !isDesktop && <TabBar guest={!user} />}
+      {/* 커뮤니티에 처음 들어온 회원에게 성별·나잇대(선택)를 한 번 묻는다 */}
+      {user && pathname.startsWith('/community') ? <DemographicsPrompt /> : null}
       {!user && (routeNeedsLogin || loginPromptOpen) ? (
         <GlobalAuthModal onClose={routeNeedsLogin ? leaveGatedRoute : closeLoginPrompt} />
       ) : null}

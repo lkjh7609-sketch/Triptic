@@ -5,10 +5,6 @@ Disallow: /admin
 Disallow: /settings
 Disallow: /shared/
 Disallow: /plan/
-Disallow: /community/compose
-Disallow: /community/companion/new
-Disallow: /community/companion/*/match
-Disallow: /community/companion/*/chat
-Disallow: /community/companion/*/expenses
+Disallow: /community
 
 Sitemap: https://triptic.my/sitemap.xml

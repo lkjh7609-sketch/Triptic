@@ -20,3 +20,18 @@
   color: var(--warning-text);
   fill: var(--warning);
 }
+
+/* 동행 화면의 나잇대·성별 — 이름 옆에 작은 칩 */
+.demographics {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 0 7px;
+  min-height: 18px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  vertical-align: middle;
+}

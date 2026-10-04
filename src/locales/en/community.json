@@ -910,5 +910,18 @@
     "qna": "Questions & Q&A",
     "tips": "Travel tips & money",
     "food": "Local food & stays"
+  },
+  "demographics": {
+    "title": "Tell us your age range and gender",
+    "reason": "We ask for this so companion posts and applications can show the author's and applicant's age range and gender. It is only visible to members active in Companions, and you can use the community without it. You can change or remove it anytime in Settings.",
+    "genderLabel": "Gender",
+    "ageLabel": "Age range",
+    "save": "Save",
+    "later": "Later",
+    "saveError": "Couldn't save. Please try again in a moment.",
+    "settingsTitle": "About me (optional)",
+    "settingsSaved": "Saved.",
+    "settingsHint": "Shown as age range and gender on companion posts and applications. Leave blank to show nothing.",
+    "companionBadge": "{{age}} · {{gender}}"
   }
 }

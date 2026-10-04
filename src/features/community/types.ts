@@ -77,6 +77,9 @@ export interface CommunityProfile {
   bio: string | null;
   /** "관리자" 배지 표시용(community_profiles 뷰, 0041) */
   is_admin: boolean;
+  /** 동행 활동을 하는 회원의 나잇대·성별(0088 companion_member_info) — 동행 화면에서만 채워진다 */
+  gender?: 'female' | 'male' | null;
+  age_band?: string | null;
   /** 동행 별점 평균/개수(community_profiles 뷰, 0047) — 받은 후기가 없으면 null/0 */
   rating_avg?: number | string | null;
   rating_count?: number | null;
