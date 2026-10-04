@@ -130,7 +130,14 @@
     "week": "距離出發還有 {{days}} 天",
     "dayBefore": "明天出發",
     "today": "今天出發!旅途愉快",
-    "note": "會在旅行前 7 天、前 1 天與當天,以及目的地發布旅遊警示時提醒你,只有開啟 App 時才會顯示。"
+    "note": "會通知留言、回覆與按讚，以及出發前 7 天、前一天、當天與目的地旅遊警示。行程提醒僅在開啟 App 時顯示。",
+    "community": {
+      "post_comment": "{{name}} 在你的貼文留言",
+      "comment_reply": "{{name}} 回覆了你的留言",
+      "post_like": "{{name}} 喜歡你的貼文",
+      "comment_like": "{{name}} 喜歡你的留言",
+      "someone": "某人"
+    }
   },
   "travelAlert": {
     "levelName": {

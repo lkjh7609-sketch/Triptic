@@ -1,6 +1,6 @@
 import { ArrowRight, BadgeCheck, ChevronLeft, ChevronRight, CalendarDays, Heart, MessageCircle, Pin, Share2, Smile, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,7 @@ export function PostDetailScreen() {
   const { t, i18n } = useTranslation(['community', 'common']);
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
+  const { hash } = useLocation();
   const { user } = useSession();
   const { data: profile } = useProfile();
   const viewerLocale = (profile?.locale as Locale | undefined) ?? 'ko';
@@ -111,6 +112,17 @@ export function PostDetailScreen() {
     setLightbox(null);
     setCommentBody('');
   }, [postId]);
+
+  // 알림에서 특정 댓글로 들어오면(#comment-ID) 그 댓글로 스크롤한다 — 댓글이 불러와진 뒤 한 번
+  const scrolledHash = useRef('');
+  const hasComments = (comments ?? []).length > 0;
+  useEffect(() => {
+    if (!hasComments || !hash.startsWith('#comment-') || scrolledHash.current === hash) return;
+    const el = document.getElementById(hash.slice(1));
+    if (!el) return;
+    scrolledHash.current = hash;
+    el.scrollIntoView({ block: 'center' });
+  }, [hasComments, hash]);
 
   const images: PostImage[] = (post?.images ?? []).slice().sort((a, b) => a.position - b.position);
 
@@ -236,7 +248,7 @@ export function PostDetailScreen() {
   function renderComment(c: Comment, isReply: boolean) {
     const byAuthor = c.author_id === post!.author_id;
     return (
-      <div key={c.id} className={isReply ? styles.reply : styles.commentItem}>
+      <div key={c.id} id={`comment-${c.id}`} className={isReply ? styles.reply : styles.commentItem}>
         <Avatar profile={c.author} size={isReply ? 32 : 36} />
         <div className={styles.commentMain}>
           <div className={`${styles.bubble} ${byAuthor ? styles.bubbleAuthor : ''}`}>
@@ -481,7 +493,7 @@ export function PostDetailScreen() {
               placeholder={t('detail.commentComposerPlaceholder')}
               value={commentBody}
               maxLength={MAX_COMMENT_LENGTH}
-              rows={3}
+              rows={1}
               onChange={(e) => setCommentBody(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent.isComposing) handleSubmitComment();

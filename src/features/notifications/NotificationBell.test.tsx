@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
@@ -6,6 +7,16 @@ import { NotificationBell } from './NotificationBell';
 
 const session = vi.hoisted(() => ({ user: { id: 'u1' } as { id: string } | null }));
 const trips = vi.hoisted(() => ({ data: [] as unknown[] }));
+const community = vi.hoisted(() => ({ rows: [] as unknown[], markRead: vi.fn(), remove: vi.fn() }));
+vi.mock('./communityNotices', async () => {
+  const actual = await vi.importActual<typeof import('./communityNotices')>('./communityNotices');
+  return {
+    ...actual,
+    listCommunityNotices: async () => (community.rows as Parameters<typeof actual.toCommunityNotice>[0][]).map(actual.toCommunityNotice),
+    markCommunityNoticesRead: async () => community.markRead(),
+    deleteCommunityNotice: async (id: string) => community.remove(id),
+  };
+});
 
 vi.mock('@/shared/hooks/useSession', () => ({
   useSession: () => ({ user: session.user, loading: false }),
@@ -47,9 +58,11 @@ function setTrips() {
 
 function setup() {
   render(
-    <MemoryRouter>
-      <NotificationBell />
-    </MemoryRouter>,
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <MemoryRouter>
+        <NotificationBell />
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
@@ -57,6 +70,9 @@ beforeEach(() => {
   localStorage.clear();
   session.user = { id: 'u1' };
   trips.data = [];
+  community.rows = [];
+  community.markRead.mockClear();
+  community.remove.mockClear();
   travel.alerts = new Map();
 });
 
@@ -122,5 +138,33 @@ describe('NotificationBell', () => {
     fireEvent.click(screen.getByRole('button', { name: /알림/ }));
     expect(screen.getByText('두바이 여행')).toBeInTheDocument();
     expect(screen.getByText(/여행경보 3단계\(출국권고\)/)).toBeInTheDocument();
+  });
+
+  it('내 글에 달린 댓글·답글·좋아요 알림이 맨 위에 뜨고, 누르면 그 글(댓글)로 가며, 지우면 서버에서 지운다', async () => {
+    setTrips();
+    community.rows = [
+      { id: 'n1', kind: 'post_comment', actor_name: '여행자', post_id: 'p1', comment_id: 'c1', post_title: '도쿄 후기', post_body: '', created_at: new Date().toISOString(), read_at: null },
+      { id: 'n2', kind: 'comment_reply', actor_name: '둘리', post_id: 'p1', comment_id: 'c2', post_title: null, post_body: '첫 줄 제목\n둘째', created_at: new Date().toISOString(), read_at: null },
+      { id: 'n3', kind: 'post_like', actor_name: '도우너', post_id: 'p2', comment_id: null, post_title: '맛집', post_body: '', created_at: new Date().toISOString(), read_at: new Date().toISOString() },
+      { id: 'n4', kind: 'comment_like', actor_name: '또치', post_id: 'p2', comment_id: 'c9', post_title: '맛집', post_body: '', created_at: new Date().toISOString(), read_at: new Date().toISOString() },
+    ];
+    setup();
+    fireEvent.click(await screen.findByRole('button', { name: '알림 (안 읽음 4개)' }));
+    expect(screen.getByText('여행자님이 내 글에 댓글을 남겼어요')).toBeInTheDocument();
+    expect(screen.getByText('둘리님이 내 댓글에 답글을 남겼어요')).toBeInTheDocument();
+    expect(screen.getByText('도우너님이 내 글을 좋아해요')).toBeInTheDocument();
+    expect(screen.getByText('또치님이 내 댓글을 좋아해요')).toBeInTheDocument();
+    expect(screen.getByText('첫 줄 제목')).toBeInTheDocument();
+    expect(screen.getAllByRole('link')[0]).toHaveAttribute('href', '/community/post/p1#comment-c1');
+    fireEvent.click(screen.getByRole('button', { name: '도쿄 후기 알림 지우기' }));
+    await waitFor(() => expect(community.remove).toHaveBeenCalledWith('n1'));
+  });
+
+  it('닫으면 안 읽은 커뮤니티 알림을 서버에 읽음으로 표시한다', async () => {
+    community.rows = [{ id: 'n1', kind: 'post_like', actor_name: '여행자', post_id: 'p1', comment_id: null, post_title: '제목', post_body: '', created_at: new Date().toISOString(), read_at: null }];
+    setup();
+    fireEvent.click(await screen.findByRole('button', { name: '알림 (안 읽음 1개)' }));
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => expect(community.markRead).toHaveBeenCalled());
   });
 });
