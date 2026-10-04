@@ -5,6 +5,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { AuthorName } from './AuthorName';
 import { prefsLabel, sanitizeTags } from './companionPrefs';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
 import type { MyCompanionPost } from './types';
@@ -53,6 +54,7 @@ export function CompanionFeedList({ destinationId }: CompanionFeedListProps) {
               <Link key={post.id} to={`/community/companion/${post.id}`} className={styles.card}>
                 <h3 className={styles.cardTitle}>{post.title}</h3>
                 <div className={styles.cardMeta}>
+                  <span><AuthorName profile={post.author} /></span>
                   <span>{post.destination?.name ?? t('companion.detail.anyDestination')}</span>
                   <span>{post.start_date && post.end_date ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date }) : t('companion.detail.dateTbd')}</span>
                   <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>

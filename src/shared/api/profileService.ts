@@ -9,6 +9,9 @@ export type Locale = 'ko' | 'en' | 'zh-TW' | 'ja';
 export type TempUnit = 'c' | 'f';
 export type DistanceUnit = 'km' | 'mi';
 
+export type MemberGender = 'female' | 'male';
+export type MemberAgeBand = '20s_early' | '20s_late' | '30s_early' | '30s_late' | '40s' | '50s_plus';
+
 export interface NotificationPrefs {
   preDeparture: boolean;
   flightChanges: boolean;
@@ -28,6 +31,11 @@ export interface ProfileRow {
   distance_unit: DistanceUnit;
   base_currency: string;
   notification_prefs: NotificationPrefs;
+  /** 선택 입력 — 동행 모집·지원 화면에 나잇대·성별로 보여 준다(0088) */
+  gender: MemberGender | null;
+  age_band: MemberAgeBand | null;
+  /** '나중에'를 누른 횟수 — 서버가 센다. 2번이면 더 묻지 않는다 */
+  demographics_skips: number;
 }
 
 const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
@@ -37,7 +45,7 @@ const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   marketing: false,
 };
 
-const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs';
+const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs, gender, age_band, demographics_skips';
 
 export async function getMyProfile(userId: string): Promise<ProfileRow> {
   const supabase = getSupabaseClient();
@@ -50,7 +58,7 @@ export async function getMyProfile(userId: string): Promise<ProfileRow> {
 }
 
 export type ProfilePatch = Partial<
-  Pick<ProfileRow, 'display_name' | 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs'>
+  Pick<ProfileRow, 'display_name' | 'locale' | 'temp_unit' | 'distance_unit' | 'base_currency' | 'notification_prefs' | 'gender' | 'age_band'>
 >;
 
 export async function updateMyProfile(userId: string, patch: ProfilePatch): Promise<void> {
@@ -65,4 +73,11 @@ export async function checkDisplayNameAvailable(name: string, excludeId: string)
   const { data, error } = await supabase.rpc('is_display_name_available', { p_name: name, p_exclude_id: excludeId });
   if (error) throw error;
   return data as boolean;
+}
+
+/** "나중에" — 서버가 횟수를 센다(이용자가 직접 못 바꾸는 컬럼) */
+export async function skipMyDemographics(): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc('skip_my_demographics');
+  if (error) throw error;
 }

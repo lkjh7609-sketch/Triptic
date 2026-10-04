@@ -17,6 +17,7 @@ import type { NotificationPrefs } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
+import { DemographicsFields } from '@/features/community/DemographicsFields';
 import { User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 'lucide-react';
 
 import { EditProfileModal } from './EditProfileModal';
@@ -203,6 +204,22 @@ export function SettingsScreen() {
         )}
         </div>
       </section>
+
+      {user && profile ? (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}><User size={18}/> {t('demographics.settingsTitle', { ns: 'community' })}</h2>
+          <div className={styles.card}>
+            <div style={{ padding: 'var(--space-3) var(--space-4)' }}>
+              <DemographicsFields
+                gender={profile.gender ?? null}
+                ageBand={profile.age_band ?? null}
+                onChange={(next) => updateProfile.mutate({ gender: next.gender, age_band: next.ageBand })}
+              />
+            </div>
+            <p className={styles.hint}>{t('demographics.settingsHint', { ns: 'community' })}</p>
+          </div>
+        </section>
+      ) : null}
 
       {user ? (
         <section className={styles.section}>
