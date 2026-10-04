@@ -12,7 +12,9 @@ import {
   useMyrealtripLink,
   type FlightSearch,
 } from '@/features/plan/partnerLinks';
+import { useQuery } from '@tanstack/react-query';
 import { useAirports } from '@/features/plan/airports/useAirports';
+import { fetchFlightPlaces } from '@/features/kayak/kayakApi';
 import { DEFAULT_ORIGIN_CODE, flightPlaceForCode, searchFlightPlaces, type FlightPlace } from '@/features/plan/airports/flightPlaces';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
@@ -56,12 +58,15 @@ function PlaceField({
   label,
   value,
   onChange,
+  source,
   inputRef,
   icon,
 }: {
   label: string;
   value: Place | null;
   onChange: (p: Place) => void;
+  /** 자동완성 자료 — 'local' 우리 공항 목록(한국어, 마이리얼트립), 'kayak' Kayak 자동완성(그 외 언어) */
+  source: 'local' | 'kayak';
   inputRef?: Ref<HTMLInputElement>;
   /** PC 칸 오른쪽 끝의 작은 아이콘(이륙·착륙) */
   icon?: ReactNode;
@@ -80,10 +85,18 @@ function PlaceField({
     return () => window.clearTimeout(id);
   }, [editing]);
 
-  const options = useMemo(
-    () => (editing !== null && term.length > 0 ? searchFlightPlaces(airports, term, i18n.language, countryName) : []),
-    [airports, editing, term, i18n.language, countryName],
+  const localOptions = useMemo(
+    () => (source === 'local' && editing !== null && term.length > 0 ? searchFlightPlaces(airports, term, i18n.language, countryName) : []),
+    [source, airports, editing, term, i18n.language, countryName],
   );
+  const { data: kayakPlaces } = useQuery({
+    queryKey: ['kayakPlaces', 'flights', term.toLowerCase()],
+    queryFn: ({ signal }) => fetchFlightPlaces(term, signal),
+    enabled: source === 'kayak' && editing !== null && term.length > 0,
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+  });
+  const options: Place[] = source === 'kayak' ? (term.length > 0 ? (kayakPlaces?.items ?? []) : []) : localOptions;
   const open = editing !== null && term.length > 0 && options.length > 0;
 
   function pick(place: Place) {
@@ -347,7 +360,7 @@ function PassengerPicker({ adults, kids, infants, cabin, onAdults, onChildren, o
  * 항공 탭(한국어) — 마이리얼트립 항공권 검색. 결과는 마이리얼트립 사이트(새 탭)에서 열린다.
  * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults/children/infants를 채워 둔다.
  */
-export function MyrealtripFlightSearch() {
+export function MyrealtripFlightSearch({ kayak }: { kayak?: { onSearch: (flight: FlightSearch) => void; busy?: boolean } } = {}) {
   const { t, i18n } = useTranslation('home');
   const [searchParams] = useSearchParams();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -385,7 +398,7 @@ export function MyrealtripFlightSearch() {
   const { data: airports = [] } = useAirports();
   const countryName = useCountryName(i18n.language);
   const named = (p: Place | null) => (p && p.name === p.code ? (flightPlaceForCode(airports, p.code, i18n.language, countryName) ?? p) : p);
-  const here = searchParams.get('origin') ? null : flightPlaceForCode(airports, DEFAULT_ORIGIN_CODE, i18n.language, countryName);
+  const here = searchParams.get('origin') || kayak ? null : flightPlaceForCode(airports, DEFAULT_ORIGIN_CODE, i18n.language, countryName);
   const effectiveOrigin = named(origin) ?? here ?? null;
   const shownDestination = named(destination);
 
@@ -416,7 +429,7 @@ export function MyrealtripFlightSearch() {
     const id = window.setTimeout(() => setSettledKey(flightKey), 700);
     return () => window.clearTimeout(id);
   }, [flightKey]);
-  const prefetched = useMyrealtripLink(flight && settledKey === flightKey ? flightLinkParams(flight, 'flights') : null);
+  const prefetched = useMyrealtripLink(!kayak && flight && settledKey === flightKey ? flightLinkParams(flight, 'flights') : null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -432,6 +445,21 @@ export function MyrealtripFlightSearch() {
       return;
     }
     setRecent(saveRecent(effectiveOrigin, destination));
+    if (kayak) {
+      kayak.onSearch({
+        origin: effectiveOrigin.code,
+        originType: effectiveOrigin.type,
+        destination: destination.code,
+        destinationType: destination.type,
+        departDate,
+        returnDate: roundTrip ? returnDate : null,
+        adults,
+        children,
+        infants,
+        ...(cabin !== 'ECONOMY' ? { cabin } : {}),
+      });
+      return;
+    }
     if (prefetched) {
       openExternal(prefetched);
       return;
@@ -498,6 +526,7 @@ export function MyrealtripFlightSearch() {
               label={t('flights.form.from')}
               value={effectiveOrigin}
               onChange={setOrigin}
+              source={kayak ? 'kayak' : 'local'}
               inputRef={originInputRef}
               icon={<PlaneTakeoff size={20} />}
             />
@@ -508,6 +537,7 @@ export function MyrealtripFlightSearch() {
               label={t('flights.form.to')}
               value={shownDestination}
               onChange={setDestination}
+              source={kayak ? 'kayak' : 'local'}
               inputRef={destInputRef}
               icon={<PlaneLanding size={20} />}
             />
@@ -584,8 +614,8 @@ export function MyrealtripFlightSearch() {
             <span className={styles.chip}>{t(`flights.form.cabin${cabin}`)}</span>
           </span>
         </div>
-        <button type="submit" className={styles.submit} disabled={busy}>
-          <Search size={18} aria-hidden="true" /> {busy ? t('flights.form.searching') : t('flights.form.search')}
+        <button type="submit" className={styles.submit} disabled={busy || !!kayak?.busy}>
+          <Search size={18} aria-hidden="true" /> {busy || kayak?.busy ? t('flights.form.searching') : t('flights.form.search')}
         </button>
       </div>
 
@@ -624,7 +654,7 @@ export function MyrealtripFlightSearch() {
         </div>
       ) : null}
       <p className={styles.note}>
-        <ShieldCheck size={14} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
+        <ShieldCheck size={14} aria-hidden="true" /> {kayak ? t('flights.form.opensOnKayak') : t('flights.form.opensOnMyrealtrip')}
       </p>
     </form>
   );

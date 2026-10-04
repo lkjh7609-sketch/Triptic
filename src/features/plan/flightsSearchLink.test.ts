@@ -81,10 +81,10 @@ describe('openFlightsSearchForTrip — 한국어는 마이리얼트립', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('한국어가 아니면 탭을 열지 않고 항공 탭(준비 중 안내)으로', async () => {
+  it('한국어가 아니면 탭을 열지 않고 날짜를 채운 항공 탭(Kayak 검색)으로', async () => {
     await openFlightsSearchForTrip(sydneyTrip, 'en');
     expect(window.open).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(assign).toHaveBeenCalledWith('/flights');
+    expect(assign).toHaveBeenCalledWith('/flights?depart_date=2026-10-07&return_date=2026-10-14');
   });
 });
