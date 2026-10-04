@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { useSession } from '@/shared/hooks/useSession';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import {
@@ -99,9 +99,10 @@ export function useTripNotifications() {
     const local = all
       .filter((r) => !state.dismissed.includes(r.id))
       .map((r) => ({ ...r, unread: !state.read.includes(r.id) }));
-    const since = Date.now() - ANNOUNCEMENT_DAYS * 86_400_000;
+    // 렌더 중에 Date.now()를 부르지 않도록 이미 있는 todayYmd 상태에서 기준일을 뽑는다
+    const sinceYmd = format(subDays(new Date(`${todayYmd}T00:00:00`), ANNOUNCEMENT_DAYS), 'yyyy-MM-dd');
     const notices: AnnouncementNotice[] = (announcements ?? [])
-      .filter((a) => new Date(a.published_at).getTime() >= since)
+      .filter((a) => a.published_at.slice(0, 10) >= sinceYmd)
       .slice(0, ANNOUNCEMENT_MAX)
       .map((a) => ({
         kind: 'announcement' as const,
