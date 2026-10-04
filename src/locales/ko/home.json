@@ -666,7 +666,7 @@
     },
     "parking": {
       "title": "주차장 실시간",
-      "sub": "{{time}} 기준 · 2분마다 갱신",
+      "sub": "{{time}} 기준",
       "source": {
         "kac": "출처: 한국공항공사",
         "icn": "출처: 인천국제공항공사"
@@ -736,7 +736,7 @@
   "airport": {
     "title": "인천공항 실시간 출·도착",
     "titleOf": "{{name}} 실시간 출·도착",
-    "updated": "{{time}} 기준 · 3분마다 갱신",
+    "updated": "{{time}} 기준",
     "tabsLabel": "출발·도착",
     "departures": "출발",
     "unavailable": "전광판 정보를 아직 받지 못했어요. 잠시 뒤 다시 확인해 주세요.",

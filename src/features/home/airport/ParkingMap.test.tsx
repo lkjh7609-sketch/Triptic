@@ -53,7 +53,7 @@ describe('ParkingMap — 주차장 평면도', () => {
     expect(screen.getByRole('button', { name: /P3 장기주차장, 남은 자리 0대/ })).toHaveTextContent('–');
     // 인천 전체(T1+T2) 여객 주차장 합계
     expect(screen.getByText('여객 주차장 남은 자리 1,777대')).toBeInTheDocument();
-    expect(screen.getByText('19:32 기준 · 2분마다 갱신 · 출처: 인천국제공항공사')).toBeInTheDocument();
+    expect(screen.getByText('19:32 기준 · 출처: 인천국제공항공사')).toBeInTheDocument();
   });
 
   it('블록을 누르면 상세(남은 자리·점유율·층별 스택)가 열리고, 다시 누르거나 닫기로 접힌다', () => {

@@ -666,7 +666,7 @@
     },
     "parking": {
       "title": "停車場即時資訊",
-      "sub": "{{time}} 更新 · 每 2 分鐘更新",
+      "sub": "{{time}} 更新",
       "source": {
         "kac": "資料來源:韓國機場公社",
         "icn": "資料來源:仁川國際機場公社"
@@ -736,7 +736,7 @@
   "airport": {
     "title": "仁川機場即時出發・抵達",
     "titleOf": "{{name}} 即時出入境航班",
-    "updated": "{{time}} 更新(韓國時間)・每 3 分鐘更新",
+    "updated": "{{time}} 更新(韓國時間)",
     "tabsLabel": "出發・抵達",
     "departures": "出發",
     "unavailable": "尚未取得航班資訊,請稍後再試。",
