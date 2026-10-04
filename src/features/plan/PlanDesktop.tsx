@@ -708,7 +708,7 @@ function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; membe
             <WeatherBox trip={trip} />
             <FlightBox trip={trip} />
             {hasNotStarted(trip) ? <DepartureChecklist trip={trip} /> : null}
-            <PdfBox trip={trip} />
+            <PdfBox trip={trip} members={members} />
             <div className={styles.membersBlock}>
               <h4 className={styles.membersTitle}>
                 <Users size={16} aria-hidden="true" /> {t('desktop.membersTitle')}
@@ -856,7 +856,7 @@ function FlightBox({ trip }: { trip: TripRow }) {
   );
 }
 
-function PdfBox({ trip }: { trip: TripRow }) {
+function PdfBox({ trip, members }: { trip: TripRow; members: TripMember[] }) {
   const { t } = useTranslation('plan');
   const [busy, setBusy] = useState(false);
 
@@ -880,6 +880,7 @@ function PdfBox({ trip }: { trip: TripRow }) {
           flightsData: (project.flights ?? { outbound: null, return: null }) as FlightsData,
           expensesData: (project.expenses ?? {}) as ExpensesData,
           dayCitiesData: (project.dayCities ?? {}) as DayCitiesData,
+          members: members.map((m) => m.name?.trim() ?? '').filter(Boolean),
         },
         'all',
       );

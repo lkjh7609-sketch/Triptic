@@ -117,7 +117,9 @@ export function ShareSheet({ tripId, onClose, itineraryText, pdfInput, isSample,
       // ~120KB) 정적 import하면 트립 상세 화면을 열 때마다 같이 로드된다 —
       // PDF 버튼을 실제로 누를 때만 동적 import로 받는다.
       const { exportToPdf } = await import('./pdfExport');
-      await exportToPdf(pdfInput, mode);
+      // 표지의 '함께하는 사람' — 이름이 없는 멤버는 뺀다
+      const members = memberList.map((m) => m.name?.trim() ?? '').filter(Boolean);
+      await exportToPdf({ ...pdfInput, members }, mode);
     } catch (err) {
       captureError(err, { context: 'exportToPdf', mode });
     } finally {
