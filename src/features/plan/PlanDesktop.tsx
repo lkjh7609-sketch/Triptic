@@ -1,7 +1,7 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { flightAirlineLabel } from './flights';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
   Plus,
   Calendar,
@@ -48,6 +48,8 @@ import { useTripMembers, initialsOf, type TripMember } from './hooks/useTripMemb
 import { formatLocalizedDay } from './planDateFormat';
 import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
+import { FirstTripGuideDialog } from './FirstTripGuideDialog';
+import { markFirstTripGuideAnswered, shouldAskFirstTripGuide } from './firstTripGuide';
 import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
 import { DepartureChecklist } from './DepartureChecklist';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
@@ -125,6 +127,10 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const [pastView, setPastView] = useState<PastView>('grid');
   const [showCreate, setShowCreate] = useState(false);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+  // 가입하고 처음 새 여행을 만들려 할 때 가이드를 볼지 한 번 묻는다(firstTripGuide.ts)
+  const [guideAnswered, setGuideAnswered] = useState(false);
+  const [guideManual, setGuideManual] = useState(false);
+  const navigate = useNavigate();
   const leaveTrip = useLeaveTrip();
   const actions: TripActions = guest
     ? { onRename, onDuplicate, onDelete, onLocked: () => setShowLoginRequired(true) }
@@ -133,12 +139,25 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   // 비로그인은 이 기기에 임시 여행을 만든다(GUEST_TRIP_LIMIT개까지) — 로그인하면 계정으로 옮겨진다.
   // 한도가 차면 로그인 창을 연다
   const guestTrips = useGuestTrips();
+  const askGuide = !guest && shouldAskFirstTripGuide(user?.id, trips.length, guideAnswered);
   const openCreate = () => {
     if (guest && guestTrips.length >= GUEST_TRIP_LIMIT) {
       showToast(t('common:guest.draftLimit', { count: GUEST_TRIP_LIMIT }));
       requireLogin();
-    } else setShowCreate(true);
+    } else if (askGuide) setGuideManual(true);
+    else setShowCreate(true);
   };
+  const guideOpen = askGuide && (guideManual || !!autoCreateCity);
+  function answerGuide(openGuide: boolean) {
+    if (user) markFirstTripGuideAnswered(user.id);
+    setGuideAnswered(true);
+    if (openGuide) {
+      navigate('/guide');
+      return;
+    }
+    if (guideManual) setShowCreate(true);
+    setGuideManual(false);
+  }
 
   const activeTrips = useMemo(() => [...ongoing, ...[...upcoming].sort(byStartDate)], [ongoing, upcoming]);
   const nextTrip = activeTrips[0] ?? null;
@@ -372,7 +391,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
 
       {showLoginRequired ? <LoginRequiredDialog onClose={() => setShowLoginRequired(false)} /> : null}
 
-      {(showCreate || autoCreateCity) && (
+      {guideOpen ? <FirstTripGuideDialog onSkip={() => answerGuide(false)} onOpenGuide={() => answerGuide(true)} /> : null}
+
+      {(showCreate || (autoCreateCity && !guideOpen)) && (
         <CreateTripModal
           autoCreateCity={autoCreateCity}
           autoCreatePlaceId={autoCreatePlaceId}

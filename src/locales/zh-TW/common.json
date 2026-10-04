@@ -108,7 +108,9 @@
     "units": "單位設定",
     "language": "語言 (Language)",
     "backup": "備份與還原",
-    "signOut": "登出"
+    "signOut": "登出",
+    "notices": "公告與更新",
+    "guide": "使用指南"
   },
   "plan": {
     "proBadge": "尊榮"

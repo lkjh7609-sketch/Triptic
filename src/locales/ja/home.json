@@ -440,7 +440,7 @@
         "lead": "初めてでも大丈夫。この順番で書けば、ほかの旅行者の役に立つ投稿になります。",
         "steps": {
           "place": {
-            "title": "どこの話？",
+            "title": "都市を選ぶ",
             "body": "旅行先を選ぶか、都市に関係ない話は「自由掲示板」に書けます。投稿後は旅行先とカテゴリを変更できないので、もう一度ご確認ください。"
           },
           "category": {
@@ -694,7 +694,8 @@
       "partnership": "提携のお問い合わせ",
       "guide": "使い方ガイド",
       "notices": "お知らせ",
-      "operator": "運営者 Ben Lee · admin@triptic.my · ホスティングサービス提供者 Vercel Inc."
+      "operator": "運営者 Ben Lee · admin@triptic.my · ホスティングサービス提供者 Vercel Inc.",
+      "navAria": "フッターメニュー"
     }
   },
   "airportPage": {

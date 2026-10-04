@@ -11,7 +11,6 @@
       "sales": "Sales",
       "analytics": "Analytics",
       "archive": "Archive",
-      "googleLink": "Google link",
       "notices": "Notices"
     },
     "reportDetail": "Report detail: {{detail}}",
@@ -168,20 +167,6 @@
       "general": "General",
       "partnership": "Partnership"
     },
-    "googleLink": {
-      "loadError": "Couldn’t load the destinations. Check that migration 0079 has been applied.",
-      "summary": "Linked to Google Maps: {{linked}} / {{total}}",
-      "hint": "For each destination this finds the city on Google Maps and saves it. Close matches are saved automatically; unclear ones are listed below for you to decide. Keep this window open until it finishes.",
-      "start": "Start linking ({{count}})",
-      "allDone": "All linked",
-      "stop": "Stop",
-      "progress": "{{done}} / {{total}} processed",
-      "reviewTitle": "{{count}} need a look",
-      "far": "Nearest candidate \"{{name}}\" is {{km}} km away.",
-      "none": "No city-level place found.",
-      "error": "Error: {{message}}",
-      "accept": "Use this place"
-    },
     "notices": {
       "title": "Manage notices & updates",
       "kind": "Type",
@@ -230,7 +215,8 @@
       "location": "Location (approx.)",
       "noLocation": "No record",
       "tripsTitle": "Trips ({{count}} created in total)",
-      "planTitle": "Plan & free trip limit"
+      "planTitle": "Trip limit · Pro plan",
+      "handle": "ID (handle)"
     }
   },
   "report": {

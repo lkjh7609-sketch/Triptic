@@ -633,5 +633,11 @@
   "saved": {
     "title": "Saved travelogues",
     "empty": "No saved travelogues yet. Save ones you like in Community."
+  },
+  "firstTripGuide": {
+    "title": "First time here! Want a quick guide?",
+    "body": "From uploading bookings to a PDF itinerary, see how Triptic works in about a minute.",
+    "open": "View guide",
+    "skip": "Create now"
   }
 }

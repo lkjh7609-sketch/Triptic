@@ -440,7 +440,7 @@
         "lead": "第一次寫也沒問題。照著以下順序寫，就能寫出對其他旅人有幫助的貼文。",
         "steps": {
           "place": {
-            "title": "是關於哪裡？",
+            "title": "選擇城市",
             "body": "選擇旅遊目的地；與城市無關的內容可以發到「自由討論版」。發佈後無法更改目的地與分類，請再確認一次。"
           },
           "category": {
@@ -694,7 +694,8 @@
       "partnership": "合作洽詢",
       "guide": "使用指南",
       "notices": "公告",
-      "operator": "營運者 Ben Lee · admin@triptic.my · 主機代管服務提供者 Vercel Inc."
+      "operator": "營運者 Ben Lee · admin@triptic.my · 主機代管服務提供者 Vercel Inc.",
+      "navAria": "頁尾選單"
     }
   },
   "airportPage": {

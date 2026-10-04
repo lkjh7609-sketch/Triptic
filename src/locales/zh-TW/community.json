@@ -11,7 +11,6 @@
       "sales": "銷售",
       "analytics": "分析",
       "archive": "封存區",
-      "googleLink": "Google 連結",
       "notices": "公告"
     },
     "reportDetail": "舉報詳情：{{detail}}",
@@ -166,20 +165,6 @@
       "general": "一般詢問",
       "partnership": "合作洽詢"
     },
-    "googleLink": {
-      "loadError": "無法載入旅遊地點。請確認已套用 0079 遷移。",
-      "summary": "已連結 Google 地圖 {{linked}} / {{total}}",
-      "hint": "為每個旅遊地點在 Google 地圖上找到該城市並儲存。接近的城市會自動儲存,不確定的會列在下方供您決定。請保持此視窗開啟直到完成。",
-      "start": "開始連結({{count}})",
-      "allDone": "全部已連結",
-      "stop": "停止",
-      "progress": "已處理 {{done}} / {{total}}",
-      "reviewTitle": "需要確認 {{count}} 處",
-      "far": "最近的候選「{{name}}」距離 {{km}} 公里。",
-      "none": "找不到城市層級的地點。",
-      "error": "錯誤:{{message}}",
-      "accept": "使用此地點"
-    },
     "notices": {
       "title": "公告與更新管理",
       "kind": "類型",
@@ -228,7 +213,8 @@
       "location": "位置（大約）",
       "noLocation": "無紀錄",
       "tripsTitle": "建立的行程（累計 {{count}} 個）",
-      "planTitle": "方案與免費行程上限"
+      "planTitle": "行程上限・Pro 方案",
+      "handle": "識別碼（代號）"
     }
   },
   "report": {

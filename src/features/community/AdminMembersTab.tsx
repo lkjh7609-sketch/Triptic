@@ -92,6 +92,7 @@ function MemberRow({
         <span className={memberStyles.main}>
           <span className={memberStyles.name}>
             {member.display_name || t('admin.userNoName')}
+            <span className={memberStyles.handle}>@{member.handle || t('admin.userNoHandle')}</span>
             {member.plan === 'pro' ? <span className={memberStyles.pro}>PRO</span> : null}
             {demographics ? <span className={memberStyles.chip}>{demographics}</span> : null}
           </span>
@@ -106,6 +107,10 @@ function MemberRow({
       {open ? (
         <div className={memberStyles.detail}>
           <dl className={memberStyles.facts}>
+            <div>
+              <dt>{t('admin.members.handle')}</dt>
+              <dd>@{member.handle || t('admin.userNoHandle')}</dd>
+            </div>
             <div>
               <dt>{t('admin.members.email')}</dt>
               <dd>{member.email ?? '—'}</dd>
@@ -142,7 +147,7 @@ function MemberRow({
           <h3 className={memberStyles.sectionTitle}>{t('admin.members.tripsTitle', { count: member.trips_created_count })}</h3>
           <MemberTrips userId={member.id} />
           <h3 className={memberStyles.sectionTitle}>{t('admin.members.planTitle')}</h3>
-          <AdminUserPlanRow user={userRow} onChanged={onChanged} activity={activity} activityWindowDays={activityWindowDays} />
+          <AdminUserPlanRow compact user={userRow} onChanged={onChanged} activity={activity} activityWindowDays={activityWindowDays} />
         </div>
       ) : null}
     </article>

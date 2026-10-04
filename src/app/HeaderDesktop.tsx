@@ -7,7 +7,7 @@ import { ProBadge } from '@/shared/ui/ProBadge';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
-import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon } from 'lucide-react';
+import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon, Megaphone, BookOpen } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
@@ -162,6 +162,13 @@ export function HeaderDesktop() {
             <button className={styles.dropdownItem} onClick={() => openModal('backup')}>
               <HardDrive size={16} /> {t('menu.backup')}
             </button>
+            <div className={styles.dropdownDivider} />
+            <Link to="/notices" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <Megaphone size={16} /> {t('menu.notices')}
+            </Link>
+            <Link to="/guide" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <BookOpen size={16} /> {t('menu.guide')}
+            </Link>
             <div className={styles.dropdownDivider} />
             <button className={styles.dropdownItem} onClick={handleSignOut}>
               <LogOut size={16} /> {t('menu.signOut')}

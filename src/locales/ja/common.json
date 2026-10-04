@@ -108,7 +108,9 @@
     "units": "単位設定",
     "language": "言語 (Language)",
     "backup": "バックアップと復元",
-    "signOut": "ログアウト"
+    "signOut": "ログアウト",
+    "notices": "お知らせ・アップデート",
+    "guide": "使い方ガイド"
   },
   "plan": {
     "proBadge": "プレミアム"

@@ -17,8 +17,11 @@ export function AdminUserPlanRow({
   onChanged,
   activity,
   activityWindowDays,
+  compact = false,
 }: {
   user: AdminUserRow;
+  /** 회원 상세 안에서 쓸 때 — 이름·핸들·등급 배지는 위에 이미 있으니 빼고 여행 한도 쪽만 보여 준다 */
+  compact?: boolean;
   onChanged: (user: AdminUserRow) => void;
   /** PostHog 최근 이용 기록 — undefined면 연결 전이거나 아직 못 읽어 줄을 숨긴다, null이면 기록 없음 */
   activity?: UserActivity | null;
@@ -76,11 +79,15 @@ export function AdminUserPlanRow({
     <div className={styles.item}>
       <div className={styles.userRow}>
         <div className={styles.userInfo}>
-          <span className={styles.userHandle}>@{user.handle || t('admin.userNoHandle')}</span>
-          <span className={styles.userName}>{user.display_name || t('admin.userNoName')}</span>
-          <span className={user.plan === 'pro' ? styles.planBadgePro : styles.planBadgeFree}>
-            {user.plan === 'pro' ? t('admin.planPro') : t('admin.planFree')}
-          </span>
+          {compact ? null : (
+            <>
+              <span className={styles.userHandle}>@{user.handle || t('admin.userNoHandle')}</span>
+              <span className={styles.userName}>{user.display_name || t('admin.userNoName')}</span>
+              <span className={user.plan === 'pro' ? styles.planBadgePro : styles.planBadgeFree}>
+                {user.plan === 'pro' ? t('admin.planPro') : t('admin.planFree')}
+              </span>
+            </>
+          )}
           <span className={styles.tripUsage}>
             {user.plan === 'pro'
               ? t('admin.tripUsagePro', { used })

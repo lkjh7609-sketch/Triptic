@@ -11,7 +11,6 @@
       "sales": "販売",
       "analytics": "分析",
       "archive": "保管庫",
-      "googleLink": "Google連携",
       "notices": "お知らせ"
     },
     "reportDetail": "通報の詳細: {{detail}}",
@@ -166,20 +165,6 @@
       "general": "一般のお問い合わせ",
       "partnership": "提携のお問い合わせ"
     },
-    "googleLink": {
-      "loadError": "旅行先の状況を読み込めませんでした。マイグレーション0079が適用されているか確認してください。",
-      "summary": "Googleマップ連携 {{linked}} / {{total}}件",
-      "hint": "旅行先ごとにGoogleマップ上のその都市を探して保存します。近い都市が見つかれば自動保存し、曖昧なものだけ下に表示します。完了するまでこの画面を閉じないでください。",
-      "start": "連携を開始({{count}}件)",
-      "allDone": "すべて連携済み",
-      "stop": "停止",
-      "progress": "{{done}} / {{total}}件処理",
-      "reviewTitle": "確認が必要 {{count}}件",
-      "far": "最も近い候補「{{name}}」は{{km}}km離れています。",
-      "none": "都市レベルの場所が見つかりませんでした。",
-      "error": "エラー: {{message}}",
-      "accept": "この場所に連携"
-    },
     "notices": {
       "title": "お知らせ・アップデート管理",
       "kind": "種類",
@@ -228,7 +213,8 @@
       "location": "位置（おおよそ）",
       "noLocation": "記録なし",
       "tripsTitle": "作成した旅行（累計 {{count}}件）",
-      "planTitle": "プランと無料旅行の上限"
+      "planTitle": "旅行の上限・プロ会員",
+      "handle": "固有番号（ハンドル）"
     }
   },
   "report": {

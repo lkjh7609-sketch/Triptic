@@ -30,11 +30,10 @@ import { AdminAnalyticsTab } from './AdminAnalyticsTab';
 import { AdminPinPad } from './AdminPinPad';
 import { AdminArchiveTab } from './AdminArchiveTab';
 import { AdminNoticesTab } from './AdminNoticesTab';
-import { AdminGoogleLinkTab } from './googleLink/AdminGoogleLinkTab';
 import { AdminMembersTab } from './AdminMembersTab';
 import styles from './AdminScreen.module.css';
 
-type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive' | 'googleLink' | 'notices';
+type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive' | 'notices';
 
 function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (item: AdminFeedbackRow) => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -385,13 +384,6 @@ export function AdminScreen() {
         </button>
         <button
           type="button"
-          className={tab === 'googleLink' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('googleLink')}
-        >
-          {t('admin.tabs.googleLink')}
-        </button>
-        <button
-          type="button"
           className={tab === 'notices' ? styles.tabActive : styles.tab}
           onClick={() => setTab('notices')}
         >
@@ -401,8 +393,6 @@ export function AdminScreen() {
 
       {tab === 'notices' ? (
         <AdminNoticesTab />
-      ) : tab === 'googleLink' ? (
-        <AdminGoogleLinkTab />
       ) : tab === 'archive' ? (
         <AdminArchiveTab />
       ) : tab === 'analytics' ? (
