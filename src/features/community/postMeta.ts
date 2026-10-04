@@ -6,6 +6,24 @@ export function isPostCategory(value: unknown): value is PostCategory {
   return typeof value === 'string' && (POST_CATEGORIES as readonly string[]).includes(value);
 }
 
+/** 제목 최대 글자(0086 posts_title_length) */
+export const MAX_TITLE_LENGTH = 100;
+
+/**
+ * 글 제목 — 제목이 있으면 그것, 옛 글(제목 없음)은 본문 첫 줄(마크다운 기호 뗀 것)을 60자까지.
+ * 목록에는 이 제목만 보이고 본문은 글을 열어야 보인다(사용자 결정).
+ */
+export function postTitleOf(post: { title?: string | null; body: string }): string {
+  const title = post.title?.trim();
+  if (title) return title;
+  const firstLine =
+    post.body
+      .split('\n')
+      .map((l) => l.replace(/^[\s>#*\-+\d.]+/, '').replace(/[*_`~[\]()!]/g, '').trim())
+      .find(Boolean) ?? '';
+  return firstLine.length > 60 ? `${firstLine.slice(0, 60).trimEnd()}…` : firstLine;
+}
+
 export const MAX_TAGS = 3;
 export const MAX_TAG_LENGTH = 20;
 

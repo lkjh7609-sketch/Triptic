@@ -6,6 +6,7 @@ import {
   addBookmark,
   createPost,
   deleteOwnPost,
+  getAdjacentPosts,
   getPost,
   likePost,
   listBookmarkedPosts,
@@ -14,6 +15,7 @@ import {
   listUserPosts,
   removeBookmark,
   unlikePost,
+  updatePost,
   type PostCursor,
 } from '../communityService';
 
@@ -78,6 +80,28 @@ export function useCreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['community', 'feed'] });
     },
+  });
+}
+
+/** 글 수정 — 끝나면 그 글과 목록을 다시 읽는다 */
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updatePost,
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: postQueryKey(vars.postId) });
+      queryClient.invalidateQueries({ queryKey: ['community'] });
+    },
+  });
+}
+
+/** 이전·다음 글 */
+export function useAdjacentPosts(post: { id: string; destination_id: string | null; created_at: string } | undefined) {
+  return useQuery({
+    queryKey: ['community', 'adjacent', post?.id ?? ''],
+    queryFn: () => getAdjacentPosts(post!),
+    enabled: !!post,
+    staleTime: 60_000,
   });
 }
 

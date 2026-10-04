@@ -96,6 +96,8 @@ export interface Post {
   id: string;
   destination_id: string | null;
   author_id: string;
+  /** 글 제목(0086) — 옛 글은 null이라 화면이 본문 첫 줄을 제목으로 보여 준다(postMeta.postTitleOf) */
+  title?: string | null;
   body: string;
   language: string | null;
   trip_id: string | null;
@@ -141,6 +143,10 @@ export interface Comment {
   created_at: string;
   deleted_at: string | null;
   author?: CommunityProfile;
+  /** 댓글 좋아요 수(0086) */
+  like_count?: number;
+  /** 내가 좋아요를 눌렀는지(listComments가 채운다) */
+  likedByMe?: boolean;
 }
 
 export interface Report {
