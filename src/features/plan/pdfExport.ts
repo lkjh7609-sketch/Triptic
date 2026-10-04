@@ -21,6 +21,7 @@ import {
   hasCoord,
   hotelStays,
   nearCluster,
+  packColumns,
   placeLabels,
   rowBudget,
   spreadOverlaps,
@@ -556,6 +557,19 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
   }
 
+  /** 구분선 + '메모' + 손글씨용 줄 */
+  function drawMemo(top: number, h: number) {
+    pdf.setDrawColor(...C_FAINT);
+    pdf.setLineWidth(0.3);
+    pdf.setLineDashPattern([1.4, 1.2], 0);
+    pdf.line(mL, top, pageW - mR, top);
+    pdf.setLineDashPattern([], 0);
+    text(L('memo'), mL, top + 6, { size: 9.5, color: C_BRAND, bold: true });
+    pdf.setDrawColor(...C_LINE);
+    pdf.setLineWidth(0.2);
+    for (let ly = top + 17; ly <= top + h - 3; ly += 8.5) pdf.line(mL, ly, pageW - mR, ly);
+  }
+
   async function drawDay(dayNum: number) {
     const date = dayDateOf(input.startDate, dayNum);
     const city = cityOfDay(dayNum);
@@ -684,12 +698,18 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         transit: '',
       });
     }
+    // 아래 약 20%는 구분선 + 메모 칸(인쇄해서 손으로 적는 자리, 사용자 결정). 타임라인이 길면 메모 칸이 줄지만 30mm는 남긴다
+    const MEMO_TARGET = pageH * 0.2;
+    const MEMO_MIN = 30;
+    const memoH = Math.max(MEMO_MIN, Math.min(MEMO_TARGET, bottomLimit - (y + 4) - rows.length * 7));
+    const memoTop = bottomLimit - memoH;
+    drawMemo(memoTop, memoH);
     if (rows.length === 0) {
       text(L('noPlans'), mL + 4, y + 7, { size: 9.5, color: C_MUTED });
       return;
     }
 
-    const budget = rowBudget(rows.length, bottomLimit - 4 - y);
+    const budget = rowBudget(rows.length, memoTop - 6 - y);
     const fs = budget.fontSize;
     const colTime = mL + 10;
     const colName = mL + 26;
@@ -732,57 +752,70 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
   }
 
   // ── 체크리스트(빈 칸) ─────────────────────────────────────────
+  // 묶음(구역)을 중간에서 자르지 않고 두 칸에 나눈다 — 한 쪽에 들어가면 두 칸 높이를 맞추고, 남는 높이는 줄 간격을 넓혀 채운다
   function drawChecklist() {
     const ck = (key: string) => i18next.t(`plan:desktop.checklist.${key}`);
-    const colW = (usableW - 8) / 2;
-    const colX = [mL, mL + colW + 8];
-    let col = 0;
-    let y = 0;
-    const startPage = () => {
+    const colGap = 10;
+    const colW = (usableW - colGap) / 2;
+    const colX = [mL, mL + colW + colGap];
+    const top = 38;
+    const avail = bottomLimit - top;
+    const HEAD_H = 11; // 구역 제목 줄 + 간격
+    const GROUP_GAP = 6;
+
+    interface Row { lines: string[]; tag: string; tagW: number; carry?: string; h: number }
+    interface Block { title: string; rows: Row[] }
+    const blocks: Block[] = [];
+    for (const page of CHECKLIST_PAGES) {
+      for (const group of page.groups) {
+        const rows: Row[] = group.items.map((item) => {
+          const tag = item.carry ? ck(`carry.${item.carry}`) : '';
+          const tagW = tag ? width(tag, 6.5) + 4 : 0;
+          const lines = wrap(ck(`items.${item.key}`), 8.8, colW - 10 - tagW).slice(0, 3);
+          return { lines, tag, tagW, carry: item.carry, h: Math.max(6.6, lines.length * 4.1 + 2.6) };
+        });
+        blocks.push({ title: ck(`groups.${group.key}`), rows });
+      }
+    }
+    const natural = blocks.map((bl) => HEAD_H + bl.rows.reduce((n, r) => n + r.h, 0) + GROUP_GAP);
+    const pages = packColumns(natural, avail);
+
+    pages.forEach(([left, right], pi) => {
       pdf.addPage();
       text(L('checklistTitle'), mL, 20, { size: 15, color: C_INK, bold: true });
       text(L('checklistHint'), mL, 27, { size: 8.5, color: C_MUTED });
-      col = 0;
-      y = 36;
-    };
-    startPage();
-    const need = (h: number) => {
-      if (y + h <= bottomLimit) return;
-      if (col === 0) {
-        col = 1;
-        y = 36;
-      } else startPage();
-    };
-    for (const page of CHECKLIST_PAGES) {
-      for (const group of page.groups) {
-        need(14);
-        const x = colX[col];
-        pdf.setFillColor(...C_SOFT);
-        pdf.roundedRect(x, y, colW, 7, 2, 2, 'F');
-        text(ck(`groups.${group.key}`), x + 3, y + 4.9, { size: 9, color: C_BRAND, bold: true });
-        y += 10;
-        for (const item of group.items) {
-          const tag = item.carry ? ck(`carry.${item.carry}`) : '';
-          const tagW = tag ? width(tag, 6.5) + 4 : 0;
-          const lines = wrap(ck(`items.${item.key}`), 8.5, colW - 9 - tagW).slice(0, 3);
-          const h = Math.max(6, lines.length * 4 + 2.4);
-          need(h);
-          const ix = colX[col];
-          pdf.setDrawColor(...C_MUTED);
-          pdf.setLineWidth(0.35);
-          pdf.roundedRect(ix + 0.5, y - 0.2, 3.8, 3.8, 0.6, 0.6, 'S');
-          lines.forEach((ln, li) => text(ln, ix + 7, y + 2.9 + li * 4, { size: 8.5, color: C_INK }));
-          if (tag) {
-            const tx = ix + colW - tagW;
-            pdf.setFillColor(...(item.carry === 'cabin' ? ([225, 236, 233] as RGB) : ([241, 245, 249] as RGB)));
-            pdf.roundedRect(tx, y - 0.4, tagW, 4.4, 2.2, 2.2, 'F');
-            text(tag, tx + tagW / 2, y + 2.7, { size: 6.5, color: C_BRAND, align: 'center' });
+      if (pages.length > 1) text(`${pi + 1} / ${pages.length}`, pageW - mR, 20, { size: 9, color: C_FAINT, align: 'right' });
+      const colH = [left, right].map((ids) => ids.reduce((n, i) => n + natural[i], 0));
+      // 남는 높이는 줄 간격으로 — 가장 큰 칸이 쪽을 거의 채우되 1.35배까지만
+      const k = Math.min(1.35, avail / Math.max(1, ...colH));
+      [left, right].forEach((ids, ci) => {
+        let y = top;
+        for (const bi of ids) {
+          const bl = blocks[bi];
+          const x = colX[ci];
+          pdf.setFillColor(...C_SOFT);
+          pdf.roundedRect(x, y, colW, 7.4, 2, 2, 'F');
+          text(bl.title, x + 3.2, y + 5.1, { size: 9.2, color: C_BRAND, bold: true });
+          y += HEAD_H;
+          for (const r of bl.rows) {
+            const h = r.h * k;
+            const my = y + (h - r.lines.length * 4.1) / 2;
+            pdf.setDrawColor(...C_MUTED);
+            pdf.setLineWidth(0.35);
+            pdf.roundedRect(x + 0.6, y + h / 2 - 2, 4, 4, 0.7, 0.7, 'S');
+            r.lines.forEach((ln, li) => text(ln, x + 8, my + 3 + li * 4.1, { size: 8.8, color: C_INK }));
+            if (r.tag) {
+              const tx = x + colW - r.tagW;
+              pdf.setFillColor(...(r.carry === 'cabin' ? ([225, 236, 233] as RGB) : ([241, 245, 249] as RGB)));
+              pdf.roundedRect(tx, y + h / 2 - 2.4, r.tagW, 4.8, 2.4, 2.4, 'F');
+              text(r.tag, tx + r.tagW / 2, y + h / 2 + 0.8, { size: 6.5, color: C_BRAND, align: 'center' });
+            }
+            y += h;
           }
-          y += h;
+          y += GROUP_GAP * k;
         }
-        y += 3;
-      }
-    }
+      });
+    });
   }
 
   // ── 경비 기록표(빈 표) ────────────────────────────────────────
