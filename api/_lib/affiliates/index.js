@@ -62,6 +62,7 @@ export const SALES_PROVIDERS = [
     { id: 'klook', name: 'Klook', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     // 유심사 — 제휴 링크(usimsa.com/affiliate/…)만 붙어 있다(항공 탭 유심·eSIM). 판매 내역은 유심사 파트너 페이지에서
     { id: 'usimsa', name: '유심사', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
-    { id: 'tripcom', name: 'Trip.com', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
+    // Kayak(호텔스컴바인 포함) — 항공·호텔 검색을 Kayak으로 바꿨다(2026-10-04). 판매 내역을 읽는 리포팅 API는 Kayak에 문의 중이라 연동 전
+    { id: 'kayak', name: 'Kayak', isConfigured: () => Boolean(process.env.KAYAK_API_KEY), fetchSales: null, dashboardUrl: 'https://affiliates.kayak.com' },
     { id: 'agoda', name: 'Agoda', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
 ];
