@@ -164,7 +164,10 @@
     "title": "이 날의 식사",
     "searchPlaceholder": "{{meal}} 식당 검색",
     "skip": "건너뛰기",
-    "saving": "저장 중…"
+    "saving": "저장 중…",
+    "timeTitle": "몇 시에 방문할 예정인가요?",
+    "back": "뒤로",
+    "confirm": "확인"
   },
   "mealSlot": {
     "breakfast": "아침",
@@ -266,7 +269,9 @@
   "inspector": {
     "focusMove": "일정 목록에서 보기",
     "unnamedPlace": "이름 없는 장소",
-    "noAddress": "주소 정보가 없어요"
+    "noAddress": "주소 정보가 없어요",
+    "collapse": "카드 접기",
+    "expand": "{{name}} 카드 펼치기"
   },
   "currency": {
     "KRW": "대한민국 원",

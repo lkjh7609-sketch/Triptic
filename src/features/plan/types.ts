@@ -40,6 +40,7 @@ export interface MealSlotInfo {
   address?: string;
   lat?: number;
   lng?: number;
+  placeId?: string | null;
 }
 
 export type DayMeals = Partial<Record<MealSlot, MealSlotInfo>>;

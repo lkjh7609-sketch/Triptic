@@ -37,7 +37,7 @@ import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
 import { formatItineraryText } from './formatItineraryText';
 import { useTripRoutes, type RouteLeg, type RouteWaypoint } from './map/useTripRoutes';
 import { getDayHotels, type Hotel } from './map/hotels';
-import { syncMealItemsIntoDay } from './map/meals';
+import { applyMealChanges, clearMealSlot, MEAL_META } from './map/meals';
 import { getDayCity } from './dayCities';
 import { FixedPointCard, FlightPointCard, LegBetween } from './FixedPointCard';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -58,6 +58,7 @@ import type {
   FlightsData,
 
   HotelsData,
+  MealSlot,
   MealsData,
   PlaceItem,
   PlannerData,
@@ -224,8 +225,19 @@ export function TripDetailScreen() {
     await persistDayItems(next);
   }
 
+  /** 식사 항목이면 이 날의 식사 슬롯도 같이 비운다 — 식사 아이콘의 1/3 숫자가 일정과 어긋나지 않게 한 스냅샷으로 저장 */
   async function handleDeleteItem(index: number) {
-    await persistDayItems(dayItems.filter((_, i) => i !== index));
+    const item = dayItems[index];
+    const slot = item?.mealType && item.mealType in MEAL_META ? (item.mealType as MealSlot) : null;
+    if (!slot || !project || !trip) {
+      await persistDayItems(dayItems.filter((_, i) => i !== index));
+      return;
+    }
+    const plannerData = { ...((project.data ?? {}) as PlannerData) };
+    plannerData[currentDay] = dayItems.filter((_, i) => i !== index);
+    const meals = { ...((project.meals ?? {}) as MealsData) };
+    meals[currentDay] = clearMealSlot(meals[currentDay] ?? {}, slot);
+    await updateSnapshot.mutateAsync({ project: { ...project, data: plannerData, meals }, name: trip.title });
   }
 
   /** 드래그 순서 변경 (DEVELOPMENT_PLAN.md §9 Phase 2: dnd-kit) */
@@ -240,8 +252,12 @@ export function TripDetailScreen() {
     if (!item) return;
     const plannerData = { ...((project.data ?? {}) as PlannerData) };
     plannerData[currentDay] = dayItems.filter((_, i) => i !== index);
-    plannerData[targetDay] = [...(plannerData[targetDay] ?? []), item];
-    const nextProject: LocalProject = { ...project, data: plannerData };
+    // 식사 표시는 그 날의 식사 슬롯과 짝이라 다른 날로 옮기면 표시를 떼고 이 날 슬롯도 비운다
+    const slot = item.mealType && item.mealType in MEAL_META ? (item.mealType as MealSlot) : null;
+    const moved = slot ? { ...item, mealType: undefined } : item;
+    plannerData[targetDay] = [...(plannerData[targetDay] ?? []), moved];
+    const meals = slot ? { ...((project.meals ?? {}) as MealsData), [currentDay]: clearMealSlot(((project.meals ?? {}) as MealsData)[currentDay] ?? {}, slot) } : project.meals;
+    const nextProject: LocalProject = { ...project, data: plannerData, meals };
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
 
@@ -255,11 +271,11 @@ export function TripDetailScreen() {
   /** 식사 슬롯 저장 — mealsData와 plannerData(식사 항목)를 한 스냅샷으로 함께 갱신한다
    * (index.html selectMeal/toggleMealSkip → saveData가 mealsData/plannerData를 같이
    * 저장하던 것과 동일한 시점 보장) */
-  async function handleSaveMeals(dayMeals: DayMeals) {
+  async function handleSaveMeals(dayMeals: DayMeals, times: Partial<Record<MealSlot, string>>) {
     if (!project || !trip) return;
     const nextMeals = { ...((project.meals ?? {}) as MealsData), [currentDay]: dayMeals };
     const plannerData = { ...((project.data ?? {}) as PlannerData) };
-    plannerData[currentDay] = syncMealItemsIntoDay(dayItems, dayMeals);
+    plannerData[currentDay] = applyMealChanges(dayItems, mealsData[currentDay] ?? {}, dayMeals, times);
     const nextProject: LocalProject = { ...project, meals: nextMeals, data: plannerData };
     await updateSnapshot.mutateAsync({ project: nextProject, name: trip.title });
   }
@@ -568,6 +584,7 @@ export function TripDetailScreen() {
       {showMealsModal ? (
         <MealsModal
           dayMeals={mealsData[currentDay] ?? {}}
+          dayItems={dayItems}
           onClose={() => setShowMealsModal(false)}
           onSave={handleSaveMeals}
         />
