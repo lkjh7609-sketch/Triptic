@@ -189,8 +189,11 @@ export function TripDetailScreen() {
       flightsData,
       expensesData,
       dayCitiesData,
+      cityLat: trip.city_lat,
+      cityLng: trip.city_lng,
+      coverUrl: bgImage,
     };
-  }, [project, trip, totalDays, currentDay, hotelsData, flightsData, expensesData, dayCitiesData]);
+  }, [project, trip, totalDays, currentDay, hotelsData, flightsData, expensesData, dayCitiesData, bgImage]);
 
   /** project.data[currentDay]를 갱신한 새 스냅샷을 저장한다 */
   async function persistDayItems(nextItems: PlaceItem[]) {
