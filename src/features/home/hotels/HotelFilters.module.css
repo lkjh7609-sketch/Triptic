@@ -1,0 +1,106 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0 0 var(--space-4);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+
+.group:last-child {
+  border-bottom: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand-solid);
+}
+
+.checkText {
+  flex: 1;
+  min-width: 0;
+}
+
+.starRow {
+  display: inline-flex;
+  flex: 1;
+  gap: 1px;
+  color: #d4a017;
+}
+
+.count {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pill,
+.pillOn {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pill {
+  background: var(--surface-card);
+  color: var(--text-primary);
+}
+
+.pillOn {
+  background: var(--brand-solid);
+  border-color: var(--brand-solid);
+  color: var(--text-on-brand);
+}
+
+.range {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--brand-solid);
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.rangeLabels strong {
+  color: var(--text-primary);
+}
