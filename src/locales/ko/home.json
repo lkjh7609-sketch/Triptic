@@ -112,7 +112,8 @@
       "cabinECONOMY": "일반석",
       "cabinPREMIUM_ECONOMY": "프리미엄 일반석",
       "cabinBUSINESS": "비즈니스석",
-      "cabinFIRST": "일등석"
+      "cabinFIRST": "일등석",
+      "opensOnKayak": "검색 결과는 이 화면에 보이고, 예약은 Kayak에서 진행돼요"
     },
     "comingSoon": {
       "title": "항공권 검색을 준비하고 있어요",
@@ -153,6 +154,41 @@
       "meta": "왕복 최저 {{price}}원~",
       "metaAirline": "왕복 최저 {{price}}원~ · {{airline}}",
       "open": "{{city}} 항공권 보기"
+    },
+    "kayak": {
+      "results": "항공권 검색 결과",
+      "sortLabel": "정렬",
+      "sort": {
+        "best": "추천순",
+        "price": "최저가순",
+        "duration": "최단 시간순"
+      },
+      "stopsLabel": "경유",
+      "stops": {
+        "any": "모두",
+        "0": "직항만",
+        "1": "경유 1회 이하"
+      },
+      "airlineLabel": "항공사",
+      "allAirlines": "모든 항공사",
+      "direct": "직항",
+      "freeCancel": "무료 취소",
+      "bagChecked": "위탁 수하물 포함",
+      "bagCarryOn": "기내 수하물 포함",
+      "durationHM": "{{h}}시간 {{m}}분",
+      "durationM": "{{m}}분",
+      "perPerson": "1인 기준 가격",
+      "perPersonSolo": "총 가격",
+      "book": "예약하기",
+      "via": "{{provider}}에서 예약",
+      "searching": "항공권을 찾는 중이에요…",
+      "searchingMore": "더 찾는 중… 지금까지 {{count}}개",
+      "empty": "조건에 맞는 항공권이 없어요. 날짜나 조건을 바꿔 보세요",
+      "error": "항공권을 불러오지 못했어요. 잠시 후 다시 시도해 주세요",
+      "priceNote": "가격은 예약처에서 바뀔 수 있어요. 예약과 결제는 Kayak이 연결하는 예약처에서 진행돼요",
+      "sandbox": "시험용 데이터예요 — 실제 가격과 다를 수 있어요",
+      "stopsN_other": "경유 {{count}}회",
+      "otherSites_other": "다른 예약처 {{count}}곳"
     }
   },
   "hotels": {

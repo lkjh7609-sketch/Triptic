@@ -112,7 +112,8 @@
       "cabinECONOMY": "經濟艙",
       "cabinPREMIUM_ECONOMY": "豪華經濟艙",
       "cabinBUSINESS": "商務艙",
-      "cabinFIRST": "頭等艙"
+      "cabinFIRST": "頭等艙",
+      "opensOnKayak": "搜尋結果顯示在此頁，訂票則在 Kayak 完成"
     },
     "comingSoon": {
       "title": "機票搜尋準備中",
@@ -153,6 +154,41 @@
       "meta": "來回最低 {{price}}韓元起",
       "metaAirline": "來回最低 {{price}}韓元起 · {{airline}}",
       "open": "查看飛往{{city}}的機票"
+    },
+    "kayak": {
+      "results": "機票搜尋結果",
+      "sortLabel": "排序",
+      "sort": {
+        "best": "推薦",
+        "price": "價格最低",
+        "duration": "時間最短"
+      },
+      "stopsLabel": "轉機",
+      "stops": {
+        "any": "全部",
+        "0": "僅直飛",
+        "1": "轉機 1 次以內"
+      },
+      "airlineLabel": "航空公司",
+      "allAirlines": "所有航空公司",
+      "direct": "直飛",
+      "freeCancel": "免費取消",
+      "bagChecked": "含托運行李",
+      "bagCarryOn": "含手提行李",
+      "durationHM": "{{h}} 小時 {{m}} 分",
+      "durationM": "{{m}} 分",
+      "perPerson": "每人價格",
+      "perPersonSolo": "總價",
+      "book": "前往訂票",
+      "via": "於 {{provider}} 訂票",
+      "searching": "正在搜尋機票…",
+      "searchingMore": "持續搜尋中… 目前 {{count}} 筆",
+      "empty": "沒有符合條件的機票，請調整日期或條件",
+      "error": "無法載入機票，請稍後再試",
+      "priceNote": "價格可能在訂票網站上變動。訂票與付款將在 Kayak 連結的訂票網站完成",
+      "sandbox": "測試資料 — 價格可能與實際不同",
+      "stopsN_other": "轉機 {{count}} 次",
+      "otherSites_other": "其他訂票網站 {{count}} 個"
     }
   },
   "hotels": {
