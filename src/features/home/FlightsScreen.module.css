@@ -37,11 +37,12 @@
 
   .heroTitle {
     margin: var(--space-3) 0 var(--space-1);
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
     font-weight: 800;
     line-height: 1.2;
     letter-spacing: -0.03em;
     color: var(--text-primary);
+    white-space: nowrap;
   }
 
   .lead {
