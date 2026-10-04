@@ -15,6 +15,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useAirports } from '@/features/plan/airports/useAirports';
 import { fetchFlightPlaces } from '@/features/kayak/kayakApi';
+import { PoweredByKayak } from '@/features/kayak/PoweredByKayak';
 import { DEFAULT_ORIGIN_CODE, flightPlaceForCode, searchFlightPlaces, type FlightPlace } from '@/features/plan/airports/flightPlaces';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
@@ -655,6 +656,7 @@ export function MyrealtripFlightSearch({ kayak }: { kayak?: { onSearch: (flight:
       ) : null}
       <p className={styles.note}>
         <ShieldCheck size={14} aria-hidden="true" /> {kayak ? t('flights.form.opensOnKayak') : t('flights.form.opensOnMyrealtrip')}
+        {kayak ? <PoweredByKayak /> : null}
       </p>
     </form>
   );

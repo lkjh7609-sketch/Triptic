@@ -5,6 +5,7 @@ import { useProfile } from '@/shared/hooks/useProfile';
 import { EXTERNAL_LINK_PROPS, formatMoney, kayakCurrency, type FlightSort, type KayakFlightLeg, type KayakFlightOffer } from '@/features/kayak/kayakApi';
 import { useFlightResults } from '@/features/kayak/useFlightResults';
 import type { FlightSearch } from '@/features/plan/partnerLinks';
+import { PoweredByKayak } from '@/features/kayak/PoweredByKayak';
 import styles from './KayakFlightResults.module.css';
 
 const SORTS: FlightSort[] = ['best', 'price', 'duration'];
@@ -217,6 +218,7 @@ export function KayakFlightResults({ search }: { search: FlightSearch }) {
         <p className={styles.empty}>{t('flights.kayak.empty')}</p>
       ) : null}
       {offers.length > 0 ? <p className={styles.note}>{t('flights.kayak.priceNote')}</p> : null}
+      <PoweredByKayak className={styles.powered} />
     </section>
   );
 }

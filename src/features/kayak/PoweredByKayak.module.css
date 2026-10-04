@@ -1,0 +1,14 @@
+.badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ff690f;
+}

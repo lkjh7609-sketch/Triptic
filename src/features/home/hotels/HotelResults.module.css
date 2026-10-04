@@ -598,3 +598,7 @@
   max-width: 28rem;
   color: var(--text-muted);
 }
+
+.powered {
+  align-self: flex-end;
+}
