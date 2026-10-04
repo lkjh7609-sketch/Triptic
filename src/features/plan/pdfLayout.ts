@@ -313,3 +313,42 @@ export function mercatorFit(points: LatLng[], w: number, h: number, pad: { x: nu
     },
   };
 }
+
+// ── 체크리스트: 묶음을 자르지 않고 두 칸에 ─────────────────────────────
+
+/**
+ * 묶음(높이 h[])을 순서대로 두 칸에 나눈다 — 묶음을 중간에서 자르지 않고, 두 칸 높이 차가 가장 작은 자리에서 가른다.
+ * 어느 칸이든 avail을 넘으면 null(한 쪽에 안 들어간다).
+ */
+export function balanceColumns(heights: number[], avail: number): [number[], number[]] | null {
+  let best: { at: number; max: number } | null = null;
+  for (let at = 0; at <= heights.length; at += 1) {
+    const left = heights.slice(0, at).reduce((a, b) => a + b, 0);
+    const right = heights.slice(at).reduce((a, b) => a + b, 0);
+    const max = Math.max(left, right);
+    if (max <= avail && (!best || max < best.max)) best = { at, max };
+  }
+  if (!best) return null;
+  const idx = heights.map((_, i) => i);
+  return [idx.slice(0, best.at), idx.slice(best.at)];
+}
+
+/** 여러 쪽에 걸칠 때 — 쪽마다 앞에서부터 가능한 만큼을 위 balanceColumns로 나눈다(묶음 단위, 한 쪽에 최대한 많이) */
+export function packColumns(heights: number[], avail: number): [number[], number[]][] {
+  const pages: [number[], number[]][] = [];
+  let from = 0;
+  while (from < heights.length) {
+    let take = heights.length - from;
+    let found: [number[], number[]] | null = null;
+    while (take > 0 && !(found = balanceColumns(heights.slice(from, from + take), avail))) take -= 1;
+    if (!found) {
+      // 한 묶음이 한 칸보다 크다 — 그 묶음만 한 칸에 둔다
+      pages.push([[from], []]);
+      from += 1;
+    } else {
+      pages.push([found[0].map((i) => i + from), found[1].map((i) => i + from)]);
+      from += take;
+    }
+  }
+  return pages;
+}

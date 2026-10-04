@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityRuns, ellipsize, hasCoord, hotelStays, mercatorFit, nearCluster, niceScale, placeLabels, project, rowBudget, spreadOverlaps } from './pdfLayout';
+import { balanceColumns, cityRuns, packColumns, ellipsize, hasCoord, hotelStays, mercatorFit, nearCluster, niceScale, placeLabels, project, rowBudget, spreadOverlaps } from './pdfLayout';
 
 describe('표지', () => {
   it('일차별 도시는 이어지는 같은 도시를 묶는다', () => {
@@ -140,5 +140,28 @@ describe('하루 한 쪽', () => {
     const xs = tokyo.map((p) => tighter.toPx(p).x);
     const ys = tokyo.map((p) => tighter.toPx(p).y);
     expect(Math.max(...xs) - Math.min(...xs) > 500 || Math.max(...ys) - Math.min(...ys) > 208).toBe(true);
+  });
+});
+
+describe('체크리스트 두 칸', () => {
+  it('묶음을 자르지 않고, 두 칸 높이 차가 가장 작은 자리에서 가른다', () => {
+    // 서류 110 · 전자기기 62 · 통신 20 · 의류 45 · 위생 40 · 약 36 · 꿀템 38 (실제와 비슷한 높이)
+    const h = [110, 62, 20, 45, 40, 36, 38];
+    const [left, right] = balanceColumns(h, 250)!;
+    expect(left.concat(right)).toEqual([0, 1, 2, 3, 4, 5, 6]);
+    const sum = (ids: number[]) => ids.reduce((a, i) => a + h[i], 0);
+    expect(Math.max(sum(left), sum(right))).toBeLessThanOrEqual(250);
+    expect(Math.abs(sum(left) - sum(right))).toBeLessThanOrEqual(40);
+    expect(right[0]).toBe(2); // 서류·전자기기가 왼쪽, 통신 준비부터 오른쪽 맨 위
+  });
+
+  it('한 쪽에 안 들어가면 null, 여러 쪽으로 나누면 각 쪽이 넘치지 않는다', () => {
+    expect(balanceColumns([200, 200, 200], 250)).toBeNull();
+    const pages = packColumns([200, 200, 200, 100], 250);
+    expect(pages.flat(2)).toEqual([0, 1, 2, 3]);
+    for (const [l, r] of pages) {
+      expect(l.reduce((a, i) => a + [200, 200, 200, 100][i], 0)).toBeLessThanOrEqual(250);
+      expect(r.reduce((a, i) => a + [200, 200, 200, 100][i], 0)).toBeLessThanOrEqual(250);
+    }
   });
 });
