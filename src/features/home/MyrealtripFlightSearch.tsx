@@ -656,8 +656,12 @@ export function MyrealtripFlightSearch({ kayak }: { kayak?: { onSearch: (flight:
       ) : null}
       <p className={styles.note}>
         <ShieldCheck size={14} aria-hidden="true" /> {kayak ? t('flights.form.opensOnKayak') : t('flights.form.opensOnMyrealtrip')}
-        {kayak ? <PoweredByKayak /> : null}
       </p>
+      {kayak ? (
+        <div className={styles.poweredRow}>
+          <PoweredByKayak />
+        </div>
+      ) : null}
     </form>
   );
 }

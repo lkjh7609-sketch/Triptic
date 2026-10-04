@@ -16,6 +16,25 @@
   object-position: center;
 }
 
+.heroImage_pending {
+  opacity: 0;
+}
+
+.heroImage_instant {
+  opacity: 1;
+}
+
+.heroImage_fade {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroImage_fade {
+    transition: none;
+  }
+}
+
 .heroShade {
   position: absolute;
   inset: 0;

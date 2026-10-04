@@ -783,3 +783,9 @@
 }
 
 /* 눌리는 영역 — 요약 칸·칩은 이미 크다. 교체 버튼은 위에서 ::after로 넓혔다 */
+
+.poweredRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}

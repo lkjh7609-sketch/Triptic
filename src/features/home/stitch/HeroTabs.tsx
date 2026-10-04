@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import heroImage from '@/assets/home/hero.webp';
@@ -54,7 +54,7 @@ export function HeroDesktop() {
   const { t } = useTranslation('home');
   return (
     <section className={styles.hero}>
-      <img src={heroImage} alt="" className={styles.heroImage} fetchPriority="high" decoding="async" />
+      <HeroPhoto />
       <div className={styles.heroShade} aria-hidden="true" />
       <div className={styles.wave} aria-hidden="true">
         <svg viewBox="0 0 1440 80" preserveAspectRatio="none" fill="currentColor">
@@ -76,6 +76,45 @@ export function CapsuleMobile() {
 }
 
 /** PC: 항공·호텔·투어 화면 맨 위의 얇은 사진 띠 + 유리 캡슐(홈 히어로의 축소판) */
+/** 사진이 이 시간 안에 오면(캐시) 효과 없이 바로 보여 준다 */
+const CACHED_WITHIN_MS = 80;
+
+/**
+ * PC 홈 맨 위 히어로 사진 — 늦게 도착한 사진만 0.25초 페이드인(회색 → 사진). 캐시에서 바로 뜨면 효과 없이 바로,
+ * 불러오기에 실패하거나 3초 안에 소식이 없어도 사진 자리는 보이는 상태로 둔다(투명하게 남지 않게).
+ */
+function HeroPhoto() {
+  const [mode, setMode] = useState<'pending' | 'instant' | 'fade'>('pending');
+  const startedAt = useRef(0);
+  const reveal = useCallback(() => {
+    setMode((m) => (m !== 'pending' ? m : performance.now() - startedAt.current < CACHED_WITHIN_MS ? 'instant' : 'fade'));
+  }, []);
+  // 이미 받아 둔 사진이면 로드 이벤트를 기다리지 않는다
+  const ref = useCallback(
+    (img: HTMLImageElement | null) => {
+      if (img && img.complete && img.naturalWidth > 0) reveal();
+    },
+    [reveal],
+  );
+  useEffect(() => {
+    startedAt.current = performance.now();
+    const id = window.setTimeout(() => setMode((m) => (m === 'pending' ? 'instant' : m)), 3000);
+    return () => window.clearTimeout(id);
+  }, []);
+  return (
+    <img
+      ref={ref}
+      src={heroImage}
+      alt=""
+      className={`${styles.heroImage} ${styles[`heroImage_${mode}`]}`}
+      fetchPriority="high"
+      decoding="async"
+      onLoad={reveal}
+      onError={() => setMode('instant')}
+    />
+  );
+}
+
 export function SectionBandDesktop({ activeKey }: { activeKey?: CapsuleTabKey }) {
   return (
     <section className={`${styles.hero} ${styles.band}`}>
