@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/shared/ui/global.css';
 import '@/shared/i18n';
-import { initMonitoring } from '@/shared/monitoring';
+import { scheduleMonitoring } from '@/shared/monitoring';
 import { applyStoredTheme } from '@/shared/theme';
 import { isNativeApp } from '@/shared/platform';
 import { App } from './App';
@@ -14,7 +14,7 @@ import { captureBootShell } from './bootShellState';
 document.documentElement.setAttribute('data-app-started', '');
 installStaleChunkReload();
 reportBootFailure();
-initMonitoring();
+scheduleMonitoring();
 applyStoredTheme();
 
 /** PWA 설치·오프라인 열람 (DEVELOPMENT_PLAN.md §10.3). */

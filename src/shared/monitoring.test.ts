@@ -2,11 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const posthog = { init: vi.fn(), capture: vi.fn(), identify: vi.fn(), reset: vi.fn() };
 vi.mock('posthog-js', () => ({ default: posthog }));
+const sentry = { init: vi.fn(), captureException: vi.fn(), setUser: vi.fn() };
+vi.mock('@sentry/react', () => sentry);
 
 describe('monitoring', () => {
   beforeEach(() => {
     vi.resetModules();
     Object.values(posthog).forEach((fn) => fn.mockClear());
+    Object.values(sentry).forEach((fn) => fn.mockClear());
   });
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -52,5 +55,44 @@ describe('monitoring', () => {
     m.identifyUser('user-1');
     m.resetIdentity();
     expect(posthog.reset).toHaveBeenCalled();
+  });
+
+  it('SDK가 준비되기 전에 난 오류는 모았다가, 오류가 나면 SDK를 바로 받아 내보낸다', async () => {
+    vi.stubEnv('VITE_SENTRY_DSN', 'https://x@sentry.test/1');
+    const m = await import('./monitoring');
+    const err = new Error('boom');
+    m.captureError(err, { where: 'test' });
+    await m.initMonitoring();
+    expect(sentry.init).toHaveBeenCalledTimes(1);
+    expect(sentry.captureException).toHaveBeenCalledWith(err, { extra: { where: 'test' } });
+    // 준비된 뒤에는 곧바로 보낸다
+    const err2 = new Error('later');
+    m.captureError(err2);
+    expect(sentry.captureException).toHaveBeenLastCalledWith(err2, { extra: undefined });
+  });
+
+  it('initMonitoring을 여러 번 불러도 SDK는 한 번만 초기화한다', async () => {
+    vi.stubEnv('VITE_SENTRY_DSN', 'https://x@sentry.test/1');
+    const m = await import('./monitoring');
+    await Promise.all([m.initMonitoring(), m.initMonitoring()]);
+    expect(sentry.init).toHaveBeenCalledTimes(1);
+  });
+
+  it('scheduleMonitoring은 load와 한가한 때가 올 때까지 SDK를 받지 않는다', async () => {
+    vi.stubEnv('VITE_SENTRY_DSN', 'https://x@sentry.test/1');
+    vi.useFakeTimers();
+    try {
+      vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
+      const m = await import('./monitoring');
+      m.scheduleMonitoring();
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(sentry.init).not.toHaveBeenCalled();
+      window.dispatchEvent(new Event('load'));
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(sentry.init).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
   });
 });
