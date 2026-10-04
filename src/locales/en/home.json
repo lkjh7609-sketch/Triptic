@@ -663,11 +663,29 @@
       "partnership": "Partnerships"
     }
   },
+  "airportPage": {
+    "title": "Live airport info",
+    "label": "Choose airport",
+    "tabs": {
+      "icn": "Incheon Intl.",
+      "tae": "Daegu",
+      "pus": "Gimhae",
+      "cju": "Jeju"
+    },
+    "full": {
+      "tae": "Daegu International Airport",
+      "pus": "Gimhae International Airport",
+      "cju": "Jeju International Airport"
+    },
+    "soon": "Live departures & arrivals for {{name}} are coming soon",
+    "soonDesc": "We'll show them here as soon as the Korea Airports Corporation data is connected."
+  },
   "airport": {
     "title": "Incheon Airport live departures & arrivals",
     "updated": "As of {{time}} (KST) · refreshes every 3 min",
     "tabsLabel": "Departures and arrivals",
     "departures": "Departures",
+    "unavailable": "We couldn't load the board yet. Please check again in a moment.",
     "arrivals": "Arrivals",
     "col": {
       "time": "Time",

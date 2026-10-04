@@ -146,6 +146,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 공항 — 인천·대구·김해·제주 실시간 출·도착(인천 먼저), 앞으로 주차장 등
+          path: 'airports',
+          lazy: async () => {
+            const { AirportScreen } = await retryChunkLoad(() => import('@/features/home/airport/AirportScreen'));
+            return { Component: AirportScreen };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => {
             const { SettingsScreen } = await retryChunkLoad(() => import('@/features/settings/SettingsScreen'));
