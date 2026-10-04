@@ -674,10 +674,10 @@
       "cju": "Jeju"
     },
     "full": {
-      "gmp": "Gimpo International Airport",
-      "tae": "Daegu International Airport",
-      "pus": "Gimhae International Airport",
-      "cju": "Jeju International Airport"
+      "gmp": "Gimpo Airport",
+      "tae": "Daegu Airport",
+      "pus": "Gimhae Airport",
+      "cju": "Jeju Airport"
     },
     "parking": {
       "title": "Live parking",

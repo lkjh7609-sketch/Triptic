@@ -288,7 +288,7 @@ describe('AirportBoard', () => {
       stale: false,
     };
     render(<AirportBoard desktop airport="gmp" />);
-    expect(screen.getByRole('heading', { level: 2, name: '김포국제공항 실시간 출·도착' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: '김포공항 실시간 출·도착' })).toBeInTheDocument();
     expect(screen.getByText(/출처: 한국공항공사/)).toBeInTheDocument();
     const row = screen.getByRole('button', { name: /LJ513/ });
     expect(row).toHaveTextContent('국내선');
