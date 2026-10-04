@@ -156,7 +156,15 @@
       "close": "收合",
       "loadError": "無法載入封存區",
       "empty": "沒有封存的貼文",
-      "note": "使用者刪除的貼文與取消的旅伴徵求。不會對使用者公開，作者退出時會一併刪除。"
+      "note": "使用者刪除的貼文與取消的旅伴徵求。不會對使用者公開，作者退出時會一併刪除。",
+      "select": "選取",
+      "selectAll": "全選此頁",
+      "deleteSelected": "刪除所選 ({{count}})",
+      "emptyAll": "全部清空",
+      "confirmSelected": "要永久刪除所選的 {{count}} 筆嗎？附加的照片檔案也會一併刪除且無法復原。",
+      "confirmAll": "要清空整個保管庫嗎？所有貼文與招募紀錄及附加照片檔案都會永久刪除且無法復原。",
+      "deleted": "已刪除 {{count}} 筆。",
+      "deleteFailed": "無法刪除，請再試一次。"
     },
     "feedbackCategoryPartnership": "合作洽詢",
     "feedbackFilterLabel": "詢問類型",
@@ -214,7 +222,33 @@
       "noLocation": "無紀錄",
       "tripsTitle": "建立的行程（累計 {{count}} 個）",
       "planTitle": "行程上限・Pro 方案",
-      "handle": "識別碼（代號）"
+      "handle": "識別碼（代號）",
+      "tripView": {
+        "title": "行程內容",
+        "readonly": "唯讀",
+        "owner": "建立者 {{name}} (@{{handle}})",
+        "members": "參與 {{count}} 人",
+        "close": "關閉",
+        "loadError": "無法載入行程。",
+        "flights": "航班",
+        "outbound": "去程",
+        "return": "回程",
+        "day": "第 {{n}} 天",
+        "noItems": "尚無景點。",
+        "empty": "行程是空的。",
+        "view": "查看內容"
+      },
+      "remove": {
+        "button": "強制退會",
+        "title": "要讓 {{name}} 退會嗎？",
+        "message": "帳號、行程、預訂文件檔案、貼文、留言與旅伴紀錄都會被刪除且無法復原。此為管理員職權處分。",
+        "confirm": "執行退會",
+        "cancel": "取消",
+        "done": "已完成退會處理。",
+        "reauth": "基於安全，僅限 15 分鐘內重新登入的管理員操作。請重新登入。",
+        "adminBlocked": "無法讓管理員帳號退會。",
+        "failed": "退會處理失敗，請再試一次。"
+      }
     }
   },
   "report": {

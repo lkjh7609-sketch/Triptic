@@ -158,7 +158,15 @@
       "close": "Collapse",
       "loadError": "Couldn't load the archive",
       "empty": "Nothing archived",
-      "note": "Posts users deleted and companion listings they cancelled. Not shown to users; removed when the author deletes their account."
+      "note": "Posts users deleted and companion listings they cancelled. Not shown to users; removed when the author deletes their account.",
+      "select": "Select",
+      "selectAll": "Select all on this page",
+      "deleteSelected": "Delete selected ({{count}})",
+      "emptyAll": "Empty all",
+      "confirmSelected": "Permanently delete the {{count}} selected items? Attached photo files are deleted too and can't be restored.",
+      "confirmAll": "Empty the whole archive? All post and recruitment records and attached photo files will be permanently deleted and can't be restored.",
+      "deleted": "Deleted {{count}} items.",
+      "deleteFailed": "Couldn't delete. Please try again."
     },
     "feedbackCategoryPartnership": "Partnership",
     "feedbackFilterLabel": "Inquiry type",
@@ -216,7 +224,33 @@
       "noLocation": "No record",
       "tripsTitle": "Trips ({{count}} created in total)",
       "planTitle": "Trip limit · Pro plan",
-      "handle": "ID (handle)"
+      "handle": "ID (handle)",
+      "tripView": {
+        "title": "Trip contents",
+        "readonly": "Read-only",
+        "owner": "Created by {{name}} (@{{handle}})",
+        "members": "{{count}} members",
+        "close": "Close",
+        "loadError": "Couldn't load the trip.",
+        "flights": "Flights",
+        "outbound": "Outbound",
+        "return": "Return",
+        "day": "Day {{n}}",
+        "noItems": "No places yet.",
+        "empty": "The itinerary is empty.",
+        "view": "View"
+      },
+      "remove": {
+        "button": "Remove member",
+        "title": "Remove {{name}}?",
+        "message": "The account, trips, booking document files, posts, comments and companion records will all be deleted and cannot be restored. This is an admin action.",
+        "confirm": "Remove",
+        "cancel": "Cancel",
+        "done": "Member removed.",
+        "reauth": "For security, only an admin who signed in within the last 15 minutes can do this. Please sign in again.",
+        "adminBlocked": "Admin accounts can't be removed.",
+        "failed": "Couldn't remove the member. Please try again."
+      }
     }
   },
   "report": {

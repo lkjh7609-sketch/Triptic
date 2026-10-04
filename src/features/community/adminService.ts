@@ -3,6 +3,7 @@
  * profiles.role='admin'인 사용자만 RLS로 이 조회들이 실제 데이터를 반환한다
  * (0020/0021의 "admin read all ..."/"admin resolve reports" 정책).
  */
+import { apiUrl } from '@/shared/api/apiUrl';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import type { Report } from './types';
 
@@ -311,4 +312,99 @@ export async function getFeedbackScreenshotSignedUrl(path: string): Promise<stri
   const { data, error } = await supabase.storage.from('feedback-screenshots').createSignedUrl(path, 600);
   if (error) throw error;
   return data?.signedUrl ?? null;
+}
+
+// ── 회원이 만든 여행 보기(0091, 읽기 전용) ─────────────────────────────────────
+export interface AdminTripView {
+  trip: {
+    id: string;
+    owner_id: string;
+    title: string;
+    city: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    total_days: number | null;
+    base_currency: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    owner_name: string | null;
+    owner_handle: string | null;
+    member_count: number;
+  } | null;
+  days: { id: string; day_index: number; date: string | null; city_name: string | null; note: string | null }[];
+  items: {
+    id: string;
+    day_id: string;
+    position: number;
+    type: string;
+    title: string;
+    subtitle: string | null;
+    category: string | null;
+    address: string | null;
+    start_local: string | null;
+    end_local: string | null;
+    memo: string | null;
+  }[];
+  hotels: { id: string; day: number; name: string; address: string | null }[];
+  flights: {
+    id: string;
+    type: string;
+    flight_no: string | null;
+    airline: string | null;
+    dep_iata: string | null;
+    dep_name: string | null;
+    dep_time: string | null;
+    arr_iata: string | null;
+    arr_name: string | null;
+    arr_time: string | null;
+  }[];
+}
+
+export async function adminGetTrip(tripId: string): Promise<AdminTripView> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('admin_get_trip', { p_trip_id: tripId });
+  if (error) throw error;
+  return data as AdminTripView;
+}
+
+// ── 운영자 강제 탈퇴(api/deleteAccount.js) ────────────────────────────────────
+export class AdminRemoveMemberError extends Error {
+  constructor(readonly code: 'reauth_required' | 'admin_cannot_delete' | 'forbidden' | 'failed') {
+    super(code);
+    this.name = 'AdminRemoveMemberError';
+  }
+}
+
+export async function adminRemoveMember(userId: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new AdminRemoveMemberError('failed');
+  const res = await fetch(apiUrl('/api/deleteAccount'), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ targetUserId: userId }),
+  });
+  if (res.ok) return;
+  const json = (await res.json().catch(() => ({}))) as { error?: string };
+  if (json.error === 'reauth_required' || json.error === 'admin_cannot_delete' || json.error === 'forbidden') {
+    throw new AdminRemoveMemberError(json.error);
+  }
+  throw new AdminRemoveMemberError('failed');
+}
+
+// ── 보관함 삭제(0091) — 사진 파일을 먼저 지우고 행을 지운다. ids가 null이면 전부 비운다 ──────────────
+export async function adminDeleteArchived(ids: number[] | null): Promise<number> {
+  const supabase = getSupabaseClient();
+  const { data: paths, error: pathErr } = await supabase.rpc('admin_archive_image_paths', { p_ids: ids });
+  if (pathErr) throw pathErr;
+  const files = (paths as string[] | null) ?? [];
+  for (let i = 0; i < files.length; i += 100) {
+    const { error } = await supabase.storage.from('post-images').remove(files.slice(i, i + 100));
+    if (error) throw error;
+  }
+  const { data, error } = await supabase.rpc('admin_delete_archived', { p_ids: ids });
+  if (error) throw error;
+  return (data as number) ?? 0;
 }

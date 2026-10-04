@@ -44,7 +44,9 @@
   "about": {
     "version": "バージョン {{version}}",
     "guide": "使い方ガイド",
-    "notices": "お知らせ・アップデート"
+    "notices": "お知らせ・アップデート",
+    "partnership": "提携のお問い合わせ",
+    "operator": "運営者 Ben Lee · admin@triptic.my · ホスティングサービス提供者 Vercel Inc. · © 2026 Triptic"
   },
   "licenses": {
     "title": "オープンソースライセンス"

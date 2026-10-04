@@ -1,0 +1,18 @@
+/* 모바일: 도시 선택과 자유게시판 버튼을 한 줄에 반반 — PC(1024px~)는 기존처럼 내용만큼의 폭 */
+@media (max-width: 1023px) {
+  .row {
+    flex-wrap: nowrap;
+  }
+
+  .row > .half {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  /* 도시 버튼은 글자가 왼쪽·화살표가 오른쪽에 붙는 모양을 유지 */
+  .row > .cityHalf {
+    justify-content: space-between;
+  }
+}

@@ -70,7 +70,7 @@ export function SettingsScreen() {
   const [showUnitSettings, setShowUnitSettings] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackKind, setFeedbackKind] = useState<'general' | 'partnership' | null>(null);
 
   const [theme, setThemeState] = useState<ThemePreference>(() => getStoredTheme());
   const [cacheUsageMB, setCacheUsageMB] = useState<number | null>(null);
@@ -300,11 +300,17 @@ export function SettingsScreen() {
           </button>
         </div>
         <div className={styles.row}>
-          <button type="button" className={styles.linkButton} onClick={() => setShowFeedback(true)}>
+          <button type="button" className={styles.linkButton} onClick={() => setFeedbackKind('general')}>
             {t('feedback.menuLabel')}
           </button>
         </div>
+        <div className={styles.row}>
+          <button type="button" className={styles.linkButton} onClick={() => setFeedbackKind('partnership')}>
+            {t('about.partnership')}
+          </button>
+        </div>
         <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
+        <p className={styles.hint}>{t('about.operator')}</p>
         </div>
       </section>
 
@@ -316,7 +322,7 @@ export function SettingsScreen() {
       {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showCurrencyModal ? <CurrencyModal onClose={() => setShowCurrencyModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showLanguageModal ? <LanguageModal onClose={() => setShowLanguageModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
-      {showFeedback ? <FeedbackModal onClose={() => setShowFeedback(false)} /> : null}
+      {feedbackKind ? <FeedbackModal kind={feedbackKind} onClose={() => setFeedbackKind(null)} /> : null}
     </div>
   );
 }
