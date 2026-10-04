@@ -4,7 +4,7 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Heart, MessageCircle, PenLine, Lightbulb, BookOpen, ArrowRight, ChevronDown, Lock, Users } from 'lucide-react';
+import { Heart, MessageCircle, PenLine, Search, Lightbulb, BookOpen, ArrowRight, ChevronDown, Lock, Users } from 'lucide-react';
 import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useSession } from '@/shared/hooks/useSession';
@@ -26,6 +26,9 @@ import { splitBody } from './channel/channelHelpers';
 type Sort = 'latest' | 'likes' | 'comments';
 
 interface Props {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  handleSearch: () => void;
   destinations?: Destination[];
   tab: Tab;
   setTab: (tab: Tab) => void;
@@ -42,6 +45,9 @@ function initialOf(name: string | null | undefined): string {
  * 화면의 모든 내용은 실제 피드/여행지 데이터에서 온다. 데이터가 없으면 빈 상태를 보여준다.
  */
 export function CommunityDesignBody({
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
   destinations,
   tab,
   setTab,
@@ -122,6 +128,22 @@ export function CommunityDesignBody({
             <DestinationSelector
               destinations={destinations || []}
               trailing={<TravelAlertSummary variant="button" />}
+              searchElement={
+                <div className="relative w-full shrink-0" style={{ maxWidth: '24rem', minWidth: '20rem' }}>
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                    <Search size={20} aria-hidden="true" />
+                  </div>
+                  <input
+                    className="w-full pl-10 pr-4 py-2.5 rounded-full bg-surface-container-lowest border border-outline-variant/40 focus:border-primary focus:ring-0 font-body-md text-body-md placeholder:text-outline text-primary transition-all shadow-[0_2px_8px_rgba(15,41,66,0.03)]"
+                    placeholder={t('design.searchPlaceholder')}
+                    aria-label={t('design.searchPlaceholder')}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                </div>
+              }
             />
           </div>
           ) : null}
