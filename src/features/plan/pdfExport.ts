@@ -12,7 +12,7 @@ import i18next, { normalizeLocale } from '@/shared/i18n';
 import { getDayHotels } from './map/hotels';
 import { getDayCity } from './dayCities';
 import { flightAirlineLabel, returnFlightDay } from './flights';
-import { sharedDirectionsCache } from './map/useTripRoutes';
+import { hotelContact, mapBackground, transitHop, type HotelContact, type MapBackground, type TransitHop } from './pdfEnrich';
 import { CHECKLIST_PAGES } from './checklistData';
 import { iconSvg } from './pdfIcons';
 import {
@@ -21,9 +21,7 @@ import {
   hasCoord,
   hotelStays,
   nearCluster,
-  niceScale,
   placeLabels,
-  project,
   rowBudget,
   spreadOverlaps,
   type Box,
@@ -168,14 +166,14 @@ type RGB = [number, number, number];
 
 /** 핀·이름표 색 — 번호마다 다른 색(타임라인 번호와 같은 색) */
 const PIN_COLORS: RGB[] = [
-  [124, 58, 237],
-  [234, 88, 12],
-  [13, 148, 136],
-  [220, 38, 38],
-  [37, 99, 235],
-  [219, 39, 119],
-  [22, 163, 74],
-  [202, 138, 4],
+  [111, 94, 160], // 연보라
+  [208, 132, 64], // 살구
+  [64, 138, 128], // 청록
+  [84, 122, 178], // 하늘
+  [168, 112, 152], // 자두
+  [104, 146, 84], // 올리브
+  [184, 148, 64], // 겨자
+  [96, 112, 140], // 회청
 ];
 const C_BRAND: RGB = [46, 79, 79];
 const C_INK: RGB = [28, 25, 23];
@@ -183,8 +181,8 @@ const C_MUTED: RGB = [100, 116, 139];
 const C_FAINT: RGB = [148, 163, 184];
 const C_LINE: RGB = [226, 232, 240];
 const C_SOFT: RGB = [241, 246, 245];
-const C_MAP_BG: RGB = [247, 250, 252];
-const C_GRID: RGB = [232, 238, 245];
+/** 웹사이트 베이지(배경 지도가 없을 때의 바탕) */
+const C_MAP_BG: RGB = [243, 239, 230];
 const C_HOTEL: RGB = [46, 79, 79];
 
 const EXPENSE_CATEGORIES: ExpenseCategory[] = ['food', 'transport', 'lodging', 'shopping', 'activity', 'other'];
@@ -283,6 +281,27 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
   const shortDate = (d: Date | null) =>
     d ? d.toLocaleDateString(locale, { month: 'numeric', day: 'numeric', weekday: 'short' }) : '';
   const fullDate = (d: Date | null) => (d ? d.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
+
+  /** '지하철 · 도보 약 25분' / '도보 약 8분' */
+  function hopText(hop: TransitHop | null): string {
+    if (!hop) return '';
+    const modes = hop.modes.map((m) => L(`mode.${m}`)).join(' · ');
+    const h = Math.floor(hop.minutes / 60);
+    const m = hop.minutes % 60;
+    const time = h > 0 ? (m > 0 ? L('hoursMinutes', { h, m }) : L('hours', { h })) : L('minutes', { m });
+    return L('hop', { modes, time });
+  }
+
+  // 숙소 전화번호·주소(표지·타임라인) — 숙소마다 한 번만 찾는다
+  const stays = hotelStays(input.hotelsData as Record<number, { name: string; address?: string }>, input.totalDays);
+  const contactByName = new Map<string, HotelContact>();
+  await Promise.all(
+    [...new Map(Object.values(input.hotelsData).filter((h) => h?.name).map((h) => [h.name, h])).values()].map(async (h) => {
+      contactByName.set(h.name, await hotelContact(h.name, h));
+    }),
+  );
+  const hotelAddress = (h: { name: string; address?: string }) => cleanPdfText(h.address) || cleanPdfText(contactByName.get(h.name)?.address);
+  const hotelPhone = (name: string) => cleanPdfText(contactByName.get(name)?.phone);
 
   function sectionTitle(label: string, y: number) {
     pdf.setFillColor(...C_BRAND);
@@ -394,22 +413,25 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     text(L('hotels'), mL, y, { size: 9.5, color: C_INK, bold: true });
     icon('house', mL + width(L('hotels'), 9.5) + 2, y - 3.6, 4.4);
     y += 4;
-    const stays = hotelStays(input.hotelsData as Record<number, { name: string; address?: string }>, input.totalDays);
     if (stays.length === 0) {
       text(L('noHotels'), mL + 4, y + 5, { size: 9, color: C_MUTED });
       y += 10;
     } else {
-      const maxRows = Math.max(1, Math.floor((bottomLimit - 8 - y) / 15));
+      const rowH = 19;
+      const maxRows = Math.max(1, Math.floor((bottomLimit - 8 - y) / (rowH + 2)));
       stays.slice(0, maxRows).forEach((s) => {
         pdf.setFillColor(...C_SOFT);
-        pdf.roundedRect(mL, y, usableW, 13, 2.5, 2.5, 'F');
-        text(fit(s.name, 10, usableW * 0.55), mL + 4, y + 5.6, { size: 10, color: C_INK, bold: true });
-        if (s.address) text(fit(s.address, 7.5, usableW * 0.55), mL + 4, y + 10.2, { size: 7.5, color: C_MUTED });
+        pdf.roundedRect(mL, y, usableW, rowH, 2.5, 2.5, 'F');
+        text(fit(s.name, 10, usableW * 0.55), mL + 4, y + 5.8, { size: 10, color: C_INK, bold: true });
+        const address = hotelAddress(s);
+        const phone = hotelPhone(s.name);
+        if (address) text(`${L('addressLabel')}  ${fit(address, 7.8, usableW * 0.62)}`, mL + 4, y + 10.8, { size: 7.8, color: C_MUTED });
+        if (phone) text(`${L('phoneLabel')}  ${phone}`, mL + 4, y + 15.4, { size: 7.8, color: C_MUTED });
         const inDate = shortDate(dayDateOf(input.startDate, s.fromDay));
         const outDate = shortDate(dayDateOf(input.startDate, s.toDay));
-        text(`${L('checkIn')} ${inDate}  →  ${L('checkOut')} ${outDate}`, pageW - mR - 4, y + 5.6, { size: 8.5, color: C_INK, align: 'right' });
-        text(L('nights', { count: s.nights }), pageW - mR - 4, y + 10.2, { size: 7.5, color: C_BRAND, align: 'right', bold: true });
-        y += 15;
+        text(`${L('checkIn')} ${inDate}  →  ${L('checkOut')} ${outDate}`, pageW - mR - 4, y + 5.8, { size: 8.5, color: C_INK, align: 'right' });
+        text(L('nights', { count: s.nights }), pageW - mR - 4, y + 10.8, { size: 7.5, color: C_BRAND, align: 'right', bold: true });
+        y += rowH + 2;
       });
       if (stays.length > maxRows) text(L('moreHotels', { count: stays.length - maxRows }), mL + 4, y + 2, { size: 8, color: C_MUTED });
     }
@@ -432,42 +454,44 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     transit: string;
   }
 
-  function transitBetween(a: { lat?: number | null; lng?: number | null } | null, b: { lat?: number | null; lng?: number | null } | null): string {
-    if (!a || !b || !hasCoord(a) || !hasCoord(b)) return '';
-    const cached = sharedDirectionsCache.get({ lat: a.lat, lng: a.lng }, { lat: b.lat, lng: b.lng });
-    return cached && cached.status === 'OK' && cached.duration ? L('transitShort', { duration: cached.duration }) : '';
-  }
+  /** 지도 칸 그림 크기(Static Maps 픽셀) — 칸 비율과 같게 */
+  const MAP_PX = { w: 640, h: 0 };
 
-  function drawMap(box: Box, points: MapPoint[]) {
-    // 바탕: 옅은 모눈
+  function drawMap(box: Box, points: MapPoint[], bg: MapBackground | null) {
+    // 바탕: 베이지 + (있으면) 그 지역 지도 모양
     pdf.setFillColor(...C_MAP_BG);
+    pdf.roundedRect(box.x, box.y, box.w, box.h, 4, 4, 'F');
+    if (bg?.image) pdf.addImage(bg.image, 'PNG', box.x, box.y, box.w, box.h);
+    // 모서리를 둥글게 보이게 흰 테두리를 얹는다(그림은 네모라)
+    pdf.setDrawColor(255, 255, 255);
+    pdf.setLineWidth(2.2);
+    pdf.roundedRect(box.x - 0.8, box.y - 0.8, box.w + 1.6, box.h + 1.6, 4.6, 4.6, 'S');
     pdf.setDrawColor(...C_LINE);
     pdf.setLineWidth(0.3);
-    pdf.roundedRect(box.x, box.y, box.w, box.h, 4, 4, 'FD');
-    pdf.setDrawColor(...C_GRID);
-    pdf.setLineWidth(0.15);
-    for (let gx = box.x + 10; gx < box.x + box.w - 2; gx += 10) pdf.line(gx, box.y + 2, gx, box.y + box.h - 2);
-    for (let gy = box.y + 10; gy < box.y + box.h - 2; gy += 10) pdf.line(box.x + 2, gy, box.x + box.w - 2, gy);
+    pdf.roundedRect(box.x, box.y, box.w, box.h, 4, 4, 'S');
 
     // 방위
-    const cx = box.x + box.w - 9;
-    const cy = box.y + 10;
+    const cx = box.x + box.w - 8;
+    const cy = box.y + 9;
     pdf.setFillColor(255, 255, 255);
     pdf.setDrawColor(...C_LINE);
-    pdf.circle(cx, cy, 4.2, 'FD');
-    pdf.setFillColor(220, 38, 38);
-    pdf.triangle(cx, cy - 3, cx - 1.3, cy, cx + 1.3, cy, 'F');
+    pdf.circle(cx, cy, 3.6, 'FD');
+    pdf.setFillColor(...C_BRAND);
+    pdf.triangle(cx, cy - 2.6, cx - 1.1, cy, cx + 1.1, cy, 'F');
     pdf.setFillColor(...C_FAINT);
-    pdf.triangle(cx, cy + 3, cx - 1.3, cy, cx + 1.3, cy, 'F');
-    text('N', cx, cy - 5.3, { size: 7, color: C_MUTED, bold: true, align: 'center' });
+    pdf.triangle(cx, cy + 2.6, cx - 1.1, cy, cx + 1.1, cy, 'F');
+    text('N', cx, cy - 4.5, { size: 6.5, color: C_MUTED, bold: true, align: 'center' });
 
-    if (points.length === 0) {
+    if (points.length === 0 || !bg) {
       text(L('freeDay'), box.x + box.w / 2, box.y + box.h / 2, { size: 11, color: C_MUTED, align: 'center', bold: true });
       return;
     }
 
-    const proj = project(points, box, { x: 26, y: 15 });
-    const xy = spreadOverlaps(points.map((p) => proj.toXY(p)), 8);
+    const toXY = (p: LatLng) => {
+      const q = bg.fit.toPx(p);
+      return { x: box.x + (q.x / MAP_PX.w) * box.w, y: box.y + (q.y / MAP_PX.h) * box.h };
+    };
+    const xy = spreadOverlaps(points.map(toXY), 7);
 
     // 이름표 크기
     const sizes = points.map((p) => {
@@ -530,19 +554,9 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
       }
     });
 
-    // 축척
-    const scale = niceScale(proj.mmPerKm, box.w);
-    const sx = box.x + 6;
-    const sy = box.y + box.h - 6;
-    pdf.setDrawColor(...C_MUTED);
-    pdf.setLineWidth(0.4);
-    pdf.line(sx, sy, sx + scale.mm, sy);
-    pdf.line(sx, sy - 1, sx, sy + 0.2);
-    pdf.line(sx + scale.mm, sy - 1, sx + scale.mm, sy + 0.2);
-    text(scale.km >= 1 ? `${scale.km} km` : `${Math.round(scale.km * 1000)} m`, sx + scale.mm + 2, sy + 1, { size: 6.5, color: C_MUTED });
   }
 
-  function drawDay(dayNum: number) {
+  async function drawDay(dayNum: number) {
     const date = dayDateOf(input.startDate, dayNum);
     const city = cityOfDay(dayNum);
     let y = 16;
@@ -586,12 +600,11 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     const mapPoints = mapCandidates.filter((p) => near.has(p));
     const outside = mapCandidates.filter((p) => !near.has(p) && p.kind === 'place');
 
-    // 지도 높이 — 타임라인 줄이 적으면 지도를 키워 쪽을 채운다(하루 한 쪽 안에서)
-    const rowCount = items.length + (startHotel ? 1 : 0) + (endHotel ? 1 : 0) + (flightArrival ? 1 : 0) + (flightDeparture ? 1 : 0);
-    const timelineNeed = Math.max(1, rowCount) * 9.5 + 26;
-    const mapH = Math.min(150, Math.max(100, bottomLimit - y - timelineNeed));
-    const mapBox: Box = { x: mL, y, w: usableW, h: mapH };
-    drawMap(mapBox, mapPoints);
+    // 지도는 쪽 높이의 30% 안(사용자 결정) — 배경은 그 지역 지도 모양(베이지 톤)
+    const mapBox: Box = { x: mL, y, w: usableW, h: 82 };
+    MAP_PX.h = Math.round((MAP_PX.w * mapBox.h) / mapBox.w);
+    const bg = mapPoints.length ? await mapBackground(mapPoints, MAP_PX, { x: 88, y: 46 }) : null;
+    drawMap(mapBox, mapPoints, bg);
     // 지도 밖(멀리 떨어진) 장소는 지도 왼쪽 위에 작게 알린다
     if (outside.length > 0) {
       const note = `${L('offMap')}  ${outside.map((p) => `${p.num} ${cleanPdfText(p.title)}`).join(', ')}`;
@@ -614,6 +627,16 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     }
     y = mapBox.y + mapBox.h + (orderPlaces.length > 1 ? 19 : 10);
 
+    // 장소 사이 대중교통(수단·시간) — 숙소 → 첫 장소 → … → 마지막 장소 → 숙소
+    const hop = async (a: { lat?: number | null; lng?: number | null } | null | undefined, b: { lat?: number | null; lng?: number | null } | null | undefined) =>
+      a && b && hasCoord(a) && hasCoord(b) && !(a.lat === b.lat && a.lng === b.lng) ? hopText(await transitHop(a, b)) : '';
+    const hops = await Promise.all([
+      hop(startHotel, items[0]),
+      ...items.map((it, i) => hop(it, items[i + 1] ?? endHotel)),
+    ]);
+    const hotelMemo = (name: string, h: { name: string; address?: string }) =>
+      [hotelPhone(name) ? `${L('phoneLabel')} ${hotelPhone(name)}` : '', hotelAddress(h)].filter(Boolean).join('  ·  ');
+
     // 타임라인
     sectionTitle(L('timeline'), y);
     y += 4;
@@ -634,8 +657,8 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         time: '',
         name: startHotel.name,
         sub: L('startHotel'),
-        memo: '',
-        transit: transitBetween(startHotel, items[0] ?? null),
+        memo: hotelMemo(startHotel.name, startHotel),
+        transit: hops[0],
       });
     }
     items.forEach((it, i) => {
@@ -645,11 +668,11 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         name: it.name,
         sub: mealSlotLabel(it.mealType) ?? (it.category ? i18next.t(`plan:placeCategory.${it.category}`) : ''),
         memo: it.memo || it.address || '',
-        transit: transitBetween(it, items[i + 1] ?? endHotel ?? null),
+        transit: hops[i + 1],
       });
     });
     if (endHotel) {
-      rows.push({ badge: { kind: 'icon', icon: 'house' }, time: '', name: endHotel.name, sub: L('endHotel'), memo: '', transit: '' });
+      rows.push({ badge: { kind: 'icon', icon: 'house' }, time: '', name: endHotel.name, sub: L('endHotel'), memo: hotelMemo(endHotel.name, endHotel), transit: '' });
     }
     if (flightDeparture) {
       rows.push({
@@ -670,7 +693,7 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
     const fs = budget.fontSize;
     const colTime = mL + 10;
     const colName = mL + 26;
-    const colMemo = mL + 104;
+    const colMemo = mL + 96;
     const colTransit = pageW - mR;
     rows.slice(0, budget.shown).forEach((row, i) => {
       const top = y + i * budget.rowH;
@@ -695,9 +718,9 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
         const sx = colName + width(name, fs) + 2.5;
         text(fit(row.sub, fs * 0.82, colMemo - 3 - sx), sx, mid + fs * 0.13, { size: fs * 0.82, color: C_MUTED });
       }
-      const transitW = row.transit ? width(row.transit, fs * 0.82) + 3 : 0;
+      const transitW = row.transit ? Math.min(46, width(row.transit, fs * 0.82)) + 3 : 0;
       if (row.memo) text(fit(row.memo, fs * 0.85, colTransit - colMemo - transitW - 2), colMemo, mid + fs * 0.13, { size: fs * 0.85, color: C_MUTED });
-      if (row.transit) text(row.transit, colTransit, mid + fs * 0.13, { size: fs * 0.82, color: C_BRAND, align: 'right' });
+      if (row.transit) text(fit(row.transit, fs * 0.82, 46), colTransit, mid + fs * 0.13, { size: fs * 0.82, color: C_BRAND, align: 'right' });
       pdf.setDrawColor(...C_LINE);
       pdf.setLineWidth(0.15);
       pdf.line(mL, top + budget.rowH, pageW - mR, top + budget.rowH);
@@ -840,12 +863,12 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
 
   // ── 쪽 순서 ─────────────────────────────────────────────────
   if (mode === 'current') {
-    drawDay(input.currentDay);
+    await drawDay(input.currentDay);
   } else {
     drawCover();
     for (let d = 1; d <= input.totalDays; d += 1) {
       pdf.addPage();
-      drawDay(d);
+      await drawDay(d);
     }
     drawChecklist();
     drawExpenseSheet();
