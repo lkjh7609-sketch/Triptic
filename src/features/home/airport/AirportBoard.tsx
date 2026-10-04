@@ -115,10 +115,10 @@ function BoardRow({
 }
 
 /**
- * 홈 '인천공항 출·도착' 전광판 — 공항 전광판처럼 지금 이후 편을 시각 순으로. 출발/도착 탭, 줄을 누르면 상세.
+ * '인천공항 출·도착' 전광판(공항 화면, standalone) — 공항 전광판처럼 지금 이후 편을 시각 순으로. 출발/도착 탭, 줄을 누르면 상세.
  * 데이터는 Edge Function(incheon-board)이 3분마다 한 번만 외부에서 받아 둔 값이다. 받아 온 값이 없으면 섹션을 그리지 않는다.
  */
-export function AirportBoard({ desktop }: { desktop: boolean }) {
+export function AirportBoard({ desktop, standalone = false }: { desktop: boolean; standalone?: boolean }) {
   const { t, i18n } = useTranslation('home');
   const { data, isLoading } = useAirportBoard();
   const nowMin = useKstMinutes();
@@ -194,7 +194,16 @@ export function AirportBoard({ desktop }: { desktop: boolean }) {
         <div className={styles.skeleton} />
       </section>
     );
-  if (!data || !fetchedAt) return null;
+  if (!data || !fetchedAt)
+    // 홈의 한 섹션일 땐 빈 틀을 남기지 않지만, 공항 화면 안에서는 비어 보이지 않게 안내를 둔다
+    return standalone ? (
+      <section className={shared.section} aria-labelledby="home-airport-title">
+        <h2 id="home-airport-title" className={shared.title}>
+          {t('airport.title')}
+        </h2>
+        <p className={styles.empty}>{t('airport.unavailable')}</p>
+      </section>
+    ) : null;
 
   const TabIcon = direction === 'departures' ? PlaneTakeoff : PlaneLanding;
 

@@ -648,11 +648,29 @@
       "partnership": "제휴문의"
     }
   },
+  "airportPage": {
+    "title": "공항 실시간 정보",
+    "label": "공항 선택",
+    "tabs": {
+      "icn": "인천국제공항",
+      "tae": "대구",
+      "pus": "김해",
+      "cju": "제주"
+    },
+    "full": {
+      "tae": "대구국제공항",
+      "pus": "김해국제공항",
+      "cju": "제주국제공항"
+    },
+    "soon": "{{name}} 실시간 출·도착은 준비 중이에요",
+    "soonDesc": "한국공항공사 공공데이터를 연결하는 대로 이곳에서 보여 드릴게요."
+  },
   "airport": {
     "title": "인천공항 실시간 출·도착",
     "updated": "{{time}} 기준 · 3분마다 갱신",
     "tabsLabel": "출발·도착",
     "departures": "출발",
+    "unavailable": "전광판 정보를 아직 받지 못했어요. 잠시 뒤 다시 확인해 주세요.",
     "arrivals": "도착",
     "col": {
       "time": "시각",

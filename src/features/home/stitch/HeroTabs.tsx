@@ -2,16 +2,32 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import heroImage from '@/assets/home/hero.webp';
+import type { LucideIcon } from 'lucide-react';
 import { CAPSULE_TABS as TABS, type CapsuleTabKey } from './capsuleTabs';
 import { HomeTopBar } from './HomeTopBar';
 import { useLiquidGlass } from './useLiquidGlass';
 import styles from './HeroTabs.module.css';
 
+/** 캡슐의 칸 하나 — 기본(항공·호텔·투어)은 화면 이동 버튼이고, 공항 화면은 같은 화면 안에서 공항을 바꾸는 칸이다 */
+export interface CapsuleItem {
+  key: string;
+  label: string;
+  Icon?: LucideIcon;
+}
+
+/** 캡슐 칸을 직접 정하는 쪽(공항 화면)이 넘기는 값 — 누르면 화면 이동 대신 onSelect가 불린다 */
+export interface CapsuleCustom {
+  items: CapsuleItem[];
+  onSelect: (key: string) => void;
+  ariaLabel: string;
+}
+
 /**
  * 항공·호텔·투어 캡슐. 홈에서는 이동 버튼이라 처음엔 아무것도 채우지 않고, 누르면 그 칸이 채워지며 해당 화면으로 간다.
  * 항공·호텔·투어 화면에서는 activeKey로 지금 화면의 칸이 채워져 있고(aria-current), 다른 칸을 누르면 그 화면으로 간다.
+ * custom이 있으면(공항 화면) 칸과 이름을 그쪽 것으로 쓰고, 누르면 onSelect만 부른다.
  */
-function CapsuleTabs({ variant, activeKey }: { variant: 'hero' | 'flat'; activeKey?: CapsuleTabKey }) {
+function CapsuleTabs({ variant, activeKey, custom }: { variant: 'hero' | 'flat'; activeKey?: string; custom?: CapsuleCustom }) {
   const { t } = useTranslation('home');
   const navigate = useNavigate();
   const [picked, setPicked] = useState<string | null>(null);
@@ -20,16 +36,17 @@ function CapsuleTabs({ variant, activeKey }: { variant: 'hero' | 'flat'; activeK
   const glass = useLiquidGlass(navRef);
   const refract = variant === 'hero' && glass.refracting;
   const current = activeKey ?? picked;
+  const items: CapsuleItem[] = custom?.items ?? TABS.map(({ key, Icon }) => ({ key, label: t(`page.tabs.${key}`), Icon }));
 
   return (
     <nav
       ref={navRef}
       className={`${styles.capsule} ${variant === 'hero' ? styles.capsuleHero : styles.capsuleFlat} ${refract ? styles.capsuleRefract : ''}`}
       style={refract ? { backdropFilter: `blur(3px) ${glass.filterUrl} saturate(1.5) brightness(1.08)` } : undefined}
-      aria-label={t('page.tabs.label')}
+      aria-label={custom?.ariaLabel ?? t('page.tabs.label')}
     >
       {variant === 'hero' ? glass.svg : null}
-      {TABS.map(({ key, to, Icon }) => (
+      {items.map(({ key, label, Icon }) => (
         <button
           key={key}
           type="button"
@@ -37,12 +54,16 @@ function CapsuleTabs({ variant, activeKey }: { variant: 'hero' | 'flat'; activeK
           aria-current={activeKey === key ? 'page' : undefined}
           onClick={() => {
             if (activeKey === key) return;
+            if (custom) {
+              custom.onSelect(key);
+              return;
+            }
             setPicked(key);
-            navigate(to);
+            navigate(TABS.find((tab) => tab.key === key)!.to);
           }}
         >
-          <Icon size={17} aria-hidden="true" className={styles.tabIcon} />
-          <span>{t(`page.tabs.${key}`)}</span>
+          {Icon ? <Icon size={17} aria-hidden="true" className={styles.tabIcon} /> : null}
+          <span>{label}</span>
         </button>
       ))}
     </nav>
@@ -115,7 +136,7 @@ function HeroPhoto() {
   );
 }
 
-export function SectionBandDesktop({ activeKey }: { activeKey?: CapsuleTabKey }) {
+export function SectionBandDesktop({ activeKey, custom }: { activeKey?: CapsuleTabKey | string; custom?: CapsuleCustom }) {
   return (
     <section className={`${styles.hero} ${styles.band}`}>
       <img src={heroImage} alt="" className={styles.heroImage} decoding="async" />
@@ -126,19 +147,19 @@ export function SectionBandDesktop({ activeKey }: { activeKey?: CapsuleTabKey })
         </svg>
       </div>
       <div className={styles.heroInner}>
-        <CapsuleTabs variant="hero" activeKey={activeKey} />
+        <CapsuleTabs variant="hero" activeKey={activeKey} custom={custom} />
       </div>
     </section>
   );
 }
 
 /** 모바일: 항공·호텔·투어 화면 맨 위의 로고 줄 + 유리 캡슐(홈과 같은 자리, 캡슐은 스크롤과 함께 올라감) */
-export function SectionCapsuleMobile({ activeKey }: { activeKey?: CapsuleTabKey }) {
+export function SectionCapsuleMobile({ activeKey, custom }: { activeKey?: CapsuleTabKey | string; custom?: CapsuleCustom }) {
   return (
     <>
       <HomeTopBar />
       <div className={styles.sectionCapsuleMobile}>
-        <CapsuleTabs variant="flat" activeKey={activeKey} />
+        <CapsuleTabs variant="flat" activeKey={activeKey} custom={custom} />
       </div>
     </>
   );

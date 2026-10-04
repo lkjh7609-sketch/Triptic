@@ -1,7 +1,7 @@
 import type { NavigationType } from 'react-router';
 
 /** 하단 탭/상단 헤더/홈 상단 탭(항공·호텔·액티비티)으로 오가는 최상위 화면 — 여기끼리는 페이드 */
-const TAB_ROOTS = new Set(['/', '/plan', '/community', '/settings', '/flights', '/hotels', '/activities']);
+const TAB_ROOTS = new Set(['/', '/plan', '/community', '/settings', '/flights', '/hotels', '/activities', '/airports']);
 
 export type NavDirection = 'forward' | 'back' | 'fade';
 

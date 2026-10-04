@@ -93,37 +93,20 @@ describe('HomePage — 시안(Stitch) 구성', () => {
     expect(screen.queryByText('지금 바로 다음 여행을 계획해 보세요')).not.toBeInTheDocument();
   });
 
-  it('인천공항 전광판은 내 일정 바로 아래에 나오고(PC·모바일), 받은 값이 없으면 섹션이 없다', () => {
+  it('인천공항 전광판은 홈에 없다 — 맨 위 메뉴 "공항"으로 옮겼다(PC·모바일)', () => {
     board.data = {
-      departures: [
-        {
-          id: 'KE1',
-          airline: '대한항공',
-          scheduled: '1010',
-          estimated: '1010',
-          city: '도쿄',
-          airportCode: 'NRT',
-          terminal: 'P03',
-          gate: '',
-          counter: '',
-          carousel: '',
-          exit: '',
-          remark: '탑승준비',
-          codeshares: [],
-          stopovers: [],
-        },
-      ],
+      departures: [],
       arrivals: [],
       fetchedAt: new Date().toISOString(),
       stale: false,
     };
     isDesktop.value = false;
     const mobile = renderHome();
-    expect(headings().slice(0, 2)).toEqual(['내 일정 & 추천 샘플', '인천공항 실시간 출·도착']);
+    expect(headings()).not.toContain('인천공항 실시간 출·도착');
     mobile.unmount();
     isDesktop.value = true;
     renderHome();
-    expect(headings().slice(0, 2)).toEqual(['내 일정 & 추천 샘플', '인천공항 실시간 출·도착']);
+    expect(headings()).not.toContain('인천공항 실시간 출·도착');
   });
 
   it('모바일: 기온은 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {

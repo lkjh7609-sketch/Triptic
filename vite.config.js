@@ -78,7 +78,7 @@ export default defineConfig(({ mode }) => {
         },
       },
       {
-        // 홈(/) 첫 화면 데이터(항공 특가·인천공항 전광판)를 JS보다 먼저 요청한다 — 자세한 설명은 src/shared/api/prefetch.ts.
+        // 첫 화면 데이터(홈: 항공 특가·접속 국가, 공항: 인천공항 전광판)를 JS보다 먼저 요청한다 — 자세한 설명은 src/shared/api/prefetch.ts.
         // 키(요청 주소)는 화면 코드가 만드는 주소와 같아야 쓰인다(어긋나면 그냥 안 쓰고 새로 받는다).
         // 웹(http/https)에서만 — 네이티브 앱(capacitor://)은 /api가 상대 주소로 안 통한다.
         name: 'prefetch-home-data',
@@ -91,9 +91,10 @@ export default defineConfig(({ mode }) => {
             const api = (env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
             // geo는 언어를 정한 적 없는 첫 방문에서만(n:1) — i18n이 접속 국가로 첫 언어를 정하는 요청(src/shared/i18n/geoLocale.ts)을 앞당겨,
             // 영어로 먼저 그렸다가 한국어로 바뀌는 순간을 줄인다
+            // p: 이 경로에서만 시작한다 — 홈(/)은 특가·접속 국가, 공항(/airports)은 인천공항 전광판
             const reqs = [
-              [`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, null],
-              [`${api}/api/geo`, { url: `${api}/api/geo`, init: { cache: 'no-store' }, first: true }],
+              [`${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, { url: `${api}/api/partnerProducts?provider=myrealtrip&kind=deals&origin=ICN&period=5`, path: '/' }],
+              [`${api}/api/geo`, { url: `${api}/api/geo`, init: { cache: 'no-store' }, first: true, path: '/' }],
             ];
             if (supa && key) {
               reqs.push([
@@ -101,15 +102,14 @@ export default defineConfig(({ mode }) => {
                 {
                   url: `${supa}/functions/v1/incheon-board`,
                   init: { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` }, body: '{}' },
+                  path: '/airports',
                 },
               ]);
             }
-            const list = JSON.stringify(
-              reqs.map(([k, v]) => (v ? { k, u: v.url, i: v.init, n: v.first ? 1 : 0 } : { k, u: k })),
-            );
+            const list = JSON.stringify(reqs.map(([k, v]) => ({ k, u: v.url, i: v.init, n: v.first ? 1 : 0, p: v.path })));
             const script =
-              `<script>(function(){if(location.pathname!=='/'||location.protocol.indexOf('http')!==0)return;var p=window.__prefetch={};` +
-              `${list}.forEach(function(r){try{if(r.n&&localStorage.getItem('triptic-locale'))return;var q=fetch(r.u,r.i).then(function(x){if(!x.ok)throw 0;return x.json()});q.catch(function(){});p[r.k]=q}catch(e){}})})()</script>`;
+              `<script>(function(){if(location.protocol.indexOf('http')!==0)return;var p=window.__prefetch={};` +
+              `${list}.forEach(function(r){try{if(r.p!==location.pathname||(r.n&&localStorage.getItem('triptic-locale')))return;var q=fetch(r.u,r.i).then(function(x){if(!x.ok)throw 0;return x.json()});q.catch(function(){});p[r.k]=q}catch(e){}})})()</script>`;
             return html.replace('</head>', `${script}\n</head>`);
           },
         },

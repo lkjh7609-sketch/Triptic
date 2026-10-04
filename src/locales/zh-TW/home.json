@@ -648,11 +648,29 @@
       "partnership": "合作洽詢"
     }
   },
+  "airportPage": {
+    "title": "機場即時資訊",
+    "label": "選擇機場",
+    "tabs": {
+      "icn": "仁川國際機場",
+      "tae": "大邱",
+      "pus": "金海",
+      "cju": "濟州"
+    },
+    "full": {
+      "tae": "大邱國際機場",
+      "pus": "金海國際機場",
+      "cju": "濟州國際機場"
+    },
+    "soon": "{{name}}即時出入境航班資訊準備中",
+    "soonDesc": "韓國機場公社資料串接完成後,將立即在此提供。"
+  },
   "airport": {
     "title": "仁川機場即時出發・抵達",
     "updated": "{{time}} 更新(韓國時間)・每 3 分鐘更新",
     "tabsLabel": "出發・抵達",
     "departures": "出發",
+    "unavailable": "尚未取得航班資訊,請稍後再試。",
     "arrivals": "抵達",
     "col": {
       "time": "時間",
