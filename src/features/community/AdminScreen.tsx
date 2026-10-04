@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, Lock as LockIcon, Search } from 'lucide-react';
+import { CheckCircle, Lock as LockIcon } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { trackScreenView, captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -10,7 +10,6 @@ import { isAdmin } from './communityService';
 import {
   adminListFeedback,
   adminMarkFeedbackReviewed,
-  adminSearchUsers,
   getFeedbackScreenshotSignedUrl,
   getReportTargetPreview,
   listOpenReports,
@@ -24,7 +23,6 @@ import {
   setPostStatus,
   type AdminFeedbackFilter,
   type AdminFeedbackRow,
-  type AdminUserRow,
 } from './adminService';
 import type { Report } from './types';
 import { AdminSalesTab } from './AdminSalesTab';
@@ -33,94 +31,10 @@ import { AdminPinPad } from './AdminPinPad';
 import { AdminArchiveTab } from './AdminArchiveTab';
 import { AdminNoticesTab } from './AdminNoticesTab';
 import { AdminGoogleLinkTab } from './googleLink/AdminGoogleLinkTab';
-import { AdminUserPlanRow } from './AdminUserPlanRow';
-import { fetchAdminUserActivity } from './analyticsService';
+import { AdminMembersTab } from './AdminMembersTab';
 import styles from './AdminScreen.module.css';
 
 type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive' | 'googleLink' | 'notices';
-
-const USER_PAGE_SIZE = 20;
-
-function UserPlanTab() {
-  const { t } = useTranslation(['community', 'common']);
-  const [query, setQuery] = useState('');
-  const [submittedQuery, setSubmittedQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const usersQuery = useQuery({
-    queryKey: ['admin', 'user-search', submittedQuery, page],
-    queryFn: () => adminSearchUsers(submittedQuery, page, USER_PAGE_SIZE),
-  });
-  const [overrides, setOverrides] = useState<Record<string, AdminUserRow>>({});
-  // 회원별 이용 기록(PostHog). 연결 전이거나 실패하면 줄을 그냥 숨긴다 — 사용자 목록 자체는 영향받지 않게
-  const activityQuery = useQuery({
-    queryKey: ['admin', 'user-activity'],
-    queryFn: fetchAdminUserActivity,
-    staleTime: 60_000,
-    retry: false,
-  });
-  const activityReady = activityQuery.data?.status === 'ok';
-
-  const displayedRows = (usersQuery.data?.rows ?? []).map((r) => overrides[r.id] ?? r);
-
-  function handleSearch() {
-    setOverrides({});
-    setPage(0);
-    setSubmittedQuery(query.trim());
-  }
-
-  return (
-    <div>
-      <div className={styles.searchRow}>
-        <input
-          className={styles.searchInput}
-          placeholder={t('admin.userSearchPlaceholder')}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSearch();
-          }}
-        />
-        <button type="button" className={styles.primaryBtn} onClick={handleSearch}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Search size={16} /> {t('admin.userSearchButton')}</span>
-        </button>
-      </div>
-
-      {usersQuery.isLoading ? (
-        <Skeleton height="60px" />
-      ) : displayedRows.length === 0 ? (
-        <EmptyState message={t('admin.userSearchEmpty')} />
-      ) : (
-        <>
-          <div className={styles.list}>
-            {displayedRows.map((u) => (
-              <AdminUserPlanRow
-                key={u.id}
-                user={u}
-                onChanged={(updated) => setOverrides((prev) => ({ ...prev, [updated.id]: updated }))}
-                activity={activityReady ? (activityQuery.data?.users?.[u.id] ?? null) : undefined}
-                activityWindowDays={activityQuery.data?.windowDays}
-              />
-            ))}
-          </div>
-          <div className={styles.pagerRow}>
-            <button type="button" className={styles.secondaryBtn} disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>
-              {t('admin.prevPage')}
-            </button>
-            <span className={styles.pagerLabel}>{t('admin.pageLabel', { page: page + 1 })}</span>
-            <button
-              type="button"
-              className={styles.secondaryBtn}
-              disabled={!usersQuery.data?.hasMore}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t('admin.nextPage')}
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (item: AdminFeedbackRow) => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -496,7 +410,7 @@ export function AdminScreen() {
       ) : tab === 'sales' ? (
         <AdminSalesTab />
       ) : tab === 'users' ? (
-        <UserPlanTab />
+        <AdminMembersTab />
       ) : tab === 'feedback' ? (
         <FeedbackTab />
       ) : tab === 'reports' ? (
