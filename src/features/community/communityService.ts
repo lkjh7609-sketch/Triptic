@@ -336,6 +336,11 @@ export function escapeLike(text: string): string {
   return text.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** PostgREST or() 안에 넣을 값 — 따옴표로 묶어 쉼표·괄호가 필터 문법으로 읽히지 않게 한다 */
+function orQuoted(value: string): string {
+  return `"${value.replace(/[\\"]/g, (c) => `\\${c}`)}"`;
+}
+
 export async function listPosts(opts: {
   destinationId?: string;
   followedByUserId?: string;
@@ -378,7 +383,7 @@ export async function listPosts(opts: {
   if (destinationIds) query = query.in('destination_id', destinationIds);
   const search = opts.search?.trim();
   if (search) {
-    const like = `%${escapeLike(search)}%`;
+    const like = orQuoted(`%${escapeLike(search)}%`);
     query = query.or(`title.ilike.${like},body.ilike.${like}`);
   }
   if (opts.category) query = query.eq('category', opts.category);

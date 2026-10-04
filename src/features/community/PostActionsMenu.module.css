@@ -4,12 +4,23 @@
 
 .trigger {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
   border: none;
+  border-radius: var(--radius-pill);
   background: none;
   color: var(--text-muted);
   font-size: var(--font-body-size);
   padding: var(--space-1) var(--space-2);
   cursor: pointer;
+}
+@media (hover: hover) {
+  .trigger:hover {
+    background: var(--surface-subtle);
+  }
 }
 
 .dropdown {
@@ -17,7 +28,7 @@
   right: 0;
   top: 100%;
   z-index: 20;
-  min-width: 140px;
+  min-width: 168px;
   background: var(--surface-card);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
@@ -29,6 +40,10 @@
 
 .item {
   appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
   border: none;
   background: none;
   text-align: left;
