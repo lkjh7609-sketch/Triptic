@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin, TriangleAlert, X } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, MapPin, MessagesSquare, TriangleAlert, X } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { trackScreenView, captureError } from '@/shared/monitoring';
@@ -97,8 +97,9 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const categoryRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const initialDestSlug = searchParams.get('destination');
-
   const [destinationId, setDestinationId] = useState(editing?.destination_id ?? '');
+  // 도시 없이 자유게시판에 쓰는 글 — ?board=free 로 들어오거나 버튼으로 고른다
+  const [freeBoard, setFreeBoard] = useState(() => (editing ? !editing.destination_id : searchParams.get('board') === 'free'));
   const [title, setTitle] = useState(editing?.title ?? (editing ? postTitleOf(editing) : ''));
   const [body, setBody] = useState(editing?.body ?? '');
   const [category, setCategory] = useState<PostCategory | ''>(editing?.category ?? '');
@@ -156,6 +157,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const current = useCallback(
     (): Omit<ComposeDraft, 'savedAt'> => ({
       destinationId,
+      freeBoard,
       title,
       body,
       tripId,
@@ -164,7 +166,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       category,
       tags,
     }),
-    [destinationId, title, body, tripId, allowCopy, photos, category, tags],
+    [destinationId, freeBoard, title, body, tripId, allowCopy, photos, category, tags],
   );
 
   // 쓰는 대로 잠깐 멈추면 저장한다
@@ -183,6 +185,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
     if (!destinations || pendingDraft.destinationId === '' || destinations.some((d) => d.id === pendingDraft.destinationId)) {
       setDestinationId(pendingDraft.destinationId);
     }
+    setFreeBoard(pendingDraft.freeBoard);
     setTitle(pendingDraft.title);
     setBody(pendingDraft.body);
     setCategory(pendingDraft.category);
@@ -227,7 +230,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
 
   // ── 게시 ────────────────────────────────────────────────────────────────
   const missingTitle = showErrors && !title.trim();
-  const missingDest = showErrors && !destinationId;
+  const missingDest = showErrors && !destinationId && !freeBoard;
   const missingBody = showErrors && !body.trim();
   const missingCategory = showErrors && !category;
   // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
@@ -273,11 +276,11 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
       return;
     }
-    if (!title.trim() || !destinationId || !category || !body.trim()) {
+    if (!title.trim() || (!destinationId && !freeBoard) || !category || !body.trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
       flagInvalid(
-        !destinationId
+        !destinationId && !freeBoard
           ? destRef.current
           : !category
             ? categoryRef.current
@@ -306,7 +309,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
         return;
       }
       const result = await createPost.mutateAsync({
-        destinationId,
+        destinationId: destinationId || null,
         title: title.trim(),
         body: body.trim(),
         tripId: tripId || null,
@@ -370,6 +373,16 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
             <X size={16} aria-hidden="true" />
           </button>
         </div>
+      ) : freeBoard ? (
+        <div className={styles.destChosen}>
+          <button type="button" ref={destRef} className={styles.destChip} onClick={() => setPickerOpen('destination')}>
+            <MessagesSquare size={16} aria-hidden="true" />
+            <span className={styles.destChipText}>{t('compose.board.freeChosen')}</span>
+          </button>
+          <button type="button" className={styles.iconBtn} onClick={() => setFreeBoard(false)} aria-label={t('compose.dest.clear')}>
+            <X size={16} aria-hidden="true" />
+          </button>
+        </div>
       ) : (
         <button
           type="button"
@@ -390,11 +403,26 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           </span>
         </button>
       )}
+      {!selectedDestination && !freeBoard ? (
+        <div className={styles.quick}>
+          <button
+            type="button"
+            className={styles.quickChip}
+            onClick={() => {
+              setFreeBoard(true);
+              clearInvalid(destRef.current);
+            }}
+          >
+            <MessagesSquare size={14} aria-hidden="true" />
+            {t('compose.board.freeButton')}
+          </button>
+        </div>
+      ) : null}
       {desktop && featured.length > 0 ? (
         <div className={styles.quick}>
           <span className={styles.quickLabel}>{t('compose.dest.quick')}</span>
           {featured.map((d) => (
-            <button key={d.id} type="button" className={styles.quickChip} onClick={() => setDestinationId(d.id)}>
+            <button key={d.id} type="button" className={styles.quickChip} onClick={() => { setDestinationId(d.id); setFreeBoard(false); }}>
               <MapPin size={14} aria-hidden="true" />
               {d.name}
             </button>
@@ -536,6 +564,11 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           <span className={styles.lockedChip}>
             <MapPin size={14} aria-hidden="true" />
             {destLabel(selectedDestination)}
+          </span>
+        ) : freeBoard ? (
+          <span className={styles.lockedChip}>
+            <MessagesSquare size={14} aria-hidden="true" />
+            {t('compose.board.freeChosen')}
           </span>
         ) : null}
         {category ? <span className={styles.lockedChip}>{t(`postCategory.${category}`)}</span> : null}
@@ -726,7 +759,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
 
       {desktop ? null : (
         <footer className={styles.footer}>
-          {showErrors && (!title.trim() || !destinationId || !category || !body.trim()) ? (
+          {showErrors && (!title.trim() || (!destinationId && !freeBoard) || !category || !body.trim()) ? (
             <p className={styles.footerWarning} role="alert">
               <TriangleAlert size={14} aria-hidden="true" />
               {t('compose.missing')}
@@ -744,6 +777,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           selectedId={destinationId || null}
           onConfirm={(d) => {
             setDestinationId(d.id);
+            setFreeBoard(false);
             clearInvalid(destRef.current);
           }}
           onClose={() => setPickerOpen(null)}

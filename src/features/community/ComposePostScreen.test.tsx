@@ -155,6 +155,20 @@ describe('ComposePostScreen — 시안 구성', () => {
     expect(localStorage.getItem('triptic-compose-draft:u1')).toBeNull();
   });
 
+  it('도시를 안 고르고 자유게시판을 골라도 게시되고, 도시 없이(null) 보낸다', async () => {
+    mutateAsync.mockResolvedValue({ id: 'p3', status: 'published' });
+    renderScreen();
+    fireEvent.click(screen.getByRole('button', { name: /자유게시판에 쓰기/ }));
+    expect(screen.getByRole('button', { name: '자유게시판' })).toBeInTheDocument();
+    fillTitle('자유 제목');
+    pickCategory('질문·Q&A');
+    fireEvent.change(screen.getByPlaceholderText(/여행 이야기를 들려주세요/), { target: { value: '아무 도시나 이야기' } });
+    fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
+    await advance(50);
+    expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: null, title: '자유 제목' });
+    expect(navigate).toHaveBeenCalledWith('/community/post/p3');
+  });
+
   it('일정을 붙이면 복사 허용 스위치가 생기고(기본 꺼짐), 켜면 게시할 때 함께 보낸다. 남의 일정은 목록에 없다', async () => {
     mutateAsync.mockResolvedValue({ id: 'p2', status: 'published' });
     renderScreen();

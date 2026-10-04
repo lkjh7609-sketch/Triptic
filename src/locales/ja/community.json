@@ -436,6 +436,10 @@
       "loading": "投稿を読み込み中…",
       "lockedLabel": "変更できない情報",
       "lockedHint": "旅行先・カテゴリ・添付した旅程は投稿後に変更できません。"
+    },
+    "board": {
+      "freeButton": "自由掲示板に投稿（都市なし）",
+      "freeChosen": "自由掲示板"
     }
   },
   "shared": {
@@ -898,5 +902,13 @@
     "settingsSaved": "保存しました。",
     "settingsHint": "同行募集の投稿と応募画面に年代・性別として表示されます。空欄なら表示されません。",
     "companionBadge": "{{age}} · {{gender}}"
+  },
+  "board": {
+    "free": "自由掲示板",
+    "subtitle": "都市に関係なく、旅の話・質問・情報を自由に共有しましょう。",
+    "searchPlaceholder": "自由掲示板を検索",
+    "empty": "自由掲示板にはまだ投稿がありません。",
+    "loadMore": "投稿をもっと見る",
+    "link": "自由掲示板"
   }
 }
