@@ -107,3 +107,58 @@
 .detailItem > svg {
   flex-shrink: 0;
 }
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collapseBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin: -6px -6px 0 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .collapseBtn:hover {
+    background: var(--surface-subtle);
+  }
+}
+
+/* 접힌 모습 — 같은 자리의 작은 동그라미 */
+.collapsedBtn {
+  appearance: none;
+  position: absolute;
+  bottom: 32px;
+  left: 32px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--brand-text);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .collapsedBtn:hover {
+    background: var(--brand-tint);
+  }
+}
