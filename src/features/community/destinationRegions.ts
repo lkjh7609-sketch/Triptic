@@ -8,14 +8,15 @@ export type ContinentKey = (typeof CONTINENT_KEYS)[number];
 export const COUNTRY_KEYS: Record<ContinentKey, string[]> = {
   AS: ['KR', 'JP', 'VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'TW', 'HK', 'MO', 'CN', 'KH', 'IN', 'NP', 'MV', 'AE', 'QA', 'IL', 'MN', 'LA', 'MM', 'BN', 'LK', 'UZ', 'KZ', 'KG', 'GE', 'AM', 'AZ', 'OM', 'JO', 'RU'],
   EU: ['FR', 'GB', 'IT', 'ES', 'CZ', 'AT', 'CH', 'NL', 'PT', 'TR', 'DE', 'GR', 'HR', 'HU', 'PL', 'DK', 'SE', 'IE', 'BE', 'FI', 'NO', 'IS', 'EE', 'LV', 'LT', 'SI', 'SK', 'MT'],
-  NA: ['US', 'CA', 'MX', 'CU', 'PA'],
+  // 괌·사이판은 미국령이라 미주 안에 둔다(여행지 선택 창의 미주 탭, 도시 채널 브레드크럼도 같은 대륙)
+  NA: ['US', 'CA', 'MX', 'CU', 'PA', 'GU', 'MP'],
   SA: ['BR', 'AR', 'PE', 'CL', 'CO'],
   AF: ['ZA', 'MA', 'EG', 'KE', 'TZ', 'ET', 'MU', 'ZW'],
-  OC: ['AU', 'GU', 'MP', 'NZ', 'FJ', 'PF', 'PW'],
+  OC: ['AU', 'NZ', 'FJ', 'PF', 'PW'],
 };
 
-/** 여행지 선택 창의 탭 — 한국·일본은 따로, 나머지는 대륙 묶음(아시아는 한국·일본을 뺀 나머지) */
-export const PICKER_TABS = ['all', 'kr', 'jp', 'asia', 'eu', 'am', 'other'] as const;
+/** 여행지 선택 창의 탭 — 한국·일본은 따로, 나머지는 대륙 묶음(아시아는 한국·일본을 뺀 나머지, 오세아니아는 미주 옆) */
+export const PICKER_TABS = ['all', 'kr', 'jp', 'asia', 'eu', 'am', 'oc', 'other'] as const;
 export type PickerTab = (typeof PICKER_TABS)[number];
 
 /** 나라 코드 → 탭(전체 제외). 목록에 없는 나라는 '기타' */
@@ -25,6 +26,7 @@ export function tabOf(countryCode: string): Exclude<PickerTab, 'all'> {
   if (COUNTRY_KEYS.AS.includes(countryCode)) return 'asia';
   if (COUNTRY_KEYS.EU.includes(countryCode)) return 'eu';
   if (COUNTRY_KEYS.NA.includes(countryCode) || COUNTRY_KEYS.SA.includes(countryCode)) return 'am';
+  if (COUNTRY_KEYS.OC.includes(countryCode)) return 'oc';
   return 'other';
 }
 
@@ -63,57 +65,28 @@ export function filterDestinations(destinations: Destination[], { tab, query, co
   return tab === 'all' ? sorted.filter((d) => d.is_featured) : sorted;
 }
 
-// ── 하위 지역(여행지 선택 창: 아시아·유럽·미주·기타 탭은 먼저 하위 지역 카드를 보여 준다) ──────────
-export type GroupedTab = 'asia' | 'eu' | 'am' | 'other';
-export const GROUPED_TABS: readonly PickerTab[] = ['asia', 'eu', 'am', 'other'];
+// ── 나라별 묶음(여행지 선택 창: 아시아·유럽·미주·오세아니아·기타 탭은 먼저 나라 카드를 보여 주고, 나라를 누르면 그 나라의 도시) ──────────
+export type GroupedTab = 'asia' | 'eu' | 'am' | 'oc' | 'other';
+export const GROUPED_TABS: readonly PickerTab[] = ['asia', 'eu', 'am', 'oc', 'other'];
 
 export function isGroupedTab(tab: PickerTab): tab is GroupedTab {
   return GROUPED_TABS.includes(tab);
 }
 
-/** 탭별 하위 지역과 그에 속한 나라. 한국·일본은 자기 탭이 따로 있어 아시아 하위 지역에 넣지 않는다.
- * 유럽은 한국 여행 상품의 구분을 따랐다(오스트리아·체코·헝가리·폴란드=동유럽, 튀르키예는 남유럽 묶음). */
-export const SUBREGIONS: Record<GroupedTab, { key: string; countries: string[] }[]> = {
-  asia: [
-    { key: 'eastAsia', countries: ['TW', 'HK', 'MO', 'CN', 'MN', 'RU'] },
-    { key: 'southeastAsia', countries: ['VN', 'TH', 'PH', 'MY', 'SG', 'ID', 'KH', 'LA', 'MM', 'BN'] },
-    { key: 'southAsia', countries: ['IN', 'NP', 'MV', 'LK'] },
-    { key: 'centralCaucasus', countries: ['UZ', 'KZ', 'KG', 'GE', 'AM', 'AZ'] },
-    { key: 'middleEast', countries: ['AE', 'QA', 'IL', 'OM', 'JO'] },
-  ],
-  eu: [
-    { key: 'westernEurope', countries: ['FR', 'GB', 'IE', 'NL', 'BE', 'DE', 'CH'] },
-    { key: 'northernEurope', countries: ['DK', 'SE', 'FI', 'NO', 'IS', 'EE', 'LV', 'LT'] },
-    { key: 'southernEurope', countries: ['IT', 'ES', 'PT', 'GR', 'HR', 'TR', 'MT'] },
-    { key: 'easternEurope', countries: ['CZ', 'AT', 'HU', 'PL', 'SI', 'SK'] },
-  ],
-  am: [
-    { key: 'northAmerica', countries: ['US', 'CA'] },
-    { key: 'centralAmerica', countries: ['MX', 'CU', 'PA'] },
-    { key: 'southAmerica', countries: ['BR', 'AR', 'PE', 'CL', 'CO'] },
-  ],
-  other: [
-    { key: 'northAfrica', countries: ['MA', 'EG'] },
-    { key: 'subSaharanAfrica', countries: ['KE', 'TZ', 'ZA', 'ET', 'ZW', 'MU'] },
-    { key: 'oceania', countries: ['AU', 'NZ', 'FJ', 'PF', 'PW'] },
-    { key: 'guamSaipan', countries: ['GU', 'MP'] },
-  ],
-};
-
-/** 어느 하위 지역에도 없는 나라(나중에 새로 생긴 도시)가 들어가는 묶음 */
-export const OTHER_SUBREGION = 'etc';
-
-export function subregionOf(tab: GroupedTab, countryCode: string): string {
-  return SUBREGIONS[tab].find((r) => r.countries.includes(countryCode))?.key ?? OTHER_SUBREGION;
-}
-
-/** 탭 안의 도시를 하위 지역별로 묶는다 — 도시가 하나도 없는 지역은 뺀다. 도시는 추천 → 정렬 순서 */
-export function groupBySubregion(destinations: Destination[], tab: GroupedTab): { key: string; destinations: Destination[] }[] {
-  const inTab = destinations.filter((d) => tabOf(d.country_code) === tab).sort(byFeaturedThenOrder);
-  const keys = [...SUBREGIONS[tab].map((r) => r.key), OTHER_SUBREGION];
-  return keys
-    .map((key) => ({ key, destinations: inTab.filter((d) => subregionOf(tab, d.country_code) === key) }))
-    .filter((g) => g.destinations.length > 0);
+/** 탭 안의 도시를 나라별로 묶는다 — 나라는 현재 언어의 이름 순(가나다·ABC), 도시는 추천 → 정렬 순서 */
+export function groupByCountry(
+  destinations: Destination[],
+  tab: GroupedTab,
+  countryName: (code: string) => string,
+  locale?: string,
+): { code: string; destinations: Destination[] }[] {
+  const byCountry = new Map<string, Destination[]>();
+  for (const d of destinations.filter((x) => tabOf(x.country_code) === tab).sort(byFeaturedThenOrder)) {
+    byCountry.set(d.country_code, [...(byCountry.get(d.country_code) ?? []), d]);
+  }
+  return [...byCountry]
+    .map(([code, list]) => ({ code, destinations: list }))
+    .sort((a, b) => countryName(a.code).localeCompare(countryName(b.code), locale));
 }
 
 // ── 최근 선택한 여행지(이 기기에만 저장, 최대 5개) ─────────────────────────────

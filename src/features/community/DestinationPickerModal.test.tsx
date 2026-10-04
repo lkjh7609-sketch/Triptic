@@ -16,6 +16,9 @@ const list = [
   dest('bangkok', '방콕', 'TH', { sort_order: 8 }),
   dest('taipei', '타이페이', 'TW', { sort_order: 9 }),
   dest('danang', '다낭', 'VN', { sort_order: 10 }),
+  dest('sydney', '시드니', 'AU', { sort_order: 11 }),
+  dest('guam', '괌', 'GU', { sort_order: 12 }),
+  dest('ny', '뉴욕', 'US', { sort_order: 13 }),
 ];
 
 beforeEach(() => {
@@ -47,35 +50,56 @@ describe('DestinationPickerModal', () => {
     expect(screen.queryByText('파리')).not.toBeInTheDocument();
   });
 
-  it('아시아 탭은 하위 지역 카드부터 보여 주고, 지역을 누르면 그 지역 도시가 나오며, 뒤로 가기로 카드로 돌아온다', () => {
+  it('아시아 탭은 나라 카드부터 보여 주고, 나라를 누르면 그 나라 도시가 나오며, 뒤로 가기로 카드로 돌아온다', () => {
     open();
     fireEvent.click(screen.getByRole('tab', { name: '아시아' }));
-    expect(screen.getByRole('button', { name: /동남아시아/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /동아시아/ })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /남아시아 / })).not.toBeInTheDocument(); // 도시가 없는 지역은 카드가 없다
+    expect(screen.getByRole('button', { name: /태국/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /대만/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /베트남/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /싱가포르/ })).not.toBeInTheDocument(); // 도시가 없는 나라는 카드가 없다
     expect(screen.queryByText('방콕')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /동남아시아/ }));
+    fireEvent.click(screen.getByRole('button', { name: /태국/ }));
     expect(screen.getByText('방콕')).toBeInTheDocument();
-    expect(screen.getByText('다낭')).toBeInTheDocument();
-    expect(screen.queryByText('타이페이')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /아시아 지역 전체/ }));
+    expect(screen.queryByText('다낭')).not.toBeInTheDocument(); // 다른 나라 도시는 안 나온다
+    fireEvent.click(screen.getByRole('button', { name: /아시아 국가 전체/ }));
     expect(screen.queryByText('방콕')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /동아시아/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /베트남/ })).toBeInTheDocument();
   });
 
-  it('다른 탭으로 옮기면 하위 지역 선택이 풀리고, 검색하면 지역과 상관없이 결과가 나온다', () => {
+  it('나라 카드는 가나다 순 — 대만, 베트남, 태국', () => {
     open();
     fireEvent.click(screen.getByRole('tab', { name: '아시아' }));
-    fireEvent.click(screen.getByRole('button', { name: /동남아시아/ }));
-    fireEvent.click(screen.getByRole('tab', { name: '유럽' }));
-    expect(screen.getByRole('button', { name: /서유럽/ })).toBeInTheDocument();
+    const names = screen.getAllByRole('button', { name: /\d+곳/ }).map((b) => b.textContent ?? '');
+    expect(names.map((n) => n.replace(/\d+곳.*/, ''))).toEqual(['대만', '베트남', '태국']);
+  });
+
+  it('오세아니아는 미주 옆 자기 탭이고, 괌은 미주 탭 안에 있다', () => {
+    open();
+    const tabs = screen.getAllByRole('tab').map((t) => t.textContent);
+    expect(tabs).toEqual(['전체', '한국', '일본', '아시아', '유럽', '미주', '오세아니아', '기타']);
+    fireEvent.click(screen.getByRole('tab', { name: '오세아니아' }));
+    fireEvent.click(screen.getByRole('button', { name: /오스트레일리아/ }));
+    expect(screen.getByText('시드니')).toBeInTheDocument();
+    expect(screen.queryByText('괌')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('tab', { name: '미주' }));
+    expect(screen.getByRole('button', { name: /미국/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^괌/ }));
+    expect(screen.getByRole('button', { name: /괌/, pressed: false })).toBeInTheDocument(); // 괌 도시 카드(눌러 고르는 카드)
+  });
+
+  it('다른 탭으로 옮기면 나라 선택이 풀리고, 검색하면 대륙과 상관없이 결과가 나온다', () => {
+    open();
     fireEvent.click(screen.getByRole('tab', { name: '아시아' }));
-    expect(screen.getByRole('button', { name: /동남아시아/ })).toBeInTheDocument(); // 다시 카드부터
+    fireEvent.click(screen.getByRole('button', { name: /태국/ }));
+    fireEvent.click(screen.getByRole('tab', { name: '유럽' }));
+    expect(screen.getByRole('button', { name: /프랑스/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('tab', { name: '아시아' }));
+    expect(screen.getByRole('button', { name: /태국/ })).toBeInTheDocument(); // 다시 카드부터
     fireEvent.change(screen.getByPlaceholderText(/국가, 도시 검색/), { target: { value: '타이' } });
     expect(screen.getByText('타이페이')).toBeInTheDocument();
   });
 
-  it('한국·일본 탭은 하위 지역 없이 바로 도시 목록', () => {
+  it('한국·일본 탭은 나라 카드 없이 바로 도시 목록', () => {
     open();
     fireEvent.click(screen.getByRole('tab', { name: '일본' }));
     expect(screen.getByText('오사카')).toBeInTheDocument();

@@ -16,7 +16,8 @@ describe('channelHelpers', () => {
   it('나라 코드로 대륙을 찾는다', () => {
     expect(continentOf('MY')).toBe('AS');
     expect(continentOf('FR')).toBe('EU');
-    expect(continentOf('GU')).toBe('OC');
+    expect(continentOf('GU')).toBe('NA'); // 괌·사이판은 미주 안
+    expect(continentOf('AU')).toBe('OC');
     expect(continentOf('XX')).toBeNull();
   });
 

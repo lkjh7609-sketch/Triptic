@@ -6,7 +6,7 @@ import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import {
   PICKER_TABS,
   filterDestinations,
-  groupBySubregion,
+  groupByCountry,
   isGroupedTab,
   forgetRecentDestination,
   readRecentDestinationIds,
@@ -43,7 +43,7 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
   const closeTimer = useRef<number | undefined>(undefined);
   const [tab, setTab] = useState<PickerTab>(initialTab ?? 'all');
   const [query, setQuery] = useState('');
-  // 아시아·유럽·미주·기타 탭에서 고른 하위 지역(없으면 하위 지역 카드를 보여 준다)
+  // 아시아·유럽·미주·오세아니아·기타 탭에서 고른 나라 코드(없으면 나라 카드를 보여 준다)
   const [region, setRegion] = useState<string | null>(null);
   const [pickedId, setPickedId] = useState<string | null>(selectedId);
   const [recentIds, setRecentIds] = useState<string[]>(() => readRecentDestinationIds());
@@ -65,8 +65,13 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
     [destinations, tab, query, regionNames],
   );
   const grouped = isGroupedTab(tab) && !query.trim();
-  const groups = useMemo(() => (isGroupedTab(tab) ? groupBySubregion(destinations, tab) : []), [destinations, tab]);
-  const regionCities = grouped && region ? (groups.find((g) => g.key === region)?.destinations ?? []) : null;
+  const groups = useMemo(
+    () => (isGroupedTab(tab) ? groupByCountry(destinations, tab, countryName, i18n.language) : []),
+    // countryName은 regionNames에서만 바뀐다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [destinations, tab, regionNames, i18n.language],
+  );
+  const regionCities = grouped && region ? (groups.find((g) => g.code === region)?.destinations ?? []) : null;
   const picked = pickedId ? byId.get(pickedId) : undefined;
   const recent = recentIds.map((id) => byId.get(id)).filter((d): d is Destination => !!d);
 
@@ -98,7 +103,7 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
   const listTitle = query.trim()
     ? t('picker.searchResults')
     : regionCities
-      ? t(`picker.regions.${region}`)
+      ? countryName(region!)
       : grouped
         ? t('picker.chooseRegion', { tab: t(`picker.tabs.${tab}`) })
         : tab === 'all'
@@ -215,10 +220,10 @@ export function DestinationPickerModal({ destinations, selectedId, onConfirm, on
           {showCards ? (
             <ul className={styles.grid}>
               {groups.map((g) => (
-                <li key={g.key}>
-                  <button type="button" className={styles.regionCard} onClick={() => setRegion(g.key)}>
+                <li key={g.code}>
+                  <button type="button" className={styles.regionCard} onClick={() => setRegion(g.code)}>
                     <span className={styles.cardText}>
-                      <span className={styles.cardName}>{t(`picker.regions.${g.key}`)}</span>
+                      <span className={styles.cardName}>{countryName(g.code)}</span>
                       <span className={styles.cardSub}>{t('picker.count', { count: g.destinations.length })}</span>
                     </span>
                     <ChevronRight size={18} aria-hidden="true" className={styles.regionArrow} />

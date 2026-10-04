@@ -720,6 +720,7 @@
       "asia": "Asia",
       "eu": "Europe",
       "am": "Americas",
+      "oc": "Oceania",
       "other": "Other"
     },
     "popular": "Popular destinations",
@@ -733,29 +734,10 @@
     "close": "Close",
     "confirm": "Done",
     "any": "Anywhere is fine",
-    "chooseRegion": "{{tab}} regions",
-    "backTo": "All {{tab}} regions",
-    "regionCount_one": "{{count}} region",
-    "regionCount_other": "{{count}} regions",
-    "regions": {
-      "eastAsia": "East Asia",
-      "southeastAsia": "Southeast Asia",
-      "southAsia": "South Asia",
-      "middleEast": "Middle East",
-      "westernEurope": "Western Europe",
-      "northernEurope": "Northern Europe",
-      "southernEurope": "Southern Europe & Türkiye",
-      "easternEurope": "Eastern Europe",
-      "northAmerica": "North America",
-      "centralAmerica": "Central America & Caribbean",
-      "southAmerica": "South America",
-      "northAfrica": "North Africa",
-      "subSaharanAfrica": "East & Southern Africa",
-      "oceania": "Oceania",
-      "guamSaipan": "Guam & Saipan",
-      "etc": "Other",
-      "centralCaucasus": "Central Asia & Caucasus"
-    }
+    "chooseRegion": "{{tab}} countries",
+    "backTo": "All {{tab}} countries",
+    "regionCount_one": "{{count}} country",
+    "regionCount_other": "{{count}} countries"
   },
   "dateDialog": {
     "title": "Choose trip dates",
