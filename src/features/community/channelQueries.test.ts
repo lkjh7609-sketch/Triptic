@@ -70,9 +70,9 @@ describe('escapeLike', () => {
 });
 
 describe('listPosts — 도시 채널 검색·정렬', () => {
-  it('최신순은 커서 방식(limit)이고 검색어는 본문 ilike로 간다', async () => {
+  it('최신순은 커서 방식(limit)이고 검색어는 제목·본문 ilike(or)로 간다', async () => {
     await listPosts({ destinationId: 'kl', search: ' 바투_동굴 ', sort: 'latest' });
-    expect(find('ilike')).toEqual(['ilike', 'body', '%바투\\_동굴%']);
+    expect(calls.log.find((c) => c[0] === 'or')?.[1]).toBe('title.ilike."%바투\\\\_동굴%",body.ilike."%바투\\\\_동굴%"');
     expect(names()).toContain('limit');
     expect(names()).not.toContain('range');
     expect(calls.log.filter((c) => c[0] === 'order').map((c) => c[1])).toEqual([
