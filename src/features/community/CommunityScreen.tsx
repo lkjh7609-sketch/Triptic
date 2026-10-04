@@ -59,9 +59,6 @@ export function CommunityScreen() {
       <div className={styles.desktopWrap} style={{ padding: 0 }}>
         {user ? <PendingCompanionReviewPrompt userId={user.id} /> : null}
         <CommunityDesignBody
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          handleSearch={handleSearch}
           destinations={destinations}
           tab={tab}
           setTab={setTab}
