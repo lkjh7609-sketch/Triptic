@@ -274,7 +274,6 @@ export function HotelSearchForm({ initial, busy, onSearch }: { initial: HotelSea
         </button>
       </div>
       {error ? <p className={styles.error}>{error}</p> : null}
-      <p className={styles.note}>{t('hotels.form.note')}</p>
       <div className={styles.poweredRow}>
         <PoweredByKayak />
       </div>
