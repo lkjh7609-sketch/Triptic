@@ -139,6 +139,12 @@
   stroke: var(--border);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .road {
+    stroke: var(--border);
+  }
+}
+
 .terminal {
   fill: #c8c6c1;
 }
@@ -153,6 +159,17 @@
 
 :root[data-theme='dark'] .muted {
   fill: #252c3a;
+}
+
+/* 테마를 고르지 않았고 기기가 다크 모드일 때도 같게 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .terminal {
+    fill: #3a4252;
+  }
+
+  :root:not([data-theme='light']) .muted {
+    fill: #252c3a;
+  }
 }
 
 .contextText {
@@ -233,7 +250,8 @@
   font-weight: 600;
 }
 
-.blockCount {
+.blockCount,
+.blockCountInline {
   fill: var(--h-ink);
   font-weight: 800;
   font-variant-numeric: tabular-nums;

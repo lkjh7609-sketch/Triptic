@@ -26,6 +26,8 @@ export interface LotGroup {
   shapes: Shape[];
   /** 이름·남은 대수를 쓰는 자리(블록 가운데쯤) */
   labelAt: { x: number; y: number };
+  /** 키가 낮은 블록(주차타워) — 이름과 숫자를 한 줄로 써서 블록 밖으로 넘치지 않게 */
+  inline?: boolean;
 }
 
 /** 배경 도형(터미널·회색 주차장·건물) — 누를 수 없다 */
@@ -96,6 +98,7 @@ const ICN_T1: ParkingPlan = {
       parts: [{ lot: 'T1 장기 P2 주차타워' }],
       shapes: [{ kind: 'rect', x: 572, y: 335, w: 146, h: 50, r: 6 }],
       labelAt: { x: 645, y: 360 },
+      inline: true,
     },
     {
       id: 'icn-t1-p2',
@@ -110,6 +113,7 @@ const ICN_T1: ParkingPlan = {
       parts: [{ lot: 'T1 장기 P1 주차타워' }],
       shapes: [{ kind: 'rect', x: 760, y: 335, w: 146, h: 50, r: 6 }],
       labelAt: { x: 833, y: 360 },
+      inline: true,
     },
     {
       id: 'icn-t1-p1',

@@ -285,11 +285,12 @@ export function ParkingMap({ airport }: { airport: string }) {
                   {plan.context.map((c, i) => (
                     <g key={i} className={c.tone === 'terminal' ? styles.terminal : styles.muted}>
                       <ShapeEl shape={c.shape} />
-                      {c.label && c.labelAt ? (
+                      {/* 휴대폰에선 평면도가 작아 회색 구역 이름은 읽을 수 없는 크기라 빼고, 터미널 이름만 크게 */}
+                      {c.label && c.labelAt && (desktop || c.tone === 'terminal') ? (
                         <text
                           x={c.labelAt.x}
                           y={c.labelAt.y}
-                          fontSize={fontSize * 0.8}
+                          fontSize={fontSize * (desktop ? 0.8 : 1.5)}
                           className={styles.contextText}
                           transform={c.labelAt.rotate ? `rotate(${c.labelAt.rotate} ${c.labelAt.x} ${c.labelAt.y})` : undefined}
                         >
@@ -333,19 +334,30 @@ export function ParkingMap({ airport }: { airport: string }) {
                             ))
                           : null}
                         {on ? v.group.shapes.map((s, i) => <ShapeEl key={`p${i}`} shape={s} className={reduced ? styles.ringStill : styles.ring} />) : null}
-                        {desktop ? (
-                          <text x={v.group.labelAt.x} y={v.group.labelAt.y - fontSize * 0.62} fontSize={fontSize * 0.9} className={styles.blockName}>
-                            {name}
+                        {desktop && v.group.inline ? (
+                          <text x={v.group.labelAt.x} y={v.group.labelAt.y} fontSize={fontSize * 0.66} className={styles.blockName}>
+                            {name}{' '}
+                            <tspan className={styles.blockCountInline} fontSize={fontSize * 0.95}>
+                              {v.parts.length ? v.left.toLocaleString() : '–'}
+                            </tspan>
                           </text>
-                        ) : null}
-                        <text
-                          x={v.group.labelAt.x}
-                          y={v.group.labelAt.y + (desktop ? fontSize * 0.8 : fontSize * 0.45)}
-                          fontSize={desktop ? fontSize * 1.35 : fontSize * 1.9}
-                          className={styles.blockCount}
-                        >
-                          {v.parts.length ? v.left.toLocaleString() : '–'}
-                        </text>
+                        ) : (
+                          <>
+                            {desktop ? (
+                              <text x={v.group.labelAt.x} y={v.group.labelAt.y - fontSize * 0.62} fontSize={fontSize * 0.9} className={styles.blockName}>
+                                {name}
+                              </text>
+                            ) : null}
+                            <text
+                              x={v.group.labelAt.x}
+                              y={v.group.labelAt.y + (desktop ? fontSize * 0.8 : fontSize * 0.45)}
+                              fontSize={desktop ? fontSize * 1.35 : fontSize * (v.group.inline ? 1.4 : 1.9)}
+                              className={styles.blockCount}
+                            >
+                              {v.parts.length ? v.left.toLocaleString() : '–'}
+                            </text>
+                          </>
+                        )}
                       </g>
                     );
                   })}
