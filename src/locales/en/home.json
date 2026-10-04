@@ -74,7 +74,7 @@
   },
   "flights": {
     "title": "Search flights",
-    "subtitle": "Compare prices from airlines and travel agencies in one place",
+    "subtitle": "Compare airline and travel agency prices in one place",
     "lead": "Pick where and when — compare prices right away on MyRealTrip.",
     "form": {
       "tripType": "Trip type",
