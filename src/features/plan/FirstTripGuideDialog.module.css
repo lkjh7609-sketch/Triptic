@@ -1,0 +1,17 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.body {
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--font-body-size);
+  line-height: 1.6;
+}

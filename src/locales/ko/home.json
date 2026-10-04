@@ -440,7 +440,7 @@
         "lead": "처음이어도 괜찮아요. 아래 순서대로 쓰면 다른 여행자에게 도움이 되는 글이 돼요.",
         "steps": {
           "place": {
-            "title": "어디 이야기인가요",
+            "title": "도시 선택",
             "body": "여행지를 고르거나, 도시와 상관없는 이야기는 '자유게시판'에 쓸 수 있어요. 올린 뒤에는 여행지와 분류를 바꿀 수 없으니 한 번 더 확인해 주세요."
           },
           "category": {
@@ -694,7 +694,8 @@
       "partnership": "제휴문의",
       "guide": "사용 가이드",
       "notices": "공지사항",
-      "operator": "운영자 Ben Lee · admin@triptic.my · 호스팅서비스 제공자 Vercel Inc."
+      "operator": "운영자 Ben Lee · admin@triptic.my · 호스팅서비스 제공자 Vercel Inc.",
+      "navAria": "하단 메뉴"
     }
   },
   "airportPage": {

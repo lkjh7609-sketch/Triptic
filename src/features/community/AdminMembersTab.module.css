@@ -11,6 +11,18 @@
   gap: var(--space-2);
 }
 
+/* 넓은 화면에서는 검색칸이 남는 폭을 쓰고 필터는 한 줄에 모두 놓인다 */
+@media (min-width: 1100px) {
+  .filters {
+    flex-wrap: nowrap;
+  }
+
+  .filters > input:first-child {
+    flex: 1 1 220px;
+    min-width: 180px;
+  }
+}
+
 .filters select,
 .filters input[type='date'] {
   min-height: 44px;
@@ -197,4 +209,11 @@
 .muted {
   color: var(--text-tertiary);
   font-size: 0.75rem;
+}
+
+.handle {
+  color: var(--text-tertiary);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
 }

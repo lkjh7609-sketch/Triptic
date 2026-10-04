@@ -108,7 +108,9 @@
     "units": "단위 설정",
     "language": "언어 (Language)",
     "backup": "백업 및 복원",
-    "signOut": "로그아웃"
+    "signOut": "로그아웃",
+    "notices": "공지사항·업데이트",
+    "guide": "사용 가이드"
   },
   "plan": {
     "proBadge": "Premium"

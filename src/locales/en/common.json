@@ -108,7 +108,9 @@
     "units": "Units",
     "language": "Language",
     "backup": "Backup & restore",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "notices": "Notices & updates",
+    "guide": "User guide"
   },
   "plan": {
     "proBadge": "Premium"

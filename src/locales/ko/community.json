@@ -11,7 +11,6 @@
       "sales": "판매",
       "analytics": "분석",
       "archive": "보관함",
-      "googleLink": "Google 연동",
       "notices": "공지"
     },
     "reportDetail": "신고 상세: {{detail}}",
@@ -166,20 +165,6 @@
       "general": "일반 문의",
       "partnership": "제휴문의"
     },
-    "googleLink": {
-      "loadError": "여행지 현황을 불러오지 못했어요. 0079 마이그레이션이 적용됐는지 확인해 주세요.",
-      "summary": "구글 장소 연동 {{linked}} / {{total}}곳",
-      "hint": "여행지마다 구글 지도의 그 도시 장소를 찾아 저장해요. 가까운 도시 단위 장소가 잡히면 자동 저장하고, 애매한 곳만 아래에 모아 보여 드려요. 창을 닫지 말고 끝날 때까지 기다려 주세요.",
-      "start": "연동 시작 ({{count}}곳)",
-      "allDone": "모두 연동됐어요",
-      "stop": "멈추기",
-      "progress": "{{done}} / {{total}}곳 처리",
-      "reviewTitle": "확인이 필요한 곳 {{count}}곳",
-      "far": "가장 가까운 후보 \"{{name}}\"이 {{km}}km 떨어져 있어요.",
-      "none": "도시 단위 장소를 찾지 못했어요.",
-      "error": "오류: {{message}}",
-      "accept": "이 장소로 연결"
-    },
     "notices": {
       "title": "공지사항·업데이트 관리",
       "kind": "분류",
@@ -228,7 +213,8 @@
       "location": "위치(대략)",
       "noLocation": "기록 없음",
       "tripsTitle": "만든 여행 (누적 {{count}}개)",
-      "planTitle": "등급·무료 여행 한도"
+      "planTitle": "여행 한도 · 프로 등급",
+      "handle": "고유번호(핸들)"
     }
   },
   "report": {

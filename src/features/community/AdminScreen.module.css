@@ -1,7 +1,15 @@
 .wrap {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--space-4);
+  /* 운영 콘솔은 화면 전체를 쓴다(탭·필터가 줄바꿈되지 않게) */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: var(--space-4) var(--space-6);
+}
+
+@media (max-width: 720px) {
+  .wrap {
+    padding: var(--space-4);
+  }
 }
 
 .title {
@@ -15,9 +23,8 @@
   gap: var(--space-2);
   border-bottom: 1px solid var(--border);
   margin-bottom: var(--space-4);
-  /* 탭이 늘어 좁은 화면에서 줄바꿈되지 않게 가로 스크롤 */
-  overflow-x: auto;
-  scrollbar-width: none;
+  /* 탭이 잘리지 않게 — 넓은 화면은 한 줄, 좁으면 줄바꿈 */
+  flex-wrap: wrap;
 }
 
 .tab,

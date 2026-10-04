@@ -454,7 +454,7 @@
         "lead": "First time? No problem. Follow these steps to write a post that helps fellow travelers.",
         "steps": {
           "place": {
-            "title": "Where is it about?",
+            "title": "Choose a city",
             "body": "Pick a destination, or post to the 'Free board' if it isn't about one city. You can't change the destination or category after posting, so double-check."
           },
           "category": {
@@ -709,7 +709,8 @@
       "partnership": "Partnerships",
       "guide": "User guide",
       "notices": "Notices",
-      "operator": "Operator: Ben Lee · admin@triptic.my · Hosting service provider: Vercel Inc."
+      "operator": "Operator: Ben Lee · admin@triptic.my · Hosting service provider: Vercel Inc.",
+      "navAria": "Footer links"
     }
   },
   "airportPage": {

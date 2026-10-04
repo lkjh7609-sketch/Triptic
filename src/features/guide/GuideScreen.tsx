@@ -74,12 +74,16 @@ export default function GuideScreen() {
       </header>
 
       <nav className={styles.toc} aria-label={t('toc')}>
-        {STEPS.map(({ key }, i) => (
-          <a key={key} href={`#step-${key}`} className={`${styles.tocItem} ${key === 'pdf' ? styles.tocItemStar : ''}`}>
-            <span className={styles.tocNo}>{i + 1}</span>
-            {t(`steps.${key}.title`)}
-          </a>
-        ))}
+        <ol className={styles.tocList}>
+          {STEPS.map(({ key }, i) => (
+            <li key={key} className={styles.tocStep}>
+              <a href={`#step-${key}`} className={`${styles.tocItem} ${key === 'pdf' ? styles.tocItemStar : ''}`}>
+                <span className={styles.tocNo}>{i + 1}</span>
+                <span className={styles.tocLabel}>{t(`steps.${key}.title`)}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
       </nav>
 
       <main className={styles.steps}>
@@ -91,14 +95,12 @@ export default function GuideScreen() {
               <div className={styles.stepHead}>
                 <span className={styles.stepIcon}>{icon}</span>
                 <div>
-                  <p className={styles.stepLabel}>
-                    {t('stepLabel', { n: i + 1 })}
-                    {isPdf ? <span className={styles.badge}>{t('steps.pdf.badge')}</span> : null}
-                  </p>
+                  <p className={styles.stepLabel}>{t('stepLabel', { n: i + 1 })}</p>
                   <h2 id={`title-${key}`} className={styles.stepTitle}>
                     {t(`steps.${key}.title`)}
                   </h2>
                 </div>
+                {isPdf ? <span className={styles.badge}>{t('steps.pdf.badge')}</span> : null}
               </div>
               <p className={styles.stepLead}>{t(`steps.${key}.lead`)}</p>
               <ul className={styles.points}>
