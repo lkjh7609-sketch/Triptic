@@ -858,6 +858,7 @@ function FlightBox({ trip }: { trip: TripRow }) {
 
 function PdfBox({ trip, members }: { trip: TripRow; members: TripMember[] }) {
   const { t } = useTranslation('plan');
+  const coverUrl = useCityImage(trip.city);
   const [busy, setBusy] = useState(false);
 
   async function handleExport() {
@@ -881,6 +882,9 @@ function PdfBox({ trip, members }: { trip: TripRow; members: TripMember[] }) {
           expensesData: (project.expenses ?? {}) as ExpensesData,
           dayCitiesData: (project.dayCities ?? {}) as DayCitiesData,
           members: members.map((m) => m.name?.trim() ?? '').filter(Boolean),
+          cityLat: trip.city_lat,
+          cityLng: trip.city_lng,
+          coverUrl,
         },
         'all',
       );

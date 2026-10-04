@@ -191,3 +191,77 @@ export async function mapBackground(points: LatLng[], size: { w: number; h: numb
     return { fit, image: null };
   }
 }
+
+// ── 표지 사진 ─────────────────────────────────────────────────────
+
+/** 도시 사진 주소 — 우리가 도시별로 넣어 둔 사진(destinations.cover_url)을 여행 좌표에서 가장 가까운 도시(60km 안)로 찾고, 없으면 앱이 그 여행에 보여 주는 사진(fallbackUrl) */
+export async function coverPhotoUrl(at: { lat?: number | null; lng?: number | null }, fallbackUrl?: string | null): Promise<string | null> {
+  if (typeof at.lat === 'number' && typeof at.lng === 'number') {
+    try {
+      const { listDestinations } = await import('@/features/community/communityService');
+      const list = await withTimeout(listDestinations('ko'), 6000, []);
+      let best: { url: string; km: number } | null = null;
+      for (const d of list) {
+        if (!d.cover_url) continue;
+        const k = Math.cos((at.lat * Math.PI) / 180);
+        const km = Math.hypot((d.lat - at.lat) * 111.32, (d.lng - at.lng) * 111.32 * k);
+        if (!best || km < best.km) best = { url: d.cover_url, km };
+      }
+      if (best && best.km <= 60) return best.url;
+    } catch {
+      // 도시 목록을 못 받았다 — 폴백 사진으로
+    }
+  }
+  return fallbackUrl || null;
+}
+
+/**
+ * 사진 → 표지 위쪽 배너 한 장(JPEG 데이터 주소). 폭 wMm×높이 hMm 비율로 가운데를 잘라 맞추고(cover),
+ * 위쪽은 글자가 읽히게 살짝 어둡게, 아래쪽은 흰 종이로 서서히 사라지게(그라데이션) 미리 그려 넣는다.
+ * jsPDF는 반투명 그라데이션을 못 그려서 이미지 안에 구워 넣는다. 못 받으면 null.
+ */
+export async function coverBanner(url: string, wMm: number, hMm: number): Promise<string | null> {
+  if (typeof document === 'undefined' || typeof Image === 'undefined') return null;
+  try {
+    const res = await withTimeout(fetch(url, { mode: 'cors' }), 9000, null);
+    if (!res || !res.ok) return null;
+    const blob = await res.blob();
+    const bitmapUrl = URL.createObjectURL(blob);
+    try {
+      const img = new Image();
+      img.src = bitmapUrl;
+      await img.decode();
+      const W = 1500;
+      const H = Math.round((W * hMm) / wMm);
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      // cover — 가로세로 중 더 모자란 쪽에 맞춰 키우고 가운데를 쓴다
+      const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+      const dw = img.naturalWidth * s;
+      const dh = img.naturalHeight * s;
+      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      // 위쪽: 글자용 어둠(약 32% → 0, 위 35%까지)
+      const top = ctx.createLinearGradient(0, 0, 0, H * 0.35);
+      top.addColorStop(0, 'rgba(15,23,22,0.38)');
+      top.addColorStop(1, 'rgba(15,23,22,0)');
+      ctx.fillStyle = top;
+      ctx.fillRect(0, 0, W, H * 0.35);
+      // 아래쪽: 흰 종이로 — 50%에서 시작해 100%에서 완전한 흰색(부드럽게 곡선)
+      const fade = ctx.createLinearGradient(0, H * 0.5, 0, H);
+      for (let i = 0; i <= 10; i += 1) {
+        const t = i / 10;
+        fade.addColorStop(t, `rgba(255,255,255,${(t * t * (3 - 2 * t)).toFixed(3)})`);
+      }
+      ctx.fillStyle = fade;
+      ctx.fillRect(0, H * 0.5, W, H * 0.5 + 1);
+      return canvas.toDataURL('image/jpeg', 0.84);
+    } finally {
+      URL.revokeObjectURL(bitmapUrl);
+    }
+  } catch {
+    return null;
+  }
+}

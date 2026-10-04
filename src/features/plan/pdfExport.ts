@@ -12,7 +12,7 @@ import i18next, { normalizeLocale } from '@/shared/i18n';
 import { getDayHotels } from './map/hotels';
 import { getDayCity } from './dayCities';
 import { flightAirlineLabel, returnFlightDay } from './flights';
-import { hotelContact, mapBackground, transitHop, type HotelContact, type MapBackground, type TransitHop } from './pdfEnrich';
+import { coverBanner, coverPhotoUrl, hotelContact, mapBackground, transitHop, type HotelContact, type MapBackground, type TransitHop } from './pdfEnrich';
 import { CHECKLIST_PAGES } from './checklistData';
 import { iconSvg } from './pdfIcons';
 import {
@@ -56,6 +56,10 @@ export interface PdfExportInput {
   dayCitiesData: DayCitiesData;
   /** 함께하는 사람 이름(표지) */
   members?: string[];
+  /** 표지 사진 — 여행 도시 좌표(가까운 도시의 사진을 찾는다)와, 못 찾을 때 쓸 사진 주소(앱이 그 여행에 보여 주는 사진) */
+  cityLat?: number | null;
+  cityLng?: number | null;
+  coverUrl?: string | null;
 }
 
 /**
@@ -311,11 +315,36 @@ export async function exportToPdf(input: PdfExportInput, mode: 'all' | 'current'
   }
 
   // ── 1쪽: 표지 + 예약 요약 ─────────────────────────────────────
+  /** 표지 아래 내용(제목~예약 요약)이 차지할 높이 추정 — 숙소가 많으면 사진을 줄여 쪽 안에 담는다 */
+  function coverContentHeight(titleLines: number): number {
+    const members = (input.members ?? []).filter(Boolean).length;
+    const hasFlights = !!(input.flightsData.outbound || input.flightsData.return);
+    const stayCount = hotelStays(input.hotelsData as Record<number, { name: string; address?: string }>, input.totalDays).length;
+    return titleLines * 9.5 + 9 + (members ? 9 : 0) + 8 + 10 + 7 + (hasFlights ? 43 : 10) + 8 + (stayCount ? stayCount * 21 : 10);
+  }
+  const coverTitleLines = wrap(input.title || cityOrTrip(input.city), 22, usableW).slice(0, 2);
+  // 사진 높이: 쪽 위쪽을 채우되 아래 내용이 다 들어갈 만큼만(52~150mm — 내용이 적으면 제목이 쪽 가운데쯤에서 시작해 아래가 덜 비어 보인다). 제목은 사진 아래쪽(흰 종이로 번지는 곳)에서 시작한다
+  const coverPhotoH = Math.max(52, Math.min(150, bottomLimit - coverContentHeight(coverTitleLines.length) - 8));
+  /** 표지 사진 배너(위쪽에서 흰 종이로 번지는 그라데이션) — 사진이 없으면 null */
+  const coverImage =
+    mode === 'all'
+      ? await (async () => {
+          const url = await coverPhotoUrl({ lat: input.cityLat, lng: input.cityLng }, input.coverUrl);
+          return url ? coverBanner(url, pageW, coverPhotoH) : null;
+        })()
+      : null;
+
   function drawCover() {
+    const titleLines = coverTitleLines;
     let y = 18;
-    text(L('coverEyebrow'), mL, y, { size: 8, color: C_BRAND, bold: true });
-    y += 11;
-    const titleLines = wrap(input.title || cityOrTrip(input.city), 22, usableW).slice(0, 2);
+    if (coverImage) {
+      pdf.addImage(coverImage, 'JPEG', 0, 0, pageW, coverPhotoH, undefined, 'FAST');
+      text(L('coverEyebrow'), mL, 16, { size: 8.5, color: [255, 255, 255], bold: true });
+      y = coverPhotoH - 12;
+    } else {
+      text(L('coverEyebrow'), mL, y, { size: 8, color: C_BRAND, bold: true });
+      y += 11;
+    }
     titleLines.forEach((ln) => {
       text(ln, mL, y, { size: 22, color: C_INK, bold: true });
       y += 9.5;
