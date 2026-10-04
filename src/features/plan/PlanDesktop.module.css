@@ -155,7 +155,7 @@
 }
 @media (min-width: 1024px) {
   .metricsBar {
-    grid-template-columns: 5fr 7fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* 검색창은 오른쪽에 줄 전체의 1/3 */
   }
 }
 .metricsLeft {
