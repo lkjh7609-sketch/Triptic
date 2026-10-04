@@ -663,8 +663,8 @@
 .toolkitAlert {
   padding: 1rem;
   border-radius: var(--radius-sm);
-  background: rgba(253, 106, 73, 0.1);
-  border: 1px solid rgba(174, 49, 21, 0.2);
+  background: var(--pd-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--brand) 25%, transparent);
   display: flex;
   align-items: flex-start;
   gap: 0.875rem;
