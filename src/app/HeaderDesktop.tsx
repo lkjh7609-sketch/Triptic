@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
@@ -9,16 +9,18 @@ import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
 import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
-import { EditProfileModal } from '@/features/settings/EditProfileModal';
-import { UnitSettingsModal } from '@/features/settings/UnitSettingsModal';
-import { LanguageModal } from '@/features/settings/LanguageModal';
-import { BackupModal } from '@/features/plan/BackupModal';
 import { isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { LanguageMenu } from './LanguageMenu';
 import styles from './HeaderDesktop.module.css';
+
+// 메뉴에서 눌러야 열리는 창들은 첫 화면 번들에서 뺀다(눌렀을 때 받는다 — 청크가 낡았으면 chunkRetry가 새로고침)
+const EditProfileModal = lazy(() => import('@/features/settings/EditProfileModal').then((m) => ({ default: m.EditProfileModal })));
+const UnitSettingsModal = lazy(() => import('@/features/settings/UnitSettingsModal').then((m) => ({ default: m.UnitSettingsModal })));
+const LanguageModal = lazy(() => import('@/features/settings/LanguageModal').then((m) => ({ default: m.LanguageModal })));
+const BackupModal = lazy(() => import('@/features/plan/BackupModal').then((m) => ({ default: m.BackupModal })));
 
 export function HeaderDesktop() {
   const { t } = useTranslation(['common', 'settings']);
@@ -166,10 +168,12 @@ export function HeaderDesktop() {
         </div>
       )}
 
-      {activeModal === 'profile' && <EditProfileModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
-      {activeModal === 'unit' && <UnitSettingsModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
-      {activeModal === 'language' && <LanguageModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
-      {activeModal === 'backup' && <BackupModal trips={trips.data ?? []} onClose={() => setActiveModal(null)} onImported={() => trips.refetch()} />}
+      <Suspense fallback={null}>
+        {activeModal === 'profile' && <EditProfileModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
+        {activeModal === 'unit' && <UnitSettingsModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
+        {activeModal === 'language' && <LanguageModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
+        {activeModal === 'backup' && <BackupModal trips={trips.data ?? []} onClose={() => setActiveModal(null)} onImported={() => trips.refetch()} />}
+      </Suspense>
     </header>
   );
 }
