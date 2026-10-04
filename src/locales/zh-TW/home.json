@@ -691,7 +691,9 @@
       "sample": "瀏覽範例"
     },
     "footer": {
-      "partnership": "合作洽詢"
+      "partnership": "合作洽詢",
+      "guide": "使用指南",
+      "notices": "公告"
     }
   },
   "airportPage": {

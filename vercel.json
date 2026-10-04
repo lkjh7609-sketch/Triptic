@@ -67,6 +67,17 @@
       "destination": "/api/seo?route=page&path=/airports"
     },
     {
+      "source": "/guide",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Yeti|Googlebot|bingbot|Daumoa|DaumApps|kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/seo?route=page&path=/guide"
+    },
+    {
       "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }

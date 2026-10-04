@@ -62,7 +62,8 @@ export default defineConfig(({ mode }) => {
 
             const locales = {};
             for (const c of chunks) {
-              const m = /\/locales\/([^/]+)\/[^/]+\.json$/.exec(c.facadeModuleId ?? '');
+              // 사용 가이드(guide) 문구는 그 화면에서만 필요해 첫 화면 미리 받기에서 뺀다
+              const m = /\/locales\/([^/]+)\/(?!guide\.json)[^/]+\.json$/.exec(c.facadeModuleId ?? '');
               if (m) (locales[m[1]] ??= []).push(`/${c.fileName}`);
             }
             if (Object.keys(locales).length) {

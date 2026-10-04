@@ -42,6 +42,13 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'guide',
+          lazy: async () => {
+            const { default: GuideScreen } = await retryChunkLoad(() => import('@/features/guide/GuideScreen'));
+            return { Component: GuideScreen };
+          },
+        },
+        {
           path: 'community',
           lazy: async () => {
             const { CommunityScreen } = await retryChunkLoad(() => import('@/features/community/CommunityScreen'));

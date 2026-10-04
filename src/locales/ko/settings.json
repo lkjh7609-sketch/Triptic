@@ -42,7 +42,9 @@
     "pdfHint": "여행별 PDF 내보내기는 여행 상세의 공유(↗) 버튼에서 할 수 있어요."
   },
   "about": {
-    "version": "버전 {{version}}"
+    "version": "버전 {{version}}",
+    "guide": "사용 가이드",
+    "notices": "공지사항·업데이트"
   },
   "licenses": {
     "title": "오픈소스 라이선스"

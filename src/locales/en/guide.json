@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "title": "Triptic user guide",
+    "desc": "From uploading bookings to live co-editing with friends, finding travel companions and exporting a beautiful PDF itinerary — a start-to-finish guide to Triptic."
+  },
+  "hero": {
+    "eyebrow": "USER GUIDE",
+    "title": "How to use Triptic",
+    "lead": "Build an itinerary from a single booking document, edit it with friends from one link, and print it as a beautiful PDF. Eight steps.",
+    "ctaPdf": "See the PDF sample",
+    "ctaStart": "Get started",
+    "ctaSample": "Try the sample trip"
+  },
+  "toc": "At a glance",
+  "stepLabel": "STEP {{n}}",
+  "steps": {
+    "start": {
+      "title": "Get started",
+      "lead": "Sign in and tap 'Create new trip'. Pick a city and dates and your itinerary screen is ready.",
+      "p1": "Sign in quickly with a Google or Kakao account.",
+      "p2": "Search the city on the map and pick dates in the calendar.",
+      "p3": "You can also open the 'sample trip' before signing in (changes aren't saved)."
+    },
+    "docs": {
+      "title": "Upload your bookings",
+      "lead": "Upload flight e-tickets and hotel vouchers and AI fills your itinerary in for you.",
+      "p1": "PDFs, photos and screenshots all work.",
+      "p2": "Outbound/return flights and hotel check-in/out with address are filled in automatically.",
+      "p3": "Review everything in a confirmation window before it's applied, and fix anything that's off."
+    },
+    "plan": {
+      "title": "Add places and plan your route",
+      "lead": "Search and add the places you want to visit — pins appear on the map and travel times between places are calculated.",
+      "p1": "Drag to reorder and the route and travel times update instantly.",
+      "p2": "Set breakfast, lunch and dinner spots under 'Meals of the day' and they join the itinerary with a visit time.",
+      "p3": "Get AI suggestions for what to visit next, and leave notes and times on each place."
+    },
+    "share": {
+      "title": "Edit live with friends via a link",
+      "lead": "Create a share link and send it in a messenger — as soon as your friend signs in, you're editing the same itinerary together.",
+      "p1": "One link to invite — no setup to explain.",
+      "p2": "Once signed in, they join as an editing member right away.",
+      "p3": "Everyone's changes show up for everyone in real time."
+    },
+    "companion": {
+      "title": "Find a travel companion",
+      "lead": "Find people heading to the same city on the same dates and travel together.",
+      "p1": "Post what age range, gender and tags you prefer, then accept applicants to confirm the match.",
+      "p2": "Posts that fit your next trip's city and dates are shown first with a match rate.",
+      "p3": "Once confirmed you get a chat room and expense splitting. Companions are for members only."
+    },
+    "community": {
+      "title": "Share stories in the community",
+      "lead": "Share travel stories, questions, tips and food finds on city boards and the free board.",
+      "p1": "Attach your itinerary and turn on 'Allow copying' so others can take it as their own trip.",
+      "p2": "Like, save, comment and reply — and get notified when people react to your posts.",
+      "p3": "Use the writing guide to make your first post easily."
+    },
+    "pdf": {
+      "title": "Export to PDF",
+      "badge": "Our pride",
+      "lead": "Turn your finished itinerary into a beautiful PDF you can print and carry. Open the share sheet on the itinerary screen and tap 'Save trip PDF' — that's it!",
+      "p1": "Cover: city photo, travel mates, city flow by day, flight and hotel summary",
+      "p2": "One page per day: route map + timeline + transit mode and time between places",
+      "p3": "A notes area at the bottom of each page, a pre-departure checklist and an empty expense log",
+      "p4": "Available in Korean, English, Japanese and Traditional Chinese",
+      "galleryTitle": "Tokyo sample itinerary",
+      "galleryHint": "A real PDF exported from the 4-day Tokyo sample trip.",
+      "open": "Open the PDF",
+      "download": "Download PDF",
+      "pageAlt": "Sample itinerary, page {{n}}",
+      "pages": "Cover · daily map & timeline · notes · checklist · expense log"
+    },
+    "before": {
+      "title": "Before and during the trip",
+      "lead": "Everything you need from before departure to the day you return, in one place.",
+      "p1": "Get reminders 7 days, 1 day and on the day of departure, plus travel alerts for your destination.",
+      "p2": "Tick off what to pack on the pre-departure checklist.",
+      "p3": "Log daily expenses, and check the weather, live airport boards and parking status."
+    }
+  },
+  "images": {
+    "tripPc": "The itinerary screen on desktop — map and timeline",
+    "tripM": "The itinerary screen on mobile"
+  },
+  "faq": {
+    "title": "FAQ",
+    "q1": "Can I use it without signing in?",
+    "a1": "You can try the sample trip and search flights, hotels and activities without signing in. Saving your trips and using the community or companions needs a sign-in.",
+    "q2": "What if my friend hasn't signed in?",
+    "a2": "They'll see a sign-in window when they open the share link and join the same itinerary right after signing in.",
+    "q3": "What language is the PDF in?",
+    "a3": "The language you've chosen in the app (Korean, English, Japanese or Traditional Chinese)."
+  },
+  "cta": {
+    "title": "Ready to start your trip?",
+    "body": "One booking document is all you need.",
+    "start": "Create a new trip",
+    "sample": "Try the sample trip"
+  },
+  "lb": {
+    "close": "Close",
+    "prev": "Previous page",
+    "next": "Next page"
+  }
+}

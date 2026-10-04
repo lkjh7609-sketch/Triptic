@@ -706,7 +706,9 @@
       "sample": "Browse the sample"
     },
     "footer": {
-      "partnership": "Partnerships"
+      "partnership": "Partnerships",
+      "guide": "User guide",
+      "notices": "Notices"
     }
   },
   "airportPage": {

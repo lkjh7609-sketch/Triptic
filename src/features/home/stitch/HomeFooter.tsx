@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
@@ -18,6 +19,12 @@ export function HomeFooter() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.links}>
+          <Link to="/guide" className={styles.link}>
+            {t('page.footer.guide')}
+          </Link>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
           <a href="/terms.html" target="_blank" rel="noopener noreferrer" className={styles.link}>
             {t('desktop.terms')}
           </a>
