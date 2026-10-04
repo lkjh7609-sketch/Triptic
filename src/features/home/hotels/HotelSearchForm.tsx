@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { format, parseISO } from 'date-fns';
 import { Building2, CalendarDays, ChevronDown, MapPin, Minus, Plane, Plus, Search, Users } from 'lucide-react';
+import { PoweredByKayak } from '@/features/kayak/PoweredByKayak';
 import { fetchHotelPlaces, type HotelPlaceItem } from '@/features/kayak/kayakApi';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
@@ -273,7 +274,9 @@ export function HotelSearchForm({ initial, busy, onSearch }: { initial: HotelSea
         </button>
       </div>
       {error ? <p className={styles.error}>{error}</p> : null}
-      <p className={styles.note}>{t('hotels.form.note')}</p>
+      <p className={styles.note}>
+        {t('hotels.form.note')} <PoweredByKayak />
+      </p>
 
       {showCalendar ? (
         <div className={styles.calendarOverlay}>

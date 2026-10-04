@@ -433,3 +433,7 @@
   font-size: var(--font-body-size);
   color: var(--text-muted);
 }
+
+.powered {
+  align-self: flex-end;
+}

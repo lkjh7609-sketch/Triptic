@@ -5,6 +5,7 @@ import { useProfile } from '@/shared/hooks/useProfile';
 import { EXTERNAL_LINK_PROPS, formatMoney, kayakCurrency, kayakLang, type HotelQuery, type HotelSort, type KayakHotel } from '@/features/kayak/kayakApi';
 import { HOTEL_SORTS, HotelFilters, NO_FILTERS, activeFilterCount, type HotelFilterState } from './HotelFilters';
 import type { HotelSearch } from './hotelSearch';
+import { PoweredByKayak } from '@/features/kayak/PoweredByKayak';
 import { useHotelResults } from './useHotelResults';
 import styles from './HotelResults.module.css';
 
@@ -237,6 +238,7 @@ export function HotelResults({ search }: { search: HotelSearch }) {
                 </button>
               ) : null}
               <p className={styles.note}>{t('hotels.priceNote')}</p>
+              <PoweredByKayak className={styles.powered} />
             </>
           ) : !r.loading && !r.error ? (
             <p className={styles.empty}>{t('hotels.empty')}</p>

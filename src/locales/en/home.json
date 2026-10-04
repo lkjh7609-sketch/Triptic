@@ -191,7 +191,7 @@
       "empty": "No flights match. Try different dates or filters",
       "error": "Couldn't load flights. Please try again in a moment",
       "priceNote": "Prices can change on the booking site. You book and pay with the provider Kayak connects you to",
-      "sandbox": "Test data — prices may not be real"
+      "sandbox": "The data below is still being built and isn't ready for real use"
     }
   },
   "hotels": {
@@ -225,7 +225,7 @@
       "stars": "Star rating",
       "distance": "Distance to center"
     },
-    "sandbox": "Test data — prices and photos may not be real",
+    "sandbox": "The data below is still being built and isn't ready for real use",
     "error": "Couldn't load hotels. Please try again in a moment",
     "empty": "No hotels match. Try different filters or dates",
     "loadMore": "Show more",
