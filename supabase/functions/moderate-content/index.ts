@@ -2,6 +2,7 @@
  * Supabase Edge Function: moderate-content (06-community.md §5.1 흐름도)
  *
  * POST { kind: 'post', destinationId, tripId?, body, images?: [{storagePath,width,height}], category?, tags? }
+ * POST { kind: 'post_edit', postId, title?, body, images?, tags? } — 작성자 본인의 글만(0086 update_published_post)
  * POST { kind: 'comment', postId, parentId?, body }
  * POST { kind: 'companion_post', destinationId?, title, body, startDate, endDate, groupSize, datesTbd? }
  *   datesTbd: true면 날짜 미정 모집글(startDate/endDate 없이 올린다, 0072)
@@ -17,18 +18,13 @@
  * 확장했다 — 신청 메시지는 주최자만 보지만, 상대가 읽는 사용자 생성 콘텐츠라는
  * 점에서 댓글과 동일한 검열 기준을 적용한다.
  *
- * 응답 시간 예산 3초(§5.1) — 텍스트 분류 + 이미지 분류(있으면, 전부 병렬)를
- * 같은 데드라인으로 경합시킨다. 하나라도 실패/타임아웃하면 fail closed
- * (decideStatus.ts) — 절대 조용히 통과시키지 않는다.
+ * 2026-10-04 사용자 결정: AI·금칙어·스팸 자동 심사를 모두 뺐다 — 모든 제재는 신고 기반(신고가 쌓이면 숨기는 기존 트리거,
+ * 관리자가 직접 판단). 그래서 이 함수는 입력 검증과 작성자 확인만 하고 항상 게시 상태로 저장한다(심사 코드는 src/features/community/moderation에
+ * 남아 있지만 쓰지 않는다). 제목이 있는 글(0086 create_published_post)과 글 수정(kind 'post_edit')도 여기를 거친다.
  */
 import { createClient } from '@supabase/supabase-js';
-import { badwordScore } from '../../../src/features/community/moderation/badwords.ts';
-import { spamScore } from '../../../src/features/community/moderation/spamHeuristics.ts';
-import { decideStatus } from '../../../src/features/community/moderation/decideStatus.ts';
-import { classifyText, classifyImageBytes } from '../../../src/features/community/moderation/deepseekClassifier.ts';
 import { detectLanguage } from '../../../src/features/community/languageDetect.ts';
 
-const CLASSIFIER_BUDGET_MS = 3000;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function corsHeaders(origin: string | null) {
@@ -53,7 +49,7 @@ interface ImageInput {
 }
 
 interface RequestBody {
-  kind?: 'post' | 'comment' | 'companion_post' | 'companion_application';
+  kind?: 'post' | 'post_edit' | 'comment' | 'companion_post' | 'companion_application';
   destinationId?: string;
   tripId?: string | null;
   postId?: string;
@@ -62,25 +58,12 @@ interface RequestBody {
   images?: ImageInput[];
   category?: string; // post: 'story'|'qna'|'tips'|'food' (0077, 없으면 story — 예전 클라이언트)
   tags?: unknown; // post: 문자열 최대 3개(0077) — 본문과 함께 심사하고 서버(RPC)가 정리해 저장
-  title?: string; // companion_post
+  title?: string; // post(0086, 선택 — 없는 옛 클라이언트), post_edit, companion_post
   startDate?: string; // companion_post, 'yyyy-MM-dd'
   endDate?: string; // companion_post, 'yyyy-MM-dd'
   datesTbd?: boolean; // companion_post: 날짜 미정(날짜 없이 올린다)
   groupSize?: number; // companion_post
   companionPostId?: string; // companion_application
-}
-
-async function fetchImageBytes(supabaseUrl: string, storagePath: string): Promise<{ bytes: Uint8Array; mimeType: string } | null> {
-  try {
-    const url = `${supabaseUrl}/storage/v1/object/public/post-images/${storagePath}`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const mimeType = res.headers.get('content-type') ?? 'image/webp';
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    return { bytes, mimeType };
-  } catch {
-    return null;
-  }
 }
 
 const POST_CATEGORIES = ['story', 'qna', 'tips', 'food'];
@@ -96,7 +79,6 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
   });
@@ -115,7 +97,7 @@ Deno.serve(async (req) => {
   }
 
   const kind = payload.kind;
-  if (kind !== 'post' && kind !== 'comment' && kind !== 'companion_post' && kind !== 'companion_application') {
+  if (kind !== 'post' && kind !== 'post_edit' && kind !== 'comment' && kind !== 'companion_post' && kind !== 'companion_application') {
     return jsonResponse({ error: 'kind 값이 올바르지 않습니다.' }, 400, headers);
   }
 
@@ -123,7 +105,7 @@ Deno.serve(async (req) => {
   const isCompanionApplication = kind === 'companion_application';
   // 신청 메시지는 선택 사항이라 빈 문자열을 허용한다 — 그 외 kind는 본문 필수.
   if (!isCompanionApplication && !text) return jsonResponse({ error: '내용을 입력해 주세요.' }, 400, headers);
-  if (kind === 'post' && text.length > 2000) {
+  if ((kind === 'post' || kind === 'post_edit') && text.length > 2000) {
     return jsonResponse({ error: '글은 2000자를 넘을 수 없습니다.' }, 400, headers);
   }
   if (kind === 'comment' && text.length > 500) {
@@ -133,15 +115,18 @@ Deno.serve(async (req) => {
   if ((kind === 'post' || kind === 'companion_post') && payload.destinationId && !UUID_RE.test(payload.destinationId)) {
     return jsonResponse({ error: '여행지 값이 올바르지 않습니다.' }, 400, headers);
   }
-  if (kind === 'comment' && !payload.postId) {
+  if ((kind === 'comment' || kind === 'post_edit') && !payload.postId) {
     return jsonResponse({ error: 'postId가 필요합니다.' }, 400, headers);
   }
+  const postTitle = (payload.title ?? '').trim();
+  if ((kind === 'post' || kind === 'post_edit') && postTitle.length > 100) {
+    return jsonResponse({ error: '제목은 100자를 넘을 수 없습니다.' }, 400, headers);
+  }
 
-  let classificationText = text; // companion_post는 제목도 검열 대상에 포함시킨다
   let postCategory = 'story';
   let postTags: string[] = [];
-  if (kind === 'post') {
-    if (payload.category !== undefined) {
+  if (kind === 'post' || kind === 'post_edit') {
+    if (kind === 'post' && payload.category !== undefined) {
       if (typeof payload.category !== 'string' || !POST_CATEGORIES.includes(payload.category)) {
         return jsonResponse({ error: '분류 값이 올바르지 않습니다.' }, 400, headers);
       }
@@ -153,8 +138,6 @@ Deno.serve(async (req) => {
       }
       postTags = payload.tags as string[];
     }
-    // 태그는 자유 입력이라 본문과 같은 심사를 거친다
-    if (postTags.length > 0) classificationText = `${text}\n${postTags.map((t) => `#${t}`).join(' ')}`;
   }
   if (kind === 'companion_post') {
     const title = (payload.title ?? '').trim();
@@ -168,7 +151,6 @@ Deno.serve(async (req) => {
     if (!Number.isInteger(groupSize) || groupSize < 2 || groupSize > 20) {
       return jsonResponse({ error: '모집 인원은 2~20명이어야 합니다.' }, 400, headers);
     }
-    classificationText = `${title}\n${text}`;
   }
   if (isCompanionApplication) {
     if (!payload.companionPostId) return jsonResponse({ error: 'companionPostId가 필요합니다.' }, 400, headers);
@@ -176,62 +158,41 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const deadline = Date.now() + CLASSIFIER_BUDGET_MS;
-    const remaining = () => Math.max(500, deadline - Date.now());
+    // 자동 심사 없음(2026-10-04 사용자 결정) — 항상 게시 상태. 제재는 신고를 보고 관리자가 판단한다
+    const decision: { status: 'published' | 'pending_review' | 'removed'; score: number; failClosed: boolean } = { status: 'published', score: 0, failClosed: false };
+    const categories: Record<string, unknown> = {};
+    const images = kind === 'post' || kind === 'post_edit' ? (payload.images ?? []) : [];
 
-    const images = kind === 'post' ? (payload.images ?? []) : [];
-    const skipClassification = isCompanionApplication && classificationText.length === 0;
-
-    let decision: ReturnType<typeof decideStatus>;
-    let categories: Record<string, unknown> = { badword: 0, spam: 0, text: null, images: [] };
-
-    if (skipClassification) {
-      decision = { status: 'published', score: 0, failClosed: false };
-    } else {
-      const badword = badwordScore(classificationText);
-      const spam = spamScore(classificationText);
-
-      const [textResult, ...imageResults] = await Promise.all([
-        deepseekApiKey ? classifyText(deepseekApiKey, classificationText, remaining()) : Promise.resolve(null),
-        ...images.map(async (img) => {
-          if (!deepseekApiKey) return null;
-          const fetched = await fetchImageBytes(supabaseUrl, img.storagePath);
-          if (!fetched) return null;
-          return classifyImageBytes(deepseekApiKey, fetched.bytes, fetched.mimeType, remaining());
-        }),
-      ]);
-
-      const textScore = textResult?.score ?? null;
-      const imageScore = images.length === 0 ? 0 : imageResults.some((r) => r == null) ? null : Math.max(...imageResults.map((r) => r!.score));
-      categories = {
-        badword,
-        spam,
-        text: textResult?.categories ?? null,
-        images: imageResults.map((r) => r?.categories ?? null),
-      };
-
-      const decisionKind = kind === 'post' || kind === 'companion_post' ? 'post' : 'comment';
-      decision = decideStatus(decisionKind, {
-        badword,
-        spam,
-        textClassifier: textScore,
-        imageClassifier: imageScore,
+    if (kind === 'post_edit') {
+      const { error: rpcErr } = await adminClient.rpc('update_published_post', {
+        p_post_id: payload.postId,
+        p_author_id: user.id,
+        p_title: postTitle,
+        p_body: text,
+        p_language: detectLanguage(text),
+        p_tags: postTags,
+        p_images: payload.images === undefined ? null : images.map((img, i) => ({ ...img, position: i })),
       });
+      if (rpcErr) {
+        // 남의 글·없는 글(42501)은 권한 없음으로
+        const code = (rpcErr as { code?: string }).code;
+        if (code === '42501') return jsonResponse({ error: '고칠 수 없는 글입니다.' }, 403, headers);
+        throw rpcErr;
+      }
+      return jsonResponse({ id: payload.postId, status: 'published', failClosed: false }, 200, headers);
     }
 
     if (kind === 'post') {
-      const { data: newId, error: rpcErr } = await adminClient.rpc('create_moderated_post', {
-        p_category: postCategory,
-        p_tags: postTags,
+      const { data: newId, error: rpcErr } = await adminClient.rpc('create_published_post', {
         p_author_id: user.id,
         p_destination_id: payload.destinationId || null,
         p_trip_id: payload.tripId ?? null,
+        p_title: postTitle,
         p_body: text,
         p_language: detectLanguage(text),
         p_images: images.map((img, i) => ({ ...img, position: i })),
-        p_status: decision.status,
-        p_score: decision.score,
-        p_categories: categories,
+        p_category: postCategory,
+        p_tags: postTags,
       });
       if (rpcErr) throw rpcErr;
       return jsonResponse({ id: newId, status: decision.status, failClosed: decision.failClosed }, 200, headers);
