@@ -121,7 +121,7 @@ async function destinationBySlug(db, slug) {
 
 /** 공개된 글만(RLS도 같은 조건이지만 뜻을 분명히 적어 둔다) */
 function publishedPosts(db) {
-    return db.from('posts').select('id, body, destination_id, created_at').eq('status', 'published').is('deleted_at', null);
+    return db.from('posts').select('id, title, body, destination_id, created_at').eq('status', 'published').is('deleted_at', null);
 }
 
 async function renderDestination(db, shell, slug) {
@@ -134,7 +134,7 @@ async function renderDestination(db, shell, slug) {
         desc: `${dest.name} 여행 일정과 후기를 나누고 ${dest.name} 동행을 찾아보세요. 트립틱에서 ${dest.name} 여행을 함께 계획할 수 있어요.`,
         heading: `${dest.name} 여행 커뮤니티 · 동행 찾기`,
         paragraphs: [`${dest.name} 여행을 다녀온 사람들의 이야기와 일정, 같은 날짜에 ${dest.name}(으)로 떠나는 동행 모집 글을 볼 수 있습니다.`],
-        links: (posts ?? []).map((p) => ({ href: `/community/post/${p.id}`, text: clip(p.body, 80) })),
+        links: (posts ?? []).map((p) => ({ href: `/community/post/${p.id}`, text: clip(p.title || p.body, 80) })),
     });
 }
 
@@ -146,7 +146,8 @@ async function renderPost(db, shell, id) {
         ? await db.from('destinations').select('slug').eq('id', post.destination_id).maybeSingle()
         : { data: null };
     const place = dest ? (await destinationBySlug(db, dest.slug))?.name : null;
-    const lead = clip(post.body, 40);
+    // 제목(0086)이 있으면 제목, 옛 글은 본문 앞부분
+    const lead = clip(post.title || post.body, 40);
     return renderPage(shell, {
         path: `/community/post/${post.id}`,
         title: `${lead} | ${place ? `${place} 여행 이야기 - ` : ''}${SITE}`,

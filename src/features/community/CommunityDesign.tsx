@@ -20,8 +20,8 @@ import type { PostsPage } from './communityService';
 import type { Destination, Post } from './types';
 import type { Tab } from './CommunityScreen';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
-import { stripMarkdown } from './editor/markdownParse';
-import { splitBody } from './channel/channelHelpers';
+import { postTitleOf } from './postMeta';
+import { CATEGORY_ICONS } from './categoryIcons';
 
 type Sort = 'latest' | 'likes' | 'comments';
 
@@ -252,9 +252,11 @@ export function CommunityDesignBody({
               />
             ) : (
               <>
-                {posts.map((post) => (
-                  <PostArticle key={post.id} post={post} />
-                ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {posts.map((post) => (
+                    <PostArticle key={post.id} post={post} />
+                  ))}
+                </div>
                 {feed.hasNextPage ? (
                   <div className="pt-6 pb-2 flex justify-center">
                     <button
@@ -398,8 +400,9 @@ function PostArticle({ post }: { post: Post }) {
   const { user } = useSession();
   const navigate = useNavigate();
   const toggleLike = useToggleLike(post.id, user?.id ?? null);
-  const { title, excerpt } = splitBody(stripMarkdown(post.body));
+  const title = postTitleOf(post);
   const cover = post.images?.[0];
+  const CategoryIcon = CATEGORY_ICONS[post.category];
 
   function handleLike(e: MouseEvent) {
     e.preventDefault();
@@ -414,54 +417,43 @@ function PostArticle({ post }: { post: Post }) {
     navigate(`/community/user/${post.author_id}`);
   }
 
+  // 작은 카드 — 사진(없으면 분류 아이콘 자리) · 도시·분류 칩 · 제목(최대 2줄) · 작성자·시간 · 숫자. 본문은 글을 열어야 보인다
   return (
     <Link
       to={`/community/post/${post.id}`}
-      className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_20px_-2px_rgba(15,41,66,0.04)] hover:shadow-[0_12px_32px_-4px_rgba(15,41,66,0.08)] transition-all duration-300 flex flex-col"
+      className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_20px_-2px_rgba(15,41,66,0.04)] hover:shadow-[0_12px_32px_-4px_rgba(15,41,66,0.08)] transition-all duration-300 flex flex-col min-w-0"
     >
-      {cover ? (
-        <div className="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
-          <img alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={getPostImageUrl(cover.storage_path)} />
-          {post.destination?.name ? (
-            <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full bg-surface-bright/90 backdrop-blur-md text-primary font-label-sm text-label-sm border border-white/40">
-                {post.destination.name}
-              </span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      <div className="p-6 flex flex-col flex-1">
-        {!cover && post.destination?.name ? (
-          <span className="self-start mb-2 px-2.5 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm">
-            {post.destination.name}
-          </span>
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-container flex items-center justify-center">
+        {cover ? (
+          <img alt="" className="w-full h-full object-cover" loading="lazy" src={getPostImageUrl(cover.storage_path)} />
+        ) : (
+          <CategoryIcon size={30} className="text-outline" aria-hidden="true" />
+        )}
+        {post.images && post.images.length > 1 ? (
+          <span className="absolute right-2 bottom-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[11px] font-bold">+{post.images.length - 1}</span>
         ) : null}
-        <h2 className="font-headline-sm text-headline-sm text-primary hover:text-secondary transition-colors cursor-pointer leading-snug">{title}</h2>
-        {excerpt ? <p className="font-body-md text-body-md text-on-surface-variant mt-2 line-clamp-2">{excerpt}</p> : null}
+      </div>
 
-        <div className="mt-6 pt-4 border-t border-surface-container flex flex-wrap items-center justify-between gap-3">
-          <button type="button" className="flex items-center gap-3 text-left" onClick={handleAuthor}>
-            {post.author?.avatar_url ? (
-              <img className="w-8 h-8 rounded-full object-cover border border-outline-variant/40" src={post.author.avatar_url} alt="" />
-            ) : (
-              <span className="w-8 h-8 rounded-full border border-outline-variant/40 bg-surface-container flex items-center justify-center text-primary font-label-sm">
-                {initialOf(post.author?.display_name)}
-              </span>
-            )}
-            <div>
-              <span className="font-title-md text-title-md text-primary text-sm"><AuthorName profile={post.author} /></span>
-              <span className="block font-body-sm text-body-sm text-outline">
-                {formatDistanceToNowStrict(new Date(post.created_at), {
-                  addSuffix: true,
-                  locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
-                })}
-              </span>
-            </div>
+      <div className="p-4 flex flex-col flex-1 gap-2 min-w-0">
+        <div className="flex flex-wrap gap-1.5">
+          {post.destination?.name ? (
+            <span className="px-2 py-0.5 rounded-md bg-surface-container text-primary text-[11px] font-bold">{post.destination.name}</span>
+          ) : null}
+          <span className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-[11px] font-bold">{t(`postCategory.${post.category}`)}</span>
+        </div>
+        <h2 className="font-title-md text-title-md text-primary leading-snug line-clamp-2 break-words">{title}</h2>
+
+        <div className="mt-auto pt-3 flex items-center justify-between gap-2 text-on-surface-variant">
+          <button type="button" className="flex flex-col items-start text-left min-w-0" onClick={handleAuthor}>
+            <span className="font-label-sm text-label-sm text-primary truncate max-w-full"><AuthorName profile={post.author} /></span>
+            <span className="font-body-sm text-body-sm text-outline">
+              {formatDistanceToNowStrict(new Date(post.created_at), {
+                addSuffix: true,
+                locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
+              })}
+            </span>
           </button>
-
-          <div className="flex items-center gap-4 text-on-surface-variant text-label-md font-label-md">
+          <div className="flex items-center gap-3 text-label-md font-label-md shrink-0">
             <button
               type="button"
               className={`flex items-center gap-1 transition-colors ${post.likedByMe ? 'text-secondary' : 'hover:text-secondary'}`}
@@ -470,11 +462,11 @@ function PostArticle({ post }: { post: Post }) {
               aria-pressed={!!post.likedByMe}
               aria-label={t('post.likeAria', { count: post.like_count })}
             >
-              <Heart size={18} fill={post.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
+              <Heart size={16} fill={post.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
               <span>{post.like_count}</span>
             </button>
             <span className="flex items-center gap-1" aria-label={t('post.commentAria', { count: post.comment_count })}>
-              <MessageCircle size={18} aria-hidden="true" />
+              <MessageCircle size={16} aria-hidden="true" />
               <span>{post.comment_count}</span>
             </span>
           </div>

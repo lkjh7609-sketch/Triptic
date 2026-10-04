@@ -54,10 +54,10 @@ beforeEach(async () => {
 });
 
 describe('ChannelPostCard', () => {
-  it('제목·발췌와 "시간 · 분류" 줄을 보여 준다', () => {
+  it('제목만(본문 발췌 없이)과 "시간 · 분류" 줄을 보여 준다', () => {
     renderCard(post());
     expect(screen.getByRole('heading', { name: '바투 동굴 계단 조심하세요' })).toBeInTheDocument();
-    expect(screen.getByText('오전 8시 반에 가면 빛내림이 예뻐요')).toBeInTheDocument();
+    expect(screen.queryByText('오전 8시 반에 가면 빛내림이 예뻐요')).not.toBeInTheDocument();
     expect(screen.getByText(/· 여행기·후기$/)).toBeInTheDocument();
   });
 

@@ -82,7 +82,11 @@ export function UserProfileScreen() {
       ) : !posts || posts.length === 0 ? (
         <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><PenTool size={16} /></span>} message={t('profile.noPosts')} />
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} />)
+        <div className={styles.postList}>
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
       )}
     </div>
   );
