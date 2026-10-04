@@ -16,7 +16,9 @@ import {
   type BoardFlight,
 } from './boardParse';
 import { FlightDetailDialog } from './FlightDetailDialog';
-import { useAirportBoard, useKstMinutes, useNowMs } from './useAirportBoard';
+import { useAirportBoard, useKstMinutes, useNowMs, type AirportBoardData } from './useAirportBoard';
+import { useKacBoard } from './useKacBoard';
+import { AIRPORT_IATA, type AirportKey } from './airports';
 import styles from './AirportBoard.module.css';
 
 const PAGE = 5;
@@ -52,12 +54,15 @@ function BoardRow({
   departures,
   desktop,
   korean,
+  arrivalGate,
   onOpen,
 }: {
   flight: BoardFlight;
   departures: boolean;
   desktop: boolean;
   korean: boolean;
+  /** 도착편 칸에 수취대 대신 게이트(한국공항공사 공항) */
+  arrivalGate: boolean;
   onOpen: () => void;
 }) {
   const { t } = useTranslation('home');
@@ -70,7 +75,7 @@ function BoardRow({
       : flight.scheduled;
   const done = statusInfo(flight.remark)?.tone === 'done';
   const terminal = terminalLabel(flight.terminal);
-  const place = departures ? flight.gate : flight.carousel;
+  const place = departures || arrivalGate ? flight.gate : flight.carousel;
   return (
     <button
       type="button"
@@ -115,12 +120,24 @@ function BoardRow({
 }
 
 /**
- * '인천공항 출·도착' 전광판(공항 화면, standalone) — 공항 전광판처럼 지금 이후 편을 시각 순으로. 출발/도착 탭, 줄을 누르면 상세.
- * 데이터는 Edge Function(incheon-board)이 3분마다 한 번만 외부에서 받아 둔 값이다. 받아 온 값이 없으면 섹션을 그리지 않는다.
+ * 공항 출·도착 전광판(공항 화면) — 공항 전광판처럼 지금 이후 편을 시각 순으로. 출발/도착 탭, 줄을 누르면 상세.
+ * 인천은 Edge Function incheon-board, 김포·대구·김해·제주는 kac-board(한국공항공사)가 3분마다 한 번만 외부에서 받아 둔 값이다.
+ * 두 데이터의 모양이 같아(BoardFlight) 화면은 하나 — 한국공항공사는 터미널 칸에 국내선/국제선, 도착편은 수취대 대신 게이트.
+ * 받아 온 값이 없으면 섹션을 그리지 않는다(standalone이면 안내 문장).
  */
-export function AirportBoard({ desktop, standalone = false }: { desktop: boolean; standalone?: boolean }) {
+export function AirportBoard({ desktop, standalone = false, airport = 'icn' }: { desktop: boolean; standalone?: boolean; airport?: AirportKey }) {
   const { t, i18n } = useTranslation('home');
-  const { data, isLoading } = useAirportBoard();
+  const isIcn = airport === 'icn';
+  const icn = useAirportBoard(isIcn);
+  const kac = useKacBoard(!isIcn);
+  const kacBoard = kac.data?.boards[AIRPORT_IATA[airport]];
+  const data: AirportBoardData | undefined = isIcn
+    ? icn.data
+    : kac.data
+      ? { departures: kacBoard?.departures ?? [], arrivals: kacBoard?.arrivals ?? [], fetchedAt: kac.data.fetchedAt, stale: kac.data.stale }
+      : undefined;
+  const isLoading = isIcn ? icn.isLoading : kac.isLoading;
+  const title = isIcn ? t('airport.title') : t('airport.titleOf', { name: t(`airportPage.full.${airport}`) });
   const nowMin = useKstMinutes();
   const nowMs = useNowMs();
   const [direction, setDirection] = useState<BoardDirection>('departures');
@@ -199,7 +216,7 @@ export function AirportBoard({ desktop, standalone = false }: { desktop: boolean
     return standalone ? (
       <section className={shared.section} aria-labelledby="home-airport-title">
         <h2 id="home-airport-title" className={shared.title}>
-          {t('airport.title')}
+          {title}
         </h2>
         <p className={styles.empty}>{t('airport.unavailable')}</p>
       </section>
@@ -214,12 +231,12 @@ export function AirportBoard({ desktop, standalone = false }: { desktop: boolean
           <div className={styles.titleRow}>
             <TabIcon size={desktop ? 22 : 20} aria-hidden="true" className={styles.titleIcon} />
             <h2 id="home-airport-title" className={shared.title}>
-              {t('airport.title')}
+              {title}
             </h2>
             <span className={styles.live} aria-hidden="true" />
           </div>
           <p className={shared.sub}>
-            {t('airport.updated', { time: updatedLabel })} · {t('airport.source')}
+            {t('airport.updated', { time: updatedLabel })} · {t(isIcn ? 'airport.source' : 'airport.sourceKac')}
           </p>
         </div>
         <div className={styles.tabs} role="group" aria-label={t('airport.tabsLabel')}>
@@ -251,7 +268,7 @@ export function AirportBoard({ desktop, standalone = false }: { desktop: boolean
             <span>{t('airport.col.flight')}</span>
             <span>{t(departures ? 'airport.col.to' : 'airport.col.from')}</span>
             <span>{t('airport.col.terminal')}</span>
-            <span>{t(departures ? 'airport.col.gate' : 'airport.col.carousel')}</span>
+            <span>{t(departures ? 'airport.col.gate' : isIcn ? 'airport.col.carousel' : 'airport.col.arrGate')}</span>
             <span>{t('airport.col.status')}</span>
             <span />
           </div>
@@ -279,6 +296,7 @@ export function AirportBoard({ desktop, standalone = false }: { desktop: boolean
                         departures={departures}
                         desktop={desktop}
                         korean={korean}
+                        arrivalGate={!isIcn}
                         onOpen={() => setSelected({ flight, direction })}
                       />
                     </li>
@@ -340,6 +358,7 @@ export function AirportBoard({ desktop, standalone = false }: { desktop: boolean
           flight={selected.flight}
           direction={selected.direction}
           korean={korean}
+          source={isIcn ? 'icn' : 'kac'}
           onClose={() => setSelected(null)}
         />
       ) : null}

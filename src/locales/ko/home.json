@@ -731,12 +731,11 @@
         "rentalCar": "렌터카 셔틀",
         "tower": "관제탑"
       }
-    },
-    "soon": "{{name}} 실시간 출·도착은 준비 중이에요",
-    "soonDesc": "한국공항공사 공공데이터를 연결하는 대로 이곳에서 보여 드릴게요."
+    }
   },
   "airport": {
     "title": "인천공항 실시간 출·도착",
+    "titleOf": "{{name}} 실시간 출·도착",
     "updated": "{{time}} 기준 · 3분마다 갱신",
     "tabsLabel": "출발·도착",
     "departures": "출발",
@@ -750,19 +749,28 @@
       "terminal": "터미널",
       "gate": "탑승 게이트",
       "carousel": "수취대",
+      "arrGate": "게이트",
       "status": "상태"
     },
     "terminal": {
+      "domestic": "국내선",
+      "international": "국제선",
       "t1": "제1터미널",
       "t1c": "제1터미널 탑승동",
       "t2": "제2터미널"
     },
     "terminalShort": {
+      "domestic": "국내선",
+      "international": "국제선",
       "t1": "T1",
       "t1c": "T1 탑승동",
       "t2": "T2"
     },
     "status": {
+      "processing": "수속 중",
+      "gateChange": "탑승구 변경",
+      "goToGate": "탑승구로 이동",
+      "loading": "수하물 적재 중",
       "departed": "출발",
       "arrived": "도착",
       "landed": "착륙",
@@ -783,6 +791,7 @@
     "emptyArrivals": "지금 이후 도착 예정 편이 없어요.",
     "staleNotice": "최근 정보를 받지 못하고 있어요. {{time}}에 받은 내용이에요.",
     "source": "출처: 인천국제공항공사",
+    "sourceKac": "출처: 한국공항공사",
     "detail": {
       "close": "닫기",
       "routeTo": "목적지",
@@ -795,6 +804,7 @@
       "stopovers": "경유지",
       "codeshare": "공동운항 편",
       "note": "인천국제공항공사 공공데이터 기준이며 현장 사정에 따라 달라질 수 있어요. 출발 전에는 항공사 안내를 꼭 확인하세요.",
+      "noteKac": "한국공항공사 공공데이터 기준이며 현장 사정에 따라 달라질 수 있어요. 공동운항 편은 묶어서 보여 주며 대표 편명은 실제 운항 편과 다를 수 있어요. 출발 전에는 항공사 안내를 꼭 확인하세요.",
       "actual": "실제 시각"
     },
     "pager": {

@@ -10,6 +10,12 @@ vi.mock('./useAirportBoard', () => ({
   useKstMinutes: () => 600,
   useNowMs: () => Date.now(),
 }));
+vi.mock('./useKacBoard', () => ({
+  useKacBoard: () => ({
+    data: { boards: { GMP: { departures: [], arrivals: [] } }, fetchedAt: new Date().toISOString(), stale: false },
+    isLoading: false,
+  }),
+}));
 vi.mock('./useAirportParking', () => ({
   useAirportParking: () => ({
     data: {
@@ -55,11 +61,11 @@ describe('AirportScreen — 공항 메뉴', () => {
     expect(screen.getByRole('heading', { level: 2, name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
   });
 
-  it('대구·김해·제주를 누르면 준비 중 안내가 나오고, 인천을 다시 누르면 전광판이 돌아온다', () => {
+  it('다른 공항을 누르면 그 공항의 출·도착(한국공항공사)으로 바뀌고, 인천을 다시 누르면 인천 전광판이 돌아온다', () => {
     renderScreen();
     fireEvent.click(screen.getByRole('button', { name: '김해' }));
     expect(screen.getByRole('button', { name: '김해' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('heading', { level: 2, name: '김해국제공항 실시간 출·도착은 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: '김해국제공항 실시간 출·도착' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '인천공항 실시간 출·도착' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '인천국제공항' }));
     expect(screen.getByRole('heading', { level: 2, name: '인천공항 실시간 출·도착' })).toBeInTheDocument();
@@ -73,11 +79,11 @@ describe('AirportScreen — 공항 메뉴', () => {
     expect(screen.getByRole('button', { name: '제주' })).toBeInTheDocument();
   });
 
-  it('주차장은 각 공항 출·도착 아래에 — 김포는 준비 중 안내 아래에 김포 주차장 평면도', () => {
+  it('주차장은 각 공항 출·도착 아래에 — 김포는 김포 출·도착 아래에 김포 주차장 평면도', () => {
     renderScreen();
     fireEvent.click(screen.getByRole('button', { name: '김포' }));
     const h2 = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
-    expect(h2).toEqual(['김포국제공항 실시간 출·도착은 준비 중이에요', '주차장 실시간']);
+    expect(h2).toEqual(['김포국제공항 실시간 출·도착', '주차장 실시간']);
     expect(screen.getByRole('button', { name: /^국내선 제1주차장, 남은 자리 222대, 혼잡/ })).toBeInTheDocument();
   });
 });

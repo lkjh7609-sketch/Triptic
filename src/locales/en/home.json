@@ -746,12 +746,11 @@
         "rentalCar": "Rental car shuttle",
         "tower": "Control tower"
       }
-    },
-    "soon": "Live departures & arrivals for {{name}} are coming soon",
-    "soonDesc": "We'll show them here as soon as the Korea Airports Corporation data is connected."
+    }
   },
   "airport": {
     "title": "Incheon Airport live departures & arrivals",
+    "titleOf": "{{name}} live departures & arrivals",
     "updated": "As of {{time}} (KST) · refreshes every 3 min",
     "tabsLabel": "Departures and arrivals",
     "departures": "Departures",
@@ -765,19 +764,28 @@
       "terminal": "Terminal",
       "gate": "Gate",
       "carousel": "Carousel",
+      "arrGate": "Gate",
       "status": "Status"
     },
     "terminal": {
+      "domestic": "Domestic",
+      "international": "International",
       "t1": "Terminal 1",
       "t1c": "Terminal 1 Concourse",
       "t2": "Terminal 2"
     },
     "terminalShort": {
+      "domestic": "DOM",
+      "international": "INTL",
       "t1": "T1",
       "t1c": "T1 Concourse",
       "t2": "T2"
     },
     "status": {
+      "processing": "Check-in",
+      "gateChange": "Gate change",
+      "goToGate": "Go to gate",
+      "loading": "Loading",
       "departed": "Departed",
       "arrived": "Arrived",
       "landed": "Landed",
@@ -799,6 +807,7 @@
     "emptyArrivals": "No more arrivals scheduled for now.",
     "staleNotice": "We can’t get the latest data right now. Showing what we received at {{time}}.",
     "source": "Source: Incheon International Airport Corporation",
+    "sourceKac": "Source: Korea Airports Corporation",
     "detail": {
       "close": "Close",
       "routeTo": "TO",
@@ -811,6 +820,7 @@
       "stopovers": "Stopovers",
       "codeshare": "Codeshare flights",
       "note": "Based on Incheon Airport public data; conditions on site may differ. Please confirm with your airline before you travel.",
+      "noteKac": "Based on Korea Airports Corporation open data and may differ on site. Codeshare flights are grouped, and the flight number shown may not be the operating flight. Always check with your airline before departure.",
       "actual": "Actual time"
     },
     "pager": {

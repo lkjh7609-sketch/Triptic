@@ -731,12 +731,11 @@
         "rentalCar": "レンタカーシャトル",
         "tower": "管制塔"
       }
-    },
-    "soon": "{{name}}のリアルタイム発着情報は準備中です",
-    "soonDesc": "韓国空港公社のデータを接続でき次第、こちらでご案内します。"
+    }
   },
   "airport": {
     "title": "仁川空港 出発・到着情報",
+    "titleOf": "{{name}} リアルタイム発着",
     "updated": "{{time}}時点(韓国時間)・3分ごとに更新",
     "tabsLabel": "出発・到着",
     "departures": "出発",
@@ -750,19 +749,28 @@
       "terminal": "ターミナル",
       "gate": "搭乗ゲート",
       "carousel": "受取所",
+      "arrGate": "ゲート",
       "status": "状況"
     },
     "terminal": {
+      "domestic": "国内線",
+      "international": "国際線",
       "t1": "第1ターミナル",
       "t1c": "第1ターミナル 搭乗棟",
       "t2": "第2ターミナル"
     },
     "terminalShort": {
+      "domestic": "国内線",
+      "international": "国際線",
       "t1": "T1",
       "t1c": "T1 搭乗棟",
       "t2": "T2"
     },
     "status": {
+      "processing": "手続き中",
+      "gateChange": "搭乗口変更",
+      "goToGate": "搭乗口へ",
+      "loading": "手荷物積込中",
       "departed": "出発済み",
       "arrived": "到着",
       "landed": "着陸",
@@ -783,6 +791,7 @@
     "emptyArrivals": "この後の到着予定便はありません。",
     "staleNotice": "最新の情報を取得できていません。{{time}}に取得した内容です。",
     "source": "出典:仁川国際空港公社",
+    "sourceKac": "出典: 韓国空港公社",
     "detail": {
       "close": "閉じる",
       "routeTo": "行き先",
@@ -795,6 +804,7 @@
       "stopovers": "経由地",
       "codeshare": "共同運航便",
       "note": "仁川国際空港公社の公共データに基づきます。現地の状況により異なる場合があります。出発前に必ず航空会社の案内をご確認ください。",
+      "noteKac": "韓国空港公社の公共データに基づいており、現地の状況により異なる場合があります。共同運航便はまとめて表示し、代表便名が実際の運航便と異なる場合があります。出発前に必ず航空会社の案内をご確認ください。",
       "actual": "実際の時刻"
     },
     "pager": {

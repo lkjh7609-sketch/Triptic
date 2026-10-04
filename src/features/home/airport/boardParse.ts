@@ -243,14 +243,23 @@ const STATUS: Record<string, { key: string; tone: StatusTone }> = {
   회항: { key: 'returned', tone: 'bad' },
   변경: { key: 'changed', tone: 'warn' },
   예정: { key: 'scheduled', tone: 'neutral' },
+  // 한국공항공사(김포·대구·김해·제주 등) 전광판에만 나오는 문구(2026-10-04 하루치 응답에서 확인)
+  수속중: { key: 'processing', tone: 'soon' },
+  사전결항: { key: 'cancelled', tone: 'bad' },
+  '탑승구 변경': { key: 'gateChange', tone: 'warn' },
+  '탑승장 입장': { key: 'goToGate', tone: 'active' },
+  '수하물 투입 중': { key: 'loading', tone: 'neutral' },
 };
 
 export function statusInfo(remark: string): { key: string; tone: StatusTone } | null {
   return STATUS[remark.trim()] ?? null;
 }
 
-/** 터미널 코드 → 표시 이름. P01=제1여객터미널, P02=제1터미널 탑승동, P03=제2여객터미널 */
-export function terminalLabel(code: string): { key: 't1' | 't1c' | 't2' | null; raw: string } {
+/** 터미널 코드 → 표시 이름. P01=제1여객터미널, P02=제1터미널 탑승동, P03=제2여객터미널(인천).
+ * 한국공항공사 공항은 터미널 대신 국내·국제 구분(DOM·INTL, kacBoardParse) */
+export function terminalLabel(code: string): { key: 't1' | 't1c' | 't2' | 'domestic' | 'international' | null; raw: string } {
+  if (code === 'DOM') return { key: 'domestic', raw: code };
+  if (code === 'INTL') return { key: 'international', raw: code };
   if (code === 'P01') return { key: 't1', raw: code };
   if (code === 'P02') return { key: 't1c', raw: code };
   if (code === 'P03') return { key: 't2', raw: code };
