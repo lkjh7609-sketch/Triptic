@@ -254,12 +254,6 @@
   font-size: var(--font-body-size);
 }
 
-.note {
-  margin: var(--space-3) 0 0;
-  font-size: var(--font-caption-size);
-  color: var(--text-muted);
-}
-
 .calendarOverlay {
   position: fixed;
   inset: 0;

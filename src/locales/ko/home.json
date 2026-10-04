@@ -112,8 +112,7 @@
       "cabinECONOMY": "일반석",
       "cabinPREMIUM_ECONOMY": "프리미엄 일반석",
       "cabinBUSINESS": "비즈니스석",
-      "cabinFIRST": "일등석",
-      "opensOnKayak": "검색 결과는 이 화면에 보이고, 예약은 Kayak에서 진행돼요"
+      "cabinFIRST": "일등석"
     },
     "comingSoon": {
       "title": "항공권 검색을 준비하고 있어요",
@@ -261,8 +260,7 @@
       "needDestination": "목적지를 목록에서 골라 주세요",
       "badDates": "날짜를 확인해 주세요 — 체크아웃은 체크인 다음 날부터예요",
       "search": "숙소 검색",
-      "searching": "검색 중…",
-      "note": "검색 결과는 이 화면에 보이고, 예약은 Kayak(호텔스컴바인 포함)에서 진행돼요"
+      "searching": "검색 중…"
     }
   },
   "activities": {

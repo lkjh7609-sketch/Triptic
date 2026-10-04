@@ -112,8 +112,7 @@
       "cabinECONOMY": "エコノミー",
       "cabinPREMIUM_ECONOMY": "プレミアムエコノミー",
       "cabinBUSINESS": "ビジネス",
-      "cabinFIRST": "ファースト",
-      "opensOnKayak": "検索結果はこの画面に表示され、予約はKayakで行います"
+      "cabinFIRST": "ファースト"
     },
     "comingSoon": {
       "title": "航空券検索を準備中です",
@@ -261,8 +260,7 @@
       "needDestination": "目的地を一覧から選んでください",
       "badDates": "日付を確認してください — チェックアウトはチェックインの翌日以降です",
       "search": "ホテルを検索",
-      "searching": "検索中…",
-      "note": "検索結果はこの画面に表示され、予約はKayak(HotelsCombined含む)で行います"
+      "searching": "検索中…"
     }
   },
   "activities": {

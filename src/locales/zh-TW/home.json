@@ -112,8 +112,7 @@
       "cabinECONOMY": "經濟艙",
       "cabinPREMIUM_ECONOMY": "豪華經濟艙",
       "cabinBUSINESS": "商務艙",
-      "cabinFIRST": "頭等艙",
-      "opensOnKayak": "搜尋結果顯示在此頁，訂票則在 Kayak 完成"
+      "cabinFIRST": "頭等艙"
     },
     "comingSoon": {
       "title": "機票搜尋準備中",
@@ -261,8 +260,7 @@
       "needDestination": "請從清單選擇目的地",
       "badDates": "請確認日期 — 退房須在入住日之後",
       "search": "搜尋住宿",
-      "searching": "搜尋中…",
-      "note": "搜尋結果顯示在此頁，訂房則在 Kayak(含 HotelsCombined)完成"
+      "searching": "搜尋中…"
     }
   },
   "activities": {

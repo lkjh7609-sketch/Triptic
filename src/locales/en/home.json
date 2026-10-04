@@ -113,8 +113,7 @@
       "cabinECONOMY": "Economy",
       "cabinPREMIUM_ECONOMY": "Premium economy",
       "cabinBUSINESS": "Business",
-      "cabinFIRST": "First",
-      "opensOnKayak": "Results appear here — you book on Kayak"
+      "cabinFIRST": "First"
     },
     "comingSoon": {
       "title": "Flight search is coming soon",
@@ -273,8 +272,7 @@
       "needDestination": "Please pick a destination from the list",
       "badDates": "Check your dates — check-out must be after check-in",
       "search": "Search hotels",
-      "searching": "Searching…",
-      "note": "Results appear here — you book on Kayak (incl. HotelsCombined)"
+      "searching": "Searching…"
     }
   },
   "activities": {
