@@ -232,7 +232,9 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const missingTitle = showErrors && !title.trim();
   const missingDest = showErrors && !destinationId && !freeBoard;
   const missingBody = showErrors && !body.trim();
-  const missingCategory = showErrors && !category;
+  // 자유게시판 글은 분류를 고르지 않는다 — 내부적으로 'story'로 저장
+  const effectiveCategory: PostCategory | '' = freeBoard ? 'story' : category;
+  const missingCategory = showErrors && !effectiveCategory;
   // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
   const tooLong = body.length > MAX_BODY_LENGTH;
   const blocked = blockedBody !== null && blockedBody === body;
@@ -276,20 +278,20 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
       return;
     }
-    if (!title.trim() || (!destinationId && !freeBoard) || !category || !body.trim()) {
+    if (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !body.trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
       flagInvalid(
         !destinationId && !freeBoard
           ? destRef.current
-          : !category
+          : !effectiveCategory
             ? categoryRef.current
             : !title.trim()
               ? titleRef.current
               : bodyRef.current,
       );
       // flagInvalid는 칸 안의 첫 버튼(서식 도구)에 포커스를 주므로 글 칸으로 다시 옮긴다
-      if (destinationId && category && title.trim())
+      if (destinationId && effectiveCategory && title.trim())
         bodyRef.current
           ?.querySelector<HTMLElement>('[contenteditable="true"]')
           ?.focus({ preventScroll: true });
@@ -314,7 +316,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
         body: body.trim(),
         tripId: tripId || null,
         allowCopy: !!tripId && allowCopy,
-        category,
+        category: effectiveCategory as PostCategory,
         tags: finalTags(),
         images: photos.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
         userId,
@@ -571,7 +573,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
             {t('compose.board.freeChosen')}
           </span>
         ) : null}
-        {category ? <span className={styles.lockedChip}>{t(`postCategory.${category}`)}</span> : null}
+        {category && !freeBoard ? <span className={styles.lockedChip}>{t(`postCategory.${category}`)}</span> : null}
         {editing.trip_id ? (
           <span className={styles.lockedChip}>
             <CalendarDays size={14} aria-hidden="true" />
@@ -745,7 +747,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           onMove={photoState.move}
         />
         {editing ? lockedSection : destinationSection}
-        {editing ? null : categorySection}
+        {editing || freeBoard ? null : categorySection}
         {titleSection}
         {storySection}
         {tagsSection}
@@ -759,7 +761,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
 
       {desktop ? null : (
         <footer className={styles.footer}>
-          {showErrors && (!title.trim() || (!destinationId && !freeBoard) || !category || !body.trim()) ? (
+          {showErrors && (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !body.trim()) ? (
             <p className={styles.footerWarning} role="alert">
               <TriangleAlert size={14} aria-hidden="true" />
               {t('compose.missing')}

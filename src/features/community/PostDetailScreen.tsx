@@ -333,8 +333,7 @@ export function PostDetailScreen() {
       <article className={styles.card}>
         <div className={styles.chips}>
           <span className={styles.chip}>
-            {destinationName ? `${destinationName} · ` : ''}
-            {t(`postCategory.${post.category}`)}
+            {post.destination_id ? `${destinationName} · ${t(`postCategory.${post.category}`)}` : destinationName}
           </span>
           {post.pinned_at ? (
             <span className={styles.chipPinned}>

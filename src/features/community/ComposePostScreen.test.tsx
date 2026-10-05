@@ -160,12 +160,12 @@ describe('ComposePostScreen — 시안 구성', () => {
     renderScreen();
     fireEvent.click(screen.getByRole('button', { name: /자유게시판에 쓰기/ }));
     expect(screen.getByRole('button', { name: '자유게시판' })).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: '질문·Q&A' })).not.toBeInTheDocument();
     fillTitle('자유 제목');
-    pickCategory('질문·Q&A');
     fireEvent.change(screen.getByPlaceholderText(/여행 이야기를 들려주세요/), { target: { value: '아무 도시나 이야기' } });
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
-    expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: null, title: '자유 제목' });
+    expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: null, title: '자유 제목', category: 'story' });
     expect(navigate).toHaveBeenCalledWith('/community/post/p3');
   });
 

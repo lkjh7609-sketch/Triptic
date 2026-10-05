@@ -443,7 +443,7 @@ function PostArticle({ post }: { post: Post }) {
       <div className={tileStyles.body}>
         <div className={tileStyles.chips}>
           <span className={tileStyles.chip}>{post.destination?.name ?? t('board.free')}</span>
-          <span className={tileStyles.chipMuted}>{t(`postCategory.${post.category}`)}</span>
+          {post.destination_id ? <span className={tileStyles.chipMuted}>{t(`postCategory.${post.category}`)}</span> : null}
         </div>
         <h2 className={tileStyles.title}>{title}</h2>
 
