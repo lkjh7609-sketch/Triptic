@@ -109,7 +109,9 @@ export function useDeletePost() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteOwnPost,
-    onSuccess: () => {
+    onSuccess: (_data, postId) => {
+      // 지운 글의 상세 캐시는 버린다 — 남겨 두면 다시 불러오다 '글을 불러오지 못했어요'가 번쩍 보인다
+      queryClient.removeQueries({ queryKey: postQueryKey(postId) });
       queryClient.invalidateQueries({ queryKey: ['community'] });
     },
   });

@@ -12,6 +12,7 @@ import { trackScreenView, captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { useDestinations } from './hooks/useDestinations';
 import { usePost, useDeletePost, useToggleLike, useAdjacentPosts, usePostTrip } from './hooks/usePosts';
 import { useComments, useCreateComment, useDeleteComment, useToggleCommentLike } from './hooks/useComments';
 import { useIsAdminViewer, useSetAcceptedComment, useSetPostPinned } from './hooks/usePostMeta';
@@ -76,6 +77,7 @@ export function PostDetailScreen() {
   const { data: post, isLoading, isError, refetch } = usePost(postId, user?.id ?? null);
   const toggleLike = useToggleLike(postId ?? '', user?.id ?? null);
   const deletePost = useDeletePost();
+  const { data: destinations } = useDestinations();
   const { data: comments } = useComments(postId, user?.id ?? null);
   const createComment = useCreateComment(postId ?? '');
   const deleteComment = useDeleteComment(postId ?? '');
@@ -172,7 +174,9 @@ export function PostDetailScreen() {
   async function handleDeletePost() {
     if (!window.confirm(t('detail.deleteConfirm'))) return;
     await deletePost.mutateAsync(post!.id);
-    navigate('/community');
+    // 글이 있던 게시판(도시 채널·자유게시판)으로 — 기록을 바꿔치기해서 뒤로가기가 지운 글로 돌아가지 않게
+    const slug = destinations?.find((d) => d.id === post!.destination_id)?.slug;
+    navigate(!post!.destination_id ? '/community/board' : slug ? `/community/d/${slug}` : '/community', { replace: true });
   }
 
   function togglePinned() {
