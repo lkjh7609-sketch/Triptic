@@ -421,7 +421,6 @@ export function PostDetailScreen() {
           <section className={styles.photos} aria-label={t('detail.photosTitle', { n: images.length })}>
             <div className={styles.photosHead}>
               <span>{t('detail.photosTitle', { n: images.length })}</span>
-              <span className={styles.photosHint}>{t('detail.photosHint')}</span>
             </div>
             <div className={`${styles.photoGrid} ${images.length === 1 ? styles.photoGridOne : ''}`}>
               {images.map((img, i) => (

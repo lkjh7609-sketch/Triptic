@@ -362,11 +362,6 @@
   font-weight: 600;
 }
 
-.photosHint {
-  color: var(--text-tertiary);
-  font-weight: 400;
-}
-
 .photoGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

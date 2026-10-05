@@ -352,7 +352,6 @@
     "tripCardDays": "{{n}} 天行程",
     "tripCardOpen": "查看行程詳情",
     "photosTitle": "附加照片 ({{n}})",
-    "photosHint": "點擊可放大檢視",
     "viewLarge": "放大檢視",
     "photoAlt": "附加照片 {{n}}",
     "lightboxClose": "關閉",
