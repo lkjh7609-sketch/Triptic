@@ -95,10 +95,23 @@ export function AppShell() {
   useTripRealtimeSync(user?.id ?? null);
   // 최근 접속·접속 국가를 서버에 남긴다(운영자 회원 관리용, 30분에 한 번)
   useActivityPing(user?.id ?? null);
-  // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
   const queryClient = useQueryClient();
   const { t } = useTranslation('common');
   const userId = user?.id;
+  // 로그인에 성공하면 어느 화면에서 했든 홈 맨 위로 — 로그인한 순간만(저장된 로그인으로 열린 것·토큰 갱신은 해당 없음).
+  // 아래 두 효과(공유 링크 이어가기·임시 여행 이어가기)가 더 구체적인 목적지를 정하면 그쪽이 이긴다(나중에 navigate하므로)
+  const startedWithoutSession = useRef(loading);
+  const prevUserId = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (loading) return;
+    const current = userId ?? null;
+    const prev = prevUserId.current;
+    prevUserId.current = current;
+    if (!current || !(prev === null || (prev === undefined && startedWithoutSession.current))) return;
+    navigate('/', { replace: true });
+    window.scrollTo(0, 0);
+  }, [userId, loading, navigate]);
+  // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
   useEffect(() => {
     if (!userId) {
       forgetGuestImportAttempts();
