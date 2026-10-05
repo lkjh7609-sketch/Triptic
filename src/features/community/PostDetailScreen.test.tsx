@@ -17,16 +17,20 @@ const state = vi.hoisted(() => ({
   recordPostView: vi.fn(),
   setPinned: vi.fn(),
   setAccepted: vi.fn(),
+  deletePost: vi.fn(),
 }));
 
 vi.mock('@/shared/hooks/useSession', () => ({ useSession: () => ({ user: state.user }) }));
 vi.mock('@/shared/hooks/useProfile', () => ({ useProfile: () => ({ data: { locale: 'ko' } }) }));
 vi.mock('./hooks/usePosts', () => ({
   usePost: () => ({ data: state.post, isLoading: false, isError: false, refetch: vi.fn() }),
-  useDeletePost: () => ({ mutateAsync: vi.fn() }),
+  useDeletePost: () => ({ mutateAsync: state.deletePost }),
   useToggleLike: () => ({ mutate: vi.fn() }),
   useAdjacentPosts: () => ({ data: state.adjacent }),
   usePostTrip: () => ({ data: undefined }),
+}));
+vi.mock('./hooks/useDestinations', () => ({
+  useDestinations: () => ({ data: [{ id: 'd1', slug: 'batu', name: '바투' }] }),
 }));
 vi.mock('./hooks/useComments', () => ({
   useComments: () => ({ data: state.comments }),
@@ -100,6 +104,9 @@ function renderScreen() {
       <MemoryRouter initialEntries={['/community/post/p1']}>
         <Routes>
           <Route path="/community/post/:postId" element={<PostDetailScreen />} />
+          <Route path="/community/d/:slug" element={<p>도시 게시판 화면</p>} />
+          <Route path="/community/board" element={<p>자유게시판 화면</p>} />
+          <Route path="/community" element={<p>커뮤니티 메인 화면</p>} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -192,6 +199,26 @@ describe('PostDetailScreen — ⋮ 메뉴(수정·삭제·관리자 고정)', ()
     renderScreen();
     expect(screen.queryByRole('button', { name: '메뉴:수정' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '메뉴:삭제' })).not.toBeInTheDocument();
+  });
+
+  it('글을 지우면 그 글이 있던 도시 게시판으로 이동한다(지운 글 주소로 돌아오지 않는다)', async () => {
+    state.user = { id: 'asker' };
+    state.deletePost.mockResolvedValue(undefined);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderScreen();
+    fireEvent.click(screen.getByRole('button', { name: '메뉴:삭제' }));
+    expect(await screen.findByText('도시 게시판 화면')).toBeInTheDocument();
+    expect(state.deletePost).toHaveBeenCalledWith('p1');
+  });
+
+  it('도시 없는 글(자유게시판)을 지우면 자유게시판으로 이동한다', async () => {
+    state.user = { id: 'asker' };
+    state.post = post({ destination_id: null });
+    state.deletePost.mockResolvedValue(undefined);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderScreen();
+    fireEvent.click(screen.getByRole('button', { name: '메뉴:삭제' }));
+    expect(await screen.findByText('자유게시판 화면')).toBeInTheDocument();
   });
 
   it('고정은 관리자에게만 메뉴로 나오고(본문 아래 버튼은 없다), 누르면 고정을 켠다', () => {
