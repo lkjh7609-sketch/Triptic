@@ -33,6 +33,9 @@ describe('send-email 템플릿', () => {
     expect(m.subject).toBe('[Triptic] 출발 3일 전이에요 · 도쿄 여행');
     expect(m.html).toContain('https://triptic.my/plan/t1');
     expect(m.text).toContain('설정 > 알림');
+    // 요약 표: 여행·여행지·출발일·남은 기간
+    expect(m.text).toContain('출발일: 2026-10-08');
+    expect(m.text).toContain('남은 기간: 3일');
   });
 
   it('사용자가 정한 이름·제목은 HTML로 해석되지 않게 이스케이프한다', () => {
@@ -44,9 +47,18 @@ describe('send-email 템플릿', () => {
     expect(r.html).not.toContain('<b>x</b>');
   });
 
-  it('탈퇴 메일에는 문의 주소가 있고 이동 버튼은 없다', () => {
-    const m = accountDeletedMail('ko', '민지');
-    expect(m.text).toContain('admin@triptic.my');
-    expect(m.html).not.toContain('<a href="https://triptic.my"');
+  it('문의 주소는 본문이 아니라 맨 아래 안내에 있다(세 종류 모두)', () => {
+    for (const m of [welcomeMail('ko', '민지'), accountDeletedMail('ko', '민지')]) {
+      expect(m.text.indexOf('admin@triptic.my')).toBeGreaterThan(m.text.indexOf('--'));
+      expect(m.html).toContain('mailto:admin@triptic.my');
+    }
+  });
+
+  it('로고와 브랜드 색이 들어가고, 탈퇴 메일에는 이동 버튼이 없다', () => {
+    const w = welcomeMail('ko', '민지');
+    expect(w.html).toContain('https://triptic.my/icon-192.png');
+    expect(w.html).toContain('#2E4F4F');
+    expect(w.html).toContain('Triptic 열기');
+    expect(accountDeletedMail('ko', '민지').html).not.toContain('열기');
   });
 });
