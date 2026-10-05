@@ -186,8 +186,10 @@ function ddayLabel(post: CompanionPost, t: (key: string, opts?: Record<string, u
 /** 내 동행 — 확정되면 공개 목록에서 빠지므로 지원자가 채팅방으로 돌아올 곳이 여기뿐이다 */
 function MyCompanionsSection({ userId }: { userId: string }) {
   const { t } = useTranslation(['community', 'common']);
-  const { data: posts } = useMyActiveCompanionPosts(userId);
-  if (!posts || posts.length === 0) return null;
+  const { data } = useMyActiveCompanionPosts(userId);
+  // 내가 모집 중인 글은 '내 동행모집' 버튼에서 보므로 여기서는 뺀다 — 신청한 글·확정된 글(채팅방 입구)만
+  const posts = (data ?? []).filter((p) => !(p.author_id === userId && p.status === 'recruiting'));
+  if (posts.length === 0) return null;
 
   function statusLabel(post: MyCompanionPost) {
     if (post.needsReview) return t('companion.mine.needsReview');
