@@ -243,3 +243,76 @@
     color: var(--brand-text);
   }
 }
+
+/* 모바일(시안 Stitch/Community/Post/cities) — 카드 글자를 한 단계씩 작게 */
+@media (max-width: 899px) {
+  .card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .desc {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .facts {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .factRow {
+    font-size: 12px;
+  }
+
+  .primaryBtn {
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .fxField {
+    min-height: 46px;
+    border-radius: 12px;
+  }
+
+  .fxCode {
+    font-size: 12px;
+  }
+
+  .fxInput {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .subTitle {
+    font-size: 12px;
+  }
+
+  .priceRow {
+    font-size: 12px;
+  }
+
+  .priceKrw,
+  .note {
+    font-size: 11px;
+  }
+
+  .urgentBadge {
+    font-size: 10px;
+  }
+
+  .urgentTitle {
+    font-size: 13px;
+  }
+
+  .urgentMeta,
+  .tagBtn {
+    font-size: 12px;
+  }
+}

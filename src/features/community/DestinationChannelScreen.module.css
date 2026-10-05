@@ -368,3 +368,108 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/* 모바일(시안 Stitch/Community/Post) — 분류 칩·검색·정렬을 작게, 정렬은 오른쪽 끝 */
+@media (max-width: 899px) {
+  .body {
+    padding: 8px 20px 24px;
+  }
+
+  .toolbar {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .tabs {
+    gap: 8px;
+  }
+
+  .tab,
+  .tabOn {
+    min-height: 34px;
+    padding: 0 14px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .tab svg,
+  .tabOn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .tools {
+    gap: 10px;
+  }
+
+  .searchInput {
+    min-height: 40px;
+    padding: 0 36px 0 40px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .searchIcon {
+    left: 14px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .sort {
+    align-self: flex-end;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .columns {
+    gap: 24px;
+  }
+
+  .feed {
+    gap: 12px;
+  }
+
+  .side {
+    gap: 24px;
+  }
+
+  .empty {
+    padding: 24px;
+    gap: 14px;
+    border-radius: 16px;
+  }
+
+  .empty h3 {
+    font-size: 16px;
+  }
+
+  .empty p {
+    font-size: 12px;
+  }
+
+  .emptyCta {
+    min-height: 36px;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
+  .loadMore {
+    min-height: 40px;
+    font-size: 12px;
+  }
+
+  .tagFilter {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+    right: 16px;
+    bottom: calc(var(--space-6) + 72px);
+  }
+}

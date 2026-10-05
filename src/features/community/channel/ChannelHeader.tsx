@@ -112,7 +112,7 @@ export function ChannelHeader({
                   : ''}
               </span>
             ) : null}
-            <span className={styles.fact}>
+            <span className={`${styles.fact} ${styles.counts}`}>
               <Users size={16} aria-hidden="true" />
               {followerCount != null
                 ? `${t('channel.followers', { count: followerCount })} · `
