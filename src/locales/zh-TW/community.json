@@ -641,7 +641,6 @@
     "detail": {
       "anyDestination": "地點未定",
       "dateRange": "{{start}} ~ {{end}}",
-      "groupSize_other": "招募 {{count}} 人",
       "statusNotice": {
         "pending_review": "這篇招募文正在審核中，通過後才會公開。",
         "closed": "這篇招募文已截止。",
@@ -674,7 +673,8 @@
       "withdrawConfirm": "要取消申請嗎？",
       "withdrawKeep": "保留我的申請",
       "withdrawProceed": "撤回申請",
-      "dateTbd": "日期可商議"
+      "dateTbd": "日期可商議",
+      "groupSize_other": "還剩 {{count}} 個名額"
     },
     "apply": {
       "dialogLabel": "申請加入同行",
@@ -904,7 +904,6 @@
     "recruiting": "招募旅伴中",
     "schedule": "日期",
     "scheduleTbd": "日期可協調",
-    "recruitCount_other": "招募 {{count}} 人",
     "wantedGender": "希望 {{value}}",
     "applyBtn": "申請同行",
     "moreMenu": "更多",
@@ -959,7 +958,8 @@
       "answerCta": "撰寫回答",
       "accepted": "{{name}} 的最佳回答"
     },
-    "categoryTime": "{{time}} · {{category}}"
+    "categoryTime": "{{time}} · {{category}}",
+    "recruitCount_other": "還剩 {{count}} 個名額"
   },
   "postCategory": {
     "story": "遊記・心得",

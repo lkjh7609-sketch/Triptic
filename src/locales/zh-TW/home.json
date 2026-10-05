@@ -655,11 +655,11 @@
       "subMobile": "與城市、日期相符的旅伴安心同行",
       "write": "發布徵旅伴文",
       "match": "{{pct}}% 吻合",
-      "recruiting_other": "徵求 {{count}} 人",
       "anywhere": "不限地點",
       "talk": "申請",
       "emptyTitle": "目前沒有徵旅伴的貼文",
-      "emptyDesc": "想找人一起出發嗎？發布第一則徵旅伴文吧。"
+      "emptyDesc": "想找人一起出發嗎？發布第一則徵旅伴文吧。",
+      "recruiting_other": "還剩 {{count}} 個名額"
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

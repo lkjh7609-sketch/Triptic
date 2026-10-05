@@ -641,7 +641,6 @@
     "detail": {
       "anyDestination": "여행지 미정",
       "dateRange": "{{start}} ~ {{end}}",
-      "groupSize_other": "{{count}}명 모집",
       "statusNotice": {
         "pending_review": "검토 중인 모집글이에요. 승인되면 다른 사용자에게 보여요.",
         "closed": "마감된 모집글이에요.",
@@ -674,7 +673,8 @@
       "withdrawConfirm": "지원을 취소할까요?",
       "withdrawKeep": "계속 지원 유지하기",
       "withdrawProceed": "지원 취소하기",
-      "dateTbd": "날짜 협의"
+      "dateTbd": "날짜 협의",
+      "groupSize_other": "{{count}}명 남음"
     },
     "apply": {
       "dialogLabel": "동행 지원",
@@ -943,7 +943,6 @@
       "days_other": "{{count}}일 뒤 출발"
     },
     "write": "이야기 쓰기",
-    "recruitCount_other": "{{count}}명 모집",
     "tagFilter": "#{{tag}} 글만 보는 중",
     "tagFilterClear": "태그 필터 지우기",
     "popularTags": "{{city}} 인기 태그",
@@ -959,7 +958,8 @@
       "answerCta": "답변 작성하기",
       "accepted": "{{name}} 님의 채택 답변"
     },
-    "categoryTime": "{{time}} · {{category}}"
+    "categoryTime": "{{time}} · {{category}}",
+    "recruitCount_other": "{{count}}명 남음"
   },
   "postCategory": {
     "story": "여행기·후기",

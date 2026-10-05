@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 import type { PopularTag } from '../communityService';
+import { spotsLeft } from '../companionPrefs';
 import type { CompanionPost, DestinationGuide } from '../types';
 import {
   defaultForeignAmount,
@@ -243,7 +244,7 @@ export function UrgentCompanionsCard({ posts }: { posts: CompanionPost[] }) {
                   ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })
                   : t('channel.scheduleTbd')}
                 {' · '}
-                {t('channel.recruitCount', { count: post.group_size })}
+                {t('channel.recruitCount', { count: spotsLeft(post) })}
               </span>
             </Link>
           </li>

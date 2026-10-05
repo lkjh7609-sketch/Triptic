@@ -655,11 +655,11 @@
       "subMobile": "도시·날짜가 맞는 메이트와 안전하게",
       "write": "동행구하기 글쓰기",
       "match": "{{pct}}% 일치",
-      "recruiting_other": "모집중 {{count}}명",
       "anywhere": "어디든",
       "talk": "신청하기",
       "emptyTitle": "아직 모집 중인 동행이 없어요",
-      "emptyDesc": "함께 갈 사람을 찾고 있다면 첫 모집글을 올려 보세요."
+      "emptyDesc": "함께 갈 사람을 찾고 있다면 첫 모집글을 올려 보세요.",
+      "recruiting_other": "{{count}}명 남음"
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

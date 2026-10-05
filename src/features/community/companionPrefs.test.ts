@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPANION_TAGS, EMPTY_PREFS, MAX_COMPANION_TAGS, hasPrefs, sanitizeAges, sanitizeTags, toggleAge, toggleTag } from './companionPrefs';
+import { COMPANION_TAGS, EMPTY_PREFS, MAX_COMPANION_TAGS, hasPrefs, sanitizeAges, sanitizeTags, toggleAge, toggleTag, spotsLeft } from './companionPrefs';
 
 describe('companionPrefs', () => {
   it('태그 목록 순서: 사진촬영·카페투어·야경투어·맥주한잔·로컬맛집 …', () => {
@@ -31,5 +31,16 @@ describe('companionPrefs', () => {
   it('조건이 없으면 hasPrefs는 false', () => {
     expect(hasPrefs(EMPTY_PREFS)).toBe(false);
     expect(hasPrefs({ ...EMPTY_PREFS, gender: 'female' })).toBe(true);
+  });
+});
+
+describe('spotsLeft', () => {
+  it('group_size는 글쓴이 본인 포함이라 본인을 뺀 남은 자리를 돌려준다', () => {
+    expect(spotsLeft({ group_size: 2 })).toBe(1);
+    expect(spotsLeft({ group_size: 4 })).toBe(3);
+  });
+
+  it('최소 1을 돌려준다', () => {
+    expect(spotsLeft({ group_size: 1 })).toBe(1);
   });
 });

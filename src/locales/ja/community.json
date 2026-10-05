@@ -641,7 +641,6 @@
     "detail": {
       "anyDestination": "旅行先未定",
       "dateRange": "{{start}} 〜 {{end}}",
-      "groupSize_other": "{{count}}人募集",
       "statusNotice": {
         "pending_review": "審査中の募集です。承認されると公開されます。",
         "closed": "締め切られた募集です。",
@@ -674,7 +673,8 @@
       "withdrawConfirm": "応募を取り消しますか？",
       "withdrawKeep": "応募を続ける",
       "withdrawProceed": "応募を取り消す",
-      "dateTbd": "日程は相談"
+      "dateTbd": "日程は相談",
+      "groupSize_other": "あと{{count}}名"
     },
     "apply": {
       "dialogLabel": "同行に応募",
@@ -904,7 +904,6 @@
     "recruiting": "同行者募集中",
     "schedule": "日程",
     "scheduleTbd": "日程相談",
-    "recruitCount_other": "{{count}}人募集",
     "wantedGender": "希望 {{value}}",
     "applyBtn": "同行を申し込む",
     "moreMenu": "その他",
@@ -959,7 +958,8 @@
       "answerCta": "回答を書く",
       "accepted": "{{name}}さんのベストアンサー"
     },
-    "categoryTime": "{{time}} · {{category}}"
+    "categoryTime": "{{time}} · {{category}}",
+    "recruitCount_other": "あと{{count}}名"
   },
   "postCategory": {
     "story": "旅行記・レビュー",
