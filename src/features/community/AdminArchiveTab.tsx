@@ -8,6 +8,7 @@ import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
 import { captureError } from '@/shared/monitoring';
 import { adminDeleteArchived, adminGetArchived, adminListArchived, type ArchivedItem } from './adminService';
+import { getPostImageUrl } from './imageProcessing';
 import styles from './AdminScreen.module.css';
 
 const PAGE_SIZE = 20;
@@ -19,6 +20,7 @@ function ArchivedRow({ item, selected, onToggle }: { item: ArchivedItem; selecte
   const date = new Date(item.archived_at).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short' });
   const kind = item.source_table === 'posts' ? t('admin.archive.kindPost') : t('admin.archive.kindCompanion');
   const comments = detail.data?.children.comments ?? [];
+  const images = [...(detail.data?.children.post_images ?? [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
   const full = detail.data ? String(detail.data.snapshot.body ?? '') : '';
 
   return (
@@ -47,6 +49,15 @@ function ArchivedRow({ item, selected, onToggle }: { item: ArchivedItem; selecte
             <div style={{ display: 'grid', gap: 8, flexBasis: '100%' }}>
               {detail.data.snapshot.title ? <strong>{String(detail.data.snapshot.title)}</strong> : null}
               <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{full}</p>
+              {images.length > 0 ? (
+                <div className={styles.archivePhotos}>
+                  {images.map((img, i) => (
+                    <a key={img.storage_path} href={getPostImageUrl(img.storage_path)} target="_blank" rel="noreferrer" className={styles.archivePhoto}>
+                      <img src={getPostImageUrl(img.storage_path)} alt={t('admin.archive.photoAlt', { n: i + 1 })} loading="lazy" />
+                    </a>
+                  ))}
+                </div>
+              ) : null}
               {comments.map((c, i) => (
                 <p key={i} className={styles.limitPreview} style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
                   ↳ {c.body}

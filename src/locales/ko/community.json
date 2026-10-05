@@ -164,7 +164,8 @@
       "confirmSelected": "선택한 {{count}}건을 영구 삭제할까요? 첨부 사진 파일도 함께 지워지며 복구할 수 없어요.",
       "confirmAll": "보관함을 전부 비울까요? 모든 글·모집글 기록과 첨부 사진 파일이 영구 삭제되며 복구할 수 없어요.",
       "deleted": "{{count}}건을 삭제했어요.",
-      "deleteFailed": "삭제하지 못했어요. 다시 시도해 주세요."
+      "deleteFailed": "삭제하지 못했어요. 다시 시도해 주세요.",
+      "photoAlt": "보관된 사진 {{n}}"
     },
     "feedbackCategoryPartnership": "제휴문의",
     "feedbackFilterLabel": "문의 종류",

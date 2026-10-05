@@ -164,7 +164,8 @@
       "confirmSelected": "要永久刪除所選的 {{count}} 筆嗎？附加的照片檔案也會一併刪除且無法復原。",
       "confirmAll": "要清空整個保管庫嗎？所有貼文與招募紀錄及附加照片檔案都會永久刪除且無法復原。",
       "deleted": "已刪除 {{count}} 筆。",
-      "deleteFailed": "無法刪除，請再試一次。"
+      "deleteFailed": "無法刪除，請再試一次。",
+      "photoAlt": "已保存的照片 {{n}}"
     },
     "feedbackCategoryPartnership": "合作洽詢",
     "feedbackFilterLabel": "詢問類型",

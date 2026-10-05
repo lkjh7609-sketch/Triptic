@@ -232,7 +232,11 @@ export interface ArchivedItem {
 
 export interface ArchivedDetail {
   snapshot: { title?: string; body?: string; created_at?: string } & Record<string, unknown>;
-  children: { comments?: Array<{ author_id: string; body: string; created_at?: string }> };
+  children: {
+    comments?: Array<{ author_id: string; body: string; created_at?: string }>;
+    /** 글에 붙었던 사진(파일은 삭제 후 1달 뒤 지워지고, 지워지면 이 목록도 빈다) */
+    post_images?: Array<{ storage_path: string; position?: number; width?: number; height?: number }>;
+  };
   reason: string;
   archived_at: string;
 }
