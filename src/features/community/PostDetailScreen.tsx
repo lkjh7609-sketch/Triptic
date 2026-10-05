@@ -419,9 +419,6 @@ export function PostDetailScreen() {
 
         {images.length > 0 ? (
           <section className={styles.photos} aria-label={t('detail.photosTitle', { n: images.length })}>
-            <div className={styles.photosHead}>
-              <span>{t('detail.photosTitle', { n: images.length })}</span>
-            </div>
             <div className={`${styles.photoGrid} ${images.length === 1 ? styles.photoGridOne : ''}`}>
               {images.map((img, i) => (
                 <button
