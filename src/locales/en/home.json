@@ -714,7 +714,8 @@
       "partnership": "Partnerships",
       "guide": "User guide",
       "notices": "Notices",
-      "operator": "Operator: Ben Lee · admin@triptic.my · Hosting service provider: Vercel Inc.",
+      "operatorItem": "Operator: Ben Lee",
+      "hostingItem": "Hosting service provider: Vercel Inc.",
       "navAria": "Footer links"
     }
   },
