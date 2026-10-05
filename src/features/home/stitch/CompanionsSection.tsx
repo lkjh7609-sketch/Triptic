@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { BadgeCheck, ChevronRight, MessageCircle, UserPlus, Users } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
+import { useProfile } from '@/shared/hooks/useProfile';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useCompanionPostsFeed } from '@/features/community/hooks/useCompanionPosts';
 import type { CompanionPost } from '@/features/community/types';
 import { prefsLabel, sanitizeTags, spotsLeft } from '@/features/community/companionPrefs';
-import { matchScore } from './matchScore';
+import { demographicFit, matchScore, type DemographicFit, type MatchMe } from './matchScore';
 import { useUpcomingTrip } from './useUpcomingTrip';
 import shared from './shared.module.css';
 import styles from './CompanionsSection.module.css';
@@ -21,8 +22,10 @@ function md(ymd: string): string {
   return ymd.slice(5).replace('-', '.');
 }
 
-function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: number | null; desktop: boolean }) {
+function CompanionCard({ post, pct, demo, desktop }: { post: CompanionPost; pct: number | null; demo: DemographicFit['matched']; desktop: boolean }) {
   const { t } = useTranslation(['home', 'community']);
+  // 퍼센트가 없을 때(내 여행이 없거나 도시·날짜가 안 맞을 때)는 나이대·성별이 맞는지만 보여 준다
+  const matchText = pct !== null ? t('page.companions.match', { pct }) : demo ? t(`page.companions.demo.${demo}`) : null;
   // 원하는 동행 — "20대 여성"·"20대·30대 무관". 조건이 없으면 표시하지 않는다
   const prefText = prefsLabel(post, (key) => t(`community:${key}`));
   const tags = sanitizeTags(post.tags);
@@ -45,17 +48,17 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
                 <span className={styles.recruit}>{t('page.companions.recruiting', { count: spotsLeft(post) })}</span>
                 {prefText ? <span className={styles.muted}>{prefText}</span> : null}
               </>
-            ) : pct !== null ? (
+            ) : matchText ? (
               <span className={styles.matchMobile}>
                 <span className={styles.ping} aria-hidden="true" />
-                {t('page.companions.match', { pct })}
+                {matchText}
               </span>
             ) : null}
           </div>
           {desktop ? (
-            pct !== null ? (
+            matchText ? (
               <span className={styles.matchPc}>
-                <BadgeCheck size={15} aria-hidden="true" /> {t('page.companions.match', { pct })}
+                <BadgeCheck size={15} aria-hidden="true" /> {matchText}
               </span>
             ) : null
           ) : (
@@ -114,25 +117,45 @@ export function CompanionsSection({ desktop }: { desktop: boolean }) {
   const requireLogin = useRequireLogin();
   const { user } = useSession();
   const { view } = useUpcomingTrip(!!user);
+  const { data: profile } = useProfile();
+  const me = useMemo<MatchMe | null>(
+    () => (profile ? { ageBand: profile.age_band ?? null, gender: profile.gender ?? null } : null),
+    [profile],
+  );
   const feed = useCompanionPostsFeed({ viewerId: user?.id ?? null });
   const limit = desktop ? PC_LIMIT : MOBILE_LIMIT;
 
   const cards = useMemo(() => {
     const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
-    const scored = posts.map((post, index) => ({
-      post,
-      index,
-      pct: view
-        ? matchScore(
-            { destinationName: post.destination?.name, startDate: post.start_date, endDate: post.end_date },
-            { city: view.trip.city, startDate: view.trip.start_date, endDate: view.trip.end_date },
-          )
-        : null,
-    }));
-    // 일치율이 높은 글을 앞에, 같으면 최신 순(받은 순서) 그대로
-    scored.sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1) || a.index - b.index);
+    const scored = posts.map((post, index) => {
+      const matchPost = {
+        destinationName: post.destination?.name,
+        startDate: post.start_date,
+        endDate: post.end_date,
+        prefAges: post.pref_ages,
+        prefGender: post.pref_gender,
+      };
+      const fit = demographicFit(matchPost, me);
+      return {
+        post,
+        index,
+        mismatch: fit.mismatch,
+        demo: fit.matched,
+        pct: view
+          ? matchScore(matchPost, { city: view.trip.city, startDate: view.trip.start_date, endDate: view.trip.end_date }, me)
+          : null,
+      };
+    });
+    // 내 나이대·성별과 안 맞는 글은 뒤로, 그다음 일치율이 높은 글, 나이대·성별이 맞는 글, 같으면 최신 순(받은 순서) 그대로
+    scored.sort(
+      (a, b) =>
+        Number(a.mismatch) - Number(b.mismatch) ||
+        (b.pct ?? -1) - (a.pct ?? -1) ||
+        Number(b.demo !== null) - Number(a.demo !== null) ||
+        a.index - b.index,
+    );
     return scored.slice(0, limit);
-  }, [feed.data, view, limit]);
+  }, [feed.data, view, me, limit]);
 
   return (
     <section className={shared.section} aria-labelledby="home-companions-title">
@@ -193,8 +216,8 @@ export function CompanionsSection({ desktop }: { desktop: boolean }) {
         </div>
       ) : (
         <div className={styles.grid}>
-          {cards.map(({ post, pct }) => (
-            <CompanionCard key={post.id} post={post} pct={pct} desktop={desktop} />
+          {cards.map(({ post, pct, demo }) => (
+            <CompanionCard key={post.id} post={post} pct={pct} demo={demo} desktop={desktop} />
           ))}
         </div>
       )}

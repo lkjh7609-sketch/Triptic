@@ -659,7 +659,12 @@
       "talk": "応募する",
       "emptyTitle": "募集中の同行はまだありません",
       "emptyDesc": "一緒に行く人を探しているなら、最初の募集を投稿してみましょう。",
-      "recruiting_other": "あと{{count}}名"
+      "recruiting_other": "あと{{count}}名",
+      "demo": {
+        "both": "年代・性別が一致",
+        "age": "年代が一致",
+        "gender": "性別が一致"
+      }
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",
