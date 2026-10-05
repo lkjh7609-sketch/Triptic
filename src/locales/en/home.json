@@ -669,12 +669,12 @@
       "subMobile": "Safely meet mates who match your city and dates",
       "write": "Post a companion request",
       "match": "{{pct}}% match",
-      "recruiting_one": "Recruiting {{count}} person",
-      "recruiting_other": "Recruiting {{count}} people",
       "anywhere": "Anywhere",
       "talk": "Apply",
       "emptyTitle": "No companion requests right now",
-      "emptyDesc": "Looking for someone to travel with? Post the first request."
+      "emptyDesc": "Looking for someone to travel with? Post the first request.",
+      "recruiting_one": "{{count}} spot left",
+      "recruiting_other": "{{count}} spots left"
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

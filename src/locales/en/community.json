@@ -653,8 +653,6 @@
     "detail": {
       "anyDestination": "Destination TBD",
       "dateRange": "{{start}} – {{end}}",
-      "groupSize_one": "Looking for {{count}} person",
-      "groupSize_other": "Looking for {{count}} people",
       "statusNotice": {
         "pending_review": "This listing is under review. It'll be visible to others once approved.",
         "closed": "This listing is closed.",
@@ -689,7 +687,9 @@
       "withdrawConfirm": "Withdraw your application?",
       "withdrawKeep": "Keep my application",
       "withdrawProceed": "Withdraw application",
-      "dateTbd": "Dates flexible"
+      "dateTbd": "Dates flexible",
+      "groupSize_one": "{{count}} spot left",
+      "groupSize_other": "{{count}} spots left"
     },
     "apply": {
       "dialogLabel": "Apply to join",
@@ -926,8 +926,6 @@
     "recruiting": "Recruiting",
     "schedule": "Dates",
     "scheduleTbd": "Dates flexible",
-    "recruitCount_one": "Looking for {{count}}",
-    "recruitCount_other": "Looking for {{count}}",
     "wantedGender": "Prefers {{value}}",
     "applyBtn": "Apply to join",
     "moreMenu": "More",
@@ -984,7 +982,9 @@
       "answerCta": "Write an answer",
       "accepted": "Accepted answer by {{name}}"
     },
-    "categoryTime": "{{time}} · {{category}}"
+    "categoryTime": "{{time}} · {{category}}",
+    "recruitCount_one": "{{count}} spot left",
+    "recruitCount_other": "{{count}} spots left"
   },
   "postCategory": {
     "story": "Trip stories & reviews",

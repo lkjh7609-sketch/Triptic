@@ -4,7 +4,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { AuthorName } from '../AuthorName';
-import { prefsLabel } from '../companionPrefs';
+import { prefsLabel, spotsLeft } from '../companionPrefs';
 import type { CompanionPost } from '../types';
 import styles from './ChannelFeedCards.module.css';
 
@@ -41,7 +41,7 @@ export function ChannelCompanionCard({ post }: { post: CompanionPost }) {
           </span>
         </div>
         <span className={styles.countPill}>
-          {t('channel.recruitCount', { count: post.group_size })}
+          {t('channel.recruitCount', { count: spotsLeft(post) })}
         </span>
       </div>
 

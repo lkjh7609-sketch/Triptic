@@ -69,3 +69,8 @@ export function prefsLabel(
   const genderText = gender !== 'any' ? t(`companion.gender.${gender}`) : ages.length > 0 ? t('companion.gender.anyShort') : '';
   return [agesText, genderText].filter(Boolean).join(' ');
 }
+
+/** 남은 자리 수 — group_size는 글쓴이 본인을 포함한 인원이라 본인을 뺀다(최소 1) */
+export function spotsLeft(post: { group_size: number }): number {
+  return Math.max(1, post.group_size - 1);
+}

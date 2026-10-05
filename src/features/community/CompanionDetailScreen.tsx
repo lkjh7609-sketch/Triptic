@@ -10,7 +10,7 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { AuthorName } from './AuthorName';
 import { PostActionsMenu } from './PostActionsMenu';
-import { prefsLabel, sanitizeTags } from './companionPrefs';
+import { prefsLabel, sanitizeTags, spotsLeft } from './companionPrefs';
 import { CompanionApplyModal } from './CompanionApplyModal';
 import {
   useApplicationsForPost,
@@ -122,7 +122,7 @@ export function CompanionDetailScreen() {
         <h2 className={styles.title}>{post.title}</h2>
         <div className={styles.meta}>
           <span>{post.start_date && post.end_date ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date }) : t('companion.detail.dateTbd')}</span>
-          <span>{t('companion.detail.groupSize', { count: post.group_size })}</span>
+          <span>{t('companion.detail.groupSize', { count: spotsLeft(post) })}</span>
           {prefsLabel(post, t) ? <span>{prefsLabel(post, t)}</span> : null}
         </div>
         {sanitizeTags(post.tags).length > 0 ? (

@@ -655,11 +655,11 @@
       "subMobile": "都市・日程が合う仲間と安心して",
       "write": "同行募集を書く",
       "match": "{{pct}}%一致",
-      "recruiting_other": "{{count}}名で募集中",
       "anywhere": "どこでも",
       "talk": "応募する",
       "emptyTitle": "募集中の同行はまだありません",
-      "emptyDesc": "一緒に行く人を探しているなら、最初の募集を投稿してみましょう。"
+      "emptyDesc": "一緒に行く人を探しているなら、最初の募集を投稿してみましょう。",
+      "recruiting_other": "あと{{count}}名"
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

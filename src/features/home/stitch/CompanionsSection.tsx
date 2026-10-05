@@ -7,7 +7,7 @@ import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useCompanionPostsFeed } from '@/features/community/hooks/useCompanionPosts';
 import type { CompanionPost } from '@/features/community/types';
-import { prefsLabel, sanitizeTags } from '@/features/community/companionPrefs';
+import { prefsLabel, sanitizeTags, spotsLeft } from '@/features/community/companionPrefs';
 import { matchScore } from './matchScore';
 import { useUpcomingTrip } from './useUpcomingTrip';
 import shared from './shared.module.css';
@@ -42,7 +42,7 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
           <div className={styles.topLeft}>
             {desktop ? (
               <>
-                <span className={styles.recruit}>{t('page.companions.recruiting', { count: post.group_size })}</span>
+                <span className={styles.recruit}>{t('page.companions.recruiting', { count: spotsLeft(post) })}</span>
                 {prefText ? <span className={styles.muted}>{prefText}</span> : null}
               </>
             ) : pct !== null ? (
@@ -51,7 +51,6 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
                 {t('page.companions.match', { pct })}
               </span>
             ) : null}
-            {desktop ? null : <span className={styles.muted}>{`${destination} · ${dates}`}</span>}
           </div>
           {desktop ? (
             pct !== null ? (
@@ -60,7 +59,7 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
               </span>
             ) : null
           ) : (
-            <span className={styles.recruitMobile}>{t('page.companions.recruiting', { count: post.group_size })}</span>
+            <span className={styles.recruitMobile}>{t('page.companions.recruiting', { count: spotsLeft(post) })}</span>
           )}
         </div>
         {desktop ? (
@@ -69,7 +68,12 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
             <span className={styles.dot}>·</span>
             <span className={styles.muted}>{dates}</span>
           </div>
-        ) : null}
+        ) : (
+          <div className={styles.placeMobile}>
+            <span className={styles.placeName}>{destination}</span>
+            <span className={styles.muted}>{dates}</span>
+          </div>
+        )}
         <h3 className={styles.title}>
           <Link to={`/community/companion/${post.id}`} className={styles.stretch}>
             {post.title}
@@ -88,7 +92,7 @@ function CompanionCard({ post, pct, desktop }: { post: CompanionPost; pct: numbe
       </div>
       <div className={styles.foot}>
         <span className={styles.author}>
-          <span className={styles.avatar}>{author.slice(0, desktop ? 1 : 2)}</span>
+          <span className={styles.avatar}>{author.slice(0, 1)}</span>
           <span className={styles.authorText}>
             <span className={styles.authorName}>{author}</span>
             {!desktop && prefText ? <span className={styles.muted}>{prefText}</span> : null}

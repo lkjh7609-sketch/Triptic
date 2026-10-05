@@ -359,3 +359,27 @@
     gap: 2px;
   }
 }
+
+/* 모바일: 도시와 날짜를 각각 한 줄로(예전엔 '방콕 · 10/17 ~ 10/19'가 어중간하게 줄바꿈됐다) */
+.placeMobile {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .placeMobile {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .placeMobile > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topRow {
+    flex-wrap: nowrap;
+  }
+}

@@ -8,7 +8,7 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { AuthorName } from './AuthorName';
-import { prefsLabel, sanitizeTags } from './companionPrefs';
+import { prefsLabel, sanitizeTags, spotsLeft } from './companionPrefs';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
 import type { CompanionPost, MyCompanionPost } from './types';
 import styles from './CompanionFeedList.module.css';
@@ -114,7 +114,7 @@ function CompanionFeedCard({ post }: { post: CompanionPost }) {
         </span>
       </div>
       <div className={styles.recruitBox}>
-        <strong className={styles.recruitCount}>{t('channel.recruitCount', { count: post.group_size })}</strong>
+        <strong className={styles.recruitCount}>{t('channel.recruitCount', { count: spotsLeft(post) })}</strong>
         {prefs ? (
           <>
             <span className={styles.recruitSep} aria-hidden="true">|</span>
