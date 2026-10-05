@@ -1,0 +1,79 @@
+--- a/src/features/community/adminService.ts
++++ b/src/features/community/adminService.ts
+@@ -350,19 +350,6 @@
+     end_local: string | null;
+     memo: string | null;
+   }[];
+-  hotels: { id: string; day: number; name: string; address: string | null }[];
+-  flights: {
+-    id: string;
+-    type: string;
+-    flight_no: string | null;
+-    airline: string | null;
+-    dep_iata: string | null;
+-    dep_name: string | null;
+-    dep_time: string | null;
+-    arr_iata: string | null;
+-    arr_name: string | null;
+-    arr_time: string | null;
+-  }[];
+ }
+ 
+ export async function adminGetTrip(tripId: string): Promise<AdminTripView> {
+--- a/src/features/community/AdminTripViewer.tsx
++++ b/src/features/community/AdminTripViewer.tsx
+@@ -1,6 +1,6 @@
+ import { useQuery } from '@tanstack/react-query';
+ import { useTranslation } from 'react-i18next';
+-import { Hotel, MapPin, Plane, Utensils, X } from 'lucide-react';
++import { MapPin, Utensils, X } from 'lucide-react';
+ import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+ import { Skeleton } from '@/shared/ui/states/Skeleton';
+ import { ErrorState } from '@/shared/ui/states/ErrorState';
+@@ -14,7 +14,7 @@
+ }
+ 
+ /**
+- * 운영자용 여행 보기(읽기 전용) — 회원이 일정을 어떻게 만들었는지 일차별로 본다: 장소·시간·메모·식사, 숙소, 항공편.
++ * 운영자용 여행 보기(읽기 전용) — 회원이 일정을 어떻게 만들었는지 일차별로 본다: 장소·시간·메모·식사.
+  * 예약 서류·경비는 열지 않는다(필요한 만큼만). 고칠 수 없다.
+  */
+ export function AdminTripViewer({ tripId, onClose }: { tripId: string; onClose: () => void }) {
+@@ -56,24 +56,9 @@
+           <ErrorState summary={t('admin.members.tripView.loadError')} onRetry={() => view.refetch()} />
+         ) : (
+           <div className={styles.body}>
+-            {data.flights.length > 0 ? (
+-              <section className={styles.block}>
+-                <h3 className={styles.blockTitle}>
+-                  <Plane size={16} aria-hidden="true" /> {t('admin.members.tripView.flights')}
+-                </h3>
+-                {data.flights.map((f) => (
+-                  <p key={f.id} className={styles.line}>
+-                    <strong>{f.type === 'return' ? t('admin.members.tripView.return') : t('admin.members.tripView.outbound')}</strong>{' '}
+-                    {[f.airline, f.flight_no].filter(Boolean).join(' ')} · {f.dep_iata ?? f.dep_name ?? '?'} {f.dep_time ?? ''} → {f.arr_iata ?? f.arr_name ?? '?'} {f.arr_time ?? ''}
+-                  </p>
+-                ))}
+-              </section>
+-            ) : null}
+-
+             {data.days.length === 0 ? <p className={styles.muted}>{t('admin.members.tripView.empty')}</p> : null}
+             {data.days.map((day) => {
+               const items = data.items.filter((i) => i.day_id === day.id).sort((a, b) => a.position - b.position);
+-              const hotel = data.hotels.find((h) => h.day === day.day_index);
+               return (
+                 <section key={day.id} className={styles.block}>
+                   <h3 className={styles.blockTitle}>
+@@ -98,12 +83,6 @@
+                       </li>
+                     ))}
+                   </ol>
+-                  {hotel ? (
+-                    <p className={styles.hotel}>
+-                      <Hotel size={14} aria-hidden="true" /> {hotel.name}
+-                      {hotel.address ? <span className={styles.itemSub}> · {hotel.address}</span> : null}
+-                    </p>
+-                  ) : null}
+                 </section>
+               );
+             })}
