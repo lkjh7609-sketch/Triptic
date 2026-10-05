@@ -103,11 +103,8 @@
   },
   "menu": {
     "darkMode": "Dark mode",
-    "settingsPage": "All settings",
-    "editProfile": "Edit profile",
-    "units": "Units",
+    "settingsPage": "Settings",
     "language": "Language",
-    "backup": "Backup & restore",
     "signOut": "Sign out",
     "notices": "Notices & updates",
     "guide": "User guide"

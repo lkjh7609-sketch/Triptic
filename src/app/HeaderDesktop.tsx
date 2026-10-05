@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
 import { ProBadge } from '@/shared/ui/ProBadge';
-import { useTrips } from '@/features/plan/hooks/useTrips';
 import { signOut } from '@/shared/api/authService';
 import { captureError } from '@/shared/monitoring';
-import { User, Settings, SlidersHorizontal, LogOut, Globe, HardDrive, Sun, Moon, Megaphone, BookOpen } from 'lucide-react';
+import { Settings, LogOut, Globe, Sun, Moon, Megaphone, BookOpen } from 'lucide-react';
 import { getStoredTheme, setTheme, ThemePreference } from '@/shared/theme';
 import { isHomeSectionPath } from '@/features/home/homeSections';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
@@ -17,22 +16,18 @@ import { LanguageMenu } from './LanguageMenu';
 import styles from './HeaderDesktop.module.css';
 
 // 메뉴에서 눌러야 열리는 창들은 첫 화면 번들에서 뺀다(눌렀을 때 받는다 — 청크가 낡았으면 chunkRetry가 새로고침)
-const EditProfileModal = lazy(() => import('@/features/settings/EditProfileModal').then((m) => ({ default: m.EditProfileModal })));
-const UnitSettingsModal = lazy(() => import('@/features/settings/UnitSettingsModal').then((m) => ({ default: m.UnitSettingsModal })));
 const LanguageModal = lazy(() => import('@/features/settings/LanguageModal').then((m) => ({ default: m.LanguageModal })));
-const BackupModal = lazy(() => import('@/features/plan/BackupModal').then((m) => ({ default: m.BackupModal })));
 
 export function HeaderDesktop() {
   const { t } = useTranslation(['common', 'settings']);
   const { user } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
-  const trips = useTrips();
   const { pathname } = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [activeModal, setActiveModal] = useState<'profile' | 'unit' | 'language' | 'backup' | null>(null);
+  const [activeModal, setActiveModal] = useState<'language' | null>(null);
   const [currentTheme, setCurrentTheme] = useState<ThemePreference>(getStoredTheme());
 
   const toggleTheme = () => {
@@ -130,6 +125,13 @@ export function HeaderDesktop() {
           </button>
 
           <div className={`${styles.dropdown} ${dropdownOpen ? styles.open : ''}`} role="menu" hidden={!dropdownOpen}>
+            <Link to="/notices" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <Megaphone size={16} /> {t('menu.notices')}
+            </Link>
+            <Link to="/guide" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <BookOpen size={16} /> {t('menu.guide')}
+            </Link>
+            <div className={styles.dropdownDivider} />
             <button 
               className={styles.dropdownItem} 
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -146,30 +148,13 @@ export function HeaderDesktop() {
                 <div className={styles.toggleThumb} />
               </div>
             </button>
+            <button className={styles.dropdownItem} onClick={() => openModal('language')}>
+              <Globe size={16} /> {t('menu.language')}
+            </button>
             <div className={styles.dropdownDivider} />
             <Link to="/settings" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
               <Settings size={16} /> {t('menu.settingsPage')}
             </Link>
-            <button className={styles.dropdownItem} onClick={() => openModal('profile')}>
-              <User size={16} /> {t('menu.editProfile')}
-            </button>
-            <button className={styles.dropdownItem} onClick={() => openModal('unit')}>
-              <SlidersHorizontal size={16} /> {t('menu.units')}
-            </button>
-            <button className={styles.dropdownItem} onClick={() => openModal('language')}>
-              <Globe size={16} /> {t('menu.language')}
-            </button>
-            <button className={styles.dropdownItem} onClick={() => openModal('backup')}>
-              <HardDrive size={16} /> {t('menu.backup')}
-            </button>
-            <div className={styles.dropdownDivider} />
-            <Link to="/notices" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
-              <Megaphone size={16} /> {t('menu.notices')}
-            </Link>
-            <Link to="/guide" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
-              <BookOpen size={16} /> {t('menu.guide')}
-            </Link>
-            <div className={styles.dropdownDivider} />
             <button className={styles.dropdownItem} onClick={handleSignOut}>
               <LogOut size={16} /> {t('menu.signOut')}
             </button>
@@ -179,10 +164,7 @@ export function HeaderDesktop() {
       )}
 
       <Suspense fallback={null}>
-        {activeModal === 'profile' && <EditProfileModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
-        {activeModal === 'unit' && <UnitSettingsModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
         {activeModal === 'language' && <LanguageModal onClose={() => setActiveModal(null)} profile={profile} updateProfile={updateProfile} />}
-        {activeModal === 'backup' && <BackupModal trips={trips.data ?? []} onClose={() => setActiveModal(null)} onImported={() => trips.refetch()} />}
       </Suspense>
     </header>
   );
