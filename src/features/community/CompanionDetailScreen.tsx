@@ -62,6 +62,8 @@ export function CompanionDetailScreen() {
   async function handleCancel() {
     try {
       await cancelPost.mutateAsync(post!.id);
+      // 삭제와 같은 역할 — 동행 게시판으로 돌아가고, 기록을 바꿔치기해서 뒤로가기가 지운 글로 오지 않게 한다
+      navigate('/community?tab=companion', { replace: true });
     } catch (err) {
       captureError(err, { context: 'cancelCompanionPost' });
     }
