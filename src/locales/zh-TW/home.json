@@ -659,7 +659,12 @@
       "talk": "申請",
       "emptyTitle": "目前沒有徵旅伴的貼文",
       "emptyDesc": "想找人一起出發嗎？發布第一則徵旅伴文吧。",
-      "recruiting_other": "還剩 {{count}} 個名額"
+      "recruiting_other": "還剩 {{count}} 個名額",
+      "demo": {
+        "both": "年齡層・性別相符",
+        "age": "年齡層相符",
+        "gender": "性別相符"
+      }
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

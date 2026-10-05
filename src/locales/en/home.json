@@ -674,7 +674,12 @@
       "emptyTitle": "No companion requests right now",
       "emptyDesc": "Looking for someone to travel with? Post the first request.",
       "recruiting_one": "{{count}} spot left",
-      "recruiting_other": "{{count}} spots left"
+      "recruiting_other": "{{count}} spots left",
+      "demo": {
+        "both": "Age & gender match",
+        "age": "Age match",
+        "gender": "Gender match"
+      }
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",

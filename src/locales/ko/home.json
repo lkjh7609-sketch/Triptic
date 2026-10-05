@@ -659,7 +659,12 @@
       "talk": "신청하기",
       "emptyTitle": "아직 모집 중인 동행이 없어요",
       "emptyDesc": "함께 갈 사람을 찾고 있다면 첫 모집글을 올려 보세요.",
-      "recruiting_other": "{{count}}명 남음"
+      "recruiting_other": "{{count}}명 남음",
+      "demo": {
+        "both": "나이대·성별 일치",
+        "age": "나이대 일치",
+        "gender": "성별 일치"
+      }
     },
     "steps": {
       "eyebrow": "HOW IT WORKS",
