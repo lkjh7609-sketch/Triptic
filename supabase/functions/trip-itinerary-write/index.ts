@@ -1,7 +1,7 @@
 /**
  * Supabase Edge Function: trip-itinerary-write (ADR-002 M7 준비, 구 sync-trip-normalized)
  *
- * POST { tripId, data, hotels, meals, expenses, flights, dayCities }
+ * POST { tripId, data, hotels, meals(무시 — 식사는 data의 mealType 항목에서 복원), expenses, flights, dayCities }
  * Authorization: 호출한 사용자의 세션 JWT — userClient로만 동작하므로
  * RLS(can_edit_trip)가 그대로 적용된다. 남의 트립은 애초에 쓰기가 안 된다.
  *
@@ -21,7 +21,7 @@ import { differenceInCalendarDays, parseISO } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import tzlookup from 'tz-lookup';
 import { getDayCity } from '../../../src/features/plan/dayCities.ts';
-import { syncMealItemsIntoDay, MEAL_META } from '../../../src/features/plan/map/meals.ts';
+import { MEAL_META } from '../../../src/features/plan/map/meals.ts';
 import { haversineKm } from '../../../src/features/plan/map/geo.ts';
 import { dayIndexForDate } from '../../../src/features/documents/commitBooking.ts';
 import type {
@@ -154,7 +154,6 @@ Deno.serve(async (req) => {
     const totalDays = differenceInCalendarDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1;
     const dataByDay = body.data ?? {};
     const hotels: HotelsData = body.hotels ?? {};
-    const meals: MealsData = body.meals ?? {};
     const expensesData: ExpensesData = body.expenses ?? {};
     const dayCities: DayCitiesData = body.dayCities ?? {};
     const flights: FlightsData = body.flights ?? { outbound: null, return: null };
@@ -212,7 +211,8 @@ Deno.serve(async (req) => {
         countryCode,
       });
 
-      const placesAndMeals = syncMealItemsIntoDay(dataByDay[day] ?? [], meals[day] ?? {});
+      // 식사 항목(mealType)도 일정 항목이라 사용자가 정한 시간·메모를 그대로 저장한다 — 식사 칸 ↔ 일정 항목은 앱(applyMealChanges)이 이미 맞춰서 보낸다
+      const placesAndMeals = dataByDay[day] ?? [];
       const tagged: TaggedItem[] = placesAndMeals.map((item) => ({
         source: item,
         kind: item.mealType ? 'meal' : 'place',
