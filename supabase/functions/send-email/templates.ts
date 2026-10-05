@@ -214,7 +214,7 @@ function layout(input: LayoutInput): { html: string; text: string } {
 <body style="margin:0;padding:0;background:#EFEDE6;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFEDE6;"><tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;font-family:${FONT};">
-<tr><td style="background:#ffffff;border-radius:18px 18px 0 0;border-top:5px solid ${BRAND};padding:28px 32px 8px;text-align:center;">
+<tr><td style="background:#ffffff;border-radius:18px 18px 0 0;padding:32px 32px 8px;text-align:center;">
 <a href="${SITE}" style="text-decoration:none;"><img src="${LOGO_URL}" width="72" height="72" alt="Triptic" style="display:inline-block;border:0;border-radius:16px;"></a>
 </td></tr>
 <tr><td style="background:#ffffff;border-radius:0 0 18px 18px;padding:8px 32px 32px;color:#1F2427;font-size:15px;line-height:1.65;">
