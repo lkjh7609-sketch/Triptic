@@ -638,7 +638,24 @@
   margin: var(--space-5) 0 0;
   color: var(--text-tertiary);
   font-size: 0.75rem;
+  line-height: 1.6;
   text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.operatorGroup {
+  white-space: nowrap;
+}
+
+.operatorDot {
+  margin: 0 6px;
+  opacity: 0.6;
+}
+
+.operatorCopy {
+  flex-basis: 100%;
 }
 
 /* 프로필 사진 변경 */

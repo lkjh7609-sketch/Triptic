@@ -46,7 +46,8 @@
     "guide": "使用指南",
     "notices": "公告與更新",
     "partnership": "合作洽詢",
-    "operator": "營運者 Ben Lee · admin@triptic.my · 主機代管服務提供者 Vercel Inc. · © 2026 Triptic"
+    "operatorItem": "營運者 Ben Lee",
+    "hostingItem": "主機代管服務提供者 Vercel Inc."
   },
   "licenses": {
     "title": "開源許可證"
