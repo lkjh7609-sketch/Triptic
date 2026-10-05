@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireUser, deleteAccountData, maybeSingle } = vi.hoisted(() => ({ requireUser: vi.fn(), deleteAccountData: vi.fn(), maybeSingle: vi.fn() }));
+const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail } = vi.hoisted(() => ({ requireUser: vi.fn(), deleteAccountData: vi.fn(), maybeSingle: vi.fn(), sendAccountDeletedMail: vi.fn() }));
+vi.mock('./accountMail.js', () => ({ sendAccountDeletedMail }));
 vi.mock('./auth.js', () => ({ requireUser }));
 vi.mock('./supabaseAdmin.js', () => ({ supabaseAdmin: () => ({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }) }) }));
 vi.mock('./deleteAccount.js', async () => ({ ...(await vi.importActual('./deleteAccount.js')), deleteAccountData }));
@@ -22,6 +23,7 @@ const fresh = () => new Date(Date.now() - 60_000).toISOString();
 beforeEach(() => {
     requireUser.mockReset().mockResolvedValue({ id: 'u1', last_sign_in_at: fresh() });
     deleteAccountData.mockReset().mockResolvedValue({ files: 0 });
+    sendAccountDeletedMail.mockReset().mockResolvedValue(true);
     maybeSingle.mockReset().mockResolvedValue({ data: { role: 'user' } });
 });
 
@@ -31,6 +33,24 @@ describe('POST /api/deleteAccount', () => {
         await handler(post(), res);
         expect(res.statusCode).toBe(200);
         expect(deleteAccountData).toHaveBeenCalledWith(expect.anything(), 'u1');
+    });
+
+    it('삭제가 끝난 뒤 탈퇴 완료 메일을 보낸다(주소·언어·이름은 지우기 전 값)', async () => {
+        requireUser.mockResolvedValue({ id: 'u1', email: 'a@b.co', last_sign_in_at: fresh() });
+        maybeSingle.mockResolvedValue({ data: { role: 'user', display_name: '민지', locale: 'ja' } });
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(200);
+        expect(sendAccountDeletedMail).toHaveBeenCalledWith({ email: 'a@b.co', locale: 'ja', name: '민지' });
+        expect(deleteAccountData.mock.invocationCallOrder[0]).toBeLessThan(sendAccountDeletedMail.mock.invocationCallOrder[0]);
+    });
+
+    it('삭제가 실패하면 메일을 보내지 않는다', async () => {
+        deleteAccountData.mockRejectedValue(new Error('boom'));
+        const res = makeRes();
+        await handler(post(), res);
+        expect(res.statusCode).toBe(500);
+        expect(sendAccountDeletedMail).not.toHaveBeenCalled();
     });
 
     it('로그인 토큰이 없으면 삭제하지 않는다(401은 requireUser가 응답)', async () => {

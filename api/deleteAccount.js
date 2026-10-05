@@ -8,6 +8,7 @@ import { applyCors, createRateLimiter, ALLOWED_ORIGINS } from './_lib/http.js';
 import { requireUser } from './_lib/auth.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 import { deleteAccountData, isRecentlySignedIn } from './_lib/deleteAccount.js';
+import { sendAccountDeletedMail } from './_lib/accountMail.js';
 
 const isRateLimited = createRateLimiter(6);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
     const db = supabaseAdmin();
     if (!db) return res.status(503).json({ error: 'server_unavailable' });
 
-    const { data: profile } = await db.from('profiles').select('role').eq('id', user.id).maybeSingle();
+    const { data: profile } = await db.from('profiles').select('role, display_name, locale').eq('id', user.id).maybeSingle();
 
     // 운영자의 강제 탈퇴
     const targetUserId = typeof req.body?.targetUserId === 'string' ? req.body.targetUserId : null;
@@ -52,6 +53,8 @@ export default async function handler(req, res) {
 
     try {
         await deleteAccountData(db, user.id);
+        // 탈퇴 완료 안내 메일 — 본인이 직접 탈퇴한 경우만(운영자 강제 탈퇴는 보내지 않는다). 실패해도 탈퇴는 이미 끝났으니 결과는 그대로 200
+        await sendAccountDeletedMail({ email: user.email, locale: profile?.locale, name: profile?.display_name });
         return res.status(200).json({ ok: true });
     } catch (e) {
         console.warn('[deleteAccount] failed:', e instanceof Error ? e.message : 'unknown');

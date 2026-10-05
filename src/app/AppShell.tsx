@@ -6,6 +6,7 @@ import { HeaderDesktop } from './HeaderDesktop';
 import { GuestBanner } from './GuestBanner';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { BootShell } from './BootShell';
+import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { useSession } from '@/shared/hooks/useSession';
 import { GlobalAuthModal } from '@/features/auth/GlobalAuthModal';
 import { closeLoginPrompt, openLoginPrompt, setSignedIn, useLoginPromptOpen } from '@/features/auth/loginPrompt';
@@ -110,6 +111,8 @@ export function AppShell() {
     if (!current || !(prev === null || (prev === undefined && startedWithoutSession.current))) return;
     navigate('/', { replace: true });
     window.scrollTo(0, 0);
+    // 가입 감사 메일 — 서버가 이메일 인증이 24시간 안인 회원에게 한 번만 보낸다(기존 회원이 로그인할 때는 아무 일도 안 한다). 실패해도 화면에는 영향 없다
+    void getSupabaseClient().functions.invoke('send-email', { body: { kind: 'welcome' } }).catch(() => {});
   }, [userId, loading, navigate]);
   // 로그인하면 로그인 전에 이 기기에 만든 임시 여행을 계정으로 옮긴다(guestTrips.ts)
   useEffect(() => {
