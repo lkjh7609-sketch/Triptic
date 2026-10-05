@@ -263,5 +263,5 @@
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 16px; /* 홈 본문(.body)과 같은 칸 — 캡슐 위 간격은 capsuleFlat의 margin-top */
+  padding: 10px 16px 0; /* 홈 본문(.body)과 같은 칸 — 위 간격은 capsuleFlat의 margin-top 4px + 10px(헤더에 붙어 보여 띄움, 홈 캡슐은 그대로) */
 }
