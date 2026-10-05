@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { useSession } from '@/shared/hooks/useSession';
@@ -7,7 +6,7 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { FeedbackModal } from '@/features/settings/FeedbackModal';
 import styles from './HomeFooter.module.css';
 
-/** 사용 가이드 · 공지사항 · 이용약관 · 개인정보처리방침 · 고객센터 · 제휴문의 한 줄(넘치면 가운데 정렬로 줄바꿈) + 운영자·호스팅 표기 + 저작권. 고객센터는 설정의 "문의하기"와 같은 창, 제휴문의는 같은 창을 "제휴문의" 제목으로 열고 따로 저장된다(비로그인은 로그인부터) */
+/** 이용약관 · 개인정보처리방침 · 고객센터 · 제휴문의 한 줄(넘치면 가운데 정렬로 줄바꿈) + 운영자·호스팅 표기 + 저작권. 고객센터는 설정의 "문의하기"와 같은 창, 제휴문의는 같은 창을 "제휴문의" 제목으로 열고 따로 저장된다(비로그인은 로그인부터) */
 export function HomeFooter() {
   const { t } = useTranslation('home');
   // PC(1024px~)는 로그인 여부와 상관없이 항상 보인다. 모바일은 로그인하지 않은 사람에게만 — 로그인하면 같은 링크가
@@ -28,12 +27,6 @@ export function HomeFooter() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <nav className={styles.links} aria-label={t('page.footer.navAria')}>
-          <Link to="/guide" className={styles.link}>
-            {t('page.footer.guide')}
-          </Link>
-          <Link to="/notices" className={styles.link}>
-            {t('page.footer.notices')}
-          </Link>
           <a href="/terms.html" target="_blank" rel="noopener noreferrer" className={styles.link}>
             {t('desktop.terms')}
           </a>
