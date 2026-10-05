@@ -31,7 +31,7 @@
     "flightChanges": "Flight changes",
     "communityReplies": "Community replies",
     "marketing": "Marketing updates",
-    "hint": "Actual notification delivery will be supported in a future update. For now, only the setting is saved."
+    "hint": "Pre-departure reminders are emailed 3 days before your trip starts, at 9:00 AM Korea time. The other notifications will be supported in a future update."
   },
   "data": {
     "offlineCache": "Offline cache",

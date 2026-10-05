@@ -91,6 +91,15 @@
 
 ## 날짜별 기록
 
+### 2026-10-05 (23) — 이메일 알림(Resend): 가입 감사·여행 3일 전·탈퇴 완료
+
+- **발송**: Supabase Edge Function `send-email`(`--no-verify-jwt`로 배포, 인증은 코드 안에서). 보내는 곳 `Triptic <noreply@triptic.my>`, 답장 `admin@triptic.my`(`MAIL_FROM`으로 바꿀 수 있음). 비밀값 `RESEND_API_KEY`는 **Supabase Secrets에만**(Vercel에는 없음). 받는 사람·제목·본문은 호출자가 못 정한다(중계기가 되지 않게).
+- **가입 감사**(`kind: 'welcome'`): 클라이언트가 로그인한 직후(AppShell) 호출 → 서버가 JWT로 본인 확인, 이메일 인증(소셜은 가입)이 24시간 안이고 안 보낸 사람에게만 한 번. 중복 방지는 `email_log(user_id, kind, ref_id)` 유일 제약.
+- **여행 3일 전**(`kind: 'trip_reminders'`): `0093`의 pg_cron `email-trip-reminders-daily`가 매일 00:00 UTC(= 09:00 한국)에 호출(`x-purge-secret`). `email_trip_reminders_due()`가 시작일이 한국 날짜로 3일 뒤인 여행의 주인(삭제 안 한 여행, 설정 > 알림 '출발 전 리마인더'를 끄지 않은 회원, 소유자만)을 고른다. 한 번에 80통, 초당 2건 제한 아래로.
+- **탈퇴 완료**(`kind: 'account_deleted'`): `api/deleteAccount.js`가 삭제를 끝낸 뒤 `api/_lib/accountMail.js`로 호출(service_role 키 — 함수는 그 키로 관리자 API가 열리는지로 확인). 받는 주소·언어·이름은 지우기 전에 잡아 둔다. 메일 실패는 탈퇴 결과에 영향 없음. 운영자의 강제 탈퇴에는 보내지 않는다.
+- 문구는 `supabase/functions/send-email/templates.ts`(ko·en·ja·zh-TW, 서비스 안내만 — 홍보 문구 금지, 넣으면 수신 동의가 필요). 설정 화면 알림 안내문을 '출발 전 리마인더만 이메일로 발송'으로 고쳤다. 개인정보처리방침 4번(처리위탁·국외 이전)·2번(이용 목적)에 Resend를 추가.
+- **남은 것**: Supabase Auth(가입 인증·비밀번호 재설정) 메일은 아직 Supabase 기본 발송 — Resend SMTP로 바꾸려면 대시보드 Auth > SMTP(호스트 `smtp.resend.com`, 포트 465, 사용자 `resend`, 비밀번호 API 키). Resend 무료 한도는 하루 100통·월 3,000통.
+
 ### 2026-10-05 (22) — 커뮤니티 회원 전용·자유게시판·공지·사용 가이드·회원 관리·약관 개정
 
 - **커뮤니티 회원 전용**: `/community*`는 비로그인이면 로그인 창(guestAccess). 로봇용 HTML(`api/seo.js`)·사이트맵·`vercel.json` 로봇 재작성·robots.txt에서 커뮤니티 빼고(비공개 글이 검색에 나가면 안 되므로), `index.html` 소개 문구도 수정. **홈 미리보기(인기 여행기·동행)는 비로그인에게도 제목·사진·닉네임이 보임**(DB 읽기 정책은 그대로 — 홈 미리보기 때문. 완전히 막으려면 홈 미리보기를 로그인 전용으로 바꿔야 함).
