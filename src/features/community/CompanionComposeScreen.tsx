@@ -217,7 +217,8 @@ function CompanionComposeForm({ userId }: { userId: string }) {
       }
       publishedRef.current = true;
       clearCompanionDraft(userId);
-      navigate(result.status === 'pending_review' ? '/community' : `/community/companion/${result.id}`);
+      // 글쓰기 화면은 기록에서 바꿔치기 — 게시 뒤 뒤로가기가 작성 화면이 아니라 이전 화면으로 간다
+      navigate(result.status === 'pending_review' ? '/community' : `/community/companion/${result.id}`, { replace: true });
     } catch (err) {
       captureError(err, { context: 'createCompanionPost' });
       setSubmitError(t('compose.submitError'));
