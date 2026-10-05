@@ -128,7 +128,7 @@ Triptic/
 │       ├── parse-booking/         # (옛) 예약 확인서 파싱 — 지금은 api/parseDocument 사용
 │       └── trip-itinerary-write/  # 일정 저장 RPC 경유 쓰기
 ├── api/                           # Vercel 함수(서류 인식, AI, 제휴 링크, 날씨, 검색 로봇용 페이지)
-├── docs/                          # 문서 안내(docs/README.md) — 개발 기록, 보고서, 설계 문서
+├── docs/                          # 문서 안내(docs/README.md) — 단계별 개발 기록·보고서·설계 문서
 ├── ios/                            # Capacitor iOS 프로젝트
 ├── scripts/                        # 빌드 전처리, i18n 검사 스크립트
 ├── manifest.json / sw.js            # PWA 매니페스트 & 서비스 워커
@@ -151,8 +151,8 @@ Triptic/
 
 ## 📚 문서
 
-- [docs/HISTORY.md](docs/HISTORY.md) — 개발 기록: 현재 상태, 지켜야 할 원칙, 날짜별 변경
-- [docs/reports/](docs/reports/) — 분석 보고서 (구독·성장·보안 등)
+- [docs/updates/00-overview.md](docs/updates/00-overview.md) — 현재 상태와 지켜야 할 원칙, 단계별 개발 기록 입구
+- [docs/updates/](docs/updates/) — 단계별 폴더(2.x → 3.0 개편 → v1.0 출시 준비 → v1.1.0), 보고서·설계 문서 포함
 - [docs/README.md](docs/README.md) — 전체 문서 안내 (설계 문서, 보관 문서)
 
 ---

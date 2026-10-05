@@ -1,4 +1,4 @@
-> **보관용 원문.** 2.x(바닐라 JS) 시절의 사용자 가이드라 지금 앱과 다릅니다. 현재 기능은 루트 [README.md](../../README.md)와 [../HISTORY.md](../HISTORY.md)를 보세요.
+> **보관용 원문.** 2.x(바닐라 JS) 시절의 사용자 가이드라 지금 앱과 다릅니다. 현재 기능은 루트 [README.md](../../../README.md)와 [../00-overview.md](../00-overview.md)를 보세요.
 
 # 🧭 Triptic(트립틱) 유저 가이드
 
