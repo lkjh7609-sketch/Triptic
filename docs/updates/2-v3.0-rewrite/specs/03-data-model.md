@@ -1,7 +1,7 @@
 # 03. 데이터 모델
 
 > 기존 `supabase/schema.sql`의 RLS 설계 철학(소유자/공유 분리, `SECURITY DEFINER` 함수 내 자체 검증)을 그대로 계승한다.
-> 가장 큰 변화는 **`trips.snapshot` JSONB → 정규화 테이블**이다. 근거는 [`../DEVELOPMENT_PLAN.md` ADR-002](../DEVELOPMENT_PLAN.md).
+> 가장 큰 변화는 **`trips.snapshot` JSONB → 정규화 테이블**이다. 근거는 [`../development-plan.md` ADR-002](../development-plan.md).
 
 ---
 
@@ -606,7 +606,7 @@ create index on public.weather_cache (fetched_at);
 
 ## 9. 사용량 계측 (`usage_events`)
 
-> **3.0에 과금은 없지만 계측은 넣는다.** 이유는 [`../DEVELOPMENT_PLAN.md` §13.3](../DEVELOPMENT_PLAN.md) 참고 — 나중에 가격을 정할 근거이자, 지금 당장은 남용 방어의 기준이 된다. 출시 후에 붙이면 그 사이 데이터를 통째로 잃는다.
+> **3.0에 과금은 없지만 계측은 넣는다.** 이유는 [`../development-plan.md` §13.3](../development-plan.md) 참고 — 나중에 가격을 정할 근거이자, 지금 당장은 남용 방어의 기준이 된다. 출시 후에 붙이면 그 사이 데이터를 통째로 잃는다.
 
 ```sql
 create table public.usage_events (
