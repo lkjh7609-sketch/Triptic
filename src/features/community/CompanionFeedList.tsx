@@ -28,8 +28,8 @@ export function CompanionFeedList({ destinationId, hostingOnly = false }: Compan
   const { user } = useSession();
   const requireLogin = useRequireLogin();
   const feed = useCompanionPostsFeed({ destinationId, viewerId: user?.id ?? null });
-  // 내 모집글은 위 '내 동행'에 이미 있다 — 피드에도 또 나오면 한 글이 두 개처럼 보인다
-  const posts = (feed.data?.pages.flatMap((p) => p.posts) ?? []).filter((p) => !user || p.author_id !== user.id);
+  // 내 모집글도 피드에 그대로 나온다('내 동행' 줄에는 신청한 글·확정된 글만 있어서 겹치지 않는다)
+  const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
 
   if (hostingOnly && user) return <HostingList userId={user.id} />;
 

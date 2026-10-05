@@ -61,10 +61,11 @@ describe('CompanionFeedList', () => {
     ] as MyCompanionPost[];
   });
 
-  it('공개 피드와 내 동행 줄 어디에도 내가 모집 중인 글은 나오지 않는다(내 동행모집 버튼에서만)', () => {
+  it('내가 모집 중인 글은 피드에 나오고, 내 동행 줄에는 나오지 않는다(겹침 없음)', () => {
     renderList();
     expect(screen.getByText('남의 모집글')).toBeInTheDocument();
-    expect(screen.queryByText('내 모집글')).not.toBeInTheDocument();
+    // 피드에 한 번만(내 동행 줄에는 없다)
+    expect(screen.getAllByText('내 모집글')).toHaveLength(1);
     // 내 동행 줄에는 확정된 글·신청한 글만
     expect(screen.getByText('확정된 내 글')).toBeInTheDocument();
     expect(screen.getByText('신청한 남의 글')).toBeInTheDocument();
