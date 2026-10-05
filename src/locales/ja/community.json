@@ -602,7 +602,13 @@
       "title": "自分の同行",
       "hosting": "主催・募集中",
       "matched": "確定 · チャットへ",
-      "needsReview": "日程終了 · レビューを書く"
+      "needsReview": "日程終了 · レビューを書く",
+      "activeCount": "進行中 {{count}}件",
+      "feedTitle": "同行募集フィード",
+      "hostingButton": "自分の同行募集",
+      "hostingEmpty": "募集中の同行投稿はありません。",
+      "dday": "D-{{count}}",
+      "ddayToday": "D-Day"
     },
     "compose": {
       "title": "同行者を探す",

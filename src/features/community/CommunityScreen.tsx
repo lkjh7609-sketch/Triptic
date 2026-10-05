@@ -1,4 +1,4 @@
-import { Lock as LockIcon, PenLine, Users, MessageCircle } from 'lucide-react';
+import { Lock as LockIcon, PenLine, Search, Users, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,16 @@ export function CommunityScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   // 동행 탭에서 고른 도시(그 도시 모집글만 보여 준다) — 선택 버튼은 전체·구독 탭과 같은 자리에 둔다
   const [companionDestinationId, setCompanionDestinationId] = useState<string | undefined>(undefined);
+  // 동행 탭의 '내 동행모집' 버튼 — 켜면 내가 모집 중인 글만 보인다(탭을 바꾸면 꺼진다)
+  const [hostingOnly, setHostingOnly] = useState(false);
+  const changeTab = (next: Tab) => {
+    setTab(next);
+    setHostingOnly(false);
+  };
+  const toggleHosting = () => {
+    if (!requireLogin()) return;
+    setHostingOnly((on) => !on);
+  };
   const navigate = useNavigate();
   const handleSearch = () => {
     if (!searchQuery) return;
@@ -66,7 +76,9 @@ export function CommunityScreen() {
           handleSearch={handleSearch}
           destinations={destinations}
           tab={tab}
-          setTab={setTab}
+          setTab={changeTab}
+          hostingOnly={hostingOnly}
+          onToggleHosting={toggleHosting}
           followedCount={followedDestinations.length}
           feed={feed}
           companionDestinationId={companionDestinationId}
@@ -104,6 +116,7 @@ export function CommunityScreen() {
 
       <div className={styles.filterSection}>
         <div className={styles.searchBarWrap}>
+          <Search size={16} aria-hidden="true" className={styles.searchIcon} />
           <input 
             type="text" 
             className={styles.searchInput} 
@@ -118,21 +131,21 @@ export function CommunityScreen() {
           <button
             type="button"
             className={tab === 'all' ? styles.tabActive : styles.tab}
-            onClick={() => setTab('all')}
+            onClick={() => changeTab('all')}
           >
             {t('feed.tabAll')}
           </button>
           <button
             type="button"
             className={tab === 'following' ? styles.tabActive : styles.tab}
-            onClick={() => setTab('following')}
+            onClick={() => changeTab('following')}
           >
             {t('feed.tabFollowing')}
           </button>
           <button
             type="button"
             className={tab === 'companion' ? styles.tabActive : styles.tab}
-            onClick={() => setTab('companion')}
+            onClick={() => changeTab('companion')}
           >
             {t('companion.list.tab')}
           </button>
@@ -146,6 +159,8 @@ export function CommunityScreen() {
                 selectedDestinationId={companionDestinationId}
                 onCitySelect={(city) => setCompanionDestinationId(city.id)}
                 onClear={() => setCompanionDestinationId(undefined)}
+                onToggleHosting={toggleHosting}
+                hostingActive={hostingOnly}
               />
             ) : (
               <DestinationSelector destinations={destinations} />
@@ -171,7 +186,7 @@ export function CommunityScreen() {
       </div>
 
       {tab === 'companion' ? (
-        <CompanionFeedList destinationId={companionDestinationId} />
+        <CompanionFeedList destinationId={companionDestinationId} hostingOnly={hostingOnly} />
       ) : tab === 'following' && !user ? (
         <EmptyState icon={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><LockIcon size={16} /></span>} message={t('feed.loginToFollow')} />
       ) : feed.isLoading ? (

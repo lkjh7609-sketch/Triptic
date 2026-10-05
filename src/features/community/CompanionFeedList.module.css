@@ -31,38 +31,152 @@
 
 .card {
   display: block;
-  padding: var(--space-4);
+  padding: 14px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
   text-decoration: none;
   color: inherit;
 }
 
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .cardTitle {
   margin: 0;
-  font-size: var(--font-headline-size);
-  font-weight: var(--font-headline-weight);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
   color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.cardTime {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--text-muted);
 }
 
 .cardMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-top: var(--space-1);
-  font-size: var(--font-caption-size);
+  align-items: center;
+  gap: 4px 6px;
+  margin-top: 6px;
+  font-size: 11px;
   color: var(--text-muted);
 }
 
-.cardBody {
-  margin: var(--space-2) 0 0;
-  font-size: var(--font-body-size);
+.metaAuthor {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.metaPlace {
+  font-weight: 500;
+  color: var(--brand-text);
+}
+
+.metaMuted {
+  font-weight: 500;
+}
+
+.metaDate {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.recruitBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  font-size: 11px;
   color: var(--text-body);
+}
+
+.recruitCount {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+.recruitSep {
+  color: var(--text-tertiary);
+}
+
+.cardBody {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.cardTag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sectionNote {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.countBadge {
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .loadMoreWrap {
@@ -90,29 +204,100 @@
   gap: var(--space-2);
 }
 
-.mineTitle {
-  margin: 0;
-  padding: 0 var(--space-4);
-  font-size: var(--font-body-size);
-  font-weight: 700;
-  color: var(--text-primary);
+/* 가로로 밀어 넘기는 줄 — 카드 폭은 240px 고정이라 한 장이면 왼쪽에 붙는다 */
+.mineScroll {
+  display: flex;
+  gap: 10px;
+  padding: 2px var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mineScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mineCard {
+  display: flex;
+  flex: 0 0 240px;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+}
+
+.mineTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: 6px;
 }
 
 .mineBadge,
 .mineBadgeActive {
   display: inline-block;
-  margin-bottom: var(--space-1);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-pill);
-  font-size: var(--font-caption-size);
-  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
   background: var(--surface-subtle);
-  color: var(--text-muted);
+  color: var(--text-primary);
 }
 
 .mineBadgeActive {
   background: var(--brand-solid);
   color: var(--text-on-brand);
+}
+
+.mineDday {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--brand-text);
+}
+
+.mineName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mineInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.mineInfo > span:first-child {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minePlace {
+  color: var(--brand-text);
+}
+
+.mineDate {
+  font-size: 10px;
+  color: var(--text-tertiary);
 }
 
 /* 대륙·나라·도시 칩 줄은 가로로 스크롤되는데 좌우 여백이 없어 첫 칩이 화면 왼쪽 끝에 붙었다 — 모바일 여백(16px)에 맞춘다 */
