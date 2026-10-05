@@ -648,7 +648,7 @@
         "removed": "운영 정책 위반으로 삭제된 모집글이에요."
       },
       "finalize_other": "매칭 확정 ({{count}}명 수락됨)",
-      "cancel": "모집 취소",
+      "cancel": "모집글 삭제",
       "goToMatch": "매칭 화면으로",
       "myApplicationStatus": {
         "pending": "지원 완료 · 응답 대기 중",
@@ -663,9 +663,9 @@
       "noApplicants": "아직 지원자가 없어요.",
       "accept": "수락",
       "reject": "거절",
-      "cancelConfirm": "이 모집글을 취소할까요? 지원자들에게는 알림이 가지 않아요.",
+      "cancelConfirm": "이 모집글을 삭제할까요? 지원자들에게는 알림이 가지 않아요.",
       "cancelKeep": "계속 모집하기",
-      "cancelProceed": "모집 취소하기",
+      "cancelProceed": "삭제하기",
       "finalizeConfirm": "지금까지 수락한 인원으로 매칭을 확정할까요? 확정 후에는 새 지원을 받을 수 없어요.",
       "finalizeKeep": "더 기다리기",
       "finalizeProceed": "매칭 확정하기",

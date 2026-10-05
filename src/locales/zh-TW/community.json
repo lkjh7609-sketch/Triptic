@@ -648,7 +648,7 @@
         "removed": "因違反社群規範已被移除。"
       },
       "finalize_other": "確定成團(已接受 {{count}} 人)",
-      "cancel": "取消招募",
+      "cancel": "刪除招募",
       "goToMatch": "前往同行群組",
       "myApplicationStatus": {
         "pending": "已申請 · 等待回覆",
@@ -663,9 +663,9 @@
       "noApplicants": "目前還沒有申請者。",
       "accept": "接受",
       "reject": "拒絕",
-      "cancelConfirm": "要取消這篇招募文嗎？申請者不會收到通知。",
+      "cancelConfirm": "要刪除這篇招募文嗎？申請者不會收到通知。",
       "cancelKeep": "繼續招募",
-      "cancelProceed": "取消招募",
+      "cancelProceed": "刪除",
       "finalizeConfirm": "要用目前已接受的人數確定成團嗎？確定後就無法再接受新的申請。",
       "finalizeKeep": "再等等",
       "finalizeProceed": "確定配對",

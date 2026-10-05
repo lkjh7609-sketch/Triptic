@@ -648,7 +648,7 @@
         "removed": "コミュニティガイドライン違反により削除されました。"
       },
       "finalize_other": "マッチング確定(承認済み{{count}}人)",
-      "cancel": "募集を取り消す",
+      "cancel": "募集を削除",
       "goToMatch": "マッチング画面へ",
       "myApplicationStatus": {
         "pending": "応募済み · 返答待ち",
@@ -663,9 +663,9 @@
       "noApplicants": "まだ応募者がいません。",
       "accept": "承認",
       "reject": "却下",
-      "cancelConfirm": "この募集を取り消しますか？応募者には通知されません。",
+      "cancelConfirm": "この募集を削除しますか？応募者には通知されません。",
       "cancelKeep": "募集を続ける",
-      "cancelProceed": "募集をキャンセル",
+      "cancelProceed": "削除する",
       "finalizeConfirm": "これまで承認した人数でマッチングを確定しますか？確定後は新しい応募を受け付けられません。",
       "finalizeKeep": "もう少し待つ",
       "finalizeProceed": "マッチングを確定",
