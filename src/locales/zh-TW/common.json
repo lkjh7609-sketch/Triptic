@@ -103,11 +103,8 @@
   },
   "menu": {
     "darkMode": "深色模式",
-    "settingsPage": "全部設定",
-    "editProfile": "編輯個人資料",
-    "units": "單位設定",
+    "settingsPage": "設定",
     "language": "語言 (Language)",
-    "backup": "備份與還原",
     "signOut": "登出",
     "notices": "公告與更新",
     "guide": "使用指南"

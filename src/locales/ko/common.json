@@ -103,11 +103,8 @@
   },
   "menu": {
     "darkMode": "다크 모드",
-    "settingsPage": "전체 설정",
-    "editProfile": "내 정보 변경",
-    "units": "단위 설정",
+    "settingsPage": "설정",
     "language": "언어 (Language)",
-    "backup": "백업 및 복원",
     "signOut": "로그아웃",
     "notices": "공지사항·업데이트",
     "guide": "사용 가이드"

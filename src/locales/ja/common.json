@@ -103,11 +103,8 @@
   },
   "menu": {
     "darkMode": "ダークモード",
-    "settingsPage": "すべての設定",
-    "editProfile": "プロフィールを編集",
-    "units": "単位設定",
+    "settingsPage": "設定",
     "language": "言語 (Language)",
-    "backup": "バックアップと復元",
     "signOut": "ログアウト",
     "notices": "お知らせ・アップデート",
     "guide": "使い方ガイド"
