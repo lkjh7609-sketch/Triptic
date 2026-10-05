@@ -359,7 +359,6 @@
     "tripCardDays": "{{n}}-day itinerary",
     "tripCardOpen": "View itinerary",
     "photosTitle": "Attached photos ({{n}})",
-    "photosHint": "Tap to view larger",
     "viewLarge": "View larger",
     "photoAlt": "Attached photo {{n}}",
     "lightboxClose": "Close",

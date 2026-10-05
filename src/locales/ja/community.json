@@ -352,7 +352,6 @@
     "tripCardDays": "{{n}}日間の旅程",
     "tripCardOpen": "旅程の詳細を見る",
     "photosTitle": "添付した写真 ({{n}})",
-    "photosHint": "タップすると大きく見られます",
     "viewLarge": "拡大して見る",
     "photoAlt": "添付写真 {{n}}",
     "lightboxClose": "閉じる",

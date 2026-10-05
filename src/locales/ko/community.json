@@ -352,7 +352,6 @@
     "tripCardDays": "{{n}}일 일정",
     "tripCardOpen": "일정 상세 보기",
     "photosTitle": "첨부한 사진 ({{n}})",
-    "photosHint": "누르면 크게 볼 수 있어요",
     "viewLarge": "크게 보기",
     "photoAlt": "첨부 사진 {{n}}",
     "lightboxClose": "닫기",
