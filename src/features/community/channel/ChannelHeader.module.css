@@ -228,3 +228,94 @@
     flex-shrink: 0;
   }
 }
+
+/* 모바일(시안 Stitch/Community/Post/cities) — 제목은 고딕 굵게 30px, 환율·날씨는 작은 흰 칩, 버튼 2:3 */
+@media (max-width: 899px) {
+  .header {
+    padding: 12px 20px 16px;
+  }
+
+  .breadcrumb {
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+
+  .top {
+    gap: 14px;
+  }
+
+  .titleBlock {
+    gap: 14px;
+  }
+
+  .eyebrow {
+    padding: 4px 10px;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+
+  .title {
+    font-family: inherit;
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .localName {
+    font-size: 1.25rem;
+  }
+
+  .facts {
+    gap: 6px 12px;
+    font-size: 13px;
+  }
+
+  .fact {
+    padding: 4px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: var(--surface-card);
+    color: var(--text-body);
+  }
+
+  /* 팔로워·스토리 수는 칩 없이 한 줄 글씨 */
+  .counts {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 10px;
+  }
+
+  .followBtn,
+  .followingBtn,
+  .tripBtn {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .landmarks {
+    margin: 16px -20px 0;
+    padding: 2px 20px;
+  }
+
+  .landmarksLabel {
+    font-size: 12px;
+  }
+
+  .landmark {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}

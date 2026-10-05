@@ -423,3 +423,94 @@
     padding: 0 var(--space-4);
   }
 }
+
+/* 모바일(시안 Stitch/Community/Post/companions) — 머리말 19px, 알약 검색, 밑줄 탭, 작은 둥근 글쓰기 버튼 */
+@media (max-width: 1023px) {
+  .headerSection {
+    align-items: center;
+    padding: 16px 16px 0;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    margin-bottom: 2px;
+    font-size: 11px;
+    letter-spacing: -0.01em;
+  }
+
+  .mainTitle {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .myPostsLink {
+    margin-top: 0;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .filterSection {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .searchBarWrap {
+    position: relative;
+  }
+
+  .searchIcon {
+    position: absolute;
+    top: 50%;
+    left: 30px;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .searchInput {
+    max-width: none;
+    height: 40px;
+    padding: 0 16px 0 38px;
+    background: var(--surface-card);
+    font-size: 12px;
+  }
+
+  .tabsDesktop {
+    justify-content: space-around;
+    gap: 0;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .tab,
+  .tabActive {
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .tabActive {
+    font-weight: 700;
+  }
+
+  .tabActive::after {
+    left: 50%;
+    right: auto;
+    width: 32px;
+    height: 2.5px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+  }
+
+  .composeBtnRow {
+    gap: 10px;
+  }
+
+  .fabBtnDesktop {
+    width: 48px;
+    height: 48px;
+  }
+}

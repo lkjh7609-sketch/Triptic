@@ -320,3 +320,125 @@ span.stat {
   overflow: hidden;
   overflow-wrap: anywhere;
 }
+
+/* 모바일(시안 Stitch/Community/Post) — 글자는 작고 가볍게, 사진은 오른쪽 작은 정사각형, 카드 아래에 가는 줄 */
+@media (max-width: 899px) {
+  .card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .head {
+    margin-bottom: 8px;
+  }
+
+  .author {
+    gap: 8px;
+  }
+
+  .avatar,
+  .avatarFallback {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .authorName {
+    font-size: 13px;
+  }
+
+  .time {
+    font-size: 11px;
+  }
+
+  .badge {
+    font-size: 10px;
+  }
+
+  .countPill {
+    padding: 2px 10px;
+    font-size: 11px;
+  }
+
+  .body,
+  .bodyWithCover {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .bodyWithCover .text {
+    flex: 1;
+  }
+
+  .title {
+    font-size: 15px;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .excerpt {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.6;
+    -webkit-line-clamp: 2;
+  }
+
+  .bodyWithCover .thumb {
+    flex-shrink: 0;
+    width: 96px;
+    height: 96px;
+    aspect-ratio: auto;
+    border-radius: 12px;
+  }
+
+  .tags {
+    gap: 2px 8px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    min-height: 24px;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .footer {
+    gap: 16px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .stat {
+    min-height: 28px;
+    font-size: 12px;
+  }
+
+  .stat svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .scheduleRow {
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .applyBtn {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .acceptedBox {
+    padding: 8px 12px;
+  }
+
+  .acceptedText {
+    font-size: 12px;
+  }
+}

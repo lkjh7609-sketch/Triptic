@@ -48,3 +48,57 @@
   max-width: 880px;
   min-width: 0;
 }
+
+/* 모바일(시안 Stitch/Community/Post/free) — 머리말을 작은 아이콘+19px 제목으로, 검색은 알약·정렬은 가로 가득 */
+@media (max-width: 899px) {
+  .head {
+    gap: 10px;
+    padding: 20px 20px 4px;
+  }
+
+  .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+  }
+
+  .icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .crumb {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .title {
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .sub {
+    margin-top: 2px;
+    font-size: 12px;
+  }
+
+  .searchInput {
+    border-radius: 999px;
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .sort {
+    align-self: stretch;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .feed {
+    max-width: none;
+  }
+}

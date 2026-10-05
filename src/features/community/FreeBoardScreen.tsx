@@ -74,7 +74,7 @@ export function FreeBoardScreen() {
               <Search size={18} aria-hidden="true" className={styles.searchIcon} />
               <input
                 type="search"
-                className={styles.searchInput}
+                className={`${styles.searchInput} ${boardStyles.searchInput}`}
                 value={draft}
                 placeholder={t('board.searchPlaceholder')}
                 aria-label={t('board.searchPlaceholder')}
@@ -86,7 +86,7 @@ export function FreeBoardScreen() {
                 </button>
               ) : null}
             </label>
-            <select className={styles.sort} value={sort} aria-label={t('channel.sortAria')} onChange={(e) => setSort(e.target.value as PostSort)}>
+            <select className={`${styles.sort} ${boardStyles.sort}`} value={sort} aria-label={t('channel.sortAria')} onChange={(e) => setSort(e.target.value as PostSort)}>
               {(['latest', 'popular', 'comments'] as const).map((key) => (
                 <option key={key} value={key}>
                   {t(`channel.sort.${key}`)}

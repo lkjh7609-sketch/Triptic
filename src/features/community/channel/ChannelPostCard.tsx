@@ -94,6 +94,20 @@ export function ChannelPostCard({
       <div className={cover ? styles.bodyWithCover : styles.body}>
         <div className={styles.text}>
           <h3 className={styles.title}>{title}</h3>
+          {post.tags.length > 0 ? (
+            <div className={styles.tags}>
+              {post.tags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={styles.tag}
+                  onClick={(e) => handleTag(e, tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
         {cover ? (
           <img
@@ -104,21 +118,6 @@ export function ChannelPostCard({
           />
         ) : null}
       </div>
-
-      {post.tags.length > 0 ? (
-        <div className={styles.tags}>
-          {post.tags.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              className={styles.tag}
-              onClick={(e) => handleTag(e, tag)}
-            >
-              #{tag}
-            </button>
-          ))}
-        </div>
-      ) : null}
 
       {isQna && accepted ? (
         <div className={styles.acceptedBox}>

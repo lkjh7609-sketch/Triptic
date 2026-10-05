@@ -21,3 +21,19 @@
 .row > a.half {
   text-decoration: none;
 }
+
+/* 모바일(시안): 도시 선택·자유게시판(동행 탭에서는 내 동행모집)을 낮고 작은 알약 두 개로 */
+@media (max-width: 1023px) {
+  .row > .half {
+    min-height: 32px;
+    padding: 0 12px;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .row > .half svg {
+    width: 14px;
+    height: 14px;
+  }
+}
