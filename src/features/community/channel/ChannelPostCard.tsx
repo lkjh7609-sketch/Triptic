@@ -65,13 +65,18 @@ export function ChannelPostCard({
               <AuthorName profile={post.author} />
             </span>
             <span className={styles.time}>
-              {t('channel.categoryTime', {
-                time: formatDistanceToNowStrict(new Date(post.created_at), {
-                  addSuffix: true,
-                  locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
-                }),
-                category: t(`postCategory.${post.category}`),
-              })}
+              {post.destination_id
+                ? t('channel.categoryTime', {
+                    time: formatDistanceToNowStrict(new Date(post.created_at), {
+                      addSuffix: true,
+                      locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
+                    }),
+                    category: t(`postCategory.${post.category}`),
+                  })
+                : formatDistanceToNowStrict(new Date(post.created_at), {
+                    addSuffix: true,
+                    locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
+                  })}
             </span>
           </span>
         </button>

@@ -8,15 +8,11 @@ import { trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ChannelPostCard } from './channel/ChannelPostCard';
-import { CATEGORY_ICONS } from './categoryIcons';
-import type { PostCategory } from './postMeta';
 import { useChannelPosts } from './hooks/useDestinationChannel';
 import type { PostSort } from './communityService';
 import styles from './DestinationChannelScreen.module.css';
 import boardStyles from './FreeBoardScreen.module.css';
 
-type BoardTab = 'all' | PostCategory;
-const TABS: BoardTab[] = ['all', 'story', 'qna', 'tips', 'food'];
 const SEARCH_DEBOUNCE_MS = 350;
 
 function useDebounced<T>(value: T, ms: number): T {
@@ -36,7 +32,6 @@ export function FreeBoardScreen() {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
   const requireLogin = useRequireLogin();
-  const [tab, setTab] = useState<BoardTab>('all');
   const [draft, setDraft] = useState('');
   const [tag, setTag] = useState('');
   const [sort, setSort] = useState<PostSort>('latest');
@@ -52,7 +47,6 @@ export function FreeBoardScreen() {
     viewerId: user?.id ?? null,
     search,
     sort,
-    category: tab === 'all' ? undefined : tab,
     tag: tag || undefined,
   });
   const items = feed.data?.pages.flatMap((p) => p.posts) ?? [];
@@ -75,17 +69,6 @@ export function FreeBoardScreen() {
 
       <div className={`${styles.container} ${styles.body}`}>
         <div className={styles.toolbar}>
-          <div className={styles.tabs} role="group" aria-label={t('channel.tabs')}>
-            {TABS.map((key) => {
-              const Icon = key === 'all' ? null : CATEGORY_ICONS[key];
-              return (
-                <button key={key} type="button" className={tab === key ? styles.tabOn : styles.tab} aria-pressed={tab === key} onClick={() => setTab(key)}>
-                  {Icon ? <Icon size={16} aria-hidden="true" /> : null}
-                  {key === 'all' ? t('channel.tabAll') : t(`postCategory.${key}`)}
-                </button>
-              );
-            })}
-          </div>
           <div className={styles.tools}>
             <label className={styles.search}>
               <Search size={18} aria-hidden="true" className={styles.searchIcon} />
