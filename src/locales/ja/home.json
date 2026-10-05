@@ -697,8 +697,6 @@
     },
     "footer": {
       "partnership": "提携のお問い合わせ",
-      "guide": "使い方ガイド",
-      "notices": "お知らせ",
       "operatorItem": "運営者 Ben Lee",
       "hostingItem": "ホスティングサービス提供者 Vercel Inc.",
       "navAria": "フッターメニュー"

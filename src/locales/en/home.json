@@ -712,8 +712,6 @@
     },
     "footer": {
       "partnership": "Partnerships",
-      "guide": "User guide",
-      "notices": "Notices",
       "operatorItem": "Operator: Ben Lee",
       "hostingItem": "Hosting service provider: Vercel Inc.",
       "navAria": "Footer links"
