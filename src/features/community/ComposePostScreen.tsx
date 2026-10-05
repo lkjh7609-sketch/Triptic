@@ -328,10 +328,11 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       publishedRef.current = true;
       clearDraft(userId);
       if (result.status === 'pending_review') {
-        navigate('/community');
+        navigate('/community', { replace: true });
         return;
       }
-      navigate(`/community/post/${result.id}`);
+      // 글쓰기 화면은 기록에서 바꿔치기 — 게시 뒤 뒤로가기가 작성 화면이 아니라 이전 화면으로 간다
+      navigate(`/community/post/${result.id}`, { replace: true });
     } catch (err) {
       captureError(err, { context: 'createPost' });
       setSubmitError(t('compose.submitError'));

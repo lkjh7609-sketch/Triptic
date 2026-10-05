@@ -151,7 +151,7 @@ describe('ComposePostScreen — 시안 구성', () => {
     await advance(50);
     expect(mutateAsync).toHaveBeenCalled();
     expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: 'kyoto', title: '교토 새벽 산책', body: '새벽 산책이 좋았어요', tripId: null, allowCopy: false, userId: 'u1', category: 'qna', tags: [] });
-    expect(navigate).toHaveBeenCalledWith('/community/post/p1');
+    expect(navigate).toHaveBeenCalledWith('/community/post/p1', { replace: true });
     expect(localStorage.getItem('triptic-compose-draft:u1')).toBeNull();
   });
 
@@ -166,7 +166,7 @@ describe('ComposePostScreen — 시안 구성', () => {
     fireEvent.click(screen.getByRole('button', { name: '게시하기' }));
     await advance(50);
     expect(mutateAsync.mock.calls[0][0]).toMatchObject({ destinationId: null, title: '자유 제목', category: 'story' });
-    expect(navigate).toHaveBeenCalledWith('/community/post/p3');
+    expect(navigate).toHaveBeenCalledWith('/community/post/p3', { replace: true });
   });
 
   it('일정을 붙이면 복사 허용 스위치가 생기고(기본 꺼짐), 켜면 게시할 때 함께 보낸다. 남의 일정은 목록에 없다', async () => {

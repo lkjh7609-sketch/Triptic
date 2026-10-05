@@ -194,7 +194,7 @@ describe('CompanionComposeScreen — 게시', () => {
       userId: 'u1',
       prefs: { gender: 'any', ages: [], tags: [] },
     });
-    expect(navigate).toHaveBeenCalledWith('/community/companion/c1');
+    expect(navigate).toHaveBeenCalledWith('/community/companion/c1', { replace: true });
     expect(localStorage.getItem('triptic-companion-draft:u1')).toBeNull();
   });
 
