@@ -114,7 +114,7 @@ export function CompanionsSection({ desktop }: { desktop: boolean }) {
   const limit = desktop ? PC_LIMIT : MOBILE_LIMIT;
 
   const cards = useMemo(() => {
-    const posts = (feed.data?.pages.flatMap((p) => p.posts) ?? []).filter((p) => p.author_id !== user?.id);
+    const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
     const scored = posts.map((post, index) => ({
       post,
       index,
@@ -128,7 +128,7 @@ export function CompanionsSection({ desktop }: { desktop: boolean }) {
     // 일치율이 높은 글을 앞에, 같으면 최신 순(받은 순서) 그대로
     scored.sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1) || a.index - b.index);
     return scored.slice(0, limit);
-  }, [feed.data, view, user?.id, limit]);
+  }, [feed.data, view, limit]);
 
   return (
     <section className={shared.section} aria-labelledby="home-companions-title">
