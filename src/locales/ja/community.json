@@ -164,7 +164,8 @@
       "confirmSelected": "選択した{{count}}件を完全に削除しますか？添付写真ファイルも削除され、元に戻せません。",
       "confirmAll": "保管庫をすべて空にしますか？すべての投稿・募集の記録と添付写真ファイルが完全に削除され、元に戻せません。",
       "deleted": "{{count}}件を削除しました。",
-      "deleteFailed": "削除できませんでした。もう一度お試しください。"
+      "deleteFailed": "削除できませんでした。もう一度お試しください。",
+      "photoAlt": "保管された写真 {{n}}"
     },
     "feedbackCategoryPartnership": "提携のお問い合わせ",
     "feedbackFilterLabel": "問い合わせの種類",

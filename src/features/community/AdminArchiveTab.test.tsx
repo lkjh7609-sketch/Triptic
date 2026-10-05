@@ -5,6 +5,7 @@ import type { ArchivedItem } from './adminService';
 
 const { adminListArchived, adminGetArchived, adminDeleteArchived } = vi.hoisted(() => ({ adminListArchived: vi.fn(), adminGetArchived: vi.fn(), adminDeleteArchived: vi.fn() }));
 vi.mock('@/shared/ui/toast', () => ({ showToast: vi.fn() }));
+vi.mock('./imageProcessing', () => ({ getPostImageUrl: (path: string) => `https://img.test/${path}` }));
 vi.mock('./adminService', async () => ({
   ...(await vi.importActual<typeof import('./adminService')>('./adminService')),
   adminListArchived,
@@ -52,6 +53,21 @@ describe('AdminArchiveTab', () => {
     expect(await screen.findByText('오사카 3박 후기 전체 본문')).toBeInTheDocument();
     expect(screen.getByText(/좋은 글이네요/)).toBeInTheDocument();
     expect(adminGetArchived).toHaveBeenCalledWith(7);
+  });
+
+  it('보관된 글의 사진을 위치 순서대로 보여 준다(누르면 원본)', async () => {
+    adminListArchived.mockResolvedValue({ rows: [item], hasMore: false });
+    adminGetArchived.mockResolvedValue({
+      snapshot: { body: '본문' },
+      children: { post_images: [{ storage_path: 'u/b.webp', position: 1 }, { storage_path: 'u/a.webp', position: 0 }] },
+      reason: 'user_deleted',
+      archived_at: item.archived_at,
+    });
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: '내용 보기' }));
+    const imgs = await screen.findAllByRole('img');
+    expect(imgs.map((i) => i.getAttribute('src'))).toEqual(['https://img.test/u/a.webp', 'https://img.test/u/b.webp']);
+    expect(imgs[0].closest('a')).toHaveAttribute('href', 'https://img.test/u/a.webp');
   });
 
   it('보관된 게 없으면 안내', async () => {

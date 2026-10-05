@@ -166,7 +166,8 @@
       "confirmSelected": "Permanently delete the {{count}} selected items? Attached photo files are deleted too and can't be restored.",
       "confirmAll": "Empty the whole archive? All post and recruitment records and attached photo files will be permanently deleted and can't be restored.",
       "deleted": "Deleted {{count}} items.",
-      "deleteFailed": "Couldn't delete. Please try again."
+      "deleteFailed": "Couldn't delete. Please try again.",
+      "photoAlt": "Archived photo {{n}}"
     },
     "feedbackCategoryPartnership": "Partnership",
     "feedbackFilterLabel": "Inquiry type",
