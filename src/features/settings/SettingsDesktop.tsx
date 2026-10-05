@@ -556,7 +556,21 @@ export function SettingsDesktop() {
                   <span className={styles.linkDesc}>{t('desktop.community.licensesDesc')}</span>
                 </button>
               </div>
-              <p className={styles.operator}>{t('about.operator')}</p>
+              {/* 홈 PC 푸터와 같은 모양 — 항목 단위로만 줄바꿈, 저작권은 아래 줄 */}
+              <p className={styles.operator}>
+                <span className={styles.operatorGroup}>
+                  {t('about.operatorItem')}
+                  <span className={styles.operatorDot} aria-hidden="true">
+                    ·
+                  </span>
+                  admin@triptic.my
+                </span>
+                <span className={styles.operatorDot} aria-hidden="true">
+                  ·
+                </span>
+                <span className={styles.operatorGroup}>{t('about.hostingItem')}</span>
+                <span className={styles.operatorCopy}>&copy; {new Date().getFullYear()} Triptic</span>
+              </p>
             </section>
           ) : null}
         </main>

@@ -299,7 +299,18 @@ export function SettingsScreen() {
           </button>
         </div>
         <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
-        <p className={styles.hint}>{t('about.operator')}</p>
+        {/* 항목 중간에서 줄이 끊기지 않게 "운영자 · 메일" / "호스팅" / "저작권" 세 줄로 나눈다 */}
+        <p className={`${styles.hint} ${styles.operator}`}>
+          <span>
+            {t('about.operatorItem')}
+            <span className={styles.dot} aria-hidden="true">
+              ·
+            </span>
+            admin@triptic.my
+          </span>
+          <span>{t('about.hostingItem')}</span>
+          <span>&copy; {new Date().getFullYear()} Triptic</span>
+        </p>
         </div>
       </section>
 
