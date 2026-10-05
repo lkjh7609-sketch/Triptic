@@ -699,7 +699,8 @@
       "partnership": "제휴문의",
       "guide": "사용 가이드",
       "notices": "공지사항",
-      "operator": "운영자 Ben Lee · admin@triptic.my · 호스팅서비스 제공자 Vercel Inc.",
+      "operatorItem": "운영자 이재헌",
+      "hostingItem": "호스팅서비스 제공자 Vercel Inc.",
       "navAria": "하단 메뉴"
     }
   },

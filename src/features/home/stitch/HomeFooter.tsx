@@ -37,7 +37,12 @@ export function HomeFooter() {
           <a href="/terms.html" target="_blank" rel="noopener noreferrer" className={styles.link}>
             {t('desktop.terms')}
           </a>
-          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className={`${styles.link} ${styles.strong}`}>
+          <a
+            href="/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.link} ${styles.strong}`}
+          >
             {t('desktop.privacy')}
           </a>
           <button type="button" className={styles.link} onClick={() => openContact('general')}>
@@ -47,10 +52,27 @@ export function HomeFooter() {
             {t('page.footer.partnership')}
           </button>
         </nav>
-        <p className={styles.operator}>{t('page.footer.operator')}</p>
-        <p className={styles.copy}>&copy; {new Date().getFullYear()} Triptic. All rights reserved.</p>
+        {/* 항목 중간에서 줄이 끊기지 않게 묶음 단위로 나눈다 — 모바일은 "운영자 · 메일" / "호스팅" 두 줄, PC는 한 줄 */}
+        <p className={styles.operator}>
+          <span className={styles.group}>
+            {t('page.footer.operatorItem')}
+            <span className={styles.dot} aria-hidden="true">
+              ·
+            </span>
+            admin@triptic.my
+          </span>
+          <span className={`${styles.dot} ${styles.pcDot}`} aria-hidden="true">
+            ·
+          </span>
+          <span className={styles.group}>{t('page.footer.hostingItem')}</span>
+        </p>
+        <p className={styles.copy}>
+          &copy; {new Date().getFullYear()} Triptic. All rights reserved.
+        </p>
       </div>
-      {contactKind ? <FeedbackModal kind={contactKind} onClose={() => setContactKind(null)} /> : null}
+      {contactKind ? (
+        <FeedbackModal kind={contactKind} onClose={() => setContactKind(null)} />
+      ) : null}
     </footer>
   );
 }
