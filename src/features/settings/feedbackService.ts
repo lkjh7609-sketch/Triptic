@@ -7,11 +7,11 @@ import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { processImageForUpload } from '@/features/community/imageProcessing';
 
 async function uploadFeedbackScreenshot(file: File, userId: string): Promise<string> {
-  const { blob } = await processImageForUpload(file);
-  const path = `${userId}/${crypto.randomUUID()}.webp`;
+  const { blob, ext } = await processImageForUpload(file);
+  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
   const supabase = getSupabaseClient();
   const { error } = await supabase.storage.from('feedback-screenshots').upload(path, blob, {
-    contentType: 'image/webp',
+    contentType: blob.type,
     upsert: false,
   });
   if (error) throw error;

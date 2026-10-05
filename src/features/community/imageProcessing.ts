@@ -7,17 +7,23 @@
  * 인코딩한 결과라 EXIF(위치정보 포함)가 애초에 옮겨지지 않는다.
  * createImageBitmap이 EXIF orientation은 픽셀에 반영해 그려주므로(가로/세로
  * 뒤집힘 방지) 시각적 손실도 없다.
+ *
+ * 아이폰 사파리 등 WebP 인코딩을 못 하는 브라우저는 toBlob이 말없이 PNG(사진 한 장 3MB 안팎)를 돌려준다 —
+ * 그러면 무료 저장 용량(1GB)이 금방 찬다. 결과가 WebP가 아니면 JPEG로 다시 뽑는다.
  */
 import i18next from '@/shared/i18n';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 
 const MAX_EDGE = 1600;
 const WEBP_QUALITY = 0.85;
+const JPEG_QUALITY = 0.8;
 
 export interface ProcessedImage {
   blob: Blob;
   width: number;
   height: number;
+  /** 파일 확장자 — WebP를 못 만드는 브라우저는 'jpg' */
+  ext: 'webp' | 'jpg';
 }
 
 export async function processImageForUpload(file: File, maxEdge = MAX_EDGE): Promise<ProcessedImage> {
@@ -41,15 +47,13 @@ export async function processImageForUpload(file: File, maxEdge = MAX_EDGE): Pro
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error(i18next.t('community:errors.imageConvertFailed')))),
-      'image/webp',
-      WEBP_QUALITY,
-    );
-  });
-
-  return { blob, width, height };
+  const toBlob = (type: string, quality: number) =>
+    new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
+  const webp = await toBlob('image/webp', WEBP_QUALITY);
+  if (webp && webp.type === 'image/webp') return { blob: webp, width, height, ext: 'webp' };
+  const jpeg = await toBlob('image/jpeg', JPEG_QUALITY);
+  if (!jpeg || jpeg.type !== 'image/jpeg') throw new Error(i18next.t('community:errors.imageConvertFailed'));
+  return { blob: jpeg, width, height, ext: 'jpg' };
 }
 
 export interface UploadedPostImage {
@@ -58,13 +62,13 @@ export interface UploadedPostImage {
   height: number;
 }
 
-/** 처리 + 업로드까지 한 번에 — 경로 규칙은 {user_id}/{uuid}.webp (0020 RLS와 일치) */
+/** 처리 + 업로드까지 한 번에 — 경로 규칙은 {user_id}/{uuid}.{webp|jpg} (0020 RLS와 일치) */
 export async function uploadPostImage(file: File, userId: string): Promise<UploadedPostImage> {
-  const { blob, width, height } = await processImageForUpload(file);
-  const path = `${userId}/${crypto.randomUUID()}.webp`;
+  const { blob, width, height, ext } = await processImageForUpload(file);
+  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
   const supabase = getSupabaseClient();
   const { error } = await supabase.storage.from('post-images').upload(path, blob, {
-    contentType: 'image/webp',
+    contentType: blob.type,
     upsert: false,
   });
   if (error) throw error;
