@@ -16,3 +16,8 @@
     justify-content: space-between;
   }
 }
+
+/* 자유게시판 버튼은 링크(<a>)라 전역 밑줄이 붙는다 — 다른 버튼과 같게 지운다 */
+.row > a.half {
+  text-decoration: none;
+}
