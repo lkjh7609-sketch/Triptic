@@ -936,7 +936,7 @@
   color: var(--text-primary);
   font-family: inherit;
   font-size: 1.0625rem;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .titleInput::placeholder {
