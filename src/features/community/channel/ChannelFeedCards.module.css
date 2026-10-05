@@ -123,7 +123,7 @@ div.author {
 .title {
   margin: 0;
   font-size: var(--font-title-size);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.4;
   color: var(--text-primary);
   overflow-wrap: anywhere;
