@@ -602,7 +602,13 @@
       "title": "내 동행",
       "hosting": "내가 모집 중",
       "matched": "확정 · 채팅방 입장",
-      "needsReview": "일정 종료 · 후기 남기기"
+      "needsReview": "일정 종료 · 후기 남기기",
+      "activeCount": "진행 중 {{count}}건",
+      "feedTitle": "동행 모집 피드",
+      "hostingButton": "내 동행모집",
+      "hostingEmpty": "모집 중인 동행글이 없어요.",
+      "dday": "D-{{count}}",
+      "ddayToday": "D-Day"
     },
     "compose": {
       "title": "동행 구하기",

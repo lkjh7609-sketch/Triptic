@@ -613,7 +613,13 @@
       "title": "My companions",
       "hosting": "You're hosting",
       "matched": "Confirmed · open chat",
-      "needsReview": "Trip ended · leave a review"
+      "needsReview": "Trip ended · leave a review",
+      "activeCount": "{{count}} active",
+      "feedTitle": "Companion feed",
+      "hostingButton": "My companion posts",
+      "hostingEmpty": "You don't have any open companion posts.",
+      "dday": "D-{{count}}",
+      "ddayToday": "D-Day"
     },
     "compose": {
       "title": "Find companions",

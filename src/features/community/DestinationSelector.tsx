@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { ChevronDown, MapPin, MessagesSquare } from 'lucide-react';
+import { ChevronDown, ClipboardList, MapPin, MessagesSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Destination } from './types';
 import { DestinationPickerModal } from './DestinationPickerModal';
@@ -18,6 +18,9 @@ interface DestinationSelectorProps {
   onClear?: () => void;
   /** onCitySelect와 같이 써서 현재 필터 중인 도시를 버튼에 보여 준다 */
   selectedDestinationId?: string | null;
+  /** 있으면 '자유게시판' 자리에 '내 동행모집' 토글 버튼이 들어간다(동행 탭) — 누르면 내가 모집 중인 글만 */
+  onToggleHosting?: () => void;
+  hostingActive?: boolean;
 }
 
 /** 도시 채널의 브레드크럼('아시아')이 ?continent=AS로 들어오면 선택 창이 그 지역 탭으로 바로 열린다 */
@@ -38,6 +41,8 @@ export function DestinationSelector({
   onCitySelect,
   onClear,
   selectedDestinationId,
+  onToggleHosting,
+  hostingActive = false,
 }: DestinationSelectorProps) {
   const { t } = useTranslation('community');
   const navigate = useNavigate();
@@ -63,13 +68,25 @@ export function DestinationSelector({
           </span>
           <ChevronDown size={18} aria-hidden="true" className="shrink-0" />
         </button>
-        <Link
-          to="/community/board"
-          className={`${rowStyles.half} inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant`}
-        >
-          <MessagesSquare size={18} aria-hidden="true" className="shrink-0" />
-          <span>{t('board.link')}</span>
-        </Link>
+        {onToggleHosting ? (
+          <button
+            type="button"
+            aria-pressed={hostingActive}
+            className={`${rowStyles.half} inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm ${hostingActive ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant'}`}
+            onClick={onToggleHosting}
+          >
+            <ClipboardList size={18} aria-hidden="true" className="shrink-0" />
+            <span>{t('companion.mine.hostingButton')}</span>
+          </button>
+        ) : (
+          <Link
+            to="/community/board"
+            className={`${rowStyles.half} inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-label-md text-label-md transition-all shrink-0 border shadow-sm bg-surface-container-lowest hover:bg-surface-container border-outline-variant/50 text-on-surface-variant`}
+          >
+            <MessagesSquare size={18} aria-hidden="true" className="shrink-0" />
+            <span>{t('board.link')}</span>
+          </Link>
+        )}
         {trailing}
       </div>
       {searchElement && <div className="w-full lg:w-auto shrink-0">{searchElement}</div>}

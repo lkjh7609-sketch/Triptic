@@ -602,7 +602,13 @@
       "title": "我的旅伴",
       "hosting": "我發起的招募",
       "matched": "已確定 · 進入聊天室",
-      "needsReview": "行程已結束 · 留下評價"
+      "needsReview": "行程已結束 · 留下評價",
+      "activeCount": "進行中 {{count}} 則",
+      "feedTitle": "同行招募動態",
+      "hostingButton": "我的同行招募",
+      "hostingEmpty": "目前沒有招募中的同行貼文。",
+      "dday": "D-{{count}}",
+      "ddayToday": "D-Day"
     },
     "compose": {
       "title": "徵求旅伴",

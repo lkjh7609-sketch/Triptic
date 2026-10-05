@@ -38,6 +38,9 @@ interface Props {
   /** 동행 탭에서 고른 도시 — 도시 선택 줄은 세 탭이 같은 자리를 쓴다 */
   companionDestinationId?: string;
   setCompanionDestinationId: (id: string | undefined) => void;
+  /** 동행 탭의 '내 동행모집' 버튼(자유게시판 자리) */
+  hostingOnly: boolean;
+  onToggleHosting: () => void;
 }
 
 function initialOf(name: string | null | undefined): string {
@@ -59,6 +62,8 @@ export function CommunityDesignBody({
   feed,
   companionDestinationId,
   setCompanionDestinationId,
+  hostingOnly,
+  onToggleHosting,
 }: Props) {
   const { t } = useTranslation(['community', 'common']);
   const { user } = useSession();
@@ -137,6 +142,8 @@ export function CommunityDesignBody({
                     selectedDestinationId: companionDestinationId,
                     onCitySelect: (city: Destination) => setCompanionDestinationId(city.id),
                     onClear: () => setCompanionDestinationId(undefined),
+                    onToggleHosting,
+                    hostingActive: hostingOnly,
                   }
                 : {})}
               trailing={<TravelAlertSummary variant="button" />}
@@ -233,7 +240,7 @@ export function CommunityDesignBody({
         </section>
 
         {tab === 'companion' ? (
-          <CompanionFeedList destinationId={companionDestinationId} />
+          <CompanionFeedList destinationId={companionDestinationId} hostingOnly={hostingOnly} />
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 flex flex-col gap-6">
