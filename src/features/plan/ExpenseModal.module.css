@@ -33,15 +33,25 @@
   border: 1px solid var(--border-strong);
   background: var(--surface-card);
   color: var(--text-muted);
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
+  flex: 1 1 0;
+  min-width: 52px;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-xl);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   cursor: pointer;
   flex-shrink: 0;
   transition: all var(--transition-fast);
+}
+
+.categoryLabel {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .categoryBtnActive {
