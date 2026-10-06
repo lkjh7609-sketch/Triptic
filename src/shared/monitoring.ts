@@ -52,8 +52,10 @@ function flushQueue() {
  * "InvalidStateError"를 던진다(문구는 브라우저마다 다름: "Skipping view transition because document visibility state has become hidden." /
  * "View transition was skipped because document visibility state is hidden." / Chrome 154: "Transition was aborted because of
  * invalid state. Document hidden"). 화면 이동 자체는 정상으로 끝난다.
+ * 앱 내 브라우저(iOS WKWebView): 앱이 페이지에 끼워 넣은 스크립트가 window.webkit.messageHandlers를 찾다가 실패한다.
+ * 우리 코드엔 이 이름이 없고, 스택이 "triptic.my/:1"(실제 index.html은 여러 줄)이라 주입 스크립트다(2026-10-06).
  */
-export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i, /transition was aborted because of invalid state/i];
+export const IGNORED_ERRORS: RegExp[] = [/view transition.*visibility state/i, /transition was aborted because of invalid state/i, /webkit\.messageHandlers/i];
 
 let initPromise: Promise<void> | null = null;
 
