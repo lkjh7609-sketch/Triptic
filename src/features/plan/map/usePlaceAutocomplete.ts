@@ -27,11 +27,11 @@ export interface UsePlaceAutocompleteOptions {
   types?: string[];
   /** false면 Google 스크립트를 부르지 않는다(항공편 공항처럼 목록으로 대신하는 칸) — 기본 true */
   enabled?: boolean;
-  /** 여행 도시 중심 — 있으면 그 도시 주변(약 30km) 안의 결과만 나온다. 없으면 제한 없음 */
+  /** 여행 도시 중심 — 있으면 그 도시 주변(약 200km, 근교 여행지까지) 안의 결과만 나온다. 없으면 제한 없음 */
   bias?: { lat: number | null; lng: number | null } | null;
 }
 
-const BIAS_RADIUS_KM = 30;
+const BIAS_RADIUS_KM = 200;
 
 function boundsAround(lat: number, lng: number): google.maps.LatLngBoundsLiteral {
   const dLat = BIAS_RADIUS_KM / 111;
