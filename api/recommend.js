@@ -13,6 +13,7 @@ import { DailyLimitError, takeAiQuota } from './_lib/aiQuota.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
+import { GROUP_SIZE, isMixComplete, missingCounts, pickBalanced } from './_lib/nearbyMix.js';
 
 // DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
 // Google Places 보강 시간까지 남겨둔다.
@@ -145,13 +146,16 @@ function getCuratedFallbackRecommendations(placeName, city, category) {
     });
 }
 
+/** 추천 구성 지시 — 식당 3·카페 3·볼거리/즐길거리 3(nearbyMix.js). category 값은 restaurant | cafe | culture | spot */
+const MIX_RULE = `Recommend exactly ${GROUP_SIZE} restaurants (category "restaurant"), ${GROUP_SIZE} cafes (category "cafe"), and ${GROUP_SIZE} sights or things to do such as parks, landmarks, museums, markets, shopping streets or experiences (category "culture" or "spot").`;
+
 function buildPrompt({ placeName, city, category, locale }) {
     const locationContext = city ? `"${placeName}" in ${city}` : `"${placeName}"`;
     const focus = category !== 'all'
         ? `Focus on the "${category}" category.`
-        : 'Mix restaurants, cafes, and sights. Never include hotels or other lodging.';
+        : `${MIX_RULE} Never include hotels or other lodging.`;
     return `You are a travel guide who knows the area well.
-Recommend 5 real places near ${locationContext} that a traveler can easily reach on foot or by public transit.
+Recommend ${category !== 'all' ? 5 : GROUP_SIZE * 3} real places near ${locationContext} that a traveler can easily reach on foot or by public transit.
 ${focus}
 Do not include "${placeName}" itself. Only recommend places that actually exist, using their exact official names so they can be found on Google Maps.
 Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.
@@ -179,7 +183,7 @@ function sanitizeRecommendations(list, placeName) {
     const baseKey = normalizeKey(placeName);
     return list
         .filter((r) => r && typeof r.name === 'string' && r.name.trim() && normalizeKey(r.name) !== baseKey)
-        .slice(0, 6)
+        .slice(0, GROUP_SIZE * 3)
         .map((r) => ({
             name: String(r.name).trim().slice(0, 120),
             category: VALID_REC_CATEGORIES.has(r.category) ? r.category : 'spot',
@@ -199,7 +203,7 @@ function needsCoords(rec) {
 /** 추천 장소에 Google Places 실제 좌표/주소를 붙인다(place_cache로 중복 호출 절약).
  * 찾아봤으면(있든 없든) coordsChecked를 남겨 같은 캐시 행을 다시 조회하지 않는다 —
  * 키/쿼터 오류처럼 일시적인 실패는 표시하지 않아 다음에 다시 시도된다. */
-async function enrichWithGoogleMaps(recs, city, bias) {
+async function enrichWithGoogleMaps(recs, city, bias, locale) {
     const apiKey = process.env.GOOGLE_PLACES_SERVER_KEY;
     if (!apiKey) return recs;
     const db = supabaseAdmin();
@@ -209,23 +213,26 @@ async function enrichWithGoogleMaps(recs, city, bias) {
         if (!needsCoords(r)) return r;
         try {
             const query = city ? `${r.name} ${city}` : r.name;
-            const queryKey = normalizeKey(query);
+            // 구글이 그 언어로 저장한 이름·주소를 쓰므로 캐시도 언어마다 따로(0097: name 열)
+            const queryKey = `${locale}|${normalizeKey(query)}`;
 
             if (db) {
                 const { data: cached } = await db
                     .from('place_cache')
-                    .select('place_id, lat, lng, address')
+                    .select('place_id, lat, lng, address, name')
                     .eq('query_key', queryKey)
                     .maybeSingle();
                 if (cached && cached.lat != null && cached.lng != null) {
-                    return withinRange({ ...r, placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address, coordsChecked: true }, bias);
+                    return withinRange({ ...r, ...(cached.name ? { name: cached.name } : {}), placeId: cached.place_id, lat: cached.lat, lng: cached.lng, address: cached.address, coordsChecked: true }, bias);
                 }
             }
 
             const params = new URLSearchParams({
                 input: query,
                 inputtype: 'textquery',
-                fields: 'place_id,geometry,formatted_address',
+                fields: 'place_id,name,geometry,formatted_address',
+                // 이름·주소를 그 언어로 — AI가 쓴 이름(현지어 원문일 때가 많다)은 검색어로만 쓰고, 화면에는 구글에 그 언어로 저장된 이름을 보여 준다
+                language: locale,
                 key: apiKey,
             });
             if (bias) params.set('locationbias', `circle:3000@${bias.lat},${bias.lng}`);
@@ -241,6 +248,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
 
             const enriched = {
                 ...r,
+                ...(typeof first.name === 'string' && first.name.trim() ? { name: first.name.trim().slice(0, 120) } : {}),
                 placeId: first.place_id,
                 lat: first.geometry.location.lat,
                 lng: first.geometry.location.lng,
@@ -250,6 +258,7 @@ async function enrichWithGoogleMaps(recs, city, bias) {
             if (db) {
                 const { error } = await db.from('place_cache').upsert({
                     query_key: queryKey,
+                    name: enriched.name,
                     place_id: enriched.placeId,
                     lat: enriched.lat,
                     lng: enriched.lng,
@@ -273,11 +282,11 @@ function parseBias(lat, lng) {
 }
 
 // ── 반경 장소 풀(0050) ────────────────────────────────────────────────────
-// 기준점 1.5km 안에 이미 쌓인 장소가 5곳 이상이면 AI 없이 그걸 보여주고, 모자라면 AI로
-// 5곳을 더 받아 반경 안에 있는 것만 풀에 쌓는다. 같은 약 500m 칸에서는 30일에 한 번만
+// 기준점 1.5km 안에 이미 쌓인 장소로 식당 3·카페 3·볼거리 3이 채워지면 AI 없이 그걸 보여주고, 모자라면 AI로
+// 모자란 만큼을 더 받아 반경 안에 있는 것만 풀에 쌓는다. 같은 약 500m 칸에서는 30일에 한 번만
 // AI를 부른다 — 장소가 드문 곳에서 열 때마다 AI를 다시 부르지 않게.
-const POOL_TARGET = 5;
-const POOL_MAX_SHOW = 10;
+// 묶음(식당·카페·볼거리)마다 3곳(GROUP_SIZE)이 쌓여 있으면 AI를 부르지 않고, 모자란 묶음만 AI에게 요청한다. 거리순으로 넉넉히 읽어 묶음별로 고른다
+const POOL_READ = 60;
 const CELL_DEG = 0.005;
 const RETRY_AFTER_MS = 30 * 86_400_000;
 
@@ -304,11 +313,11 @@ async function readPool(db, bias, locale, basePlaceId) {
         p_lng: bias.lng,
         p_radius_m: MAX_DISTANCE_M,
         p_locale: locale,
-        p_limit: POOL_MAX_SHOW + 1,
+        p_limit: POOL_READ,
     });
     if (error) throw error;
     // 기준 장소 자신(같은 place_id 또는 40m 이내)은 뺀다
-    return (data ?? []).filter((row) => row.place_id !== basePlaceId && row.distance_m > 40).slice(0, POOL_MAX_SHOW);
+    return (data ?? []).filter((row) => row.place_id !== basePlaceId && row.distance_m > 40);
 }
 
 /** 이 칸에서 AI를 불러도 되는지(30일 안에 부른 적 없으면 지금 부른 것으로 기록) */
@@ -322,12 +331,21 @@ async function claimCell(db, locale, bias) {
     return cell;
 }
 
-function buildPoolPrompt({ placeName, city, bias, locale, exclude }) {
+/** 모자란 묶음만 요청한다(예: 식당은 충분하고 카페 2곳·볼거리 3곳이 모자라면 그만큼만) */
+function poolMixRule(need) {
+    const parts = [];
+    if (need.restaurant) parts.push(`${need.restaurant} restaurants (category "restaurant")`);
+    if (need.cafe) parts.push(`${need.cafe} cafes (category "cafe")`);
+    if (need.sight) parts.push(`${need.sight} sights or things to do such as parks, landmarks, museums, markets, shopping streets or experiences (category "culture" or "spot")`);
+    return `Recommend exactly ${parts.join(', ')}.`;
+}
+
+function buildPoolPrompt({ placeName, city, bias, locale, exclude, need }) {
     const where = `"${placeName}"${city ? ` in ${city}` : ''} (latitude ${bias.lat.toFixed(5)}, longitude ${bias.lng.toFixed(5)})`;
     const known = exclude.length > 0 ? `These places are already known, so do not repeat them: ${exclude.join(', ')}.\n` : '';
     return `You are a travel guide who knows the area well.
-Recommend 5 real places within 1.5 km walking distance of ${where}.
-Mix restaurants, cafes, and sights. Never include hotels or other lodging. Do not include "${placeName}" itself.
+${poolMixRule(need)}
+Every place must be a real place within 1.5 km walking distance of ${where}. Never include hotels or other lodging. Do not include "${placeName}" itself.
 ${known}Only recommend places that actually exist in that neighborhood, using their exact official names so they can be found on Google Maps.
 Describe each place on its own merits. Do not mention the distance or direction from "${placeName}", because the description will be reused for other nearby starting points.
 Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.
@@ -350,23 +368,24 @@ Respond with JSON only, in this shape:
 
 async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceId, takeQuota }) {
     let pool = await readPool(db, bias, locale, basePlaceId);
-    if (pool.length >= POOL_TARGET || !hasLlmProvider()) return { recommendations: pool.map(poolRowToRec), cached: true };
+    const shown = (rows) => pickBalanced(rows).map(poolRowToRec);
+    if (isMixComplete(pool) || !hasLlmProvider()) return { recommendations: shown(pool), cached: true };
 
     const cell = await claimCell(db, locale, bias);
-    if (!cell) return { recommendations: pool.map(poolRowToRec), cached: true };
+    if (!cell) return { recommendations: shown(pool), cached: true };
     try {
         // 여기서부터 LLM을 부른다 — 로그인 사용자별 하루 한도. 거절되면 아래 catch가 방금 잡은 칸을 되돌려 다른 사람이 쓸 수 있게 한다
         await takeQuota();
         const result = await chatCompletion({
             system: 'You are an expert travel assistant. Output ONLY valid JSON.',
-            user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name) }),
+            user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name), need: missingCounts(pool) }),
             json: true,
             timeoutMs: LLM_TIMEOUT_MS,
             budgetMs: LLM_BUDGET_MS,
         });
         const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
         // enrichWithGoogleMaps가 반경 밖 좌표는 이미 버린다(withinRange)
-        const enriched = await enrichWithGoogleMaps(recs, city, bias);
+        const enriched = await enrichWithGoogleMaps(recs, city, bias, locale);
         const rows = enriched
             .filter((r) => r.lat != null && r.lng != null && r.placeId && r.placeId !== basePlaceId && distanceM(bias, r) > 40)
             .map((r) => ({
@@ -396,7 +415,7 @@ async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceI
     }
 
     pool = await readPool(db, bias, locale, basePlaceId);
-    return { recommendations: pool.map(poolRowToRec), cached: false };
+    return { recommendations: shown(pool), cached: false };
 }
 
 export default async function handler(req, res) {
@@ -452,7 +471,7 @@ export default async function handler(req, res) {
             // 쓴다 — 앱은 캐시에 좌표 없는 항목이 있을 때만 이 경로로 온다(aiRecommendations.ts).
             const update = { hit_count: (hit.hit_count ?? 0) + 1 };
             if (process.env.GOOGLE_PLACES_SERVER_KEY && recommendations.some(needsCoords)) {
-                recommendations = await enrichWithGoogleMaps(recommendations, city, bias);
+                recommendations = await enrichWithGoogleMaps(recommendations, city, bias, locale);
                 update.payload = { ...hit.payload, recommendations };
             }
             const { error: updateErr } = await db.from('ai_recommendation_cache').update(update).eq('id', hit.id);
@@ -481,7 +500,7 @@ export default async function handler(req, res) {
             });
             const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
             if (recs.length > 0) {
-                const enriched = await enrichWithGoogleMaps(recs, city, bias);
+                const enriched = await enrichWithGoogleMaps(recs, city, bias, locale);
                 if (db) {
                             const { error } = await db.from('ai_recommendation_cache').upsert(
                         { ...cacheKey, payload: { recommendations: enriched }, provider: result.provider, model_used: result.model, hit_count: 0, created_at: new Date().toISOString(), expires_at: NEVER_EXPIRES },
@@ -507,7 +526,7 @@ export default async function handler(req, res) {
     if (curated.length === 0) {
         return res.status(503).json({ error: 'recommendation_unavailable' });
     }
-    const enrichedCurated = await enrichWithGoogleMaps(curated, city, bias);
+    const enrichedCurated = await enrichWithGoogleMaps(curated, city, bias, locale);
     return res.status(200).json({
         success: true,
         provider: 'Triptic Curated',

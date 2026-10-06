@@ -149,14 +149,17 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
             .filter((r) => r.located.status === 'pending')
             .map(async (r) => {
               let located: Located = { status: 'notFound' };
+              // 구글이 이 언어로 저장한 이름 — AI가 쓴 이름(현지어 원문일 수 있음)은 검색어로만 쓰고 화면엔 이 이름을 보여 준다
+              let googleName: string | null = null;
               try {
                 const found = await resolvePlace(city ? `${r.rec.name} ${city}` : r.rec.name, bias);
                 if (found && !isOutOfRange(found, bias)) {
                   located = { status: 'found', ...found };
+                  googleName = found.name || null;
                   queryClient.setQueryData<ApiRecommendation[]>(queryKey, (old) =>
                     old?.map((rec) =>
                       rec.name === r.rec.name
-                        ? { ...rec, lat: found.lat, lng: found.lng, address: found.address, placeId: found.placeId, types: found.types }
+                        ? { ...rec, ...(googleName ? { name: googleName } : {}), lat: found.lat, lng: found.lng, address: found.address, placeId: found.placeId, types: found.types }
                         : rec,
                     ),
                   );
@@ -165,7 +168,7 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
                 captureError(err, { context: 'aiNextPlace.resolvePlace' });
               }
               if (controller.signal.aborted) return;
-              setRecs((prev) => prev.map((p) => (p.id === r.id ? { ...p, located } : p)));
+              setRecs((prev) => prev.map((p) => (p.id === r.id ? { ...p, ...(googleName ? { rec: { ...p.rec, name: googleName } } : {}), located } : p)));
             }),
         );
       } catch (err) {
