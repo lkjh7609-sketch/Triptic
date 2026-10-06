@@ -68,7 +68,9 @@ export function initMonitoring(): Promise<void> {
 async function loadMonitoring(): Promise<void> {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
   if (sentryDsn && !sentryModule) {
-    const Sentry = await import('@sentry/react');
+    // 새 배포 직후 예전 탭에서 청크를 못 받으면 vite:preloadError 처리기(chunkRetry)가 오류를 삼키고 import()가 undefined로 끝난다 — 곧 새로고침되니 조용히 그만둔다
+    const Sentry = (await import('@sentry/react')) as typeof SentryNS | undefined;
+    if (!Sentry) return;
     Sentry.init({
       dsn: sentryDsn,
       release: `triptic@${import.meta.env.VITE_APP_VERSION ?? 'dev'}`,
@@ -84,7 +86,9 @@ async function loadMonitoring(): Promise<void> {
 
   const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
   if (posthogKey && !posthogModule) {
-    const { default: posthog } = await import('posthog-js');
+    const posthogImport = (await import('posthog-js')) as typeof import('posthog-js') | undefined;
+    if (!posthogImport) return;
+    const posthog = posthogImport.default;
     posthog.init(posthogKey, {
       api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
       capture_pageview: false, // 화면 전환은 02-screens.md §1.3 규칙에 맞춰 직접 기록한다
