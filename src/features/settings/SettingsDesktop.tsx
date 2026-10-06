@@ -7,7 +7,6 @@ import {
   Camera,
   BookOpen,
   ChevronRight,
-  Code2,
   Database,
   FileText,
   Handshake,
@@ -49,7 +48,6 @@ import { registerPushNotifications } from '@/shared/push/registerPush';
 import { clearOfflineCache } from '@/shared/offline/persister';
 import type { NotificationPrefs, ProfileRow } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
-import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
 import { EditProfileModal } from './EditProfileModal';
 import { FeedbackModal } from './FeedbackModal';
@@ -121,7 +119,6 @@ export function SettingsDesktop() {
   const [clearing, setClearing] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
-  const [showLicenses, setShowLicenses] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [feedbackKind, setFeedbackKind] = useState<'general' | 'partnership' | null>(null);
@@ -549,12 +546,6 @@ export function SettingsDesktop() {
                   </span>
                   <span className={styles.linkDesc}>{t('desktop.community.privacyDesc')}</span>
                 </a>
-                <button type="button" className={styles.linkCard} onClick={() => setShowLicenses(true)}>
-                  <span className={styles.linkTitle}>
-                    <Code2 size={16} aria-hidden="true" /> {t('licenses.title')}
-                  </span>
-                  <span className={styles.linkDesc}>{t('desktop.community.licensesDesc')}</span>
-                </button>
               </div>
               {/* 홈 PC 푸터와 같은 모양 — 항목 단위로만 줄바꿈, 저작권은 아래 줄 */}
               <p className={styles.operator}>
@@ -577,7 +568,6 @@ export function SettingsDesktop() {
       </div>
 
       {showBackup ? <BackupModal trips={trips.data ?? []} onClose={() => setShowBackup(false)} onImported={() => trips.refetch()} /> : null}
-      {showLicenses ? <LicensesModal onClose={() => setShowLicenses(false)} /> : null}
       {showEdit ? <EditProfileModal onClose={() => setShowEdit(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showPassword ? <PasswordChangeDialog provider={signInProviderOf(user)} onClose={() => setShowPassword(false)} /> : null}
       {feedbackKind ? <FeedbackModal kind={feedbackKind} onClose={() => setFeedbackKind(null)} /> : null}
