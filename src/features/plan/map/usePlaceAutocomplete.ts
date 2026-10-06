@@ -6,6 +6,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { loadGoogleMapsPlaces } from '@/shared/api/googleMapsLoader';
+import i18n from '@/shared/i18n';
+import { searchPlacesOnServer } from './placeSearchApi';
 
 export interface SelectedPlace {
   name: string;
@@ -33,8 +35,33 @@ export interface UsePlaceAutocompleteOptions {
   textSearchFallback?: boolean;
 }
 
+/** 서버가 구글을 못 부르는 상태(서버 키 없음 등)일 때만 쓰는 브라우저 직접 검색 */
+async function searchInBrowser(q: string, bias: { lat: number | null; lng: number | null }): Promise<SelectedPlace[]> {
+  const { Place } = await loadGoogleMapsPlaces();
+  const { lat, lng } = bias;
+  const { places } = await Place.searchByText({
+    textQuery: q,
+    fields: ['displayName', 'formattedAddress', 'location', 'id', 'types', 'addressComponents'],
+    maxResultCount: 6,
+    ...(lat != null && lng != null ? { locationRestriction: boundsAround(lat, lng) } : {}),
+  });
+  return places
+    .filter((pl) => pl.location)
+    .map((pl) => ({
+      name: pl.displayName ?? pl.formattedAddress ?? '',
+      address: pl.formattedAddress ?? '',
+      lat: pl.location!.lat(),
+      lng: pl.location!.lng(),
+      placeId: pl.id ?? null,
+      types: pl.types ?? [],
+      countryCode: pl.addressComponents?.find((c) => c.types.includes('country'))?.shortText ?? null,
+    }));
+}
+
 /** 입력을 멈춘 뒤 이만큼 기다렸다가 자동완성 목록이 비었는지 본다(자동완성이 먼저 응답할 시간) */
 const FALLBACK_DELAY_MS = 700;
+/** 이 글자 수 미만이면 보조 검색을 하지 않는다 */
+const FALLBACK_MIN_CHARS = 2;
 
 const BIAS_RADIUS_KM = 200;
 
@@ -113,7 +140,7 @@ export function usePlaceAutocomplete(
       const q = input?.value.trim() ?? '';
       seq += 1;
       const mySeq = seq;
-      if (!fallbackOn || q.length < 2) {
+      if (!fallbackOn || q.length < FALLBACK_MIN_CHARS) {
         setFallbackItems([]);
         return;
       }
@@ -126,30 +153,17 @@ export function usePlaceAutocomplete(
           return;
         }
         try {
-          const { Place } = await loadGoogleMapsPlaces();
-          const { lat, lng } = biasRef.current;
-          const { places } = await Place.searchByText({
-            textQuery: q,
-            fields: ['displayName', 'formattedAddress', 'location', 'id', 'types', 'addressComponents'],
-            maxResultCount: 6,
-            ...(lat != null && lng != null ? { locationRestriction: boundsAround(lat, lng) } : {}),
-          });
+          const bias = biasRef.current;
+          // 서버(캐시 → 우리 장소 풀 → 구글, 하루 한도)가 먼저 — 로그인 전이면 보조 검색을 하지 않는다
+          const server = await searchPlacesOnServer(q, bias, i18n.language);
           if (mySeq !== seq) return;
-          setFallbackItems(
-            places
-              .filter((pl) => pl.location)
-              .map((pl) => ({
-                name: pl.displayName ?? pl.formattedAddress ?? '',
-                address: pl.formattedAddress ?? '',
-                lat: pl.location!.lat(),
-                lng: pl.location!.lng(),
-                placeId: pl.id ?? null,
-                types: pl.types ?? [],
-                countryCode: pl.addressComponents?.find((c) => c.types.includes('country'))?.shortText ?? null,
-              })),
-          );
+          if (server === null) {
+            setFallbackItems([]);
+            return;
+          }
+          setFallbackItems(server === 'unavailable' ? await searchInBrowser(q, bias) : server);
         } catch {
-          // Places API(New)가 꺼져 있거나 한도 초과 — 보조 검색만 포기하고 자동완성은 그대로 둔다
+          // 네트워크·구글 오류 — 보조 검색만 포기하고 자동완성은 그대로 둔다
           if (mySeq === seq) setFallbackItems([]);
         }
       }, FALLBACK_DELAY_MS);
