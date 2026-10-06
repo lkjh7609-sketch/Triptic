@@ -11,6 +11,9 @@ function resolveProviders() {
             key: process.env.DEEPSEEK_API_KEY,
             // 현재 모델 이름(예전 deepseek-chat은 문서에서 빠졌다) — 문서 인식(parseBooking/llm.ts)과 같다
             model: 'deepseek-flash',
+            // deepseek-flash는 기본이 '생각하는' 모드라 추천 5곳을 만드는 데 20~24초(추론 토큰 약 4,000개)가 걸렸다. 끄면 같은 요청이 5~6초
+            // (2026-10-07 직접 측정, 결과 품질은 같고 한국어 문구도 정상). 여기 쓰는 호출(추천·도시 설명)은 추론이 필요 없다
+            extraBody: { thinking: { type: 'disabled' } },
             extraHeaders: {},
         });
     }
@@ -20,6 +23,7 @@ function resolveProviders() {
             url: 'https://openrouter.ai/api/v1/chat/completions',
             key: process.env.OPENROUTER_API_KEY,
             model: 'deepseek/deepseek-chat',
+            extraBody: {},
             extraHeaders: { 'HTTP-Referer': 'https://triptic.my', 'X-Title': 'Triptic' },
         });
     }
@@ -49,6 +53,7 @@ async function callProvider(provider, { system, user, temperature, json, timeout
                 ],
                 temperature,
                 ...(json ? { response_format: { type: 'json_object' } } : {}),
+                ...provider.extraBody,
             }),
             signal: controller.signal,
         });
