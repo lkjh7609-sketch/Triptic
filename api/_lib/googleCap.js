@@ -2,12 +2,16 @@
 // 한도는 환경 변수 GOOGLE_CAP_<종류>(예: GOOGLE_CAP_PLACES_NEARBY=2000)로 바꿀 수 있다. 사용량: Supabase google_api_calls 표.
 // 브라우저가 직접 부르는 구글(지도·자동완성)은 서버가 막을 수 없다 — 구글 클라우드 콘솔의 할당량으로만 제한된다.
 
-/** 기본 월 한도 — 무료 구간(Text Search Pro 5,000·Nearby Enterprise 1,000·Vision 1,000)을 넘으면 요금이 나간다 */
+/**
+ * 기본 월 한도 — 무료 구간 안에서 끝나도록(요금 0원) 무료 한도보다 조금 낮게 잡았다.
+ * 무료 한도(구글 요금표): Text Search Pro 5,000 · Nearby Search Enterprise 1,000(평점 필드) · Find Place Pro 5,000 · Vision 글자 인식 1,000.
+ * 브라우저가 부르는 같은 종류(장소 위치 찾기=Find Place, 서버를 못 쓸 때의 Text Search)와 무료 한도를 나눠 쓰므로 그만큼 여유를 둔다.
+ */
 export const DEFAULT_GOOGLE_CAPS = {
-    places_text_search: 5000,
-    places_nearby: 3000,
-    places_find: 3000,
-    vision: 5000,
+    places_text_search: 4000,
+    places_nearby: 950,
+    places_find: 2500,
+    vision: 950,
 };
 
 export class GoogleCapError extends Error {

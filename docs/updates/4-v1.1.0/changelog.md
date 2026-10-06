@@ -8,7 +8,7 @@
 
 - **요청(사용자)**: 구글 API 비용 걱정으로 서버에서 호출 상한을 건다.
 - **구조**: 구글을 부르기 직전에 `takeGoogleCall(db, 종류)`로 이번 달(UTC) 서버 전체 합계 1회분을 쓴다. 한도에 닿으면 호출하지 않는다. DB 함수 `take_google_call`(0099)이 확인과 기록을 한 문장으로 해서 동시에 여러 요청이 와도 한도를 못 넘는다. 확인이 안 되면(DB 없음·오류) 통과시키지 않는다(닫힌 쪽). `api/_lib/googleCap.js`.
-- **종류와 기본 월 한도**: `places_text_search` 5,000(장소 검색 보조) · `places_nearby` 3,000(주변 추천 구글 Nearby, 묶음당 1회) · `places_find` 3,000(예전 방식 좌표 확인) · `vision` 5,000(서류 글자 인식). 환경 변수 `GOOGLE_CAP_<종류>`(예: `GOOGLE_CAP_PLACES_NEARBY=2000`, 0이면 완전 차단)로 바꾼다. 최악일 때 월 대략 $130 안팎으로 추정(무료 구간 제외 안 한 값, 필드별 등급은 확인 못 한 추정).
+- **종류와 기본 월 한도**: `places_text_search` 4,000(장소 검색 보조) · `places_nearby` 950(주변 추천 구글 Nearby, 묶음당 1회) · `places_find` 2,500(예전 방식 좌표 확인) · `vision` 950(서류 글자 인식) — **무료 구간 안(요금 0원)** 에서 끝나게 무료 한도(Text Search Pro 5,000·Nearby Enterprise 1,000·Find Place Pro 5,000·Vision 1,000)보다 낮게 잡음. 브라우저가 쓰는 같은 종류(위치 찾기=Find Place 등)와 무료 한도를 나눠 쓰므로 Find Place는 절반만. 무료 한도 숫자는 구글 요금표 기준이고 필드별 등급은 확인 못 한 추정. 환경 변수 `GOOGLE_CAP_<종류>`(예: `GOOGLE_CAP_PLACES_NEARBY=2000`, 0이면 완전 차단)로 바꾼다.
 - **한도에 닿으면**: 장소 검색 보조는 우리 장소 풀 결과만, 주변 추천은 새 구글 호출 없이 쌓인 풀만(없으면 예전 방식 → 좌표는 한도 안에서만), 서류 인식은 "이번 달 서류 인식 한도를 모두 썼어요" 안내.
 - **사용량 보기**: Supabase에서 `select * from google_api_calls order by month desc, kind;`
 - **못 막는 것**: 브라우저가 직접 부르는 구글(지도 표시·장소 자동완성)은 서버를 거치지 않아 이 상한이 닿지 않는다 — 구글 클라우드 콘솔의 API 할당량(Quotas)에서 따로 제한해야 한다.
