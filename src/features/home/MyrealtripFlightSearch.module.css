@@ -535,7 +535,7 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    gap: var(--space-2);
+    gap: 3px;
     padding: 3px;
     border-radius: var(--radius-lg);
     background: var(--surface-subtle);
@@ -588,13 +588,13 @@
     color: var(--brand-text);
   }
 
-  /* 교체 버튼은 첫 두 칸 사이 간격 위에 걸친다(양쪽 여백 −22px = 버튼 36px − 간격 8px − 여유) */
+  /* 교체 버튼은 첫 두 칸 사이 간격 위에 걸친다(칸 사이 3px이 되도록 양쪽 여백 −19.5px = (버튼 36px + 간격 3px×2 − 3px) ÷ 2) */
   .route .swap {
     position: relative;
     z-index: 2;
     flex: none;
     align-self: center;
-    margin: 0 -22px;
+    margin: 0 -19.5px;
     border: 1px solid var(--border);
   }
 
