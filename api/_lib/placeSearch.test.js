@@ -36,9 +36,24 @@ describe('placeSearch', () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
+    // 캐시·풀은 비어 있고, 한도(서버 월 한도 포함) 확인만 통과하는 가짜 DB
+    const openDb = () => {
+        const q = { select: () => q, eq: () => q, gte: () => q, lte: () => q, or: () => q, limit: async () => ({ data: [] }), maybeSingle: async () => ({ data: null }), upsert: async () => ({ error: null }) };
+        return { from: () => q, rpc: async () => ({ data: [{ allowed: true, used: 1 }] }) };
+    };
+
+    it('서버 월 한도를 다 쓰면 구글을 부르지 않는다', async () => {
+        const fetchMock = vi.fn();
+        vi.stubGlobal('fetch', fetchMock);
+        const db = { ...openDb(), rpc: async () => ({ data: [{ allowed: false, used: 5000 }] }) };
+        const out = await placeSearch({ db, apiKey: 'k', q: '동물원', locale: 'ko', bias, takeQuota: async () => {} });
+        expect(out).toMatchObject({ limited: true });
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it('구글 결과를 돌려준다', async () => {
         vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ places: [{ id: 'p1', displayName: { text: '타롱가 동물원' }, location: { latitude: -33.84, longitude: 151.24 } }] }) }));
-        const out = await placeSearch({ db: null, apiKey: 'k', q: '동물원', locale: 'ko', bias, takeQuota: async () => {} });
+        const out = await placeSearch({ db: openDb(), apiKey: 'k', q: '동물원', locale: 'ko', bias, takeQuota: async () => {} });
         expect(out.source).toBe('google');
         expect(out.results[0].name).toBe('타롱가 동물원');
     });

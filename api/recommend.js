@@ -13,6 +13,7 @@ import { DailyLimitError, takeAiQuota } from './_lib/aiQuota.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
+import { takeGoogleCall } from './_lib/googleCap.js';
 import { placeSearch, PLACE_SEARCH_KIND, PLACE_SEARCH_DAILY_LIMIT } from './_lib/placeSearch.js';
 import { applyBlurbs, buildBlurbPrompt, searchNearbyGroup, selectCandidates } from './_lib/nearbyGoogle.js';
 import { GROUP_SIZE, GROUPS, isMixComplete, missingCounts, pickBalanced } from './_lib/nearbyMix.js';
@@ -234,6 +235,12 @@ async function enrichWithGoogleMaps(recs, city, bias, locale) {
                 }
             }
 
+            // 서버 전체 월 한도 — 넘었거나 확인 못 하면 좌표 없이 둔다(다음에 다시 시도, 한도가 풀리면 채워짐)
+            try {
+                await takeGoogleCall(db, 'places_find');
+            } catch {
+                return r;
+            }
             const params = new URLSearchParams({
                 input: query,
                 inputtype: 'textquery',
@@ -351,6 +358,8 @@ async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceI
         // 1) 장소는 구글이 고른다(평점 4.0↑·리뷰 50↑·영업 중, 반경 500m) — 모자란 묶음만. 9곳이 안 채워지면 찾은 만큼만 쌓는다
         const need = missingCounts(pool);
         const groups = GROUPS.filter((g) => need[g] > 0);
+        // 서버 전체 월 한도 — 묶음마다 구글 호출 1회. 넘으면 던져서 칸을 되돌리고 아래 예전 경로(이름 추천+좌표 확인)로 넘어간다
+        await takeGoogleCall(db, 'places_nearby', groups.length);
         const found = (await Promise.all(groups.map((group) => searchNearbyGroup({ apiKey: process.env.GOOGLE_PLACES_SERVER_KEY, bias, group, locale })))).flat();
         const known = new Set(pool.map((p) => p.place_id));
         const candidates = selectCandidates(found, { basePlaceId }).filter((c) => !known.has(c.placeId) && distanceM(bias, c) > 40);

@@ -98,12 +98,13 @@ export async function visionPdfFirstPageText(bytes, key) {
  * @returns {Promise<{ text: string, fromOcr: boolean, pageCount: number }>}
  * 지원하지 않는 형식·OCR 키 없음·읽은 글이 없음은 UnsupportedDocumentError(사용자에게 그대로 보여줄 문구).
  */
-export async function extractDocumentText(bytes, mimeType) {
+export async function extractDocumentText(bytes, mimeType, { beforeVision } = {}) {
     if (mimeType === 'application/pdf') {
         const { text, pageCount } = await pdfFirstPageText(bytes);
         if (hasUsableText(text)) return { text, fromOcr: false, pageCount };
         const key = visionKey();
         if (!key) throw new UnsupportedDocumentError('스캔본 PDF는 아직 읽을 수 없어요. 글자가 들어 있는 PDF나 사진으로 올려 주세요.');
+        await beforeVision?.();
         const ocr = await visionPdfFirstPageText(bytes, key);
         if (!hasUsableText(ocr)) throw new UnsupportedDocumentError('문서에서 글자를 찾지 못했어요.');
         return { text: ocr, fromOcr: true, pageCount };
@@ -111,6 +112,7 @@ export async function extractDocumentText(bytes, mimeType) {
     if (IMAGE_TYPES.includes(mimeType)) {
         const key = visionKey();
         if (!key) throw new UnsupportedDocumentError('사진 인식을 아직 쓸 수 없어요. PDF로 올려 주세요.');
+        await beforeVision?.();
         const text = await visionImageText(bytes, key);
         if (!hasUsableText(text)) throw new UnsupportedDocumentError('사진에서 글자를 찾지 못했어요. 더 밝고 선명하게 찍어 주세요.');
         return { text, fromOcr: true, pageCount: 1 };
