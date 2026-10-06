@@ -65,14 +65,21 @@ async function callProvider(provider, { system, user, temperature, json, timeout
 /**
  * @returns {Promise<{ content: string, provider: string, model: string }>}
  * DeepSeek 직접 → (실패하면) OpenRouter 순서. 전부 실패하면 마지막 오류를 던진다(호출부가 폴백을 결정).
+ * timeoutMs는 공급자 한 곳당 제한, budgetMs는 전체 제한이다 — 첫 곳이 오래 걸린 뒤 대체 공급자까지 각자 제한만큼 기다리면
+ * 서버리스 함수의 최대 실행 시간(vercel.json maxDuration)을 넘겨 호출자가 오류 응답을 받기 전에 504가 된다(2026-10-06 recommend).
+ * 남은 시간이 MIN_ATTEMPT_MS보다 적으면 다음 공급자는 시도하지 않는다.
  */
-export async function chatCompletion({ system, user, temperature = 0.7, json = false, timeoutMs = 8000 }) {
+export const MIN_ATTEMPT_MS = 2500;
+export async function chatCompletion({ system, user, temperature = 0.7, json = false, timeoutMs = 8000, budgetMs = Infinity }) {
     const providers = resolveProviders();
     if (providers.length === 0) throw new Error('No LLM provider configured');
+    const deadline = Date.now() + budgetMs;
     let lastError;
     for (const provider of providers) {
+        const remaining = deadline - Date.now();
+        if (lastError && remaining < MIN_ATTEMPT_MS) break;
         try {
-            return await callProvider(provider, { system, user, temperature, json, timeoutMs });
+            return await callProvider(provider, { system, user, temperature, json, timeoutMs: Math.min(timeoutMs, remaining) });
         } catch (e) {
             lastError = e;
             console.warn(`[llm] ${provider.name} failed:`, e instanceof Error ? e.message : e);
