@@ -16,7 +16,10 @@ import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 
 // DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
 // Google Places 보강 시간까지 남겨둔다.
-const LLM_TIMEOUT_MS = 22000;
+// 함수 최대 실행 시간이 30초(vercel.json)라, 공급자 한 곳당 16초·전체 22초 안에서 대체 공급자까지 시도하고 나머지는 좌표 보강에 쓴다.
+// 예전엔 곳당 22초라 DeepSeek이 느리면 OpenRouter까지 기다리다 30초를 넘겨 504가 났다(2026-10-06)
+const LLM_TIMEOUT_MS = 16000;
+const LLM_BUDGET_MS = 22000;
 // 한 번 생성한 결과는 계속 쓴다(expires_at은 컬럼 호환용 먼 미래 값)
 const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
 // "주변" 추천의 최대 거리 — AI가 엉뚱한 도시의 같은 이름 가게를 지어내도(오사카역 근처라며
@@ -359,6 +362,7 @@ async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceI
             user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name) }),
             json: true,
             timeoutMs: LLM_TIMEOUT_MS,
+            budgetMs: LLM_BUDGET_MS,
         });
         const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
         // enrichWithGoogleMaps가 반경 밖 좌표는 이미 버린다(withinRange)
@@ -473,6 +477,7 @@ export default async function handler(req, res) {
                 user: buildPrompt({ placeName, city, category, locale }),
                 json: true,
                 timeoutMs: LLM_TIMEOUT_MS,
+                budgetMs: LLM_BUDGET_MS,
             });
             const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
             if (recs.length > 0) {
