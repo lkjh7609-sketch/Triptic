@@ -57,8 +57,22 @@ export function isMixComplete(rows: { category?: string | null }[]): boolean {
   return GROUPS.every((g) => have[g] >= GROUP_SIZE);
 }
 
-/** 거리순 목록에서 묶음마다 가까운 3곳씩 식당 → 카페 → 볼거리 순으로(모자란 묶음은 남은 곳 중 가까운 것으로 채워 최대 9곳) */
-export function pickBalanced<T extends { category?: string | null }>(rows: T[]): T[] {
+/** 무작위로 섞은 사본(Fisher–Yates) */
+export function shuffled<T>(rows: T[], random: () => number = Math.random): T[] {
+  const a = [...rows];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
+ * 쌓인 장소에서 묶음마다 **무작위로** 3곳씩 식당 → 카페 → 볼거리 순으로(모자란 묶음은 남은 곳 중 무작위로 채워 최대 9곳).
+ * 비슷한 자리에서 열 때마다(기준 장소마다) 같은 가까운 곳만 나오지 않게 한다.
+ */
+export function pickBalanced<T extends { category?: string | null }>(rowsInput: T[], random: () => number = Math.random): T[] {
+  const rows = shuffled(rowsInput, random);
   const max = GROUP_SIZE * GROUPS.length;
   const out: T[] = [];
   const picked = new Set<T>();
@@ -82,7 +96,7 @@ export function pickBalanced<T extends { category?: string | null }>(rows: T[]):
   return out;
 }
 
-/** 풀을 거리순으로 넉넉히 읽는다(RPC 상한 60, 0097) — 가까운 곳이 한 종류로만 몰려 있어도 묶음별로 고르려고 */
+/** 풀을 넉넉히 읽는다(RPC 상한 60, 0097) — 한 종류로만 몰려 있어도 묶음별로 고르고, 무작위로 고를 후보를 늘리려고 */
 const POOL_READ = 60;
 
 interface PoolRow {
@@ -117,8 +131,10 @@ function poolRowToRec(row: PoolRow): ApiRecommendation {
   };
 }
 
-/** "주변" 추천 최대 거리(api/recommend.js MAX_DISTANCE_M과 같은 값) */
+/** "주변" 추천 최대 거리(api/recommend.js MAX_DISTANCE_M과 같은 값) — AI가 엉뚱한 곳을 지어낸 것을 거르는 안전선 */
 export const NEARBY_RADIUS_M = 1500;
+/** 쌓인 장소를 '같은 곳'으로 보여 주는 범위(api/recommend.js POOL_RADIUS_M과 같은 값) */
+export const NEARBY_POOL_RADIUS_M = 500;
 
 /** 기준점에서 반경 밖 좌표 — AI가 다른 도시의 같은 이름 가게를 지어낸 경우(오사카역 → 도쿄 롯폰기) */
 export function isOutOfRange(point: { lat?: number | null; lng?: number | null }, base: { lat: number; lng: number } | null): boolean {
@@ -168,7 +184,7 @@ export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRe
 }
 
 /**
- * 기준 좌표가 있으면: 1.5km 안 장소 풀(0050)에 식당 3·카페 3·볼거리 3이 있으면 그대로(AI 없음), 모자라면
+ * 기준 좌표가 있으면: 500m 안 장소 풀(0050)에 식당 3·카페 3·볼거리 3이 있으면 그중 무작위로(AI 없음), 모자라면
  * /api/recommend가 AI로 모자란 만큼 더 받아 반경 안 것만 풀에 쌓은 뒤 돌려준다.
  * 좌표가 없으면(도시 기준): 1) 이름별 DB 캐시(0049) → 2) 없을 때만 /api/recommend.
  */
@@ -179,7 +195,7 @@ export async function fetchNearbyRecommendations(input: NearbyInput): Promise<Ap
       const { data, error } = await getSupabaseClient().rpc('get_nearby_ai_places', {
         p_lat: input.lat,
         p_lng: input.lng,
-        p_radius_m: NEARBY_RADIUS_M,
+        p_radius_m: NEARBY_POOL_RADIUS_M,
         p_locale: aiLocale(input.locale),
         p_limit: POOL_READ,
       });

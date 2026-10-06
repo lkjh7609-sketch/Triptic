@@ -76,7 +76,7 @@ describe('isOutOfRange (1.5km)', () => {
   });
 });
 
-describe('기준 좌표가 있으면 1.5km 장소 풀부터', () => {
+describe('기준 좌표가 있으면 500m 장소 풀부터', () => {
   const row = (id: string, distance: number, category = 'spot') => ({
     place_id: id, name: id, lat: 34.7, lng: 135.49, address: null, category,
     category_label: null, signature_menu: null, price_range: null, reason: null, tip: null, distance_m: distance,
@@ -87,11 +87,16 @@ describe('기준 좌표가 있으면 1.5km 장소 풀부터', () => {
     row('r4', 140, 'restaurant'), row('c2', 150, 'cafe'), row('s2', 160, 'culture'), row('c3', 170, 'cafe'), row('c4', 180, 'cafe'), row('s3', 190, 'spot'),
   ];
 
-  it('식당 3·카페 3·볼거리 3이 쌓여 있으면 AI(/api) 없이 풀만 쓴다 — 묶음별로 가까운 3곳, 기준 장소 자신은 뺀다', async () => {
+  it('식당 3·카페 3·볼거리 3이 쌓여 있으면 AI(/api) 없이 풀만 쓴다 — 묶음별로 무작위 3곳, 기준 장소 자신은 뺀다', async () => {
     rpc.mockResolvedValue({ data: full, error: null });
     const recs = await fetchNearbyRecommendations(base);
-    expect(recs.map((r) => r.placeId)).toEqual(['r1', 'r2', 'r3', 'c1', 'c2', 'c3', 's1', 's2', 's3']);
-    expect(rpc).toHaveBeenCalledWith('get_nearby_ai_places', expect.objectContaining({ p_radius_m: 1500, p_locale: 'ko', p_limit: 60 }));
+    // 식당 4곳 중 3곳·카페 4곳 중 3곳·볼거리 3곳 — 무작위라 어느 것인지는 정해지지 않지만 구성은 같다
+    expect(recs).toHaveLength(9);
+    expect(recs.slice(0, 3).every((r) => r.placeId?.startsWith('r'))).toBe(true);
+    expect(recs.slice(3, 6).every((r) => r.placeId?.startsWith('c'))).toBe(true);
+    expect(recs.slice(6).map((r) => r.placeId).sort()).toEqual(['s1', 's2', 's3']);
+    expect(recs.some((r) => r.placeId === 'base')).toBe(false);
+    expect(rpc).toHaveBeenCalledWith('get_nearby_ai_places', expect.objectContaining({ p_radius_m: 500, p_locale: 'ko', p_limit: 60 }));
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -118,9 +123,13 @@ describe('주변 추천 구성(식당 3·카페 3·볼거리 3)', () => {
     expect(isMixComplete(rows)).toBe(false);
     expect(isMixComplete([...rows, mk('c3', 'cafe')])).toBe(true);
   });
-  it('모자란 묶음은 남은 곳 중 가까운 것으로 채워 최대 9곳', () => {
+  it('모자란 묶음은 남은 곳으로 채워 최대 9곳, 무작위로 골라 호출마다 조합이 달라진다', () => {
     const rows = [mk('r1', 'restaurant'), mk('r2', 'restaurant'), mk('r3', 'restaurant'), mk('r4', 'restaurant'), mk('r5', 'restaurant'), mk('c1', 'cafe'), mk('s1', 'spot')];
-    expect(pickBalanced(rows).map((r) => r.name)).toEqual(['r1', 'r2', 'r3', 'c1', 's1', 'r4', 'r5']);
+    const result = pickBalanced(rows);
+    expect(result).toHaveLength(7);
+    expect(result.map((r) => r.name).slice(3, 5).sort()).toEqual(['c1', 's1']);
+    const pool = [...Array.from({ length: 8 }, (_, i) => mk(`r${i}`, 'restaurant')), ...Array.from({ length: 8 }, (_, i) => mk(`c${i}`, 'cafe')), ...Array.from({ length: 8 }, (_, i) => mk(`s${i}`, 'spot'))];
+    expect(new Set(Array.from({ length: 30 }, () => pickBalanced(pool).map((r) => r.name).join())).size).toBeGreaterThan(5);
     expect(pickBalanced(Array.from({ length: 20 }, (_, i) => mk(`r${i}`, 'restaurant')))).toHaveLength(9);
   });
 });
