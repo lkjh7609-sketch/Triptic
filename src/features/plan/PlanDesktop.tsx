@@ -372,9 +372,6 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
                   <p className={styles.emptyText}>{isFiltering ? t('desktop.noResultsDesc') : t('desktop.emptyDesc')}</p>
                 </div>
               </div>
-              <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={openCreate}>
-                {t('desktop.emptyCta')}
-              </button>
             </div>
           )}
 
@@ -385,7 +382,6 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         <NextTripRail
           trip={nextTripDetail.data ?? nextTrip}
           members={nextTrip ? (members.data?.[nextTrip.id] ?? []) : []}
-          onCreate={openCreate}
         />
       </div>
 
@@ -706,7 +702,7 @@ function PastTripCard({ trip, summary, actions, list }: { trip: TripRow; summary
 }
 
 /** 오른쪽 레일 — 다음 여행 준비 상황(날씨·항공편·PDF·동행자). 전부 그 여행의 실제 데이터만 쓴다 */
-function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; members: TripMember[]; onCreate: () => void }) {
+function NextTripRail({ trip, members }: { trip: TripRow | null; members: TripMember[] }) {
   const { t } = useTranslation('plan');
 
   return (
@@ -752,9 +748,6 @@ function NextTripRail({ trip, members, onCreate }: { trip: TripRow | null; membe
         ) : (
           <>
             <p className={styles.toolkitEmpty}>{t('desktop.toolkitEmpty')}</p>
-            <button type="button" className={`${styles.btnCreate} ${styles.btnCreateSmall}`} onClick={onCreate}>
-              <Plus size={16} /> {t('desktop.createTrip')}
-            </button>
           </>
         )}
 
