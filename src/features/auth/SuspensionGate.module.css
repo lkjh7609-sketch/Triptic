@@ -1,9 +1,47 @@
-.facts {
+/* 화면을 꽉 채우지 않는 작은 가운데 팝업 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--surface-overlay);
+}
+
+.card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin: var(--space-4) 0 var(--space-5);
-  padding: var(--space-4);
+  width: 100%;
+  max-width: 320px;
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.intro {
+  margin: 0;
+  font-size: var(--font-label-size);
+  line-height: 1.5;
+  color: var(--text-body);
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
   border-radius: var(--radius-md);
   background: var(--surface-subtle);
 }
@@ -15,13 +53,25 @@
 }
 
 .facts dt {
-  font-size: var(--font-label-size);
+  font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
 .facts dd {
   margin: 0;
+  font-size: var(--font-label-size);
   font-weight: 600;
   color: var(--text-primary);
   overflow-wrap: anywhere;
+}
+
+.close {
+  min-height: 40px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
