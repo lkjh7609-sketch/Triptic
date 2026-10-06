@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, Eye, MapPin, RotateCcw, Search, UserX } from 'lucide-react';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
-import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
 import { captureError } from '@/shared/monitoring';
 import {
@@ -16,7 +15,10 @@ import {
   type AdminMemberRow,
   type AdminUserRow,
 } from './adminService';
+import type { SuspensionReason } from '@/shared/suspension';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
+import { RemoveMemberDialog } from './RemoveMemberDialog';
+import { AdminSuspensionsSection } from './AdminSuspensionsSection';
 import { AdminTripViewer } from './AdminTripViewer';
 import { COMPANION_AGES } from './companionPrefs';
 import { fetchAdminUserActivity } from './analyticsService';
@@ -96,11 +98,12 @@ function MemberRow({
     trip_limit: member.trip_limit,
   };
 
-  async function removeMember() {
+  async function removeMember(reason: SuspensionReason) {
     try {
-      await adminRemoveMember(member.id);
+      await adminRemoveMember(member.id, reason);
       showToast(t('admin.members.remove.done'), { tone: 'success' });
       void queryClient.invalidateQueries({ queryKey: ['admin', 'members'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'suspensions'] });
     } catch (err) {
       const code = err instanceof AdminRemoveMemberError ? err.code : 'failed';
       if (code === 'failed') captureError(err, { context: 'adminRemoveMember' });
@@ -181,13 +184,9 @@ function MemberRow({
         </div>
       ) : null}
       {confirmRemove ? (
-        <ConfirmDialog
-          danger
-          title={t('admin.members.remove.title', { name: member.display_name || member.handle || member.id.slice(0, 6) })}
-          message={t('admin.members.remove.message')}
-          cancelLabel={t('admin.members.remove.cancel')}
-          confirmLabel={t('admin.members.remove.confirm')}
-          onConfirm={() => void removeMember()}
+        <RemoveMemberDialog
+          name={member.display_name || member.handle || member.id.slice(0, 6)}
+          onConfirm={(reason) => void removeMember(reason)}
           onClose={() => setConfirmRemove(false)}
         />
       ) : null}
@@ -233,6 +232,7 @@ export function AdminMembersTab() {
 
   return (
     <div className={memberStyles.wrap}>
+      <AdminSuspensionsSection />
       <div className={memberStyles.filters}>
         <input
           className={styles.searchInput}

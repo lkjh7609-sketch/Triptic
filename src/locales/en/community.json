@@ -244,13 +244,29 @@
       "remove": {
         "button": "Remove member",
         "title": "Remove {{name}}?",
-        "message": "The account, trips, booking document files, posts, comments and companion records will all be deleted and cannot be restored. This is an admin action.",
+        "message": "The account, trips, booking document files, posts, comments and companion records will all be deleted and cannot be restored. This email will be suspended and can't sign up or log in again (you can lift it under “Suspended accounts” below). This is an admin action.",
         "confirm": "Remove",
         "cancel": "Cancel",
         "done": "Member removed.",
         "reauth": "For security, only an admin who signed in within the last 15 minutes can do this. Please sign in again.",
         "adminBlocked": "Admin accounts can't be removed.",
-        "failed": "Couldn't remove the member. Please try again."
+        "failed": "Couldn't remove the member. Please try again.",
+        "reasonLabel": "Reason for suspension",
+        "reasonPlaceholder": "Select a reason"
+      },
+      "suspended": {
+        "title": "Suspended accounts",
+        "empty": "No suspended accounts.",
+        "at": "Suspended {{time}}",
+        "liftedAt": "Lifted {{time}}",
+        "lift": "Lift suspension",
+        "liftTitle": "Lift the suspension for {{email}}?",
+        "liftMessage": "Once lifted, this email can sign up and log in again. Data that was already deleted won't come back.",
+        "liftConfirm": "Lift",
+        "liftCancel": "Cancel",
+        "liftDone": "Suspension lifted.",
+        "liftFailed": "Couldn't lift the suspension. Please try again.",
+        "loadFailed": "Couldn't load the suspended accounts."
       }
     }
   },

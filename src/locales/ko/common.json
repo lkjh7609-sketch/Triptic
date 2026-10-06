@@ -177,5 +177,20 @@
   },
   "datePicker": {
     "tripRange": "연한 색 칸은 이 여행 기간이에요."
+  },
+  "suspension": {
+    "title": "이용 정지 안내",
+    "intro": "아래 사유에 의해 이용 정지된 계정입니다.",
+    "actedAt": "조치 일시",
+    "reason": "사유",
+    "reasons": {
+      "abuse": "욕설·비방·혐오 표현",
+      "spam": "광고·스팸·도배",
+      "fraud": "사기·허위 정보",
+      "privacy": "타인의 개인정보 노출·침해",
+      "illegal": "불법·유해 콘텐츠",
+      "impersonation": "사칭",
+      "terms": "그 밖의 이용약관 위반"
+    }
   }
 }

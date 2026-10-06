@@ -124,6 +124,14 @@ export async function isEmailAvailable(email: string): Promise<boolean> {
   return data === true;
 }
 
+/** 이용 정지된 이메일로 로그인(또는 다시 가입)했는지 — 정지돼 있으면 사유 코드·조치 시각을 돌려주고(0095), 아니면 null. 정지된 사람이 새로 만든 빈 계정은 서버가 지운다 */
+export async function checkMySuspension(): Promise<{ reason: string; suspendedAt: string } | null> {
+  const { data, error } = await getSupabaseClient().rpc('check_my_suspension');
+  if (error) throw error;
+  const row = (data as { reason: string; suspended_at: string }[] | null)?.[0];
+  return row ? { reason: row.reason, suspendedAt: row.suspended_at } : null;
+}
+
 /** 비밀번호 변경 — 이메일로 가입한 회원만(소셜 로그인 회원은 비밀번호가 없다). 로그인한 세션에서 바로 바꾼다 */
 export async function changePassword(newPassword: string): Promise<void> {
   const client = getSupabaseClient();

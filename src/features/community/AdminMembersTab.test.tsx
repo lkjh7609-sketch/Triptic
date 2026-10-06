@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
 
-const state = vi.hoisted(() => ({ list: vi.fn(), trips: vi.fn(), remove: vi.fn(), tripView: vi.fn() }));
+const state = vi.hoisted(() => ({ list: vi.fn(), trips: vi.fn(), remove: vi.fn(), tripView: vi.fn(), suspensions: vi.fn(), lift: vi.fn() }));
 vi.mock('@/shared/ui/toast', () => ({ showToast: vi.fn() }));
 
 vi.mock('./adminService', () => ({
@@ -11,6 +11,8 @@ vi.mock('./adminService', () => ({
   adminMemberTrips: (...args: unknown[]) => state.trips(...args),
   adminRemoveMember: (...args: unknown[]) => state.remove(...args),
   adminGetTrip: (...args: unknown[]) => state.tripView(...args),
+  adminListSuspensions: (...args: unknown[]) => state.suspensions(...args),
+  adminLiftSuspension: (...args: unknown[]) => state.lift(...args),
   AdminRemoveMemberError: class extends Error {
     constructor(readonly code: string) {
       super(code);
@@ -51,6 +53,8 @@ function renderTab() {
 
 beforeEach(() => {
   state.remove.mockReset().mockResolvedValue(undefined);
+  state.suspensions.mockReset().mockResolvedValue([]);
+  state.lift.mockReset().mockResolvedValue(undefined);
   state.tripView.mockReset().mockResolvedValue({
     trip: { id: 't1', owner_id: 'u1', title: '도쿄 3박 4일', city: 'Tokyo', start_date: '2026-10-15', end_date: '2026-10-18', total_days: 4, base_currency: 'JPY', created_at: '', updated_at: '', deleted_at: null, owner_name: '여행자', owner_handle: 'abc12', member_count: 1 },
     days: [{ id: 'd1', day_index: 1, date: '2026-10-15', city_name: 'Tokyo', note: null }],
@@ -99,12 +103,31 @@ describe('AdminMembersTab', () => {
     expect(screen.getByText('10:30')).toBeInTheDocument();
   });
 
-  it('강제 탈퇴는 확인 창을 거쳐야 서버에 요청한다', async () => {
+  it('강제 탈퇴는 사유를 골라야 눌러지고, 고른 사유와 함께 서버에 요청한다', async () => {
     renderTab();
     fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
     fireEvent.click(screen.getByRole('button', { name: '강제 탈퇴' }));
     expect(state.remove).not.toHaveBeenCalled();
+    // 사유를 고르기 전에는 탈퇴시키기가 막혀 있다
+    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'spam' } });
     fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
-    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1'));
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam'));
+  });
+
+  it('이용 정지 계정 목록을 펼쳐 정지를 해제할 수 있다(이미 해제된 줄에는 버튼이 없다)', async () => {
+    state.suspensions.mockResolvedValue([
+      { id: 7, email: 'bad@example.com', display_name: '나쁜사람', reason: 'fraud', suspended_at: '2026-10-06T12:47:00Z', lifted_at: null },
+      { id: 6, email: 'old@example.com', display_name: null, reason: 'abuse', suspended_at: '2026-10-01T12:47:00Z', lifted_at: '2026-10-02T12:47:00Z' },
+    ]);
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: /이용 정지 계정 \(1\)/ }));
+    expect(await screen.findByText('bad@example.com')).toBeInTheDocument();
+    expect(screen.getByText(/사기·허위 정보/)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: '정지 해제' })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: '정지 해제' }));
+    expect(state.lift).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '해제하기' }));
+    await waitFor(() => expect(state.lift).toHaveBeenCalledWith(7));
   });
 });

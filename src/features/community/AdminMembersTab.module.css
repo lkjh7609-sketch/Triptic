@@ -259,3 +259,77 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* 강제 탈퇴 다이얼로그의 사유 드롭다운 */
+.reasonField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: var(--space-3) 0 var(--space-4);
+  font-size: var(--font-label-size);
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.reasonField select {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 500;
+}
+
+/* 이용 정지 계정 목록 */
+.suspended {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.suspendedHead {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.suspendedList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-2);
+  list-style: none;
+}
+
+.suspendedItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border);
+}
+
+.suspendedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.suspendedLifted {
+  opacity: 0.6;
+}

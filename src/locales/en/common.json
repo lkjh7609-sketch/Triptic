@@ -177,5 +177,20 @@
   },
   "datePicker": {
     "tripRange": "The shaded days are your trip dates."
+  },
+  "suspension": {
+    "title": "Account suspended",
+    "intro": "This account has been suspended for the reason below.",
+    "actedAt": "Date and time of action",
+    "reason": "Reason",
+    "reasons": {
+      "abuse": "Abusive, hateful or harassing content",
+      "spam": "Advertising, spam or flooding",
+      "fraud": "Fraud or false information",
+      "privacy": "Exposing or violating others' personal information",
+      "illegal": "Illegal or harmful content",
+      "impersonation": "Impersonation",
+      "terms": "Other violation of the Terms of Service"
+    }
   }
 }

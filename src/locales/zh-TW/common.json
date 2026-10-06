@@ -177,5 +177,20 @@
   },
   "datePicker": {
     "tripRange": "淺色日期為此旅程的期間。"
+  },
+  "suspension": {
+    "title": "停權通知",
+    "intro": "此帳號因以下原因已被停權。",
+    "actedAt": "處置時間",
+    "reason": "原因",
+    "reasons": {
+      "abuse": "辱罵、毀謗、仇恨言論",
+      "spam": "廣告、垃圾訊息、洗版",
+      "fraud": "詐欺或不實資訊",
+      "privacy": "洩漏或侵害他人個資",
+      "illegal": "違法或有害內容",
+      "impersonation": "冒充他人",
+      "terms": "其他違反服務條款"
+    }
   }
 }
