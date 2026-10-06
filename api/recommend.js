@@ -26,6 +26,9 @@ const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
 // "주변" 추천의 최대 거리 — AI가 엉뚱한 도시의 같은 이름 가게를 지어내도(오사카역 근처라며
 // 도쿄 롯폰기 가게) Google이 그 이름으로 좌표를 찾아 붙이면 400km 밖이 찍혔다.
 const MAX_DISTANCE_M = 1500;
+// 쌓인 장소를 '같은 곳'으로 보여 주는 범위 — 기준 장소 500m 안에 쌓인 것을 무작위로 골라 보여 준다(client NEARBY_POOL_RADIUS_M과 같은 값).
+// 1500m는 AI가 엉뚱한 곳을 지어낸 것을 거르는 안전선(풀에는 쌓아 두면 다른 기준 장소에서 쓰인다)
+const POOL_RADIUS_M = 500;
 
 function distanceM(a, b) {
     const R = 6371000;
@@ -282,7 +285,7 @@ function parseBias(lat, lng) {
 }
 
 // ── 반경 장소 풀(0050) ────────────────────────────────────────────────────
-// 기준점 1.5km 안에 이미 쌓인 장소로 식당 3·카페 3·볼거리 3이 채워지면 AI 없이 그걸 보여주고, 모자라면 AI로
+// 기준점 500m 안에 이미 쌓인 장소로 식당 3·카페 3·볼거리 3이 채워지면 AI 없이 그중에서 무작위로 골라 보여 주고, 모자라면 AI로
 // 모자란 만큼을 더 받아 반경 안에 있는 것만 풀에 쌓는다. 같은 약 500m 칸에서는 30일에 한 번만
 // AI를 부른다 — 장소가 드문 곳에서 열 때마다 AI를 다시 부르지 않게.
 // 묶음(식당·카페·볼거리)마다 3곳(GROUP_SIZE)이 쌓여 있으면 AI를 부르지 않고, 모자란 묶음만 AI에게 요청한다. 거리순으로 넉넉히 읽어 묶음별로 고른다
@@ -311,7 +314,7 @@ async function readPool(db, bias, locale, basePlaceId) {
     const { data, error } = await db.rpc('get_nearby_ai_places', {
         p_lat: bias.lat,
         p_lng: bias.lng,
-        p_radius_m: MAX_DISTANCE_M,
+        p_radius_m: POOL_RADIUS_M,
         p_locale: locale,
         p_limit: POOL_READ,
     });
@@ -345,7 +348,7 @@ function buildPoolPrompt({ placeName, city, bias, locale, exclude, need }) {
     const known = exclude.length > 0 ? `These places are already known, so do not repeat them: ${exclude.join(', ')}.\n` : '';
     return `You are a travel guide who knows the area well.
 ${poolMixRule(need)}
-Every place must be a real place within 1.5 km walking distance of ${where}. Never include hotels or other lodging. Do not include "${placeName}" itself.
+Every place must be a real place within about 500 m (a 5-minute walk) of ${where}. Never include hotels or other lodging. Do not include "${placeName}" itself.
 ${known}Only recommend places that actually exist in that neighborhood, using their exact official names so they can be found on Google Maps.
 Describe each place on its own merits. Do not mention the distance or direction from "${placeName}", because the description will be reused for other nearby starting points.
 Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.

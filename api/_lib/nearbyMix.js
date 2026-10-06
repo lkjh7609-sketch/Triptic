@@ -24,11 +24,22 @@ export function missingCounts(rows) {
     return Object.fromEntries(GROUPS.map((g) => [g, Math.max(0, GROUP_SIZE - have[g])]));
 }
 
+/** 무작위로 섞은 사본(Fisher–Yates). random은 시험에서 고정하려고 바꿀 수 있다 */
+export function shuffled(rows, random = Math.random) {
+    const a = [...rows];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 /**
- * 거리순(가까운 것 먼저)으로 들어온 목록에서 묶음마다 가까운 3곳씩 골라 식당 → 카페 → 볼거리 순으로 돌려준다.
- * 어떤 묶음이 3곳에 못 미치면 남은 곳 중 가까운 것으로 채워 최대 9곳까지(목록이 덜 비어 보이지 않게).
+ * 쌓인 장소 중에서 묶음마다 **무작위로** 3곳씩 골라 식당 → 카페 → 볼거리 순으로 돌려준다 — 비슷한 자리에서 열 때마다(기준 장소마다)
+ * 같은 가까운 곳만 나오지 않게. 어떤 묶음이 3곳에 못 미치면 남은 곳 중 무작위로 채워 최대 9곳까지(목록이 덜 비어 보이지 않게).
  */
-export function pickBalanced(rows) {
+export function pickBalanced(rowsInput, random = Math.random) {
+    const rows = shuffled(rowsInput, random);
     const picked = new Set();
     const out = [];
     for (const g of GROUPS) {
