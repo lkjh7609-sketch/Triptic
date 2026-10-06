@@ -13,6 +13,7 @@ import { DailyLimitError, takeAiQuota } from './_lib/aiQuota.js';
 import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale, LOCALE_LANGUAGE_NAME } from './_lib/http.js';
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
+import { placeSearch, PLACE_SEARCH_KIND, PLACE_SEARCH_DAILY_LIMIT } from './_lib/placeSearch.js';
 import { GROUP_SIZE, isMixComplete, missingCounts, pickBalanced } from './_lib/nearbyMix.js';
 
 // DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
@@ -52,6 +53,8 @@ function withinRange(rec, bias) {
 }
 const CATEGORIES = new Set(['all', 'restaurant', 'cafe', 'culture', 'spot']);
 const isRateLimited = createRateLimiter(20);
+// 장소 검색 보조는 입력을 멈출 때마다 불려서 따로 센다
+const isPlaceSearchLimited = createRateLimiter(40);
 
 /**
  * LLM을 쓸 수 없을 때의 한국어 큐레이션 폴백(주요 일본 5개 도시). 실제 존재하는 장소만
@@ -421,10 +424,40 @@ async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceI
     return { recommendations: shown(pool), cached: false };
 }
 
+/** POST { mode:'placeSearch', q, lat?, lng?, locale } — 자동완성이 비었을 때 앱이 부르는 장소 검색(캐시 → 장소 풀 → 구글 Text Search) */
+async function handlePlaceSearch(req, res) {
+    if (isPlaceSearchLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const q = sanitizeInput(req.body?.q, 60);
+    if (q.length < 2) return res.status(400).json({ error: 'query_too_short' });
+    const db = supabaseAdmin();
+    const takeQuota = async () => {
+        if (!db) throw new Error('quota unavailable');
+        const { data: profile } = await db.from('profiles').select('plan, role').eq('id', user.id).maybeSingle();
+        const pro = profile?.plan === 'pro' || profile?.role === 'admin';
+        const limit = pro ? PLACE_SEARCH_DAILY_LIMIT.pro : PLACE_SEARCH_DAILY_LIMIT.free;
+        const { data, error } = await db.rpc('take_daily_quota', { p_user_id: user.id, p_kind: PLACE_SEARCH_KIND, p_limit: limit, p_meta: {} });
+        const row = Array.isArray(data) ? data[0] : data;
+        if (error || !row) throw new Error('quota unavailable');
+        if (!row.allowed) throw new DailyLimitError(limit, row.used);
+    };
+    const out = await placeSearch({
+        db,
+        apiKey: process.env.GOOGLE_PLACES_SERVER_KEY,
+        q,
+        locale: parseLocale(req.body?.locale),
+        bias: parseBias(req.body?.lat, req.body?.lng),
+        takeQuota,
+    });
+    return res.status(200).json(out);
+}
+
 export default async function handler(req, res) {
     applyCors(req, res, 'POST,OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+    if (req.body?.mode === 'placeSearch') return handlePlaceSearch(req, res);
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
     // AI(LLM) 호출은 비용이 드는 API라 로그인 사용자에게만 연다. 캐시 읽기는 앱이 DB 함수로 직접 하므로 비로그인도 캐시된 결과는 본다
     const user = await requireUser(req, res);
