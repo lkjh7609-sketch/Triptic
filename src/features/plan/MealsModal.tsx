@@ -130,7 +130,7 @@ export function MealsModal({ dayMeals, dayItems, bias, onClose, onSave }: MealsM
                 defaultValue={info.name ?? ''}
                 disabled={info.skip}
               />
-              <PlaceFallbackList inputRef={inputRefs[slot]} items={fallbacks[slot].items} onPick={fallbacks[slot].pick} />
+              <PlaceFallbackList rect={fallbacks[slot].rect} items={fallbacks[slot].items} onPick={fallbacks[slot].pick} />
               <label className={styles.mealSkipLabel}>
                 <input
                   type="checkbox"

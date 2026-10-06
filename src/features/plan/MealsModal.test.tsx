@@ -9,7 +9,7 @@ const state = vi.hoisted(() => ({ callbacks: [] as Array<(p: unknown) => void> }
 vi.mock('./map/usePlaceAutocomplete', () => ({
   usePlaceAutocomplete: (onSelect: (p: unknown) => void) => {
     state.callbacks.push(onSelect);
-    return { inputRef: { current: null }, fallback: { items: [], pick: () => {}, clear: () => {} } };
+    return { inputRef: { current: null }, fallback: { items: [], rect: null, pick: () => {}, clear: () => {} } };
   },
 }));
 vi.mock('@/shared/a11y/useFocusTrap', () => ({ useFocusTrap: () => ({ current: null }) }));
