@@ -35,6 +35,7 @@ import {
   useUrgentCompanions,
 } from './hooks/useDestinationChannel';
 import { useDestination } from './hooks/useDestinations';
+import { mergeAllFeed } from './hooks/useAllFeedItems';
 import type { PostSort } from './communityService';
 import type { CompanionSort } from './companionService';
 import styles from './DestinationChannelScreen.module.css';
@@ -169,6 +170,9 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
   const filterText = search || (tag ? `#${tag}` : '');
   const postItems = posts.data?.pages.flatMap((p) => p.posts) ?? [];
   const companionItems = companions.data?.pages.flatMap((p) => p.posts) ?? [];
+  // '전체'(최신순·태그 없음)에는 모집 중인 모집글도 시간순으로 섞는다
+  const mergeCompanions = tab === 'all' && postSort === 'latest' && companionSort === 'latest' && !tag;
+  const allItems = mergeAllFeed(postItems, mergeCompanions ? companionItems : [], !!posts.hasNextPage);
 
   return (
     <div className={styles.page}>
@@ -281,7 +285,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               </>
             ) : feed.isError ? (
               <ErrorState summary={t('feed.loadError')} onRetry={() => feed.refetch()} />
-            ) : (isCompanionTab ? companionItems : postItems).length === 0 ? (
+            ) : (isCompanionTab ? companionItems : allItems).length === 0 ? (
               <div className={styles.empty}>
                 <h3>
                   {filterText && !isCompanionTab
@@ -316,9 +320,13 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               <>
                 {isCompanionTab
                   ? companionItems.map((post) => <ChannelCompanionCard key={post.id} post={post} />)
-                  : postItems.map((post) => (
-                      <ChannelPostCard key={post.id} post={post} onTagClick={filterByTag} />
-                    ))}
+                  : allItems.map((item) =>
+                      item.kind === 'post' ? (
+                        <ChannelPostCard key={item.id} post={item.post} onTagClick={filterByTag} />
+                      ) : (
+                        <ChannelCompanionCard key={item.id} post={item.post} />
+                      ),
+                    )}
                 {feed.hasNextPage ? (
                   <div className={styles.loadMoreWrap}>
                     <button

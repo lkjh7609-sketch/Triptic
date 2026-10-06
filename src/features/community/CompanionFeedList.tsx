@@ -84,7 +84,7 @@ export function CompanionFeedList({ destinationId, hostingOnly = false }: Compan
 }
 
 /** 모집글 한 장 — 제목·시간 / 작성자(나잇대·성별)·여행지·일정 / 'N명 모집 | 원하는 동행' / 본문 / 태그 */
-function CompanionFeedCard({ post }: { post: CompanionPost }) {
+export function CompanionFeedCard({ post }: { post: CompanionPost }) {
   const { t, i18n } = useTranslation('community');
   const prefs = prefsLabel(post, t);
   const tags = sanitizeTags(post.tags);

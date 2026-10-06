@@ -14,7 +14,8 @@ import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
 import { DestinationSelector } from './DestinationSelector';
 import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
-import { CompanionFeedList } from './CompanionFeedList';
+import { CompanionFeedList, CompanionFeedCard } from './CompanionFeedList';
+import { useAllFeedItems } from './hooks/useAllFeedItems';
 import { PendingCompanionReviewPrompt } from './PendingCompanionReviewPrompt';
 import styles from './CommunityScreen.module.css';
 import { CommunityDesignBody } from './CommunityDesign';
@@ -64,7 +65,14 @@ export function CommunityScreen() {
   }, []);
 
   const followedDestinations = (destinations ?? []).filter((d) => (followedIds ?? []).includes(d.id));
-  const posts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
+  const feedPosts = feed.data?.pages.flatMap((p) => p.posts) ?? [];
+  const items = useAllFeedItems({
+    posts: feedPosts,
+    hasNextPage: !!feed.hasNextPage,
+    viewerId: user?.id ?? null,
+    enabled: tab === 'all',
+  });
+  const posts = items;
 
   if (isDesktop) {
     return (
@@ -212,9 +220,13 @@ export function CommunityScreen() {
       ) : (
         <>
           <div className={styles.desktopList}>
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+            {items.map((item) =>
+              item.kind === 'post' ? (
+                <PostCard key={item.id} post={item.post} />
+              ) : (
+                <CompanionFeedCard key={item.id} post={item.post} />
+              ),
+            )}
           </div>
           {feed.hasNextPage ? (
             <div className={styles.loadMoreWrap}>

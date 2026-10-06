@@ -12,7 +12,8 @@ import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { DestinationSelector } from './DestinationSelector';
 import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
-import { CompanionFeedList } from './CompanionFeedList';
+import { CompanionFeedList, CompanionFeedCard } from './CompanionFeedList';
+import { useAllFeedItems } from './hooks/useAllFeedItems';
 import { useToggleLike } from './hooks/usePosts';
 import { AuthorName } from './AuthorName';
 import { getPostImageUrl } from './imageProcessing';
@@ -76,6 +77,13 @@ export function CommunityDesignBody({
     if (sort === 'comments') return [...list].sort((a, b) => b.comment_count - a.comment_count);
     return list;
   }, [feed.data, sort]);
+  // '전체' 탭(최신순)에는 모집 중인 동행 모집글도 시간순으로 섞는다
+  const items = useAllFeedItems({
+    posts,
+    hasNextPage: !!feed.hasNextPage,
+    viewerId: user?.id ?? null,
+    enabled: tab === 'all' && sort === 'latest',
+  });
 
   /** 불러온 글 기준으로 가장 활발한 작성자 */
   const activeAuthors = useMemo(() => {
@@ -253,7 +261,7 @@ export function CommunityDesignBody({
               </>
             ) : feed.isError ? (
               <ErrorState summary={t('feed.loadError')} onRetry={() => feed.refetch()} />
-            ) : posts.length === 0 ? (
+            ) : items.length === 0 ? (
               <EmptyCard
                 title={tab === 'following' ? t('feed.emptyFollowing') : t('feed.emptyAll')}
                 description={t('feed.emptySub')}
@@ -271,9 +279,15 @@ export function CommunityDesignBody({
             ) : (
               <>
                 <div className={tileStyles.grid}>
-                  {posts.map((post) => (
-                    <PostArticle key={post.id} post={post} />
-                  ))}
+                  {items.map((item) =>
+                    item.kind === 'post' ? (
+                      <PostArticle key={item.id} post={item.post} />
+                    ) : (
+                      <div key={item.id} style={{ gridColumn: '1 / -1' }}>
+                        <CompanionFeedCard post={item.post} />
+                      </div>
+                    ),
+                  )}
                 </div>
                 {feed.hasNextPage ? (
                   <div className="pt-6 pb-2 flex justify-center">
