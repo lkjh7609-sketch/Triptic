@@ -5,7 +5,6 @@ import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { SUSPENSION_REASONS } from '@/shared/suspension';
-import modalStyles from '@/features/plan/AddPlaceModal.module.css';
 import styles from './SuspensionGate.module.css';
 
 interface Suspension {
@@ -57,13 +56,14 @@ function SuspensionDialog({ info, onClose }: { info: Suspension; onClose: () => 
   const { t, i18n } = useTranslation('common');
   const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
   const code = (SUSPENSION_REASONS as readonly string[]).includes(info.reason) ? info.reason : 'terms';
+  const reasonLabel = code === 'custom' && info.reasonText ? info.reasonText : t(`suspension.reasons.${code === 'custom' ? 'terms' : code}`);
   const when = new Date(info.suspendedAt).toLocaleString(i18n.language, { dateStyle: 'long', timeStyle: 'short' });
 
   return (
-    <div className={modalStyles.overlay}>
-      <div ref={focusTrapRef} className={modalStyles.sheet} onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true" aria-label={t('suspension.title')}>
-        <h2 className={modalStyles.title}>{t('suspension.title')}</h2>
-        <p>{t('suspension.intro')}</p>
+    <div className={styles.overlay}>
+      <div ref={focusTrapRef} className={styles.card} onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true" aria-label={t('suspension.title')}>
+        <h2 className={styles.title}>{t('suspension.title')}</h2>
+        <p className={styles.intro}>{t('suspension.intro')}</p>
         <dl className={styles.facts}>
           <div>
             <dt>{t('suspension.actedAt')}</dt>
@@ -71,14 +71,12 @@ function SuspensionDialog({ info, onClose }: { info: Suspension; onClose: () => 
           </div>
           <div>
             <dt>{t('suspension.reason')}</dt>
-            <dd>{code === 'custom' && info.reasonText ? info.reasonText : t(`suspension.reasons.${code === 'custom' ? 'terms' : code}`)}</dd>
+            <dd>{reasonLabel}</dd>
           </div>
         </dl>
-        <div className={modalStyles.actions}>
-          <button type="button" className={modalStyles.primary} onClick={onClose}>
-            {t('action.close')}
-          </button>
-        </div>
+        <button type="button" className={styles.close} onClick={onClose}>
+          {t('action.close')}
+        </button>
       </div>
     </div>
   );
