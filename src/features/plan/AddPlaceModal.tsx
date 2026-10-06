@@ -13,6 +13,8 @@ interface AddPlaceModalProps {
   initialSearch?: string;
   onClose: () => void;
   onAdd: (item: PlaceItem) => Promise<void>;
+  /** 그날 도시 중심 — 이 도시 주변 결과만 검색된다 */
+  bias?: { lat: number | null; lng: number | null } | null;
 }
 
 /**
@@ -20,13 +22,13 @@ interface AddPlaceModalProps {
  * 좌표 없는 항목은 저장하지 않는다 — legacy 앱은 저장 시점에 조용히 삭제했지만
  * (index.html saveData/renderList), 3.0은 입력 단계에서 막는다(스펙 명시).
  */
-export function AddPlaceModal({ onClose, onAdd, initialSearch }: AddPlaceModalProps) {
+export function AddPlaceModal({ onClose, onAdd, initialSearch, bias }: AddPlaceModalProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(null);
   const [time, setTime] = useState('');
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
-  const { inputRef, ready } = usePlaceAutocomplete(setSelected);
+  const { inputRef, ready } = usePlaceAutocomplete(setSelected, { bias });
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   // Use standard top-level useEffect

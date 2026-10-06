@@ -556,7 +556,7 @@ export function TripDetailScreen() {
       ) : null}
 
       {showAddPlace ? (
-        <AddPlaceModal onClose={() => setShowAddPlace(false)} onAdd={handleAddPlace} />
+        <AddPlaceModal onClose={() => setShowAddPlace(false)} onAdd={handleAddPlace} bias={currentCity} />
       ) : null}
 
       {editingIndex !== null && dayItems[editingIndex] ? (
@@ -576,6 +576,9 @@ export function TripDetailScreen() {
           currentDay={currentDay}
           totalDays={totalDays}
           hotelsData={hotelsData}
+          biasForDay={(day) =>
+            getDayCity(day, dayCitiesData, { name: project?.city ?? null, lat: project?.cityLat ?? null, lng: project?.cityLng ?? null })
+          }
           onClose={() => setShowHotelModal(false)}
           onSave={handleSetAllHotels}
         />
@@ -585,6 +588,7 @@ export function TripDetailScreen() {
         <MealsModal
           dayMeals={mealsData[currentDay] ?? {}}
           dayItems={dayItems}
+          bias={currentCity}
           onClose={() => setShowMealsModal(false)}
           onSave={handleSaveMeals}
         />

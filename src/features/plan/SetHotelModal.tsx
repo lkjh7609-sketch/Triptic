@@ -12,11 +12,13 @@ interface SetHotelModalProps {
   currentDay: number;
   totalDays: number;
   hotelsData: HotelsData;
+  /** 날짜별 도시 중심 — 그 날 도시 주변 결과만 검색된다 */
+  biasForDay?: (day: number) => { lat: number | null; lng: number | null } | null;
   onClose: () => void;
   onSave: (hotels: HotelsData) => Promise<void>;
 }
 
-export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSave }: SetHotelModalProps) {
+export function SetHotelModal({ currentDay, totalDays, hotelsData, biasForDay, onClose, onSave }: SetHotelModalProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [activeDay, setActiveDay] = useState(currentDay);
   const [draftHotels, setDraftHotels] = useState<HotelsData>(hotelsData);
@@ -110,6 +112,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
           <HotelSearchInput 
             key={activeDay} // 탭이 바뀔때마다 input 리셋
             currentHotel={currentDraft ?? null}
+            bias={biasForDay?.(activeDay)}
             onChange={handleSetForDay} 
           />
 
@@ -148,7 +151,7 @@ export function SetHotelModal({ currentDay, totalDays, hotelsData, onClose, onSa
   );
 }
 
-function HotelSearchInput({ currentHotel, onChange }: { currentHotel: HotelItem | null, onChange: (p: SelectedPlace | null) => void }) {
+function HotelSearchInput({ currentHotel, bias, onChange }: { currentHotel: HotelItem | null, bias?: { lat: number | null; lng: number | null } | null, onChange: (p: SelectedPlace | null) => void }) {
   const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(
     currentHotel
@@ -159,7 +162,7 @@ function HotelSearchInput({ currentHotel, onChange }: { currentHotel: HotelItem 
   const { inputRef } = usePlaceAutocomplete((place) => {
     setSelected(place);
     onChange(place);
-  });
+  }, { bias });
 
   return (
     <div className={styles.searchWrap}>

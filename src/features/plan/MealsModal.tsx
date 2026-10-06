@@ -14,6 +14,8 @@ interface MealsModalProps {
   dayMeals: DayMeals;
   /** 그 날 일정 — 새로 정한 식당이 이미 일정에 있는지 보고 방문 시간을 물을지 정한다 */
   dayItems: PlaceItem[];
+  /** 그날 도시 중심 — 이 도시 주변 결과만 검색된다 */
+  bias?: { lat: number | null; lng: number | null } | null;
   onClose: () => void;
   onSave: (dayMeals: DayMeals, times: Partial<Record<MealSlot, string>>) => Promise<void>;
 }
@@ -24,7 +26,7 @@ interface MealsModalProps {
  * "건너뛰기"로 표시할 수 있다. 새로 정하거나 바꾼 식당이 아래 일정에 아직 없으면 저장할 때
  * 방문 시간을 묻고(두 번째 단계), TripDetailScreen이 applyMealChanges로 그 시간에 일정 항목을 넣는다.
  */
-export function MealsModal({ dayMeals, dayItems, onClose, onSave }: MealsModalProps) {
+export function MealsModal({ dayMeals, dayItems, bias, onClose, onSave }: MealsModalProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [slots, setSlots] = useState<DayMeals>(dayMeals);
   const [saving, setSaving] = useState(false);
@@ -45,9 +47,9 @@ export function MealsModal({ dayMeals, dayItems, onClose, onSave }: MealsModalPr
     updateSlot(slot, { skip: checked });
   }
 
-  const breakfast = usePlaceAutocomplete((p) => selectPlace('breakfast', p));
-  const lunch = usePlaceAutocomplete((p) => selectPlace('lunch', p));
-  const dinner = usePlaceAutocomplete((p) => selectPlace('dinner', p));
+  const breakfast = usePlaceAutocomplete((p) => selectPlace('breakfast', p), { bias });
+  const lunch = usePlaceAutocomplete((p) => selectPlace('lunch', p), { bias });
+  const dinner = usePlaceAutocomplete((p) => selectPlace('dinner', p), { bias });
   const inputRefs: Record<MealSlot, typeof breakfast.inputRef> = {
     breakfast: breakfast.inputRef,
     lunch: lunch.inputRef,
