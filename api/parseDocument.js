@@ -15,6 +15,7 @@ import { applyCors, createRateLimiter } from './_lib/http.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 import { createAirportIndex, runBookingPipeline } from './_lib/documents/pipeline.js';
 import { extractDocumentText, UnsupportedDocumentError } from './_lib/documents/extract.js';
+import { GoogleCapError, takeGoogleCall } from './_lib/googleCap.js';
 
 const DAILY_LIMIT = 30; // 04-document-ai.md §11.5
 const isRateLimited = createRateLimiter(20);
@@ -79,7 +80,17 @@ export default async function handler(req, res) {
         if (dlErr || !blob) throw new Error(`download failed: ${dlErr?.message}`);
         const bytes = new Uint8Array(await blob.arrayBuffer());
 
-        const { text, fromOcr, pageCount } = await extractDocumentText(bytes, doc.mime_type);
+        const { text, fromOcr, pageCount } = await extractDocumentText(bytes, doc.mime_type, {
+            // 글자 인식(Vision)은 서버 전체 월 한도 안에서만 — 넘으면 사용자에게 안내
+            beforeVision: async () => {
+                try {
+                    await takeGoogleCall(admin, 'vision');
+                } catch (e) {
+                    if (e instanceof GoogleCapError) throw new UnsupportedDocumentError('이번 달 서류 인식 한도를 모두 썼어요. 다음 달에 다시 시도해 주세요.');
+                    throw e;
+                }
+            },
+        });
         const result = await runBookingPipeline(
             { text, fromOcr, tripStartDate: trip.start_date, tripEndDate: trip.end_date },
             { airports: await loadAirports(), keys: { deepseekApiKey: process.env.DEEPSEEK_API_KEY, openrouterApiKey: process.env.OPENROUTER_API_KEY } },

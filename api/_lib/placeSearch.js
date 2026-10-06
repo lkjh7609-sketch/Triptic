@@ -2,6 +2,7 @@
 // 순서: 1) 같은 도시권·같은 검색어 캐시(기간 제한 없음, 사용자 결정) → 2) 우리 장소 풀(ai_places) → 3) 구글 Text Search(하루 한도).
 // 구글 호출만 돈이 들므로 1·2에서 끝나면 부르지 않는다.
 import { normalizeKey } from './http.js';
+import { takeGoogleCall } from './googleCap.js';
 
 export const SEARCH_RADIUS_KM = 200;
 /** 구글을 직접 부르는 검색의 하루(24시간) 한도 — 무료·프로 */
@@ -110,8 +111,9 @@ export async function placeSearch({ db, apiKey, q, locale, bias, takeQuota }) {
     if (!apiKey) return { unavailable: true };
     try {
         await takeQuota();
+        await takeGoogleCall(db, 'places_text_search');
     } catch {
-        // 하루 한도를 다 썼거나 한도를 확인할 수 없으면(닫힌 쪽) 구글은 부르지 않고 풀 결과만 돌려준다
+        // 사용자 하루 한도·서버 월 한도를 다 썼거나 한도를 확인할 수 없으면(닫힌 쪽) 구글은 부르지 않고 풀 결과만 돌려준다
         return { results: pool, source: 'pool', limited: true };
     }
     let google;
