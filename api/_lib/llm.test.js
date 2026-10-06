@@ -54,4 +54,18 @@ describe('chatCompletion 시간 예산', () => {
         expect(await settled).toBe('aborted');
         expect(fetchMock).toHaveBeenCalledTimes(1);
     });
+
+    it('DeepSeek 직접 호출은 추론(thinking)을 끄고, OpenRouter에는 보내지 않는다', async () => {
+        const bodies = [];
+        vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+            bodies.push([String(url), JSON.parse(init.body)]);
+            if (String(url).includes('deepseek.com')) throw new Error('down');
+            return ok('deepseek/deepseek-chat');
+        }));
+        await chatCompletion({ system: 's', user: 'u', budgetMs: 22000 });
+        const deepseek = bodies.find(([u]) => u.includes('deepseek.com'))[1];
+        const openrouter = bodies.find(([u]) => u.includes('openrouter.ai'))[1];
+        expect(deepseek.thinking).toEqual({ type: 'disabled' });
+        expect(openrouter.thinking).toBeUndefined();
+    });
 });
