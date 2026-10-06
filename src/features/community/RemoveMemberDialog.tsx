@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import modalStyles from '@/features/plan/AddPlaceModal.module.css';
 import confirmStyles from '@/shared/ui/ConfirmDialog.module.css';
-import { SUSPENSION_REASONS, type SuspensionReason } from '@/shared/suspension';
+import { SUSPENSION_REASONS, SUSPENSION_REASON_TEXT_MAX, type SuspensionReason } from '@/shared/suspension';
 import styles from './AdminMembersTab.module.css';
 
 interface RemoveMemberDialogProps {
   name: string;
-  onConfirm: (reason: SuspensionReason) => void;
+  onConfirm: (reason: SuspensionReason, reasonText?: string) => void;
   onClose: () => void;
 }
 
@@ -17,6 +17,9 @@ export function RemoveMemberDialog({ name, onConfirm, onClose }: RemoveMemberDia
   const { t } = useTranslation(['community', 'common']);
   const focusTrapRef = useFocusTrap<HTMLDivElement>(onClose);
   const [reason, setReason] = useState<SuspensionReason | ''>('');
+  const [text, setText] = useState('');
+  const trimmed = text.trim();
+  const ready = reason !== '' && (reason !== 'custom' || trimmed.length > 0);
   const title = t('admin.members.remove.title', { ns: 'community', name });
 
   return (
@@ -35,6 +38,21 @@ export function RemoveMemberDialog({ name, onConfirm, onClose }: RemoveMemberDia
             ))}
           </select>
         </label>
+        {reason === 'custom' ? (
+          <label className={styles.reasonField}>
+            <span>{t('admin.members.remove.reasonTextLabel', { ns: 'community' })}</span>
+            <textarea
+              rows={3}
+              maxLength={SUSPENSION_REASON_TEXT_MAX}
+              value={text}
+              placeholder={t('admin.members.remove.reasonTextPlaceholder', { ns: 'community' })}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <span className={styles.muted}>
+              {text.length} / {SUSPENSION_REASON_TEXT_MAX}
+            </span>
+          </label>
+        ) : null}
         <div className={modalStyles.actions}>
           <button type="button" className={modalStyles.secondary} onClick={onClose}>
             {t('admin.members.remove.cancel', { ns: 'community' })}
@@ -42,11 +60,11 @@ export function RemoveMemberDialog({ name, onConfirm, onClose }: RemoveMemberDia
           <button
             type="button"
             className={`${modalStyles.primary} ${confirmStyles.dangerBtn}`}
-            disabled={!reason}
+            disabled={!ready}
             onClick={() => {
-              if (!reason) return;
+              if (!reason || !ready) return;
               onClose();
-              onConfirm(reason);
+              onConfirm(reason, reason === 'custom' ? trimmed : undefined);
             }}
           >
             {t('admin.members.remove.confirm', { ns: 'community' })}

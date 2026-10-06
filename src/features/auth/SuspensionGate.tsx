@@ -10,6 +10,7 @@ import styles from './SuspensionGate.module.css';
 
 interface Suspension {
   reason: string;
+  reasonText: string | null;
   suspendedAt: string;
 }
 
@@ -70,7 +71,7 @@ function SuspensionDialog({ info, onClose }: { info: Suspension; onClose: () => 
           </div>
           <div>
             <dt>{t('suspension.reason')}</dt>
-            <dd>{t(`suspension.reasons.${code}`)}</dd>
+            <dd>{code === 'custom' && info.reasonText ? info.reasonText : t(`suspension.reasons.${code === 'custom' ? 'terms' : code}`)}</dd>
           </div>
         </dl>
         <div className={modalStyles.actions}>

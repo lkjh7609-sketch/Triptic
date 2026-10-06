@@ -250,7 +250,9 @@
         "adminBlocked": "管理者アカウントは退会させられません。",
         "failed": "退会処理に失敗しました。もう一度お試しください。",
         "reasonLabel": "停止の理由",
-        "reasonPlaceholder": "理由を選択してください"
+        "reasonPlaceholder": "理由を選択してください",
+        "reasonTextLabel": "理由（利用者にそのまま表示されます）",
+        "reasonTextPlaceholder": "例：同じ内容の投稿を繰り返しました"
       },
       "suspended": {
         "title": "利用停止アカウント",

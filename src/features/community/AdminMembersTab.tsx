@@ -98,9 +98,9 @@ function MemberRow({
     trip_limit: member.trip_limit,
   };
 
-  async function removeMember(reason: SuspensionReason) {
+  async function removeMember(reason: SuspensionReason, reasonText?: string) {
     try {
-      await adminRemoveMember(member.id, reason);
+      await adminRemoveMember(member.id, reason, reasonText);
       showToast(t('admin.members.remove.done'), { tone: 'success' });
       void queryClient.invalidateQueries({ queryKey: ['admin', 'members'] });
       void queryClient.invalidateQueries({ queryKey: ['admin', 'suspensions'] });
@@ -186,7 +186,7 @@ function MemberRow({
       {confirmRemove ? (
         <RemoveMemberDialog
           name={member.display_name || member.handle || member.id.slice(0, 6)}
-          onConfirm={(reason) => void removeMember(reason)}
+          onConfirm={(reason, reasonText) => void removeMember(reason, reasonText)}
           onClose={() => setConfirmRemove(false)}
         />
       ) : null}

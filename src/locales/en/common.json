@@ -190,7 +190,8 @@
       "privacy": "Exposing or violating others' personal information",
       "illegal": "Illegal or harmful content",
       "impersonation": "Impersonation",
-      "terms": "Other violation of the Terms of Service"
+      "terms": "Other violation of the Terms of Service",
+      "custom": "Write my own"
     }
   }
 }

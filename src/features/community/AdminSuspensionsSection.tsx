@@ -52,7 +52,7 @@ export function AdminSuspensionsSection() {
                 <span className={memberStyles.suspendedInfo}>
                   <strong>{s.email}</strong>
                   <span className={memberStyles.muted}>
-                    {[s.display_name, t(`suspension.reasons.${s.reason}`, { ns: 'common' })].filter(Boolean).join(' · ')}
+                    {[s.display_name, s.reason === 'custom' && s.reason_text ? s.reason_text : t(`suspension.reasons.${s.reason}`, { ns: 'common' })].filter(Boolean).join(' · ')}
                   </span>
                   <span className={memberStyles.muted}>
                     {s.lifted_at ? t('admin.members.suspended.liftedAt', { ns: 'community', time: dt(s.lifted_at) }) : t('admin.members.suspended.at', { ns: 'community', time: dt(s.suspended_at) })}

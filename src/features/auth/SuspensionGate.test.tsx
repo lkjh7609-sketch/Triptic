@@ -37,7 +37,7 @@ beforeEach(() => {
 
 describe('SuspensionGate', () => {
   it('정지된 이메일로 로그인하면 로그아웃시키고 사유·조치 시각을 알리는 팝업을 띄운다', async () => {
-    h.check.mockResolvedValue({ reason: 'fraud', suspendedAt: '2026-10-06T12:47:00Z' });
+    h.check.mockResolvedValue({ reason: 'fraud', reasonText: null, suspendedAt: '2026-10-06T12:47:00Z' });
     render(<SuspensionGate />);
     await login();
     expect(h.signOut).toHaveBeenCalledTimes(1);
@@ -45,6 +45,13 @@ describe('SuspensionGate', () => {
     expect(screen.getByText('사기·허위 정보')).toBeInTheDocument();
     expect(screen.getByText('조치 일시')).toBeInTheDocument();
     expect(screen.getByText(/2026/)).toBeInTheDocument();
+  });
+
+  it('직접 입력한 사유는 쓴 글 그대로 보여 준다', async () => {
+    h.check.mockResolvedValue({ reason: 'custom', reasonText: '같은 글을 반복해서 올렸어요', suspendedAt: '2026-10-06T12:47:00Z' });
+    render(<SuspensionGate />);
+    await login();
+    expect(screen.getByText('같은 글을 반복해서 올렸어요')).toBeInTheDocument();
   });
 
   it('정지되지 않았으면 아무것도 하지 않는다', async () => {
@@ -55,7 +62,7 @@ describe('SuspensionGate', () => {
   });
 
   it('같은 사용자는 한 번만 확인하고, 모르는 사유 코드는 이용약관 위반으로 보여 준다', async () => {
-    h.check.mockResolvedValue({ reason: 'something-new', suspendedAt: '2026-10-06T12:47:00Z' });
+    h.check.mockResolvedValue({ reason: 'something-new', reasonText: null, suspendedAt: '2026-10-06T12:47:00Z' });
     render(<SuspensionGate />);
     await login();
     await login();
@@ -64,7 +71,7 @@ describe('SuspensionGate', () => {
   });
 
   it('로그아웃 요청이 실패해도 이 기기의 로그인은 반드시 지운다', async () => {
-    h.check.mockResolvedValue({ reason: 'abuse', suspendedAt: '2026-10-06T12:47:00Z' });
+    h.check.mockResolvedValue({ reason: 'abuse', reasonText: null, suspendedAt: '2026-10-06T12:47:00Z' });
     h.signOut.mockRejectedValue(new Error('offline'));
     render(<SuspensionGate />);
     await login();
