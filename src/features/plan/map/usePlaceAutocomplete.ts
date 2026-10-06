@@ -29,7 +29,12 @@ export interface UsePlaceAutocompleteOptions {
   enabled?: boolean;
   /** 여행 도시 중심 — 있으면 그 도시 주변(약 200km, 근교 여행지까지) 안의 결과만 나온다. 없으면 제한 없음 */
   bias?: { lat: number | null; lng: number | null } | null;
+  /** true면 자동완성 결과가 0개일 때 Text Search로 한 번 더 찾아 아래 목록으로 보여 준다("동물원"처럼 이름이 아닌 종류로 찾을 때) */
+  textSearchFallback?: boolean;
 }
+
+/** 입력을 멈춘 뒤 이만큼 기다렸다가 자동완성 목록이 비었는지 본다(자동완성이 먼저 응답할 시간) */
+const FALLBACK_DELAY_MS = 700;
 
 const BIAS_RADIUS_KM = 200;
 
@@ -51,6 +56,8 @@ export function usePlaceAutocomplete(
   }, [onSelect]);
   const types = options?.types;
   const enabled = options?.enabled ?? true;
+  const fallbackOn = options?.textSearchFallback ?? false;
+  const [fallbackItems, setFallbackItems] = useState<SelectedPlace[]>([]);
   const biasLat = options?.bias?.lat ?? null;
   const biasLng = options?.bias?.lng ?? null;
   const biasRef = useRef({ lat: biasLat, lng: biasLng });
@@ -97,7 +104,61 @@ export function usePlaceAutocomplete(
       setReady(true);
     });
 
+    // 자동완성 목록이 비어 있으면(보이는 .pac-item이 없으면) Text Search로 보충한다 — 별도 자동완성 호출 없이 화면만 본다
+    const input = inputRef.current;
+    let timer: number | undefined;
+    let seq = 0;
+    const onInput = () => {
+      window.clearTimeout(timer);
+      const q = input?.value.trim() ?? '';
+      seq += 1;
+      const mySeq = seq;
+      if (!fallbackOn || q.length < 2) {
+        setFallbackItems([]);
+        return;
+      }
+      timer = window.setTimeout(async () => {
+        const hasPac = [...document.querySelectorAll('.pac-container')].some(
+          (c) => getComputedStyle(c).display !== 'none' && c.querySelector('.pac-item'),
+        );
+        if (hasPac) {
+          setFallbackItems([]);
+          return;
+        }
+        try {
+          const { Place } = await loadGoogleMapsPlaces();
+          const { lat, lng } = biasRef.current;
+          const { places } = await Place.searchByText({
+            textQuery: q,
+            fields: ['displayName', 'formattedAddress', 'location', 'id', 'types', 'addressComponents'],
+            maxResultCount: 6,
+            ...(lat != null && lng != null ? { locationRestriction: boundsAround(lat, lng) } : {}),
+          });
+          if (mySeq !== seq) return;
+          setFallbackItems(
+            places
+              .filter((pl) => pl.location)
+              .map((pl) => ({
+                name: pl.displayName ?? pl.formattedAddress ?? '',
+                address: pl.formattedAddress ?? '',
+                lat: pl.location!.lat(),
+                lng: pl.location!.lng(),
+                placeId: pl.id ?? null,
+                types: pl.types ?? [],
+                countryCode: pl.addressComponents?.find((c) => c.types.includes('country'))?.shortText ?? null,
+              })),
+          );
+        } catch {
+          // Places API(New)가 꺼져 있거나 한도 초과 — 보조 검색만 포기하고 자동완성은 그대로 둔다
+          if (mySeq === seq) setFallbackItems([]);
+        }
+      }, FALLBACK_DELAY_MS);
+    };
+    input?.addEventListener('input', onInput);
+
     return () => {
+      window.clearTimeout(timer);
+      input?.removeEventListener('input', onInput);
       cancelled = true;
       autocompleteRef.current = null;
       if (autocomplete) google.maps.event.clearInstanceListeners(autocomplete);
@@ -107,5 +168,15 @@ export function usePlaceAutocomplete(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
 
-  return { inputRef, ready };
+  const fallback = {
+    items: fallbackItems,
+    pick: (place: SelectedPlace) => {
+      if (inputRef.current) inputRef.current.value = place.name;
+      setFallbackItems([]);
+      onSelectRef.current(place);
+    },
+    clear: () => setFallbackItems([]),
+  };
+
+  return { inputRef, ready, fallback };
 }

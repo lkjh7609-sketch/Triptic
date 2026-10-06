@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { PlaceFallbackList } from './map/PlaceFallbackList';
 import { inferPlaceCategory } from './placeCategory';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -28,7 +29,7 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch, bias }: AddPlaceM
   const [time, setTime] = useState('');
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
-  const { inputRef, ready } = usePlaceAutocomplete(setSelected, { bias });
+  const { inputRef, ready, fallback } = usePlaceAutocomplete(setSelected, { bias, textSearchFallback: true });
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
 
   // Use standard top-level useEffect
@@ -86,6 +87,7 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch, bias }: AddPlaceM
           placeholder={t('addPlace.searchPlaceholder')}
           aria-label={t('addPlace.searchPlaceholder')}
         />
+        <PlaceFallbackList inputRef={inputRef} items={fallback.items} onPick={fallback.pick} />
 
         {selected ? (
           <div className={styles.selectedCard}>
