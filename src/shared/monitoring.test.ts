@@ -21,6 +21,7 @@ describe('monitoring', () => {
     expect(ignored('Skipping view transition because document visibility state has become hidden.')).toBe(true);
     expect(ignored('View transition was skipped because document visibility state is hidden.')).toBe(true);
     expect(ignored('InvalidStateError: Transition was aborted because of invalid state. Document hidden')).toBe(true);
+    expect(ignored("undefined is not an object (evaluating 'window.webkit.messageHandlers')")).toBe(true);
     // 다른 오류는 그대로 보낸다
     expect(ignored('InvalidStateError: something else')).toBe(false);
     expect(ignored('Failed to fetch dynamically imported module')).toBe(false);
