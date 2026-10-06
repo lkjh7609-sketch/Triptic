@@ -138,6 +138,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
                 title={t(`expense.category.${cat}`)}
               >
                 {CATEGORY_ICON[cat]}
+                <span className={styles.categoryLabel}>{t(`expense.category.${cat}`)}</span>
               </button>
             ))}
           </div>
@@ -166,6 +167,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
                 <div key={i} className={styles.listItem}>
                   <span className={styles.itemIcon}>{CATEGORY_ICON[e.category ?? 'other']}</span>
                   <span className={styles.itemDesc}>
+                    <span className={styles.itemMeta}>{t(`expense.category.${e.category ?? 'other'}`)} · </span>
                     {e.desc}
                   </span>
                   <span className={styles.itemAmount}>
