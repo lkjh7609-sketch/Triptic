@@ -18,7 +18,6 @@ import type { NotificationPrefs } from '@/shared/api/profileService';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { SettingsDesktop } from './SettingsDesktop';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
-import { LicensesModal } from './LicensesModal';
 import { BlockedUsersList } from './BlockedUsersList';
 import { User, Palette, Bell, HardDrive, Globe, Info, Sun, Moon, Monitor } from 'lucide-react';
 
@@ -68,7 +67,6 @@ export function SettingsScreen() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [showDeleteFlow, setShowDeleteFlow] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
-  const [showLicenses, setShowLicenses] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showUnitSettings, setShowUnitSettings] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
@@ -284,11 +282,6 @@ export function SettingsScreen() {
           </a>
         </div>
         <div className={styles.row}>
-          <button type="button" className={styles.linkButton} onClick={() => setShowLicenses(true)}>
-            {t('licenses.title')}
-          </button>
-        </div>
-        <div className={styles.row}>
           <button type="button" className={styles.linkButton} onClick={() => setFeedbackKind('general')}>
             {t('feedback.menuLabel')}
           </button>
@@ -317,7 +310,6 @@ export function SettingsScreen() {
       {showBackup ? (
         <BackupModal trips={trips.data ?? []} onClose={() => setShowBackup(false)} onImported={() => trips.refetch()} />
       ) : null}
-      {showLicenses ? <LicensesModal onClose={() => setShowLicenses(false)} /> : null}
       {showEditProfile ? <EditProfileModal onClose={() => setShowEditProfile(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showUnitSettings ? <UnitSettingsModal onClose={() => setShowUnitSettings(false)} profile={profile} updateProfile={updateProfile} /> : null}
       {showCurrencyModal ? <CurrencyModal onClose={() => setShowCurrencyModal(false)} profile={profile} updateProfile={updateProfile} /> : null}
