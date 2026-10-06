@@ -3,6 +3,7 @@
  * profiles.role='admin'인 사용자만 RLS로 이 조회들이 실제 데이터를 반환한다
  * (0020/0021의 "admin read all ..."/"admin resolve reports" 정책).
  */
+import type { SuspensionReason } from '@/shared/suspension';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { getSupabaseClient } from '@/shared/api/supabaseClient';
 import type { Report } from './types';
@@ -380,7 +381,8 @@ export class AdminRemoveMemberError extends Error {
   }
 }
 
-export async function adminRemoveMember(userId: string): Promise<void> {
+/** 강제 탈퇴 — 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
+export async function adminRemoveMember(userId: string, reason: SuspensionReason): Promise<void> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -388,7 +390,7 @@ export async function adminRemoveMember(userId: string): Promise<void> {
   const res = await fetch(apiUrl('/api/deleteAccount'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ targetUserId: userId }),
+    body: JSON.stringify({ targetUserId: userId, reason }),
   });
   if (res.ok) return;
   const json = (await res.json().catch(() => ({}))) as { error?: string };
@@ -396,6 +398,27 @@ export async function adminRemoveMember(userId: string): Promise<void> {
     throw new AdminRemoveMemberError(json.error);
   }
   throw new AdminRemoveMemberError('failed');
+}
+
+// ── 이용 정지 명단(0095) ─────────────────────────────────────────────────────
+export interface AdminSuspension {
+  id: number;
+  email: string;
+  display_name: string | null;
+  reason: SuspensionReason;
+  suspended_at: string;
+  lifted_at: string | null;
+}
+
+export async function adminListSuspensions(): Promise<AdminSuspension[]> {
+  const { data, error } = await getSupabaseClient().rpc('admin_list_suspensions');
+  if (error) throw error;
+  return (data as AdminSuspension[]) ?? [];
+}
+
+export async function adminLiftSuspension(id: number): Promise<void> {
+  const { error } = await getSupabaseClient().rpc('admin_lift_suspension', { p_id: id });
+  if (error) throw error;
 }
 
 // ── 보관함 삭제(0091) — 사진 파일을 먼저 지우고 행을 지운다. ids가 null이면 전부 비운다 ──────────────

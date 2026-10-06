@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail } = vi.hoisted(() => ({ requireUser: vi.fn(), deleteAccountData: vi.fn(), maybeSingle: vi.fn(), sendAccountDeletedMail: vi.fn() }));
+const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, recordSuspension } = vi.hoisted(() => ({
+    requireUser: vi.fn(),
+    deleteAccountData: vi.fn(),
+    maybeSingle: vi.fn(),
+    sendAccountDeletedMail: vi.fn(),
+    recordSuspension: vi.fn(),
+}));
+vi.mock('./suspension.js', async () => ({ ...(await vi.importActual('./suspension.js')), recordSuspension }));
 vi.mock('./accountMail.js', () => ({ sendAccountDeletedMail }));
 vi.mock('./auth.js', () => ({ requireUser }));
 vi.mock('./supabaseAdmin.js', () => ({ supabaseAdmin: () => ({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }) }) }));
@@ -24,6 +31,7 @@ beforeEach(() => {
     requireUser.mockReset().mockResolvedValue({ id: 'u1', last_sign_in_at: fresh() });
     deleteAccountData.mockReset().mockResolvedValue({ files: 0 });
     sendAccountDeletedMail.mockReset().mockResolvedValue(true);
+    recordSuspension.mockReset().mockResolvedValue(true);
     maybeSingle.mockReset().mockResolvedValue({ data: { role: 'user' } });
 });
 
@@ -96,5 +104,50 @@ describe('POST /api/deleteAccount', () => {
         await handler(post(), res);
         expect(res.statusCode).toBe(500);
         expect(JSON.stringify(res.body)).not.toContain('secret');
+    });
+
+    describe('운영자 강제 탈퇴', () => {
+        const target = '11111111-1111-4111-8111-111111111111';
+        const asAdmin = () => maybeSingle.mockResolvedValueOnce({ data: { role: 'admin' } });
+        const adminPost = (body) => post({ body });
+
+        it('사유와 함께 요청하면 이용 정지 명단에 올린 뒤에 지운다', async () => {
+            asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+            const res = makeRes();
+            await handler(adminPost({ targetUserId: target, reason: 'abuse' }), res);
+            expect(res.statusCode).toBe(200);
+            expect(recordSuspension).toHaveBeenCalledWith(expect.anything(), { userId: target, adminId: 'u1', reason: 'abuse' });
+            expect(recordSuspension.mock.invocationCallOrder[0]).toBeLessThan(deleteAccountData.mock.invocationCallOrder[0]);
+            expect(sendAccountDeletedMail).not.toHaveBeenCalled();
+        });
+
+        it('사유가 없거나 목록 밖이면 400이고 아무것도 지우지 않는다', async () => {
+            for (const reason of [undefined, '', 'whatever']) {
+                maybeSingle.mockReset();
+                asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason }), res);
+                expect(res.statusCode).toBe(400);
+                expect(res.body).toEqual({ error: 'bad_reason' });
+            }
+            expect(recordSuspension).not.toHaveBeenCalled();
+            expect(deleteAccountData).not.toHaveBeenCalled();
+        });
+
+        it('정지 명단에 못 올리면 지우지 않고 500', async () => {
+            recordSuspension.mockRejectedValue(new Error('insert failed'));
+            asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+            const res = makeRes();
+            await handler(adminPost({ targetUserId: target, reason: 'spam' }), res);
+            expect(res.statusCode).toBe(500);
+            expect(deleteAccountData).not.toHaveBeenCalled();
+        });
+
+        it('관리자가 아니면 403', async () => {
+            const res = makeRes();
+            await handler(adminPost({ targetUserId: target, reason: 'spam' }), res);
+            expect(res.statusCode).toBe(403);
+            expect(recordSuspension).not.toHaveBeenCalled();
+        });
     });
 });

@@ -8,6 +8,7 @@ import { LocaleSync } from '@/shared/i18n/useSyncLocale';
 import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
 import { ToastHost } from '@/shared/ui/toast';
 import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
+import { SuspensionGate } from '@/features/auth/SuspensionGate';
 import { ErrorBoundary } from './ErrorBoundary';
 import { BootShell } from './BootShell';
 import { router } from './router';
@@ -90,6 +91,7 @@ export function App() {
           <LocaleSync />
           <RouterProvider router={router} />
           <ToastHost />
+          <SuspensionGate />
         </Suspense>
       </PersistQueryClientProvider>
     </ErrorBoundary>
