@@ -4,7 +4,7 @@ const rpc = vi.fn();
 const getSession = vi.fn();
 vi.mock('@/shared/api/supabaseClient', () => ({ getSupabaseClient: () => ({ rpc, auth: { getSession } }) }));
 
-const { AiLimitError, fetchNearbyRecommendations, isOutOfRange, needsServerCoords } = await import('./aiRecommendations');
+const { AiLimitError, fetchNearbyRecommendations, groupOf, isMixComplete, isOutOfRange, needsServerCoords, pickBalanced } = await import('./aiRecommendations');
 const { fetchCityDescription } = await import('@/features/home/cityDescription');
 
 const fetchMock = vi.fn();
@@ -77,25 +77,51 @@ describe('isOutOfRange (1.5km)', () => {
 });
 
 describe('기준 좌표가 있으면 1.5km 장소 풀부터', () => {
-  const row = (id: string, distance: number) => ({
-    place_id: id, name: id, lat: 34.7, lng: 135.49, address: null, category: 'spot',
+  const row = (id: string, distance: number, category = 'spot') => ({
+    place_id: id, name: id, lat: 34.7, lng: 135.49, address: null, category,
     category_label: null, signature_menu: null, price_range: null, reason: null, tip: null, distance_m: distance,
   });
   const base = { placeName: '오사카역', city: 'Osaka', locale: 'ko', lat: 34.7025, lng: 135.4959, placeId: 'base' };
+  const full = [
+    row('base', 0), row('s1', 90, 'spot'), row('r1', 100, 'restaurant'), row('r2', 110, 'restaurant'), row('c1', 120, 'cafe'), row('r3', 130, 'restaurant'),
+    row('r4', 140, 'restaurant'), row('c2', 150, 'cafe'), row('s2', 160, 'culture'), row('c3', 170, 'cafe'), row('c4', 180, 'cafe'), row('s3', 190, 'spot'),
+  ];
 
-  it('반경 안에 5곳 이상이면 AI(/api) 없이 풀만 쓴다 — 기준 장소 자신은 뺀다', async () => {
-    rpc.mockResolvedValue({ data: [row('base', 0), row('a', 100), row('b', 200), row('c', 300), row('d', 400), row('e', 500)], error: null });
+  it('식당 3·카페 3·볼거리 3이 쌓여 있으면 AI(/api) 없이 풀만 쓴다 — 묶음별로 가까운 3곳, 기준 장소 자신은 뺀다', async () => {
+    rpc.mockResolvedValue({ data: full, error: null });
     const recs = await fetchNearbyRecommendations(base);
-    expect(recs.map((r) => r.placeId)).toEqual(['a', 'b', 'c', 'd', 'e']);
-    expect(rpc).toHaveBeenCalledWith('get_nearby_ai_places', expect.objectContaining({ p_radius_m: 1500, p_locale: 'ko' }));
+    expect(recs.map((r) => r.placeId)).toEqual(['r1', 'r2', 'r3', 'c1', 'c2', 'c3', 's1', 's2', 's3']);
+    expect(rpc).toHaveBeenCalledWith('get_nearby_ai_places', expect.objectContaining({ p_radius_m: 1500, p_locale: 'ko', p_limit: 60 }));
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('5곳 미만이면 서버에 요청해 AI로 더 받는다(기준 place_id 전달)', async () => {
-    rpc.mockResolvedValue({ data: [row('a', 100), row('b', 200), row('c', 300), row('d', 400)], error: null });
+  it('한 묶음이라도 3곳이 안 되면 서버에 요청해 AI로 모자란 만큼 더 받는다(기준 place_id 전달)', async () => {
+    rpc.mockResolvedValue({ data: [row('a', 100, 'restaurant'), row('b', 200, 'restaurant'), row('c', 300, 'restaurant'), row('d', 400, 'cafe'), row('e', 500, 'spot'), row('f', 600, 'spot')], error: null });
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ recommendations: [{ name: 'a' }, { name: 'new' }] }) });
     expect(await fetchNearbyRecommendations(base)).toEqual([{ name: 'a' }, { name: 'new' }]);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({ lat: 34.7025, lng: 135.4959, placeId: 'base' });
+  });
+
+  it('비로그인은 AI를 못 부르니, 풀에 쌓인 것이 있으면 그것만이라도 보여 준다', async () => {
+    getSession.mockResolvedValue({ data: { session: null } });
+    rpc.mockResolvedValue({ data: [row('a', 100, 'restaurant'), row('b', 200, 'cafe')], error: null });
+    expect((await fetchNearbyRecommendations(base)).map((r) => r.placeId)).toEqual(['a', 'b']);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('주변 추천 구성(식당 3·카페 3·볼거리 3)', () => {
+  const mk = (name: string, category: string) => ({ name, category });
+  it('문화·명소는 볼거리 묶음, 묶음이 모두 3곳 이상이어야 충분', () => {
+    expect(['restaurant', 'cafe', 'culture', 'spot', undefined].map(groupOf)).toEqual(['restaurant', 'cafe', 'sight', 'sight', 'sight']);
+    const rows = [mk('r1', 'restaurant'), mk('r2', 'restaurant'), mk('r3', 'restaurant'), mk('c1', 'cafe'), mk('c2', 'cafe'), mk('s1', 'spot'), mk('s2', 'culture'), mk('s3', 'spot')];
+    expect(isMixComplete(rows)).toBe(false);
+    expect(isMixComplete([...rows, mk('c3', 'cafe')])).toBe(true);
+  });
+  it('모자란 묶음은 남은 곳 중 가까운 것으로 채워 최대 9곳', () => {
+    const rows = [mk('r1', 'restaurant'), mk('r2', 'restaurant'), mk('r3', 'restaurant'), mk('r4', 'restaurant'), mk('r5', 'restaurant'), mk('c1', 'cafe'), mk('s1', 'spot')];
+    expect(pickBalanced(rows).map((r) => r.name)).toEqual(['r1', 'r2', 'r3', 'c1', 's1', 'r4', 'r5']);
+    expect(pickBalanced(Array.from({ length: 20 }, (_, i) => mk(`r${i}`, 'restaurant')))).toHaveLength(9);
   });
 });
 

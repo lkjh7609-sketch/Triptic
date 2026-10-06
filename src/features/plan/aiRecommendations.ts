@@ -40,8 +40,50 @@ export function nearbyRecsQueryKey({ placeName, city, locale, lat, lng }: Omit<N
   return ['ai', 'nearby', aiLocale(locale), cityKey, placeKey] as const;
 }
 
-/** 반경 안 추천이 이만큼 쌓여 있으면 AI를 부르지 않는다(api/recommend.js POOL_TARGET) */
-export const NEARBY_TARGET = 5;
+/** 주변 추천 구성 — 식당 3 · 카페 3 · 볼거리/즐길거리 3(api/_lib/nearbyMix.js와 같은 규칙). 묶음마다 이만큼 쌓여 있으면 AI를 부르지 않는다 */
+export const GROUP_SIZE = 3;
+const GROUPS = ['restaurant', 'cafe', 'sight'] as const;
+type Group = (typeof GROUPS)[number];
+
+/** AI 카테고리(restaurant | cafe | culture | spot) → 구성 묶음. 문화·명소는 모두 '볼거리' */
+export function groupOf(category: string | null | undefined): Group {
+  return category === 'restaurant' ? 'restaurant' : category === 'cafe' ? 'cafe' : 'sight';
+}
+
+/** 식당·카페·볼거리 묶음이 모두 3곳 이상인지 */
+export function isMixComplete(rows: { category?: string | null }[]): boolean {
+  const have: Record<Group, number> = { restaurant: 0, cafe: 0, sight: 0 };
+  for (const r of rows) have[groupOf(r.category)] += 1;
+  return GROUPS.every((g) => have[g] >= GROUP_SIZE);
+}
+
+/** 거리순 목록에서 묶음마다 가까운 3곳씩 식당 → 카페 → 볼거리 순으로(모자란 묶음은 남은 곳 중 가까운 것으로 채워 최대 9곳) */
+export function pickBalanced<T extends { category?: string | null }>(rows: T[]): T[] {
+  const max = GROUP_SIZE * GROUPS.length;
+  const out: T[] = [];
+  const picked = new Set<T>();
+  for (const g of GROUPS) {
+    let n = 0;
+    for (const r of rows) {
+      if (n >= GROUP_SIZE || out.length >= max) break;
+      if (groupOf(r.category) !== g) continue;
+      picked.add(r);
+      out.push(r);
+      n += 1;
+    }
+  }
+  for (const r of rows) {
+    if (out.length >= max) break;
+    if (!picked.has(r)) {
+      picked.add(r);
+      out.push(r);
+    }
+  }
+  return out;
+}
+
+/** 풀을 거리순으로 넉넉히 읽는다(RPC 상한 60, 0097) — 가까운 곳이 한 종류로만 몰려 있어도 묶음별로 고르려고 */
+const POOL_READ = 60;
 
 interface PoolRow {
   place_id: string;
@@ -126,28 +168,35 @@ export async function requestNearbyFromServer(input: NearbyInput): Promise<ApiRe
 }
 
 /**
- * 기준 좌표가 있으면: 1.5km 안 장소 풀(0050)에 5곳 이상 있으면 그대로(AI 없음), 모자라면
- * /api/recommend가 AI로 더 받아 반경 안 것만 풀에 쌓은 뒤 돌려준다.
+ * 기준 좌표가 있으면: 1.5km 안 장소 풀(0050)에 식당 3·카페 3·볼거리 3이 있으면 그대로(AI 없음), 모자라면
+ * /api/recommend가 AI로 모자란 만큼 더 받아 반경 안 것만 풀에 쌓은 뒤 돌려준다.
  * 좌표가 없으면(도시 기준): 1) 이름별 DB 캐시(0049) → 2) 없을 때만 /api/recommend.
  */
 export async function fetchNearbyRecommendations(input: NearbyInput): Promise<ApiRecommendation[]> {
   if (input.lat != null && input.lng != null) {
+    let poolRows: PoolRow[] = [];
     try {
       const { data, error } = await getSupabaseClient().rpc('get_nearby_ai_places', {
         p_lat: input.lat,
         p_lng: input.lng,
         p_radius_m: NEARBY_RADIUS_M,
         p_locale: aiLocale(input.locale),
-        p_limit: 11,
+        p_limit: POOL_READ,
       });
       if (!error && Array.isArray(data)) {
-        const rows = (data as PoolRow[]).filter((r) => r.place_id !== input.placeId && r.distance_m > 40).slice(0, 10);
-        if (rows.length >= NEARBY_TARGET) return rows.map(poolRowToRec);
+        poolRows = (data as PoolRow[]).filter((r) => r.place_id !== input.placeId && r.distance_m > 40);
+        if (isMixComplete(poolRows)) return pickBalanced(poolRows).map(poolRowToRec);
       }
     } catch {
       // RPC 네트워크 오류 등 — 서버로 넘어간다
     }
-    return requestNearbyFromServer(input);
+    try {
+      return await requestNearbyFromServer(input);
+    } catch (err) {
+      // 비로그인은 AI를 못 부르니, 쌓여 있는 곳이 있으면 그것만이라도 보여 준다
+      if (err instanceof LoginRequiredError && poolRows.length > 0) return pickBalanced(poolRows).map(poolRowToRec);
+      throw err;
+    }
   }
 
   const { cityKey, placeKey } = nearbyCacheKeys(input.placeName, input.city);
