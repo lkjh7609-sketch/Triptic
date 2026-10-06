@@ -84,7 +84,10 @@ export function usePlaceAutocomplete(
   const types = options?.types;
   const enabled = options?.enabled ?? true;
   const fallbackOn = options?.textSearchFallback ?? false;
-  const [fallbackItems, setFallbackItems] = useState<SelectedPlace[]>([]);
+  const [fallbackState, setFallbackState] = useState<{ items: SelectedPlace[]; rect: DOMRect | null }>({ items: [], rect: null });
+  // 입력칸 위치는 목록을 띄우는 순간(이벤트 안)에 읽어 둔다 — 렌더 중에 ref를 읽지 않는다
+  const setFallbackItems = (items: SelectedPlace[]) =>
+    setFallbackState({ items, rect: items.length > 0 ? (inputRef.current?.getBoundingClientRect() ?? null) : null });
   const biasLat = options?.bias?.lat ?? null;
   const biasLng = options?.bias?.lng ?? null;
   const biasRef = useRef({ lat: biasLat, lng: biasLng });
@@ -183,7 +186,8 @@ export function usePlaceAutocomplete(
   }, [enabled]);
 
   const fallback = {
-    items: fallbackItems,
+    items: fallbackState.items,
+    rect: fallbackState.rect,
     pick: (place: SelectedPlace) => {
       if (inputRef.current) inputRef.current.value = place.name;
       setFallbackItems([]);

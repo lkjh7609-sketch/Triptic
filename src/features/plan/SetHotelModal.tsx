@@ -174,7 +174,7 @@ function HotelSearchInput({ currentHotel, bias, onChange }: { currentHotel: Hote
         aria-label={t('hotel.searchPlaceholder')}
         defaultValue={currentHotel?.name} 
       />
-      <PlaceFallbackList inputRef={inputRef} items={fallback.items} onPick={fallback.pick} />
+      <PlaceFallbackList rect={fallback.rect} items={fallback.items} onPick={fallback.pick} />
       {selected ? (
         <div className={styles.selectedCard}>
           <div className={styles.selectedName}>{selected.name}</div>

@@ -1,17 +1,16 @@
 import { createPortal } from 'react-dom';
-import type { RefObject } from 'react';
 import type { SelectedPlace } from './usePlaceAutocomplete';
 import styles from './PlaceFallbackList.module.css';
 
 interface PlaceFallbackListProps {
-  inputRef: RefObject<HTMLInputElement | null>;
+  /** 목록을 띄울 때 읽어 둔 입력칸 위치 */
+  rect: DOMRect | null;
   items: SelectedPlace[];
   onPick: (place: SelectedPlace) => void;
 }
 
 /** 자동완성이 비었을 때 Text Search 결과 — 입력칸 바로 아래에 구글 자동완성 목록처럼 띄운다 */
-export function PlaceFallbackList({ inputRef, items, onPick }: PlaceFallbackListProps) {
-  const rect = inputRef.current?.getBoundingClientRect();
+export function PlaceFallbackList({ rect, items, onPick }: PlaceFallbackListProps) {
   if (items.length === 0 || !rect) return null;
   return createPortal(
     <ul

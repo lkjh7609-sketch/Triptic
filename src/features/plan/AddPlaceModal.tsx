@@ -87,7 +87,7 @@ export function AddPlaceModal({ onClose, onAdd, initialSearch, bias }: AddPlaceM
           placeholder={t('addPlace.searchPlaceholder')}
           aria-label={t('addPlace.searchPlaceholder')}
         />
-        <PlaceFallbackList inputRef={inputRef} items={fallback.items} onPick={fallback.pick} />
+        <PlaceFallbackList rect={fallback.rect} items={fallback.items} onPick={fallback.pick} />
 
         {selected ? (
           <div className={styles.selectedCard}>
