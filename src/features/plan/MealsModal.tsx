@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { PlaceFallbackList } from './map/PlaceFallbackList';
 import { MEAL_META, slotsNeedingTime } from './map/meals';
 import { captureError } from '@/shared/monitoring';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
@@ -47,14 +48,15 @@ export function MealsModal({ dayMeals, dayItems, bias, onClose, onSave }: MealsM
     updateSlot(slot, { skip: checked });
   }
 
-  const breakfast = usePlaceAutocomplete((p) => selectPlace('breakfast', p), { bias });
-  const lunch = usePlaceAutocomplete((p) => selectPlace('lunch', p), { bias });
-  const dinner = usePlaceAutocomplete((p) => selectPlace('dinner', p), { bias });
+  const breakfast = usePlaceAutocomplete((p) => selectPlace('breakfast', p), { bias, textSearchFallback: true });
+  const lunch = usePlaceAutocomplete((p) => selectPlace('lunch', p), { bias, textSearchFallback: true });
+  const dinner = usePlaceAutocomplete((p) => selectPlace('dinner', p), { bias, textSearchFallback: true });
   const inputRefs: Record<MealSlot, typeof breakfast.inputRef> = {
     breakfast: breakfast.inputRef,
     lunch: lunch.inputRef,
     dinner: dinner.inputRef,
   };
+  const fallbacks = { breakfast: breakfast.fallback, lunch: lunch.fallback, dinner: dinner.fallback };
 
   function handleSaveClick() {
     const ask = slotsNeedingTime(dayItems, dayMeals, slots);
@@ -128,6 +130,7 @@ export function MealsModal({ dayMeals, dayItems, bias, onClose, onSave }: MealsM
                 defaultValue={info.name ?? ''}
                 disabled={info.skip}
               />
+              <PlaceFallbackList inputRef={inputRefs[slot]} items={fallbacks[slot].items} onPick={fallbacks[slot].pick} />
               <label className={styles.mealSkipLabel}>
                 <input
                   type="checkbox"

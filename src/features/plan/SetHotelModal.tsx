@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { usePlaceAutocomplete, type SelectedPlace } from './map/usePlaceAutocomplete';
+import { PlaceFallbackList } from './map/PlaceFallbackList';
 import { captureError } from '@/shared/monitoring';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import type { HotelItem, HotelsData } from './types';
@@ -159,10 +160,10 @@ function HotelSearchInput({ currentHotel, bias, onChange }: { currentHotel: Hote
       : null,
   );
   
-  const { inputRef } = usePlaceAutocomplete((place) => {
+  const { inputRef, fallback } = usePlaceAutocomplete((place) => {
     setSelected(place);
     onChange(place);
-  }, { bias });
+  }, { bias, textSearchFallback: true });
 
   return (
     <div className={styles.searchWrap}>
@@ -173,6 +174,7 @@ function HotelSearchInput({ currentHotel, bias, onChange }: { currentHotel: Hote
         aria-label={t('hotel.searchPlaceholder')}
         defaultValue={currentHotel?.name} 
       />
+      <PlaceFallbackList inputRef={inputRef} items={fallback.items} onPick={fallback.pick} />
       {selected ? (
         <div className={styles.selectedCard}>
           <div className={styles.selectedName}>{selected.name}</div>
