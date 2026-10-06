@@ -190,7 +190,8 @@
       "privacy": "洩漏或侵害他人個資",
       "illegal": "違法或有害內容",
       "impersonation": "冒充他人",
-      "terms": "其他違反服務條款"
+      "terms": "其他違反服務條款",
+      "custom": "自行輸入"
     }
   }
 }

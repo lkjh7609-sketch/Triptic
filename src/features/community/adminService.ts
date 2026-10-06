@@ -382,7 +382,7 @@ export class AdminRemoveMemberError extends Error {
 }
 
 /** 강제 탈퇴 — 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
-export async function adminRemoveMember(userId: string, reason: SuspensionReason): Promise<void> {
+export async function adminRemoveMember(userId: string, reason: SuspensionReason, reasonText?: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -390,7 +390,7 @@ export async function adminRemoveMember(userId: string, reason: SuspensionReason
   const res = await fetch(apiUrl('/api/deleteAccount'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ targetUserId: userId, reason }),
+    body: JSON.stringify({ targetUserId: userId, reason, ...(reason === 'custom' ? { reasonText } : {}) }),
   });
   if (res.ok) return;
   const json = (await res.json().catch(() => ({}))) as { error?: string };
@@ -406,6 +406,7 @@ export interface AdminSuspension {
   email: string;
   display_name: string | null;
   reason: SuspensionReason;
+  reason_text: string | null;
   suspended_at: string;
   lifted_at: string | null;
 }

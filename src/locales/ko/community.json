@@ -250,7 +250,9 @@
         "adminBlocked": "관리자 계정은 탈퇴시킬 수 없어요.",
         "failed": "탈퇴 처리에 실패했어요. 다시 시도해 주세요.",
         "reasonLabel": "정지 사유",
-        "reasonPlaceholder": "사유를 선택해 주세요"
+        "reasonPlaceholder": "사유를 선택해 주세요",
+        "reasonTextLabel": "사유 입력 (사용자에게 그대로 보여요)",
+        "reasonTextPlaceholder": "예: 같은 내용의 글을 반복해서 올렸어요"
       },
       "suspended": {
         "title": "이용 정지 계정",

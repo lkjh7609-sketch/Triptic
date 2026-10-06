@@ -116,7 +116,7 @@ describe('POST /api/deleteAccount', () => {
             const res = makeRes();
             await handler(adminPost({ targetUserId: target, reason: 'abuse' }), res);
             expect(res.statusCode).toBe(200);
-            expect(recordSuspension).toHaveBeenCalledWith(expect.anything(), { userId: target, adminId: 'u1', reason: 'abuse' });
+            expect(recordSuspension).toHaveBeenCalledWith(expect.anything(), { userId: target, adminId: 'u1', reason: 'abuse', reasonText: null });
             expect(recordSuspension.mock.invocationCallOrder[0]).toBeLessThan(deleteAccountData.mock.invocationCallOrder[0]);
             expect(sendAccountDeletedMail).not.toHaveBeenCalled();
         });
@@ -132,6 +132,22 @@ describe('POST /api/deleteAccount', () => {
             }
             expect(recordSuspension).not.toHaveBeenCalled();
             expect(deleteAccountData).not.toHaveBeenCalled();
+        });
+
+        it("직접 입력('custom')은 글을 함께 넘기고, 글이 없거나 200자를 넘으면 400", async () => {
+            asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+            const ok = makeRes();
+            await handler(adminPost({ targetUserId: target, reason: 'custom', reasonText: '  같은 글 반복  ' }), ok);
+            expect(ok.statusCode).toBe(200);
+            expect(recordSuspension).toHaveBeenCalledWith(expect.anything(), { userId: target, adminId: 'u1', reason: 'custom', reasonText: '같은 글 반복' });
+            for (const reasonText of [undefined, '   ', 'a'.repeat(201)]) {
+                maybeSingle.mockReset();
+                asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'custom', reasonText }), res);
+                expect(res.statusCode).toBe(400);
+            }
+            expect(deleteAccountData).toHaveBeenCalledTimes(1);
         });
 
         it('정지 명단에 못 올리면 지우지 않고 500', async () => {

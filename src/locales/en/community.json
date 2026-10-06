@@ -252,7 +252,9 @@
         "adminBlocked": "Admin accounts can't be removed.",
         "failed": "Couldn't remove the member. Please try again.",
         "reasonLabel": "Reason for suspension",
-        "reasonPlaceholder": "Select a reason"
+        "reasonPlaceholder": "Select a reason",
+        "reasonTextLabel": "Reason (shown to the user as written)",
+        "reasonTextPlaceholder": "e.g. Repeatedly posted the same content"
       },
       "suspended": {
         "title": "Suspended accounts",

@@ -112,18 +112,32 @@ describe('AdminMembersTab', () => {
     expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
     fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'spam' } });
     fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
-    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam'));
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam', undefined));
+  });
+
+  it("'직접 입력'을 고르면 글을 써야 눌러지고, 쓴 글이 사유로 서버에 간다", async () => {
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
+    fireEvent.click(screen.getByRole('button', { name: '강제 탈퇴' }));
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'custom' } });
+    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText(/사유 입력/), { target: { value: '   ' } });
+    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText(/사유 입력/), { target: { value: '  같은 글 반복  ' } });
+    fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'custom', '같은 글 반복'));
   });
 
   it('이용 정지 계정 목록을 펼쳐 정지를 해제할 수 있다(이미 해제된 줄에는 버튼이 없다)', async () => {
     state.suspensions.mockResolvedValue([
-      { id: 7, email: 'bad@example.com', display_name: '나쁜사람', reason: 'fraud', suspended_at: '2026-10-06T12:47:00Z', lifted_at: null },
-      { id: 6, email: 'old@example.com', display_name: null, reason: 'abuse', suspended_at: '2026-10-01T12:47:00Z', lifted_at: '2026-10-02T12:47:00Z' },
+      { id: 7, email: 'bad@example.com', display_name: '나쁜사람', reason: 'fraud', reason_text: null, suspended_at: '2026-10-06T12:47:00Z', lifted_at: null },
+      { id: 6, email: 'old@example.com', display_name: null, reason: 'custom', reason_text: '반복 도배', suspended_at: '2026-10-01T12:47:00Z', lifted_at: '2026-10-02T12:47:00Z' },
     ]);
     renderTab();
     fireEvent.click(await screen.findByRole('button', { name: /이용 정지 계정 \(1\)/ }));
     expect(await screen.findByText('bad@example.com')).toBeInTheDocument();
     expect(screen.getByText(/사기·허위 정보/)).toBeInTheDocument();
+    expect(screen.getByText(/반복 도배/)).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: '정지 해제' })).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: '정지 해제' }));
     expect(state.lift).not.toHaveBeenCalled();

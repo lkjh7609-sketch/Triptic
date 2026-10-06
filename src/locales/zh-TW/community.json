@@ -250,7 +250,9 @@
         "adminBlocked": "無法讓管理員帳號退會。",
         "failed": "退會處理失敗，請再試一次。",
         "reasonLabel": "停權原因",
-        "reasonPlaceholder": "請選擇原因"
+        "reasonPlaceholder": "請選擇原因",
+        "reasonTextLabel": "原因（將原文顯示給使用者）",
+        "reasonTextPlaceholder": "例如：重複張貼相同內容"
       },
       "suspended": {
         "title": "停權帳號",
