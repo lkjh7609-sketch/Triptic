@@ -32,7 +32,7 @@ interface Copy {
   greeting: (name: string) => string;
   /** 본문 아래 안내 — 문의 주소는 여기(본문 밖)로 뺀다 */
   footer: { contactPrefix: string; contactSuffix: string; service: string };
-  welcome: { subject: string; headline: string; lead: string; tipsTitle: string; tips: string[]; cta: string };
+  welcome: { subject: string; headline: string; lead: string[]; tipsTitle: string; tips: string[]; cta: string };
   reminder: {
     subject: (label: string) => string;
     headline: string;
@@ -49,13 +49,14 @@ interface Copy {
 const COPY: Record<MailLocale, Copy> = {
   ko: {
     greeting: (n) => `${n}님, 안녕하세요.`,
-    footer: { contactPrefix: '궁금한 점이나 도움이 필요하시면 ', contactSuffix: ' 로 문의해 주세요.', service: '이 메일은 Triptic 서비스 이용과 관련한 안내 메일이에요.' },
+    footer: { contactPrefix: '궁금한 점은 ', contactSuffix: ' 로 문의해 주세요.', service: '이 메일은 Triptic 서비스 이용과 관련한 안내 메일이에요.' },
     welcome: {
       subject: '[Triptic] 가입해 주셔서 고맙습니다',
       headline: 'Triptic에 오신 것을 환영해요',
-      lead: '가입해 주셔서 고맙습니다. 이제 여행 준비를 한 곳에서 시작해 보세요.',
+      lead: ['가입해 주셔서 고맙습니다.', '이제 여행 준비를 한 곳에서 시작해 보세요.'],
       tipsTitle: '이렇게 시작해 보세요',
-      tips: ['항공권·호텔 예약 서류를 올리면 일정이 자동으로 정리돼요', '공유 링크로 친구와 같은 일정을 함께 편집해요', '여행지별 게시판에서 후기를 보고 동행도 찾아보세요'],
+      // 폰(390px)에서 한 줄에 들어가는 길이로
+      tips: ['항공권·호텔 예약을 올리면 일정이 자동 정리돼요', '공유 링크로 친구와 같은 일정을 함께 편집해요', '여행지별 게시판에서 후기와 동행을 찾아보세요'],
       cta: 'Triptic 열기',
     },
     reminder: {
@@ -81,7 +82,7 @@ const COPY: Record<MailLocale, Copy> = {
     welcome: {
       subject: '[Triptic] Thanks for joining',
       headline: 'Welcome to Triptic',
-      lead: 'Thanks for joining. Start planning your trips in one place.',
+      lead: ['Thanks for joining.', 'Start planning your trips in one place.'],
       tipsTitle: 'Get started',
       tips: ['Upload flight and hotel bookings and your itinerary is organized for you', 'Share a link to edit the same itinerary with friends', 'Read stories and find travel companions in each destination board'],
       cta: 'Open Triptic',
@@ -109,7 +110,7 @@ const COPY: Record<MailLocale, Copy> = {
     welcome: {
       subject: '[Triptic] ご登録ありがとうございます',
       headline: 'Tripticへようこそ',
-      lead: 'ご登録ありがとうございます。旅行の準備を一か所で始めましょう。',
+      lead: ['ご登録ありがとうございます。', '旅行の準備を一か所で始めましょう。'],
       tipsTitle: 'はじめ方',
       tips: ['航空券・ホテルの予約書類をアップロードすると日程が自動で整理されます', '共有リンクで友達と同じ日程を一緒に編集できます', '行き先別の掲示板で体験談を読み、旅の仲間も探せます'],
       cta: 'Tripticを開く',
@@ -137,7 +138,7 @@ const COPY: Record<MailLocale, Copy> = {
     welcome: {
       subject: '[Triptic] 感謝您的加入',
       headline: '歡迎來到 Triptic',
-      lead: '感謝您的加入。現在就在同一個地方開始規劃旅行吧。',
+      lead: ['感謝您的加入。', '現在就在同一個地方開始規劃旅行吧。'],
       tipsTitle: '開始使用',
       tips: ['上傳機票與飯店訂單，行程就會自動整理好', '用分享連結和朋友一起編輯同一份行程', '在各目的地的討論板閱讀心得，也能找旅伴'],
       cta: '開啟 Triptic',
@@ -168,6 +169,7 @@ interface LayoutInput {
   locale: MailLocale;
   name: string;
   headline: string;
+  /** 문단 안의 \n은 줄바꿈(<br>)으로 */
   paragraphs: string[];
   /** 요약 표(라벨·값) */
   rows?: Array<[string, string]>;
@@ -184,6 +186,8 @@ function layout(input: LayoutInput): { html: string; text: string } {
   const c = COPY[input.locale];
   const greeting = c.greeting(input.name);
   const e = escapeHtml;
+  // 한국어는 낱말 중간에서 줄이 끊기지 않게(일본어·중국어는 글자 단위 줄바꿈이 맞아 그대로)
+  const keepAll = input.locale === 'ko' ? 'word-break:keep-all;' : '';
 
   const rows = input.rows?.length
     ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 4px;border:1px solid #E5E4DE;border-radius:12px;background:#F7F6F2;border-collapse:separate;">${input.rows
@@ -197,7 +201,7 @@ function layout(input: LayoutInput): { html: string; text: string } {
     ? `<div style="margin:20px 0 4px;">${input.list.title ? `<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:${BRAND};letter-spacing:0.02em;">${e(input.list.title)}</p>` : ''}<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${input.list.items
         .map(
           (item) =>
-            `<tr><td valign="top" style="width:22px;padding:5px 0;font-size:14px;color:${BRAND};font-weight:700;">&#10003;</td><td style="padding:5px 0;font-size:14px;line-height:1.55;color:#1F2427;">${e(item)}</td></tr>`,
+            `<tr><td valign="top" style="width:20px;padding:4px 0;font-size:13px;line-height:1.55;color:${BRAND};font-weight:700;">&#10003;</td><td style="padding:4px 0;font-size:13px;line-height:1.55;color:#1F2427;">${e(item)}</td></tr>`,
         )
         .join('')}</table></div>`
     : '';
@@ -210,17 +214,18 @@ function layout(input: LayoutInput): { html: string; text: string } {
     : '';
 
   const html = `<!doctype html>
-<html lang="${input.locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"></head>
+<html lang="${input.locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">
+<style>@media (max-width:480px){.wrap{padding:16px 6px !important}.pad{padding-left:20px !important;padding-right:20px !important}}</style></head>
 <body style="margin:0;padding:0;background:#EFEDE6;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFEDE6;"><tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;font-family:${FONT};">
-<tr><td style="background:#ffffff;border-radius:18px 18px 0 0;padding:32px 32px 8px;text-align:center;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFEDE6;"><tr><td class="wrap" align="center" style="padding:32px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;font-family:${FONT};${keepAll}">
+<tr><td class="pad" style="background:#ffffff;border-radius:18px 18px 0 0;padding:32px 32px 8px;text-align:center;">
 <a href="${SITE}" style="text-decoration:none;"><img src="${LOGO_URL}" width="72" height="72" alt="Triptic" style="display:inline-block;border:0;border-radius:16px;"></a>
 </td></tr>
-<tr><td style="background:#ffffff;border-radius:0 0 18px 18px;padding:8px 32px 32px;color:#1F2427;font-size:15px;line-height:1.65;">
+<tr><td class="pad" style="background:#ffffff;border-radius:0 0 18px 18px;padding:8px 32px 32px;color:#1F2427;font-size:14px;line-height:1.65;">
 <h1 style="margin:12px 0 18px;font-size:22px;line-height:1.35;font-weight:800;letter-spacing:-0.01em;color:${BRAND};text-align:center;">${e(input.headline)}</h1>
 <p style="margin:0 0 12px;">${e(greeting)}</p>
-${input.paragraphs.map((p) => `<p style="margin:0 0 12px;">${e(p)}</p>`).join('\n')}
+${input.paragraphs.map((p) => `<p style="margin:0 0 12px;">${e(p).replace(/\n/g, '<br>')}</p>`).join('\n')}
 ${rows}${list}${cta}${callout}${notes}
 </td></tr>
 <tr><td style="padding:20px 12px 0;text-align:center;font-size:12px;line-height:1.7;color:#6B6560;">
@@ -252,7 +257,7 @@ ${rows}${list}${cta}${callout}${notes}
 
 export function welcomeMail(locale: MailLocale, name: string): Mail {
   const c = COPY[locale].welcome;
-  const m = layout({ locale, name, headline: c.headline, paragraphs: [c.lead], list: { title: c.tipsTitle, items: c.tips }, cta: { label: c.cta, url: SITE } });
+  const m = layout({ locale, name, headline: c.headline, paragraphs: [c.lead.join('\n')], list: { title: c.tipsTitle, items: c.tips }, cta: { label: c.cta, url: SITE } });
   return { subject: c.subject, html: m.html, text: m.text };
 }
 
