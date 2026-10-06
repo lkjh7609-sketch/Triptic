@@ -14,7 +14,8 @@ import { applyCors, createRateLimiter, sanitizeInput, normalizeKey, parseLocale,
 import { chatCompletion, hasLlmProvider, parseJsonObject } from './_lib/llm.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 import { placeSearch, PLACE_SEARCH_KIND, PLACE_SEARCH_DAILY_LIMIT } from './_lib/placeSearch.js';
-import { GROUP_SIZE, isMixComplete, missingCounts, pickBalanced } from './_lib/nearbyMix.js';
+import { applyBlurbs, buildBlurbPrompt, searchNearbyGroup, selectCandidates } from './_lib/nearbyGoogle.js';
+import { GROUP_SIZE, GROUPS, isMixComplete, missingCounts, pickBalanced } from './_lib/nearbyMix.js';
 
 // DeepSeek가 추천 5개를 JSON으로 쓰는 데 10~20초가 걸린다. vercel.json maxDuration(30초) 안에서
 // Google Places 보강 시간까지 남겨둔다.
@@ -288,10 +289,10 @@ function parseBias(lat, lng) {
 }
 
 // ── 반경 장소 풀(0050) ────────────────────────────────────────────────────
-// 기준점 500m 안에 이미 쌓인 장소로 식당 3·카페 3·볼거리 3이 채워지면 AI 없이 그중에서 무작위로 골라 보여 주고, 모자라면 AI로
-// 모자란 만큼을 더 받아 반경 안에 있는 것만 풀에 쌓는다. 같은 약 500m 칸에서는 30일에 한 번만
-// AI를 부른다 — 장소가 드문 곳에서 열 때마다 AI를 다시 부르지 않게.
-// 묶음(식당·카페·볼거리)마다 3곳(GROUP_SIZE)이 쌓여 있으면 AI를 부르지 않고, 모자란 묶음만 AI에게 요청한다. 거리순으로 넉넉히 읽어 묶음별로 고른다
+// 기준점 500m 안에 이미 쌓인 장소로 식당 3·카페 3·볼거리 3이 채워지면 그중에서 무작위로 골라 보여 주고, 모자라면
+// 구글 Nearby Search로 모자란 묶음의 인기 장소(평점 4.0↑·리뷰 50↑·영업 중)를 가져와 AI가 추천 문구만 붙여 풀에 쌓는다(nearbyGoogle.js).
+// 조건에 맞는 곳이 9곳에 못 미치면 찾은 만큼만 보여 준다. 같은 약 500m 칸에서는 30일에 한 번만 구글을 부른다.
+// 묶음마다 3곳(GROUP_SIZE)이 쌓여 있으면 부르지 않는다. 거리순으로 넉넉히 읽어 묶음별로 고른다
 const POOL_READ = 60;
 const CELL_DEG = 0.005;
 const RETRY_AFTER_MS = 30 * 86_400_000;
@@ -337,85 +338,65 @@ async function claimCell(db, locale, bias) {
     return cell;
 }
 
-/** 모자란 묶음만 요청한다(예: 식당은 충분하고 카페 2곳·볼거리 3곳이 모자라면 그만큼만) */
-function poolMixRule(need) {
-    const parts = [];
-    if (need.restaurant) parts.push(`${need.restaurant} restaurants (category "restaurant")`);
-    if (need.cafe) parts.push(`${need.cafe} cafes (category "cafe")`);
-    if (need.sight) parts.push(`${need.sight} sights or things to do such as parks, landmarks, museums, markets, shopping streets or experiences (category "culture" or "spot")`);
-    return `Recommend exactly ${parts.join(', ')}.`;
-}
-
-function buildPoolPrompt({ placeName, city, bias, locale, exclude, need }) {
-    const where = `"${placeName}"${city ? ` in ${city}` : ''} (latitude ${bias.lat.toFixed(5)}, longitude ${bias.lng.toFixed(5)})`;
-    const known = exclude.length > 0 ? `These places are already known, so do not repeat them: ${exclude.join(', ')}.\n` : '';
-    return `You are a travel guide who knows the area well.
-${poolMixRule(need)}
-Every place must be a real place within about 500 m (a 5-minute walk) of ${where}. Never include hotels or other lodging. Do not include "${placeName}" itself.
-${known}Only recommend places that actually exist in that neighborhood, using their exact official names so they can be found on Google Maps.
-Describe each place on its own merits. Do not mention the distance or direction from "${placeName}", because the description will be reused for other nearby starting points.
-Write every text field in ${LOCALE_LANGUAGE_NAME[locale]}.
-
-Respond with JSON only, in this shape:
-{
-  "recommendations": [
-    {
-      "name": "exact official place name",
-      "category": "restaurant | cafe | culture | spot",
-      "categoryLabel": "short category label",
-      "signatureMenu": "signature dish or highlight",
-      "priceRange": "typical price range",
-      "reason": "one or two short sentences on why it is worth visiting",
-      "tip": "one short practical visiting tip"
-    }
-  ]
-}`;
-}
-
 async function recommendFromPool({ db, bias, locale, placeName, city, basePlaceId, takeQuota }) {
     let pool = await readPool(db, bias, locale, basePlaceId);
     const shown = (rows) => pickBalanced(rows).map(poolRowToRec);
-    if (isMixComplete(pool) || !hasLlmProvider()) return { recommendations: shown(pool), cached: true };
+    if (isMixComplete(pool)) return { recommendations: shown(pool), cached: true };
 
     const cell = await claimCell(db, locale, bias);
     if (!cell) return { recommendations: shown(pool), cached: true };
     try {
-        // 여기서부터 LLM을 부른다 — 로그인 사용자별 하루 한도. 거절되면 아래 catch가 방금 잡은 칸을 되돌려 다른 사람이 쓸 수 있게 한다
+        // 여기서부터 돈이 드는 호출(구글 Nearby·AI 문구) — 로그인 사용자별 하루 한도. 거절되면 아래 catch가 방금 잡은 칸을 되돌려 다른 사람이 쓸 수 있게 한다
         await takeQuota();
-        const result = await chatCompletion({
-            system: 'You are an expert travel assistant. Output ONLY valid JSON.',
-            user: buildPoolPrompt({ placeName, city, bias, locale, exclude: pool.map((p) => p.name), need: missingCounts(pool) }),
-            json: true,
-            timeoutMs: LLM_TIMEOUT_MS,
-            budgetMs: LLM_BUDGET_MS,
-        });
-        const recs = sanitizeRecommendations(parseJsonObject(result.content)?.recommendations, placeName);
-        // enrichWithGoogleMaps가 반경 밖 좌표는 이미 버린다(withinRange)
-        const enriched = await enrichWithGoogleMaps(recs, city, bias, locale);
-        const rows = enriched
-            .filter((r) => r.lat != null && r.lng != null && r.placeId && r.placeId !== basePlaceId && distanceM(bias, r) > 40)
-            .map((r) => ({
-                place_id: r.placeId,
-                locale,
-                name: r.name,
-                lat: r.lat,
-                lng: r.lng,
-                address: r.address ?? null,
-                category: r.category,
-                category_label: r.categoryLabel || null,
-                signature_menu: r.signatureMenu || null,
-                price_range: r.priceRange || null,
-                reason: r.reason || null,
-                tip: r.tip || null,
-                provider: result.provider,
-                model_used: result.model,
-            }));
+        // 1) 장소는 구글이 고른다(평점 4.0↑·리뷰 50↑·영업 중, 반경 500m) — 모자란 묶음만. 9곳이 안 채워지면 찾은 만큼만 쌓는다
+        const need = missingCounts(pool);
+        const groups = GROUPS.filter((g) => need[g] > 0);
+        const found = (await Promise.all(groups.map((group) => searchNearbyGroup({ apiKey: process.env.GOOGLE_PLACES_SERVER_KEY, bias, group, locale })))).flat();
+        const known = new Set(pool.map((p) => p.place_id));
+        const candidates = selectCandidates(found, { basePlaceId }).filter((c) => !known.has(c.placeId) && distanceM(bias, c) > 40);
+
+        // 2) AI는 고른 장소에 추천 문구만 쓴다 — 실패해도 장소는 문구 없이 보여 준다
+        let parsed = null;
+        let provider = 'google';
+        let model = null;
+        if (candidates.length > 0 && hasLlmProvider()) {
+            try {
+                const result = await chatCompletion({
+                    system: 'You are an expert travel assistant. Output ONLY valid JSON.',
+                    user: buildBlurbPrompt({ candidates, placeName, city, languageName: LOCALE_LANGUAGE_NAME[locale] }),
+                    json: true,
+                    timeoutMs: LLM_TIMEOUT_MS,
+                    budgetMs: LLM_BUDGET_MS,
+                });
+                parsed = parseJsonObject(result.content);
+                provider = result.provider;
+                model = result.model;
+            } catch (e) {
+                console.warn('[recommend] blurb generation failed:', e instanceof Error ? e.message : e);
+            }
+        }
+        const rows = applyBlurbs(candidates, parsed).map((r) => ({
+            place_id: r.placeId,
+            locale,
+            name: r.name,
+            lat: r.lat,
+            lng: r.lng,
+            address: r.address || null,
+            category: r.category,
+            category_label: r.categoryLabel || null,
+            signature_menu: r.signatureMenu || null,
+            price_range: r.priceRange || null,
+            reason: r.reason || null,
+            tip: r.tip || null,
+            provider,
+            model_used: model,
+        }));
         if (rows.length > 0) {
             const { error } = await db.from('ai_places').upsert(rows, { onConflict: 'place_id,locale', ignoreDuplicates: true });
             if (error) console.warn('[recommend] ai_places upsert failed:', error.message);
         }
     } catch (e) {
-        // AI/네트워크 실패는 "시도함"으로 남기지 않는다 — 다음에 다시 시도
+        // 구글/한도 실패는 "시도함"으로 남기지 않는다 — 다음에 다시 시도
         await db.from('ai_place_attempts').delete().match(cell);
         throw e;
     }
