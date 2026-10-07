@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: '잘못된 요청입니다.' }, 400, headers);
   }
   const text = (body.text ?? '').trim();
-  if (!text || text.length > 2000) {
+  if (!text || text.length > 3500) {
     return jsonResponse({ error: '텍스트가 비었거나 너무 깁니다.' }, 400, headers);
   }
   const targetName = LOCALE_NAME[body.target ?? ''] ?? 'English';

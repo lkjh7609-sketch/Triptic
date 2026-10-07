@@ -67,6 +67,8 @@ interface RequestBody {
 }
 
 const POST_CATEGORIES = ['story', 'qna', 'tips', 'food'];
+// 글 중간 사진 한 줄(`![](저장경로)`)과 앞뒤 빈 줄 — 글자 수에서 뺀다
+const IMAGE_LINE_RE = /^!\[\]\([^)\s]*\)[ \t]*(?:\n\n?|$)/gm;
 
 Deno.serve(async (req) => {
   const headers = corsHeaders(req.headers.get('origin'));
@@ -105,8 +107,9 @@ Deno.serve(async (req) => {
   const isCompanionApplication = kind === 'companion_application';
   // 신청 메시지는 선택 사항이라 빈 문자열을 허용한다 — 그 외 kind는 본문 필수.
   if (!isCompanionApplication && !text) return jsonResponse({ error: '내용을 입력해 주세요.' }, 400, headers);
-  if ((kind === 'post' || kind === 'post_edit') && text.length > 2000) {
-    return jsonResponse({ error: '글은 2000자를 넘을 수 없습니다.' }, 400, headers);
+  // 글은 3000자(글 중간 사진 줄은 빼고 센다 — 클라이언트 bodyTextLength와 같은 규칙). 사진 줄까지 합친 총길이는 DB 한도(0100)에 맞춘다
+  if ((kind === 'post' || kind === 'post_edit') && (text.replace(IMAGE_LINE_RE, '').length > 3000 || text.length > 4000)) {
+    return jsonResponse({ error: '글은 3000자를 넘을 수 없습니다.' }, 400, headers);
   }
   if (kind === 'comment' && text.length > 500) {
     return jsonResponse({ error: '댓글은 500자를 넘을 수 없습니다.' }, 400, headers);
