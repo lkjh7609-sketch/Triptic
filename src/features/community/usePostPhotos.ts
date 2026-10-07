@@ -50,22 +50,26 @@ export function usePostPhotos(userId: string, initial: PostPhoto[] = []) {
   );
 
   const upload = useCallback(
-    async (files: File[]) => {
+    /** 올라간 사진을 차례대로 돌려준다(글 중간에 넣을 때 쓴다) */
+    async (files: File[]): Promise<PostPhoto[]> => {
       const images = files.filter((f) => f.type.startsWith('image/') || f.type === '');
-      if (images.length === 0) return;
+      if (images.length === 0) return [];
       if (photosRef.current.length + images.length > MAX_POST_IMAGES) {
         showToast(t('compose.maxImagesError', { max: MAX_POST_IMAGES }), { tone: 'error' });
-        return;
+        return [];
       }
       const firstUpload = photosRef.current.length === 0;
       cancelRef.current = false;
       setProgress({ total: images.length, done: 0 });
       let added = 0;
+      const addedPhotos: PostPhoto[] = [];
       try {
         for (const file of images) {
           if (cancelRef.current) break;
           const uploaded = await uploadPostImage(file, userId);
-          setPhotos((prev) => [...prev, { ...uploaded, previewUrl: URL.createObjectURL(file), revokable: true }]);
+          const photo: PostPhoto = { ...uploaded, previewUrl: URL.createObjectURL(file), revokable: true };
+          addedPhotos.push(photo);
+          setPhotos((prev) => [...prev, photo]);
           added += 1;
           setProgress({ total: images.length, done: added });
         }
@@ -82,6 +86,7 @@ export function usePostPhotos(userId: string, initial: PostPhoto[] = []) {
           tone: 'success',
         });
       }
+      return addedPhotos;
     },
     [t, userId],
   );

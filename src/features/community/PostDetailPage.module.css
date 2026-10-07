@@ -887,3 +887,22 @@
   color: #fff;
   font-size: 0.875rem;
 }
+
+/* ── 글 중간 사진 ── */
+.inlinePhotoBtn {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.inlinePhoto {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}

@@ -27,6 +27,7 @@ import type { Comment, CommunityProfile, Locale, PostImage } from './types';
 import styles from './PostDetailPage.module.css';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
 import { LightMarkdown } from './editor/LightMarkdown';
+import { imagePathsOf, withoutImages } from './editor/markdownParse';
 
 const MAX_COMMENT_LENGTH = 500;
 const EMOJIS = ['😀', '😍', '👍', '🙏', '🎉', '😂', '😭', '🔥', '✈️', '🍜', '🌸', '❤️'];
@@ -128,6 +129,10 @@ export function PostDetailScreen() {
 
   const images: PostImage[] = (post?.images ?? []).slice().sort((a, b) => a.position - b.position);
 
+  // 글 중간에 넣은 사진은 그 자리에 보이고, 아래 사진 모음에는 나머지(글에 안 넣은 사진)만 보인다
+  const inlinePaths = new Set(imagePathsOf(post?.body ?? ''));
+  const galleryImages = images.map((img, index) => ({ img, index })).filter(({ img }) => !inlinePaths.has(img.storage_path));
+
   // 사진 크게 보기 — Esc로 닫고, 좌우 방향키로 넘긴다
   useEffect(() => {
     if (lightbox === null) return;
@@ -162,7 +167,7 @@ export function PostDetailScreen() {
   async function handleTranslate() {
     setTranslating(true);
     try {
-      const result = await translateText(post!.body, post!.language, viewerLocale);
+      const result = await translateText(withoutImages(post!.body), post!.language, viewerLocale);
       setTranslated(result);
     } catch (err) {
       captureError(err, { context: 'translatePost' });
@@ -384,7 +389,21 @@ export function PostDetailScreen() {
 
         <hr className={styles.rule} />
 
-        <LightMarkdown text={post.body} className={styles.bodyRich} />
+        <LightMarkdown
+          text={post.body}
+          className={styles.bodyRich}
+          renderImage={(path) => {
+            const index = images.findIndex((img) => img.storage_path === path);
+            const picture = <img src={getPostImageUrl(path)} alt="" className={styles.inlinePhoto} loading="lazy" />;
+            return index < 0 ? (
+              picture
+            ) : (
+              <button type="button" className={styles.inlinePhotoBtn} onClick={() => setLightbox(index)} aria-label={`${t('detail.photoAlt', { n: index + 1 })} — ${t('detail.viewLarge')}`}>
+                {picture}
+              </button>
+            );
+          }}
+        />
 
         {showTranslateButton ? (
           <div className={styles.translateBlock}>
@@ -421,10 +440,10 @@ export function PostDetailScreen() {
           </div>
         ) : null}
 
-        {images.length > 0 ? (
-          <section className={styles.photos} aria-label={t('detail.photosTitle', { n: images.length })}>
-            <div className={`${styles.photoGrid} ${images.length === 1 ? styles.photoGridOne : ''}`}>
-              {images.map((img, i) => (
+        {galleryImages.length > 0 ? (
+          <section className={styles.photos} aria-label={t('detail.photosTitle', { n: galleryImages.length })}>
+            <div className={`${styles.photoGrid} ${galleryImages.length === 1 ? styles.photoGridOne : ''}`}>
+              {galleryImages.map(({ img, index: i }) => (
                 <button
                   key={img.id}
                   type="button"

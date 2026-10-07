@@ -18,7 +18,7 @@ const STEPS: { key: string; icon: ReactNode }[] = [
 
 /**
  * "여행기 작성 가이드" 팝업 — 홈의 "첫 여행기를 남겨보세요" 배너에서 연다. 글쓰기 화면의 실제 규칙
- * (제목 100자·본문 2000자·사진 10장·태그 3개·일정 첨부와 복사 허용·올린 뒤 수정)과 맞춰 적은 안내라서,
+ * (제목 100자·본문 3000자·사진 10장·태그 3개·일정 첨부와 복사 허용·올린 뒤 수정)과 맞춰 적은 안내라서,
  * 글쓰기 규칙을 바꾸면 이 문구(home.json page.stories.guide)도 같이 고친다.
  */
 export function WritingGuideDialog({ onClose, onWrite }: { onClose: () => void; onWrite: () => void }) {

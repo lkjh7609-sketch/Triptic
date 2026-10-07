@@ -27,13 +27,15 @@ import {
   type PostCategory,
 } from './postMeta';
 import { MAX_POST_IMAGES, photoFromStored, usePostPhotos } from './usePostPhotos';
+import { bodyTextLength, dropUnknownImages, stripMarkdown } from './editor/markdownParse';
 import type { Destination, Post } from './types';
 import styles from './ComposePostScreen.module.css';
 
 // 편집기(Lexical)는 글쓰기 화면에서만 필요해서 따로 내려받는다 — 앱 첫 로딩에는 들어가지 않는다
 const RichTextEditor = lazy(() => import('./editor/RichTextEditor'));
 
-const MAX_BODY_LENGTH = 2000;
+// 글자 수는 사진 줄을 뺀 길이로 센다(서버·DB는 사진 줄까지 넉넉히 받는다 — 0100)
+const MAX_BODY_LENGTH = 3000;
 const AUTOSAVE_DELAY_MS = 700;
 const QUICK_PICK_COUNT = 4;
 
@@ -91,6 +93,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
     editing?.images?.slice().sort((a, b) => a.position - b.position).map((i) => photoFromStored({ storagePath: i.storage_path, width: i.width ?? 0, height: i.height ?? 0 })),
   );
   const { photos, setPhotos } = photoState;
+  const photoPaths = useMemo(() => photos.map((p) => p.storagePath), [photos]);
   const bodyRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const destRef = useRef<HTMLButtonElement>(null);
@@ -231,12 +234,14 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   // ── 게시 ────────────────────────────────────────────────────────────────
   const missingTitle = showErrors && !title.trim();
   const missingDest = showErrors && !destinationId && !freeBoard;
-  const missingBody = showErrors && !body.trim();
+  // 사진만 있는 글은 받지 않는다 — 글이 한 줄은 있어야 한다
+  const missingBody = showErrors && !stripMarkdown(body).trim();
   // 자유게시판 글은 분류를 고르지 않는다 — 내부적으로 'story'로 저장
   const effectiveCategory: PostCategory | '' = freeBoard ? 'story' : category;
   const missingCategory = showErrors && !effectiveCategory;
-  // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 2000자 제한)
-  const tooLong = body.length > MAX_BODY_LENGTH;
+  // 편집기가 한도에서 입력을 막지만, 붙여넣기로 넘친 경우는 여기서 막는다(서버·DB도 3000자 제한)
+  const bodyLength = bodyTextLength(body);
+  const tooLong = bodyLength > MAX_BODY_LENGTH;
   const blocked = blockedBody !== null && blockedBody === body;
   const publishDisabled = createPost.isPending || updatePost.isPending || photoState.uploading || blocked;
 
@@ -278,7 +283,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       setSubmitError(t('compose.story.tooLong', { max: MAX_BODY_LENGTH }));
       return;
     }
-    if (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !body.trim()) {
+    if (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !stripMarkdown(body).trim()) {
       setShowErrors(true);
       // 빨간 테두리·흔들림·포커스·스크롤은 flagInvalid가 한다(앱 공통 동작)
       flagInvalid(
@@ -302,7 +307,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
         await updatePost.mutateAsync({
           postId: editing.id,
           title: title.trim(),
-          body: body.trim(),
+          body: dropUnknownImages(body, photos.map((p) => p.storagePath)).trim(),
           tags: finalTags(),
           images: photos.map(({ storagePath, width, height }) => ({ storagePath, width, height })),
         });
@@ -313,7 +318,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
       const result = await createPost.mutateAsync({
         destinationId: destinationId || null,
         title: title.trim(),
-        body: body.trim(),
+        body: dropUnknownImages(body, photos.map((p) => p.storagePath)).trim(),
         tripId: tripId || null,
         allowCopy: !!tripId && allowCopy,
         category: effectiveCategory as PostCategory,
@@ -593,7 +598,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           {storyLabel} {desktop ? <span className={styles.required}>*</span> : null}
         </span>
         {desktop ? (
-          <span className={`${styles.counterTop} ${tooLong ? styles.counterOver : ''}`}>{t('compose.story.counterPc', { count: body.length, max: MAX_BODY_LENGTH })}</span>
+          <span className={`${styles.counterTop} ${tooLong ? styles.counterOver : ''}`}>{t('compose.story.counterPc', { count: bodyLength, max: MAX_BODY_LENGTH })}</span>
         ) : null}
         {missingBody ? (
           <span className={styles.errorText} role="alert">
@@ -611,11 +616,13 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
             labelledBy="compose-story-label"
             placeholder={desktop ? t('compose.story.placeholderPc') : t('compose.story.placeholder')}
             onChange={setBody}
+            onPickImages={async (files) => (await photoState.upload(files)).map((p) => p.storagePath)}
+            photoPaths={photoPaths}
           />
         </Suspense>
         <div className={styles.writingFoot}>
           {desktop ? <span className={styles.minHint}>{t('compose.story.minHint')}</span> : <span />}
-          {desktop ? null : <span className={`${styles.counter} ${tooLong ? styles.counterOver : ''}`}>{body.length}/{MAX_BODY_LENGTH}</span>}
+          {desktop ? null : <span className={`${styles.counter} ${tooLong ? styles.counterOver : ''}`}>{bodyLength}/{MAX_BODY_LENGTH}</span>}
         </div>
       </div>
     </section>
@@ -762,7 +769,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
 
       {desktop ? null : (
         <footer className={styles.footer}>
-          {showErrors && (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !body.trim()) ? (
+          {showErrors && (!title.trim() || (!destinationId && !freeBoard) || !effectiveCategory || !stripMarkdown(body).trim()) ? (
             <p className={styles.footerWarning} role="alert">
               <TriangleAlert size={14} aria-hidden="true" />
               {t('compose.missing')}

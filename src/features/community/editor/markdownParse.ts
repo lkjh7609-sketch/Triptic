@@ -15,7 +15,58 @@ export type Block =
   | { type: 'paragraph'; lines: InlineNode[][] }
   | { type: 'heading'; level: 1 | 2 | 3; children: InlineNode[] }
   | { type: 'quote'; lines: InlineNode[][] }
-  | { type: 'list'; ordered: boolean; items: InlineNode[][] };
+  | { type: 'list'; ordered: boolean; items: InlineNode[][] }
+  | { type: 'image'; path: string };
+
+/**
+ * 글 중간에 넣은 사진 — 한 줄짜리 `![](저장경로)`. 경로는 우리 저장소(post-images) 규칙 `{사용자id}/{uuid}.{webp|jpg}`만 받는다.
+ * 그 밖의 주소(바깥 사진)는 사진이 아니라 일반 글자로 남는다 — 남의 주소로 사진을 불러 와 추적하는 길을 막는다.
+ */
+const IMAGE_PATH = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(webp|jpg)$/i;
+const IMAGE_LINE = /^!\[\]\(([^)\s]+)\)$/;
+/** 글자 수를 셀 때 빼는 사진 줄(앞뒤 빈 줄 포함) */
+const IMAGE_LINE_WITH_BREAKS = /^!\[\]\([^)\s]*\)[ \t]*(?:\n\n?|$)/gm;
+
+export function isImagePath(path: string): boolean {
+  return IMAGE_PATH.test(path);
+}
+
+export function imageMarkdown(path: string): string {
+  return `![](${path})`;
+}
+
+/** 본문에 넣은 사진 경로(순서대로, 중복 없음) */
+export function imagePathsOf(source: string): string[] {
+  const out: string[] = [];
+  for (const raw of source.replace(/\r\n?/g, '\n').split('\n')) {
+    const m = IMAGE_LINE.exec(raw.trimEnd());
+    if (m && isImagePath(m[1]) && !out.includes(m[1])) out.push(m[1]);
+  }
+  return out;
+}
+
+/** 글자 수 한도에 넣는 길이 — 사진 줄은 뺀다(사진 한 장이 글자 80여 자를 차지하지 않게). 서버(moderate-content)도 같은 규칙 */
+export function bodyTextLength(source: string): number {
+  return source.replace(IMAGE_LINE_WITH_BREAKS, '').length;
+}
+
+/** 사진 줄을 뺀 글 — 번역처럼 사진을 보낼 수 없는 곳에 쓴다 */
+export function withoutImages(source: string): string {
+  return source.replace(IMAGE_LINE_WITH_BREAKS, '');
+}
+
+/** 올린 사진 목록에 없는 사진 줄을 뺀다 — 사진을 지웠는데 본문에 자리만 남는 일을 막는다 */
+export function dropUnknownImages(source: string, knownPaths: string[]): string {
+  const known = new Set(knownPaths);
+  return source
+    .split('\n')
+    .filter((raw) => {
+      const m = IMAGE_LINE.exec(raw.trimEnd());
+      return !m || known.has(m[1]);
+    })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n');
+}
 
 /** 링크는 http(s)만 — javascript: 같은 주소는 링크가 되지 않고 글자로 남는다 */
 export function isSafeUrl(url: string): boolean {
@@ -55,8 +106,11 @@ export function parseBlocks(source: string): Block[] {
     const quote = /^>\s?(.*)$/.exec(line);
     const bullet = /^[-*]\s+(.*)$/.exec(line);
     const numbered = /^\d+[.)]\s+(.*)$/.exec(line);
+    const image = IMAGE_LINE.exec(line);
     const last = blocks[blocks.length - 1];
-    if (heading) {
+    if (image && isImagePath(image[1])) {
+      blocks.push({ type: 'image', path: image[1] });
+    } else if (heading) {
       blocks.push({ type: 'heading', level: Math.min(heading[1].length, 3) as 1 | 2 | 3, children: parseInline(heading[2]) });
     } else if (bullet || numbered) {
       const ordered = !bullet;
@@ -94,6 +148,8 @@ export function stripMarkdown(source: string): string {
       for (const line of block.lines) lines.push(inlineText(line));
     } else if (block.type === 'heading') {
       lines.push(inlineText(block.children));
+    } else if (block.type === 'image') {
+      continue;
     } else {
       for (const item of block.items) lines.push(inlineText(item));
     }
