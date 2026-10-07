@@ -508,7 +508,9 @@
       "link": "Link",
       "linkRemove": "Remove link",
       "linkPlaceholder": "Link address (e.g. example.com)",
-      "linkApply": "Apply"
+      "linkApply": "Apply",
+      "image": "Insert photo",
+      "imageRemove": "Remove photo"
     },
     "category": {
       "label": "Category",

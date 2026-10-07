@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bold, Heading2, Italic, Link2, List, ListOrdered } from 'lucide-react';
+import { Bold, Heading2, ImagePlus, Italic, LoaderCircle, Link2, List, ListOrdered } from 'lucide-react';
 import {
   $createParagraphNode,
   $createTextNode,
+  $getRoot,
   $getSelection,
   $isRangeSelection,
   $setSelection,
@@ -47,13 +48,15 @@ import {
   type Transformer,
 } from '@lexical/markdown';
 import { $setBlocksType } from '@lexical/selection';
-import { isSafeUrl } from './markdownParse';
+import { $insertNodeToNearestRoot } from '@lexical/utils';
+import { $createImageNode, $isImageNode, IMAGE, ImageNode } from './ImageNode';
+import { bodyTextLength, isSafeUrl } from './markdownParse';
 import styles from './RichTextEditor.module.css';
 
-/** 편집기가 읽고 쓰는 마크다운 규칙 — 굵게·기울임·제목·목록·링크(+붙여넣은 인용). 저장 모양은 markdownParse.ts와 같다 */
-const TRANSFORMERS: Transformer[] = [HEADING, QUOTE, UNORDERED_LIST, ORDERED_LIST, BOLD_ITALIC_STAR, BOLD_STAR, ITALIC_STAR, LINK];
+/** 편집기가 읽고 쓰는 마크다운 규칙 — 굵게·기울임·제목·목록·링크·글 중간 사진(+붙여넣은 인용). 저장 모양은 markdownParse.ts와 같다 */
+const TRANSFORMERS: Transformer[] = [IMAGE, HEADING, QUOTE, UNORDERED_LIST, ORDERED_LIST, BOLD_ITALIC_STAR, BOLD_STAR, ITALIC_STAR, LINK];
 
-const NODES = [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode];
+const NODES = [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, ImageNode];
 
 interface ToolbarState {
   bold: boolean;
@@ -88,7 +91,7 @@ function normalizeUrl(raw: string): string | null {
   return isSafeUrl(url) ? url : null;
 }
 
-function Toolbar() {
+function Toolbar({ onPickImages }: { onPickImages?: (files: File[]) => Promise<string[]> }) {
   const { t } = useTranslation('community');
   const [editor] = useLexicalComposerContext();
   const [state, setState] = useState<ToolbarState>(NO_FORMAT);
@@ -96,6 +99,8 @@ function Toolbar() {
   const [linkValue, setLinkValue] = useState('');
   const [linkError, setLinkError] = useState(false);
   const linkInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageBusy, setImageBusy] = useState(false);
   // 주소 칸으로 포커스가 옮겨 가면 글 칸의 선택이 풀리므로, 링크 버튼을 누른 순간의 선택을 붙들어 둔다
   const savedSelection = useRef<BaseSelection | null>(null);
 
@@ -126,6 +131,34 @@ function Toolbar() {
   function toggleList(kind: 'bullet' | 'numbered') {
     const active = kind === 'bullet' ? state.bullet : state.numbered;
     editor.dispatchCommand(active ? REMOVE_LIST_COMMAND : kind === 'bullet' ? INSERT_UNORDERED_LIST_COMMAND : INSERT_ORDERED_LIST_COMMAND, undefined);
+  }
+
+  function openImagePicker() {
+    // 파일 창이 열리면 글 칸의 선택이 풀리므로, 누른 순간의 커서를 붙들어 둔다(사진을 그 자리에 넣는다)
+    savedSelection.current = editor.getEditorState().read(() => $getSelection()?.clone() ?? null);
+    fileInputRef.current?.click();
+  }
+
+  async function handleImageFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = '';
+    if (!onPickImages || files.length === 0) return;
+    setImageBusy(true);
+    try {
+      const paths = await onPickImages(files);
+      if (paths.length === 0) return;
+      editor.update(() => {
+        if (savedSelection.current) $setSelection(savedSelection.current);
+        let last: ImageNode | null = null;
+        for (const path of paths) last = $insertNodeToNearestRoot($createImageNode(path));
+        // 사진이 글 맨 끝이면 그 뒤에 이어 쓸 빈 줄이 있어야 한다
+        if (last && !last.getNextSibling()) last.insertAfter($createParagraphNode());
+        last?.selectNext();
+      });
+      editor.focus();
+    } finally {
+      setImageBusy(false);
+    }
   }
 
   function handleLink() {
@@ -180,8 +213,12 @@ function Toolbar() {
         {button(t('compose.editor.heading'), state.heading, toggleHeading, <Heading2 size={18} aria-hidden="true" />)}
         {button(t('compose.editor.bulletList'), state.bullet, () => toggleList('bullet'), <List size={18} aria-hidden="true" />)}
         {button(t('compose.editor.numberedList'), state.numbered, () => toggleList('numbered'), <ListOrdered size={18} aria-hidden="true" />)}
+        {onPickImages
+          ? button(t('compose.editor.image'), false, imageBusy ? () => undefined : openImagePicker, imageBusy ? <LoaderCircle size={18} aria-hidden="true" className={styles.spin} /> : <ImagePlus size={18} aria-hidden="true" />)
+          : null}
         {button(state.link ? t('compose.editor.linkRemove') : t('compose.editor.link'), state.link, handleLink, <Link2 size={18} aria-hidden="true" />)}
       </div>
+      <input ref={fileInputRef} type="file" accept="image/*" multiple className={styles.hiddenInput} onChange={(e) => void handleImageFiles(e)} />
       {linkOpen ? (
         <form className={styles.linkRow} onSubmit={applyLink} noValidate>
           <input
@@ -235,13 +272,13 @@ function SyncValuePlugin({ value, emitted }: { value: string; emitted: EmittedVa
 
 function ChangePlugin({ maxLength, onChange, emitted }: { maxLength: number; onChange: (markdown: string) => void; emitted: EmittedValue }) {
   const [editor] = useLexicalComposerContext();
-  // 글자 수 제한(저장되는 마크다운 기준) — 한도에 닿으면 더 입력되지 않게 막는다. 한글 조합 중인 글자는 막을 수 없어 그대로 두고,
+  // 글자 수 제한(저장되는 마크다운 기준, 사진 줄은 뺀다) — 한도에 닿으면 더 입력되지 않게 막는다. 한글 조합 중인 글자는 막을 수 없어 그대로 두고,
   // 붙여넣기로 넘친 경우는 바깥(글쓰기 화면)이 글자 수를 보고 안내한다
   useEffect(() => {
     const guard = (e: Event) => {
       const input = e as InputEvent;
       if (input.isComposing || !input.inputType.startsWith('insert')) return;
-      if (emitted.get().length >= maxLength) e.preventDefault();
+      if (bodyTextLength(emitted.get()) >= maxLength) e.preventDefault();
     };
     const off = editor.registerRootListener((root, previous) => {
       previous?.removeEventListener('beforeinput', guard);
@@ -265,6 +302,23 @@ function ChangePlugin({ maxLength, onChange, emitted }: { maxLength: number; onC
   );
 }
 
+/** 글쓰기 사진 목록에서 지운 사진은 본문에서도 뺀다 — 목록에서 빠지는 순간만 보고, 처음 열 때(목록이 늦게 채워질 때)는 건드리지 않는다 */
+function DropRemovedImagesPlugin({ photoPaths }: { photoPaths: string[] }) {
+  const [editor] = useLexicalComposerContext();
+  const previous = useRef(photoPaths);
+  useEffect(() => {
+    const now = new Set(photoPaths);
+    const removed = previous.current.filter((p) => !now.has(p));
+    previous.current = photoPaths;
+    if (removed.length === 0) return;
+    editor.update(() => {
+      const gone = new Set(removed);
+      for (const node of $getRoot().getChildren()) if ($isImageNode(node) && gone.has(node.getPath())) node.remove();
+    });
+  }, [editor, photoPaths]);
+  return null;
+}
+
 export interface RichTextEditorProps {
   /** 저장 형식(가벼운 마크다운) */
   value: string;
@@ -276,14 +330,18 @@ export interface RichTextEditorProps {
   /** 편집기를 감싸는 요소 — 포커스·오류 표시를 위해 바깥이 잡는다 */
   editorRef?: React.Ref<HTMLDivElement>;
   minHeight?: number;
+  /** 글 중간에 사진을 넣는다 — 고른 파일을 올리고, 글에 넣을 저장 경로를 돌려준다(못 올린 것은 빼고). 안 주면 사진 단추가 없다 */
+  onPickImages?: (files: File[]) => Promise<string[]>;
+  /** 지금 글쓰기 사진 목록의 저장 경로 — 목록에서 지운 사진을 본문에서도 뺀다 */
+  photoPaths?: string[];
 }
 
 /**
- * 글쓰기 본문 편집기(Lexical) — 굵게·기울임·제목·목록·링크. `# `·`- `·`**굵게**`처럼 마크다운을 직접 쳐도 서식이 된다.
+ * 글쓰기 본문 편집기(Lexical) — 굵게·기울임·제목·목록·링크·글 중간 사진. `# `·`- `·`**굵게**`처럼 마크다운을 직접 쳐도 서식이 된다.
  * 값은 가벼운 마크다운 문자열로 주고받는다(예전 평문 글도 그대로 열린다).
  * 무거워서 글쓰기 화면이 열릴 때만 따로 내려받는다(React.lazy로 불러 쓴다).
  */
-export default function RichTextEditor({ value, onChange, maxLength, placeholder, labelledBy, editorRef, minHeight = 180 }: RichTextEditorProps) {
+export default function RichTextEditor({ value, onChange, maxLength, placeholder, labelledBy, editorRef, minHeight = 180, onPickImages, photoPaths }: RichTextEditorProps) {
   const lastEmitted = useRef(value);
   const emitted = useMemo<EmittedValue>(
     () => ({
@@ -318,7 +376,7 @@ export default function RichTextEditor({ value, onChange, maxLength, placeholder
   return (
     <LexicalComposer initialConfig={config}>
       <div className={styles.editor} ref={editorRef}>
-        <Toolbar />
+        <Toolbar onPickImages={onPickImages} />
         <div className={styles.surface}>
           <RichTextPlugin
             contentEditable={<ContentEditable className={styles.content} style={{ minHeight }} aria-labelledby={labelledBy} aria-multiline="true" />}
@@ -330,6 +388,7 @@ export default function RichTextEditor({ value, onChange, maxLength, placeholder
         <ListPlugin />
         <LinkPlugin validateUrl={isSafeUrl} />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        {photoPaths ? <DropRemovedImagesPlugin photoPaths={photoPaths} /> : null}
         <SyncValuePlugin value={value} emitted={emitted} />
         <ChangePlugin maxLength={maxLength} onChange={onChange} emitted={emitted} />
       </div>

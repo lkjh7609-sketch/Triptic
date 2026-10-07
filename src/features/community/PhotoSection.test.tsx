@@ -113,7 +113,7 @@ describe('usePostPhotos', () => {
       (f: File) => new Promise((resolve) => (release = () => resolve({ storagePath: `u1/${f.name}`, width: 1, height: 1 }))),
     );
     const { result } = renderHook(() => usePostPhotos('u1'));
-    let done: Promise<void> = Promise.resolve();
+    let done: Promise<unknown> = Promise.resolve();
     await act(async () => {
       done = result.current.upload([file('a'), file('b'), file('c')]);
     });

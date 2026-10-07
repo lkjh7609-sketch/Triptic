@@ -499,7 +499,9 @@
       "link": "링크",
       "linkRemove": "링크 해제",
       "linkPlaceholder": "링크 주소 (예: example.com)",
-      "linkApply": "적용"
+      "linkApply": "적용",
+      "image": "사진 넣기",
+      "imageRemove": "사진 지우기"
     },
     "category": {
       "label": "분류",

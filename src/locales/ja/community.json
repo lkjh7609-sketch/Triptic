@@ -499,7 +499,9 @@
       "link": "リンク",
       "linkRemove": "リンクを解除",
       "linkPlaceholder": "リンクのアドレス(例: example.com)",
-      "linkApply": "適用"
+      "linkApply": "適用",
+      "image": "写真を入れる",
+      "imageRemove": "写真を削除"
     },
     "category": {
       "label": "カテゴリ",

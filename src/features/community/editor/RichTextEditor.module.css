@@ -181,3 +181,63 @@
 .italic {
   font-style: italic;
 }
+
+/* 글 중간 사진(편집기 안) */
+.imageBlock {
+  margin: var(--space-3) 0;
+}
+
+.image {
+  position: relative;
+  display: block;
+}
+
+.imageImg {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.imageRemove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+
+.imageRemove:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.spin {
+  animation: editor-spin 0.9s linear infinite;
+}
+
+@keyframes editor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

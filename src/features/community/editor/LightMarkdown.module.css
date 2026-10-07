@@ -39,3 +39,14 @@
 .root > :last-child {
   margin-bottom: 0;
 }
+
+.figure {
+  margin: var(--space-4) 0;
+}
+
+.figureImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
