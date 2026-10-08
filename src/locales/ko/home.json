@@ -153,41 +153,6 @@
       "meta": "왕복 최저 {{price}}원~",
       "metaAirline": "왕복 최저 {{price}}원~ · {{airline}}",
       "open": "{{city}} 항공권 보기"
-    },
-    "kayak": {
-      "results": "항공권 검색 결과",
-      "sortLabel": "정렬",
-      "sort": {
-        "best": "추천순",
-        "price": "최저가순",
-        "duration": "최단 시간순"
-      },
-      "stopsLabel": "경유",
-      "stops": {
-        "any": "모두",
-        "0": "직항만",
-        "1": "경유 1회 이하"
-      },
-      "airlineLabel": "항공사",
-      "allAirlines": "모든 항공사",
-      "direct": "직항",
-      "freeCancel": "무료 취소",
-      "bagChecked": "위탁 수하물 포함",
-      "bagCarryOn": "기내 수하물 포함",
-      "durationHM": "{{h}}시간 {{m}}분",
-      "durationM": "{{m}}분",
-      "perPerson": "1인 기준 가격",
-      "perPersonSolo": "총 가격",
-      "book": "예약하기",
-      "via": "{{provider}}에서 예약",
-      "searching": "항공권을 찾는 중이에요…",
-      "searchingMore": "더 찾는 중… 지금까지 {{count}}개",
-      "empty": "조건에 맞는 항공권이 없어요. 날짜나 조건을 바꿔 보세요",
-      "error": "항공권을 불러오지 못했어요. 잠시 후 다시 시도해 주세요",
-      "priceNote": "가격은 예약처에서 바뀔 수 있어요. 예약과 결제는 Kayak이 연결하는 예약처에서 진행돼요",
-      "sandbox": "아래 데이터는 현재 구축 중이므로 실제 사용은 어렵습니다",
-      "stopsN_other": "경유 {{count}}회",
-      "otherSites_other": "다른 예약처 {{count}}곳"
     }
   },
   "hotels": {
@@ -196,33 +161,23 @@
     "results": "숙소 검색 결과",
     "starsN_other": "{{count}}성급",
     "guestRating": "투숙객 평점",
-    "fromCenter": "중심에서 {{km}}km",
     "reviewsN_other": "후기 {{count}}개",
-    "freeCancel": "무료 취소",
     "breakfast": "조식 포함",
-    "payLater": "현장 결제",
-    "perNight": "1박 기준(세금 포함)",
-    "totalFor": "{{nights}}박 총 {{price}}",
+    "perNight": "1박 기준",
     "book": "예약하기",
-    "via": "{{provider}}에서 예약",
-    "compareRooms_other": "객실·가격 {{count}}개 비교",
-    "room": "객실",
     "countN_other": "숙소 {{count}}곳",
     "searching": "숙소를 찾는 중이에요…",
     "sortLabel": "정렬",
     "sort": {
-      "popularity": "추천순",
-      "price": "낮은 가격순",
-      "rating": "평점 높은 순",
-      "stars": "성급 높은 순",
-      "distance": "중심에서 가까운 순"
+      "recommended": "추천순",
+      "priceAsc": "낮은 가격순",
+      "priceDesc": "높은 가격순",
+      "starsDesc": "성급 높은 순",
+      "reviewScore": "평점 높은 순"
     },
-    "sandbox": "아래 데이터는 현재 구축 중이므로 실제 사용은 어렵습니다",
     "error": "숙소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요",
     "empty": "조건에 맞는 숙소가 없어요. 필터나 날짜를 바꿔 보세요",
-    "loadMore": "더 보기",
-    "loadingMore": "불러오는 중…",
-    "priceNote": "가격은 예약처에서 바뀔 수 있어요. 예약과 결제는 Kayak이 연결하는 예약처에서 진행돼요",
+    "priceNote": "가격은 예약 단계에서 바뀔 수 있어요. 세금·봉사료 포함 여부는 예약 페이지에서 확인해 주세요",
     "comingSoon": {
       "title": "숙소 검색을 준비하고 있어요",
       "body": "전 세계 숙소 가격을 한 번에 비교하는 검색을 곧 열어요."
@@ -237,19 +192,18 @@
       "price": "가격 상한",
       "anyPrice": "제한 없음",
       "upTo": "최대 {{price}}",
-      "propertyType": "숙소 유형",
-      "facilities": "편의시설",
-      "showResults_other": "숙소 {{count}}곳 보기"
+      "showResults_other": "숙소 {{count}}곳 보기",
+      "anyStars": "전체",
+      "starsOver": "{{n}}성 이상",
+      "discountOnly": "할인 상품만"
     },
     "form": {
       "destination": "어디로 가세요?",
-      "destinationPlaceholder": "도시, 지역, 호텔 이름",
+      "destinationPlaceholder": "도시 또는 지역",
       "decrease": "{{label}} 빼기",
       "increase": "{{label}} 더하기",
-      "guests": "객실 · 인원",
-      "roomsN_other": "객실 {{count}}개",
+      "guests": "인원",
       "guestsN_other": "투숙객 {{count}}명",
-      "rooms": "객실",
       "adults": "성인",
       "children": "아동",
       "childAge": "아동 {{n}} 나이",
@@ -261,6 +215,17 @@
       "badDates": "날짜를 확인해 주세요 — 체크아웃은 체크인 다음 날부터예요",
       "search": "숙소 검색",
       "searching": "검색 중…"
+    },
+    "discountN": "{{pct}}% 할인",
+    "wifi": "무료 Wi-Fi",
+    "noCity": {
+      "title": "이 지역 근처의 숙소를 찾지 못했어요",
+      "body": "다른 도시나 지역으로 검색해 보세요."
+    },
+    "recommend": {
+      "title": "추천 여행지",
+      "sub": "내 일정의 도시와 인기 도시를 모았어요",
+      "myTrip": "내 일정"
     }
   },
   "activities": {
@@ -486,169 +451,15 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "지금 가기 좋은 여행지",
-      "sub": "계절과 현지 행사를 기준으로 고른 이달의 추천 도시",
-      "subMobile": "실시간 날씨와 여행 테마로 선택해보세요",
+      "sub": "20년 기후 평년값으로 고른 이달의 추천 도시",
+      "subMobile": "오늘 날씨와 이달의 기후로 골랐어요",
       "best": "{{range}} 최적기",
-      "cities": {
-        "kyoto": "교토",
-        "tokyo": "도쿄",
-        "sapporo": "삿포로",
-        "taipei": "타이베이",
-        "bangkok": "방콕",
-        "danang": "다낭",
-        "bali": "발리",
-        "sydney": "시드니",
-        "paris": "파리",
-        "london": "런던",
-        "rome": "로마",
-        "barcelona": "바르셀로나",
-        "newyork": "뉴욕",
-        "interlaken": "인터라켄"
+      "kind": {
+        "warm": "맑고 따뜻한 날씨",
+        "pleasant": "쾌적한 날씨",
+        "cool": "선선한 날씨"
       },
-      "kyoto": {
-        "spring": {
-          "badge": "벚꽃 개화",
-          "desc": "한적한 사찰 산책과 말차"
-        },
-        "autumn": {
-          "badge": "단풍 절정",
-          "desc": "붉은 단풍길과 야간 특별 개방"
-        },
-        "winter": {
-          "badge": "겨울 사찰",
-          "desc": "눈 덮인 사찰과 온천 료칸"
-        }
-      },
-      "tokyo": {
-        "sakura": {
-          "badge": "벚꽃 명소",
-          "desc": "나카메구로 벚꽃길 산책"
-        },
-        "walk": {
-          "badge": "걷기 좋은 날씨",
-          "desc": "신주쿠 쇼핑과 하코네 당일치기"
-        },
-        "lights": {
-          "badge": "겨울 조명",
-          "desc": "일루미네이션과 근교 온천"
-        }
-      },
-      "sapporo": {
-        "snow": {
-          "badge": "눈 축제",
-          "desc": "오도리 공원 눈 축제와 온천"
-        },
-        "summer": {
-          "badge": "시원한 여름",
-          "desc": "라벤더 들판과 맥주 정원"
-        },
-        "autumn": {
-          "badge": "가을 미식",
-          "desc": "해산물과 단풍 드라이브"
-        }
-      },
-      "taipei": {
-        "night": {
-          "badge": "야시장 시즌",
-          "desc": "선선한 밤거리와 온천"
-        },
-        "lantern": {
-          "badge": "등불 축제",
-          "desc": "랜턴 축제와 온천 여행"
-        }
-      },
-      "bangkok": {
-        "dry": {
-          "badge": "건기",
-          "desc": "선선한 건기와 루프탑 야경"
-        }
-      },
-      "danang": {
-        "beach": {
-          "badge": "해변 시즌",
-          "desc": "맑은 바다와 호이안 야경"
-        }
-      },
-      "bali": {
-        "dry": {
-          "badge": "건기",
-          "desc": "서핑과 우붓 논 풍경"
-        }
-      },
-      "sydney": {
-        "summer": {
-          "badge": "여름 해변",
-          "desc": "본다이 해변과 불꽃놀이"
-        },
-        "jacaranda": {
-          "badge": "자카란다",
-          "desc": "보랏빛 꽃길과 항구 크루즈"
-        }
-      },
-      "paris": {
-        "picnic": {
-          "badge": "피크닉 시즌",
-          "desc": "야외 테라스와 미술관 투어"
-        },
-        "market": {
-          "badge": "겨울 마켓",
-          "desc": "조명과 크리스마스 마켓"
-        }
-      },
-      "london": {
-        "sunny": {
-          "badge": "쾌청한 날씨",
-          "desc": "공원 산책과 웨스트엔드 뮤지컬"
-        },
-        "autumn": {
-          "badge": "가을 문화",
-          "desc": "박물관 무료 관람과 펍"
-        },
-        "xmas": {
-          "badge": "크리스마스",
-          "desc": "윈터 원더랜드와 마켓"
-        }
-      },
-      "rome": {
-        "food": {
-          "badge": "미식 탐방",
-          "desc": "젤라또와 고대 유적 도보 여행"
-        },
-        "autumn": {
-          "badge": "선선한 가을",
-          "desc": "유적 답사와 와이너리 근교"
-        }
-      },
-      "barcelona": {
-        "beach": {
-          "badge": "해변과 건축",
-          "desc": "가우디 건축과 해변 산책"
-        }
-      },
-      "newyork": {
-        "park": {
-          "badge": "센트럴파크",
-          "desc": "브로드웨이와 루프탑 라운지"
-        },
-        "fall": {
-          "badge": "가을 단풍",
-          "desc": "공원 단풍과 미술관"
-        },
-        "holiday": {
-          "badge": "홀리데이",
-          "desc": "트리 점등과 홀리데이 마켓"
-        }
-      },
-      "interlaken": {
-        "hike": {
-          "badge": "하이킹 시즌",
-          "desc": "알프스 트레킹과 호수 유람선"
-        },
-        "snow": {
-          "badge": "설경",
-          "desc": "스키와 설산 열차"
-        }
-      }
+      "desc": "평균 {{min}}~{{max}} · 월 강수량 {{rain}}mm"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

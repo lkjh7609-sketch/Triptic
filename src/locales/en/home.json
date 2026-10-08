@@ -154,43 +154,6 @@
       "meta": "From ₩{{price}} round trip",
       "metaAirline": "From ₩{{price}} round trip · {{airline}}",
       "open": "View flights to {{city}}"
-    },
-    "kayak": {
-      "results": "Flight results",
-      "sortLabel": "Sort",
-      "sort": {
-        "best": "Best",
-        "price": "Cheapest",
-        "duration": "Fastest"
-      },
-      "stopsLabel": "Stops",
-      "stops": {
-        "any": "Any",
-        "0": "Nonstop",
-        "1": "1 stop or fewer"
-      },
-      "airlineLabel": "Airlines",
-      "allAirlines": "All airlines",
-      "direct": "Nonstop",
-      "stopsN_one": "{{count}} stop",
-      "stopsN_other": "{{count}} stops",
-      "freeCancel": "Free cancellation",
-      "bagChecked": "Checked bag included",
-      "bagCarryOn": "Carry-on included",
-      "durationHM": "{{h}}h {{m}}m",
-      "durationM": "{{m}}m",
-      "perPerson": "per person",
-      "perPersonSolo": "total",
-      "book": "Book",
-      "via": "on {{provider}}",
-      "otherSites_one": "{{count}} other site",
-      "otherSites_other": "{{count}} other sites",
-      "searching": "Searching flights…",
-      "searchingMore": "Still searching… {{count}} so far",
-      "empty": "No flights match. Try different dates or filters",
-      "error": "Couldn't load flights. Please try again in a moment",
-      "priceNote": "Prices can change on the booking site. You book and pay with the provider Kayak connects you to",
-      "sandbox": "The data below is still being built and isn't ready for real use"
     }
   },
   "hotels": {
@@ -200,36 +163,25 @@
     "starsN_one": "{{count}}-star",
     "starsN_other": "{{count}}-star",
     "guestRating": "Guest rating",
-    "fromCenter": "{{km}} km from center",
     "reviewsN_one": "{{count}} review",
     "reviewsN_other": "{{count}} reviews",
-    "freeCancel": "Free cancellation",
     "breakfast": "Breakfast included",
-    "payLater": "Pay at property",
-    "perNight": "per night, taxes included",
-    "totalFor": "{{nights}} nights: {{price}}",
+    "perNight": "per night",
     "book": "Book",
-    "via": "on {{provider}}",
-    "compareRooms_one": "Compare {{count}} room & price",
-    "compareRooms_other": "Compare {{count}} rooms & prices",
-    "room": "Room",
     "countN_one": "{{count}} property",
     "countN_other": "{{count}} properties",
     "searching": "Searching hotels…",
     "sortLabel": "Sort",
     "sort": {
-      "popularity": "Recommended",
-      "price": "Lowest price",
-      "rating": "Guest rating",
-      "stars": "Star rating",
-      "distance": "Distance to center"
+      "recommended": "Recommended",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "starsDesc": "Star rating",
+      "reviewScore": "Guest rating"
     },
-    "sandbox": "The data below is still being built and isn't ready for real use",
     "error": "Couldn't load hotels. Please try again in a moment",
     "empty": "No hotels match. Try different filters or dates",
-    "loadMore": "Show more",
-    "loadingMore": "Loading…",
-    "priceNote": "Prices can change on the booking site. You book and pay with the provider Kayak connects you to",
+    "priceNote": "Prices may change at booking. Check taxes and fees on the booking page.",
     "comingSoon": {
       "title": "Hotel search is coming soon",
       "body": "We're opening a search that compares hotel prices worldwide. Check back soon."
@@ -244,22 +196,20 @@
       "price": "Max price",
       "anyPrice": "No limit",
       "upTo": "Up to {{price}}",
-      "propertyType": "Property type",
-      "facilities": "Amenities",
       "showResults_one": "Show {{count}} property",
-      "showResults_other": "Show {{count}} properties"
+      "showResults_other": "Show {{count}} properties",
+      "anyStars": "Any",
+      "starsOver": "{{n}}+ stars",
+      "discountOnly": "Deals only"
     },
     "form": {
       "destination": "Where to?",
-      "destinationPlaceholder": "City, area or hotel name",
+      "destinationPlaceholder": "City or area",
       "decrease": "Decrease {{label}}",
       "increase": "Increase {{label}}",
-      "guests": "Rooms & guests",
-      "roomsN_one": "{{count}} room",
-      "roomsN_other": "{{count}} rooms",
+      "guests": "Guests",
       "guestsN_one": "{{count}} guest",
       "guestsN_other": "{{count}} guests",
-      "rooms": "Rooms",
       "adults": "Adults",
       "children": "Children",
       "childAge": "Child {{n}} age",
@@ -273,6 +223,17 @@
       "badDates": "Check your dates — check-out must be after check-in",
       "search": "Search hotels",
       "searching": "Searching…"
+    },
+    "discountN": "{{pct}}% off",
+    "wifi": "Free Wi-Fi",
+    "noCity": {
+      "title": "We couldn't find stays near this place",
+      "body": "Try searching a different city or area."
+    },
+    "recommend": {
+      "title": "Recommended destinations",
+      "sub": "Cities from your trips and popular picks",
+      "myTrip": "My trip"
     }
   },
   "activities": {
@@ -500,169 +461,15 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "Great places to go now",
-      "sub": "This month's picks, chosen by season and local events",
-      "subMobile": "Pick by live weather and travel theme",
+      "sub": "This month's picks, chosen from 20-year climate normals",
+      "subMobile": "Chosen by today's weather and this month's climate",
       "best": "Best in {{range}}",
-      "cities": {
-        "kyoto": "Kyoto",
-        "tokyo": "Tokyo",
-        "sapporo": "Sapporo",
-        "taipei": "Taipei",
-        "bangkok": "Bangkok",
-        "danang": "Da Nang",
-        "bali": "Bali",
-        "sydney": "Sydney",
-        "paris": "Paris",
-        "london": "London",
-        "rome": "Rome",
-        "barcelona": "Barcelona",
-        "newyork": "New York",
-        "interlaken": "Interlaken"
+      "kind": {
+        "warm": "Warm and sunny",
+        "pleasant": "Pleasant weather",
+        "cool": "Cool and fresh"
       },
-      "kyoto": {
-        "spring": {
-          "badge": "Cherry blossoms",
-          "desc": "Quiet temple walks & matcha"
-        },
-        "autumn": {
-          "badge": "Peak fall colors",
-          "desc": "Red maple paths & night openings"
-        },
-        "winter": {
-          "badge": "Winter temples",
-          "desc": "Snowy temples & hot-spring inns"
-        }
-      },
-      "tokyo": {
-        "sakura": {
-          "badge": "Sakura spots",
-          "desc": "Strolling the Nakameguro blossoms"
-        },
-        "walk": {
-          "badge": "Great walking weather",
-          "desc": "Shinjuku shopping & Hakone day trip"
-        },
-        "lights": {
-          "badge": "Winter lights",
-          "desc": "Illuminations & nearby onsen"
-        }
-      },
-      "sapporo": {
-        "snow": {
-          "badge": "Snow festival",
-          "desc": "Odori Park festival & onsen"
-        },
-        "summer": {
-          "badge": "Cool summer",
-          "desc": "Lavender fields & beer gardens"
-        },
-        "autumn": {
-          "badge": "Autumn feasts",
-          "desc": "Seafood & fall-color drives"
-        }
-      },
-      "taipei": {
-        "night": {
-          "badge": "Night-market season",
-          "desc": "Cool evenings & hot springs"
-        },
-        "lantern": {
-          "badge": "Lantern season",
-          "desc": "Lantern festival & hot springs"
-        }
-      },
-      "bangkok": {
-        "dry": {
-          "badge": "Dry season",
-          "desc": "Cooler days & rooftop views"
-        }
-      },
-      "danang": {
-        "beach": {
-          "badge": "Beach season",
-          "desc": "Clear seas & Hoi An nights"
-        }
-      },
-      "bali": {
-        "dry": {
-          "badge": "Dry season",
-          "desc": "Surfing & Ubud rice terraces"
-        }
-      },
-      "sydney": {
-        "summer": {
-          "badge": "Summer beaches",
-          "desc": "Bondi Beach & fireworks"
-        },
-        "jacaranda": {
-          "badge": "Jacaranda bloom",
-          "desc": "Purple streets & harbour cruises"
-        }
-      },
-      "paris": {
-        "picnic": {
-          "badge": "Picnic season",
-          "desc": "Terrace cafés & museum hopping"
-        },
-        "market": {
-          "badge": "Holiday markets",
-          "desc": "Lights & Christmas markets"
-        }
-      },
-      "london": {
-        "sunny": {
-          "badge": "Bright days",
-          "desc": "Park walks & West End shows"
-        },
-        "autumn": {
-          "badge": "Autumn culture",
-          "desc": "Free museums & pubs"
-        },
-        "xmas": {
-          "badge": "Christmas",
-          "desc": "Winter Wonderland & markets"
-        }
-      },
-      "rome": {
-        "food": {
-          "badge": "Food trail",
-          "desc": "Gelato & ancient ruins on foot"
-        },
-        "autumn": {
-          "badge": "Mild autumn",
-          "desc": "Ruins & nearby wineries"
-        }
-      },
-      "barcelona": {
-        "beach": {
-          "badge": "Beach & architecture",
-          "desc": "Gaudí sights & seaside walks"
-        }
-      },
-      "newyork": {
-        "park": {
-          "badge": "Central Park",
-          "desc": "Broadway & rooftop lounges"
-        },
-        "fall": {
-          "badge": "Fall foliage",
-          "desc": "Park colors & museums"
-        },
-        "holiday": {
-          "badge": "Holiday season",
-          "desc": "Tree lighting & holiday markets"
-        }
-      },
-      "interlaken": {
-        "hike": {
-          "badge": "Hiking season",
-          "desc": "Alpine treks & lake cruises"
-        },
-        "snow": {
-          "badge": "Snow scenery",
-          "desc": "Skiing & mountain trains"
-        }
-      }
+      "desc": "Avg {{min}}–{{max}} · {{rain}} mm rain a month"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

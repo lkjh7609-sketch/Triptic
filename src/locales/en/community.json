@@ -903,14 +903,12 @@
     "breadcrumbAll": "All destinations",
     "breadcrumbNav": "Location",
     "rate": "1 {{currency}} ≈ {{amount}} KRW",
-    "weatherNow": "{{temp}} {{condition}}",
-    "weatherFeels": "(feels like {{temp}})",
+    "weatherToday": "Today {{temp}} {{condition}}",
     "weather": {
       "clear": "Clear",
       "partly": "Partly cloudy",
       "cloudy": "Cloudy",
       "fog": "Fog",
-      "drizzle": "Drizzle",
       "rain": "Rain",
       "snow": "Snow",
       "thunder": "Thunderstorm"

@@ -41,7 +41,7 @@ async function fetchProfilesByIds(ids: string[]): Promise<Map<string, CommunityP
   return new Map((data as CommunityProfile[]).map((p) => [p.id, p]));
 }
 
-async function fetchDestinationNamesByIds(ids: string[], locale = currentLocale()): Promise<Map<string, string>> {
+export async function fetchDestinationNamesByIds(ids: string[], locale = currentLocale()): Promise<Map<string, string>> {
   const supabase = getSupabaseClient();
   const distinct = uniq(ids);
   if (distinct.length === 0) return new Map();

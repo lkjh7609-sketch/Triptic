@@ -1,11 +1,9 @@
 /**
  * Supabase Auth 서비스 (새 React 앱 전용 — src/services/authService.js 이식)
  * 로직은 그대로 유지하고, 클라이언트 획득만 동기 방식(getSupabaseClient)으로 바뀐다.
- * Sign in with Apple 배선 추가 (02-screens.md §6: "Apple 로그인을 첫 번째로 배치").
- * ⚠️ Apple Developer Program 미가입 상태 — Supabase 프로젝트에 Apple OAuth
- * 공급자가 아직 설정되지 않았으므로, 버튼은 동작하되 실제 인증은 완료되지 않는다.
+ * Sign in with Apple 배선 (02-screens.md §6: "Apple 로그인을 첫 번째로 배치") — 운영 Supabase에 Apple 공급자 설정 완료.
  */
-import { isAuthRetryableFetchError, type Session, type User, type AuthChangeEvent } from '@supabase/supabase-js';
+import { isAuthRetryableFetchError, type Session, type User, type UserIdentity, type AuthChangeEvent } from '@supabase/supabase-js';
 import { getSupabaseClient, supabaseAuthStorageKey } from './supabaseClient';
 import { clearOfflineCache } from '@/shared/offline/persister';
 import { isNativeApp } from '@/shared/platform';
@@ -76,6 +74,54 @@ export function readStoredSessionUser(): User | null {
   } catch {
     return null;
   }
+}
+
+/** 새로 연결된 로그인 방법으로 간주하는 시간 — 이보다 오래된 연결은 예전부터 쓰던 방법이다 */
+const FRESH_LINK_WINDOW_MS = 2 * 60_000;
+
+export interface LoginConflict {
+  /** 방금 로그인하려던 방법(google·kakao·apple·email) */
+  attempted: string;
+  /** 이 이메일로 이미 가입돼 있던 방법들 */
+  existing: string[];
+  /** 그중 가장 최근에 로그인한 방법 */
+  recent: string;
+  /** 방금 자동으로 연결된 로그인 방법(막으면서 연결을 끊는다) */
+  linked: UserIdentity;
+}
+
+/**
+ * Supabase는 같은 이메일(인증됨)이면 새 로그인 방법을 기존 계정에 자동으로 연결한다. 로그인 직후 사용자에게 방금(2분 안에)
+ * 만들어진 연결이 하나이고 그 전부터 있던 다른 방법이 있으면 "이미 다른 방법으로 가입된 이메일"로 본다.
+ * 처음 가입(연결 1개)이나 예전부터 쓰던 방법으로 다시 로그인하는 경우는 null.
+ */
+export function findLoginConflict(user: User | null | undefined, now = Date.now()): LoginConflict | null {
+  const identities = user?.identities ?? [];
+  if (identities.length < 2) return null;
+  const fresh = identities.filter((i) => i.created_at && now - Date.parse(i.created_at) < FRESH_LINK_WINDOW_MS);
+  if (fresh.length !== 1) return null;
+  const linked = fresh[0];
+  const existing = identities.filter((i) => i !== linked);
+  if (existing.length === 0) return null;
+  const recent = [...existing].sort((a, b) => Date.parse(b.last_sign_in_at ?? '') - Date.parse(a.last_sign_in_at ?? ''))[0];
+  return { attempted: linked.provider, existing: existing.map((i) => i.provider), recent: recent.provider, linked };
+}
+
+/**
+ * 막기로 한 로그인 — 새로 붙은 연결을 끊고 로그아웃한다(연결을 남기면 다음엔 그대로 로그인돼 버린다).
+ * 연결 끊기가 거부되면(Supabase의 '수동 연결' 설정이 꺼져 있는 경우 등) 로그아웃만 하고 오류는 호출한 쪽이 기록한다.
+ */
+export async function rejectLinkedLogin(linked: UserIdentity): Promise<{ unlinkError: unknown | null }> {
+  const client = getSupabaseClient();
+  let unlinkError: unknown | null = null;
+  const { error } = await client.auth.unlinkIdentity(linked);
+  if (error) unlinkError = error;
+  try {
+    await signOut();
+  } catch {
+    await client.auth.signOut({ scope: 'local' });
+  }
+  return { unlinkError };
 }
 
 export function onAuthStateChange(

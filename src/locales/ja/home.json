@@ -153,41 +153,6 @@
       "meta": "往復最安 {{price}}ウォン~",
       "metaAirline": "往復最安 {{price}}ウォン~ · {{airline}}",
       "open": "{{city}}の航空券を見る"
-    },
-    "kayak": {
-      "results": "航空券の検索結果",
-      "sortLabel": "並べ替え",
-      "sort": {
-        "best": "おすすめ順",
-        "price": "最安値順",
-        "duration": "所要時間が短い順"
-      },
-      "stopsLabel": "乗り継ぎ",
-      "stops": {
-        "any": "すべて",
-        "0": "直行便のみ",
-        "1": "乗り継ぎ1回まで"
-      },
-      "airlineLabel": "航空会社",
-      "allAirlines": "すべての航空会社",
-      "direct": "直行便",
-      "freeCancel": "無料キャンセル",
-      "bagChecked": "預け荷物込み",
-      "bagCarryOn": "機内持ち込み込み",
-      "durationHM": "{{h}}時間{{m}}分",
-      "durationM": "{{m}}分",
-      "perPerson": "1人あたり",
-      "perPersonSolo": "合計",
-      "book": "予約する",
-      "via": "{{provider}}で予約",
-      "searching": "航空券を探しています…",
-      "searchingMore": "さらに検索中… 現在{{count}}件",
-      "empty": "条件に合う航空券がありません。日程や条件を変えてみてください",
-      "error": "航空券を読み込めませんでした。しばらくしてからもう一度お試しください",
-      "priceNote": "価格は予約サイトで変わることがあります。予約と支払いはKayakが案内する予約サイトで行います",
-      "sandbox": "以下のデータは現在構築中のため、実際のご利用はできません",
-      "stopsN_other": "乗り継ぎ{{count}}回",
-      "otherSites_other": "他の予約サイト{{count}}件"
     }
   },
   "hotels": {
@@ -196,33 +161,23 @@
     "results": "ホテル検索結果",
     "starsN_other": "{{count}}つ星",
     "guestRating": "宿泊者評価",
-    "fromCenter": "中心部から{{km}}km",
     "reviewsN_other": "クチコミ{{count}}件",
-    "freeCancel": "無料キャンセル",
     "breakfast": "朝食付き",
-    "payLater": "現地払い",
-    "perNight": "1泊あたり(税込)",
-    "totalFor": "{{nights}}泊 合計{{price}}",
+    "perNight": "1泊あたり",
     "book": "予約する",
-    "via": "{{provider}}で予約",
-    "compareRooms_other": "客室・料金{{count}}件を比較",
-    "room": "客室",
     "countN_other": "{{count}}件の宿泊施設",
     "searching": "ホテルを探しています…",
     "sortLabel": "並べ替え",
     "sort": {
-      "popularity": "おすすめ順",
-      "price": "料金が安い順",
-      "rating": "評価が高い順",
-      "stars": "星の数が多い順",
-      "distance": "中心部に近い順"
+      "recommended": "おすすめ順",
+      "priceAsc": "価格の安い順",
+      "priceDesc": "価格の高い順",
+      "starsDesc": "星の多い順",
+      "reviewScore": "評価の高い順"
     },
-    "sandbox": "以下のデータは現在構築中のため、実際のご利用はできません",
     "error": "ホテルを読み込めませんでした。しばらくしてからもう一度お試しください",
     "empty": "条件に合うホテルがありません。絞り込みや日程を変えてみてください",
-    "loadMore": "もっと見る",
-    "loadingMore": "読み込み中…",
-    "priceNote": "料金は予約サイトで変わることがあります。予約と支払いはKayakが案内する予約サイトで行います",
+    "priceNote": "料金は予約時に変わることがあります。税・サービス料は予約ページでご確認ください",
     "comingSoon": {
       "title": "ホテル検索を準備中です",
       "body": "世界中のホテル料金を比較できる検索をまもなく公開します。"
@@ -237,19 +192,18 @@
       "price": "料金の上限",
       "anyPrice": "上限なし",
       "upTo": "最大{{price}}",
-      "propertyType": "施設タイプ",
-      "facilities": "設備",
-      "showResults_other": "{{count}}件を表示"
+      "showResults_other": "{{count}}件を表示",
+      "anyStars": "指定なし",
+      "starsOver": "星{{n}}以上",
+      "discountOnly": "割引のみ"
     },
     "form": {
       "destination": "どこへ行きますか?",
-      "destinationPlaceholder": "都市・エリア・ホテル名",
+      "destinationPlaceholder": "都市またはエリア",
       "decrease": "{{label}}を減らす",
       "increase": "{{label}}を増やす",
-      "guests": "客室・人数",
-      "roomsN_other": "{{count}}室",
+      "guests": "人数",
       "guestsN_other": "{{count}}名",
-      "rooms": "客室",
       "adults": "大人",
       "children": "子ども",
       "childAge": "子ども{{n}}の年齢",
@@ -261,6 +215,17 @@
       "badDates": "日付を確認してください — チェックアウトはチェックインの翌日以降です",
       "search": "ホテルを検索",
       "searching": "検索中…"
+    },
+    "discountN": "{{pct}}%オフ",
+    "wifi": "無料Wi-Fi",
+    "noCity": {
+      "title": "この場所の近くで宿泊先が見つかりませんでした",
+      "body": "別の都市やエリアで検索してください。"
+    },
+    "recommend": {
+      "title": "おすすめの旅行先",
+      "sub": "旅程の都市と人気の都市です",
+      "myTrip": "旅程"
     }
   },
   "activities": {
@@ -486,169 +451,15 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "今行きたい旅行先",
-      "sub": "季節と現地のイベントをもとに選んだ今月のおすすめ都市",
-      "subMobile": "リアルタイムの天気と旅のテーマで選べます",
+      "sub": "20年の気候平年値で選んだ今月のおすすめ",
+      "subMobile": "今日の天気と今月の気候で選びました",
       "best": "{{range}}がおすすめ",
-      "cities": {
-        "kyoto": "京都",
-        "tokyo": "東京",
-        "sapporo": "札幌",
-        "taipei": "台北",
-        "bangkok": "バンコク",
-        "danang": "ダナン",
-        "bali": "バリ島",
-        "sydney": "シドニー",
-        "paris": "パリ",
-        "london": "ロンドン",
-        "rome": "ローマ",
-        "barcelona": "バルセロナ",
-        "newyork": "ニューヨーク",
-        "interlaken": "インターラーケン"
+      "kind": {
+        "warm": "暖かく穏やか",
+        "pleasant": "快適な気候",
+        "cool": "涼しい気候"
       },
-      "kyoto": {
-        "spring": {
-          "badge": "桜の開花",
-          "desc": "静かな寺巡りと抹茶"
-        },
-        "autumn": {
-          "badge": "紅葉の見頃",
-          "desc": "紅葉の道と夜の特別拝観"
-        },
-        "winter": {
-          "badge": "冬の寺院",
-          "desc": "雪の寺院と温泉旅館"
-        }
-      },
-      "tokyo": {
-        "sakura": {
-          "badge": "桜の名所",
-          "desc": "目黒川の桜並木散歩"
-        },
-        "walk": {
-          "badge": "散策日和",
-          "desc": "新宿ショッピングと箱根日帰り"
-        },
-        "lights": {
-          "badge": "冬のイルミネーション",
-          "desc": "イルミと近郊の温泉"
-        }
-      },
-      "sapporo": {
-        "snow": {
-          "badge": "雪まつり",
-          "desc": "大通公園の雪まつりと温泉"
-        },
-        "summer": {
-          "badge": "涼しい夏",
-          "desc": "ラベンダー畑とビアガーデン"
-        },
-        "autumn": {
-          "badge": "秋の味覚",
-          "desc": "海鮮と紅葉ドライブ"
-        }
-      },
-      "taipei": {
-        "night": {
-          "badge": "夜市シーズン",
-          "desc": "涼しい夜の街と温泉"
-        },
-        "lantern": {
-          "badge": "ランタン祭り",
-          "desc": "ランタンフェスと温泉"
-        }
-      },
-      "bangkok": {
-        "dry": {
-          "badge": "乾季",
-          "desc": "過ごしやすい乾季とルーフトップ夜景"
-        }
-      },
-      "danang": {
-        "beach": {
-          "badge": "ビーチシーズン",
-          "desc": "澄んだ海とホイアンの夜景"
-        }
-      },
-      "bali": {
-        "dry": {
-          "badge": "乾季",
-          "desc": "サーフィンとウブドの棚田"
-        }
-      },
-      "sydney": {
-        "summer": {
-          "badge": "夏のビーチ",
-          "desc": "ボンダイビーチと花火"
-        },
-        "jacaranda": {
-          "badge": "ジャカランダ",
-          "desc": "紫の花並木とハーバークルーズ"
-        }
-      },
-      "paris": {
-        "picnic": {
-          "badge": "ピクニック日和",
-          "desc": "テラス席と美術館巡り"
-        },
-        "market": {
-          "badge": "ホリデーマーケット",
-          "desc": "イルミとクリスマスマーケット"
-        }
-      },
-      "london": {
-        "sunny": {
-          "badge": "爽やかな晴天",
-          "desc": "公園散策とウエストエンドのミュージカル"
-        },
-        "autumn": {
-          "badge": "秋の文化",
-          "desc": "無料の博物館とパブ"
-        },
-        "xmas": {
-          "badge": "クリスマス",
-          "desc": "ウィンターワンダーランドとマーケット"
-        }
-      },
-      "rome": {
-        "food": {
-          "badge": "グルメ散歩",
-          "desc": "ジェラートと古代遺跡の徒歩旅"
-        },
-        "autumn": {
-          "badge": "爽やかな秋",
-          "desc": "遺跡巡りと近郊ワイナリー"
-        }
-      },
-      "barcelona": {
-        "beach": {
-          "badge": "ビーチと建築",
-          "desc": "ガウディ建築と海辺散歩"
-        }
-      },
-      "newyork": {
-        "park": {
-          "badge": "セントラルパーク",
-          "desc": "ブロードウェイとルーフトップラウンジ"
-        },
-        "fall": {
-          "badge": "紅葉の季節",
-          "desc": "公園の紅葉と美術館"
-        },
-        "holiday": {
-          "badge": "ホリデーシーズン",
-          "desc": "ツリー点灯とホリデーマーケット"
-        }
-      },
-      "interlaken": {
-        "hike": {
-          "badge": "ハイキング",
-          "desc": "アルプスのトレッキングと湖遊覧"
-        },
-        "snow": {
-          "badge": "雪景色",
-          "desc": "スキーと雪山列車"
-        }
-      }
+      "desc": "平均 {{min}}〜{{max}} · 月の降水量 {{rain}}mm"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

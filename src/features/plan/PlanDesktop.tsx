@@ -781,24 +781,18 @@ function WeatherBox({ trip }: { trip: TripRow }) {
         <span>{t('desktop.weatherTitle')}</span>
         <span className={styles.accentText}>{cityDisplayName(trip.city)}</span>
       </div>
-      <div className={styles.toolkitBoxContent}>
-        <div className={styles.toolkitBoxLeft}>
-          {icon ? (
-            <span className={styles.weatherIcon} aria-hidden="true">
-              {icon}
-            </span>
-          ) : null}
-          <div>
-            <div className={styles.toolkitValue}>
-              {min ?? '–'} / {max ?? '–'}
-            </div>
-            <div className={styles.toolkitSub}>
-              {first.source === 'climate_normal' ? t('tripDetail.climateBadge') : t('desktop.weatherFirstDay')}
-            </div>
-          </div>
-        </div>
+      <div className={styles.weatherRow}>
+        {icon ? (
+          <span className={styles.weatherIcon} aria-hidden="true">
+            {icon}
+          </span>
+        ) : null}
+        <span className={styles.toolkitValue}>
+          {min ?? '–'} / {max ?? '–'}
+        </span>
+        {first.source === 'climate_normal' ? <span className={styles.weatherNormal}>{t('tripDetail.climateBadge')}</span> : null}
         {first.precipChance != null ? (
-          <div className={styles.weatherPrecip}>{t('desktop.precip', { value: Math.round(first.precipChance * 100) })}</div>
+          <span className={styles.weatherPrecip}>{t('desktop.precip', { value: Math.round(first.precipChance * 100) })}</span>
         ) : null}
       </div>
     </div>

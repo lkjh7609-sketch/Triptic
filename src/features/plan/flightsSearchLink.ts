@@ -6,12 +6,12 @@ import { fetchMyrealtripFlightsLink, fetchTrackedMyrealtripLink, flightLinkParam
 
 /**
  * 항공 검색 제휴사 — 마이리얼트립은 한국어·원화 사이트뿐이라 한국어 사용자만.
- * 그 외 언어는 Kayak 항공 검색(항공 탭이 우리 화면 안에 결과를 보여 주고 예약은 Kayak 링크).
+ * 그 외 언어는 아직 연결된 항공 검색이 없어('none') 항공 탭이 '준비 중' 안내를 보여 준다.
  */
-export type FlightsProvider = 'myrealtrip' | 'kayak';
+export type FlightsProvider = 'myrealtrip' | 'none';
 
 export function flightsProviderFor(language: string): FlightsProvider {
-  return aiLocale(language) === 'ko' ? 'myrealtrip' : 'kayak';
+  return aiLocale(language) === 'ko' ? 'myrealtrip' : 'none';
 }
 
 interface TripForFlights {
@@ -99,8 +99,8 @@ export async function openFlightsSearchForTrip(trip: TripForFlights, language: s
     openExternal(prefetchedUrl);
     return;
   }
-  if (flightsProviderFor(language) === 'kayak') {
-    // 출발지는 모르니 날짜만 채운 항공 탭으로(출발·도착은 사용자가 고른다)
+  if (flightsProviderFor(language) === 'none') {
+    // 연결된 항공 검색이 없으니 항공 탭(준비 중 안내)으로 — 날짜는 주소에 담아 둔다
     const dates = new URLSearchParams();
     if (trip.start_date) dates.set('depart_date', trip.start_date);
     if (trip.end_date && trip.start_date && trip.end_date > trip.start_date) dates.set('return_date', trip.end_date);

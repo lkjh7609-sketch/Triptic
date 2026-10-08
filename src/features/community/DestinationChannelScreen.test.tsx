@@ -61,10 +61,12 @@ vi.mock('./hooks/useCommunitySafety', () => ({
   useFollowedDestinationIds: () => ({ data: [] }),
   useToggleFollow: () => ({ mutate: vi.fn(), isPending: false }),
 }));
+vi.mock('@/features/weather/destinationWeather', () => ({
+  useDestinationWeather: () => ({ destinationId: 'd1', date: '2026-10-08', tmaxC: 29.4, tminC: 24.2, conditionCode: 'Clear', precipChance: 0.1, updatedAt: new Date().toISOString() }),
+}));
 vi.mock('./hooks/useDestinationChannel', () => ({
   useDestinationGuide: () => ({ data: state.guide }),
   useDestinationFollowerCount: () => ({ data: 1248 }),
-  useCurrentWeather: () => ({ data: { temp: 29.4, feelsLike: 32, code: 0 } }),
   useUrgentCompanions: () => ({ data: [] }),
   usePinnedPost: () => ({ data: state.pinned }),
   usePopularTags: () => ({ data: state.popularTags }),
@@ -154,8 +156,7 @@ describe('DestinationChannelScreen', () => {
     expect(screen.getByText(/팔로워 1,248명/)).toBeInTheDocument();
     expect(screen.getByText(/스토리 428개/)).toBeInTheDocument();
     expect(screen.getByText(/1 MYR ≈ 312\.\d KRW/)).toBeInTheDocument();
-    expect(screen.getByText(/29°C 맑음/)).toBeInTheDocument();
-    expect(screen.getByText(/체감 32°C/)).toBeInTheDocument();
+    expect(screen.getByText(/오늘 24°\/29° 맑음/)).toBeInTheDocument();
   });
 
   it('대표 사진이 있으면 머리말 뒤에 깔고, 없으면 깔지 않는다', () => {

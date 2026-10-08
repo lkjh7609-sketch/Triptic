@@ -1,0 +1,576 @@
+<!DOCTYPE html><html lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Triptic - 액티비티</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #FDFBF7;
+      color: #1C1917;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-shadow {
+      box-shadow: 0 4px 20px rgba(28, 25, 23, 0.05);
+    }
+    .custom-shadow-hover {
+      box-shadow: 0 8px 26px rgba(28, 25, 23, 0.09);
+    }
+    .tour-card {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tour-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(28, 25, 23, 0.09);
+    }
+    /* Skeleton Pulse */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+    .skeleton-box {
+      background-color: #E2DFD6;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#1C1917] min-h-screen flex flex-col justify-between">
+<!-- TOP WRAPPER -->
+<div>
+<!-- 1. Header (Global Navigation) -->
+<header class="bg-[#FFFFFF] border-b border-[#E7E5E4] sticky top-0 z-40">
+<div class="max-w-[1120px] mx-auto h-[68px] px-4 flex items-center justify-between">
+<!-- Logo & Main Nav -->
+<div class="flex items-center gap-10">
+<a class="flex items-center gap-2 text-decoration-none group" href="#">
+<!-- Triptic Monoline Mountain Compass Logo -->
+<svg class="w-8 h-8 text-[#0F766E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 32 32">
+<path d="M4 24L13 9L18 17L22 11L28 24H4Z"></path>
+<circle cx="16" cy="16" r="14" stroke="#0D9488" stroke-dasharray="2 3" stroke-width="1.2"></circle>
+<path d="M16 6V3M16 29V26M3 16H6M26 16H29" stroke="#0F766E" stroke-width="1.5"></path>
+</svg>
+<div class="flex flex-col">
+<span class="text-[19px] font-[800] tracking-tight text-[#0F766E] leading-none">TRIPTIC</span>
+<span class="text-[10px] tracking-wider text-[#6B6560] font-[600]">트립틱</span>
+</div>
+</a>
+<!-- Primary Nav Links -->
+<nav class="flex items-center gap-7">
+<a class="text-[15px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-colors" href="#">홈</a>
+<a class="text-[15px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-colors" href="#">계획</a>
+<a class="text-[15px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-colors" href="#">커뮤니티</a>
+</nav>
+</div>
+<!-- Right Utilities: Language & User Avatar -->
+<div class="flex items-center gap-5">
+<!-- State Preview Toggle (UX Feature: Normal / Skeleton Loading) -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EBE8E0] hover:bg-[#E2DFD6] text-[12px] font-[600] text-[#57534E] transition-colors shrink-0" id="toggle-skeleton-btn" onclick="toggleSkeleton()" title="로딩 상태(스켈레톤)를 전환하여 확인할 수 있습니다">
+<svg class="w-3.5 h-3.5 text-[#0D9488]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+<span id="toggle-skeleton-text" class="">스켈레톤 UI 보기</span>
+</button>
+<!-- Language Globe Icon (monoline) -->
+<button class="p-2 text-[#57534E] hover:text-[#1C1917] transition-colors rounded-full" title="언어 설정 (한국어)">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="2" x2="22" y1="12" y2="12"></line>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+</svg>
+</button>
+<!-- User Avatar circle with calm border -->
+<div class="flex items-center gap-2.5 pl-2 border-l border-[#E7E5E4]">
+<div class="w-9 h-9 rounded-full bg-[#EBE8E0] border border-[#D6D3D1] flex items-center justify-center text-[13px] font-[700] text-[#57534E]">
+              민
+            </div>
+<span class="text-[14px] font-[600] text-[#1C1917]">관리자</span>
+<span class="px-2 py-0.5 rounded-full bg-[#CCFBF1] text-[#0E6F68] text-[11px] font-[700] tracking-wide">PRO</span>
+</div>
+</div>
+</div>
+</header>
+<!-- 2. Section Tab Row (White bar with bottom hairline) -->
+<div class="bg-[#FFFFFF] border-b border-[#E7E5E4]">
+<div class="max-w-[1120px] mx-auto px-4 flex items-center gap-8">
+<a class="py-3.5 text-[15px] font-[600] text-[#57534E] hover:text-[#1C1917] transition-colors relative" href="#">
+          항공
+        </a>
+<a class="py-3.5 text-[15px] font-[600] text-[#57534E] hover:text-[#1C1917] transition-colors relative" href="#">
+          호텔
+        </a>
+<!-- ACTIVE TAB: 액티비티 (Teal with 3px underline) -->
+<a class="py-3.5 text-[15px] font-[700] text-[#0E6F68] relative" href="#">
+          액티비티
+          <span class="absolute bottom-0 left-0 right-0 h-[3px] bg-[#0F766E] rounded-t-sm"></span>
+</a>
+</div>
+</div>
+<!-- MAIN CONTENT CONTAINER (Max 1120px, Centered) -->
+<main class="max-w-[1120px] mx-auto px-4 pt-10 pb-16">
+<!-- 3. Intro + Search Block (Focal point, on cream background) -->
+<section class="mb-12">
+<!-- Heading: ONE line only -->
+<h1 class="text-[32px] font-[800] text-[#1C1917] tracking-tight mb-5 leading-tight">
+          어떤 체험을 찾으세요?
+        </h1>
+<!-- Search Input Pill & Provider selector -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4">
+<!-- Large White Search Pill -->
+<div class="relative flex-1 max-w-[760px] bg-[#FFFFFF] rounded-full border border-[#7F7A74] custom-shadow flex items-center px-4 py-2 transition-all focus-within:ring-2 focus-within:ring-[#0F766E]/20 focus-within:border-[#0F766E]">
+<!-- Monoline Magnifier Icon -->
+<svg class="w-5 h-5 text-[#6B6560] mr-3 shrink-0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+<!-- Input -->
+<input class="w-full bg-transparent text-[15px] text-[#1C1917] placeholder-[#A8A29E] focus:outline-none pr-3" placeholder="도시, 명소, 체험 검색 (예: 유니버설 스튜디오)" type="text" value="시드니">
+<!-- Inside-right Teal Pill Button -->
+<button class="bg-[#0F766E] hover:bg-[#115E59] active:bg-[#115E59] text-[#FFFFFF] text-[14px] font-[700] px-5 py-2 rounded-full transition-colors shrink-0">
+              검색
+            </button>
+</div>
+<!-- Secondary Provider Selector -->
+<div class="flex items-center gap-2 self-start sm:self-center">
+<span class="text-[12px] font-[500] text-[#6B6560]">예약처</span>
+<div class="bg-[#EBE8E0] p-1 rounded-full flex items-center">
+<!-- Selected: Klook -->
+<button class="px-3.5 py-1 rounded-full bg-[#FFFFFF] custom-shadow text-[13px] font-[700] text-[#1C1917] transition-all" id="provider-klook" onclick="selectProvider('klook')">
+                Klook
+              </button>
+<!-- Secondary: 마이리얼트립 -->
+<button class="px-3.5 py-1 rounded-full text-[13px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-all" id="provider-mrt" onclick="selectProvider('mrt')">
+                마이리얼트립
+              </button>
+</div>
+</div>
+</div>
+<!-- Quick filter chips (helpful lightweight feature for travel discovery) -->
+<div class="flex items-center gap-2 mt-4 text-[13px]">
+<span class="text-[#6B6560] text-[12px] font-[500]">인기 검색어:</span>
+<button class="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E5E4] text-[#57534E] hover:border-[#0F766E] hover:text-[#0E6F68] transition-colors">블루마운틴 선셋</button>
+<button class="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E5E4] text-[#57534E] hover:border-[#0F766E] hover:text-[#0E6F68] transition-colors">오페라하우스 투어</button>
+<button class="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E5E4] text-[#57534E] hover:border-[#0F766E] hover:text-[#0E6F68] transition-colors">포트스테판 사막 샌드보딩</button>
+<button class="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E5E4] text-[#57534E] hover:border-[#0F766E] hover:text-[#0E6F68] transition-colors">시드니 타워아이 전망대</button>
+</div>
+</section>
+<!-- 4. Section "인기 도시" (Single row of circular destination thumbnails) -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-[20px] font-[700] text-[#1C1917] tracking-tight">인기 여행지</h2>
+<span class="text-[13px] text-[#6B6560]">자주 찾는 도시 바로가기</span>
+</div>
+<!-- 6 Circular City Items (88px circles, 3px white ring + soft shadow, city name below) -->
+<div class="flex items-center py-2 px-2 overflow-x-auto justify-center gap-8">
+<!-- 교토 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="교토" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">교토</span>
+</a>
+<!-- 파리 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="파리" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">파리</span>
+</a>
+<!-- 뉴욕 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="뉴욕" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">뉴욕</span>
+</a>
+<!-- 런던 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="런던" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">런던</span>
+</a>
+<!-- 로마 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="로마" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">로마</span>
+</a>
+<!-- 도쿄 -->
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#">
+<div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200">
+<img alt="도쿄" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+</div>
+<span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">도쿄</span>
+</a>
+<a class="flex flex-col items-center group text-decoration-none shrink-0" href="#"><div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200"><img alt="방콕" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"></div><span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">방콕</span></a><a class="flex flex-col items-center group text-decoration-none shrink-0" href="#"><div class="w-[88px] h-[88px] rounded-full ring-[3px] ring-[#FFFFFF] custom-shadow overflow-hidden group-hover:scale-105 transition-transform duration-200"><img alt="다낭" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"></div><span class="mt-2.5 text-[14px] font-[600] text-[#1C1917] group-hover:text-[#0E6F68] transition-colors">다낭</span></a></div>
+</section>
+<!-- 5. Section "추천 투어" (Title 22px/700 + one-line helper + 4-column grid of 8 cards) -->
+<section>
+<div class="flex items-baseline justify-between mb-6">
+<div class="flex items-baseline gap-3">
+<h2 class="text-[22px] font-[700] text-[#1C1917] tracking-tight">추천 투어</h2>
+<p class="text-[14px] font-[400] text-[#57534E]">다음 시드니 여행에 맞춰 골랐어요</p>
+</div>
+<!-- Micro sort filter -->
+<div class="flex items-center gap-1 text-[13px] text-[#6B6560]"><button class="font-[600] text-[#0E6F68]">추천순</button><span class="">·</span><button class="hover:text-[#1C1917]">인기순</button><span class="">·</span><button class="hover:text-[#1C1917]">낮은 가격순</button><span class="mx-2 text-[#E7E5E4]">|</span><button id="open-filter-btn" onclick="toggleFilterModal(true)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFFFFF] border border-[#D6D3D1] hover:border-[#0F766E] text-[13px] font-[600] text-[#1C1917] transition-all custom-shadow shrink-0"><svg class="w-3.5 h-3.5 text-[#0F766E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M6 12h12m-9 6h6"></path></svg><span class="">필터</span><span id="filter-badge" class="w-4 h-4 rounded-full bg-[#0F766E] text-[#FFFFFF] text-[10px] font-[700] flex items-center justify-center leading-none">3</span></button></div>
+</div>
+<!-- Normal Tour Cards Grid (4 columns, 8 cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="tour-grid-normal">
+<!-- Card 1: [호버 예시 활성화용 ID 포함] -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer" id="demo-hover-card">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="블루마운틴 선셋 별보기" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">투어</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                [안심귀가] 블루마운틴 선셋 별보기 &amp; 소그룹 시크릿 3코스
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.9</span><span class="text-[12px] text-[#A8A29E]">(1,420)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">한국어 가이드</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩72,988</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">1인 기준</span>
+</div>
+</div>
+</div>
+<!-- Card 2: With Discount Badge & Strikethrough -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="포트스테판 사막투어" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">투어</span>
+<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-[6px] bg-[#FEE2E2] text-[#DC2626] text-[11px] font-[700]">15% 할인</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                프리미엄 포트스테판 투어 | 사막 썰매·돌고래 크루즈·와이너리
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.8</span><span class="text-[12px] text-[#A8A29E]">(986)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">일일투어</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<div class="flex items-baseline gap-1.5">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩96,685</span>
+<span class="text-[12px] line-through text-[#A8A29E]">₩113,700</span>
+</div>
+<span class="text-[12px] font-[500] text-[#6B6560]">1인 기준</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="페더데일 동물원" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">입장권</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                페더데일 와일드라이프 파크 입장권 (코알라·캥거루 교감)
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.7</span><span class="text-[12px] text-[#A8A29E]">(542)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">E-티켓</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩38,200</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">모바일 즉시사용</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="시드니 오페라하우스" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">가이드 투어</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                [공식 티켓] 시드니 오페라 하우스 한국어 내부 가이드 투어
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.9</span><span class="text-[12px] text-[#A8A29E]">(2,310)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">한국어 설명</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩35,400</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">한국어 가이드</span>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="시드니 하버 크루즈" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">크루즈</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                시드니 하버 캡틴쿡 선셋 디너 크루즈 &amp; 3코스 식사
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.8</span><span class="text-[12px] text-[#A8A29E]">(730)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">다이닝</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩89,000</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">식사 포함</span>
+</div>
+</div>
+</div>
+<!-- Card 6: With Discount Badge -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="스카이다이빙" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">액티비티</span>
+<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-[6px] bg-[#FEE2E2] text-[#DC2626] text-[11px] font-[700]">특가 10%</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                시드니 울릉공 15,000피트 탠덤 스카이다이빙 (비치 랜딩)
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 5.0</span><span class="text-[12px] text-[#A8A29E]">(320)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">익스트림</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<div class="flex items-baseline gap-1.5">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩324,000</span>
+<span class="text-[12px] line-through text-[#A8A29E]">₩360,000</span>
+</div>
+<span class="text-[12px] font-[500] text-[#6B6560]">보험 포함</span>
+</div>
+</div>
+</div>
+<!-- Card 7 -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="본다이비치 서핑" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">클래스</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                본다이 비치 초보자 2시간 입문 서핑 레슨 (장비 대여 무료)
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.8</span><span class="text-[12px] text-[#A8A29E]">(415)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">소규모</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩64,500</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">슈트 포함</span>
+</div>
+</div>
+</div>
+<!-- Card 8 -->
+<div class="tour-card bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between cursor-pointer">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-[12px] overflow-hidden mb-3 bg-[#E2DFD6]">
+<img alt="타롱가 동물원" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[6px] bg-[#FFFFFF]/90 backdrop-blur-xs text-[12px] font-[600] text-[#1C1917]">입장권</span>
+</div>
+<h3 class="text-[15px] font-[600] text-[#1C1917] line-clamp-2 leading-[1.35] mb-2 min-h-[40px]">
+                시드니 타롱가 동물원 입장권 + 왕복 하버 페리 패키지
+              </h3>
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-[13px] text-[#6B6560] mb-2"><span class="text-[#0E6F68] font-[700]">★ 4.9</span><span class="text-[12px] text-[#A8A29E]">(1,890)</span><span class="mx-1 text-[#E7E5E4]">·</span><span class="text-[12px]">인기 패키지</span></div>
+<div class="flex items-baseline justify-between pt-2 border-t border-[#E7E5E4]">
+<span class="text-[17px] font-[800] text-[#1C1917]">₩51,800</span>
+<span class="text-[12px] font-[500] text-[#6B6560]">모바일 즉시확정</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Skeleton Loading State Grid (Toggleable preview for Requirement B) -->
+<div class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="tour-grid-skeleton">
+<!-- 8 Skeleton cards with exact card shape & #E2DFD6 placeholders -->
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-3/4 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-1/2 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-24 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-5/6 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-2/3 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-24 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-4/5 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-1/3 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-20 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-3/4 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-1/2 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-24 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-5/6 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-2/5 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-24 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-3/4 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-1/2 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-28 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-4/5 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-3/5 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-20 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+<div class="bg-[#FFFFFF] rounded-[16px] border border-[#E7E5E4] custom-shadow p-3 flex flex-col justify-between">
+<div>
+<div class="w-full aspect-[4/3] rounded-[12px] skeleton-box mb-3"></div>
+<div class="h-4 w-3/4 skeleton-box rounded mb-2"></div>
+<div class="h-4 w-1/2 skeleton-box rounded mb-3"></div>
+</div>
+<div>
+<div class="h-3 w-1/3 skeleton-box rounded mb-3"></div>
+<div class="pt-2 border-t border-[#E7E5E4] flex justify-between items-center">
+<div class="h-5 w-24 skeleton-box rounded"></div>
+<div class="h-3 w-12 skeleton-box rounded"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. Centered Soft Button: "더 보기" -->
+<div class="flex justify-center mt-10">
+<button class="h-[48px] min-w-[200px] px-8 rounded-full bg-[#FFFFFF] border border-[#D6D3D1] text-[15px] font-[600] text-[#1C1917] hover:bg-[#EBE8E0]/40 active:bg-[#EBE8E0] transition-colors custom-shadow flex items-center justify-center gap-2">
+<span class="">더 보기</span>
+<svg class="w-4 h-4 text-[#57534E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+</div>
+<!-- 7. Tiny Centered Source Note -->
+<div class="text-center mt-4">
+<p class="text-[12px] font-[400] text-[#6B6560]" id="source-note">
+            Klook 제공
+          </p>
+</div>
+</section>
+</main>
+</div>
+<!-- 8. Simple Footer Area with generous bottom padding (empty cream space) -->
+<footer class="w-full py-12 bg-transparent text-center border-t border-[#E7E5E4]/60">
+<div class="max-w-[1120px] mx-auto px-4 flex flex-col items-center justify-center gap-2">
+<div class="flex items-center gap-6 text-[13px] text-[#6B6560]">
+<a class="hover:underline" href="#">이용약관</a>
+<a class="hover:underline" href="#">개인정보처리방침</a>
+<a class="hover:underline" href="#">고객센터</a>
+<a class="hover:underline" href="#">파트너 제휴 문의</a>
+</div>
+<p class="text-[12px] text-[#A8A29E] mt-1">© 2025 Triptic. 모든 권리 보유.</p>
+</div>
+</footer>
+<!-- Script for interactive preview: Provider toggle & Skeleton mode toggle -->
+<script>
+    function selectProvider(provider) {
+      const klookBtn = document.getElementById('provider-klook');
+      const mrtBtn = document.getElementById('provider-mrt');
+      const sourceNote = document.getElementById('source-note');
+
+      if (provider === 'klook') {
+        klookBtn.className = "px-3.5 py-1 rounded-full bg-[#FFFFFF] custom-shadow text-[13px] font-[700] text-[#1C1917] transition-all";
+        mrtBtn.className = "px-3.5 py-1 rounded-full text-[13px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-all";
+        sourceNote.textContent = "Klook 제공";
+      } else {
+        mrtBtn.className = "px-3.5 py-1 rounded-full bg-[#FFFFFF] custom-shadow text-[13px] font-[700] text-[#1C1917] transition-all";
+        klookBtn.className = "px-3.5 py-1 rounded-full text-[13px] font-[500] text-[#57534E] hover:text-[#1C1917] transition-all";
+        sourceNote.textContent = "마이리얼트립 제공";
+      }
+    }
+
+    let isSkeleton = false;
+    function toggleSkeleton() {
+      const normalGrid = document.getElementById('tour-grid-normal');
+      const skeletonGrid = document.getElementById('tour-grid-skeleton');
+      const btnText = document.getElementById('toggle-skeleton-text');
+
+      isSkeleton = !isSkeleton;
+      if (isSkeleton) {
+        normalGrid.classList.add('hidden');
+        skeletonGrid.classList.remove('hidden');
+        skeletonGrid.classList.add('grid');
+        btnText.textContent = "정상 화면 보기";
+      } else {
+        normalGrid.classList.remove('hidden');
+        skeletonGrid.classList.add('hidden');
+        skeletonGrid.classList.remove('grid');
+        btnText.textContent = "스켈레톤 UI 보기";
+      }
+    }
+  </script>
+
+
+
+
+<!-- 상세 필터 모달 (기본 오픈 상태) --><div id="filter-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center p-4 bg-[#1C1917]/40 backdrop-blur-xs transition-opacity duration-200 flex" onclick="handleBackdropClick(event)"><div id="filter-modal-container" class="bg-[#FDFBF7] border border-[#E7E5E4] rounded-[20px] custom-shadow max-w-[540px] w-full overflow-hidden flex flex-col max-h-[90vh] transition-transform duration-200" onclick="event.stopPropagation()"><!-- 모달 헤더 --><div class="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] bg-[#FFFFFF]"><div class="flex items-center gap-2"><h3 class="text-[18px] font-[700] text-[#1C1917] tracking-tight">상세 필터</h3><span class="px-2 py-0.5 rounded-full bg-[#CCFBF1] text-[#0E6F68] text-[11px] font-[700]">시드니</span></div><button onclick="toggleFilterModal(false)" class="w-8 h-8 rounded-full flex items-center justify-center text-[#6B6560] hover:text-[#1C1917] hover:bg-[#EBE8E0] transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div><!-- 모달 바디 (스크롤 가능 영역) --><div class="px-6 py-5 overflow-y-auto flex flex-col gap-6"><!-- 1. 카테고리 다중 선택 태그 --><div class="flex flex-col gap-2.5"><label class="text-[14px] font-[700] text-[#1C1917]">카테고리</label><div class="flex flex-wrap gap-2" id="category-tags"><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#0F766E] bg-[#0F766E] text-[#FFFFFF] text-[13px] font-[600] transition-colors">투어</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#0F766E] bg-[#0F766E] text-[#FFFFFF] text-[13px] font-[600] transition-colors">입장권</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">가이드 투어</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">크루즈</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#0F766E] bg-[#0F766E] text-[#FFFFFF] text-[13px] font-[600] transition-colors">액티비티</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">클래스</button></div></div><!-- 2. 가격 범위 슬라이더 --><div class="flex flex-col gap-2.5"><div class="flex items-center justify-between"><label class="text-[14px] font-[700] text-[#1C1917]">가격대 (1인 기준)</label><span id="price-display" class="text-[14px] font-[700] text-[#0F766E]">₩30,000 ~ ₩200,000</span></div><div class="bg-[#FFFFFF] p-4 rounded-[12px] border border-[#E7E5E4] custom-shadow flex flex-col gap-3"><input id="price-range-input" type="range" min="30000" max="350000" step="10000" value="200000" oninput="updatePriceDisplay(this.value)" class="w-full accent-[#0F766E] cursor-pointer"><div class="flex justify-between text-[11px] font-[500] text-[#A8A29E]"><span class="">₩30,000</span><span class="">₩150,000</span><span class="">₩350,000+</span></div></div></div><!-- 3. 최소 평점 선택 --><div class="flex flex-col gap-2.5"><label class="text-[14px] font-[700] text-[#1C1917]">최소 평점</label><div class="grid grid-cols-4 gap-2" id="rating-options"><button type="button" onclick="selectRating(this, 'all')" class="rating-btn py-2 px-2 rounded-[10px] border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[12px] font-[600] transition-colors text-center">전체</button><button type="button" onclick="selectRating(this, '4.5')" class="rating-btn py-2 px-2 rounded-[10px] border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[12px] font-[600] transition-colors text-center">★ 4.5+</button><button type="button" onclick="selectRating(this, '4.8')" class="rating-btn py-2 px-2 rounded-[10px] border border-[#0F766E] bg-[#CCFBF1] text-[#0E6F68] text-[12px] font-[700] transition-colors text-center">★ 4.8+</button><button type="button" onclick="selectRating(this, '4.9')" class="rating-btn py-2 px-2 rounded-[10px] border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[12px] font-[600] transition-colors text-center">★ 4.9+</button></div></div><!-- 4. 특별 혜택 / 서비스 칩 --><div class="flex flex-col gap-2.5"><label class="text-[14px] font-[700] text-[#1C1917]">특별 혜택</label><div class="flex flex-wrap gap-2" id="benefit-tags"><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">할인 특가</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">한국어 가이드</button><button type="button" onclick="toggleTag(this)" class="filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors">모바일 즉시사용</button></div></div></div><!-- 모달 푸터 버튼 바 --><div class="px-6 py-4 bg-[#FFFFFF] border-t border-[#E7E5E4] flex items-center justify-between gap-3"><button type="button" onclick="resetFilters()" class="text-[14px] font-[600] text-[#6B6560] hover:text-[#1C1917] underline py-2 px-3 transition-colors">초기화</button><button type="button" onclick="applyFilters()" class="flex-1 bg-[#0F766E] hover:bg-[#115E59] active:bg-[#115E59] text-[#FFFFFF] text-[15px] font-[700] py-3 px-6 rounded-full transition-colors flex items-center justify-center gap-1.5 custom-shadow"><span id="apply-count-text" class="">6개 결과 보기</span><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div></div></div><script class="">function toggleFilterModal(open) { const modal = document.getElementById('filter-modal-backdrop'); if (open) { modal.classList.remove('hidden'); modal.classList.add('flex'); } else { modal.classList.add('hidden'); modal.classList.remove('flex'); } } function handleBackdropClick(event) { if (event.target === document.getElementById('filter-modal-backdrop')) { toggleFilterModal(false); } } function updatePriceDisplay(val) { const formatted = Number(val).toLocaleString(); document.getElementById('price-display').textContent = '₩30,000 ~ ₩' + formatted; } function toggleTag(btn) { const isSelected = btn.classList.contains('bg-[#0F766E]'); if (isSelected) { btn.className = 'filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors'; } else { btn.className = 'filter-tag px-3 py-1.5 rounded-full border border-[#0F766E] bg-[#0F766E] text-[#FFFFFF] text-[13px] font-[600] transition-colors'; } recalculateBadge(); } function selectRating(btn, val) { const allBtns = document.querySelectorAll('#rating-options button'); allBtns.forEach(b => { b.className = 'rating-btn py-2 px-2 rounded-[10px] border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[12px] font-[600] transition-colors text-center'; }); btn.className = 'rating-btn py-2 px-2 rounded-[10px] border border-[#0F766E] bg-[#CCFBF1] text-[#0E6F68] text-[12px] font-[700] transition-colors text-center'; recalculateBadge(); } function recalculateBadge() { const selectedTags = document.querySelectorAll('.filter-tag.bg-\[\#0F766E\]').length; const badge = document.getElementById('filter-badge'); badge.textContent = selectedTags; if (selectedTags === 0) { badge.classList.add('hidden'); } else { badge.classList.remove('hidden'); } document.getElementById('apply-count-text').textContent = (selectedTags > 0 ? selectedTags * 2 : 8) + '개 결과 보기'; } function resetFilters() { const allTags = document.querySelectorAll('.filter-tag'); allTags.forEach(t => { t.className = 'filter-tag px-3 py-1.5 rounded-full border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[13px] font-[600] transition-colors'; }); const ratingBtns = document.querySelectorAll('#rating-options button'); ratingBtns.forEach((b, idx) => { if (idx === 0) { b.className = 'rating-btn py-2 px-2 rounded-[10px] border border-[#0F766E] bg-[#CCFBF1] text-[#0E6F68] text-[12px] font-[700] transition-colors text-center'; } else { b.className = 'rating-btn py-2 px-2 rounded-[10px] border border-[#E7E5E4] bg-[#FFFFFF] text-[#57534E] hover:border-[#0F766E] text-[12px] font-[600] transition-colors text-center'; } }); document.getElementById('price-range-input').value = 350000; updatePriceDisplay(350000); recalculateBadge(); } function applyFilters() { toggleFilterModal(false); } </script></body></html>
