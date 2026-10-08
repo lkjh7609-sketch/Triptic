@@ -8,13 +8,13 @@ describe('avatarGrid', () => {
     const seeds = Array.from({ length: 40 }, (_, i) => JSON.stringify(avatarGrid(`user-${i}`)));
     expect(new Set(seeds).size).toBeGreaterThan(30);
   });
-  it('32×48칸 전신이고 머리·몸·발이 다 있다', () => {
+  it('36×52칸 전신이고 머리·몸·발이 다 있다', () => {
     const g = avatarGrid('x');
     expect(g).toHaveLength(AVATAR_H);
     expect(g.every((row) => row.length === AVATAR_W)).toBe(true);
     const rowsWithPixels = g.map((row) => row.some(Boolean));
-    expect(rowsWithPixels.slice(5, 46).every(Boolean)).toBe(true); // 머리 위부터 발끝까지 끊김 없이 이어진다
-    expect(g[30]![16]).toBeTruthy(); // 몸통
+    expect(rowsWithPixels.slice(3, 50).every(Boolean)).toBe(true); // 머리 위부터 발끝까지 끊김 없이 이어진다
+    expect(g[34]![18]).toBeTruthy(); // 몸통
   });
 });
 
