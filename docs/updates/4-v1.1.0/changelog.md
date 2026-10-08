@@ -4,16 +4,12 @@
 
 ---
 
-### 2026-10-08 (6) — iOS 앱 출시 준비: 앱 로그인·푸시 알림·권한 파일·Codemagic
+### 2026-10-08 (6) — 앱 출시 준비 중단(PR #10 되돌림) + 웹이 앱으로 판별되던 사고 수정
 
-- **앱 소셜 로그인**(PR #9): 구글이 앱 내장 웹뷰 로그인을 막아서, 앱에서는 인앱 브라우저(SFSafariViewController)로 로그인 창을 열고 `com.triptic.travel://auth/callback?code=…`로 돌아와 PKCE 코드로 세션을 만든다(`nativeAuth.ts`, 앱에서만 PKCE·웹은 그대로, Info.plist URL scheme, `@capacitor/app`). ⚠️ Supabase Authentication → URL Configuration → Redirect URLs에 `com.triptic.travel://auth/callback` 등록이 필요하다(운영 설정, 사용자).
-- **푸시 알림 서버**: Edge Function `send-push`(APNs, 공급자 토큰 ES256 JWT를 WebCrypto로 서명, 호출은 `x-purge-secret`만). 보내는 것: ① 내 글에 댓글·내 댓글에 답글(DB 트리거가 알림을 만들 때 부름 — 좋아요는 안 보냄), ② 출발 3일 전(매일 09:05 한국, 설정 '출발 전 리마인더'를 끄지 않고 iOS 기기가 등록된 회원, `push_log`로 중복 방지). 잠금 화면 문구에는 글·댓글 내용을 담지 않는다(4개 언어). APNs가 '쓸 수 없는 토큰'이라고 하면 그 토큰을 지운다. **0103 마이그레이션(트리거·cron·push_log)은 아직 운영에 적용하지 않았다** — 함수를 먼저 배포하고 APNs 비밀값을 넣은 뒤에 적용한다(순서가 틀리면 트리거가 없는 함수를 불러 쓸데없는 실패만 쌓인다).
-- **푸시 앱 쪽**: 로그인하면 알림 권한을 묻고 기기를 등록(`PushBootstrap`), 알림을 누르면 담긴 경로(앱 안 경로만)로 이동, 로그아웃하면 이 기기 토큰을 서버에서 지운다(같은 기기에 다른 사람이 로그인했을 때 이전 사람의 알림이 오지 않게). AppDelegate가 기기 토큰을 Capacitor로 넘기도록 함.
-- **iOS 프로젝트**: `App.entitlements`(푸시 `aps-environment=production`·Sign in with Apple·Associated Domains `applinks:triptic.my`), `PrivacyInfo.xcprivacy`(추적 안 함, 수집 항목: 이메일·이름·사용자 ID·사진·기타 사용자 콘텐츠·제품 상호작용·충돌 데이터·기기 ID), Info.plist(원격 알림 백그라운드 모드·사진 보관함 문구), project.pbxproj에 연결. Xcode가 없어 로컬 빌드는 못 했고 plist·pbxproj 문법과 참조만 확인했다.
-- **유니버설 링크**: `public/.well-known/apple-app-site-association`(`/plan/*`·`/shared/*`·`/community/*`)와 `vercel.json`의 application/json 헤더. 앱 ID는 `37SRQ4NMPD.com.triptic.travel`.
-- **Codemagic**: `codemagic.yaml`(mac_mini_m2, Node 22, npm ci → build → cap sync → 서명 → 빌드 번호 자동 증가 → IPA → TestFlight). 코드매직 화면에서 App Store Connect 통합 이름, 환경변수 그룹 `triptic_app`(VITE_*), `APP_STORE_APPLE_ID`를 채워야 한다.
-- **법적 문서 반영 누락 수정**: 이용약관·개인정보처리방침은 **루트 `terms.html`/`privacy.html`이 원본**이고 빌드(`scripts/build.js`)가 루트 → `public/`으로 덮어쓴다. 오늘 앞서 `public/`만 고쳐서 운영에는 Kayak·Open-Meteo 문구가 그대로였다 — 루트에 반영했다(예전에도 한 번 있었던 실수). 같은 이유로 `public/`에만 있던 담당자 이름 '이재헌'(2026-10-05 결정)도 이제서야 운영에 나간다.
-- 못 한 것: 앱 실기기 시험(Xcode·Apple 기기 없음), 푸시 실발송(APNs 키 없음), Google 지도 키의 웹 주소 제한이 앱(`capacitor://localhost`)에서 막히는지.
+- **사고**: PR #10(푸시·iOS 설정)을 배포하자 `@capacitor/core`가 메인 번들에 들어가 웹에도 `window.Capacitor` 전역이 생겼고, `isNativeApp()`이 그것만 보고 있어서 **운영 웹이 앱으로 판별**됐다(호텔 탭이 위젯 대신 앱 검색폼, 소셜 로그인이 앱 방식, 서비스워커 미등록, API 주소가 절대 주소로). 사용자가 확인해 즉시 조치.
+- **수정**: `isNativeApp()`이 `Capacitor.isNativePlatform()`을 보도록(시험 4개) — 되돌린 뒤에도 남긴다(설정 화면을 열면 같은 문제가 나던 잠복 버그였다).
+- **사용자 결정**: PR #10을 되돌려 main을 PR #9 상태로 두고, **앱 출시는 Kayak 운영 API가 올 때까지 보류**. 앱 개편 때는 웹 폴더를 그대로 두고 복제한 새 폴더에서 작업. 진행하던 내용과 재개 방법은 저장소 루트 `CLAUDE.md`에 적었다.
+- **되돌려진 것**: 푸시 서버(send-push·0103, 운영 DB에는 미적용이라 영향 없음)·앱 푸시 등록·iOS 설정(entitlements·개인정보 매니페스트)·유니버설 링크 파일·`codemagic.yaml`, 그리고 같은 PR에 들어 있던 **약관·방침 원본(루트) 반영**(Agoda 전환·Open-Meteo 제거·담당자 이름) — 이 법적 문서 반영은 따로 다시 할지 사용자 확인 대기.
 
 ### 2026-10-08 (5) — 로그인 순서·중복 이메일 차단, 설정 버전, 홈 카드·계획 날씨 칸
 
