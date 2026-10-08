@@ -7,6 +7,7 @@ import { isAuthRetryableFetchError, type Session, type User, type UserIdentity, 
 import { getSupabaseClient, supabaseAuthStorageKey } from './supabaseClient';
 import { clearOfflineCache } from '@/shared/offline/persister';
 import { isNativeApp } from '@/shared/platform';
+import { NATIVE_AUTH_REDIRECT } from './nativeAuth';
 
 export type AuthProvider = 'apple' | 'google' | 'kakao';
 
@@ -17,6 +18,18 @@ function isLocalHost(): boolean {
 
 export async function signInWithProvider(provider: AuthProvider, redirectPath?: string) {
   const client = getSupabaseClient();
+  // 앱: 로그인 창을 인앱 브라우저로 열고 앱 전용 주소로 돌아온다(구글은 앱 안 웹뷰 로그인을 막는다) — nativeAuth.ts
+  if (isNativeApp()) {
+    const { data, error } = await client.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: NATIVE_AUTH_REDIRECT, skipBrowserRedirect: true },
+    });
+    if (error) throw error;
+    if (!data.url) throw new Error('no oauth url');
+    const { Browser } = await import('@capacitor/browser');
+    await Browser.open({ url: data.url });
+    return data;
+  }
   const currentPath = redirectPath ?? window.location.pathname + window.location.search;
   const redirectUrl = isLocalHost() && !isNativeApp() ? window.location.origin + currentPath : 'https://triptic.my' + currentPath;
 

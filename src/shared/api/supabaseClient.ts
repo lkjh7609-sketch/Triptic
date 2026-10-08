@@ -10,6 +10,7 @@
  *  부분까지 그대로 복제하지는 않는다 — 이 판단의 근거를 여기 남긴다.)
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { isNativeApp } from '@/shared/platform';
 
 let client: SupabaseClient | null = null;
 
@@ -53,6 +54,10 @@ export function getSupabaseClient(): SupabaseClient {
     );
   }
 
-  client = createClient(url, anonKey, { global: { fetch: fetchWithRefreshTimeout } });
+  client = createClient(url, anonKey, {
+    // 앱의 소셜 로그인은 앱 전용 주소로 돌아오는 코드(PKCE)로 세션을 만든다(nativeAuth.ts). 웹은 예전 방식 그대로
+    ...(isNativeApp() ? { auth: { flowType: 'pkce' as const } } : {}),
+    global: { fetch: fetchWithRefreshTimeout },
+  });
   return client;
 }
