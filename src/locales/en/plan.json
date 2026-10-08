@@ -392,7 +392,6 @@
     "tipLabel": "Travel tip",
     "tipText": "Leave a couple of mornings unscheduled each week — the best moments often happen off-plan.",
     "weatherTitle": "First-day weather",
-    "weatherFirstDay": "Forecast",
     "precip": "{{value}}% chance of rain",
     "flightMissingTitle": "Add your flight",
     "flightMissingDesc": "Adding your flights maps them onto the first and last days.",

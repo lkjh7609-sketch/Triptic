@@ -379,7 +379,6 @@
     "tipLabel": "여행 팁",
     "tipText": "일주일에 이틀 오전은 일정을 비워 두세요. 기억에 남는 순간은 계획 밖에서 생기곤 해요.",
     "weatherTitle": "첫날 날씨",
-    "weatherFirstDay": "예보",
     "precip": "강수 확률 {{value}}%",
     "flightMissingTitle": "항공편 추가하기",
     "flightMissingDesc": "출국·귀국 항공편을 넣으면 첫날·마지막 날 동선에 반영돼요.",

@@ -379,7 +379,6 @@
     "tipLabel": "旅のヒント",
     "tipText": "週に2回は午前を予定なしにしてみましょう。思い出に残る瞬間は計画の外で生まれるものです。",
     "weatherTitle": "初日の天気",
-    "weatherFirstDay": "予報",
     "precip": "降水確率 {{value}}%",
     "flightMissingTitle": "航空便を追加",
     "flightMissingDesc": "往復の航空便を入れると、初日と最終日のルートに反映されます。",
