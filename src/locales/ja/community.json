@@ -309,7 +309,13 @@
     "emptySub": "初めての旅行の瞬間やローカルなインサイトを共有してみましょう。",
     "writeFirst": "初めてのストーリーを書く",
     "writeBtn": "投稿する",
-    "myPostsBtn": "自分の投稿"
+    "myPostsBtn": "自分の投稿",
+    "pager": {
+      "label": "ページ移動",
+      "prev": "前のページ",
+      "next": "次のページ",
+      "page": "{{page}}ページ"
+    }
   },
   "destination": {
     "loadError": "旅行先情報を読み込めませんでした。",

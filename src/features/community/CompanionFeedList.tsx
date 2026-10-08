@@ -4,14 +4,18 @@ import { Users } from 'lucide-react';
 import { differenceInCalendarDays, formatDistanceToNowStrict } from 'date-fns';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useSession } from '@/shared/hooks/useSession';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { AuthorName } from './AuthorName';
-import { prefsLabel, sanitizeTags, spotsLeft } from './companionPrefs';
+import { spotsLeft } from './companionPrefs';
 import { useCompanionPostsFeed, useMyActiveCompanionPosts } from './hooks/useCompanionPosts';
 import type { CompanionPost, MyCompanionPost } from './types';
+import { PagedFeed } from './PagedFeed';
 import styles from './CompanionFeedList.module.css';
+import tileStyles from './PostTile.module.css';
+import rowStyles from './PostCard.module.css';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 
 interface CompanionFeedListProps {
@@ -59,77 +63,85 @@ export function CompanionFeedList({ destinationId, hostingOnly = false }: Compan
           }
         />
       ) : (
-        <>
-          <div className={styles.list}>
-            {posts.map((post) => (
-              <CompanionFeedCard key={post.id} post={post} />
-            ))}
-          </div>
-          {feed.hasNextPage ? (
-            <div className={styles.loadMoreWrap}>
-              <button
-                type="button"
-                className={styles.loadMoreBtn}
-                onClick={() => feed.fetchNextPage()}
-                disabled={feed.isFetchingNextPage}
-              >
-                {feed.isFetchingNextPage ? t('state.loading', { ns: 'common' }) : t('feed.loadMore')}
-              </button>
-            </div>
-          ) : null}
-        </>
+        <PagedFeed
+          items={posts}
+          getKey={(post) => post.id}
+          renderItem={(post) => <CompanionFeedCard post={post} />}
+          hasMore={!!feed.hasNextPage}
+          isFetchingMore={feed.isFetchingNextPage}
+          fetchMore={() => void feed.fetchNextPage()}
+          gridClassName={tileStyles.grid}
+          listClassName={styles.list}
+        />
       )}
     </div>
   );
 }
 
-/** 모집글 한 장 — 제목·시간 / 작성자(나잇대·성별)·여행지·일정 / 'N명 모집 | 원하는 동행' / 본문 / 태그 */
+/**
+ * 모집글 한 장 — 일반 글 카드와 같은 모양(PC는 사진 칸이 위에 있는 작은 카드, 모바일은 왼쪽 썸네일 가로 카드).
+ * 사진 대신 동행 아이콘, 칩에는 여행지·남은 자리, 아래에는 작성자·시간과 여행 날짜가 들어간다.
+ * 원하는 동행 조건·본문·태그는 글을 열어야 보인다.
+ */
 export function CompanionFeedCard({ post }: { post: CompanionPost }) {
   const { t, i18n } = useTranslation('community');
-  const prefs = prefsLabel(post, t);
-  const tags = sanitizeTags(post.tags);
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const place = post.destination?.name ?? t('companion.detail.anyDestination');
+  const spots = t('channel.recruitCount', { count: spotsLeft(post) });
+  const dates =
+    post.start_date && post.end_date
+      ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })
+      : t('companion.detail.dateTbd');
+  const time = formatDistanceToNowStrict(new Date(post.created_at), {
+    addSuffix: true,
+    locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
+  });
+
+  if (isDesktop) {
+    return (
+      <Link to={`/community/companion/${post.id}`} className={tileStyles.tile}>
+        <div className={tileStyles.cover}>
+          <Users size={30} className={tileStyles.coverIcon} aria-hidden="true" />
+        </div>
+        <div className={tileStyles.body}>
+          <div className={tileStyles.chips}>
+            <span className={tileStyles.chip}>{place}</span>
+            <span className={tileStyles.chipMuted}>{spots}</span>
+          </div>
+          <h2 className={tileStyles.title}>{post.title}</h2>
+          <div className={tileStyles.foot}>
+            <span className={tileStyles.authorBtnStatic}>
+              <span className={tileStyles.authorName}>
+                <AuthorName profile={post.author} />
+              </span>
+              <span className={tileStyles.time}>{time}</span>
+            </span>
+            <span className={tileStyles.footNote}>{dates}</span>
+          </div>
+        </div>
+      </Link>
+    );
+  }
 
   return (
-    <Link to={`/community/companion/${post.id}`} className={styles.card}>
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>{post.title}</h3>
-        <span className={styles.cardTime}>
-          {formatDistanceToNowStrict(new Date(post.created_at), {
-            addSuffix: true,
-            locale: DATE_FNS_LOCALE[i18n.language] ?? DATE_FNS_LOCALE.ko,
-          })}
+    <Link to={`/community/companion/${post.id}`} className={rowStyles.card}>
+      <span className={rowStyles.thumb}>
+        <Users size={22} className={rowStyles.thumbIcon} aria-hidden="true" />
+      </span>
+      <span className={rowStyles.main}>
+        <span className={rowStyles.chips}>
+          <span className={rowStyles.chip}>{place}</span>
+          <span className={rowStyles.chipMuted}>{spots}</span>
         </span>
-      </div>
-      <div className={styles.cardMeta}>
-        <span className={styles.metaAuthor}>
-          <AuthorName profile={post.author} />
+        <span className={rowStyles.title}>{post.title}</span>
+        <span className={rowStyles.metaRow}>
+          <span className={rowStyles.authorStatic}>
+            <AuthorName profile={post.author} />
+          </span>
+          <span className={rowStyles.time}>· {time}</span>
         </span>
-        <span className={post.destination ? styles.metaPlace : styles.metaMuted}>
-          {post.destination?.name ?? t('companion.detail.anyDestination')}
-        </span>
-        <span className={styles.metaDate}>
-          {post.start_date && post.end_date
-            ? t('companion.detail.dateRange', { start: post.start_date, end: post.end_date })
-            : t('companion.detail.dateTbd')}
-        </span>
-      </div>
-      <div className={styles.recruitBox}>
-        <strong className={styles.recruitCount}>{t('channel.recruitCount', { count: spotsLeft(post) })}</strong>
-        {prefs ? (
-          <>
-            <span className={styles.recruitSep} aria-hidden="true">|</span>
-            <span>{prefs}</span>
-          </>
-        ) : null}
-      </div>
-      {post.body ? <p className={styles.cardBody}>{post.body}</p> : null}
-      {tags.length > 0 ? (
-        <div className={styles.cardTags}>
-          {tags.map((tag) => (
-            <span key={tag} className={styles.cardTag}>#{t(`companion.tags.${tag}`)}</span>
-          ))}
-        </div>
-      ) : null}
+        <span className={rowStyles.footer}>{dates}</span>
+      </span>
     </Link>
   );
 }
@@ -165,11 +177,16 @@ function HostingList({ userId }: { userId: string }) {
           }
         />
       ) : (
-        <div className={styles.list}>
-          {posts.map((post) => (
-            <CompanionFeedCard key={post.id} post={post} />
-          ))}
-        </div>
+        <PagedFeed
+          items={posts}
+          getKey={(post) => post.id}
+          renderItem={(post) => <CompanionFeedCard post={post} />}
+          hasMore={false}
+          isFetchingMore={false}
+          fetchMore={() => {}}
+          gridClassName={tileStyles.grid}
+          listClassName={styles.list}
+        />
       )}
     </div>
   );

@@ -190,3 +190,17 @@
   align-items: center;
   gap: 4px;
 }
+
+/* 동행 모집 카드의 작성자 칸 — 일반 글 카드의 작성자 버튼과 같은 모양(카드 전체가 링크라 버튼이 아니다) */
+.authorBtnStatic {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.footNote {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}

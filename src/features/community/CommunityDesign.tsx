@@ -4,7 +4,7 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Heart, MessageCircle, PenLine, Search, Lightbulb, BookOpen, ArrowRight, ChevronDown, Lock, Users } from 'lucide-react';
+import { Heart, MessageCircle, PenLine, Search, Lightbulb, BookOpen, ArrowRight, Lock, Users } from 'lucide-react';
 import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { DATE_FNS_LOCALE } from '@/features/plan/planDateFormat';
 import { useSession } from '@/shared/hooks/useSession';
@@ -13,6 +13,7 @@ import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { DestinationSelector } from './DestinationSelector';
 import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
 import { CompanionFeedList, CompanionFeedCard } from './CompanionFeedList';
+import { PagedFeed } from './PagedFeed';
 import { useAllFeedItems } from './hooks/useAllFeedItems';
 import { useToggleLike } from './hooks/usePosts';
 import { AuthorName } from './AuthorName';
@@ -277,32 +278,19 @@ export function CommunityDesignBody({
                 }
               />
             ) : (
-              <>
-                <div className={tileStyles.grid}>
-                  {items.map((item) =>
-                    item.kind === 'post' ? (
-                      <PostArticle key={item.id} post={item.post} />
-                    ) : (
-                      <div key={item.id} style={{ gridColumn: '1 / -1' }}>
-                        <CompanionFeedCard post={item.post} />
-                      </div>
-                    ),
-                  )}
-                </div>
-                {feed.hasNextPage ? (
-                  <div className="pt-6 pb-2 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => feed.fetchNextPage()}
-                      disabled={feed.isFetchingNextPage}
-                      className="px-8 py-3 rounded-full bg-surface-container-lowest border border-outline-variant/40 hover:border-primary text-primary font-label-md text-label-md transition-all duration-200 shadow-sm flex items-center gap-2"
-                    >
-                      <span>{feed.isFetchingNextPage ? t('common:state.loading') : t('feed.loadMore')}</span>
-                      <ChevronDown size={18} aria-hidden="true" />
-                    </button>
-                  </div>
-                ) : null}
-              </>
+              <PagedFeed
+                key={`${tab}-${sort}`}
+                items={items}
+                getKey={(item) => item.id}
+                renderItem={(item) =>
+                  item.kind === 'post' ? <PostArticle post={item.post} /> : <CompanionFeedCard post={item.post} />
+                }
+                hasMore={!!feed.hasNextPage}
+                isFetchingMore={feed.isFetchingNextPage}
+                fetchMore={() => void feed.fetchNextPage()}
+                gridClassName={tileStyles.grid}
+                listClassName={tileStyles.grid}
+              />
             )}
           </div>
 
