@@ -113,7 +113,7 @@
       "cabinPREMIUM_ECONOMY": "豪華經濟艙",
       "cabinBUSINESS": "商務艙",
       "cabinFIRST": "頭等艙",
-      "opensOnPartner": "搜尋結果在此查看，預訂將在預訂網站（新分頁）進行"
+      "opensOnPartner": "預訂將在預訂網站（新分頁）進行"
     },
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
@@ -167,7 +167,6 @@
         "1": "最多轉機 1 次"
       },
       "airlineLabel": "航空公司",
-      "allAirlines": "全部航空公司",
       "direct": "直飛",
       "stopsN_other": "轉機 {{count}} 次",
       "durationHM": "{{h}} 小時 {{m}} 分",
@@ -175,6 +174,7 @@
       "selfTransfer": "分開購票（轉機時可能需重新託運行李）",
       "approx": "約",
       "perPerson": "每人 · 搜尋時參考價",
+      "perPersonAvg": "每人平均（含兒童／嬰兒）· 搜尋時參考價",
       "total": "總價 {{price}}",
       "book": "前往預訂",
       "redirecting": "即將前往所選機票的預訂頁面。",
@@ -185,7 +185,19 @@
       "unavailableTitle": "目前無法顯示機票清單",
       "unavailableBody": "您可以直接在預訂網站以相同條件搜尋。",
       "failedTitle": "無法載入機票",
-      "failedBody": "請稍後再試，或到預訂網站以相同條件搜尋。"
+      "failedBody": "請稍後再試，或到預訂網站以相同條件搜尋。",
+      "count_other": "{{count}} 個航班",
+      "filter": "篩選",
+      "filterReset": "重設",
+      "filterDone": "完成",
+      "timeLabel": "出發時間（去程）",
+      "time": {
+        "dawn": "凌晨 0–6 時",
+        "morning": "上午 6–12 時",
+        "afternoon": "下午 12–18 時",
+        "evening": "晚上 18–24 時"
+      },
+      "removeFilter": "取消篩選：{{name}}"
     }
   },
   "hotels": {

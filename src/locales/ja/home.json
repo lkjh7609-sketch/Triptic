@@ -113,7 +113,7 @@
       "cabinPREMIUM_ECONOMY": "プレミアムエコノミー",
       "cabinBUSINESS": "ビジネス",
       "cabinFIRST": "ファースト",
-      "opensOnPartner": "検索結果はこの画面で確認、予約は予約サイト（新しいタブ）で行います"
+      "opensOnPartner": "予約は予約サイト（新しいタブ）で行います"
     },
     "essentials": {
       "title": "SIM・eSIMも必要ですか？",
@@ -167,7 +167,6 @@
         "1": "乗り継ぎ1回まで"
       },
       "airlineLabel": "航空会社",
-      "allAirlines": "すべての航空会社",
       "direct": "直行",
       "stopsN_other": "乗り継ぎ{{count}}回",
       "durationHM": "{{h}}時間{{m}}分",
@@ -175,6 +174,7 @@
       "selfTransfer": "別々の航空券（乗り継ぎ時に手荷物の再預けが必要な場合があります）",
       "approx": "約",
       "perPerson": "1人あたり・検索時点の参考価格",
+      "perPersonAvg": "1人あたりの平均（子ども・幼児含む）・検索時点の参考価格",
       "total": "合計 {{price}}",
       "book": "予約する",
       "redirecting": "選択した航空券の予約ページへ移動します。",
@@ -185,7 +185,19 @@
       "unavailableTitle": "現在、航空券の一覧を表示できません",
       "unavailableBody": "予約サイトで同じ条件をそのまま検索できます。",
       "failedTitle": "航空券を読み込めませんでした",
-      "failedBody": "しばらくしてからもう一度検索するか、予約サイトで同じ条件を検索してください。"
+      "failedBody": "しばらくしてからもう一度検索するか、予約サイトで同じ条件を検索してください。",
+      "count_other": "{{count}}便",
+      "filter": "絞り込み",
+      "filterReset": "リセット",
+      "filterDone": "完了",
+      "timeLabel": "出発時間（行き）",
+      "time": {
+        "dawn": "早朝 0–6時",
+        "morning": "午前 6–12時",
+        "afternoon": "午後 12–18時",
+        "evening": "夜 18–24時"
+      },
+      "removeFilter": "絞り込み解除: {{name}}"
     }
   },
   "hotels": {
