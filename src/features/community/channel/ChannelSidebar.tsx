@@ -1,5 +1,5 @@
 import { Route as RouteIcon, Zap } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
@@ -33,17 +33,31 @@ function useTimeDiffText(timezone: string): string | null {
   return t(ahead ? 'channel.timeDiff.ahead' : 'channel.timeDiff.behind', { time });
 }
 
+/** 도시의 현재 시각 — 30초마다 갱신(분 단위로만 보여 주므로 충분하다). 시간대 이름이 잘못되면 null */
+function useCityClock(timezone: string, language: string): string | null {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+  try {
+    return new Intl.DateTimeFormat(language, { timeZone: timezone, hour: 'numeric', minute: '2-digit' }).format(now);
+  } catch {
+    return null;
+  }
+}
+
 interface TripCardProps {
   city: string;
   timezone: string;
   guide: DestinationGuide | null | undefined;
-  onCreateTrip: () => void;
 }
 
-/** 여행 일정 만들기 카드 — 추천 기간·최적 시기(내용이 있을 때만)·시차 */
-export function TripCard({ city, timezone, guide, onCreateTrip }: TripCardProps) {
+/** 날씨 및 시차 카드 — 추천 기간·최적 시기(내용이 있을 때만) + 도시 현재 시각과 한국과의 시차. 일정 만들기 버튼은 위쪽 헤더에 있다 */
+export function TripCard({ city, timezone, guide }: TripCardProps) {
   const { t, i18n } = useTranslation('community');
   const timeDiff = useTimeDiffText(timezone);
+  const clock = useCityClock(timezone, i18n.language);
   const length = pickText(guide?.trip_length, i18n.language);
   const season = pickText(guide?.best_season, i18n.language);
 
@@ -53,8 +67,14 @@ export function TripCard({ city, timezone, guide, onCreateTrip }: TripCardProps)
         <RouteIcon size={20} aria-hidden="true" className={styles.titleIcon} />
         {t('channel.tripCard.title', { city })}
       </h2>
-      <p className={styles.desc}>{t('channel.tripCard.desc')}</p>
-      {length || season || timeDiff ? (
+      {clock ? (
+        <div className={styles.clock}>
+          <span className={styles.clockLabel}>{t('channel.tripCard.nowLabel', { city })}</span>
+          <strong className={styles.clockTime}>{clock}</strong>
+          {timeDiff ? <span className={styles.clockDiff}>{timeDiff}</span> : null}
+        </div>
+      ) : null}
+      {length || season ? (
         <dl className={styles.facts}>
           {length ? (
             <div className={styles.factRow}>
@@ -68,17 +88,8 @@ export function TripCard({ city, timezone, guide, onCreateTrip }: TripCardProps)
               <dd>{season}</dd>
             </div>
           ) : null}
-          {timeDiff ? (
-            <div className={styles.factRow}>
-              <dt>{t('channel.tripCard.timeDiff')}</dt>
-              <dd>{timeDiff}</dd>
-            </div>
-          ) : null}
         </dl>
       ) : null}
-      <button type="button" className={styles.primaryBtn} onClick={onCreateTrip}>
-        {t('channel.tripCard.cta')}
-      </button>
     </section>
   );
 }
