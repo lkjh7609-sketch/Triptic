@@ -93,11 +93,11 @@ function dedupe(offers) {
 
 /**
  * Ignav 응답 → { currency, offers[] }. 가격(price)은 승객 전체 합계, perPerson은 (성인+아동) 한 명 몫 근사.
- * 가격이 없거나 구간이 비면 뺀다.
+ * 가격이 없거나 구간이 비면 뺀다. 확인된 가격이 있으면 미확인 가격은 뺀다(아래).
  */
 export function normalizeIgnav(raw, search) {
     const payers = Math.max(1, search.adults + (search.children ?? 0));
-    const all = (Array.isArray(raw?.itineraries) ? raw.itineraries : [])
+    const priced = (Array.isArray(raw?.itineraries) ? raw.itineraries : [])
         .map((it) => {
             const amount = it?.price?.amount;
             if (typeof amount !== 'number' || !(amount > 0)) return null;
@@ -115,6 +115,11 @@ export function normalizeIgnav(raw, search) {
         })
         .filter(Boolean)
         .sort((a, b) => a.price - b.price);
+
+    // 2026-10-09 실측: 미확인('unverified') 가격은 비현실적으로 낮다(영어 시장 ICN→TYO 왕복 2인 $202 vs 확인된 최저 $391).
+    // 확인된 가격이 하나라도 있으면 미확인은 빼고, 하나도 없을 때만 '약'으로 보여 준다
+    const hasVerified = priced.some((o) => o.verified);
+    const all = hasVerified ? priced.filter((o) => o.verified) : priced;
 
     const picked = new Set(all.slice(0, CHEAPEST_OVERALL));
     const perCarrier = new Map();
