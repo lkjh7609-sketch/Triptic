@@ -315,6 +315,14 @@
       "prev": "前のページ",
       "next": "次のページ",
       "page": "{{page}}ページ"
+    },
+    "boardHead": {
+      "title": "タイトル",
+      "author": "投稿者",
+      "date": "投稿日",
+      "likes": "いいね",
+      "comments": "コメント",
+      "photo": "写真あり"
     }
   },
   "destination": {

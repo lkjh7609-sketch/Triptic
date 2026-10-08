@@ -315,6 +315,14 @@
       "prev": "이전 페이지",
       "next": "다음 페이지",
       "page": "{{page}}페이지"
+    },
+    "boardHead": {
+      "title": "제목",
+      "author": "작성자",
+      "date": "작성일",
+      "likes": "좋아요",
+      "comments": "댓글",
+      "photo": "사진 있음"
     }
   },
   "destination": {
