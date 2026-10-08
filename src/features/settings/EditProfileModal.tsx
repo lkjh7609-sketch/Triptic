@@ -1,4 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react';
+import { Shuffle, RotateCcw } from 'lucide-react';
+import { PixelSprite } from '@/features/stats/PixelSprite';
+import { avatarGrid, avatarSeedOf, randomAvatarSeed } from '@/features/stats/pixelArt';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import { useTranslation } from 'react-i18next';
 import type { UseMutationResult } from '@tanstack/react-query';
@@ -40,6 +43,8 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
   const nameChanged = name.trim() !== (profile?.display_name ?? '');
   const [gender, setGender] = useState<MemberGender | null>(profile?.gender ?? null);
   const [ageBand, setAgeBand] = useState<MemberAgeBand | null>(profile?.age_band ?? null);
+  const [pixelSeed, setPixelSeed] = useState<string | null>(profile?.pixel_avatar_seed ?? null);
+  const avatarChanged = pixelSeed !== (profile?.pixel_avatar_seed ?? null);
   const demographicsChanged = gender !== (profile?.gender ?? null) || ageBand !== (profile?.age_band ?? null);
 
   function handleNameChange(value: string) {
@@ -83,7 +88,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
       flagInvalid(nameInputRef.current);
       return;
     }
-    if (!nameChanged && !demographicsChanged) {
+    if (!nameChanged && !demographicsChanged && !avatarChanged) {
       onClose();
       return;
     }
@@ -103,6 +108,7 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
       {
         ...(nameChanged ? { display_name: trimmed } : {}),
         ...(demographicsChanged ? { gender, age_band: ageBand } : {}),
+        ...(avatarChanged ? { pixel_avatar_seed: pixelSeed } : {}),
       },
       {
         onSuccess: onClose,
@@ -162,6 +168,23 @@ export function EditProfileModal({ onClose, profile, updateProfile }: EditProfil
                 {error}
               </p>
             ) : null}
+          </div>
+          <div className={modalStyles.field}>
+            <span className={modalStyles.label}>{t('profile.pixelAvatarLabel')}</span>
+            <div className={styles.avatarRow}>
+              <PixelSprite grid={avatarGrid(avatarSeedOf(profile?.id ?? '', pixelSeed))} pixel={2} className={styles.avatarPreview} label={t('profile.pixelAvatarLabel')} />
+              <div className={styles.avatarBtns}>
+                <button type="button" className={styles.checkBtn} onClick={() => setPixelSeed(randomAvatarSeed())}>
+                  <Shuffle size={14} aria-hidden="true" /> {t('profile.pixelAvatarRandom')}
+                </button>
+                {pixelSeed ? (
+                  <button type="button" className={styles.checkBtn} onClick={() => setPixelSeed(null)}>
+                    <RotateCcw size={14} aria-hidden="true" /> {t('profile.pixelAvatarReset')}
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            <p className={modalStyles.hint}>{t('profile.pixelAvatarHint')}</p>
           </div>
           <div className={modalStyles.field}>
             <span className={modalStyles.label}>{t('demographics.settingsTitle', { ns: 'community' })}</span>

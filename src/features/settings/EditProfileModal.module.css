@@ -30,3 +30,32 @@
 .available {
   color: var(--success-text);
 }
+
+/* 도트 캐릭터 고르기 */
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatarPreview {
+  display: block;
+  flex-shrink: 0;
+  padding: 4px 8px 0;
+  border-radius: var(--radius-lg);
+  background: var(--brand-tint);
+  image-rendering: pixelated;
+}
+
+.avatarBtns {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.avatarBtns button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

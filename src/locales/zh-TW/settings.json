@@ -98,7 +98,11 @@
     "nameReserved": "此暱稱無法使用。",
     "checkDuplicate": "確認重複",
     "checking": "確認中…",
-    "saveError": "無法儲存，請稍後再試。"
+    "saveError": "無法儲存，請稍後再試。",
+    "pixelAvatarLabel": "像素角色",
+    "pixelAvatarRandom": "隨機更換",
+    "pixelAvatarReset": "恢復原本樣子",
+    "pixelAvatarHint": "會在統計分頁的「一起旅行的朋友」代表你。儲存後朋友也會看到這個樣子。"
   },
   "units": {
     "title": "單位設定",

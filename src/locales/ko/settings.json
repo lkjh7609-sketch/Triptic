@@ -98,7 +98,11 @@
     "nameReserved": "사용할 수 없는 닉네임이에요.",
     "checkDuplicate": "중복 확인",
     "checking": "확인 중…",
-    "saveError": "저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+    "saveError": "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "pixelAvatarLabel": "도트 캐릭터",
+    "pixelAvatarRandom": "랜덤으로 바꾸기",
+    "pixelAvatarReset": "처음 모습으로",
+    "pixelAvatarHint": "통계 탭의 \"같이 다닌 친구들\"에서 나를 나타내요. 저장하면 같이 다닌 친구에게도 이 모습으로 보여요."
   },
   "units": {
     "title": "단위 설정",
