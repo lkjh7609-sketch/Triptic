@@ -99,6 +99,14 @@ describe('normalizeIgnav', () => {
         expect(out.offers.map((o) => o.id)).toEqual(['a']);
     });
 
+    it('확인된 가격이 있으면 비현실적으로 낮은 미확인 가격은 뺀다(없을 때만 남겨 \'약\' 표시)', () => {
+        const unverified = (id, amount) => itinerary(id, amount, 'KE', String(Number(id.slice(1)) * 10), { price: { amount, currency: 'KRW', status: 'unverified' } });
+        const mixed = normalizeIgnav({ itineraries: [unverified('u1', 100), itinerary('v', 300000, '7C', '1107')] }, { adults: 1 });
+        expect(mixed.offers.map((o) => o.id)).toEqual(['v']);
+        const onlyUnverified = normalizeIgnav({ itineraries: [unverified('u1', 100), unverified('u2', 200)] }, { adults: 1 });
+        expect(onlyUnverified.offers.map((o) => [o.id, o.verified])).toEqual([['u1', false], ['u2', false]]);
+    });
+
     it('1,000건이 와도 가격순 앞쪽 + 항공사별 몇 개로 추려 100건을 넘기지 않는다(비싼 항공사도 남는다)', () => {
         const many = Array.from({ length: 1000 }, (_, i) => itinerary(`i${i}`, 100000 + i * 100, '7C', String(1000 + i * 2)));
         many.push(itinerary('ke', 9_000_000, 'KE', '703'));
