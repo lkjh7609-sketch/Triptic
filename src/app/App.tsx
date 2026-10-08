@@ -9,6 +9,7 @@ import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/per
 import { ToastHost } from '@/shared/ui/toast';
 import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
 import { SuspensionGate } from '@/features/auth/SuspensionGate';
+import { LoginConflictGate } from '@/features/auth/LoginConflictGate';
 import { ErrorBoundary } from './ErrorBoundary';
 import { BootShell } from './BootShell';
 import { router } from './router';
@@ -92,6 +93,7 @@ export function App() {
           <RouterProvider router={router} />
           <ToastHost />
           <SuspensionGate />
+          <LoginConflictGate />
         </Suspense>
       </PersistQueryClientProvider>
     </ErrorBoundary>

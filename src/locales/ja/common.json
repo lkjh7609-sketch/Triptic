@@ -193,5 +193,17 @@
       "terms": "その他の利用規約違反",
       "custom": "直接入力"
     }
+  },
+  "loginConflict": {
+    "title": "すでに登録済みのメールアドレスです",
+    "intro": "このメールアドレスは{{existing}}ですでに登録されています。{{attempted}}ではログインできませんでした。",
+    "recent": "最近のログイン方法",
+    "hint": "{{recent}}でログインしてください。",
+    "provider": {
+      "apple": "Apple",
+      "google": "Google",
+      "kakao": "カカオ",
+      "email": "メール"
+    }
   }
 }
