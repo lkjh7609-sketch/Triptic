@@ -182,6 +182,14 @@ export const router = createBrowserRouter(
           },
         },
         {
+          // 통계 — 다녀온 여행 전체 통계(로그인 필요: guestAccess)
+          path: 'stats',
+          lazy: async () => {
+            const { StatsScreen } = await retryChunkLoad(() => import('@/features/stats/StatsScreen'));
+            return { Component: StatsScreen };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => {
             const { SettingsScreen } = await retryChunkLoad(() => import('@/features/settings/SettingsScreen'));

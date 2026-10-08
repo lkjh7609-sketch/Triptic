@@ -1,0 +1,137 @@
+{
+  "title": "여행 통계",
+  "subtitle": "지금까지 다녀온 여행을 숫자로 돌아봐요",
+  "loadError": "통계를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.",
+  "empty": {
+    "title": "아직 다녀온 여행이 없어요",
+    "body": "여행이 끝나면 여기에 통계가 쌓여요. 종료일이 지난 여행부터 센답니다.",
+    "upcoming": "예정된 여행 {{count}}건",
+    "cta": "내 여행 보러 가기"
+  },
+  "summary": {
+    "trips": "다녀온 여행",
+    "tripsValue": "{{count}}번",
+    "days": "여행한 날",
+    "daysValue": "{{count}}일",
+    "cities": "방문 도시",
+    "citiesValue": "{{count}}곳",
+    "countries": "방문 나라",
+    "countriesValue": "{{count}}개국",
+    "laps": "지구 둘레",
+    "lapsValue": "{{value}}바퀴",
+    "km": "이동 {{km}}km (직선거리 기준)",
+    "upcoming": "예정된 여행 {{count}}건"
+  },
+  "map": {
+    "title": "다녀온 곳",
+    "aria": "다녀온 나라를 칠한 세계 지도",
+    "world": "전 세계 195개국 중 {{count}}개국 ({{percent}}%)",
+    "unknown": "도시 {{count}}곳은 나라를 알 수 없어 나라·대륙 통계에서 빠졌어요.",
+    "continents": "대륙별 비율",
+    "continentNote": "여행 횟수 기준"
+  },
+  "expense": {
+    "title": "경비",
+    "total": "총 지출",
+    "perDay": "하루 평균",
+    "perTrip": "여행당 평균",
+    "mostExpensive": "가장 비싼 여행",
+    "byCategory": "무엇에 썼나",
+    "byPayment": "어떻게 결제했나",
+    "byTrip": "여행별 비교",
+    "perDayShort": "하루 {{amount}}",
+    "none": "경비를 기록한 여행이 아직 없어요. 여행에 경비를 적어 두면 여기서 모아 볼 수 있어요.",
+    "noRecord": "경비 기록이 없는 여행 {{count}}건은 평균에서 뺐어요.",
+    "noRate": "환율을 알 수 없는 통화의 여행 {{count}}건은 합계에서 뺐어요.",
+    "note": "원화 금액은 여행에 적어 둔 환율로 기본 통화까지 바꾼 뒤, 현재 환율로 원화로 바꾼 값이에요."
+  },
+  "habits": {
+    "title": "여행 습관",
+    "byMonth": "월별 여행 횟수",
+    "monthLabel": "{{month}}월",
+    "byYear": "연도별",
+    "yearRow": "{{trips}}번 · {{days}}일",
+    "avgDays": "평균 여행 기간",
+    "longest": "가장 긴 여행",
+    "topCities": "자주 간 도시",
+    "topCityTrips": "{{count}}번",
+    "placesPerDay": "하루 평균 방문 장소",
+    "placesPerDayValue": "{{value}}곳",
+    "categories": "많이 들른 곳",
+    "styleTitle": "나의 여행 성향",
+    "styleNeed": "장소를 5곳 이상 담은 여행이 쌓이면 성향을 알려 드려요.",
+    "style": {
+      "food": "맛집 탐방형 — 방문 장소의 3분의 1 이상이 식당이에요.",
+      "sightseeing": "관광 명소형 — 방문 장소의 절반 이상이 관광지예요.",
+      "balanced": "골고루 즐기는 균형형이에요."
+    }
+  },
+  "trips": {
+    "title": "여행별 통계",
+    "days": "{{count}}일",
+    "places": "장소 {{count}}곳",
+    "flights": "항공 {{count}}구간",
+    "companions": "동행 여행",
+    "expand": "자세히",
+    "collapse": "접기",
+    "dayExpense": "일차별 지출",
+    "dayLabel": "{{day}}일차",
+    "noExpense": "경비 기록 없음",
+    "airlines": "항공사",
+    "distance": "이동 거리",
+    "categories": "방문 장소 분류",
+    "countries": "방문 나라"
+  },
+  "badges": {
+    "title": "기록",
+    "locked": "아직이에요",
+    "name": {
+      "firstTrip": "첫 여행 완료",
+      "firstAbroad": "첫 해외여행",
+      "countries3": "3개국 돌파",
+      "countries5": "5개국 돌파",
+      "countries10": "10개국 돌파",
+      "trips5": "5번째 여행",
+      "trips10": "10번째 여행",
+      "trips20": "20번째 여행",
+      "days30": "여행 30일 달성",
+      "days100": "여행 100일 달성",
+      "oneLap": "지구 한 바퀴",
+      "firstCompanion": "첫 동행 여행"
+    }
+  },
+  "label": {
+    "expense": {
+      "food": "식비",
+      "transport": "교통",
+      "lodging": "숙박",
+      "shopping": "쇼핑",
+      "activity": "액티비티",
+      "other": "기타"
+    },
+    "payment": {
+      "cash": "현금",
+      "card": "카드",
+      "other": "기타",
+      "unknown": "결제수단 미입력"
+    },
+    "place": {
+      "sight": "관광",
+      "meal": "식사",
+      "restaurant": "식당",
+      "cafe": "카페",
+      "shopping": "쇼핑",
+      "lodging": "숙소",
+      "transport": "교통",
+      "other": "기타"
+    },
+    "continent": {
+      "AS": "아시아",
+      "EU": "유럽",
+      "NA": "북아메리카",
+      "SA": "남아메리카",
+      "AF": "아프리카",
+      "OC": "오세아니아"
+    }
+  }
+}
