@@ -153,41 +153,6 @@
       "meta": "往復最安 {{price}}ウォン~",
       "metaAirline": "往復最安 {{price}}ウォン~ · {{airline}}",
       "open": "{{city}}の航空券を見る"
-    },
-    "kayak": {
-      "results": "航空券の検索結果",
-      "sortLabel": "並べ替え",
-      "sort": {
-        "best": "おすすめ順",
-        "price": "最安値順",
-        "duration": "所要時間が短い順"
-      },
-      "stopsLabel": "乗り継ぎ",
-      "stops": {
-        "any": "すべて",
-        "0": "直行便のみ",
-        "1": "乗り継ぎ1回まで"
-      },
-      "airlineLabel": "航空会社",
-      "allAirlines": "すべての航空会社",
-      "direct": "直行便",
-      "freeCancel": "無料キャンセル",
-      "bagChecked": "預け荷物込み",
-      "bagCarryOn": "機内持ち込み込み",
-      "durationHM": "{{h}}時間{{m}}分",
-      "durationM": "{{m}}分",
-      "perPerson": "1人あたり",
-      "perPersonSolo": "合計",
-      "book": "予約する",
-      "via": "{{provider}}で予約",
-      "searching": "航空券を探しています…",
-      "searchingMore": "さらに検索中… 現在{{count}}件",
-      "empty": "条件に合う航空券がありません。日程や条件を変えてみてください",
-      "error": "航空券を読み込めませんでした。しばらくしてからもう一度お試しください",
-      "priceNote": "価格は予約サイトで変わることがあります。予約と支払いはKayakが案内する予約サイトで行います",
-      "sandbox": "以下のデータは現在構築中のため、実際のご利用はできません",
-      "stopsN_other": "乗り継ぎ{{count}}回",
-      "otherSites_other": "他の予約サイト{{count}}件"
     }
   },
   "hotels": {
