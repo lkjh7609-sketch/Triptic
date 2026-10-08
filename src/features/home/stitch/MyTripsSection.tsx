@@ -5,6 +5,7 @@ import { useSession } from '@/shared/hooks/useSession';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { initialsOf } from '@/features/plan/hooks/useTripMembers';
 import { relativeTime } from './relativeTime';
+import { TripWeatherChip } from '@/features/weather/TripWeatherChip';
 import { useUpcomingTrip, type UpcomingTripView } from './useUpcomingTrip';
 import shared from './shared.module.css';
 import styles from './MyTripsSection.module.css';
@@ -36,6 +37,7 @@ function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean 
         <div className={styles.metaRow}>
           <div className={styles.metaLeft}>
             <span className={styles.ddayBadge}>{compact ? `${dday} ${t('page.trips.upcomingLabel')}` : dday}</span>
+            <TripWeatherChip trip={trip} className={styles.metaText} />
             {compact ? null : (
               <span className={styles.metaText}>
                 {`${start.full} - ${end.md} (${nightsDays})`}
