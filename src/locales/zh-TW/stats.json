@@ -16,9 +16,7 @@
     "cities": "造訪城市",
     "citiesValue": "{{count}} 個",
     "countries": "造訪國家",
-    "countriesValue": "{{count}} 個",
-    "km": "移動 {{km}} 公里(直線距離)",
-    "upcoming": "即將出發的旅行 {{count}} 趟"
+    "countriesValue": "{{count}} 個"
   },
   "map": {
     "title": "去過的地方",
