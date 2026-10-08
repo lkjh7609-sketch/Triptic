@@ -35,9 +35,11 @@ export function useSeasonPicks(month: number): { data: SeasonPick[] | undefined 
   );
   const ids = useMemo(() => (candidates ?? []).map((c) => c.id), [candidates]);
   const english = i18n.language === 'en';
+  // 결과는 일반 객체로 — 오프라인 캐시(JSON)에 Map을 넣으면 복원 때 `{}`가 되어 `.get()`에서 홈이 죽었다(2026-10-08).
+  // 키에 v2를 붙여 예전에 `{}`로 저장된 값을 다시 쓰지 않는다
   const { data: enNames } = useQuery({
-    queryKey: ['seasonEnNames', ids.join(',')],
-    queryFn: () => fetchDestinationNamesByIds(ids, 'en'),
+    queryKey: ['seasonEnNames', 'v2', ids.join(',')],
+    queryFn: async () => Object.fromEntries(await fetchDestinationNamesByIds(ids, 'en')) as Record<string, string>,
     enabled: !english && ids.length > 0,
     staleTime: 60 * 60 * 1000,
   });
@@ -46,7 +48,7 @@ export function useSeasonPicks(month: number): { data: SeasonPick[] | undefined 
     const byId = new Map(destinations.data.map((d) => [d.id, d.name]));
     return candidates.map((c) => {
       const name = byId.get(c.id) ?? c.slug;
-      return { ...c, name, nameEn: english ? name : (enNames?.get(c.id) ?? name) };
+      return { ...c, name, nameEn: english ? name : (enNames?.[c.id] ?? name) };
     });
   }, [candidates, destinations.data, enNames, english]);
   return { data };

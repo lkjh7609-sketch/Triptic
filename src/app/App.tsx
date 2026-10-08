@@ -5,7 +5,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { RouterProvider } from 'react-router';
 import { LocaleSync } from '@/shared/i18n/useSyncLocale';
-import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
+import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS, shouldPersistQuery } from '@/shared/offline/persister';
 import { ToastHost } from '@/shared/ui/toast';
 import { installExternalLinkHandler } from '@/shared/externalLink';
 import { installNativeAuthListener } from '@/shared/api/nativeAuth';
@@ -88,7 +88,11 @@ export function App() {
     <ErrorBoundary>
       <PersistQueryClientProvider
         client={queryClient}
-        persistOptions={{ persister: offlinePersister, maxAge: OFFLINE_CACHE_MAX_AGE_MS }}
+        persistOptions={{
+          persister: offlinePersister,
+          maxAge: OFFLINE_CACHE_MAX_AGE_MS,
+          dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
+        }}
         onSuccess={() => {
           if (refetchAfterRestore) void queryClient.invalidateQueries();
         }}
