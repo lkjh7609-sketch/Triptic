@@ -451,7 +451,7 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "今行きたい旅行先",
-      "sub": "過去10年の気候データで選んだ今月のおすすめ",
+      "sub": "20年の気候平年値で選んだ今月のおすすめ",
       "subMobile": "今日の天気と今月の気候で選びました",
       "best": "{{range}}がおすすめ",
       "kind": {
@@ -459,7 +459,7 @@
         "pleasant": "快適な気候",
         "cool": "涼しい気候"
       },
-      "desc": "平均 {{min}}〜{{max}} · 月の雨の日 {{wet}}日"
+      "desc": "平均 {{min}}〜{{max}} · 月の降水量 {{rain}}mm"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

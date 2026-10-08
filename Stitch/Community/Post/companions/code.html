@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>커뮤니티 - 동행 찾기</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FAF9F5',
+              surface: '#FFFFFF',
+              pine: '#23483F',
+              pineHover: '#1B3831',
+              pineLight: '#EEF4F1',
+              border: '#EAE6DF',
+              tagBg: '#F3EFE9',
+              subtext: '#76726B',
+              text: '#1C1B1A',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Apple SD Gothic Neo"', '"Pretendard"', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="base-styling">
+    /* Mobile viewport base styling */
+    body {
+      background-color: #FAF9F5;
+      color: #1C1B1A;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Hide scrollbars for slick horizontal scroll */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style data-purpose="elevation-effects">
+    /* Subtle shadows tailored for soft cream card style */
+    .card-shadow {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(35, 72, 63, 0.04);
+    }
+    .fab-shadow {
+      box-shadow: 0 4px 14px rgba(35, 72, 63, 0.28);
+    }
+    .bottom-nav-shadow {
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="flex justify-center min-h-screen bg-[#EDECE8]">
+<!-- Mobile Viewport Container -->
+<div class="w-full max-w-md min-h-screen bg-brand-cream relative flex flex-col pb-24 shadow-xl">
+<!-- BEGIN: TopHeader -->
+<header class="pt-4 px-4 pb-2 bg-brand-cream sticky top-0 z-20" data-purpose="app-header">
+<div class="flex items-center justify-between mb-2.5">
+<div>
+<p class="text-[11px] font-medium text-brand-subtext tracking-tight">여행자들의 기록과 영감</p>
+<h1 class="text-[19px] font-bold text-brand-text tracking-tight mt-0.5">커뮤니티</h1>
+</div>
+<!-- My Posts Shortcut Pill -->
+<button class="px-3 py-1 rounded-full text-xs font-medium text-[#4A4843] bg-brand-tagBg hover:bg-[#E8E3DB] transition-colors" data-purpose="my-written-posts" type="button">
+          내가 쓴 글
+        </button>
+</div>
+<!-- Search Input Container -->
+<div class="relative w-full" data-purpose="search-bar">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8A857D]">
+<!-- Magnifying Glass Icon -->
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<input class="w-full h-10 pl-9 pr-4 text-xs font-normal text-brand-text bg-white border border-brand-border rounded-full placeholder-[#A09A90] focus:outline-none focus:ring-1.5 focus:ring-brand-pine focus:border-brand-pine shadow-sm transition" placeholder="지역, 키워드, 여행자 검색..." type="text"/>
+</div>
+<!-- Section Tabs Navigation -->
+<nav class="flex items-center justify-around border-b border-brand-border mt-3 text-sm" data-purpose="section-tabs">
+<button class="py-2.5 px-3 font-medium text-brand-subtext hover:text-brand-text relative transition-colors" type="button">
+          전체
+        </button>
+<button class="py-2.5 px-3 font-medium text-brand-subtext hover:text-brand-text relative transition-colors" type="button">
+          구독
+        </button>
+<button class="py-2.5 px-3 font-bold text-brand-pine relative transition-colors" type="button">
+          동행
+          <!-- Active Tab Underline Indicator -->
+<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] bg-brand-pine rounded-full"></span>
+</button>
+</nav>
+<!-- Sub-filter / Shortcut Bar -->
+<div class="flex items-center justify-between pt-2.5 pb-0.5 gap-2" data-purpose="filter-bar">
+<!-- City Select Dropdown -->
+<button class="flex-1 flex items-center justify-center gap-1.5 h-8 px-3 bg-white border border-brand-border rounded-full text-xs font-medium text-brand-text hover:bg-neutral-50 active:scale-[0.98] transition" type="button">
+<svg class="w-3.5 h-3.5 text-brand-pine" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>도시 선택</span>
+<svg class="w-3 h-3 text-brand-subtext" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Free Board Shortcut Pill -->
+<button class="flex-1 flex items-center justify-center gap-1.5 h-8 px-3 bg-white border border-brand-border rounded-full text-xs font-medium text-brand-text hover:bg-neutral-50 active:scale-[0.98] transition" type="button">
+<svg class="w-3.5 h-3.5 text-brand-pine" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>자유게시판</span>
+</button>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainContent -->
+<main class="px-4 pt-2.5 space-y-4" data-purpose="companion-content">
+<!-- Section: My Companion Posts (Compact horizontal-ready showcase) -->
+<section data-purpose="my-accompaniment-section">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<h2 class="text-sm font-bold text-brand-text">내 동행</h2>
+<span class="inline-flex items-center justify-center px-1.5 py-0.2 text-[10px] font-semibold text-brand-pine bg-brand-pineLight rounded-full">2</span>
+</div>
+<span class="text-[11px] text-brand-subtext font-normal">진행 중 2건</span>
+</div>
+<!-- Horizontal scroll list of My Posts -->
+<div class="flex gap-2.5 overflow-x-auto no-scrollbar py-0.5" data-purpose="my-posts-list">
+<!-- My Post Item 1 -->
+<article class="min-w-[240px] flex-1 bg-white border border-brand-border rounded-xl p-3 card-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="inline-block px-2 py-0.5 bg-brand-tagBg text-brand-text font-medium text-[10px] rounded-md">내가 모집 중</span>
+<span class="text-[10px] text-emerald-600 font-medium">D-12</span>
+</div>
+<h3 class="text-[14px] font-bold text-brand-text tracking-tight truncate">테스트1</h3>
+</div>
+<div class="mt-2.5 pt-2 border-t border-dashed border-[#F0ECE4] text-[11px] text-brand-subtext flex flex-col gap-0.5">
+<span class="text-[#59554F] font-medium truncate">여행지 미정</span>
+<span class="text-[10px] text-[#8C877E]">2026-10-14 ~ 2026-10-16</span>
+</div>
+</article>
+<!-- My Post Item 2 -->
+<article class="min-w-[240px] flex-1 bg-white border border-brand-border rounded-xl p-3 card-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="inline-block px-2 py-0.5 bg-brand-tagBg text-brand-text font-medium text-[10px] rounded-md">내가 모집 중</span>
+<span class="text-[10px] text-emerald-600 font-medium">D-15</span>
+</div>
+<h3 class="text-[14px] font-bold text-brand-text tracking-tight truncate">테스트2</h3>
+</div>
+<div class="mt-2.5 pt-2 border-t border-dashed border-[#F0ECE4] text-[11px] text-brand-subtext flex flex-col gap-0.5">
+<span class="text-brand-pine font-medium truncate">방콕, 태국</span>
+<span class="text-[10px] text-[#8C877E]">2026-10-17 ~ 2026-10-19</span>
+</div>
+</article>
+</div>
+</section>
+<!-- Section: Companion Feed List -->
+<section class="space-y-2.5 pt-1" data-purpose="companion-feed-list">
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-sm font-bold text-brand-text">동행 모집 피드</h2>
+<span class="text-[11px] text-brand-subtext">최신순</span>
+</div>
+<!-- Feed Card Item 1 (테스트2) -->
+<article class="bg-white border border-brand-border rounded-2xl p-3.5 card-shadow hover:border-[#D6D0C5] transition" data-purpose="feed-card">
+<!-- Card Header & Title -->
+<div class="flex items-start justify-between">
+<h3 class="text-[15px] font-bold text-brand-text tracking-tight">테스트2</h3>
+<span class="text-[10px] text-[#9E998F]">방금 전</span>
+</div>
+<!-- Author Info & Metadata -->
+<div class="flex items-center flex-wrap gap-1.5 mt-1.5 text-[11px] text-brand-subtext">
+<div class="flex items-center gap-1 font-medium text-brand-text">
+<span>관리자</span>
+<!-- Verification Shield Badge -->
+<svg class="w-3.5 h-3.5 text-brand-pine" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<!-- Demographics Badge -->
+<span class="px-2 py-0.5 bg-brand-tagBg text-[#4E4A43] rounded text-[10px] font-normal">30대 초반 · 남성</span>
+<span class="text-brand-subtext">·</span>
+<span class="font-medium text-brand-pine">방콕</span>
+<span class="text-[#A19D94] text-[10px]">2026-10-17 ~ 2026-10-19</span>
+</div>
+<!-- Recruitment Target Badge -->
+<div class="mt-2.5 flex items-center gap-1.5 text-[11px] text-[#4F4B44] bg-[#FAF8F5] px-2.5 py-1.5 rounded-lg border border-[#F0ECE4]">
+<svg class="w-3.5 h-3.5 text-brand-pine flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-semibold text-brand-pine">2명 모집</span>
+<span class="text-neutral-300">|</span>
+<span>30대 초반 남성</span>
+</div>
+<!-- Body Description Short -->
+<p class="text-xs text-brand-text mt-2 font-normal">
+            테스트2
+          </p>
+<!-- Hashtags -->
+<div class="flex items-center flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-[#F4EFE9]">
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#로컬맛집</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#힐링여행</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#투어</span>
+</div>
+</article>
+<!-- Feed Card Item 2 (테스트1) -->
+<article class="bg-white border border-brand-border rounded-2xl p-3.5 card-shadow hover:border-[#D6D0C5] transition" data-purpose="feed-card">
+<!-- Card Header & Title -->
+<div class="flex items-start justify-between">
+<h3 class="text-[15px] font-bold text-brand-text tracking-tight">테스트1</h3>
+<span class="text-[10px] text-[#9E998F]">1시간 전</span>
+</div>
+<!-- Author Info & Metadata -->
+<div class="flex items-center flex-wrap gap-1.5 mt-1.5 text-[11px] text-brand-subtext">
+<div class="flex items-center gap-1 font-medium text-brand-text">
+<span>관리자</span>
+<!-- Verification Shield Badge -->
+<svg class="w-3.5 h-3.5 text-brand-pine" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<!-- Demographics Badge -->
+<span class="px-2 py-0.5 bg-brand-tagBg text-[#4E4A43] rounded text-[10px] font-normal">30대 초반 · 남성</span>
+<span class="text-brand-subtext">·</span>
+<span class="font-medium text-brand-subtext">여행지 미정</span>
+<span class="text-[#A19D94] text-[10px]">2026-10-14 ~ 2026-10-16</span>
+</div>
+<!-- Recruitment Target Badge -->
+<div class="mt-2.5 flex items-center gap-1.5 text-[11px] text-[#4F4B44] bg-[#FAF8F5] px-2.5 py-1.5 rounded-lg border border-[#F0ECE4]">
+<svg class="w-3.5 h-3.5 text-brand-pine flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-semibold text-brand-pine">2명 모집</span>
+<span class="text-neutral-300">|</span>
+<span>30대 초반 남성</span>
+</div>
+<!-- Body Description Short -->
+<p class="text-xs text-brand-text mt-2 font-normal">
+            테스트1
+          </p>
+<!-- Hashtags -->
+<div class="flex items-center flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-[#F4EFE9]">
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#카페투어</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#맥주한잔</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#로컬맛집</span>
+</div>
+</article>
+<!-- Feed Card Item 3 (Additional realistic sample) -->
+<article class="bg-white border border-brand-border rounded-2xl p-3.5 card-shadow hover:border-[#D6D0C5] transition opacity-95" data-purpose="feed-card">
+<div class="flex items-start justify-between">
+<h3 class="text-[15px] font-bold text-brand-text tracking-tight">다낭 미케비치 서핑 &amp; 야시장 가실 분</h3>
+<span class="text-[10px] text-[#9E998F]">3시간 전</span>
+</div>
+<div class="flex items-center flex-wrap gap-1.5 mt-1.5 text-[11px] text-brand-subtext">
+<div class="flex items-center gap-1 font-medium text-brand-text">
+<span>수달여행러</span>
+<svg class="w-3.5 h-3.5 text-brand-pine" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="px-2 py-0.5 bg-brand-tagBg text-[#4E4A43] rounded text-[10px] font-normal">20대 후반 · 여성</span>
+<span class="text-brand-subtext">·</span>
+<span class="font-medium text-brand-pine">다낭</span>
+<span class="text-[#A19D94] text-[10px]">2026-11-01 ~ 2026-11-05</span>
+</div>
+<div class="mt-2.5 flex items-center gap-1.5 text-[11px] text-[#4F4B44] bg-[#FAF8F5] px-2.5 py-1.5 rounded-lg border border-[#F0ECE4]">
+<svg class="w-3.5 h-3.5 text-brand-pine flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-semibold text-brand-pine">1명 모집</span>
+<span class="text-neutral-300">|</span>
+<span>20~30대 여성</span>
+</div>
+<p class="text-xs text-brand-text mt-2 font-normal">
+            오전에 서핑 강습 받고 저녁엔 야시장 구경 가요! 일정 부분 동행도 환영해요.
+          </p>
+<div class="flex items-center flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-[#F4EFE9]">
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#액티비티</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#야시장</span>
+<span class="text-[11px] text-brand-pine bg-brand-pineLight px-2 py-0.5 rounded-md font-medium">#사진촬영</span>
+</div>
+</article>
+</section>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: FloatingActionButtons -->
+<div class="fixed right-4 bottom-20 z-30 flex flex-col gap-2.5 items-end max-w-md pointer-events-none" data-purpose="floating-action-buttons">
+<!-- Group / Accompaniment Filter FAB -->
+<button aria-label="동행 모아보기" class="pointer-events-auto w-12 h-12 rounded-full bg-brand-pine text-white flex items-center justify-center fab-shadow hover:bg-brand-pineHover active:scale-95 transition" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Write New Post FAB -->
+<button aria-label="동행 글쓰기" class="pointer-events-auto w-12 h-12 rounded-full bg-brand-pine text-white flex items-center justify-center fab-shadow hover:bg-brand-pineHover active:scale-95 transition" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- END: FloatingActionButtons -->
+<!-- BEGIN: StickyBottomNavigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 flex justify-center pointer-events-none" data-purpose="bottom-navigation-container">
+<div class="pointer-events-auto w-full max-w-md h-16 bg-white border-t border-brand-border bottom-nav-shadow px-4 flex items-center justify-around">
+<!-- 1. Home -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-brand-subtext hover:text-brand-text transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">홈</span>
+</button>
+<!-- 2. My Trips -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-brand-subtext hover:text-brand-text transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M19 7h-1V6a2 2 0 00-2-2H8a2 2 0 00-2 2v1H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2zM8 6h8v1H8V6zm11 13H5V9h14v10z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">내 여행</span>
+</button>
+<!-- 3. Community (Active) -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-brand-pine transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-bold mt-1">커뮤니티</span>
+</button>
+<!-- 4. Airport -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-brand-subtext hover:text-brand-text transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">공항</span>
+</button>
+<!-- 5. My Profile -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-brand-subtext hover:text-brand-text transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M5.121 17.804A9 9 0 1118.879 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">마이</span>
+</button>
+</div>
+</nav>
+<!-- END: StickyBottomNavigation -->
+</div>
+</body></html>

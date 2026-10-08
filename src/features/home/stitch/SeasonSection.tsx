@@ -53,9 +53,9 @@ function WeatherLine({ weather, className }: { weather: CardWeather; className: 
   );
 }
 
-/** 그 달 기후 한 줄 — "평균 16~24° · 비 오는 날 월 6일"(온도 단위는 사용자 설정) */
+/** 그 달 기후 한 줄 — "평균 16~24° · 월 강수량 120mm"(온도 단위는 사용자 설정) */
 function seasonDesc(t: TFunction<'home'>, pick: SeasonPick, unit: 'C' | 'F'): string {
-  return t('page.season.desc', { min: formatTemp(pick.stat[1], unit) ?? '–', max: formatTemp(pick.stat[0], unit) ?? '–', wet: Math.round(pick.stat[3]) });
+  return t('page.season.desc', { min: formatTemp(pick.stat[1], unit) ?? '–', max: formatTemp(pick.stat[0], unit) ?? '–', rain: Math.round(pick.stat[2]) });
 }
 
 function SquareCard({ pick, weather, onOpen }: { pick: SeasonPick; weather: CardWeather | null; onOpen: () => void }) {

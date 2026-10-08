@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TRIPTIC - 환경설정</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1E3F35",
+            "primary-dark": "#152C25",
+            "primary-light": "#EBF2EE",
+            "accent-gold": "#E5A93C",
+            "background-light": "#F8F6F1",
+            "background-dark": "#121715",
+            "surface-light": "#FFFFFF",
+            "surface-dark": "#1A221F",
+            "border-light": "#E8E4DA",
+            "border-dark": "#2B3833",
+            "text-muted-light": "#68756E",
+            "text-muted-dark": "#94A39B"
+          },
+          fontFamily: {
+            sans: ["'Noto Sans KR'", "'Plus Jakarta Sans'", "sans-serif"],
+            display: ["'Plus Jakarta Sans'", "'Noto Sans KR'", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.75rem",
+          },
+          boxShadow: {
+            'soft': '0 2px 12px -2px rgba(30, 63, 53, 0.05), 0 1px 4px rgba(0, 0, 0, 0.02)',
+            'card': '0 4px 20px -3px rgba(27, 43, 37, 0.04)',
+          }
+        },
+      },
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen font-sans antialiased transition-colors duration-200">
+<header class="sticky top-0 z-40 bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-border-light dark:border-border-dark">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<a class="flex items-center gap-2 group" href="#">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
+<span class="material-symbols-outlined text-lg">explore</span>
+</div>
+<span class="font-display font-bold text-xl tracking-tight text-primary dark:text-emerald-400">TRIPTIC</span>
+</a>
+<nav class="hidden md:flex items-center gap-1">
+<a class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-emerald-400 hover:bg-primary-light/60 dark:hover:bg-slate-800 transition-colors" href="#">홈</a>
+<a class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-emerald-400 hover:bg-primary-light/60 dark:hover:bg-slate-800 transition-colors" href="#">계획</a>
+<a class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-emerald-400 hover:bg-primary-light/60 dark:hover:bg-slate-800 transition-colors" href="#">커뮤니티</a>
+<a class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-emerald-400 hover:bg-primary-light/60 dark:hover:bg-slate-800 transition-colors" href="#">공항</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/50 dark:hover:bg-slate-800 transition-colors relative" title="알림">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-600 ring-2 ring-white dark:ring-surface-dark"></span>
+</button>
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/50 dark:hover:bg-slate-800 transition-colors" onclick="toggleDarkMode()" title="화면 테마 변경">
+<span class="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
+<span class="material-symbols-outlined text-[20px] hidden dark:inline-block">light_mode</span>
+</button>
+<div class="h-5 w-px bg-border-light dark:bg-border-dark mx-1"></div>
+<div class="flex items-center gap-2 pl-1 py-1 pr-2 rounded-full hover:bg-primary-light/40 dark:hover:bg-slate-800 transition-colors cursor-pointer border border-transparent hover:border-border-light dark:hover:border-border-dark">
+<img alt="사용자 프로필 사진" class="w-8 h-8 rounded-full object-cover ring-1 ring-border-light dark:ring-border-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArXDM6XZ2vzdcJkBK0minYMJeYfWfVXYdsTqCPr4DnY-WIIFmXJqxLWbUdD4yzv0MRGgAF41kDAAxHVTxrs9C6bCaf3DH1V7dRePTHsLloRk-2RXhUjnwzgr30kmFggM-cPf6kKkJ-nSgBrgqT6pLsrGhKfmBMz29F7-Ya1xQU64CJV20ILPqR0tWPA4-p71Tt_Qvdy2wbD0EmztCBoIIn5uHYAb5L9kstvC98cS1IpM6mQrgyA1w"/>
+<span class="text-sm font-medium text-slate-800 dark:text-slate-200">관리자</span>
+<span class="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-700/50 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[13px] fill text-amber-500">hotel_class</span>
+            Premium
+          </span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<div class="mb-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-muted-light dark:text-text-muted-dark mb-1">
+<span class="material-symbols-outlined text-sm text-primary dark:text-emerald-400">tune</span>
+            Preferences &amp; Security
+          </div>
+<h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">환경설정</h1>
+<p class="text-sm text-text-muted-light dark:text-text-muted-dark mt-1">계정 정보, 동행 매칭 프로필 및 사용자 환경설정을 데스크톱에서 편리하게 맞춤 설정하세요.</p>
+</div>
+<div class="flex items-center gap-3 self-start md:self-auto">
+<span class="text-xs text-text-muted-light dark:text-text-muted-dark bg-surface-light dark:bg-surface-dark px-3 py-1.5 rounded-full border border-border-light dark:border-border-dark shadow-sm">
+            마지막 동기화: 오늘 14:32
+          </span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<aside class="lg:col-span-3 lg:sticky lg:top-24">
+<nav class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-2 shadow-soft space-y-1">
+<a class="nav-item active flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 bg-primary text-white shadow-sm" href="#section-account">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span>계정 관리</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-70">chevron_right</span>
+</a>
+<a class="nav-item flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/60 dark:hover:bg-slate-800/80 hover:text-primary dark:hover:text-emerald-400 transition-all" href="#section-preferences">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<span>디스플레이 &amp; 언어</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-50">chevron_right</span>
+</a>
+<a class="nav-item flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/60 dark:hover:bg-slate-800/80 hover:text-primary dark:hover:text-emerald-400 transition-all" href="#section-profile-details">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+<span>동행 매칭 정보</span>
+</div>
+<span class="text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 font-semibold px-1.5 py-0.5 rounded">필수</span>
+</a>
+<a class="nav-item flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/60 dark:hover:bg-slate-800/80 hover:text-primary dark:hover:text-emerald-400 transition-all" href="#section-notifications">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+<span>알림 수신 설정</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-50">chevron_right</span>
+</a>
+<a class="nav-item flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/60 dark:hover:bg-slate-800/80 hover:text-primary dark:hover:text-emerald-400 transition-all" href="#section-data-cache">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">hard_drive</span>
+<span>데이터 &amp; 저장공간</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-50">chevron_right</span>
+</a>
+<a class="nav-item flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-text-muted-light dark:text-text-muted-dark hover:bg-primary-light/60 dark:hover:bg-slate-800/80 hover:text-primary dark:hover:text-emerald-400 transition-all" href="#section-community-info">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span>커뮤니티 및 정보</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-50">chevron_right</span>
+</a>
+</nav>
+<div class="mt-4 p-4 rounded-2xl bg-primary-light/40 dark:bg-surface-dark border border-primary-light dark:border-border-dark flex items-start gap-3">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400 text-xl shrink-0 mt-0.5">verified_user</span>
+<div>
+<h4 class="text-xs font-semibold text-slate-800 dark:text-slate-200">프리미엄 혜택 활성화됨</h4>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5 leading-relaxed">광고 제거 및 오프라인 지도 캐시 무제한 이용 중</p>
+</div>
+</div>
+</aside>
+<div class="lg:col-span-9 space-y-6">
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft transition-all" id="section-account">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="사용자 고해상도 프로필" class="w-16 h-16 rounded-full object-cover ring-2 ring-primary/20 dark:ring-emerald-500/20 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKnJfc62mYk3O1wlqDXTk2ai5RvlMhOIOBug4DqVi2Mfb5t16Jp5oof0sY3qGmGz386xLh6YaHO2swK3Dy9-aEsiieKGfhZCF9rOBLdzP9afrPXz0qeKxPj4nI51CdkABzjLCx02OqzShVoRmyewHAhUa5aLqihEN5MdNSPZ1288lvgJ-FQHrsbWhao22Um0ZDsq3fEFQ9ZWiR09V90inbjD7N99XhhXzlQToubMdLszD76W5qmE4"/>
+<button class="absolute -bottom-1 -right-1 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-full p-1 text-text-muted-light hover:text-primary dark:hover:text-emerald-400 shadow-sm transition" title="프로필 사진 변경">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+</button>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">관리자</h2>
+<span class="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[13px] fill text-amber-500">hotel_class</span>
+                    Premium
+                  </span>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
+<span class="font-mono text-xs bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">@dfxrj</span>
+<span>•</span>
+<span>lkjh7609@gmail.com</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2.5">
+<button class="px-4 py-2 rounded-xl text-sm font-medium bg-primary hover:bg-primary-dark text-white transition-all shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                내 정보 수정
+              </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
+<div class="p-4 rounded-xl bg-background-light/70 dark:bg-slate-800/40 border border-border-light/80 dark:border-border-dark">
+<div class="flex items-center gap-2.5 mb-1.5">
+<span class="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark text-[20px]">lock_reset</span>
+<span class="text-sm font-semibold text-slate-800 dark:text-slate-200">비밀번호 관리</span>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">주기적인 변경으로 계정을 안전하게 보호하세요.</p>
+<button class="text-xs font-semibold text-primary dark:text-emerald-400 hover:underline inline-flex items-center gap-0.5">
+                비밀번호 변경하기 <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="p-4 rounded-xl bg-background-light/70 dark:bg-slate-800/40 border border-border-light/80 dark:border-border-dark">
+<div class="flex items-center gap-2.5 mb-1.5">
+<span class="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark text-[20px]">devices</span>
+<span class="text-sm font-semibold text-slate-800 dark:text-slate-200">로그인 세션</span>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-3">현재 기기 외 1개 활성 세션 유지 중</p>
+<button class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white inline-flex items-center gap-0.5">
+                로그아웃 <span class="material-symbols-outlined text-[14px]">logout</span>
+</button>
+</div>
+<div class="p-4 rounded-xl bg-red-50/40 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40">
+<div class="flex items-center gap-2.5 mb-1.5">
+<span class="material-symbols-outlined text-red-500 text-[20px]">delete_forever</span>
+<span class="text-sm font-semibold text-red-700 dark:text-red-400">위험 구역</span>
+</div>
+<p class="text-xs text-red-600/80 dark:text-red-400/70 mb-3">모든 여행 일정 및 데이터가 영구 삭제됩니다.</p>
+<button class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-2">
+                계정 탈퇴 신청
+              </button>
+</div>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft" id="section-preferences">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">tune</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">디스플레이 및 환경설정</h2>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-6">사용자 화면 테마와 글로벌 여행 표준 단위 및 언어를 지정합니다.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="md:col-span-2 p-4 rounded-xl bg-background-light/50 dark:bg-slate-800/30 border border-border-light dark:border-border-dark flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white">화면 테마</h3>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">시스템 설정 연동 또는 원하는 테마를 직접 선택하세요.</p>
+</div>
+<div class="inline-flex p-1 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-xs" id="theme-segmented">
+<button class="theme-opt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white shadow-xs transition" id="theme-btn-light" onclick="setTheme('light')" type="button">
+<span class="material-symbols-outlined text-sm">light_mode</span>
+<span>라이트</span>
+</button>
+<button class="theme-opt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted-light dark:text-text-muted-dark hover:text-slate-900 dark:hover:text-white transition" id="theme-btn-dark" onclick="setTheme('dark')" type="button">
+<span class="material-symbols-outlined text-sm">dark_mode</span>
+<span>다크</span>
+</button>
+<button class="theme-opt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted-light dark:text-text-muted-dark hover:text-slate-900 dark:hover:text-white transition" id="theme-btn-system" onclick="setTheme('system')" type="button">
+<span class="material-symbols-outlined text-sm">desktop_windows</span>
+<span>시스템</span>
+</button>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2" for="unit-select">단위 설정 (온도 / 거리)</label>
+<div class="relative">
+<select class="w-full bg-background-light/50 dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition appearance-none cursor-pointer" id="unit-select">
+<option selected="">섭씨 / 킬로미터 (°C, km)</option>
+<option>화씨 / 마일 (°F, mi)</option>
+<option>섭씨 / 마일 (°C, mi)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-text-muted-light pointer-events-none text-lg">unfold_more</span>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2" for="currency-select">기본 통화</label>
+<div class="relative">
+<select class="w-full bg-background-light/50 dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition appearance-none cursor-pointer" id="currency-select">
+<option selected="">KRW - 대한민국 원 (₩)</option>
+<option>USD - 미국 달러 ($)</option>
+<option>JPY - 일본 엔 (¥)</option>
+<option>EUR - 유로 (€)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-text-muted-light pointer-events-none text-lg">unfold_more</span>
+</div>
+</div>
+<div class="md:col-span-2">
+<label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2" for="lang-select">언어 (Language)</label>
+<div class="relative max-w-md">
+<select class="w-full bg-background-light/50 dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition appearance-none cursor-pointer" id="lang-select">
+<option selected="">한국어 (Korean)</option>
+<option>English (United States)</option>
+<option>日本語 (Japanese)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-text-muted-light pointer-events-none text-lg">unfold_more</span>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft" id="section-profile-details">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">badge</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">내 정보 (선택)</h2>
+</div>
+<span class="text-xs bg-primary-light dark:bg-emerald-950/60 text-primary dark:text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-primary/20 dark:border-emerald-800/40">동행 추천 반영</span>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-6">동행 모집·지원 화면에 나잇대와 성별로 표기돼요. 비워 두면 표기되지 않아요.</p>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2.5">성별</label>
+<div class="grid grid-cols-2 gap-3 max-w-md">
+<button class="gender-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-border-light dark:border-border-dark bg-background-light/60 dark:bg-slate-800/40 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="selectGender(this)" type="button">
+<span class="material-symbols-outlined text-[18px]">female</span>
+                  여성
+                </button>
+<button class="gender-btn active flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-primary bg-primary text-white text-sm font-medium shadow-sm transition" onclick="selectGender(this)" type="button">
+<span class="material-symbols-outlined text-[18px]">male</span>
+                  남성
+                </button>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2.5">나잇대</label>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+<button class="age-btn px-4 py-2.5 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-emerald-400 transition text-center" onclick="selectAge(this)" type="button">
+                  20대 초반
+                </button>
+<button class="age-btn px-4 py-2.5 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-emerald-400 transition text-center" onclick="selectAge(this)" type="button">
+                  20대 후반
+                </button>
+<button class="age-btn active px-4 py-2.5 rounded-xl border-2 border-primary bg-primary-light/50 dark:bg-emerald-950/40 text-primary dark:text-emerald-300 font-semibold transition text-center" onclick="selectAge(this)" type="button">
+                  30대 초반
+                </button>
+<button class="age-btn px-4 py-2.5 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-emerald-400 transition text-center" onclick="selectAge(this)" type="button">
+                  30대 후반
+                </button>
+<button class="age-btn px-4 py-2.5 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-emerald-400 transition text-center" onclick="selectAge(this)" type="button">
+                  40대
+                </button>
+<button class="age-btn px-4 py-2.5 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-emerald-400 transition text-center" onclick="selectAge(this)" type="button">
+                  50대 이상
+                </button>
+</div>
+</div>
+<div class="flex items-center gap-2 p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-800 dark:text-amber-300">
+<span class="material-symbols-outlined text-[18px] shrink-0 text-amber-600 dark:text-amber-400">info</span>
+<span>입력한 나이와 성별 정보는 동행 필터링 및 매칭 신뢰도 계산 시에만 익명으로 활용됩니다.</span>
+</div>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft" id="section-notifications">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">notifications</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">알림 설정</h2>
+</div>
+<button class="text-xs font-medium text-primary dark:text-emerald-400 hover:underline">브라우저 권한 확인</button>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-6">푸시 및 웹 알림으로 수신할 이벤트 항목을 직접 지정할 수 있습니다.</p>
+<div class="divide-y divide-border-light dark:divide-border-dark">
+<div class="py-4 flex items-center justify-between gap-4 first:pt-0">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-primary dark:text-emerald-400 shrink-0">
+<span class="material-symbols-outlined text-[20px]">flight_takeoff</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200">출발 전 리마인더</h4>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">여행 출발 24시간 및 3시간 전 패킹 리스트 및 일정 알림</p>
+</div>
+</div>
+<button aria-checked="true" class="switch-btn relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-primary" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+</div>
+<div class="py-4 flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-text-muted-light shrink-0">
+<span class="material-symbols-outlined text-[20px]">sync_problem</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200">항공편 변경 및 지연 알림</h4>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">등록된 항공편의 탑승 게이트 변경 또는 시간 변동 실시간 브로드캐스트</p>
+</div>
+</div>
+<button aria-checked="false" class="switch-btn relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300 dark:bg-slate-700" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+</button>
+</div>
+<div class="py-4 flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-primary dark:text-emerald-400 shrink-0">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200">커뮤니티 답글 및 멘션</h4>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">내 동행 모집글 및 여행 팁 게시글에 댓글이나 신청이 달렸을 때 알림</p>
+</div>
+</div>
+<button aria-checked="true" class="switch-btn relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-primary" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+</div>
+<div class="py-4 flex items-center justify-between gap-4 last:pb-0">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-text-muted-light shrink-0">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200">마케팅 및 특가 프로모션</h4>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">최저가 항공권 기획전, 제휴 숙박 할인 코드 및 신규 기능 업데이트 소식</p>
+</div>
+</div>
+<button aria-checked="false" class="switch-btn relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300 dark:bg-slate-700" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+</button>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-border-light/60 dark:border-border-dark/60 text-right">
+<span class="text-[11px] text-text-muted-light dark:text-text-muted-dark">실제 알림 발송은 브라우저 알림 권한 및 계정 설정에 따릅니다.</span>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft" id="section-data-cache">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">database</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">데이터 및 로컬 캐시 관리</h2>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-6">오프라인 여행 계획 캐시 데이터 및 계정 백업 파일을 관리합니다.</p>
+<div class="p-5 rounded-xl bg-background-light/60 dark:bg-slate-800/40 border border-border-light dark:border-border-dark space-y-4">
+<div>
+<div class="flex items-center justify-between text-xs mb-2">
+<span class="font-medium text-slate-700 dark:text-slate-300">오프라인 지도 및 일정 캐시 용량</span>
+<span class="font-bold text-primary dark:text-emerald-400">21.9 MB / 1.0 GB</span>
+</div>
+<div class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 14%;"></div>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+<div class="flex flex-wrap items-center gap-2">
+<button class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center gap-1.5 shadow-2xs" type="button">
+<span class="material-symbols-outlined text-sm text-red-500">delete_sweep</span>
+                  캐시 비우기
+                </button>
+<button class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center gap-1.5 shadow-2xs" type="button">
+<span class="material-symbols-outlined text-sm text-primary dark:text-emerald-400">file_download</span>
+                  내보내기 / 가져오기 (JSON)
+                </button>
+</div>
+<div class="flex items-center gap-1.5 text-xs text-text-muted-light dark:text-text-muted-dark bg-white dark:bg-surface-dark/80 px-3 py-1.5 rounded-lg border border-border-light/70 dark:border-border-dark">
+<span class="material-symbols-outlined text-sm text-amber-500">picture_as_pdf</span>
+<span>여행별 PDF 내보내기는 <strong class="text-slate-700 dark:text-slate-300">상세 일정의 [공유]</strong> 버튼에서 가능합니다.</span>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-soft" id="section-community-info">
+<div class="mb-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">group_off</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">차단 및 커뮤니티 설정</h2>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mb-4">채팅 및 동행 신청에서 차단한 사용자를 확인하거나 차단을 해제할 수 있습니다.</p>
+<div class="p-8 rounded-xl border border-dashed border-border-light dark:border-border-dark text-center bg-background-light/30 dark:bg-slate-800/20">
+<div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-primary dark:text-emerald-400 flex items-center justify-center mx-auto mb-2">
+<span class="material-symbols-outlined text-2xl">sentiment_satisfied</span>
+</div>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">차단한 사용자가 없습니다.</p>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">쾌적한 여행 커뮤니티 문화가 유지되고 있습니다.</p>
+</div>
+</div>
+<div class="pt-6 border-t border-border-light dark:border-border-dark">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-emerald-400">help_center</span>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">고객지원 및 서비스 정보</h3>
+</div>
+<span class="text-xs font-mono font-medium text-text-muted-light bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">v1.0.2-stable</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>사용 가이드</span>
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">일정 동기화 방법 둘러보기</p>
+</a>
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>공지사항 · 업데이트</span>
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">새로운 기능 릴리즈 노트</p>
+</a>
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>1:1 문의하기</span>
+<span class="material-symbols-outlined text-sm">support_agent</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">평일 09:00 ~ 18:00 지원</p>
+</a>
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>서비스 이용약관</span>
+<span class="material-symbols-outlined text-sm">description</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">약관 개정 안내</p>
+</a>
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>개인정보처리방침</span>
+<span class="material-symbols-outlined text-sm">security</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">데이터 보호 및 보관 규격</p>
+</a>
+<a class="p-3 rounded-xl border border-border-light dark:border-border-dark bg-background-light/40 dark:bg-slate-800/30 hover:border-primary/50 dark:hover:border-emerald-500/50 hover:bg-surface-light dark:hover:bg-slate-800 transition group" href="#">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-emerald-400">
+<span>오픈소스 라이선스</span>
+<span class="material-symbols-outlined text-sm">code</span>
+</div>
+<p class="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-1">오픈소스 소프트웨어 고지</p>
+</a>
+</div>
+</div>
+</section>
+<div class="flex items-center justify-between p-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl shadow-card">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">모든 변경 사항은 이 브라우저에 실시간 자동 저장됩니다.</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-4 py-1.5 rounded-xl text-xs font-medium border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition">취소</button>
+<button class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-primary hover:bg-primary-dark text-white transition shadow-sm">설정 완료</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+    // Theme Switcher Logic
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+    }
+    function setTheme(mode) {
+      const html = document.documentElement;
+      const lightBtn = document.getElementById('theme-btn-light');
+      const darkBtn = document.getElementById('theme-btn-dark');
+      const sysBtn = document.getElementById('theme-btn-system');
+      // Reset segmented styles
+      [lightBtn, darkBtn, sysBtn].forEach(btn => {
+        btn.className = "theme-opt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted-light dark:text-text-muted-dark hover:text-slate-900 dark:hover:text-white transition";
+      });
+      const activeClass = "theme-opt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white shadow-xs transition";
+      if (mode === 'light') {
+        html.classList.remove('dark');
+        lightBtn.className = activeClass;
+      } else if (mode === 'dark') {
+        html.classList.add('dark');
+        darkBtn.className = activeClass;
+      } else {
+        // System preference
+        sysBtn.className = activeClass;
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          html.classList.add('dark');
+        } else {
+          html.classList.remove('dark');
+        }
+      }
+    }
+    // Toggle Switch (iOS / Modern toggle behavior)
+    function toggleSwitch(button) {
+      const isChecked = button.getAttribute('aria-checked') === 'true';
+      const circle = button.querySelector('span');
+      if (isChecked) {
+        button.setAttribute('aria-checked', 'false');
+        button.classList.remove('bg-primary');
+        button.classList.add('bg-slate-300', 'dark:bg-slate-700');
+        circle.classList.remove('translate-x-5');
+        circle.classList.add('translate-x-0');
+      } else {
+        button.setAttribute('aria-checked', 'true');
+        button.classList.remove('bg-slate-300', 'dark:bg-slate-700');
+        button.classList.add('bg-primary');
+        circle.classList.remove('translate-x-0');
+        circle.classList.add('translate-x-5');
+      }
+    }
+    // Gender selection toggle
+    function selectGender(element) {
+      const buttons = document.querySelectorAll('.gender-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('active', 'border-primary', 'bg-primary', 'text-white', 'shadow-sm');
+        btn.classList.add('border-border-light', 'dark:border-border-dark', 'bg-background-light/60', 'dark:bg-slate-800/40', 'text-slate-700', 'dark:text-slate-300');
+      });
+      element.classList.add('active', 'border-primary', 'bg-primary', 'text-white', 'shadow-sm');
+      element.classList.remove('border-border-light', 'dark:border-border-dark', 'bg-background-light/60', 'dark:bg-slate-800/40', 'text-slate-700', 'dark:text-slate-300');
+    }
+    // Age selection grid
+    function selectAge(element) {
+      const buttons = document.querySelectorAll('.age-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('active', 'border-2', 'border-primary', 'bg-primary-light/50', 'dark:bg-emerald-950/40', 'text-primary', 'dark:text-emerald-300', 'font-semibold');
+        btn.classList.add('border', 'border-border-light', 'dark:border-border-dark', 'bg-surface-light', 'dark:bg-surface-dark', 'text-slate-700', 'dark:text-slate-300');
+      });
+      element.classList.remove('border', 'border-border-light', 'dark:border-border-dark', 'bg-surface-light', 'dark:bg-surface-dark', 'text-slate-700', 'dark:text-slate-300');
+      element.classList.add('active', 'border-2', 'border-primary', 'bg-primary-light/50', 'dark:bg-emerald-950/40', 'text-primary', 'dark:text-emerald-300', 'font-semibold');
+    }
+    // Left Navigation Active Spy
+    const navLinks = document.querySelectorAll('.nav-item');
+    window.addEventListener('scroll', () => {
+      let currentSection = '';
+      const sections = document.querySelectorAll('section');
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (window.scrollY >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      if (currentSection) {
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${currentSection}`) {
+            link.classList.add('bg-primary', 'text-white');
+            link.classList.remove('text-text-muted-light', 'dark:text-text-muted-dark');
+          } else {
+            link.classList.remove('bg-primary', 'text-white');
+            link.classList.add('text-text-muted-light', 'dark:text-text-muted-dark');
+          }
+        });
+      }
+    });
+  </script>
+
+</body></html>

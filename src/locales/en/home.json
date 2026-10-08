@@ -461,7 +461,7 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "Great places to go now",
-      "sub": "This month's picks, chosen from 10 years of climate data",
+      "sub": "This month's picks, chosen from 20-year climate normals",
       "subMobile": "Chosen by today's weather and this month's climate",
       "best": "Best in {{range}}",
       "kind": {
@@ -469,7 +469,7 @@
         "pleasant": "Pleasant weather",
         "cool": "Cool and fresh"
       },
-      "desc": "Avg {{min}}–{{max}} · {{wet}} rainy days a month"
+      "desc": "Avg {{min}}–{{max}} · {{rain}} mm rain a month"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",
