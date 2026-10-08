@@ -196,33 +196,23 @@
     "results": "숙소 검색 결과",
     "starsN_other": "{{count}}성급",
     "guestRating": "투숙객 평점",
-    "fromCenter": "중심에서 {{km}}km",
     "reviewsN_other": "후기 {{count}}개",
-    "freeCancel": "무료 취소",
     "breakfast": "조식 포함",
-    "payLater": "현장 결제",
-    "perNight": "1박 기준(세금 포함)",
-    "totalFor": "{{nights}}박 총 {{price}}",
+    "perNight": "1박 기준",
     "book": "예약하기",
-    "via": "{{provider}}에서 예약",
-    "compareRooms_other": "객실·가격 {{count}}개 비교",
-    "room": "객실",
     "countN_other": "숙소 {{count}}곳",
     "searching": "숙소를 찾는 중이에요…",
     "sortLabel": "정렬",
     "sort": {
-      "popularity": "추천순",
-      "price": "낮은 가격순",
-      "rating": "평점 높은 순",
-      "stars": "성급 높은 순",
-      "distance": "중심에서 가까운 순"
+      "recommended": "추천순",
+      "priceAsc": "낮은 가격순",
+      "priceDesc": "높은 가격순",
+      "starsDesc": "성급 높은 순",
+      "reviewScore": "평점 높은 순"
     },
-    "sandbox": "아래 데이터는 현재 구축 중이므로 실제 사용은 어렵습니다",
     "error": "숙소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요",
     "empty": "조건에 맞는 숙소가 없어요. 필터나 날짜를 바꿔 보세요",
-    "loadMore": "더 보기",
-    "loadingMore": "불러오는 중…",
-    "priceNote": "가격은 예약처에서 바뀔 수 있어요. 예약과 결제는 Kayak이 연결하는 예약처에서 진행돼요",
+    "priceNote": "가격은 예약 단계에서 바뀔 수 있어요. 세금·봉사료 포함 여부는 예약 페이지에서 확인해 주세요",
     "comingSoon": {
       "title": "숙소 검색을 준비하고 있어요",
       "body": "전 세계 숙소 가격을 한 번에 비교하는 검색을 곧 열어요."
@@ -237,19 +227,18 @@
       "price": "가격 상한",
       "anyPrice": "제한 없음",
       "upTo": "최대 {{price}}",
-      "propertyType": "숙소 유형",
-      "facilities": "편의시설",
-      "showResults_other": "숙소 {{count}}곳 보기"
+      "showResults_other": "숙소 {{count}}곳 보기",
+      "anyStars": "전체",
+      "starsOver": "{{n}}성 이상",
+      "discountOnly": "할인 상품만"
     },
     "form": {
       "destination": "어디로 가세요?",
-      "destinationPlaceholder": "도시, 지역, 호텔 이름",
+      "destinationPlaceholder": "도시 또는 지역",
       "decrease": "{{label}} 빼기",
       "increase": "{{label}} 더하기",
-      "guests": "객실 · 인원",
-      "roomsN_other": "객실 {{count}}개",
+      "guests": "인원",
       "guestsN_other": "투숙객 {{count}}명",
-      "rooms": "객실",
       "adults": "성인",
       "children": "아동",
       "childAge": "아동 {{n}} 나이",
@@ -261,6 +250,17 @@
       "badDates": "날짜를 확인해 주세요 — 체크아웃은 체크인 다음 날부터예요",
       "search": "숙소 검색",
       "searching": "검색 중…"
+    },
+    "discountN": "{{pct}}% 할인",
+    "wifi": "무료 Wi-Fi",
+    "noCity": {
+      "title": "이 지역 근처의 숙소를 찾지 못했어요",
+      "body": "다른 도시나 지역으로 검색해 보세요."
+    },
+    "recommend": {
+      "title": "추천 여행지",
+      "sub": "내 일정의 도시와 인기 도시를 모았어요",
+      "myTrip": "내 일정"
     }
   },
   "activities": {

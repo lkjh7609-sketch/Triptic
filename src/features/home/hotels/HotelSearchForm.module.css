@@ -278,8 +278,3 @@
   margin-top: var(--space-4);
 }
 
-.poweredRow {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--space-2);
-}

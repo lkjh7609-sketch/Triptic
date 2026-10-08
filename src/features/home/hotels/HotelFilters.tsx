@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Star } from 'lucide-react';
-import { formatMoney, type HotelSort, type KayakHotelsResponse } from '@/features/kayak/kayakApi';
+import { formatMoney } from './hotelsApi';
+import type { HotelFacets } from './useHotelResults';
 import styles from './HotelFilters.module.css';
 
+/** 서버가 걸러 주는 조건만 — 성급(이상)·리뷰 점수(이상)·가격 상한·할인 상품만 */
 export interface HotelFilterState {
-  stars: number[];
-  guestRating: number | null;
+  minStars: number | null;
+  minReview: number | null;
   maxPrice: number | null;
-  propertyTypes: number[];
-  facilities: number[];
+  discountOnly: boolean;
 }
 
-export const NO_FILTERS: HotelFilterState = { stars: [], guestRating: null, maxPrice: null, propertyTypes: [], facilities: [] };
+export const NO_FILTERS: HotelFilterState = { minStars: null, minReview: null, maxPrice: null, discountOnly: false };
 
 export function activeFilterCount(f: HotelFilterState): number {
-  return f.stars.length + (f.guestRating !== null ? 1 : 0) + (f.maxPrice !== null ? 1 : 0) + f.propertyTypes.length + f.facilities.length;
+  return (f.minStars !== null ? 1 : 0) + (f.minReview !== null ? 1 : 0) + (f.maxPrice !== null ? 1 : 0) + (f.discountOnly ? 1 : 0);
 }
 
-const toggle = <T,>(list: T[], v: T): T[] => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
-const RATINGS = [7, 8, 9] as const;
-export const HOTEL_SORTS: HotelSort[] = ['popularity', 'price', 'rating', 'stars', 'distance'];
+const STARS = [3, 4, 5] as const;
+const REVIEWS = [7, 8, 9] as const;
 
-function PriceSlider({ facets, value, currency, onChange }: { facets: KayakHotelsResponse['filters']; value: number | null; currency: string; onChange: (v: number | null) => void }) {
+function PriceSlider({ facets, value, currency, onChange }: { facets: HotelFacets; value: number | null; currency: string; onChange: (v: number | null) => void }) {
   const { t, i18n } = useTranslation('home');
-  const min = Math.floor(facets.priceMin ?? 0);
-  const max = Math.ceil(facets.priceMax ?? 0);
+  const min = Math.floor(facets.priceMin);
+  const max = Math.ceil(facets.priceMax);
   // 슬라이더를 끄는 동안만 draft를 들고(null이면 적용된 값을 따른다), 멈추면 적용
   const [draft, setDraft] = useState<number | null>(null);
   const shown = draft ?? value ?? max;
@@ -68,7 +68,7 @@ export function HotelFilters({
   currency,
   onChange,
 }: {
-  facets: KayakHotelsResponse['filters'];
+  facets: HotelFacets | null;
   value: HotelFilterState;
   currency: string;
   onChange: (next: HotelFilterState) => void;
@@ -76,66 +76,42 @@ export function HotelFilters({
   const { t } = useTranslation('home');
   return (
     <div className={styles.panel}>
-      {facets.stars.length > 0 ? (
-        <fieldset className={styles.group}>
-          <legend className={styles.legend}>{t('hotels.filters.stars')}</legend>
-          {[5, 4, 3, 2, 1]
-            .filter((n) => facets.stars.some((s) => s.key === n))
-            .map((n) => (
-              <label key={n} className={styles.check}>
-                <input type="checkbox" checked={value.stars.includes(n)} onChange={() => onChange({ ...value, stars: toggle(value.stars, n) })} />
-                <span className={styles.starRow} aria-label={t('hotels.starsN', { count: n })}>
-                  {Array.from({ length: n }, (_, i) => (
-                    <Star key={i} size={13} fill="currentColor" aria-hidden="true" />
-                  ))}
-                </span>
-                <span className={styles.count}>{facets.stars.find((s) => s.key === n)?.count}</span>
-              </label>
-            ))}
-        </fieldset>
-      ) : null}
+      <fieldset className={styles.group}>
+        <legend className={styles.legend}>{t('hotels.filters.stars')}</legend>
+        <div className={styles.pills}>
+          <button type="button" aria-pressed={value.minStars === null} className={value.minStars === null ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, minStars: null })}>
+            {t('hotels.filters.anyStars')}
+          </button>
+          {STARS.map((n) => (
+            <button key={n} type="button" aria-pressed={value.minStars === n} className={value.minStars === n ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, minStars: value.minStars === n ? null : n })}>
+              <Star size={12} fill="currentColor" aria-hidden="true" /> {t('hotels.filters.starsOver', { n })}
+            </button>
+          ))}
+        </div>
+      </fieldset>
 
       <fieldset className={styles.group}>
         <legend className={styles.legend}>{t('hotels.filters.rating')}</legend>
         <div className={styles.pills}>
-          <button type="button" aria-pressed={value.guestRating === null} className={value.guestRating === null ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, guestRating: null })}>
+          <button type="button" aria-pressed={value.minReview === null} className={value.minReview === null ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, minReview: null })}>
             {t('hotels.filters.anyRating')}
           </button>
-          {RATINGS.map((r) => (
-            <button key={r} type="button" aria-pressed={value.guestRating === r} className={value.guestRating === r ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, guestRating: value.guestRating === r ? null : r })}>
+          {REVIEWS.map((r) => (
+            <button key={r} type="button" aria-pressed={value.minReview === r} className={value.minReview === r ? styles.pillOn : styles.pill} onClick={() => onChange({ ...value, minReview: value.minReview === r ? null : r })}>
               {t('hotels.filters.ratingOver', { n: r })}
             </button>
           ))}
         </div>
       </fieldset>
 
-      <PriceSlider facets={facets} value={value.maxPrice} currency={currency} onChange={(maxPrice) => onChange({ ...value, maxPrice })} />
+      {facets ? <PriceSlider facets={facets} value={value.maxPrice} currency={currency} onChange={(maxPrice) => onChange({ ...value, maxPrice })} /> : null}
 
-      {facets.propertyTypes.length > 1 ? (
-        <fieldset className={styles.group}>
-          <legend className={styles.legend}>{t('hotels.filters.propertyType')}</legend>
-          {facets.propertyTypes.map((p) => (
-            <label key={p.id} className={styles.check}>
-              <input type="checkbox" checked={value.propertyTypes.includes(p.id)} onChange={() => onChange({ ...value, propertyTypes: toggle(value.propertyTypes, p.id) })} />
-              <span className={styles.checkText}>{p.name}</span>
-              <span className={styles.count}>{p.count}</span>
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
-
-      {facets.facilities.length > 0 ? (
-        <fieldset className={styles.group}>
-          <legend className={styles.legend}>{t('hotels.filters.facilities')}</legend>
-          {facets.facilities.map((p) => (
-            <label key={p.id} className={styles.check}>
-              <input type="checkbox" checked={value.facilities.includes(p.id)} onChange={() => onChange({ ...value, facilities: toggle(value.facilities, p.id) })} />
-              <span className={styles.checkText}>{p.name}</span>
-              <span className={styles.count}>{p.count}</span>
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
+      <fieldset className={styles.group}>
+        <label className={styles.check}>
+          <input type="checkbox" checked={value.discountOnly} onChange={() => onChange({ ...value, discountOnly: !value.discountOnly })} />
+          <span className={styles.checkText}>{t('hotels.filters.discountOnly')}</span>
+        </label>
+      </fieldset>
     </div>
   );
 }
