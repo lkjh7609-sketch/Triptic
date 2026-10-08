@@ -9,8 +9,6 @@ import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/per
 import { ToastHost } from '@/shared/ui/toast';
 import { installExternalLinkHandler } from '@/shared/externalLink';
 import { installNativeAuthListener } from '@/shared/api/nativeAuth';
-import { useSession } from '@/shared/hooks/useSession';
-import { installPushTapHandler, registerPushNotifications } from '@/shared/push/registerPush';
 import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
 import { SuspensionGate } from '@/features/auth/SuspensionGate';
 import { LoginConflictGate } from '@/features/auth/LoginConflictGate';
@@ -81,17 +79,6 @@ function refetchIfUserChanged(userId: string | null) {
   }
 }
 
-/** 앱(iOS)에서만: 로그인하면 알림 권한을 묻고 기기를 등록하고, 알림을 누르면 그 화면으로 연다(웹에서는 아무것도 하지 않는다) */
-function PushBootstrap() {
-  const { user } = useSession();
-  const userId = user?.id;
-  useEffect(() => {
-    if (userId) void registerPushNotifications(userId);
-  }, [userId]);
-  useEffect(() => installPushTapHandler((path) => void router.navigate(path)), []);
-  return null;
-}
-
 export function App() {
   // 앱에서는 호텔·항공·액티비티 등 바깥 사이트 링크를 인앱 브라우저로 연다(웹에서는 아무 일도 하지 않는다)
   useEffect(() => installExternalLinkHandler(), []);
@@ -113,7 +100,6 @@ export function App() {
           <ToastHost />
           <SuspensionGate />
           <LoginConflictGate />
-          <PushBootstrap />
         </Suspense>
       </PersistQueryClientProvider>
     </ErrorBoundary>
