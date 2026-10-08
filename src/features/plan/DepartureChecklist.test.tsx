@@ -7,7 +7,7 @@ import { CHECKLIST_PAGES, firstIncompletePage, isPageComplete, migrateChecked, r
 vi.mock('@/shared/api/tripService', () => ({
   tripService: { toLocalProject: () => ({ flights: { outbound: null, return: null }, hotels: {} }) },
 }));
-vi.mock('./flightsSearchLink', () => ({ openFlightsSearchForTrip: async () => {}, useTripFlightsLink: () => undefined }));
+vi.mock('./flightsSearchLink', () => ({ openFlightsSearchForTrip: async () => {} }));
 
 import { DepartureChecklist } from './DepartureChecklist';
 
