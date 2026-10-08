@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import type { ContinentKey } from '@/features/community/destinationRegions';
 import { WorldMap } from './WorldMap';
+import { PixelSprite } from './PixelSprite';
+import { avatarGrid, badgeGrid, type BadgeKind } from './pixelArt';
+import type { Friend } from './friends';
 import type { Badge, TravelStats, TripStat } from './statsCompute';
 import { CHART_COLORS, countryName, flagOf, krw, num, shortDate } from './statsFormat';
 import styles from './Stats.module.css';
@@ -32,6 +35,32 @@ export function SummaryStrip({ stats }: { stats: TravelStats }) {
         {t('summary.km', { km: num(stats.totalKm, lang) })}
         {stats.upcomingCount > 0 ? ` · ${t('summary.upcoming', { count: stats.upcomingCount })}` : ''}
       </p>
+    </section>
+  );
+}
+
+/** 같이 다닌 친구들 — 도트 캐릭터로. 나는 늘 맨 앞, 같이 다닌 친구가 없으면(여행이 없을 때 포함) 나 혼자 */
+export function CompanionsSection({ friends, meId, meName }: { friends: Friend[]; meId: string; meName: string | null }) {
+  const { t } = useTranslation('stats');
+  return (
+    <section className={styles.card} aria-labelledby="stats-friends-title">
+      <h2 id="stats-friends-title" className={styles.cardTitle}>{t('friends.title')}</h2>
+      <ul className={styles.friends}>
+        <li className={styles.friend}>
+          <PixelSprite grid={avatarGrid(meId)} size={72} className={`${styles.avatar} ${styles.avatarMe}`} label={t('friends.me')} />
+          <span className={styles.friendName}>{t('friends.me')}</span>
+          <span className={styles.friendSub}>{meName ?? ''}</span>
+        </li>
+        {friends.map((f) => (
+          <li key={f.userId} className={styles.friend}>
+            <PixelSprite grid={avatarGrid(f.userId)} size={72} className={styles.avatar} label={f.name ?? t('friends.unnamed')} />
+            <span className={styles.friendName}>{f.name ?? t('friends.unnamed')}</span>
+            <span className={styles.friendSub}>{t('friends.together', { count: f.trips })}</span>
+          </li>
+        ))}
+      </ul>
+      {friends.length === 0 ? <p className={styles.note}>{t('friends.alone')}</p> : null}
+      <p className={styles.note}>{t('friends.note')}</p>
     </section>
   );
 }
@@ -369,6 +398,7 @@ export function BadgesSection({ badges }: { badges: Badge[] }) {
           const date = got.get(k);
           return (
             <div key={k} className={`${styles.badge} ${date ? '' : styles.badgeLocked}`}>
+              <PixelSprite grid={badgeGrid(k as BadgeKind, !date)} size={64} className={styles.badgeArt} />
               <span className={styles.badgeName}>{t(`badges.name.${k}`)}</span>
               <span className={styles.badgeDate}>{date ? shortDate(date, i18n.language) : t('badges.locked')}</span>
             </div>

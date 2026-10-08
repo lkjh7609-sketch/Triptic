@@ -135,5 +135,13 @@
       "AF": "Africa",
       "OC": "Oceania"
     }
+  },
+  "friends": {
+    "title": "Travel buddies",
+    "me": "Me",
+    "alone": "No travel buddies yet — it's just you for now.",
+    "together": "{{count}} trip(s) together",
+    "unnamed": "Unnamed friend",
+    "note": "Only people invited to your trips appear here. Each pixel character always looks the same."
   }
 }
