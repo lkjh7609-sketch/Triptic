@@ -16,9 +16,7 @@
     "cities": "訪れた都市",
     "citiesValue": "{{count}}か所",
     "countries": "訪れた国",
-    "countriesValue": "{{count}}か国",
-    "km": "移動 {{km}}km(直線距離)",
-    "upcoming": "予定の旅行 {{count}}件"
+    "countriesValue": "{{count}}か国"
   },
   "map": {
     "title": "行った場所",
