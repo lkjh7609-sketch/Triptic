@@ -379,7 +379,6 @@
     "tipLabel": "旅行小提示",
     "tipText": "每週留兩個早上不排行程吧，最難忘的時刻常常發生在計畫之外。",
     "weatherTitle": "第一天天氣",
-    "weatherFirstDay": "預報",
     "precip": "降雨機率 {{value}}%",
     "flightMissingTitle": "新增航班",
     "flightMissingDesc": "加入去回程航班後，會反映在第一天與最後一天的路線上。",

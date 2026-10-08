@@ -6,18 +6,18 @@
 //               (액티비티 탭 필터·정렬·더 보기 — {items, hasNextPage, totalCount})
 //           GET /api/partnerProducts?provider=myrealtrip&kind=categories&q=시드니 (그 도시의 카테고리 목록 — 도시마다 다르다)
 //
-//           GET /api/partnerProducts?provider=kayak&kind=place|flights|hotels … (Kayak 항공·호텔 — _lib/kayak/index.js 머리말 참고)
+//           GET /api/partnerProducts?provider=agoda&kind=hotels&lat=…&lng=… (호텔 검색 — _lib/agoda/index.js 머리말 참고)
 //
 // 제휴사 상품 검색 API 결과를 앱 카드 모양으로 돌려준다. 상품을 누를 때만 /api/partnerLink로
 // 추적 링크를 만든다(카드마다 미리 만들면 화면 한 번에 유료 호출이 N번).
 import { applyCors, createRateLimiter, sanitizeInput } from './_lib/http.js';
 import * as myrealtrip from './_lib/affiliates/myrealtrip.js';
-import { handleKayak } from './_lib/kayak/index.js';
+import { handleAgoda } from './_lib/agoda/index.js';
 
 // 액티비티 탭이 필터를 바꿀 때마다(미리보기 포함) 부르므로 여유를 둔다. 응답은 CDN에 캐시돼 같은 조건은 여기까지 안 온다
 const isRateLimited = createRateLimiter(60);
-// Kayak(항공·호텔 검색·자동완성): 샌드박스는 키 하나로 시간당 250회라 접속자당 분당 횟수를 따로 좁게 둔다
-const isKayakRateLimited = createRateLimiter(40);
+// 호텔 검색(우리 화면의 필터·정렬을 바꿀 때마다 부른다) — 접속자당 분당 횟수를 따로 둔다
+const isAgodaRateLimited = createRateLimiter(40);
 
 const PROVIDERS = {
     myrealtrip: {
@@ -59,10 +59,10 @@ export default async function handler(req, res) {
     applyCors(req, res, 'GET,OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
-    // Kayak — 처리부는 _lib/kayak(함수 개수 한도 때문에 이 함수가 대신 받는다)
-    if (req.query?.provider === 'kayak') {
-        if (isKayakRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
-        return handleKayak(req, res);
+    // 호텔 검색 — 처리부는 _lib/agoda(함수 개수 한도 때문에 이 함수가 대신 받는다)
+    if (req.query?.provider === 'agoda') {
+        if (isAgodaRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+        return handleAgoda(req, res);
     }
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
 

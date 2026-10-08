@@ -153,41 +153,6 @@
       "meta": "來回最低 {{price}}韓元起",
       "metaAirline": "來回最低 {{price}}韓元起 · {{airline}}",
       "open": "查看飛往{{city}}的機票"
-    },
-    "kayak": {
-      "results": "機票搜尋結果",
-      "sortLabel": "排序",
-      "sort": {
-        "best": "推薦",
-        "price": "價格最低",
-        "duration": "時間最短"
-      },
-      "stopsLabel": "轉機",
-      "stops": {
-        "any": "全部",
-        "0": "僅直飛",
-        "1": "轉機 1 次以內"
-      },
-      "airlineLabel": "航空公司",
-      "allAirlines": "所有航空公司",
-      "direct": "直飛",
-      "freeCancel": "免費取消",
-      "bagChecked": "含托運行李",
-      "bagCarryOn": "含手提行李",
-      "durationHM": "{{h}} 小時 {{m}} 分",
-      "durationM": "{{m}} 分",
-      "perPerson": "每人價格",
-      "perPersonSolo": "總價",
-      "book": "前往訂票",
-      "via": "於 {{provider}} 訂票",
-      "searching": "正在搜尋機票…",
-      "searchingMore": "持續搜尋中… 目前 {{count}} 筆",
-      "empty": "沒有符合條件的機票，請調整日期或條件",
-      "error": "無法載入機票，請稍後再試",
-      "priceNote": "價格可能在訂票網站上變動。訂票與付款將在 Kayak 連結的訂票網站完成",
-      "sandbox": "以下資料目前仍在建置中，暫時無法實際使用",
-      "stopsN_other": "轉機 {{count}} 次",
-      "otherSites_other": "其他訂票網站 {{count}} 個"
     }
   },
   "hotels": {
@@ -196,33 +161,23 @@
     "results": "住宿搜尋結果",
     "starsN_other": "{{count}} 星級",
     "guestRating": "住客評分",
-    "fromCenter": "距市中心 {{km}} 公里",
     "reviewsN_other": "{{count}} 則評論",
-    "freeCancel": "免費取消",
     "breakfast": "含早餐",
-    "payLater": "現場付款",
-    "perNight": "每晚(含稅)",
-    "totalFor": "{{nights}} 晚共 {{price}}",
+    "perNight": "每晚",
     "book": "前往訂房",
-    "via": "於 {{provider}} 訂房",
-    "compareRooms_other": "比較 {{count}} 種房型與價格",
-    "room": "房型",
     "countN_other": "{{count}} 間住宿",
     "searching": "正在搜尋住宿…",
     "sortLabel": "排序",
     "sort": {
-      "popularity": "推薦",
-      "price": "價格最低",
-      "rating": "評分最高",
-      "stars": "星級最高",
-      "distance": "距市中心最近"
+      "recommended": "推薦排序",
+      "priceAsc": "價格低到高",
+      "priceDesc": "價格高到低",
+      "starsDesc": "星級高到低",
+      "reviewScore": "評分高到低"
     },
-    "sandbox": "以下資料目前仍在建置中，暫時無法實際使用",
     "error": "無法載入住宿，請稍後再試",
     "empty": "沒有符合條件的住宿，請調整篩選或日期",
-    "loadMore": "顯示更多",
-    "loadingMore": "載入中…",
-    "priceNote": "價格可能在訂房網站上變動。訂房與付款將在 Kayak 連結的訂房網站完成",
+    "priceNote": "價格可能於訂房時變動，稅金與服務費請於訂房頁面確認",
     "comingSoon": {
       "title": "住宿搜尋準備中",
       "body": "我們即將推出可比較全球住宿價格的搜尋，敬請期待。"
@@ -237,19 +192,18 @@
       "price": "價格上限",
       "anyPrice": "不限",
       "upTo": "最高 {{price}}",
-      "propertyType": "住宿類型",
-      "facilities": "設施",
-      "showResults_other": "查看 {{count}} 間住宿"
+      "showResults_other": "查看 {{count}} 間住宿",
+      "anyStars": "不限",
+      "starsOver": "{{n}} 星以上",
+      "discountOnly": "僅限優惠"
     },
     "form": {
       "destination": "想去哪裡?",
-      "destinationPlaceholder": "城市、地區或飯店名稱",
+      "destinationPlaceholder": "城市或地區",
       "decrease": "減少{{label}}",
       "increase": "增加{{label}}",
-      "guests": "房間與人數",
-      "roomsN_other": "{{count}} 間房",
+      "guests": "人數",
       "guestsN_other": "{{count}} 位旅客",
-      "rooms": "房間",
       "adults": "成人",
       "children": "兒童",
       "childAge": "兒童 {{n}} 年齡",
@@ -261,6 +215,17 @@
       "badDates": "請確認日期 — 退房須在入住日之後",
       "search": "搜尋住宿",
       "searching": "搜尋中…"
+    },
+    "discountN": "{{pct}}% 折扣",
+    "wifi": "免費 Wi-Fi",
+    "noCity": {
+      "title": "找不到此地點附近的住宿",
+      "body": "請試試其他城市或地區。"
+    },
+    "recommend": {
+      "title": "推薦旅遊地",
+      "sub": "來自你的行程與熱門城市",
+      "myTrip": "我的行程"
     }
   },
   "activities": {
@@ -486,169 +451,15 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "現在最適合出發的旅遊地",
-      "sub": "依季節與當地活動精選的本月推薦城市",
-      "subMobile": "依即時天氣與旅遊主題挑選",
+      "sub": "以 20 年氣候平年值挑選的本月推薦",
+      "subMobile": "依今天天氣與本月氣候挑選",
       "best": "{{range}}最佳時節",
-      "cities": {
-        "kyoto": "京都",
-        "tokyo": "東京",
-        "sapporo": "札幌",
-        "taipei": "台北",
-        "bangkok": "曼谷",
-        "danang": "峴港",
-        "bali": "峇里島",
-        "sydney": "雪梨",
-        "paris": "巴黎",
-        "london": "倫敦",
-        "rome": "羅馬",
-        "barcelona": "巴塞隆納",
-        "newyork": "紐約",
-        "interlaken": "茵特拉肯"
+      "kind": {
+        "warm": "溫暖晴朗",
+        "pleasant": "舒適的天氣",
+        "cool": "涼爽的天氣"
       },
-      "kyoto": {
-        "spring": {
-          "badge": "櫻花盛開",
-          "desc": "靜謐的寺廟散步與抹茶"
-        },
-        "autumn": {
-          "badge": "楓紅高峰",
-          "desc": "紅葉步道與夜間特別參拜"
-        },
-        "winter": {
-          "badge": "冬日古寺",
-          "desc": "雪中寺院與溫泉旅館"
-        }
-      },
-      "tokyo": {
-        "sakura": {
-          "badge": "賞櫻名所",
-          "desc": "漫步中目黑櫻花道"
-        },
-        "walk": {
-          "badge": "適合散步",
-          "desc": "新宿購物與箱根一日遊"
-        },
-        "lights": {
-          "badge": "冬季燈飾",
-          "desc": "燈海與近郊溫泉"
-        }
-      },
-      "sapporo": {
-        "snow": {
-          "badge": "雪祭",
-          "desc": "大通公園雪祭與溫泉"
-        },
-        "summer": {
-          "badge": "涼爽夏日",
-          "desc": "薰衣草田與啤酒花園"
-        },
-        "autumn": {
-          "badge": "秋日美食",
-          "desc": "海鮮與賞楓兜風"
-        }
-      },
-      "taipei": {
-        "night": {
-          "badge": "夜市季",
-          "desc": "涼爽夜晚與溫泉"
-        },
-        "lantern": {
-          "badge": "燈節",
-          "desc": "元宵燈會與泡湯"
-        }
-      },
-      "bangkok": {
-        "dry": {
-          "badge": "乾季",
-          "desc": "涼爽乾季與高空夜景"
-        }
-      },
-      "danang": {
-        "beach": {
-          "badge": "海灘季",
-          "desc": "清澈海水與會安夜景"
-        }
-      },
-      "bali": {
-        "dry": {
-          "badge": "乾季",
-          "desc": "衝浪與烏布梯田"
-        }
-      },
-      "sydney": {
-        "summer": {
-          "badge": "夏日海灘",
-          "desc": "邦迪海灘與煙火"
-        },
-        "jacaranda": {
-          "badge": "藍花楹盛開",
-          "desc": "紫色花道與港灣遊船"
-        }
-      },
-      "paris": {
-        "picnic": {
-          "badge": "野餐季",
-          "desc": "露天咖啡座與美術館之旅"
-        },
-        "market": {
-          "badge": "耶誕市集",
-          "desc": "燈飾與耶誕市集"
-        }
-      },
-      "london": {
-        "sunny": {
-          "badge": "晴朗好天氣",
-          "desc": "公園漫步與西區音樂劇"
-        },
-        "autumn": {
-          "badge": "秋日文化",
-          "desc": "免費博物館與酒館"
-        },
-        "xmas": {
-          "badge": "耶誕節",
-          "desc": "冬季仙境與市集"
-        }
-      },
-      "rome": {
-        "food": {
-          "badge": "美食之旅",
-          "desc": "義式冰淇淋與古蹟步行"
-        },
-        "autumn": {
-          "badge": "涼爽秋日",
-          "desc": "古蹟探訪與近郊酒莊"
-        }
-      },
-      "barcelona": {
-        "beach": {
-          "badge": "海灘與建築",
-          "desc": "高第建築與海邊散步"
-        }
-      },
-      "newyork": {
-        "park": {
-          "badge": "中央公園",
-          "desc": "百老匯與屋頂酒吧"
-        },
-        "fall": {
-          "badge": "秋葉季",
-          "desc": "公園楓葉與美術館"
-        },
-        "holiday": {
-          "badge": "假期季",
-          "desc": "耶誕樹點燈與假日市集"
-        }
-      },
-      "interlaken": {
-        "hike": {
-          "badge": "健行季",
-          "desc": "阿爾卑斯健行與湖上遊船"
-        },
-        "snow": {
-          "badge": "雪景",
-          "desc": "滑雪與雪山列車"
-        }
-      }
+      "desc": "平均 {{min}}～{{max}} · 每月降雨量 {{rain}} 毫米"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

@@ -883,14 +883,12 @@
     "breadcrumbAll": "전체 도시 목록",
     "breadcrumbNav": "위치",
     "rate": "1 {{currency}} ≈ {{amount}} KRW",
-    "weatherNow": "{{temp}} {{condition}}",
-    "weatherFeels": "(체감 {{temp}})",
+    "weatherToday": "오늘 {{temp}} {{condition}}",
     "weather": {
       "clear": "맑음",
       "partly": "구름 조금",
       "cloudy": "흐림",
       "fog": "안개",
-      "drizzle": "이슬비",
       "rain": "비",
       "snow": "눈",
       "thunder": "뇌우"

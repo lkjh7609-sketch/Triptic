@@ -1,0 +1,436 @@
+<!DOCTYPE html><html lang="ko" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-card": "#ffffff", "surface-dim": "#d2d9f4", "text-secondary": "#475569", "tertiary-container": "#6a4c07", "on-tertiary": "#ffffff", "error": "#ba1a1a", "secondary-fixed": "#9cf2e8", "accent-gold": "#cea65c", "primary-fixed": "#a7f0e6", "on-secondary-fixed": "#00201d", "primary-fixed-dim": "#8cd4ca", "surface-bright": "#faf8ff", "surface-tint": "#1a6962", "on-secondary": "#ffffff", "surface-canvas": "#f9faf8", "outline": "#6f7977", "tertiary": "#4e3600", "surface-container-lowest": "#ffffff", "surface-container-low": "#f2f3ff", "surface": "#faf8ff", "on-tertiary-fixed-variant": "#5e4200", "brand-teal-primary": "#0f766e", "secondary-fixed-dim": "#80d5cb", "error-container": "#ffdad6", "surface-container": "#eaedff", "on-background": "#131b2e", "surface-container-highest": "#dae2fd", "tertiary-fixed-dim": "#ebc073", "inverse-primary": "#8cd4ca", "text-primary": "#0f172a", "brand-teal-deep": "#005c55", "on-secondary-container": "#006f67", "on-primary": "#ffffff", "background": "#faf8ff", "brand-teal-hover": "#115e59", "on-primary-fixed-variant": "#00504a", "on-tertiary-container": "#e8be72", "secondary": "#006a63", "on-error-container": "#93000a", "inverse-surface": "#283044", "on-secondary-fixed-variant": "#00504a", "border-hairline": "#e2e8f0", "on-tertiary-fixed": "#271900", "on-error": "#ffffff", "accent-coral": "#ea580c", "surface-container-high": "#e2e7ff", "surface-variant": "#dae2fd", "brand-teal-tint": "#f0fdfa", "text-muted": "#94a3b8", "primary": "#00433d", "primary-container": "#005c55", "tertiary-fixed": "#ffdea7", "inverse-on-surface": "#eef0ff", "on-surface-variant": "#3f4947", "secondary-container": "#99efe5", "on-primary-fixed": "#00201d", "outline-variant": "#bec9c6", "on-surface": "#131b2e", "on-primary-container": "#8ad2c8", "surface-tint-sand": "#f1f5f2", "brand-teal-subtle": "#ccfbf1" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "space-lg": "1rem", "space-2xl": "2rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "margin": "1rem", "space-xl": "1.5rem" }, fontFamily: { "display": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "display-mobile": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"] }, fontSize: { "display": ["36px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-lg": ["15px", { "lineHeight": "24px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "17px", "fontWeight": "400" }], "display-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "13px", "letterSpacing": "0.02em", "fontWeight": "700" }], "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-md": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "18px", "fontWeight": "600" }], "body-md": ["13px", { "lineHeight": "20px", "fontWeight": "400" }], "headline-lg-mobile": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-text-primary flex flex-col min-h-screen selection:bg-brand-teal-subtle"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-full bg-brand-teal-tint flex items-center justify-center text-brand-teal-primary"><span class="material-symbols-outlined text-[22px]">explore</span></div><span class="font-headline-md text-headline-md tracking-tight text-primary font-bold">TRIPTIC</span><span class="hidden text-display-mobile">Home</span></div><div class="flex items-center gap-space-xs"><button aria-label="검색" class="w-11 h-11 flex items-center justify-center rounded-full text-text-secondary hover:text-primary hover:bg-brand-teal-tint active:scale-95 transition-all"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="알림" class="relative w-11 h-11 flex items-center justify-center rounded-full text-text-secondary hover:text-primary hover:bg-brand-teal-tint active:scale-95 transition-all"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-accent-coral"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full px-margin-mobile gap-space-xl">
+<!-- TOP BAR: Liquid Glass Capsule Switcher (No large hero) -->
+<section class="w-full pt-space-xs">
+<div class="p-1 rounded-full bg-white/70 backdrop-blur-xl shadow-sm flex items-center justify-between">
+<button class="capsule-btn flex-1 py-2 px-3 rounded-full font-label-md text-label-md transition-all flex items-center justify-center gap-1.5 bg-brand-teal-primary text-on-primary shadow-sm" data-tab="flight">
+<span class="material-symbols-outlined text-[17px]">flight_takeoff</span>
+<span class="">항공</span>
+</button>
+<button class="capsule-btn flex-1 py-2 px-3 rounded-full font-label-md text-label-md transition-all flex items-center justify-center gap-1.5 text-text-secondary hover:text-text-primary" data-tab="hotel">
+<span class="material-symbols-outlined text-[17px]">apartment</span>
+<span class="">호텔</span>
+</button>
+<button class="capsule-btn flex-1 py-2 px-3 rounded-full font-label-md text-label-md transition-all flex items-center justify-center gap-1.5 text-text-secondary hover:text-text-primary" data-tab="tour">
+<span class="material-symbols-outlined text-[17px]">local_activity</span>
+<span class="">투어·액티비티</span>
+</button>
+</div>
+<!-- Quick Search Pill Input -->
+
+</section>
+<!-- UPCOMING TRIP & SAMPLE CARDS -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-brand-teal-primary animate-pulse"></span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">내 일정 &amp; 추천 샘플</h2>
+</div>
+<a class="font-label-sm text-label-sm text-brand-teal-primary flex items-center gap-0.5" href="#">전체보기 <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<!-- Horizontal Swipe Cards -->
+<div class="flex gap-space-md overflow-x-auto pb-space-xs -mx-margin-mobile px-margin-mobile snap-x scrollbar-none">
+<!-- Card 1: D-18 Fukuoka (Current Trip) -->
+<div class="min-w-[290px] max-w-[310px] snap-center bg-surface-card rounded-2xl p-space-lg shadow-sm flex flex-col justify-between flex-shrink-0 relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-brand-teal-tint -z-0"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-full bg-brand-teal-subtle text-brand-teal-deep font-label-sm text-label-sm font-bold">D-18 다가오는 여정</span>
+<span class="font-body-sm text-body-sm text-text-secondary">3박 4일</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary">후쿠오카 힐링 온천 여행</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">2025. 04. 12 (토) - 04. 15 (화)</p>
+<div class="mt-space-md">
+<div class="flex justify-between items-center mb-1.5">
+<span class="font-label-sm text-label-sm text-text-secondary">일정 준비율</span>
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-bold">75%</span>
+</div>
+<div class="w-full bg-surface-tint-sand h-2 rounded-full overflow-hidden">
+<div class="bg-brand-teal-primary h-full rounded-full transition-all duration-500" style="width: 75%;"></div>
+</div>
+</div>
+</div>
+<div class="relative z-10 mt-space-lg pt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-text-secondary">
+<span class="material-symbols-outlined text-[16px] text-brand-teal-primary">flight_takeoff</span>
+<span class="font-body-sm text-body-sm">진에어 LJ221 확정</span>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-brand-teal-primary text-on-primary font-label-md text-label-md active:scale-95 transition-transform flex items-center gap-1 shadow-sm">
+<span class="">편집하기</span>
+<span class="material-symbols-outlined text-[14px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Tokyo Sample Course -->
+<div class="min-w-[290px] max-w-[310px] snap-center bg-surface-card rounded-2xl p-space-lg shadow-sm flex flex-col justify-between flex-shrink-0 relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-surface-container-high -z-0"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold">추천 샘플 코스</span>
+<span class="font-body-sm text-body-sm text-accent-gold font-semibold">★ 4.9</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary">도쿄 4일 감성 카페 코스</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">나카메구로 &amp; 시부야 골목 산책</p>
+<div class="flex items-center gap-2 mt-space-md">
+<span class="px-2 py-1 rounded-lg bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#카페투어</span>
+<span class="px-2 py-1 rounded-lg bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#빈티지샵</span>
+<span class="px-2 py-1 rounded-lg bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#사진명소</span>
+</div>
+</div>
+<div class="relative z-10 mt-space-lg pt-space-sm flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-text-secondary">에디터 큐레이션</span>
+<button class="px-3.5 py-1.5 rounded-full bg-brand-teal-tint text-brand-teal-deep font-label-md text-label-md active:scale-95 transition-transform flex items-center gap-1">
+<span class="">내 여행에 담기</span>
+<span class="material-symbols-outlined text-[14px]">bookmark_add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SEASONAL CURATION: 지금 가기 좋은 여행지 -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">지금 가기 좋은 여행지</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">실시간 날씨와 여행 테마로 선택해보세요</p>
+</div>
+</div>
+<div class="flex gap-space-md overflow-x-auto pb-1 -mx-margin-mobile px-margin-mobile scrollbar-none">
+<!-- City 1 -->
+<button class="flex flex-col items-center gap-1.5 min-w-[72px] flex-shrink-0 active:scale-95 transition-transform">
+<div class="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Close-up delicate cherry blossoms in spring at a traditional temple courtyard in Kyoto, Japan, soft warm morning lighting, shallow depth of field, pastel tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNDwEEstTTXcNXjcsNhGT_wHRO80XYBQMW4VTVCP44EIMdJw79bqABhb4TQg00wlqdDEKR_RMXhSLkmvaV30AVYo2cqH_mYhLyTA9xnVqVYJeNuWqtlR0Ggbgv0O9sYqJrdCnlBmTwBUIbQUcSeQS6oaj-G-ww759x96hhaJNF_KA8VGy4MDHoShJ9HGs2Lc1F-lKYGQ_BZPMMlXkSi4mPXBTAoBP-nCoAcJ2kqJQC4sD3qvS9BRE">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-1 w-full text-center font-label-sm text-label-sm text-on-primary font-bold">18°C</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">교토</span>
+<span class="font-label-sm text-label-sm text-accent-coral">벚꽃 개화</span>
+</button>
+<!-- City 2 -->
+<button class="flex flex-col items-center gap-1.5 min-w-[72px] flex-shrink-0 active:scale-95 transition-transform">
+<div class="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Charming outdoor cafe terrace in Le Marais Paris, rattan bistro chairs, morning sunlight, croissants on small marble round table, Parisian street background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhnxhn7REOAtv8yPPuba1NXJY-Sv46FYFZvupjRzSJLMxzgVFA9IueOKmKBU3jG2QjobdXiquC5onBgXj4nQqvwMRmdOfXFwaK9R4OCxh2keNv2uh44v95i1d5AzxC6EeTGSH9oOPy9TG9jxJc06RxkcgSc7SLmuPrwvuwf3m8njJG5XPDrsRvJ9jIX2Z031H5abboW9oQRBJng6__IqXYmdiOaO3ohM6gWjwgbZzMdDV1fFV0BrU">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-1 w-full text-center font-label-sm text-label-sm text-on-primary font-bold">16°C</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">파리</span>
+<span class="font-label-sm text-label-sm text-brand-teal-primary">테라스 시즌</span>
+</button>
+<!-- City 3 -->
+<button class="flex flex-col items-center gap-1.5 min-w-[72px] flex-shrink-0 active:scale-95 transition-transform">
+<div class="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Vibrant tropical night view of Bangkok riverside with illuminated temple Wat Arun reflecting off Chao Phraya river, glowing ambient city tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTU0zwr8ZPiW1agk0-vCKmsPstAtac-N-vcT9M_vwEqgz0TSoSSgx0R-yPVYqiT4eVvyuCrbk_XaglPMbci6oJNdrDStI2I-h-IgavgWW5tlqYylQaVnJTdPuhnxM1tHwIpVgjQsPZg7Bn8jOISPVl00HbmG3CfMKba7lT8zGWwmQj4fx3iwM5EM0T_HFgvVWBuAWqQR3KFKCDhMVZSxnp2jb0j2ywuRb-1PMdpzgcDPo8JnprsRo">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-1 w-full text-center font-label-sm text-label-sm text-on-primary font-bold">31°C</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">방콕</span>
+<span class="font-label-sm text-label-sm text-text-secondary">야시장 낭만</span>
+</button>
+<!-- City 4 -->
+<button class="flex flex-col items-center gap-1.5 min-w-[72px] flex-shrink-0 active:scale-95 transition-transform">
+<div class="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Central park lake in New York with bright sunny day, emerald green trees framing modern skyscrapers, calm clear reflection on water surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn1oBYnez3Wg4xtoiyvndLkkKIR1og7nZ_q67NfDMBaFUnouHDA-vNIcomkbciqnc0jy5qFUaYk0Uez7Dc4Qal0UXkH7TJkYk4MguLgQJWc6Wt10vJmxubNrvY_1CgXqKQ560XpsAij-YCRnUf8qQtJJxO4vv78YIEYim7onaCjqvYmrQnk8osvr9OMpGd0bxGJ_8eY06Ykc04UMEhac-Ic7ssTyg7TDDrU2vwuZdY7cVq8PBKVp8">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-1 w-full text-center font-label-sm text-label-sm text-on-primary font-bold">15°C</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">뉴욕</span>
+<span class="font-label-sm text-label-sm text-text-secondary">피크닉 명소</span>
+</button>
+<!-- City 5 -->
+<button class="flex flex-col items-center gap-1.5 min-w-[72px] flex-shrink-0 active:scale-95 transition-transform">
+<div class="relative w-16 h-16 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Picturesque historic streets of Covent Garden London, red telephone box, lush hanging floral baskets, soft gentle golden hour lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASihUE57sMSNBl0dwtZwtkU4nPg0YW4Yvg-qTOFIHocjWNmb20Jjc9YWY6E_B5V9YpsOrsiMW1--AGJbnQ4O1xsViFRyLhSyA462-jj1Iy3SvWLB-z2xj76aFGRAq5MMsgrKKCVurBLz9Dt5UcGJIDshQ07zKPa0fLKIsqEQBmVDJCDpjSGtM1gD4OALc_DCtY3kiX_SLK3JC0JPyINi5qedMcxMTQKs_5O90E9r5EVbq5MtY_C54">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-1 w-full text-center font-label-sm text-label-sm text-on-primary font-bold">14°C</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">런던</span>
+<span class="font-label-sm text-label-sm text-text-secondary">뮤지컬 투어</span>
+</button>
+</div>
+</section>
+<!-- FLIGHT DEALS: 서울(인천) 출발 최저가 특가 -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-accent-coral text-[20px]">local_fire_department</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">서울(인천) 출발 최저가 특가</h2>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">실시간 유류할증료 포함 왕복 총액</p>
+</div>
+<a class="font-label-sm text-label-sm text-brand-teal-primary flex items-center" href="#">더보기 <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<!-- 2-Column Grid -->
+<div class="grid grid-cols-2 gap-space-md">
+<!-- Deal 1: Osaka -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
+<div class="relative h-28 w-full">
+<img class="w-full h-full object-cover" data-alt="Osaka castle surrounded by vibrant cherry blossom trees in full bloom with blue sky, serene reflection on moat water." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIb0ZBy5lCkslL6EsGN_jdOGGuggkZUrDaYc6tSML8QnjY4VeQV_biDVKM01e7VV49j7AisFNyPoc8BURDOejefD78ygPDrLHo2CWE9zD8DLAjJ3kut457jkyVTi-XDcr8nktrXMFwzZbHft7hJRDDaqG2FOze6HV5FJBhf-DxY7KhZP3WCt1hQ-P3HLeDCVeHANf6PeG37F0E2N8UejRUVVyTejbkxTuxX-q_9uuUdL7GpHE0yTs">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-accent-coral text-on-primary font-label-sm text-label-sm font-bold shadow-sm">34% 특가</span>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-grow">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">오사카 (KIX)</h3>
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-semibold">직항</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">티웨이항공 · 5/10 - 5/13</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted line-through">287,000원</span>
+<span class="font-headline-sm text-headline-sm text-brand-teal-primary font-bold">189,400원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 2: Fukuoka -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
+<div class="relative h-28 w-full">
+<img class="w-full h-full object-cover" data-alt="Scenic sunset view over Momochi seaside park in Fukuoka, modern architecture against gentle glowing orange sky, tranquil water surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd0U6kX5hoAZJHXnXPiUnBRzc2Txsfpgg1IxmzvsqMswoIGelT2eg-LynUmOLO00Ssptv9EqvTaL61nQBehydtaQja4iHf3UqNnrbaHpTTImAkCkFVQIw2QMxR9e0w_mSIy36da6U4rOoOBN1ok1BPAZfpEuanXSUikU5eSYr3AHdt5swE8M0SnofdtR5RfFqAHAYZkAp4Z1wD5pERus8o7JHk_60gvE3XkZPE0pLFEtdHwfVccxI">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-accent-coral text-on-primary font-label-sm text-label-sm font-bold shadow-sm">41% 특가</span>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-grow">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">후쿠오카 (FUK)</h3>
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-semibold">직항</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">제주항공 · 5/18 - 5/21</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted line-through">245,000원</span>
+<span class="font-headline-sm text-headline-sm text-brand-teal-primary font-bold">144,800원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 3: Taipei -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
+<div class="relative h-28 w-full">
+<img class="w-full h-full object-cover" data-alt="Traditional red lanterns lining cobblestone stairs in Jiufen old street Taipei at twilight, moody atmospheric mist, warm glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrYJ6iCDonkYkYiZdmT2WvS-J0IOdXs9hf6j9keWg3U-i18NRQ_RQrOZiOuGd6Gfe1EmsaEsrQHv688_JTVbXrHnZrYvz-8DyQXqs4lIZGNiTuTu0BOhq0K_Dzhh1Gj9IOT9wBL-HR1jGXHhp9DgYMdscBMYPz5_ILhcaZoYd6a0XZwAn_XW6HWxW2mHunZbf15OuYev2xScCjfBwG29wU7VvmqCAvVxx1D4wijTfuCpIGdiGs2Qs">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-accent-coral text-on-primary font-label-sm text-label-sm font-bold shadow-sm">28% 특가</span>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-grow">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">타이베이 (TPE)</h3>
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-semibold">직항</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">중화항공 · 6/02 - 6/05</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted line-through">350,000원</span>
+<span class="font-headline-sm text-headline-sm text-brand-teal-primary font-bold">252,000원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 4: Da Nang -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
+<div class="relative h-28 w-full">
+<img class="w-full h-full object-cover" data-alt="Tropical turquoise coastline of Da Nang Vietnam with white sand beaches, coconut palm silhouettes, bright sun flare, luxury resort setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArCj0V6mSYJLRh73U14d-y0OrPMYRIyneyMzO2GZDU4BoR1g5NM0XxuxPCMiP74JXW84BXTImA__M0PKBrgz2Ypcypc8oFRSQJDjQ1EnSOuqLB_64s9wBUNKsBIIdLAqiVKiLrvmjnEktiJup3dCbpGEAlJu17lEIJRrzoyPqL7YpdDcaQ6JSAPKRn84y8GmRR3H_zpL0aCS_fVZ4y-yBC5-S0HU5Y2HEdex9LHZ0JxLmhSdfpKJc">
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-accent-coral text-on-primary font-label-sm text-label-sm font-bold shadow-sm">31% 특가</span>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-grow">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">다낭 (DAD)</h3>
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-semibold">직항</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">비엣젯항공 · 6/11 - 6/15</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted line-through">390,000원</span>
+<span class="font-headline-sm text-headline-sm text-brand-teal-primary font-bold">269,100원~</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- COMMUNITY MATCHING: 같이 갈 사람 찾기 -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">같이 갈 사람 찾기</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">취향과 동선이 일치하는 메이트와 안전하게</p>
+</div>
+<a class="font-label-sm text-label-sm text-brand-teal-primary flex items-center" href="#">더보기 <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<!-- Match Card 1 -->
+<div class="bg-surface-card rounded-2xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-brand-teal-subtle text-brand-teal-deep font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-teal-primary animate-ping"></span>
+            98% 일치
+          </span>
+<span class="font-label-sm text-label-sm text-text-secondary">도쿄 · 4/20 ~ 4/24</span>
+</div>
+<span class="font-label-sm text-label-sm text-accent-coral font-semibold">모집중 1/2명</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-text-primary">시부야 빈티지숍 &amp; 나카메구로 브런치 같이 가실 분!</p>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">사진 찍는 거 좋아하고 현지 카페 위주로 다녀요. 20대 후반 여성분 선호하며, 저녁 맛집 일정만 함께해도 환영입니다 :)</p>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#미식탐방</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#사진촬영</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#카페투어</span>
+</div>
+<div class="pt-space-xs flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-label-md text-label-md text-primary font-bold">소연</div>
+<div>
+<span class="font-label-md text-label-md text-text-primary">소연 (Lv.4)</span>
+<span class="font-label-sm text-label-sm text-text-muted block">신뢰도 99% · 20대 여성</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-full bg-brand-teal-primary text-on-primary font-label-md text-label-md active:scale-95 transition-transform flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+<span class="">대화하기</span>
+</button>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="bg-surface-card rounded-2xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-brand-teal-subtle text-brand-teal-deep font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-teal-primary"></span>
+            92% 일치
+          </span>
+<span class="font-label-sm text-label-sm text-text-secondary">방콕 · 5/01 ~ 5/06</span>
+</div>
+<span class="font-label-sm text-label-sm text-accent-coral font-semibold">모집중 2/3명</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-text-primary">카오산로드 &amp; 루프탑 바 야경 칵테일 팟 구해요</p>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">방콕 3번째 여행자입니다. 맛있는 똠얌꿍 맛집이랑 야경 스팟 섭외 완료! 편하게 이야기 나누면서 즐겁게 다닐 분 찾습니다.</p>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#야경투어</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#로컬맛집</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-canvas text-text-secondary font-label-sm text-label-sm">#힐링여행</span>
+</div>
+<div class="pt-space-xs flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-brand-teal-tint flex items-center justify-center font-label-md text-label-md text-brand-teal-primary font-bold">민우</div>
+<div>
+<span class="font-label-md text-label-md text-text-primary">민우 (Lv.5)</span>
+<span class="font-label-sm text-label-sm text-text-muted block">신뢰도 100% · 30대 남성</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-full bg-brand-teal-primary text-on-primary font-label-md text-label-md active:scale-95 transition-transform flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+<span class="">대화하기</span>
+</button>
+</div>
+</div>
+</section>
+<!-- POPULAR STORIES (EDITOR'S SELECTION) -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">인기 여행기</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">EDITOR'S SELECTION</p>
+</div>
+<a class="font-label-sm text-label-sm text-brand-teal-primary flex items-center" href="#">전체 피드 <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<!-- Story 1: Kyoto Healing -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col">
+<div class="relative h-44 w-full">
+<img class="w-full h-full object-cover" data-alt="Traditional Japanese zen garden in Kyoto with raked gravel, mossy stones, calm wooden engawa porch overlooking green bamboo grove, tranquil zen atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2FNEsRawu-rshNTYkfYtNUuMo1TsPrjPNEd-Gn6kodI_7uZFE3LPA3q0Znm_2Wq9KYiSQZzvrTgbv0FEH60ZJG51NsdnFMXMDVvyYaxGVbkkfpFbmFr5vQnW2jdI1kkLHjSA5GTYj1HK7sXikyUaa7Fyre02ocvvVK-Zz4PKoooZxrfxFn5VLET2uKZkvJaB9Ubb02M8qjlqtVT4I0a1p5ErLy3KeeAYb373OQEzUBxncwOUOU4w">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+<span class="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md font-label-sm text-label-sm">교토 3박 4일</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">favorite</span> 1,280</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">bookmark</span> 842</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">관광객 없는 교토 숨은 사찰 힐링 루트 5선</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">아침 7시 이끼 정원 산책부터 고즈넉한 다도 체험까지, 복잡한 인파를 피해 온전히 쉼에 집중한 3박 4일 코스를 공유합니다.</p>
+<div class="flex items-center justify-between pt-space-xs mt-1">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-full bg-brand-teal-tint flex items-center justify-center font-label-sm text-label-sm text-brand-teal-primary font-bold">린</div>
+<span class="font-label-sm text-label-sm text-text-secondary">여행작가 서린</span>
+</div>
+<span class="font-body-sm text-body-sm text-brand-teal-primary font-semibold flex items-center gap-0.5">일정 복사하기 <span class="material-symbols-outlined text-[14px]">content_copy</span></span>
+</div>
+</div>
+</div>
+<!-- Story 2: Paris Marais -->
+<div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm flex flex-col">
+<div class="relative h-44 w-full">
+<img class="w-full h-full object-cover" data-alt="Chic boutique street in Paris Le Marais neighborhood with stylish pedestrians, Parisian balconies, elegant boutique shop fronts, warm aesthetic light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNYvE2IbXOmkKgZoEzJvTvEC6sRNnY2LgKTNCnve0hgl9e_WhimuI8H_8BN_NeweMx8r7Q7YyLm9QhJ_ACs_njh-bZRKjiMj5LbzpD40R-HunTsWQxBIeV9IpxADXSXL0PbHh9pr-TgLv1IOS5JHJV55Q8_H_uaGPeSFbQlCN5uTLZiLTMx6_X53Bs-ibvRp0C9nQ8XE5RLsemmqXgovMeqmtcbHG2XuKGttgszZazZ12-7FpgY5E">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+<span class="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md font-label-sm text-label-sm">파리 5박 6일</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">favorite</span> 2,140</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">bookmark</span> 1,510</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-text-primary">파리지앵처럼 걷는 마레지구 골목 편집숍 &amp; 베이커리</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">크루아상 한 입 베어 물고 보쥬 광장 벤치에서 책 읽기. 실패 없는 로컬 베이커리와 라이프스타일 숍 지도 대방출!</p>
+<div class="flex items-center justify-between pt-space-xs mt-1">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm text-primary font-bold">준</div>
+<span class="font-label-sm text-label-sm text-text-secondary">디자이너 준</span>
+</div>
+<span class="font-body-sm text-body-sm text-brand-teal-primary font-semibold flex items-center gap-0.5">일정 복사하기 <span class="material-symbols-outlined text-[14px]">content_copy</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- HOW IT WORKS: 트립틱 이렇게 써요 -->
+<section class="bg-surface-tint-sand rounded-2xl p-space-lg flex flex-col gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-brand-teal-primary font-bold uppercase tracking-wider">HOW IT WORKS</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary">트립틱 이렇게 써요</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">예약 확인서만 넣으면 스마트한 여행 일정이 완성됩니다</p>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Step 1 -->
+<div class="flex items-start gap-space-md">
+<div class="w-8 h-8 rounded-full bg-brand-teal-subtle text-brand-teal-deep flex items-center justify-center font-label-lg text-label-lg font-bold flex-shrink-0 shadow-sm">1</div>
+<div class="flex flex-col">
+<h3 class="font-label-lg text-label-lg text-text-primary font-bold">서류 드래그 &amp; 업로드</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">항공 E-티켓, 호텔 바우처 PDF나 캡처 이미지를 올리면 AI가 즉시 자동 분석합니다.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-space-md">
+<div class="w-8 h-8 rounded-full bg-brand-teal-subtle text-brand-teal-deep flex items-center justify-center font-label-lg text-label-lg font-bold flex-shrink-0 shadow-sm">2</div>
+<div class="flex flex-col">
+<h3 class="font-label-lg text-label-lg text-text-primary font-bold">AI 동선 타임라인 생성</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">체크인 시간과 이동 시간을 고려해 최적화된 하루 단위 타임라인 지도를 제작합니다.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-space-md">
+<div class="w-8 h-8 rounded-full bg-brand-teal-subtle text-brand-teal-deep flex items-center justify-center font-label-lg text-label-lg font-bold flex-shrink-0 shadow-sm">3</div>
+<div class="flex flex-col">
+<h3 class="font-label-lg text-label-lg text-text-primary font-bold">실시간 동행 공동 편집</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-0.5">링크 하나로 친구를 초대해 메모, 가고 싶은 장소, 가계부를 함께 실시간 공유하세요.</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-space-xs py-3 rounded-xl bg-brand-teal-primary text-on-primary font-label-lg text-label-lg font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="">새로운 여행 일정 만들기</span>
+</button>
+</section>
+</div>
+<script>
+  // Liquid Glass Capsule Switcher Micro-interaction
+  document.querySelectorAll('.capsule-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.capsule-btn').forEach(b => {
+        b.classList.remove('bg-brand-teal-primary', 'text-on-primary', 'shadow-sm');
+        b.classList.add('text-text-secondary');
+      });
+      this.classList.remove('text-text-secondary');
+      this.classList.add('bg-brand-teal-primary', 'text-on-primary', 'shadow-sm');
+    });
+  });
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-brand-teal-primary font-label-md"><div class="flex justify-around items-center h-16 px-space-xs"><a aria-current="page" class="flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] transition-all text-brand-teal-primary font-label-md" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm">홈</span></a><a class="flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] text-text-secondary hover:text-primary transition-all" data-path="my-trips" href="#"><span class="material-symbols-outlined text-[22px]">luggage</span><span class="font-label-sm text-label-sm">내 여행</span></a><a class="flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] text-text-secondary hover:text-primary transition-all" data-path="community" href="#"><span class="material-symbols-outlined text-[22px]">groups</span><span class="font-label-sm text-label-sm">커뮤니티</span></a><a class="flex flex-1 flex-col items-center justify-center gap-1 min-h-[44px] text-text-secondary hover:text-primary transition-all" data-path="profile" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="font-label-sm text-label-sm">마이</span></a></div></nav>
+
+</body></html>

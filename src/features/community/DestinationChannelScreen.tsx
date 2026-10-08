@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { useFxRates } from '@/features/plan/useFxRates';
+import { useDestinationWeather } from '@/features/weather/destinationWeather';
 import { getRate } from '@/features/plan/fxRates';
 import { useSession } from '@/shared/hooks/useSession';
 import { showToast } from '@/shared/ui/toast';
@@ -27,7 +28,6 @@ import { useFollowedDestinationIds, useToggleFollow } from './hooks/useCommunity
 import {
   useChannelCompanions,
   useChannelPosts,
-  useCurrentWeather,
   useDestinationFollowerCount,
   useDestinationGuide,
   usePinnedPost,
@@ -77,7 +77,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
   const toggleFollow = useToggleFollow(viewerId);
   const { data: guide } = useDestinationGuide(destination?.id);
   const { data: followerCount } = useDestinationFollowerCount(destination?.id);
-  const { data: weather } = useCurrentWeather(destination?.lat, destination?.lng);
+  const weather = useDestinationWeather(destination?.id);
   const { data: fxRates } = useFxRates();
   const { data: urgent } = useUrgentCompanions(destination?.id);
   const { data: pinned } = usePinnedPost(destination?.id, viewerId);

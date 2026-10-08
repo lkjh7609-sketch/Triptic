@@ -1,12 +1,12 @@
 import { ArrowLeft, Banknote, CalendarPlus, Users } from 'lucide-react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { WeatherIcon } from '@/features/home/stitch/weatherIcon';
+import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
+import type { DestinationWeather } from '@/features/weather/destinationWeather';
 import type { FxRates } from '@/features/plan/fxRates';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import { getRate } from '@/features/plan/fxRates';
-import type { CurrentWeather } from '../hooks/useDestinationChannel';
 import type { Destination, LocalizedText } from '../types';
 import { continentOf, pickText, weatherKey } from './channelHelpers';
 import styles from './ChannelHeader.module.css';
@@ -15,7 +15,8 @@ interface ChannelHeaderProps {
   destination: Destination;
   landmarks: LocalizedText[];
   fxRates: FxRates | undefined;
-  weather: CurrentWeather | undefined;
+  /** 오늘 날씨(하루 한 번 서버가 WeatherKit에서 받아 저장한 값) — 없으면 칸을 숨긴다 */
+  weather: DestinationWeather | null | undefined;
   followerCount: number | undefined;
   isFollowing: boolean;
   followDisabled: boolean;
@@ -50,7 +51,8 @@ export function ChannelHeader({
     destination.currency && destination.currency !== 'KRW'
       ? getRate(fxRates, destination.currency, 'KRW')
       : null;
-  const wKey = weather ? weatherKey(weather.code) : null;
+  const condition = weather?.conditionCode ? mapConditionCode(weather.conditionCode) : null;
+  const wKey = condition ? weatherKey(condition) : null;
   const stories = destination.post_count;
 
   return (
@@ -102,14 +104,15 @@ export function ChannelHeader({
             ) : null}
             {weather ? (
               <span className={styles.fact}>
-                <WeatherIcon code={weather.code} size={16} />
-                {t('channel.weatherNow', {
-                  temp: `${formatTemp(weather.temp, unit)}${unit}`,
+                {condition ? (
+                  <span aria-hidden="true" className={styles.weatherIcon}>
+                    {weatherIcon(condition, true)}
+                  </span>
+                ) : null}
+                {t('channel.weatherToday', {
+                  temp: `${formatTemp(weather.tminC, unit) ?? '–'}/${formatTemp(weather.tmaxC, unit) ?? '–'}`,
                   condition: wKey ? t(`channel.weather.${wKey}`) : '',
                 }).trim()}
-                {weather.feelsLike != null
-                  ? ` ${t('channel.weatherFeels', { temp: `${formatTemp(weather.feelsLike, unit)}${unit}` })}`
-                  : ''}
               </span>
             ) : null}
             <span className={`${styles.fact} ${styles.counts}`}>

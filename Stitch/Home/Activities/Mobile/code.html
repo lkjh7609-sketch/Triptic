@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Triptic - 액티비티</title>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#FDFBF7',
+            card: '#FFFFFF',
+            chipBg: '#EBE8E0',
+            placeholderBg: '#E2DFD6',
+            primaryText: '#1C1917',
+            secondaryText: '#57534E',
+            tertiaryText: '#6B6560',
+            placeholderText: '#A8A29E',
+            brandTeal: '#0F766E',
+            brandTealPressed: '#115E59',
+            brandAccent: '#0D9488',
+            brandTealLight: '#0E6F68',
+            brandTint: '#CCFBF1',
+            hairline: '#E7E5E4',
+            divider: '#D6D3D1',
+            inputBorder: '#7F7A74',
+            starAmber: '#D97706',
+            discountRed: '#B91C1C',
+            discountBg: '#FEE2E2',
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          },
+          boxShadow: {
+            card: '0 4px 16px rgba(28,25,23,0.06)',
+            subtle: '0 1px 3px rgba(28,25,23,0.04)',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Utility to hide scrollbars for clean iOS horizontal carousels */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    body {
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-canvas text-primaryText font-sans antialiased min-h-screen flex justify-center selection:bg-brandTint selection:text-brandTeal">
+<!-- Mobile Screen Frame (390px fixed simulated container for iOS viewport) -->
+<div class="w-full max-w-[390px] min-h-screen bg-canvas flex flex-col relative pb-24 shadow-2xl sm:my-4 sm:rounded-[44px] sm:overflow-hidden sm:border-[8px] sm:border-stone-800">
+<!-- BEGIN: StatusBar -->
+<header class="w-full pt-3 px-6 pb-2 flex justify-between items-center text-primaryText select-none" data-purpose="ios-status-bar">
+<!-- Time -->
+<span class="text-[15px] font-semibold tracking-tight">9:41</span>
+<!-- iOS Icons: Cell, Wifi, Battery -->
+<div class="flex items-center gap-1.5">
+<!-- Cellular Signal -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 17 12">
+<rect height="4" rx="0.75" width="3" x="0" y="8"></rect>
+<rect height="6.5" rx="0.75" width="3" x="4.5" y="5.5"></rect>
+<rect height="9" rx="0.75" width="3" x="9" y="3"></rect>
+<rect height="12" rx="0.75" width="3" x="13.5" y="0"></rect>
+</svg>
+<!-- Wifi -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 16 12">
+<path d="M8 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-4.24-4.24a6 6 0 0 1 8.48 0 .8.8 0 1 0 1.14-1.14 7.6 7.6 0 0 0-10.76 0 .8.8 0 0 0 1.14 1.14zm-2.83-2.83a10 10 0 0 1 14.14 0 .8.8 0 0 0 1.14-1.14 11.6 11.6 0 0 0-16.42 0 .8.8 0 0 0 1.14 1.14z"></path>
+</svg>
+<!-- Battery -->
+<div class="w-5 h-2.5 border border-primaryText rounded-[3px] p-0.5 flex items-center relative">
+<div class="h-full w-3.5 bg-primaryText rounded-[1px]"></div>
+<div class="absolute -right-1 top-0.5 bottom-0.5 w-0.5 bg-primaryText rounded-r-[1px]"></div>
+</div>
+</div>
+</header>
+<!-- END: StatusBar -->
+<!-- BEGIN: TopTabNavigation -->
+<nav class="px-4 border-b border-hairline bg-canvas sticky top-0 z-30" data-purpose="top-tabs">
+<ul class="flex items-center gap-7 pt-2">
+<li>
+<a class="inline-block pb-3 text-[20px] font-extrabold text-tertiaryText hover:text-primaryText transition-colors" href="#">홈</a>
+</li>
+<li>
+<a class="inline-block pb-3 text-[20px] font-extrabold text-tertiaryText hover:text-primaryText transition-colors" href="#">항공</a>
+</li>
+<li>
+<a class="inline-block pb-3 text-[20px] font-extrabold text-tertiaryText hover:text-primaryText transition-colors" href="#">호텔</a>
+</li>
+<li class="relative">
+<a class="inline-block pb-3 text-[20px] font-extrabold text-primaryText" href="#">액티비티</a>
+<!-- Exact underline match for active category tab -->
+<div class="absolute bottom-0 left-0 right-0 h-[3px] bg-primaryText rounded-full"></div>
+</li>
+</ul>
+</nav>
+<!-- END: TopTabNavigation -->
+<!-- Main Scrollable Content Area -->
+<main class="flex-1 px-4 pt-5 pb-8 space-y-8" data-purpose="main-content">
+<!-- BEGIN: HeadingAndSearchSection -->
+<section class="space-y-4" data-purpose="search-header-group">
+<!-- Main Single Heading -->
+<h1 class="text-[24px] font-extrabold tracking-tight text-primaryText">어떤 체험을 찾으세요?</h1>
+<!-- Search Bar with Inside-right Teal Button -->
+<div class="relative w-full h-[52px] bg-card rounded-full border border-inputBorder shadow-sm flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-brandTeal/20">
+<!-- Search Icon (Monoline SVG) -->
+<svg class="w-[18px] h-[18px] text-secondaryText shrink-0 mr-2.5" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<!-- Input field -->
+<input class="w-full bg-transparent border-0 p-0 text-[13px] text-primaryText placeholder:text-placeholderText focus:ring-0 focus:outline-none truncate pr-2" placeholder="도시, 명소, 체험 검색 (예: 유니버설 스튜디오)" type="text"/>
+<!-- Inside Teal Pill Button -->
+<button class="bg-brandTeal active:bg-brandTealPressed text-white text-xs font-bold px-3.5 py-1.5 rounded-full shrink-0 shadow-sm transition-colors">
+            검색
+          </button>
+</div>
+<!-- Provider Selector Segmented Control -->
+<div class="flex items-center" data-purpose="provider-segmented-control">
+<span class="text-xs font-medium text-tertiaryText mr-2 shrink-0">예약처</span>
+<div class="bg-chipBg p-1 rounded-full inline-flex items-center gap-1 shadow-inner">
+<button class="bg-white text-primaryText font-bold text-xs px-3 py-1 rounded-full shadow-subtle transition-all">
+              Klook
+            </button>
+<button class="text-tertiaryText font-medium text-xs px-3 py-1 rounded-full hover:text-primaryText transition-colors">
+              마이리얼트립
+            </button>
+</div>
+</div>
+<!-- Popular Keywords Row -->
+<div class="flex items-center gap-2 overflow-hidden" data-purpose="popular-keywords-bar">
+<span class="text-xs font-medium text-tertiaryText shrink-0">인기 검색어</span>
+<div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+<button class="bg-card border border-hairline rounded-full px-3 py-1.5 text-xs text-secondaryText whitespace-nowrap active:bg-chipBg shadow-subtle">
+              블루마운틴 선셋 별보기
+            </button>
+<button class="bg-card border border-hairline rounded-full px-3 py-1.5 text-xs text-secondaryText whitespace-nowrap active:bg-chipBg shadow-subtle">
+              오페라하우스 투어
+            </button>
+<button class="bg-card border border-hairline rounded-full px-3 py-1.5 text-xs text-secondaryText whitespace-nowrap active:bg-chipBg shadow-subtle">
+              포트스테판 샌드보딩
+            </button>
+<button class="bg-card border border-hairline rounded-full px-3 py-1.5 text-xs text-secondaryText whitespace-nowrap active:bg-chipBg shadow-subtle">
+              시드니 타워아이 전망대
+            </button>
+</div>
+</div>
+</section>
+<!-- END: HeadingAndSearchSection -->
+<!-- BEGIN: PopularDestinationsSection -->
+<section data-purpose="popular-destinations">
+<h2 class="text-[18px] font-bold text-primaryText mb-3 tracking-tight">인기 여행지</h2>
+<!-- Horizontal Carousel with 8 Cities -->
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
+<!-- 1. Kyoto -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="교토" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmwgTQHHCCewYNI6DM9553hdF8KbHrOp_4jcBSaN40CAr4aWyR3p3dpf5BVqh-76lFTpG3cxOLa1l14LYyBEwyflQIzs1_1a8cTew7c5sucG5wmwuKkXIupVJJiJXQhFgFJsM8n5NvkwLw57OsSTXuKclSN-imI005p_KnoR_USeKwA79XUdvUuuYd5uePu3qvx3c1OmddKDhPt5UqCfExwa7sTg-lMAl-SkmstM6STzJCWeoRNsk"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">교토</span>
+</a>
+<!-- 2. Paris -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="파리" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh5D8-kp1baQDHzXQnlRxAIcwQygkNMlwtKcVxp_P01GsI6CFWMZbI8ltvOyiRpli9O-RsZc-Pho12CVvoKtpV7UxTbvKVYGbECEXH_WZD5EGub3OXgmH6BTP-xopDYQGqbB5Fg87Msgaf0RtzZvBh48wPQPhoNKA7X6o5FNAMQV1WhXe_Zfll7RsRj0uRSaBSj1b7x1FPUGZGoLVT8fsDRUijvTlmBCoSR1rJsOUbAOVecNcpH2s"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">파리</span>
+</a>
+<!-- 3. New York -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="뉴욕" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHs5yrVpn6E-19pRpfZfPpOhwmMZ9GtyKrpVqiDxbkND7Z-0h3WFk4wWX-iXAVWQyWq1BlZTxc6B9ASjaU-cMgofY3XyZOcDxdm0I0_N5Nw6-hBIzyLG7jkL5pKRw8512lgkM51PCdWFtQekC9HWfbdbb33sFhOXeoS2Yx4PvZIzepnhcI7Z-7BenUtzc_zp2dCUhILfHtcs3rntH4VUedXNaRkn6Ddd3XEIPLaKEEFuNWUsjQSx8"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">뉴욕</span>
+</a>
+<!-- 4. London -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="런던" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUooOWkgt4esIlY23z8EmFlCg2XOnSrB1NGFBES2hrq1ETA1CQg4hEc_ogn1Hu9coay6tXJ6bADSMy9HFVXKN8YxYcNXxZaBbAGgdQiYMfxWXrKRTfH8Qu11eRdiwn-uvYsDpg7E9sbDIg9SFxfTPEqcjmgeZ4_mMAP1h_FGRGU7seR2tHEr9nLsIh6B1lJW9OCGbqOcZ9qKHuGxXoUvgPosBjVMzKPsiiomKwcH_2XDRi-jU4NhM"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">런던</span>
+</a>
+<!-- 5. Rome -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="로마" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9D13OR--Z-u7IDbybDH7yt_uN1PIZiuXcY2PCxHVShzvf-w1zEwB2lqIzRmH14ANA-Ub3BW2aFJgfJM-5_NJTHaVh6VSzmoeifBq110Lwmn9AWBAzEIjzwUqkBY_X8FRn3LXYuevHjjRl621Cq18QRC9AXaTks0jGAgVxMckBMc8P0Fzue7_WtgajqTdx6gCvZumbG9I8mSg7Z_z9wZHzo5LPrg96ZmyMdT0MTdAtRxiANDF6jo0"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">로마</span>
+</a>
+<!-- 6. Tokyo -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="도쿄" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMMP8OAf0IR3zDoujgBmxofiYuCEojsNLh57qJ0WyA0hxK5INqP7TpPM3C3j3Lr28Ww4oQKn80RWaS4r5bMvUmA-MVAdyufgZp_M3EiuBd0acJsEAQu9joQDCt4wCydwdPghA8A5Y0-S2360QEeKj4tVSHRcuP4VD4d2PadsTu-cZEPUNoceItLvpLsm2TJ6sKJHUJ9SpIiJGL2uaQRfBQ9u5biUI5UH1fMZNmFtXZQ0j7yq-iUyg"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">도쿄</span>
+</a>
+<!-- 7. Bangkok -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="방콕" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0cvjL4kMk1VDnMzk6ivTif2-0K-eJVup54kH0LQBbktLBJgOzwNAxaMnORAOMwoJSI0h32qjALpnRGejeramnJWS41Xc_TS45yrwdLP1Jh56bctCSFdZ1LmNNCIHt6SjAK3RDZZWS_ygsbra3lb-zBk8-dmgZYzS3cSEGE3MpR2ncZDPgeMUkL5JZnFGLrKh2bDwoZ653mujNIetcWsmToIvVdMFCLEKZq05ZIcvSrtn5d8acj_I"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">방콕</span>
+</a>
+<!-- 8. Danang -->
+<a class="flex flex-col items-center shrink-0 group" href="#">
+<div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white shadow-card bg-placeholderBg">
+<img alt="다낭" class="w-full h-full object-cover group-active:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuszgfsOmvRV9nOq2x5s7tRq9alXxKTJQrCcjAniKD4AW_ESBJ9FX9Teyi4xGndk1Vr5g2ezo_VDYjhiEd1zY_jC0bG-HtmV1t5deqbbsjAA0dXQ85_Dx8j2otbY1Ler0XR84IH_qYET6l76aE0exRqzswbqlKr12VF0UXsbIudDousWV35nYPwYQDfPhBkJP0ogNX0z7Vc6qtOb3yFIR40_WrDeWYh2_TEtex-SjrPWvsvZi4Plk"/>
+</div>
+<span class="text-[13px] font-semibold text-primaryText mt-1.5 text-center">다낭</span>
+</a>
+</div>
+</section>
+<!-- END: PopularDestinationsSection -->
+<!-- BEGIN: RecommendedToursSection -->
+<section data-purpose="recommended-tours">
+<!-- Section Header -->
+<div class="mb-3">
+<h2 class="text-[18px] font-bold text-primaryText tracking-tight">추천 투어</h2>
+<p class="text-[13px] text-secondaryText mt-0.5">다음 시드니 여행에 맞춰 골랐어요</p>
+</div>
+<!-- 2-Column Equal Tour Card Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Tour Card 1 -->
+<article class="bg-card rounded-2xl border border-hairline shadow-card p-2 flex flex-col justify-between" data-purpose="tour-card">
+<div>
+<!-- Tour Image Container -->
+<div class="aspect-[4/3] w-full rounded-xl overflow-hidden relative bg-placeholderBg">
+<img alt="블루마운틴 선셋" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdTugkg1gnBWbdcP37vFY8OI7FprtLYf8E0jxKkU4Uq-af2HetwOrvxMCuLMSG8e4-Z6u_mzUztXSdlHekV4NIXAMcLUhxKbv-jKUgamI9PbmE0XnP9Ph76aR5zfayEg48e85O9AX0S6BIlrAxeWF_3wUffEdeZFTxtH-a3qChquzGgBt5xXSf2eqblG4N7yxKcK8SIw8_uh1EWWh8Zb3pTw5geSk1e6zA1kMChFiIEWUDGQIUfls"/>
+<!-- Category Tag Overlay -->
+<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-xs text-[11px] font-medium text-primaryText px-2 py-0.5 rounded-md shadow-xs">
+                  투어
+                </span>
+</div>
+<!-- Content -->
+<div class="pt-2 px-1">
+<h3 class="text-[14px] font-semibold text-primaryText line-clamp-2 leading-snug">
+                  [안심귀가] K-POP 블루마운틴 선셋 별보기 &amp; 소그룹 투어
+                </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-xs text-tertiaryText">
+<span class="text-starAmber font-bold">★ 4.9</span>
+<span>(1,420)</span>
+</div>
+</div>
+</div>
+<!-- Price Footer -->
+<div class="pt-2 px-1 border-t border-hairline/60 mt-2 flex items-baseline justify-between">
+<span class="text-[16px] font-extrabold text-primaryText">₩72,988</span>
+<span class="text-xs text-tertiaryText font-normal">1인 기준</span>
+</div>
+</article>
+<!-- Tour Card 2 -->
+<article class="bg-card rounded-2xl border border-hairline shadow-card p-2 flex flex-col justify-between" data-purpose="tour-card">
+<div>
+<!-- Tour Image Container -->
+<div class="aspect-[4/3] w-full rounded-xl overflow-hidden relative bg-placeholderBg">
+<img alt="포트스테판 사막 샌드보딩" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJeSlETYOMewOixvxWWta3FokX8s8vhScFgaN6lVrQzO5MBh7k2O8iGAXHcK06bFHS5SqC7KjyVKMjz1ENYUnwODKBWalNI4ZUKXHFPTcp0uuqvj36PHRjt8V9YP7HiDQTMuQr1yjqxkNh7q46QTaUqsayfGLEL65XZA9qcCYbwkjewHE7GG3xJaRr1Lib_DTEX6kZ-k9hE8p3pqh3wGb04D3OSZkeGGG-9vDaVZsCxeBgLH3uXPw"/>
+<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-xs text-[11px] font-medium text-primaryText px-2 py-0.5 rounded-md shadow-xs">
+                  투어
+                </span>
+</div>
+<!-- Content -->
+<div class="pt-2 px-1">
+<h3 class="text-[14px] font-semibold text-primaryText line-clamp-2 leading-snug">
+                  프리미엄 포트스테판 투어 | 사막 샌드보딩 &amp; 돌고래 와이너리
+                </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-xs text-tertiaryText">
+<span class="text-starAmber font-bold">★ 5.0</span>
+<span>(4,258)</span>
+</div>
+</div>
+</div>
+<!-- Price Footer with Discount -->
+<div class="pt-2 px-1 border-t border-hairline/60 mt-2 space-y-0.5">
+<div class="flex items-center gap-1.5 leading-none">
+<span class="text-[11px] text-placeholderText line-through">₩115,000</span>
+<span class="text-[10px] font-bold text-discountRed bg-discountBg px-1.5 py-0.5 rounded">16% 할인</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-[16px] font-extrabold text-primaryText">₩96,685</span>
+<span class="text-xs text-tertiaryText font-normal">1인 기준</span>
+</div>
+</div>
+</article>
+<!-- Tour Card 3 -->
+<article class="bg-card rounded-2xl border border-hairline shadow-card p-2 flex flex-col justify-between" data-purpose="tour-card">
+<div>
+<!-- Tour Image Container -->
+<div class="aspect-[4/3] w-full rounded-xl overflow-hidden relative bg-placeholderBg">
+<img alt="블루마운틴 시닉월드" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_j58zNo7Lld2kVP2_weVkPuaNCbKMqIf6oWzxSpb876utOOWjO3offBXiqhP7V6J3s5mwvh1amVvp8ONoVUdVhrYZorIw-K3ttQkvYVDU2997FfFu5FBWGdZ3vYzZhyS_K2oei-wCxmUVmuBBxuBhZrAk4LhDBrJDJ9zzfsubSSJ4lMuqE-XBU8t-j-9UgZJzJ-ktt2brE-3aJl-XRbe7GvmbwHIQQH7F4YgreDrgjwWZAPAN0B0"/>
+<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-xs text-[11px] font-medium text-primaryText px-2 py-0.5 rounded-md shadow-xs">
+                  가이드 투어
+                </span>
+</div>
+<!-- Content -->
+<div class="pt-2 px-1">
+<h3 class="text-[14px] font-semibold text-primaryText line-clamp-2 leading-snug">
+                  블루마운틴 시닉월드 &amp; 페더데일 동물원 한국어 일일 투어
+                </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-xs text-tertiaryText">
+<span class="text-starAmber font-bold">★ 5.0</span>
+<span>(4,940)</span>
+</div>
+</div>
+</div>
+<!-- Price Footer -->
+<div class="pt-2 px-1 border-t border-hairline/60 mt-2 flex items-baseline justify-between">
+<span class="text-[16px] font-extrabold text-primaryText">₩80,571</span>
+<span class="text-xs text-tertiaryText font-normal">1인 기준</span>
+</div>
+</article>
+<!-- Tour Card 4 -->
+<article class="bg-card rounded-2xl border border-hairline shadow-card p-2 flex flex-col justify-between" data-purpose="tour-card">
+<div>
+<!-- Tour Image Container -->
+<div class="aspect-[4/3] w-full rounded-xl overflow-hidden relative bg-placeholderBg">
+<img alt="시드니 오페라하우스" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzxmInSuKzA_niTwwIGjBzH_XDBZo0Y-9Hr4xwysbX62w0O5Cnobnb1cscCj6ywOCQEhk84N9NghSnMA4rxMwHdM73ZyWMoMCOsPLTEOuhgMmg-LfWiTbiW3i3ls2CVYrWkda-GGXOKtdbccRIgh6OqGOrkxc_6GUDADvF_CluAMCFtibMxq7YsQbRsTHBhAWpFv5LUgJDuHFooSOqWMxKfsbwU31J1o1B3V7i6M1tfeTK-fn0M_Y"/>
+<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-xs text-[11px] font-medium text-primaryText px-2 py-0.5 rounded-md shadow-xs">
+                  입장권
+                </span>
+</div>
+<!-- Content -->
+<div class="pt-2 px-1">
+<h3 class="text-[14px] font-semibold text-primaryText line-clamp-2 leading-snug">
+                  [공식 티켓] 시드니 오페라하우스 한국어 내부 가이드 투어
+                </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-xs text-tertiaryText">
+<span class="text-starAmber font-bold">★ 4.9</span>
+<span>(2,310)</span>
+</div>
+</div>
+</div>
+<!-- Price Footer -->
+<div class="pt-2 px-1 border-t border-hairline/60 mt-2 flex items-baseline justify-between">
+<span class="text-[16px] font-extrabold text-primaryText">₩35,400</span>
+<span class="text-xs text-tertiaryText font-normal">1인 기준</span>
+</div>
+</article>
+</div>
+<!-- Full-width View More Button -->
+<button class="w-full h-12 mt-4 bg-white border border-divider text-primaryText rounded-full flex items-center justify-center gap-1.5 font-medium text-sm shadow-sm active:bg-chipBg transition-colors" data-purpose="view-more-button">
+<span>더 보기</span>
+<!-- Monoline Chevron Down -->
+<svg class="w-4 h-4 text-primaryText" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Source Attribution Note -->
+<p class="text-xs text-tertiaryText text-center mt-2.5">Klook 제공</p>
+</section>
+<!-- END: RecommendedToursSection -->
+<!-- BEGIN: SiteFooter -->
+<footer class="pt-2 pb-6 text-center select-none" data-purpose="mobile-footer">
+<nav class="flex justify-center items-center gap-2 text-xs text-tertiaryText mb-2">
+<a class="hover:underline" href="#">이용약관</a>
+<span class="text-hairline">·</span>
+<a class="hover:underline" href="#">개인정보처리방침</a>
+<span class="text-hairline">·</span>
+<a class="hover:underline" href="#">고객센터</a>
+<span class="text-hairline">·</span>
+<a class="hover:underline" href="#">제휴문의</a>
+</nav>
+<p class="text-xs text-tertiaryText">© 2025 Triptic. 모든 권리 보유.</p>
+</footer>
+<!-- END: SiteFooter -->
+</main>
+<!-- BEGIN: BottomNavigation -->
+<nav class="fixed bottom-0 max-w-[390px] w-full bg-white/95 backdrop-blur-md border-t border-hairline px-6 py-2 flex justify-between items-center z-40" data-purpose="ios-bottom-tab-bar">
+<!-- Home Tab -->
+<a class="flex flex-col items-center gap-1 text-tertiaryText hover:text-brandTeal transition-colors" href="#">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-medium leading-none">홈</span>
+</a>
+<!-- Trips Tab -->
+<a class="flex flex-col items-center gap-1 text-tertiaryText hover:text-brandTeal transition-colors" href="#">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-medium leading-none">내 여행</span>
+</a>
+<!-- Community Tab -->
+<a class="flex flex-col items-center gap-1 text-tertiaryText hover:text-brandTeal transition-colors" href="#">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.999-3.199a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-medium leading-none">커뮤니티</span>
+</a>
+<!-- Profile Tab (My) -->
+<a class="flex flex-col items-center gap-1 text-tertiaryText hover:text-brandTeal transition-colors" href="#">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-medium leading-none">마이</span>
+</a>
+</nav>
+<!-- END: BottomNavigation -->
+<!-- iOS Home Indicator bar -->
+<div class="fixed bottom-1 w-32 h-1 bg-stone-900/30 rounded-full left-1/2 -translate-x-1/2 z-50 pointer-events-none"></div>
+</div>
+</body></html>

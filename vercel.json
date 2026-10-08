@@ -121,6 +121,15 @@
     },
     "api/partnerProducts.js": {
       "maxDuration": 30
+    },
+    "api/weather.js": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/weather?cron=1",
+      "schedule": "0 19 * * *"
+    }
+  ]
 }

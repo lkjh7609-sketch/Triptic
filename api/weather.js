@@ -7,12 +7,16 @@
 // ⚠️ conditionCode는 원본(WeatherKit) 코드를 그대로 돌려준다 — 9종 압축 매핑은
 // src/features/weather/conditionMap.ts "한 곳에만" 둔다(05-weather.md §4).
 //
-// ⚠️ Apple Developer Program 미가입 상태라 WEATHERKIT_* 환경변수는 아직 비어있다
-// (사용자 명시 승인 — Phase 1과 동일한 제약). 그 동안 이 엔드포인트는 항상 503을
-// 반환하고, 클라이언트는 §6.3 규칙대로 날씨 영역을 조용히 숨긴다.
+// WEATHERKIT_* 환경변수가 없으면 이 엔드포인트는 503을 돌려주고, 클라이언트는 §6.3 규칙대로 날씨 영역을 조용히 숨긴다.
+//
+// 하루 한 번 갱신: GET /api/weather?cron=1 (Vercel Cron이 CRON_SECRET을 Authorization: Bearer로 붙여 부른다)
+// — 등록 도시마다 오늘 날씨를 받아 destination_weather에 저장한다(_lib/weather/refresh.js). 홈 "지금 가기 좋은 여행지"와
+// 도시 채널은 이 표만 읽는다.
 
+import { timingSafeEqual } from 'node:crypto';
 import { SignJWT, importPKCS8 } from 'jose';
 import { createClient } from '@supabase/supabase-js';
+import { refreshDestinations } from './_lib/weather/refresh.js';
 
 const ALLOWED_ORIGINS = new Set([
     'https://triptic.my',
@@ -206,6 +210,46 @@ async function fetchWeatherKit(lat, lng, lang, rangeStart, rangeEnd, needCurrent
     return upstream.json();
 }
 
+/** Vercel Cron의 Authorization(Bearer CRON_SECRET) 확인. null = CRON_SECRET이 서버에 없음 */
+function cronAuthorized(req) {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return null;
+    const given = Buffer.from(String(req.headers?.authorization ?? ''));
+    const expected = Buffer.from(`Bearer ${secret}`);
+    return given.length === expected.length && timingSafeEqual(given, expected);
+}
+
+/** 한 도시의 일별 예보(오늘 앞뒤) — 날짜 경계는 그 도시의 시간대로 */
+async function fetchDestinationDays(dest, startIso, endIso) {
+    const token = await weatherKitToken();
+    const params = new URLSearchParams({ dataSets: 'forecastDaily', timezone: dest.timezone, dailyStart: startIso, dailyEnd: endIso });
+    const url = `https://weatherkit.apple.com/api/v1/weather/en/${dest.lat}/${dest.lng}?${params.toString()}`;
+    const upstream = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15_000) });
+    if (!upstream.ok) throw new Error(`WeatherKit ${upstream.status}`);
+    const json = await upstream.json();
+    return json.forecastDaily?.days ?? [];
+}
+
+/** 하루 한 번 — 등록 도시 전부의 오늘 날씨를 destination_weather에 저장 */
+async function handleDailyRefresh(req, res) {
+    const authorized = cronAuthorized(req);
+    if (authorized === null) return res.status(503).json({ error: 'cron_not_configured' });
+    if (!authorized) return res.status(401).json({ error: 'unauthorized' });
+    const configured = !!(process.env.WEATHERKIT_TEAM_ID && process.env.WEATHERKIT_SERVICE_ID && process.env.WEATHERKIT_KEY_ID && process.env.WEATHERKIT_PRIVATE_KEY);
+    const db = supabaseAdmin();
+    if (!configured || !db) return res.status(503).json({ error: 'not_configured' });
+
+    const { data: destinations, error } = await db.from('destinations').select('id, slug, lat, lng, timezone');
+    if (error) return res.status(500).json({ error: 'destinations_failed' });
+    const { rows, failed } = await refreshDestinations({ destinations: destinations ?? [], fetchDays: fetchDestinationDays });
+    for (let i = 0; i < rows.length; i += 100) {
+        const { error: upsertError } = await db.from('destination_weather').upsert(rows.slice(i, i + 100), { onConflict: 'destination_id' });
+        if (upsertError) return res.status(500).json({ error: 'save_failed', updated: i });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(200).json({ updated: rows.length, failed });
+}
+
 export default async function handler(req, res) {
     applyCors(req, res);
 
@@ -215,6 +259,7 @@ export default async function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
+    if (req.query?.cron === '1') return handleDailyRefresh(req, res);
 
     const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
     if (isRateLimited(ip)) {

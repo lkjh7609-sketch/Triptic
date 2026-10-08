@@ -1120,10 +1120,20 @@
   font-size: 1.75rem;
   line-height: 1;
 }
+.weatherRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.weatherNormal {
+  font-size: var(--font-caption-size);
+  color: var(--pd-muted);
+}
 .weatherPrecip {
-  text-align: right;
+  margin-left: auto;
   font-size: var(--font-caption-size);
   color: var(--pd-subtle);
+  white-space: nowrap;
 }
 .flightIcon {
   margin-top: 2px;

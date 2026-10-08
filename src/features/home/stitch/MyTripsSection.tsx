@@ -68,18 +68,18 @@ function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean 
               </span>
             )}
           </div>
-          {compact ? (
-            <span className={styles.metaText}>{nightsDays}</span>
-          ) : others > 0 ? (
+          <TripWeatherChip trip={trip} className={styles.cardWeather} />
+        </div>
+        {compact ? (
+          <p className={styles.subMeta}>{nightsDays}</p>
+        ) : others > 0 ? (
+          <p className={styles.subMeta}>
             <span className={styles.group}>
               <Users size={16} aria-hidden="true" /> {t('page.trips.withCompanions', { count: others })}
             </span>
-          ) : null}
-        </div>
-        <div className={styles.titleRow}>
-          <h3 className={styles.cardTitle}>{trip.title}</h3>
-          <TripWeatherChip trip={trip} className={styles.titleWeather} />
-        </div>
+          </p>
+        ) : null}
+        <h3 className={styles.cardTitle}>{trip.title}</h3>
         {compact ? (
           <p className={styles.cardDesc}>{`${start.full} (${start.weekday}) - ${end.md} (${end.weekday})`}</p>
         ) : (

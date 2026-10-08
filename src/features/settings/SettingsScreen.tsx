@@ -27,9 +27,8 @@ import { LanguageModal } from './LanguageModal';
 import { CurrencyModal } from './CurrencyModal';
 import { FeedbackModal } from './FeedbackModal';
 
+import { useAppVersion } from '@/features/notices/useAppVersion';
 import styles from './SettingsScreen.module.css';
-
-const APP_VERSION = '1.0.2';
 
 const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
   preDeparture: 'notifications.preDeparture',
@@ -58,6 +57,7 @@ async function readCacheUsageMB(): Promise<number | null> {
  * 정보(약관/개인정보처리방침/오픈소스 라이선스/문의하기) 섹션을 채운다.
  */
 export function SettingsScreen() {
+  const appVersion = useAppVersion();
   const { t, i18n } = useTranslation(['settings', 'common']);
   const { user, loading } = useSession();
   const { data: profile } = useProfile();
@@ -291,7 +291,7 @@ export function SettingsScreen() {
             {t('about.partnership')}
           </button>
         </div>
-        <p className={styles.row}>{t('about.version', { version: APP_VERSION })}</p>
+        <p className={styles.row}>{t('about.version', { version: appVersion })}</p>
         {/* 항목 중간에서 줄이 끊기지 않게 "운영자 · 메일" / "호스팅" / "저작권" 세 줄로 나눈다 */}
         <p className={`${styles.hint} ${styles.operator}`}>
           <span>

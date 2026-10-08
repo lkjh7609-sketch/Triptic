@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { apiUrl } from '@/shared/api/apiUrl';
 import { aiLocale } from '@/shared/api/aiCacheKeys';
 import { AFFILIATE_LINKS } from '@/shared/config';
+import { isNativeApp } from '@/shared/platform';
+import { openExternalUrl } from '@/shared/externalLink';
 import i18n from '@/shared/i18n';
 import { cityDisplayName } from './cityName';
 
@@ -74,6 +76,13 @@ export function openExternal(url: string): void {
  * 링크가 없으면(null) 연 탭을 닫고 false.
  */
 export async function openInNewTab(getUrl: () => Promise<string | null>): Promise<boolean> {
+  // 앱(iOS 셸)은 팝업 차단이 없고 인앱 브라우저로 여니, 링크를 받은 뒤에 바로 연다
+  if (isNativeApp()) {
+    const url = await getUrl().catch(() => null);
+    if (!url) return false;
+    await openExternalUrl(url);
+    return true;
+  }
   const tab = window.open('', '_blank');
   if (tab) {
     tab.opener = null;

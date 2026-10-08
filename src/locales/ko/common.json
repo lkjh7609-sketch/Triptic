@@ -193,5 +193,17 @@
       "terms": "그 밖의 이용약관 위반",
       "custom": "직접 입력"
     }
+  },
+  "loginConflict": {
+    "title": "이미 가입된 이메일이에요",
+    "intro": "이 이메일은 {{existing}}(으)로 이미 가입되어 있어요. {{attempted}}(으)로는 로그인되지 않았어요.",
+    "recent": "최근 로그인 방법",
+    "hint": "{{recent}}(으)로 로그인해 주세요.",
+    "provider": {
+      "apple": "Apple",
+      "google": "Google",
+      "kakao": "카카오",
+      "email": "이메일"
+    }
   }
 }
