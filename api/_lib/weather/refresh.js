@@ -7,12 +7,17 @@ export function localDate(timeZone, now = new Date()) {
     return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 }
 
-/** WeatherKit forecastDaily.days 중 그 도시의 '오늘'(현지 날짜)에 해당하는 날 — 없으면 null */
-export function pickLocalDay(days, timeZone, localToday) {
+/**
+ * WeatherKit forecastDaily.days 중 지금(now)이 속한 날 — 그 도시의 '오늘'. 시간대 데이터(Intl)에 기대지 않고 WeatherKit이 준
+ * 하루의 시작·끝 시각으로 직접 찾는다(Africa/Casablanca처럼 Intl의 시간대 정보가 어긋나는 도시도 맞는다). 없으면 null.
+ */
+export function pickLocalDay(days, now = new Date()) {
+    const t = now.getTime();
     for (const day of Array.isArray(days) ? days : []) {
-        if (typeof day?.forecastStart !== 'string') continue;
-        const t = new Date(day.forecastStart);
-        if (!Number.isNaN(t.getTime()) && localDate(timeZone, t) === localToday) return day;
+        const start = Date.parse(day?.forecastStart);
+        if (Number.isNaN(start)) continue;
+        const end = Date.parse(day?.forecastEnd);
+        if (start <= t && t < (Number.isNaN(end) ? start + 86_400_000 : end)) return day;
     }
     return null;
 }
@@ -66,7 +71,7 @@ export async function refreshDestinations({ destinations, fetchDays, now = new D
             const start = new Date(now.getTime() - 24 * 3_600_000).toISOString().slice(0, 19) + 'Z';
             const end = new Date(now.getTime() + 36 * 3_600_000).toISOString().slice(0, 19) + 'Z';
             const days = await fetchDays(dest, start, end);
-            const day = pickLocalDay(days, dest.timezone, today);
+            const day = pickLocalDay(days, now);
             const row = day ? toRow(dest.id, day, today, now) : null;
             if (row) rows.push(row);
             else failed.push(dest.slug);
