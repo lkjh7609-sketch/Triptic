@@ -9,6 +9,7 @@
  * mount, 캐시 만료 등)을 그대로 얻을 수 있어 안전하다.
  */
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { defaultShouldDehydrateQuery, type Query } from '@tanstack/react-query';
 import { get, set, del } from 'idb-keyval';
 
 const CACHE_KEY = 'triptic-query-cache';
@@ -24,6 +25,22 @@ export const offlinePersister = createAsyncStoragePersister({
     removeItem: (key) => del(key),
   },
 });
+
+/**
+ * 캐시는 JSON으로 저장되므로 Map·Set은 `{}`로 바뀌어 복원된다 — 복원된 값에 `.get()`을 부르면 화면이 죽는다
+ * (2026-10-08 홈 '가기 좋은 여행지'가 아이폰에서 두 번째 접속부터 멈춤). 그런 결과는 저장하지 않는다.
+ * 깊이 3단계·배열은 앞 50개만 본다(저장은 자주 일어나므로 전체를 훑지 않는다).
+ */
+export function isPersistableData(value: unknown, depth = 0): boolean {
+  if (value instanceof Map || value instanceof Set) return false;
+  if (depth >= 3 || value === null || typeof value !== 'object') return true;
+  const items = Array.isArray(value) ? value.slice(0, 50) : Object.values(value as Record<string, unknown>);
+  return items.every((v) => isPersistableData(v, depth + 1));
+}
+
+export function shouldPersistQuery(query: Query): boolean {
+  return defaultShouldDehydrateQuery(query) && isPersistableData(query.state.data);
+}
 
 /** 로그아웃 시 호출 — 이전 계정의 캐시가 다음 로그인에 잠깐 노출되는 것을 막는다. */
 export async function clearOfflineCache(): Promise<void> {
