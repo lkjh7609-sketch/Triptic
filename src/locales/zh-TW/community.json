@@ -309,7 +309,13 @@
     "searchPlaceholder": "搜尋地區、關鍵字、旅行者...",
     "emptySub": "分享您第一次旅行的瞬間和當地見解。",
     "writeFirst": "寫下您的第一個故事",
-    "searchError": "找不到該城市的留言板。"
+    "searchError": "找不到該城市的留言板。",
+    "pager": {
+      "label": "分頁",
+      "prev": "上一頁",
+      "next": "下一頁",
+      "page": "第 {{page}} 頁"
+    }
   },
   "destination": {
     "loadError": "未能載入旅行地資訊。",
