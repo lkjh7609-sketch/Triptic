@@ -30,6 +30,7 @@ import { SavedTravelogues } from './SavedTravelogues';
 import { useProfile } from '@/shared/hooks/useProfile';
 import { useTempUnit } from '@/shared/hooks/useTempUnit';
 import { useWeather } from '@/features/weather/useWeather';
+import { TripWeatherChip } from '@/features/weather/TripWeatherChip';
 import { mapConditionCode, weatherIcon } from '@/features/weather/conditionMap';
 import { formatTemp } from '@/features/weather/weatherRules';
 import { captureError } from '@/shared/monitoring';
@@ -591,6 +592,7 @@ function CompactTripCard({
           <p className={styles.cardDesc}>{range ?? t('tripCard.periodUndecided')}</p>
           <div className={styles.cardRoute}>
             <Navigation size={14} color="var(--pd-accent)" aria-hidden="true" /> {cityDisplayName(trip.city) || t('desktop.cityUnset')}
+            <TripWeatherChip trip={trip} className={styles.cardWeather} />
           </div>
         </div>
       </div>
