@@ -1,9 +1,7 @@
 /**
  * Supabase Auth 서비스 (새 React 앱 전용 — src/services/authService.js 이식)
  * 로직은 그대로 유지하고, 클라이언트 획득만 동기 방식(getSupabaseClient)으로 바뀐다.
- * Sign in with Apple 배선 추가 (02-screens.md §6: "Apple 로그인을 첫 번째로 배치").
- * ⚠️ Apple Developer Program 미가입 상태 — Supabase 프로젝트에 Apple OAuth
- * 공급자가 아직 설정되지 않았으므로, 버튼은 동작하되 실제 인증은 완료되지 않는다.
+ * Sign in with Apple 배선 (02-screens.md §6: "Apple 로그인을 첫 번째로 배치") — 운영 Supabase에 Apple 공급자 설정 완료.
  */
 import { isAuthRetryableFetchError, type Session, type User, type AuthChangeEvent } from '@supabase/supabase-js';
 import { getSupabaseClient, supabaseAuthStorageKey } from './supabaseClient';
