@@ -319,3 +319,13 @@
     font-weight: 500;
   }
 }
+
+.weatherIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.weatherIcon svg {
+  width: 16px;
+  height: 16px;
+}

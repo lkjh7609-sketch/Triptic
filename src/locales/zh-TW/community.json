@@ -883,14 +883,12 @@
     "breadcrumbAll": "所有城市",
     "breadcrumbNav": "目前位置",
     "rate": "1 {{currency}} ≈ {{amount}} KRW",
-    "weatherNow": "{{temp}} {{condition}}",
-    "weatherFeels": "(體感 {{temp}})",
+    "weatherToday": "今天 {{temp}} {{condition}}",
     "weather": {
       "clear": "晴",
       "partly": "晴時多雲",
       "cloudy": "陰",
       "fog": "霧",
-      "drizzle": "毛毛雨",
       "rain": "雨",
       "snow": "雪",
       "thunder": "雷雨"

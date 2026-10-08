@@ -49,15 +49,16 @@ describe('channelHelpers', () => {
     expect(splitDiff(60)).toEqual({ hours: 1, minutes: 0, ahead: true });
   });
 
-  it('WMO 코드를 문구 묶음으로', () => {
-    expect(weatherKey(0)).toBe('clear');
-    expect(weatherKey(2)).toBe('partly');
-    expect(weatherKey(3)).toBe('cloudy');
-    expect(weatherKey(53)).toBe('drizzle');
-    expect(weatherKey(63)).toBe('rain');
-    expect(weatherKey(73)).toBe('snow');
-    expect(weatherKey(95)).toBe('thunder');
-    expect(weatherKey(null)).toBeNull();
+  it('WeatherKit 날씨 상태(줄인 9종)를 문구 묶음으로', () => {
+    expect(weatherKey('clear')).toBe('clear');
+    expect(weatherKey('partly_cloudy')).toBe('partly');
+    expect(weatherKey('cloudy')).toBe('cloudy');
+    expect(weatherKey('fog')).toBe('fog');
+    expect(weatherKey('rain')).toBe('rain');
+    expect(weatherKey('snow')).toBe('snow');
+    expect(weatherKey('thunderstorm')).toBe('thunder');
+    expect(weatherKey('wind')).toBeNull();
+    expect(weatherKey('unknown')).toBeNull();
   });
 
   it('금액 범위와 원화 어림값', () => {
