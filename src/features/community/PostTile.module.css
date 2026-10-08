@@ -204,3 +204,27 @@
   color: var(--text-muted);
   font-size: 0.75rem;
 }
+
+/* ── 동행 모집글 표시 — 전체 피드에서 일반 글과 한눈에 구분(2026-10-08) ── */
+.coverCompanion {
+  background: var(--brand-solid);
+}
+
+.companionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  background: var(--text-on-brand);
+  color: var(--brand-text);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.tileCompanion {
+  border-color: var(--brand-solid);
+}
