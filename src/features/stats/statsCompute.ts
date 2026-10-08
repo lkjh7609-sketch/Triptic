@@ -80,7 +80,7 @@ export interface TripStat {
 }
 
 export interface Badge {
-  key: 'firstTrip' | 'firstAbroad' | 'countries3' | 'countries5' | 'countries10' | 'trips5' | 'trips10' | 'trips20' | 'days30' | 'days100' | 'oneLap' | 'firstCompanion';
+  key: 'firstTrip' | 'firstAbroad' | 'countries3' | 'countries5' | 'countries10' | 'trips5' | 'trips10' | 'trips20' | 'days30' | 'days100' | 'days365' | 'firstCompanion';
   /** 달성한 여행의 종료일 */
   date: string;
 }
@@ -95,8 +95,6 @@ export interface TravelStats {
   /** 나라를 못 정한 장소 수(통계에서 빠진다) */
   unknownPlaces: number;
   totalKm: number;
-  /** 지구 둘레(40,075km) 몇 바퀴 */
-  laps: number;
   visited: VisitedPlace[];
   countries: { code: string; trips: number }[];
   continents: { key: ContinentKey; trips: number; percent: number }[];
@@ -127,7 +125,6 @@ export interface TravelStats {
 }
 
 const SEOUL = { lat: 37.4691, lng: 126.451 };
-const EARTH_KM = 40075;
 const MATCH_KM = 120;
 const WORLD_COUNTRIES = 195;
 
@@ -337,7 +334,6 @@ export function buildStats(input: {
     countryCount: countries.length,
     unknownPlaces,
     totalKm,
-    laps: totalKm / EARTH_KM,
     visited: [...visitedMap.values()],
     countries,
     continents,
@@ -382,12 +378,10 @@ export function computeBadges(tripsAsc: TripStat[]): Badge[] {
   const seenCountries = new Set<string>();
   let count = 0;
   let days = 0;
-  let km = 0;
   const ordered = [...tripsAsc].sort((a, b) => (a.endDate < b.endDate ? -1 : a.endDate > b.endDate ? 1 : 0));
   for (const t of ordered) {
     count += 1;
     days += t.days;
-    km += t.distanceKm;
     for (const c of t.countries) seenCountries.add(c);
     award('firstTrip', t.endDate);
     if (t.countries.some((c) => c !== 'KR')) award('firstAbroad', t.endDate);
@@ -400,7 +394,7 @@ export function computeBadges(tripsAsc: TripStat[]): Badge[] {
     if (count >= 20) award('trips20', t.endDate);
     if (days >= 30) award('days30', t.endDate);
     if (days >= 100) award('days100', t.endDate);
-    if (km >= EARTH_KM) award('oneLap', t.endDate);
+    if (days >= 365) award('days365', t.endDate);
   }
   return out;
 }

@@ -84,7 +84,7 @@
 
 @media (min-width: 900px) {
   .summary {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -709,4 +709,18 @@
   color: var(--text-muted);
   font-size: 0.6875rem;
   min-height: 1em;
+}
+
+/* 한 줄로 — 넘치면 말줄임 */
+.oneLine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.styleLabel {
+  margin-right: 8px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
