@@ -205,26 +205,16 @@
   font-size: 0.75rem;
 }
 
-/* ── 동행 모집글 표시 — 전체 피드에서 일반 글과 한눈에 구분(2026-10-08) ── */
-.coverCompanion {
-  background: var(--brand-solid);
-}
-
-.companionBadge {
+/* 동행 모집글 표시 — 칩 줄 맨 앞의 알약 하나(브랜드 초록과 어울리는 따뜻한 호박색) */
+.companionPill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 34px;
-  padding: 0 16px;
+  min-height: 22px;
+  padding: 0 9px;
   border-radius: var(--radius-pill);
-  background: var(--text-on-brand);
-  color: var(--brand-text);
-  font-size: 1rem;
+  background: var(--warning-tint);
+  color: var(--warning-text);
+  font-size: 0.6875rem;
   font-weight: 800;
-  letter-spacing: 0.01em;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-}
-
-.tileCompanion {
-  border-color: var(--brand-solid);
+  white-space: nowrap;
 }

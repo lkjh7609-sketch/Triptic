@@ -12,6 +12,8 @@ import { usePostsFeed } from './hooks/usePosts';
 import { useDestinations } from './hooks/useDestinations';
 import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
+import { BoardHead, BoardRow } from './BoardRow';
+import boardStyles from './BoardRow.module.css';
 import { PagedFeed } from './PagedFeed';
 import { DestinationSelector } from './DestinationSelector';
 import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
@@ -223,12 +225,17 @@ export function CommunityScreen() {
           key={tab}
           items={items}
           getKey={(item) => item.id}
-          renderItem={(item) => (item.kind === 'post' ? <PostCard post={item.post} /> : <CompanionFeedCard post={item.post} />)}
+          renderItem={(item) =>
+            tab === 'all' ? <BoardRow item={item} /> : item.kind === 'post' ? <PostCard post={item.post} /> : <CompanionFeedCard post={item.post} />
+          }
           hasMore={!!feed.hasNextPage}
           isFetchingMore={feed.isFetchingNextPage}
           fetchMore={() => void feed.fetchNextPage()}
-          gridClassName={styles.desktopList}
-          listClassName={styles.pageList}
+          // 전체 탭은 게시판형(8개씩), 구독 탭은 카드형
+          gridClassName={tab === 'all' ? boardStyles.list : styles.desktopList}
+          listClassName={tab === 'all' ? boardStyles.list : styles.pageList}
+          pageSize={tab === 'all' ? 8 : undefined}
+          gridHeader={tab === 'all' ? <BoardHead /> : undefined}
         />
       )}
     </div>
