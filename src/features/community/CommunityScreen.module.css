@@ -514,3 +514,11 @@
     height: 48px;
   }
 }
+
+/* 모바일 피드 한 쪽(6개) — 옆으로 넘기는 한 장 안에서 카드가 세로로 쌓인다 */
+.pageList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4) 0;
+}

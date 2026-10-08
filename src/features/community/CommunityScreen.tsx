@@ -12,6 +12,7 @@ import { usePostsFeed } from './hooks/usePosts';
 import { useDestinations } from './hooks/useDestinations';
 import { useFollowedDestinationIds } from './hooks/useCommunitySafety';
 import { PostCard } from './PostCard';
+import { PagedFeed } from './PagedFeed';
 import { DestinationSelector } from './DestinationSelector';
 import { TravelAlertSummary } from '@/features/travelAlerts/TravelAlertSummary';
 import { CompanionFeedList, CompanionFeedCard } from './CompanionFeedList';
@@ -218,29 +219,17 @@ export function CommunityScreen() {
           
         </div>
       ) : (
-        <>
-          <div className={styles.desktopList}>
-            {items.map((item) =>
-              item.kind === 'post' ? (
-                <PostCard key={item.id} post={item.post} />
-              ) : (
-                <CompanionFeedCard key={item.id} post={item.post} />
-              ),
-            )}
-          </div>
-          {feed.hasNextPage ? (
-            <div className={styles.loadMoreWrap}>
-              <button
-                type="button"
-                className={styles.loadMoreBtn}
-                onClick={() => feed.fetchNextPage()}
-                disabled={feed.isFetchingNextPage}
-              >
-                {feed.isFetchingNextPage ? t('state.loading', { ns: 'common' }) : t('feed.loadMore')}
-              </button>
-            </div>
-          ) : null}
-        </>
+        <PagedFeed
+          key={tab}
+          items={items}
+          getKey={(item) => item.id}
+          renderItem={(item) => (item.kind === 'post' ? <PostCard post={item.post} /> : <CompanionFeedCard post={item.post} />)}
+          hasMore={!!feed.hasNextPage}
+          isFetchingMore={feed.isFetchingNextPage}
+          fetchMore={() => void feed.fetchNextPage()}
+          gridClassName={styles.desktopList}
+          listClassName={styles.pageList}
+        />
       )}
     </div>
   );

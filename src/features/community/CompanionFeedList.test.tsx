@@ -21,6 +21,16 @@ vi.mock('./hooks/useCompanionPosts', () => ({
   useMyActiveCompanionPosts: () => ({ data: state.mine, isLoading: false, isError: false }),
 }));
 
+/** useMediaQuery가 쓰는 matchMedia — jsdom에는 없다. matches=true면 PC 폭 */
+function stubMatchMedia(matches: boolean) {
+  window.matchMedia = ((query: string) => ({
+    matches,
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  })) as unknown as typeof window.matchMedia;
+}
+
 function post(over: Partial<CompanionPost> = {}): CompanionPost {
   return {
     id: 'c1',
@@ -52,6 +62,7 @@ function renderList(hostingOnly = false) {
 
 describe('CompanionFeedList', () => {
   beforeEach(() => {
+    stubMatchMedia(false);
     state.user = { id: 'me' };
     state.feed = [post(), post({ id: 'c2', author_id: 'me', title: '내 모집글' })];
     state.mine = [

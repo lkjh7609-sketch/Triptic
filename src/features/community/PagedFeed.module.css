@@ -1,0 +1,142 @@
+.scrollAnchor {
+  scroll-margin-top: 96px;
+}
+
+.cell {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cell > * {
+  flex: 1;
+}
+
+/* PC — 둥근 번호 쪽 넘김 */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-6) 0 var(--space-2);
+}
+
+.arrow,
+.num,
+.numActive {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.arrow {
+  border-color: var(--border);
+  background: var(--surface-card);
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .arrow:hover:not(:disabled),
+  .num:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+  }
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.numActive {
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-sm);
+  cursor: default;
+}
+
+.gap {
+  min-width: 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  letter-spacing: 1px;
+}
+
+.arrow:focus-visible,
+.num:focus-visible,
+.dot:focus-visible,
+.dotActive:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* 모바일 — 옆으로 밀어 한 쪽씩 넘기고, 아래 점이 위치를 보여 준다 */
+.track {
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  box-sizing: border-box;
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-3) 0 var(--space-2);
+}
+
+/* 점은 작게 보이지만 누르는 칸은 넉넉하게 */
+.dot,
+.dotActive {
+  appearance: none;
+  position: relative;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  cursor: pointer;
+  transition: width 0.2s, background 0.2s;
+}
+
+.dot::after,
+.dotActive::after {
+  content: '';
+  position: absolute;
+  inset: -10px -4px;
+}
+
+.dotActive {
+  width: 22px;
+  background: var(--brand-solid);
+}
