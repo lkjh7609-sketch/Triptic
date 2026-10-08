@@ -1,0 +1,7 @@
+/* 위젯(반응형)이 칸 폭에 맞춰 줄어든다. 혹시 넘치면 가로로만 스크롤 */
+.host {
+  width: 100%;
+  max-width: 100%;
+  min-height: 286px;
+  overflow-x: auto;
+}

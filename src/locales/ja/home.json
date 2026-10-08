@@ -196,33 +196,23 @@
     "results": "ホテル検索結果",
     "starsN_other": "{{count}}つ星",
     "guestRating": "宿泊者評価",
-    "fromCenter": "中心部から{{km}}km",
     "reviewsN_other": "クチコミ{{count}}件",
-    "freeCancel": "無料キャンセル",
     "breakfast": "朝食付き",
-    "payLater": "現地払い",
-    "perNight": "1泊あたり(税込)",
-    "totalFor": "{{nights}}泊 合計{{price}}",
+    "perNight": "1泊あたり",
     "book": "予約する",
-    "via": "{{provider}}で予約",
-    "compareRooms_other": "客室・料金{{count}}件を比較",
-    "room": "客室",
     "countN_other": "{{count}}件の宿泊施設",
     "searching": "ホテルを探しています…",
     "sortLabel": "並べ替え",
     "sort": {
-      "popularity": "おすすめ順",
-      "price": "料金が安い順",
-      "rating": "評価が高い順",
-      "stars": "星の数が多い順",
-      "distance": "中心部に近い順"
+      "recommended": "おすすめ順",
+      "priceAsc": "価格の安い順",
+      "priceDesc": "価格の高い順",
+      "starsDesc": "星の多い順",
+      "reviewScore": "評価の高い順"
     },
-    "sandbox": "以下のデータは現在構築中のため、実際のご利用はできません",
     "error": "ホテルを読み込めませんでした。しばらくしてからもう一度お試しください",
     "empty": "条件に合うホテルがありません。絞り込みや日程を変えてみてください",
-    "loadMore": "もっと見る",
-    "loadingMore": "読み込み中…",
-    "priceNote": "料金は予約サイトで変わることがあります。予約と支払いはKayakが案内する予約サイトで行います",
+    "priceNote": "料金は予約時に変わることがあります。税・サービス料は予約ページでご確認ください",
     "comingSoon": {
       "title": "ホテル検索を準備中です",
       "body": "世界中のホテル料金を比較できる検索をまもなく公開します。"
@@ -237,19 +227,18 @@
       "price": "料金の上限",
       "anyPrice": "上限なし",
       "upTo": "最大{{price}}",
-      "propertyType": "施設タイプ",
-      "facilities": "設備",
-      "showResults_other": "{{count}}件を表示"
+      "showResults_other": "{{count}}件を表示",
+      "anyStars": "指定なし",
+      "starsOver": "星{{n}}以上",
+      "discountOnly": "割引のみ"
     },
     "form": {
       "destination": "どこへ行きますか?",
-      "destinationPlaceholder": "都市・エリア・ホテル名",
+      "destinationPlaceholder": "都市またはエリア",
       "decrease": "{{label}}を減らす",
       "increase": "{{label}}を増やす",
-      "guests": "客室・人数",
-      "roomsN_other": "{{count}}室",
+      "guests": "人数",
       "guestsN_other": "{{count}}名",
-      "rooms": "客室",
       "adults": "大人",
       "children": "子ども",
       "childAge": "子ども{{n}}の年齢",
@@ -261,6 +250,17 @@
       "badDates": "日付を確認してください — チェックアウトはチェックインの翌日以降です",
       "search": "ホテルを検索",
       "searching": "検索中…"
+    },
+    "discountN": "{{pct}}%オフ",
+    "wifi": "無料Wi-Fi",
+    "noCity": {
+      "title": "この場所の近くで宿泊先が見つかりませんでした",
+      "body": "別の都市やエリアで検索してください。"
+    },
+    "recommend": {
+      "title": "おすすめの旅行先",
+      "sub": "旅程の都市と人気の都市です",
+      "myTrip": "旅程"
     }
   },
   "activities": {

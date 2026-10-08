@@ -196,33 +196,23 @@
     "results": "住宿搜尋結果",
     "starsN_other": "{{count}} 星級",
     "guestRating": "住客評分",
-    "fromCenter": "距市中心 {{km}} 公里",
     "reviewsN_other": "{{count}} 則評論",
-    "freeCancel": "免費取消",
     "breakfast": "含早餐",
-    "payLater": "現場付款",
-    "perNight": "每晚(含稅)",
-    "totalFor": "{{nights}} 晚共 {{price}}",
+    "perNight": "每晚",
     "book": "前往訂房",
-    "via": "於 {{provider}} 訂房",
-    "compareRooms_other": "比較 {{count}} 種房型與價格",
-    "room": "房型",
     "countN_other": "{{count}} 間住宿",
     "searching": "正在搜尋住宿…",
     "sortLabel": "排序",
     "sort": {
-      "popularity": "推薦",
-      "price": "價格最低",
-      "rating": "評分最高",
-      "stars": "星級最高",
-      "distance": "距市中心最近"
+      "recommended": "推薦排序",
+      "priceAsc": "價格低到高",
+      "priceDesc": "價格高到低",
+      "starsDesc": "星級高到低",
+      "reviewScore": "評分高到低"
     },
-    "sandbox": "以下資料目前仍在建置中，暫時無法實際使用",
     "error": "無法載入住宿，請稍後再試",
     "empty": "沒有符合條件的住宿，請調整篩選或日期",
-    "loadMore": "顯示更多",
-    "loadingMore": "載入中…",
-    "priceNote": "價格可能在訂房網站上變動。訂房與付款將在 Kayak 連結的訂房網站完成",
+    "priceNote": "價格可能於訂房時變動，稅金與服務費請於訂房頁面確認",
     "comingSoon": {
       "title": "住宿搜尋準備中",
       "body": "我們即將推出可比較全球住宿價格的搜尋，敬請期待。"
@@ -237,19 +227,18 @@
       "price": "價格上限",
       "anyPrice": "不限",
       "upTo": "最高 {{price}}",
-      "propertyType": "住宿類型",
-      "facilities": "設施",
-      "showResults_other": "查看 {{count}} 間住宿"
+      "showResults_other": "查看 {{count}} 間住宿",
+      "anyStars": "不限",
+      "starsOver": "{{n}} 星以上",
+      "discountOnly": "僅限優惠"
     },
     "form": {
       "destination": "想去哪裡?",
-      "destinationPlaceholder": "城市、地區或飯店名稱",
+      "destinationPlaceholder": "城市或地區",
       "decrease": "減少{{label}}",
       "increase": "增加{{label}}",
-      "guests": "房間與人數",
-      "roomsN_other": "{{count}} 間房",
+      "guests": "人數",
       "guestsN_other": "{{count}} 位旅客",
-      "rooms": "房間",
       "adults": "成人",
       "children": "兒童",
       "childAge": "兒童 {{n}} 年齡",
@@ -261,6 +250,17 @@
       "badDates": "請確認日期 — 退房須在入住日之後",
       "search": "搜尋住宿",
       "searching": "搜尋中…"
+    },
+    "discountN": "{{pct}}% 折扣",
+    "wifi": "免費 Wi-Fi",
+    "noCity": {
+      "title": "找不到此地點附近的住宿",
+      "body": "請試試其他城市或地區。"
+    },
+    "recommend": {
+      "title": "推薦旅遊地",
+      "sub": "來自你的行程與熱門城市",
+      "myTrip": "我的行程"
     }
   },
   "activities": {
