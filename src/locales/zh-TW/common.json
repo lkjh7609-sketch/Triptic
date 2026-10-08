@@ -193,5 +193,17 @@
       "terms": "其他違反服務條款",
       "custom": "自行輸入"
     }
+  },
+  "loginConflict": {
+    "title": "此電子郵件已註冊",
+    "intro": "此電子郵件已使用{{existing}}註冊。無法使用{{attempted}}登入。",
+    "recent": "最近的登入方式",
+    "hint": "請使用{{recent}}登入。",
+    "provider": {
+      "apple": "Apple",
+      "google": "Google",
+      "kakao": "Kakao",
+      "email": "電子郵件"
+    }
   }
 }

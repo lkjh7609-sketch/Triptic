@@ -193,5 +193,17 @@
       "terms": "Other violation of the Terms of Service",
       "custom": "Write my own"
     }
+  },
+  "loginConflict": {
+    "title": "This email is already registered",
+    "intro": "This email is already registered with {{existing}}. You weren't signed in with {{attempted}}.",
+    "recent": "Last sign-in method",
+    "hint": "Please sign in with {{recent}}.",
+    "provider": {
+      "apple": "Apple",
+      "google": "Google",
+      "kakao": "Kakao",
+      "email": "Email"
+    }
   }
 }
