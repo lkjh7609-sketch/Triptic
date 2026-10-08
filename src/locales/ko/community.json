@@ -941,12 +941,10 @@
     "applyBtn": "동행 신청하기",
     "moreMenu": "더보기",
     "tripCard": {
-      "title": "{{city}} 여행 일정 만들기",
-      "desc": "항공권·호텔 예약 서류를 올리면 일정에 자동으로 정리해 드려요.",
+      "title": "{{city}} 날씨 및 시차",
+      "nowLabel": "{{city}} 현재 시각",
       "length": "추천 여행 기간",
-      "season": "최적 여행 시기",
-      "timeDiff": "시차",
-      "cta": "일정 만들기"
+      "season": "최적 여행 시기"
     },
     "timeDiff": {
       "same": "시차 없음",

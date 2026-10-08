@@ -941,12 +941,10 @@
     "applyBtn": "申請同行",
     "moreMenu": "更多",
     "tripCard": {
-      "title": "建立{{city}}旅遊行程",
-      "desc": "上傳機票與飯店訂房文件,我們會自動整理進你的行程。",
+      "title": "{{city}}天氣與時差",
+      "nowLabel": "{{city}}目前時間",
       "length": "建議天數",
-      "season": "最佳旅遊時間",
-      "timeDiff": "時差",
-      "cta": "建立行程"
+      "season": "最佳旅遊時間"
     },
     "timeDiff": {
       "same": "與韓國無時差",

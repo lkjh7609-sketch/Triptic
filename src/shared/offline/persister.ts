@@ -39,6 +39,8 @@ export function isPersistableData(value: unknown, depth = 0): boolean {
 }
 
 export function shouldPersistQuery(query: Query): boolean {
+  // AI 소개 같은 '없음(null)' 결과는 저장하지 않는다 — 복원된 null이 그 기기에서 소개를 계속 가렸다(2026-10-09)
+  if (query.queryKey[0] === 'ai' && query.state.data == null) return false;
   return defaultShouldDehydrateQuery(query) && isPersistableData(query.state.data);
 }
 
