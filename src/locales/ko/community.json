@@ -620,6 +620,7 @@
   "companion": {
     "list": {
       "tab": "동행",
+      "badge": "동행 모집",
       "writeBtn": "모집글 쓰기",
       "writeFirst": "첫 모집글 올리기",
       "empty": "아직 모집 중인 동행이 없어요."
