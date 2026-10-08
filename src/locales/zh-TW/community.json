@@ -315,6 +315,14 @@
       "prev": "上一頁",
       "next": "下一頁",
       "page": "第 {{page}} 頁"
+    },
+    "boardHead": {
+      "title": "標題",
+      "author": "作者",
+      "date": "日期",
+      "likes": "讚",
+      "comments": "留言",
+      "photo": "附照片"
     }
   },
   "destination": {

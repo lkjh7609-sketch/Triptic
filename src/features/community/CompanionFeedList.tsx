@@ -99,15 +99,13 @@ export function CompanionFeedCard({ post }: { post: CompanionPost }) {
 
   if (isDesktop) {
     return (
-      <Link to={`/community/companion/${post.id}`} className={`${tileStyles.tile} ${tileStyles.tileCompanion}`}>
-        <div className={`${tileStyles.cover} ${tileStyles.coverCompanion}`}>
-          <span className={tileStyles.companionBadge}>
-            <Users size={16} aria-hidden="true" />
-            {t('companion.list.badge')}
-          </span>
+      <Link to={`/community/companion/${post.id}`} className={tileStyles.tile}>
+        <div className={tileStyles.cover}>
+          <Users size={30} className={tileStyles.coverIcon} aria-hidden="true" />
         </div>
         <div className={tileStyles.body}>
           <div className={tileStyles.chips}>
+            <span className={tileStyles.companionPill}>{t('companion.list.badge')}</span>
             <span className={tileStyles.chip}>{place}</span>
             <span className={tileStyles.chipMuted}>{spots}</span>
           </div>
@@ -127,13 +125,13 @@ export function CompanionFeedCard({ post }: { post: CompanionPost }) {
   }
 
   return (
-    <Link to={`/community/companion/${post.id}`} className={`${rowStyles.card} ${rowStyles.cardCompanion}`}>
-      <span className={`${rowStyles.thumb} ${rowStyles.thumbCompanion}`}>
-        <Users size={26} aria-hidden="true" />
+    <Link to={`/community/companion/${post.id}`} className={rowStyles.card}>
+      <span className={rowStyles.thumb}>
+        <Users size={22} className={rowStyles.thumbIcon} aria-hidden="true" />
       </span>
       <span className={rowStyles.main}>
         <span className={rowStyles.chips}>
-          <span className={rowStyles.companionBadge}>{t('companion.list.badge')}</span>
+          <span className={rowStyles.companionPill}>{t('companion.list.badge')}</span>
           <span className={rowStyles.chip}>{place}</span>
           <span className={rowStyles.chipMuted}>{spots}</span>
         </span>

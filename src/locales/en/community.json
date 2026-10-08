@@ -317,6 +317,14 @@
       "prev": "Previous page",
       "next": "Next page",
       "page": "Page {{page}}"
+    },
+    "boardHead": {
+      "title": "Title",
+      "author": "Author",
+      "date": "Posted",
+      "likes": "Likes",
+      "comments": "Comments",
+      "photo": "Has photos"
     }
   },
   "destination": {
