@@ -18,6 +18,7 @@
 ### 이미 main에 있는 앱 관련 코드 (웹에서는 동작하지 않아야 한다)
 - PR #9 앱 소셜 로그인: `src/shared/api/nativeAuth.ts`(인앱 브라우저 → `com.triptic.travel://auth/callback?code=` 복귀, 앱에서만 PKCE), `@capacitor/app`·`@capacitor/browser`, Info.plist URL scheme. ⚠️ Supabase Authentication → URL Configuration → Redirect URLs에 `com.triptic.travel://auth/callback` 등록 필요(운영 설정, 사용자).
 - 앱에서 바깥 링크는 인앱 브라우저(`src/shared/externalLink.ts`), 호텔 탭은 웹=검색창 위젯 / 앱=구글 자동완성+우리 화면 결과(`HotelsScreen`).
+- **웹 항공 탭(2026-10-09)**: 모든 언어에서 우리 화면의 운임 목록(Ignav) + 예약은 Trip.com KR(한국어)/Kiwi.com(그 외, Travelpayouts) 딥링크. 앱 재개 때 이 구조를 쓸지는 사용자 결정(Kayak은 보류).
 - Kayak 연결은 **전부 제거됨**(PR #7, 커밋 `bae400c`) — Kayak 운영 키가 오면 그 이전 상태(항공 결과 목록은 `f09a626`에서 만들었다)를 되살려 항공에 붙인다. 호텔은 Agoda로 대체됨(화면에 제휴사 이름을 쓰지 않는다는 사용자 결정).
 
 ### 반드시 기억할 함정
