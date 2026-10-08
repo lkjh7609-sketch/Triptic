@@ -5,6 +5,9 @@ import { format } from 'date-fns';
 import '@/shared/i18n';
 import { TripWeatherChip } from './TripWeatherChip';
 
+// useProfile이 Supabase 클라이언트를 불러오는데 CI에는 환경변수가 없다 — 단위는 기본값 C로 고정
+vi.mock('@/shared/hooks/useTempUnit', () => ({ useTempUnit: () => 'C' }));
+
 const ymd = (offsetDays: number) => {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
