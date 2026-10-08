@@ -35,7 +35,9 @@ export function DestinationPreviewModal({
   const { data: aiDesc, isPending: loading } = useQuery({
     queryKey: cityDescQueryKey(dest.city, locale),
     queryFn: () => fetchCityDescription(dest.city, locale),
-    staleTime: Infinity,
+    // 소개를 받은 경우만 영구 보관 — '소개 없음(null)'은 그 순간(로그인 확인 전·네트워크·한도)의 결과라 다시 열 때 다시 묻는다.
+    // 예전엔 null도 영구 보관 + 이 기기 캐시(24시간)에 저장돼, 설치형 앱(PWA)에서 소개 대신 기온·강수량 한 줄만 계속 나왔다(2026-10-09)
+    staleTime: (query) => (query.state.data ? Infinity : 0),
     gcTime: Infinity,
   });
 

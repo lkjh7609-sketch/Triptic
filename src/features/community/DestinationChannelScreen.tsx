@@ -352,7 +352,6 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
               city={city}
               timezone={destination.timezone}
               guide={guide}
-              onCreateTrip={createTrip}
             />
             {destination.currency ? (
               <FxAndPricesCard

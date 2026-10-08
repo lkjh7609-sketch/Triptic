@@ -169,3 +169,10 @@
     padding: 0 var(--space-4);
   }
 }
+
+/* PC 동행 게시판 — 한 줄에 카드 4개, 두 줄(한 쪽 8개) */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}

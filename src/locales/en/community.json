@@ -963,12 +963,10 @@
     "applyBtn": "Apply to join",
     "moreMenu": "More",
     "tripCard": {
-      "title": "Plan your {{city}} trip",
-      "desc": "Upload your flight and hotel bookings and we will organize them into your itinerary.",
+      "title": "{{city}} weather & time difference",
+      "nowLabel": "Current time in {{city}}",
       "length": "Suggested length",
-      "season": "Best time to go",
-      "timeDiff": "Time difference",
-      "cta": "Create a trip"
+      "season": "Best time to go"
     },
     "timeDiff": {
       "same": "Same time as Korea",
