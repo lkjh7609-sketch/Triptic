@@ -19,6 +19,8 @@ describe('requiresLogin — 비로그인 둘러보기(커뮤니티는 회원 전
   it.each([
     '/settings',
     '/settings/',
+    '/stats',
+    '/stats/',
     '/community',
     '/community/',
     '/community/d/tokyo',

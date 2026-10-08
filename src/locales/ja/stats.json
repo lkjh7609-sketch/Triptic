@@ -1,0 +1,137 @@
+{
+  "title": "旅行の統計",
+  "subtitle": "これまでの旅を数字で振り返ります",
+  "loadError": "統計を読み込めませんでした。しばらくしてからもう一度お試しください。",
+  "empty": {
+    "title": "まだ終わった旅行がありません",
+    "body": "旅行が終わるとここに統計がたまります。終了日が過ぎた旅行から数えます。",
+    "upcoming": "予定の旅行 {{count}}件",
+    "cta": "マイ旅行へ"
+  },
+  "summary": {
+    "trips": "行った旅行",
+    "tripsValue": "{{count}}回",
+    "days": "旅した日数",
+    "daysValue": "{{count}}日",
+    "cities": "訪れた都市",
+    "citiesValue": "{{count}}か所",
+    "countries": "訪れた国",
+    "countriesValue": "{{count}}か国",
+    "laps": "地球一周",
+    "lapsValue": "{{value}}周",
+    "km": "移動 {{km}}km(直線距離)",
+    "upcoming": "予定の旅行 {{count}}件"
+  },
+  "map": {
+    "title": "行った場所",
+    "aria": "訪れた国を塗った世界地図",
+    "world": "全195か国のうち{{count}}か国({{percent}}%)",
+    "unknown": "{{count}}か所は国を特定できず、国・大陸の統計から除きました。",
+    "continents": "大陸別の割合",
+    "continentNote": "旅行の回数ベース"
+  },
+  "expense": {
+    "title": "費用",
+    "total": "総支出",
+    "perDay": "1日あたり",
+    "perTrip": "1旅行あたり",
+    "mostExpensive": "一番高かった旅行",
+    "byCategory": "何に使った?",
+    "byPayment": "支払い方法",
+    "byTrip": "旅行ごとの比較",
+    "perDayShort": "1日 {{amount}}",
+    "none": "費用を記録した旅行がまだありません。旅行に費用を書いておくと、ここで集計できます。",
+    "noRecord": "費用の記録がない旅行 {{count}}件は平均から除きました。",
+    "noRate": "為替レートがない通貨の旅行 {{count}}件は合計から除きました。",
+    "note": "ウォン金額は、記録した為替で旅行の基準通貨に換算し、現在のレートでウォンに換算した値です。"
+  },
+  "habits": {
+    "title": "旅のくせ",
+    "byMonth": "月別の旅行回数",
+    "monthLabel": "{{month}}月",
+    "byYear": "年別",
+    "yearRow": "{{trips}}回 · {{days}}日",
+    "avgDays": "平均の旅行日数",
+    "longest": "一番長い旅行",
+    "topCities": "よく行った都市",
+    "topCityTrips": "{{count}}回",
+    "placesPerDay": "1日の平均訪問先",
+    "placesPerDayValue": "{{value}}か所",
+    "categories": "よく立ち寄った所",
+    "styleTitle": "あなたの旅のタイプ",
+    "styleNeed": "5か所以上入れた旅行がたまると、タイプをお知らせします。",
+    "style": {
+      "food": "グルメ探訪型 — 訪問先の3分の1以上が飲食店です。",
+      "sightseeing": "名所めぐり型 — 訪問先の半分以上が観光地です。",
+      "balanced": "バランス型です。"
+    }
+  },
+  "trips": {
+    "title": "旅行ごとの統計",
+    "days": "{{count}}日",
+    "places": "スポット {{count}}か所",
+    "flights": "フライト {{count}}区間",
+    "companions": "同行あり",
+    "expand": "詳しく",
+    "collapse": "閉じる",
+    "dayExpense": "日ごとの支出",
+    "dayLabel": "{{day}}日目",
+    "noExpense": "費用の記録なし",
+    "airlines": "航空会社",
+    "distance": "移動距離",
+    "categories": "訪問先の種類",
+    "countries": "訪れた国"
+  },
+  "badges": {
+    "title": "記録",
+    "locked": "まだです",
+    "name": {
+      "firstTrip": "初めての旅行を完了",
+      "firstAbroad": "初めての海外旅行",
+      "countries3": "3か国達成",
+      "countries5": "5か国達成",
+      "countries10": "10か国達成",
+      "trips5": "5回目の旅行",
+      "trips10": "10回目の旅行",
+      "trips20": "20回目の旅行",
+      "days30": "旅30日達成",
+      "days100": "旅100日達成",
+      "oneLap": "地球一周",
+      "firstCompanion": "初めての同行旅行"
+    }
+  },
+  "label": {
+    "expense": {
+      "food": "食費",
+      "transport": "交通",
+      "lodging": "宿泊",
+      "shopping": "ショッピング",
+      "activity": "アクティビティ",
+      "other": "その他"
+    },
+    "payment": {
+      "cash": "現金",
+      "card": "カード",
+      "other": "その他",
+      "unknown": "支払い方法未入力"
+    },
+    "place": {
+      "sight": "観光",
+      "meal": "食事",
+      "restaurant": "飲食店",
+      "cafe": "カフェ",
+      "shopping": "ショッピング",
+      "lodging": "宿",
+      "transport": "交通",
+      "other": "その他"
+    },
+    "continent": {
+      "AS": "アジア",
+      "EU": "ヨーロッパ",
+      "NA": "北アメリカ",
+      "SA": "南アメリカ",
+      "AF": "アフリカ",
+      "OC": "オセアニア"
+    }
+  }
+}

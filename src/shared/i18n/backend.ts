@@ -14,6 +14,7 @@ const localeModules: Record<string, () => Promise<any>> = {
   'en/home': () => import('../../locales/en/home.json'),
   'en/plan': () => import('../../locales/en/plan.json'),
   'en/settings': () => import('../../locales/en/settings.json'),
+  'en/stats': () => import('../../locales/en/stats.json'),
   'en/weather': () => import('../../locales/en/weather.json'),
   'ja/common': () => import('../../locales/ja/common.json'),
   'ja/community': () => import('../../locales/ja/community.json'),
@@ -22,6 +23,7 @@ const localeModules: Record<string, () => Promise<any>> = {
   'ja/home': () => import('../../locales/ja/home.json'),
   'ja/plan': () => import('../../locales/ja/plan.json'),
   'ja/settings': () => import('../../locales/ja/settings.json'),
+  'ja/stats': () => import('../../locales/ja/stats.json'),
   'ja/weather': () => import('../../locales/ja/weather.json'),
   'ko/common': () => import('../../locales/ko/common.json'),
   'ko/community': () => import('../../locales/ko/community.json'),
@@ -30,6 +32,7 @@ const localeModules: Record<string, () => Promise<any>> = {
   'ko/home': () => import('../../locales/ko/home.json'),
   'ko/plan': () => import('../../locales/ko/plan.json'),
   'ko/settings': () => import('../../locales/ko/settings.json'),
+  'ko/stats': () => import('../../locales/ko/stats.json'),
   'ko/weather': () => import('../../locales/ko/weather.json'),
   'zh-TW/common': () => import('../../locales/zh-TW/common.json'),
   'zh-TW/community': () => import('../../locales/zh-TW/community.json'),
@@ -38,6 +41,7 @@ const localeModules: Record<string, () => Promise<any>> = {
   'zh-TW/home': () => import('../../locales/zh-TW/home.json'),
   'zh-TW/plan': () => import('../../locales/zh-TW/plan.json'),
   'zh-TW/settings': () => import('../../locales/zh-TW/settings.json'),
+  'zh-TW/stats': () => import('../../locales/zh-TW/stats.json'),
   'zh-TW/weather': () => import('../../locales/zh-TW/weather.json'),
 };
 

@@ -91,6 +91,9 @@ export function HeaderDesktop() {
           <Link to="/airports" className={styles.navLink} aria-current={pathname.startsWith('/airports') ? 'page' : undefined}>
             {t('tab.airport')}
           </Link>
+          <Link to="/stats" className={styles.navLink} aria-current={pathname.startsWith('/stats') ? 'page' : undefined}>
+            {t('tab.stats')}
+          </Link>
         </nav>
       </div>
 
