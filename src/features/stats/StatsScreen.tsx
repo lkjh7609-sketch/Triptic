@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { BarChart3 } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
+import { useSession } from '@/shared/hooks/useSession';
+import { useTripMembers } from '@/features/plan/hooks/useTripMembers';
 import { useTravelStats } from './useTravelStats';
-import { BadgesSection, ExpenseSection, HabitsSection, SummaryStrip, TripsSection, WorldSection } from './StatsSections';
+import { computeFriends } from './friends';
+import { BadgesSection, CompanionsSection, ExpenseSection, HabitsSection, SummaryStrip, TripsSection, WorldSection } from './StatsSections';
 import styles from './Stats.module.css';
 
 /** 통계 탭 — 지금까지 다녀온 여행(종료일이 지난 여행)의 모든 통계. 비로그인은 AppShell이 로그인 창을 먼저 띄운다(guestAccess) */
@@ -14,6 +17,11 @@ export function StatsScreen() {
   const { t } = useTranslation('stats');
   const { stats, isLoading, isError, refetch } = useTravelStats();
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { user } = useSession();
+  // 다녀온 여행의 동행자(나 제외) — 도트 친구들
+  const tripIds = useMemo(() => stats?.trips.map((x) => x.id) ?? [], [stats]);
+  const { data: members } = useTripMembers(tripIds);
+  const friends = useMemo(() => computeFriends(tripIds, members, user?.id ?? null), [tripIds, members, user?.id]);
 
   useEffect(() => {
     trackScreenView('stats');
@@ -48,6 +56,7 @@ export function StatsScreen() {
             </div>
           ) : null}
           <SummaryStrip stats={stats} />
+          {user ? <CompanionsSection friends={friends} meId={user.id} meName={(user.user_metadata?.full_name as string | undefined) ?? (user.user_metadata?.name as string | undefined) ?? null} /> : null}
           <WorldSection stats={stats} />
           <ExpenseSection stats={stats} />
           <HabitsSection stats={stats} />
