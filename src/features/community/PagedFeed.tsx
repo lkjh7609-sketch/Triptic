@@ -41,6 +41,10 @@ interface PagedFeedProps<T> {
   gridClassName: string;
   /** 모바일: 한 쪽 안의 배치(예: 세로 목록) */
   listClassName: string;
+  /** 한 쪽에 보이는 수 — 기본 6(카드형), 전체 게시판형은 8 */
+  pageSize?: number;
+  /** PC에서 목록 맨 위에 붙는 머리줄(게시판형의 '제목·작성자…' 줄) */
+  gridHeader?: ReactNode;
 }
 
 /**
@@ -48,11 +52,11 @@ interface PagedFeedProps<T> {
  * PC는 번호 쪽 넘김, 모바일은 옆으로 밀어 넘기고 아래에 점으로 위치를 보여 준다.
  * 이미 불러온 글을 쪽으로 자를 뿐이고, 서버에서는 지금 쪽이 끝에서 한 쪽 안으로 다가오면 다음 묶음을 미리 불러온다.
  */
-export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMore, fetchMore, gridClassName, listClassName }: PagedFeedProps<T>) {
+export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMore, fetchMore, gridClassName, listClassName, pageSize = FEED_PAGE_SIZE, gridHeader }: PagedFeedProps<T>) {
   const { t } = useTranslation('community');
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [requested, setRequested] = useState(0);
-  const total = Math.max(1, Math.ceil(items.length / FEED_PAGE_SIZE));
+  const total = Math.max(1, Math.ceil(items.length / pageSize));
   const page = Math.min(requested, total - 1);
   const topRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -62,7 +66,7 @@ export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMor
   }, [hasMore, isFetchingMore, page, total, fetchMore]);
 
   const pages: T[][] = [];
-  for (let i = 0; i < items.length; i += FEED_PAGE_SIZE) pages.push(items.slice(i, i + FEED_PAGE_SIZE));
+  for (let i = 0; i < items.length; i += pageSize) pages.push(items.slice(i, i + pageSize));
 
   function goDesktop(next: number) {
     setRequested(next);
@@ -87,6 +91,7 @@ export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMor
     return (
       <div ref={topRef} className={styles.scrollAnchor}>
         <div className={gridClassName}>
+          {gridHeader}
           {current.map((item) => (
             <div key={getKey(item)} className={styles.cell}>
               {renderItem(item)}

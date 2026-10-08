@@ -24,6 +24,8 @@ import type { Tab } from './CommunityScreen';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { postTitleOf } from './postMeta';
 import tileStyles from './PostTile.module.css';
+import boardStyles from './BoardRow.module.css';
+import { BoardHead, BoardRow } from './BoardRow';
 import { CATEGORY_ICONS } from './categoryIcons';
 
 type Sort = 'latest' | 'likes' | 'comments';
@@ -283,13 +285,16 @@ export function CommunityDesignBody({
                 items={items}
                 getKey={(item) => item.id}
                 renderItem={(item) =>
-                  item.kind === 'post' ? <PostArticle post={item.post} /> : <CompanionFeedCard post={item.post} />
+                  tab === 'all' ? <BoardRow item={item} /> : item.kind === 'post' ? <PostArticle post={item.post} /> : <CompanionFeedCard post={item.post} />
                 }
                 hasMore={!!feed.hasNextPage}
                 isFetchingMore={feed.isFetchingNextPage}
                 fetchMore={() => void feed.fetchNextPage()}
-                gridClassName={tileStyles.grid}
-                listClassName={tileStyles.grid}
+                // 전체 탭은 게시판형(8개씩), 구독 탭은 카드형
+                gridClassName={tab === 'all' ? boardStyles.list : tileStyles.grid}
+                listClassName={tab === 'all' ? boardStyles.list : tileStyles.grid}
+                pageSize={tab === 'all' ? 8 : undefined}
+                gridHeader={tab === 'all' ? <BoardHead /> : undefined}
               />
             )}
           </div>
