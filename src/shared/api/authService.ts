@@ -47,12 +47,6 @@ export async function signInWithProvider(provider: AuthProvider, redirectPath?: 
 
 export async function signOut(): Promise<void> {
   const client = getSupabaseClient();
-  // 앱: 이 기기의 푸시 토큰을 서버에서 먼저 지운다(로그아웃하면 이 계정으로는 지울 권한이 없어진다)
-  if (isNativeApp()) {
-    const { data } = await client.auth.getSession();
-    const { unregisterPushForSignOut } = await import('@/shared/push/registerPush');
-    await unregisterPushForSignOut(data.session?.user.id);
-  }
   const { error } = await client.auth.signOut();
   if (error) {
     throw error;
