@@ -75,7 +75,7 @@
   "flights": {
     "title": "Search flights",
     "subtitle": "Compare airline and travel agency prices in one place",
-    "lead": "Pick where and when — compare prices right away on MyRealTrip.",
+    "lead": "Pick where and when — compare flight prices right here.",
     "form": {
       "tripType": "Trip type",
       "roundTrip": "Round trip",
@@ -113,11 +113,8 @@
       "cabinECONOMY": "Economy",
       "cabinPREMIUM_ECONOMY": "Premium economy",
       "cabinBUSINESS": "Business",
-      "cabinFIRST": "First"
-    },
-    "comingSoon": {
-      "title": "Flight search is coming soon",
-      "body": "We're building a new flight search that compares more airlines and routes. Check back soon."
+      "cabinFIRST": "First",
+      "opensOnPartner": "Booking opens on a booking site (new tab)"
     },
     "essentials": {
       "title": "Need a SIM or eSIM?",
@@ -154,6 +151,56 @@
       "meta": "From ₩{{price}} round trip",
       "metaAirline": "From ₩{{price}} round trip · {{airline}}",
       "open": "View flights to {{city}}"
+    },
+    "results": {
+      "label": "Flight search results",
+      "searching": "Searching flights… this takes a few seconds.",
+      "sortLabel": "Sort",
+      "sort": {
+        "price": "Cheapest",
+        "duration": "Fastest",
+        "depart": "Earliest departure"
+      },
+      "stopsLabel": "Stops",
+      "stops": {
+        "any": "Any",
+        "0": "Nonstop only",
+        "1": "Up to 1 stop"
+      },
+      "airlineLabel": "Airline",
+      "direct": "Nonstop",
+      "stopsN_one": "{{count}} stop",
+      "stopsN_other": "{{count}} stops",
+      "durationHM": "{{h}}h {{m}}m",
+      "durationM": "{{m}}m",
+      "selfTransfer": "Separate tickets (you may need to re-check bags)",
+      "approx": "~",
+      "perPerson": "per traveler · price at search time",
+      "perPersonAvg": "avg per traveler (incl. children/infants) · price at search time",
+      "total": "{{price}} total",
+      "book": "Book",
+      "redirecting": "Opening the booking page for your selected flight.",
+      "priceNote": "Prices are reference fares at the time of search. Live seat changes and payment method (card discounts, etc.) can make the final price on the booking page differ slightly. The booking page opens with your route, dates and travelers filled in — you may need to pick the same flight again.",
+      "empty": "No flights found for these conditions. Try other dates or airports.",
+      "emptyFiltered": "No flights match these filters. Try changing them.",
+      "searchOnSite": "Search on the booking site",
+      "unavailableTitle": "We can't show flight results right now",
+      "unavailableBody": "You can search the same trip directly on the booking site.",
+      "failedTitle": "Couldn't load flights",
+      "failedBody": "Try again in a moment, or search the same trip on the booking site.",
+      "count_one": "{{count}} flight",
+      "count_other": "{{count}} flights",
+      "filter": "Filters",
+      "filterReset": "Reset",
+      "filterDone": "Done",
+      "timeLabel": "Departure time (outbound)",
+      "time": {
+        "dawn": "12–6 AM",
+        "morning": "6 AM–12 PM",
+        "afternoon": "12–6 PM",
+        "evening": "6 PM–12 AM"
+      },
+      "removeFilter": "Remove filter: {{name}}"
     }
   },
   "hotels": {

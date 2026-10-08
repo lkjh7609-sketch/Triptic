@@ -74,7 +74,7 @@
   "flights": {
     "title": "항공권 검색",
     "subtitle": "여러 항공사·여행사 가격을 한 번에 비교해요",
-    "lead": "출발지와 날짜만 고르면 마이리얼트립에서 가격을 바로 비교할 수 있어요.",
+    "lead": "출발지와 날짜만 고르면 항공권 가격을 바로 비교할 수 있어요.",
     "form": {
       "tripType": "여정",
       "roundTrip": "왕복",
@@ -112,11 +112,8 @@
       "cabinECONOMY": "일반석",
       "cabinPREMIUM_ECONOMY": "프리미엄 일반석",
       "cabinBUSINESS": "비즈니스석",
-      "cabinFIRST": "일등석"
-    },
-    "comingSoon": {
-      "title": "항공권 검색을 준비하고 있어요",
-      "body": "더 많은 항공사와 노선을 비교할 수 있는 새 항공권 검색을 곧 열어요."
+      "cabinFIRST": "일등석",
+      "opensOnPartner": "예약은 예약 사이트(새 탭)에서 진행돼요"
     },
     "essentials": {
       "title": "유심·eSIM도 필요하신가요?",
@@ -153,6 +150,54 @@
       "meta": "왕복 최저 {{price}}원~",
       "metaAirline": "왕복 최저 {{price}}원~ · {{airline}}",
       "open": "{{city}} 항공권 보기"
+    },
+    "results": {
+      "label": "항공권 검색 결과",
+      "searching": "항공권을 찾는 중이에요. 잠시만 기다려 주세요.",
+      "sortLabel": "정렬",
+      "sort": {
+        "price": "최저가순",
+        "duration": "최단 시간",
+        "depart": "출발 빠른 순"
+      },
+      "stopsLabel": "경유",
+      "stops": {
+        "any": "전체",
+        "0": "직항만",
+        "1": "경유 1회 이하"
+      },
+      "airlineLabel": "항공사",
+      "direct": "직항",
+      "stopsN_other": "경유 {{count}}회",
+      "durationHM": "{{h}}시간 {{m}}분",
+      "durationM": "{{m}}분",
+      "selfTransfer": "별도 발권(환승 시 짐을 다시 부쳐야 할 수 있어요)",
+      "approx": "약",
+      "perPerson": "1인 기준 · 검색 시점 참고가",
+      "perPersonAvg": "1인 평균(아동·유아 포함) · 검색 시점 참고가",
+      "total": "총 {{price}}",
+      "book": "예약하기",
+      "redirecting": "선택하신 항공권의 예약 페이지로 이동합니다.",
+      "priceNote": "표시된 가격은 검색 시점의 참고 가격이에요. 실시간 좌석 변동 및 결제 수단(카드사 할인 등)에 따라 예약 페이지의 최종 결제 금액과 소폭 상이할 수 있어요. 예약 페이지는 노선·날짜·인원이 입력된 상태로 열리고, 같은 항공편을 다시 골라야 할 수 있어요.",
+      "empty": "조건에 맞는 항공편을 찾지 못했어요. 날짜나 공항을 바꿔 보세요.",
+      "emptyFiltered": "이 조건에 맞는 항공편이 없어요. 필터를 바꿔 보세요.",
+      "searchOnSite": "예약 사이트에서 검색",
+      "unavailableTitle": "지금은 항공권 목록을 보여드릴 수 없어요",
+      "unavailableBody": "예약 사이트에서 같은 조건으로 바로 검색할 수 있어요.",
+      "failedTitle": "항공권을 불러오지 못했어요",
+      "failedBody": "잠시 후 다시 검색하거나, 예약 사이트에서 같은 조건으로 검색해 보세요.",
+      "count_other": "항공편 {{count}}개",
+      "filter": "필터",
+      "filterReset": "초기화",
+      "filterDone": "완료",
+      "timeLabel": "출발 시간(가는 편)",
+      "time": {
+        "dawn": "새벽 0–6시",
+        "morning": "오전 6–12시",
+        "afternoon": "오후 12–18시",
+        "evening": "저녁 18–24시"
+      },
+      "removeFilter": "{{name}} 필터 해제"
     }
   },
   "hotels": {

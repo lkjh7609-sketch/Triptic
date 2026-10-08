@@ -7,17 +7,20 @@
 //           GET /api/partnerProducts?provider=myrealtrip&kind=categories&q=시드니 (그 도시의 카테고리 목록 — 도시마다 다르다)
 //
 //           GET /api/partnerProducts?provider=agoda&kind=hotels&lat=…&lng=… (호텔 검색 — _lib/agoda/index.js 머리말 참고)
+//           GET /api/partnerProducts?provider=flights&kind=search&origin=SEL&destination=TYO&depart_date=… (항공 운임 검색 — _lib/flights/index.js 머리말 참고)
 //
 // 제휴사 상품 검색 API 결과를 앱 카드 모양으로 돌려준다. 상품을 누를 때만 /api/partnerLink로
 // 추적 링크를 만든다(카드마다 미리 만들면 화면 한 번에 유료 호출이 N번).
 import { applyCors, createRateLimiter, sanitizeInput } from './_lib/http.js';
 import * as myrealtrip from './_lib/affiliates/myrealtrip.js';
 import { handleAgoda } from './_lib/agoda/index.js';
+import { handleFlights } from './_lib/flights/index.js';
 
 // 액티비티 탭이 필터를 바꿀 때마다(미리보기 포함) 부르므로 여유를 둔다. 응답은 CDN에 캐시돼 같은 조건은 여기까지 안 온다
 const isRateLimited = createRateLimiter(60);
 // 호텔 검색(우리 화면의 필터·정렬을 바꿀 때마다 부른다) — 접속자당 분당 횟수를 따로 둔다
 const isAgodaRateLimited = createRateLimiter(40);
+const isFlightsRateLimited = createRateLimiter(12);
 
 const PROVIDERS = {
     myrealtrip: {
@@ -64,9 +67,14 @@ export default async function handler(req, res) {
         if (isAgodaRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
         return handleAgoda(req, res);
     }
+    // 항공 검색 — 처리부는 _lib/flights. 검색마다 유료 호출(왕복은 2회)이라 분당 횟수를 가장 좁게 둔다
+    if (req.query?.provider === 'flights') {
+        if (isFlightsRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+        return handleFlights(req, res);
+    }
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
 
-    const provider = Object.prototype.hasOwnProperty.call(PROVIDERS, req.query?.provider) ? PROVIDERS[req.query.provider] : null;
+    const provider =Object.prototype.hasOwnProperty.call(PROVIDERS, req.query?.provider) ? PROVIDERS[req.query.provider] : null;
     // 항공 특가 — 검색어 없이 출발지(공항 코드)와 여행 기간(3~7일)만 받는다
     if (provider && req.query?.kind === 'deals') {
         const origin = typeof req.query.origin === 'string' ? req.query.origin.toUpperCase() : 'ICN';

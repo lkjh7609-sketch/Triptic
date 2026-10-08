@@ -4,17 +4,19 @@ import type { Airport } from './airports/airportData';
 const listAirports = vi.fn<() => Promise<Airport[]>>();
 vi.mock('./airports/airportService', () => ({ listAirports: () => listAirports() }));
 const { openFlightsSearchForTrip, resetFlightAirportsCache } = await import('./flightsSearchLink');
+const { takeFlightsAutoSearch } = await import('./flightsAutoSearch');
 
-const fetchMock = vi.fn();
-vi.stubGlobal('fetch', fetchMock);
 afterEach(() => {
-  fetchMock.mockReset();
   resetFlightAirportsCache();
+  sessionStorage.clear();
 });
 
 const airport = (iata: string, lat: number, lng: number): Airport => ({ iata, country_code: 'XX', name: { en: iata }, city: { en: iata }, lat, lng, timezone: 'UTC' });
 const AIRPORTS = [airport('ICN', 37.46, 126.44), airport('GMP', 37.56, 126.79), airport('SYD', -33.94, 151.18)];
-beforeEach(() => listAirports.mockResolvedValue(AIRPORTS));
+beforeEach(() => {
+  // 모의 함수를 그대로 돌려주면 vitest가 정리 함수로 불러 버린다
+  listAirports.mockResolvedValue(AIRPORTS);
+});
 
 const sydneyTrip = {
   city: '오스트레일리아 뉴사우스웨일스 주 시드니',
@@ -24,67 +26,40 @@ const sydneyTrip = {
   end_date: '2026-10-14',
 };
 
-describe('openFlightsSearchForTrip — 한국어는 마이리얼트립', () => {
+describe('openFlightsSearchForTrip — 항공 탭을 채워서 열고 한 번 바로 검색(모든 언어)', () => {
   const realLocation = window.location;
   const assign = vi.fn();
-  const tab = { opener: {}, location: { href: '' }, close: vi.fn() };
 
   beforeEach(() => {
-    vi.spyOn(window, 'open').mockReturnValue(tab as unknown as Window);
     Object.defineProperty(window, 'location', { configurable: true, value: { ...realLocation, assign } });
-    tab.location.href = '';
-    tab.close.mockReset();
     assign.mockReset();
   });
   afterEach(() => {
-    vi.restoreAllMocks();
     Object.defineProperty(window, 'location', { configurable: true, value: realLocation });
   });
 
-  it('누르는 순간 탭을 열고, 서울(모든 공항) → 여행지에 가장 가까운 공항·날짜로 받은 마이링크로 보낸다', async () => {
-    fetchMock.mockImplementation(async () => ({ ok: true, json: async () => ({ url: 'https://myrealt.rip/abc' }) }));
-    await openFlightsSearchForTrip(sydneyTrip, 'ko');
-    expect(window.open).toHaveBeenCalledWith('', '_blank');
-    expect(tab.opener).toBeNull();
-    expect(tab.location.href).toBe('https://myrealt.rip/abc');
-    const linkCall = String(fetchMock.mock.calls.find((c) => String(c[0]).includes('/api/partnerLink'))?.[0]);
-    const params = new URLSearchParams(linkCall.split('?')[1]);
-    expect(Object.fromEntries(params)).toEqual({
-      brand: 'myrealtrip',
-      kind: 'flight',
-      origin: 'SEL',
-      origin_type: 'city',
-      destination: 'SYD',
-      destination_type: 'airport',
-      depart_date: '2026-10-07',
-      return_date: '2026-10-14',
-      adults: '1',
-      placement: 'trip_flights',
-    });
+  it('서울(모든 공항) → 여행지에 가장 가까운 공항·날짜로 항공 탭을 열고 자동 검색 표시를 남긴다', async () => {
+    await openFlightsSearchForTrip(sydneyTrip);
+    expect(assign).toHaveBeenCalledTimes(1);
+    const url = new URL(String(assign.mock.calls[0][0]), 'https://triptic.my');
+    expect(url.pathname).toBe('/flights');
+    expect(Object.fromEntries(url.searchParams)).toEqual({ origin: 'SEL', destination: 'SYD', adults: '1', depart_date: '2026-10-07', return_date: '2026-10-14' });
+    // 표시는 한 번만 읽힌다 — 새로고침하면 자동 검색이 아니다
+    expect(takeFlightsAutoSearch()).toBe(true);
+    expect(takeFlightsAutoSearch()).toBe(false);
   });
 
-  it('도착지를 못 정하면(150km 안에 공항 없음) 연 탭을 닫고 항공 탭 폼으로(날짜는 채워서)', async () => {
+  it('도착지를 못 정하면(150km 안에 공항 없음) 날짜만 채운 검색 폼으로 — 자동 검색 표시 없음', async () => {
     listAirports.mockResolvedValue(AIRPORTS.filter((a) => a.iata !== 'SYD'));
-    await openFlightsSearchForTrip(sydneyTrip, 'ko');
-    expect(tab.close).toHaveBeenCalled();
+    await openFlightsSearchForTrip(sydneyTrip);
     expect(assign).toHaveBeenCalledWith('/flights?depart_date=2026-10-07&return_date=2026-10-14');
+    expect(takeFlightsAutoSearch()).toBe(false);
   });
 
-  it('미리 받아 둔 링크가 있으면 서버를 기다리지 않고 바로 연다', async () => {
-    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
-      tab.location.href = this.href;
-    });
-    await openFlightsSearchForTrip(sydneyTrip, 'ko', 'https://myrealt.rip/ready');
-    expect(click).toHaveBeenCalledTimes(1);
-    expect(tab.location.href).toBe('https://myrealt.rip/ready');
-    expect(window.open).not.toHaveBeenCalled();
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it('한국어가 아니면 탭을 열지 않고 날짜를 채운 항공 탭(준비 중 안내)으로', async () => {
-    await openFlightsSearchForTrip(sydneyTrip, 'en');
-    expect(window.open).not.toHaveBeenCalled();
-    expect(fetchMock).not.toHaveBeenCalled();
+  it('공항 목록을 못 받아도 날짜만 채운 폼으로 열린다', async () => {
+    listAirports.mockRejectedValue(new Error('offline'));
+    await openFlightsSearchForTrip(sydneyTrip);
     expect(assign).toHaveBeenCalledWith('/flights?depart_date=2026-10-07&return_date=2026-10-14');
+    expect(takeFlightsAutoSearch()).toBe(false);
   });
 });
