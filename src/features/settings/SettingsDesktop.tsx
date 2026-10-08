@@ -55,9 +55,8 @@ import { PasswordChangeDialog } from './PasswordChangeDialog';
 import { currentDeviceLabel } from './deviceInfo';
 import { AvatarError, isUploadedAvatar, removeAvatarFiles, uploadAvatar } from './avatar';
 import { showToast } from '@/shared/ui/toast';
+import { useAppVersion } from '@/features/notices/useAppVersion';
 import styles from './SettingsDesktop.module.css';
-
-const APP_VERSION = '1.0.2';
 
 type SectionKey = 'account' | 'display' | 'matching' | 'notifications' | 'data' | 'community';
 
@@ -108,6 +107,7 @@ function formatSize(mb: number): string {
  * 로그인 세션은 현재 기기만, 비밀번호 변경은 이메일 가입자만, Pro 박스는 프로 회원에게만.
  */
 export function SettingsDesktop() {
+  const appVersion = useAppVersion();
   const { t, i18n } = useTranslation(['settings', 'common']);
   const { user } = useSession();
   const { data: profile } = useProfile();
@@ -507,7 +507,7 @@ export function SettingsDesktop() {
                 <h3 className={styles.supportTitle}>
                   <LifeBuoy size={18} aria-hidden="true" /> {t('desktop.community.supportTitle')}
                 </h3>
-                <span className={styles.version}>v{APP_VERSION}</span>
+                <span className={styles.version}>v{appVersion}</span>
               </div>
               <div className={styles.links}>
                 <Link to="/guide" className={styles.linkCard}>
