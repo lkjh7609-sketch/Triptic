@@ -399,7 +399,7 @@ export function BadgesSection({ badges }: { badges: Badge[] }) {
           const date = got.get(k);
           return (
             <div key={k} className={`${styles.badge} ${date ? '' : styles.badgeLocked}`}>
-              <BadgeArt kind={k as BadgeKind} locked={!date} size={84} className={styles.badgeArt} />
+              <BadgeArt kind={k as BadgeKind} locked={!date} />
               <span className={styles.badgeName}>{t(`badges.name.${k}`)}</span>
               <span className={styles.badgeDate}>{date ? shortDate(date, i18n.language) : t('badges.locked')}</span>
             </div>
