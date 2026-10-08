@@ -2,11 +2,14 @@
 export interface FriendMember {
   userId: string;
   name: string | null;
+  pixelSeed?: string | null;
 }
 
 export interface Friend {
   userId: string;
   name: string | null;
+  /** 도트 캐릭터를 정하는 값 — 본인이 고른 값이 있으면 그것, 없으면 사용자 ID */
+  seed: string;
   trips: number;
 }
 
@@ -21,7 +24,7 @@ export function computeFriends(
     for (const m of membersByTrip?.[id] ?? []) {
       if (m.userId === myId || seenInTrip.has(m.userId)) continue;
       seenInTrip.add(m.userId);
-      const cur = map.get(m.userId) ?? { userId: m.userId, name: m.name, trips: 0 };
+      const cur = map.get(m.userId) ?? { userId: m.userId, name: m.name, seed: m.pixelSeed || m.userId, trips: 0 };
       cur.trips += 1;
       cur.name = cur.name ?? m.name;
       map.set(m.userId, cur);

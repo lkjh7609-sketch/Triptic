@@ -6,6 +6,8 @@ export interface TripMember {
   role: string;
   name: string | null;
   avatarUrl: string | null;
+  /** 통계 탭 도트 캐릭터를 정하는 값(없으면 사용자 ID) */
+  pixelSeed: string | null;
 }
 
 /** 여러 여행의 동행자(trip_members + 공개 프로필)를 한 번에 가져온다. 결과: tripId → 멤버 목록 */
@@ -24,11 +26,11 @@ export function useTripMembers(tripIds: string[]) {
       if (error) throw error;
 
       const userIds = [...new Set((rows ?? []).map((r) => r.user_id as string))];
-      const profiles = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+      const profiles = new Map<string, { display_name: string | null; avatar_url: string | null; pixel_avatar_seed: string | null }>();
       if (userIds.length > 0) {
         const { data: profileRows } = await supabase
           .from('community_profiles')
-          .select('id, display_name, avatar_url')
+          .select('id, display_name, avatar_url, pixel_avatar_seed')
           .in('id', userIds);
         for (const p of profileRows ?? []) profiles.set(p.id as string, p);
       }
@@ -41,6 +43,7 @@ export function useTripMembers(tripIds: string[]) {
           role: r.role as string,
           name: profile?.display_name ?? null,
           avatarUrl: profile?.avatar_url ?? null,
+          pixelSeed: profile?.pixel_avatar_seed ?? null,
         });
       }
       return byTrip;

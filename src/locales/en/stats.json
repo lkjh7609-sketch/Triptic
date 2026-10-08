@@ -35,7 +35,7 @@
     "perTrip": "Per trip",
     "mostExpensive": "Most expensive trip",
     "byCategory": "What you spent on",
-    "byPayment": "How you paid",
+    "byPayment": "Payment method",
     "byTrip": "Trip by trip",
     "perDayShort": "{{amount}} / day",
     "none": "No trip has expenses recorded yet.",

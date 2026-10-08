@@ -71,6 +71,19 @@ const BLUSH = '#F2A199';
 
 type Outfit = 'suit' | 'dress' | 'hoodie' | 'tee';
 
+/** 도트 캐릭터를 정하는 값 — 본인이 고른 값이 있으면 그것, 없으면 사용자 ID */
+export function avatarSeedOf(userId: string, pixelSeed?: string | null): string {
+  return pixelSeed || userId;
+}
+
+/** 설정의 '랜덤으로 바꾸기' — 겹치지 않는 새 값 */
+export function randomAvatarSeed(): string {
+  const bytes = new Uint32Array(2);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes);
+  else bytes.forEach((_, i) => (bytes[i] = Math.floor(Math.random() * 4294967296)));
+  return `r${bytes[0]!.toString(36)}${bytes[1]!.toString(36)}`;
+}
+
 export function avatarGrid(seed: string): Grid {
   const r = rng(seed);
   const pick = <T,>(list: T[]) => list[Math.floor(r() * list.length)]!;

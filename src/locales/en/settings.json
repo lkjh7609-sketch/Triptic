@@ -101,7 +101,11 @@
     "nameReserved": "This nickname can't be used.",
     "checkDuplicate": "Check availability",
     "checking": "Checking…",
-    "saveError": "Couldn't save. Please try again shortly."
+    "saveError": "Couldn't save. Please try again shortly.",
+    "pixelAvatarLabel": "Pixel character",
+    "pixelAvatarRandom": "Randomize",
+    "pixelAvatarReset": "Back to original",
+    "pixelAvatarHint": "Shown as you in \"Travel buddies\" on the Stats tab — and to your buddies once you save."
   },
   "units": {
     "title": "Units",

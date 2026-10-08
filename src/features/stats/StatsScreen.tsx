@@ -6,6 +6,8 @@ import { trackScreenView } from '@/shared/monitoring';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useSession } from '@/shared/hooks/useSession';
+import { useProfile } from '@/shared/hooks/useProfile';
+import { avatarSeedOf } from './pixelArt';
 import { useTripMembers } from '@/features/plan/hooks/useTripMembers';
 import { useTravelStats } from './useTravelStats';
 import { computeFriends } from './friends';
@@ -18,6 +20,7 @@ export function StatsScreen() {
   const { stats, isLoading, isError, refetch } = useTravelStats();
   const [expanded, setExpanded] = useState<string | null>(null);
   const { user } = useSession();
+  const { data: profile } = useProfile();
   // 다녀온 여행의 동행자(나 제외) — 도트 친구들
   const tripIds = useMemo(() => stats?.trips.map((x) => x.id) ?? [], [stats]);
   const { data: members } = useTripMembers(tripIds);
@@ -56,7 +59,7 @@ export function StatsScreen() {
             </div>
           ) : null}
           <SummaryStrip stats={stats} />
-          {user ? <CompanionsSection friends={friends} meId={user.id} meName={(user.user_metadata?.full_name as string | undefined) ?? (user.user_metadata?.name as string | undefined) ?? null} /> : null}
+          {user ? <CompanionsSection friends={friends} meSeed={avatarSeedOf(user.id, profile?.pixel_avatar_seed)} meName={profile?.display_name ?? null} /> : null}
           <WorldSection stats={stats} />
           <ExpenseSection stats={stats} />
           <HabitsSection stats={stats} />

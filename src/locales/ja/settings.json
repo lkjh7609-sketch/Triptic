@@ -98,7 +98,11 @@
     "nameReserved": "このニックネームは使用できません。",
     "checkDuplicate": "重複確認",
     "checking": "確認中…",
-    "saveError": "保存できませんでした。しばらくしてからもう一度お試しください。"
+    "saveError": "保存できませんでした。しばらくしてからもう一度お試しください。",
+    "pixelAvatarLabel": "ドットキャラクター",
+    "pixelAvatarRandom": "ランダムで変更",
+    "pixelAvatarReset": "最初の姿に戻す",
+    "pixelAvatarHint": "統計タブの「一緒に旅した友だち」で私を表します。保存すると友だちにもこの姿で見えます。"
   },
   "units": {
     "title": "単位設定",
