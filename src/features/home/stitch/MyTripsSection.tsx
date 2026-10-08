@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CalendarCog, CalendarDays, ChevronRight, Eye, Pencil, Plus, Sparkles, Users } from 'lucide-react';
+import { CalendarCog, CalendarDays, Check, ChevronRight, Eye, Pencil, Plus, Sparkles, Users } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { SAMPLE_TRIP_ID } from '@/features/plan/sampleTrip';
 import { initialsOf } from '@/features/plan/hooks/useTripMembers';
@@ -16,6 +16,38 @@ function dateParts(ymd: string, locale: string) {
   return { y: ymd.slice(0, 4), md: ymd.slice(5).replace('-', '.'), full: ymd.replaceAll('-', '.'), weekday };
 }
 
+/** 숙소·항공편이 들어 있는지 한눈에 — 등록됐으면 ✓와 진하게, 아직이면 '미정'을 연하게(누르는 단추가 아니라 상태 표시) */
+export function TripStatus({ view }: { view: UpcomingTripView }) {
+  const { t } = useTranslation('home');
+  const items = [
+    { ok: view.hasHotel, set: t('page.trips.hotelSet'), missing: t('page.trips.hotelMissing') },
+    { ok: view.hasFlight, set: t('page.trips.flightSet'), missing: t('page.trips.flightMissing') },
+  ];
+  const parts = [
+    view.placeCount > 0 ? <span key="places">{t('page.trips.places', { count: view.placeCount })}</span> : null,
+    ...items.map((it) =>
+      it.ok ? (
+        <span key={it.set} className={styles.statusOk} aria-label={t('page.trips.statusDoneAria', { label: it.set })}>
+          <Check size={13} aria-hidden="true" />
+          {it.set}
+        </span>
+      ) : (
+        <span key={it.set} className={styles.statusMissing}>{it.missing}</span>
+      ),
+    ),
+  ].filter(Boolean);
+  return (
+    <>
+      {parts.map((node, i) => (
+        <span key={i}>
+          {i > 0 ? <span className={styles.statusSep} aria-hidden="true"> · </span> : null}
+          {node}
+        </span>
+      ))}
+    </>
+  );
+}
+
 function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean }) {
   const { t, i18n } = useTranslation('home');
   const { trip, daysUntil, nights, totalDays, completeness, members } = view;
@@ -24,20 +56,12 @@ function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean 
   const nightsDays = nights === 0 ? t('page.trips.dayTrip') : t('page.trips.nightsDays', { nights, days: totalDays });
   const dday = daysUntil > 0 ? `D-${daysUntil}` : daysUntil === 0 ? t('page.trips.dDay') : t('page.trips.ongoing');
   const others = Math.max(0, members.length - 1);
-  const parts = [
-    view.placeCount > 0 ? t('page.trips.places', { count: view.placeCount }) : null,
-    view.hasHotel ? t('page.trips.hotelSet') : null,
-    view.hasFlight ? t('page.trips.flightSet') : null,
-  ].filter(Boolean);
-  const summary = parts.length > 0 ? parts.join(' · ') : t('page.trips.nothingYet');
-
   return (
     <article className={`${shared.card} ${shared.cardHover} ${styles.card}`}>
       <div className={styles.cardBody}>
         <div className={styles.metaRow}>
           <div className={styles.metaLeft}>
             <span className={styles.ddayBadge}>{compact ? `${dday} ${t('page.trips.upcomingLabel')}` : dday}</span>
-            <TripWeatherChip trip={trip} className={styles.metaText} />
             {compact ? null : (
               <span className={styles.metaText}>
                 {`${start.full} - ${end.md} (${nightsDays})`}
@@ -52,11 +76,14 @@ function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean 
             </span>
           ) : null}
         </div>
-        <h3 className={styles.cardTitle}>{trip.title}</h3>
+        <div className={styles.titleRow}>
+          <h3 className={styles.cardTitle}>{trip.title}</h3>
+          <TripWeatherChip trip={trip} className={styles.titleWeather} />
+        </div>
         {compact ? (
           <p className={styles.cardDesc}>{`${start.full} (${start.weekday}) - ${end.md} (${end.weekday})`}</p>
         ) : (
-          <p className={styles.cardDesc}>{summary}</p>
+          <p className={styles.cardDesc}><TripStatus view={view} /></p>
         )}
         <div className={styles.progress}>
           <div className={styles.progressHead}>
@@ -70,7 +97,7 @@ function TripCard({ view, compact }: { view: UpcomingTripView; compact: boolean 
       </div>
       <div className={styles.cardFoot}>
         {compact ? (
-          <span className={styles.footNote}>{summary}</span>
+          <span className={styles.footNote}><TripStatus view={view} /></span>
         ) : (
           <div className={styles.avatars} aria-hidden="true">
             {members.slice(0, 3).map((m) => (
