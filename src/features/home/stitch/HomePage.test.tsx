@@ -37,8 +37,13 @@ vi.mock('../flightDealsData', async () => ({
   ...(await vi.importActual<typeof import('../flightDealsData')>('../flightDealsData')),
   useFlightDeals: () => ({ data: [], isLoading: false }),
 }));
-vi.mock('./useSeasonTemps', () => ({
-  useSeasonTemps: () => ({ data: { kyoto: { temp: 17.6, code: 0 } } }),
+vi.mock('./seasonService', () => ({
+  useSeasonPicks: () => ({
+    data: [{ id: 'd-kyoto', slug: 'kyoto', country: 'JP', lat: 35, lng: 135, cover: null, featured: true, stat: [24, 14, 120, 9], kind: 'pleasant', name: '교토', nameEn: 'Kyoto' }],
+  }),
+}));
+vi.mock('@/features/weather/destinationWeather', () => ({
+  useDestinationWeathers: () => ({ data: { 'd-kyoto': { destinationId: 'd-kyoto', date: '2026-10-08', tmaxC: 24, tminC: 16, conditionCode: 'Clear', precipChance: 0.1, updatedAt: new Date().toISOString() } } }),
 }));
 vi.mock('../cityDescription', async () => ({
   ...(await vi.importActual<typeof import('../cityDescription')>('../cityDescription')),
@@ -109,16 +114,16 @@ describe('HomePage — 시안(Stitch) 구성', () => {
     expect(headings()).not.toContain('인천공항 실시간 출·도착');
   });
 
-  it('모바일: 기온은 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {
-    // 이달 추천 도시는 날짜에 따라 달라지므로(교토는 2·3·4·10·11월) 날짜를 고정한다 — 실행하는 날·서버 시간대와 무관하게
-    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-15T12:00:00Z') });
+  it('모바일: 오늘 날씨(최저/최고)는 사진 위가 아니라 도시 이름·배지 아래 글자 줄로(날씨 아이콘과 함께)', () => {
     isDesktop.value = false;
     renderHome();
-    const temp = screen.getByText('18°C');
+    const temp = screen.getByText('16°/24°');
     expect(temp.className).toMatch(/circleWeather/);
     expect(temp.querySelector('svg')).not.toBeNull();
     // 사진(동그라미) 안에는 기온 글자가 없다
     expect(temp.closest('[class*="circleMedia"]')).toBeNull();
+    // 배지는 그 달 기후로 고른다 — 평균 최고 24°는 '쾌적한 날씨'
+    expect(screen.getByText('쾌적한 날씨')).toBeInTheDocument();
   });
 
   it('모바일: 캡슐 탭은 처음엔 아무것도 채워지지 않는다', () => {
