@@ -620,6 +620,7 @@
   "companion": {
     "list": {
       "tab": "同行探し",
+      "badge": "同行募集",
       "writeBtn": "募集を投稿",
       "writeFirst": "最初の募集を投稿する",
       "empty": "まだ募集中の同行がありません。"

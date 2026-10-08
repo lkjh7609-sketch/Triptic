@@ -620,6 +620,7 @@
   "companion": {
     "list": {
       "tab": "找同行",
+      "badge": "徵求同行",
       "writeBtn": "發布招募文",
       "writeFirst": "發布第一篇招募文",
       "empty": "目前還沒有招募中的同行。"

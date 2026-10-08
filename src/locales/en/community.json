@@ -631,6 +631,7 @@
   "companion": {
     "list": {
       "tab": "Companions",
+      "badge": "Companion",
       "writeBtn": "New listing",
       "writeFirst": "Post the first listing",
       "empty": "No one is looking for a companion yet."
