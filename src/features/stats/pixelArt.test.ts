@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AVATAR_H, AVATAR_W, avatarGrid } from './pixelArt';
+import { AVATAR_H, AVATAR_W, avatarGrid, avatarSeedOf, randomAvatarSeed } from './pixelArt';
 import { computeFriends } from './friends';
 
 describe('avatarGrid', () => {
@@ -18,16 +18,31 @@ describe('avatarGrid', () => {
   });
 });
 
+describe('avatarSeedOf·randomAvatarSeed', () => {
+  it('고른 값이 있으면 그것, 없으면 사용자 ID', () => {
+    expect(avatarSeedOf('u1', 'abc')).toBe('abc');
+    expect(avatarSeedOf('u1', null)).toBe('u1');
+    expect(avatarSeedOf('u1', '')).toBe('u1');
+  });
+  it('랜덤 값은 매번 다르고 40자 이하(DB 한도)이며, 다른 모습을 만든다', () => {
+    const a = randomAvatarSeed();
+    const b = randomAvatarSeed();
+    expect(a).not.toBe(b);
+    expect(a.length).toBeLessThanOrEqual(40);
+    expect(JSON.stringify(avatarGrid(a))).not.toEqual(JSON.stringify(avatarGrid(b)));
+  });
+});
+
 describe('computeFriends', () => {
   const members = {
     a: [{ userId: 'me', name: '나' }, { userId: 'f1', name: '김복순' }],
-    b: [{ userId: 'me', name: '나' }, { userId: 'f1', name: '김복순' }, { userId: 'f2', name: '이재헌' }],
+    b: [{ userId: 'me', name: '나' }, { userId: 'f1', name: '김복순' }, { userId: 'f2', name: '이재헌', pixelSeed: 'seed-f2' }],
     c: [{ userId: 'me', name: '나' }],
   };
   it('나를 뺀 같이 다닌 사람을 횟수 순으로', () => {
     expect(computeFriends(['a', 'b', 'c'], members, 'me')).toEqual([
-      { userId: 'f1', name: '김복순', trips: 2 },
-      { userId: 'f2', name: '이재헌', trips: 1 },
+      { userId: 'f1', name: '김복순', seed: 'f1', trips: 2 },
+      { userId: 'f2', name: '이재헌', seed: 'seed-f2', trips: 1 },
     ]);
   });
   it('혼자 다닌 여행뿐이면 빈 목록', () => {

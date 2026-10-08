@@ -40,20 +40,20 @@ export function SummaryStrip({ stats }: { stats: TravelStats }) {
 }
 
 /** 같이 다닌 친구들 — 도트 캐릭터로. 나는 늘 맨 앞, 같이 다닌 친구가 없으면(여행이 없을 때 포함) 나 혼자 */
-export function CompanionsSection({ friends, meId, meName }: { friends: Friend[]; meId: string; meName: string | null }) {
+export function CompanionsSection({ friends, meSeed, meName }: { friends: Friend[]; meSeed: string; meName: string | null }) {
   const { t } = useTranslation('stats');
   return (
     <section className={styles.card} aria-labelledby="stats-friends-title">
       <h2 id="stats-friends-title" className={styles.cardTitle}>{t('friends.title')}</h2>
       <ul className={styles.friends}>
         <li className={styles.friend}>
-          <PixelSprite grid={avatarGrid(meId)} pixel={3} className={`${styles.avatar} ${styles.avatarMe}`} label={t('friends.me')} />
+          <PixelSprite grid={avatarGrid(meSeed)} pixel={3} className={`${styles.avatar} ${styles.avatarMe}`} label={t('friends.me')} />
           <span className={styles.friendName}>{t('friends.me')}</span>
           <span className={styles.friendSub}>{meName ?? ''}</span>
         </li>
         {friends.map((f) => (
           <li key={f.userId} className={styles.friend}>
-            <PixelSprite grid={avatarGrid(f.userId)} pixel={3} className={styles.avatar} label={f.name ?? t('friends.unnamed')} />
+            <PixelSprite grid={avatarGrid(f.seed)} pixel={3} className={styles.avatar} label={f.name ?? t('friends.unnamed')} />
             <span className={styles.friendName}>{f.name ?? t('friends.unnamed')}</span>
             <span className={styles.friendSub}>{t('friends.together', { count: f.trips })}</span>
           </li>
@@ -126,9 +126,11 @@ function Donut({ rows, total }: { rows: { key: string; label: string; value: num
   const stops = rows
     .map((_, i) => `${CHART_COLORS[i % CHART_COLORS.length]} ${((ends[i - 1] ?? 0) / total) * 100}% ${(ends[i]! / total) * 100}%`)
     .join(', ');
+  // 기록이 없으면(합계 0) 연한 회색 고리 + 0%로 보여 준다
+  const empty = total <= 0;
   return (
     <div className={styles.donutWrap}>
-      <div className={styles.donut} style={{ background: `conic-gradient(${stops})` }} aria-hidden="true">
+      <div className={styles.donut} style={{ background: empty ? 'var(--surface-subtle)' : `conic-gradient(${stops})` }} aria-hidden="true">
         <div className={styles.donutHole} />
       </div>
       <ul className={styles.legend}>
@@ -137,7 +139,7 @@ function Donut({ rows, total }: { rows: { key: string; label: string; value: num
             <span className={styles.swatch} style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
             <span>{r.label}</span>
             <span className={styles.legendValue}>{krw(r.value, i18n.language, true)}</span>
-            <span className={styles.legendPct}>{Math.round((r.value / total) * 100)}%</span>
+            <span className={styles.legendPct}>{empty ? 0 : Math.round((r.value / total) * 100)}%</span>
           </li>
         ))}
       </ul>
@@ -151,17 +153,15 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
   const lang = i18n.language;
   const e = stats.expense;
   const tt = t as unknown as TFn;
-  if (e.tripsWithExpense === 0) {
-    return (
-      <section className={styles.card} aria-labelledby="stats-exp-title">
-        <h2 id="stats-exp-title" className={styles.cardTitle}>{t('expense.title')}</h2>
-        <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.none')}</p>
-        {e.noRate > 0 ? <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.noRate', { count: e.noRate })}</p> : null}
-      </section>
-    );
-  }
   const withExp = stats.trips.filter((x) => x.expenseKrw != null && x.expenseKrw > 0);
   const payTotal = e.byPayment.reduce((s, r) => s + r.krw, 0);
+  // 데이터가 없어도 어떤 항목이 쌓이는지 보이게 — 모든 항목을 0으로 채워 보여 준다(2026-10-09 사용자 결정)
+  const categoryRows = (e.byCategory.length > 0 ? e.byCategory : ['food', 'transport', 'lodging', 'shopping', 'activity', 'other'].map((key) => ({ key, krw: 0 }))).map((r) => ({
+    key: r.key,
+    label: tt(`label.expense.${r.key in { food: 1, transport: 1, lodging: 1, shopping: 1, activity: 1 } ? r.key : 'other'}`),
+    value: r.krw,
+  }));
+  const paymentRows = e.byPayment.length > 0 ? e.byPayment : ['card', 'cash', 'other'].map((key) => ({ key, krw: 0 }));
   return (
     <section className={styles.card} aria-labelledby="stats-exp-title">
       <h2 id="stats-exp-title" className={styles.cardTitle}>{t('expense.title')}</h2>
@@ -172,15 +172,15 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
         </div>
         <div className={styles.kpi}>
           <span className={styles.kpiLabel}>{t('expense.perDay')}</span>
-          <span className={styles.kpiValue}>{e.perDayKrw != null ? krw(e.perDayKrw, lang) : '–'}</span>
+          <span className={styles.kpiValue}>{krw(e.perDayKrw ?? 0, lang)}</span>
         </div>
         <div className={styles.kpi}>
           <span className={styles.kpiLabel}>{t('expense.perTrip')}</span>
-          <span className={styles.kpiValue}>{e.perTripKrw != null ? krw(e.perTripKrw, lang) : '–'}</span>
+          <span className={styles.kpiValue}>{krw(e.perTripKrw ?? 0, lang)}</span>
         </div>
         <div className={styles.kpi}>
           <span className={styles.kpiLabel}>{t('expense.mostExpensive')}</span>
-          <span className={styles.kpiValue}>{e.mostExpensive ? krw(e.mostExpensive.expenseKrw ?? 0, lang) : '–'}</span>
+          <span className={styles.kpiValue}>{krw(e.mostExpensive?.expenseKrw ?? 0, lang)}</span>
           {e.mostExpensive ? <span className={styles.kpiSub}>{e.mostExpensive.title}</span> : null}
         </div>
       </div>
@@ -188,25 +188,22 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
       <div className={styles.two}>
         <div>
           <h3 className={styles.subTitle}>{t('expense.byCategory')}</h3>
-          <Donut
-            total={e.totalKrw}
-            rows={e.byCategory.map((r) => ({ key: r.key, label: tt(`label.expense.${r.key in { food: 1, transport: 1, lodging: 1, shopping: 1, activity: 1 } ? r.key : 'other'}`), value: r.krw }))}
-          />
+          <Donut total={e.totalKrw} rows={categoryRows} />
         </div>
         <div>
           <h3 className={styles.subTitle}>{t('expense.byPayment')}</h3>
           <div className={styles.stack} aria-hidden="true">
-            {e.byPayment.map((r, i) => (
+            {payTotal > 0 ? e.byPayment.map((r, i) => (
               <span key={r.key} style={{ width: `${(r.krw / payTotal) * 100}%`, background: CHART_COLORS[i % CHART_COLORS.length] }} />
-            ))}
+            )) : null}
           </div>
           <ul className={styles.legend} style={{ marginTop: 12 }}>
-            {e.byPayment.map((r, i) => (
+            {paymentRows.map((r, i) => (
               <li key={r.key} className={styles.legendRow}>
                 <span className={styles.swatch} style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
                 <span>{tt(`label.payment.${r.key in { cash: 1, card: 1, other: 1, unknown: 1 } ? r.key : 'other'}`)}</span>
                 <span className={styles.legendValue}>{krw(r.krw, lang, true)}</span>
-                <span className={styles.legendPct}>{Math.round((r.krw / payTotal) * 100)}%</span>
+                <span className={styles.legendPct}>{payTotal > 0 ? Math.round((r.krw / payTotal) * 100) : 0}%</span>
               </li>
             ))}
           </ul>
@@ -214,6 +211,7 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
       </div>
 
       <h3 className={styles.subTitle}>{t('expense.byTrip')}</h3>
+      {withExp.length === 0 ? <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.none')}</p> : null}
       <Bars
         rows={withExp.map((x) => ({
           key: x.id,

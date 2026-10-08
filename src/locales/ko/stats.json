@@ -35,7 +35,7 @@
     "perTrip": "여행당 평균",
     "mostExpensive": "가장 비싼 여행",
     "byCategory": "무엇에 썼나",
-    "byPayment": "어떻게 결제했나",
+    "byPayment": "결제방법",
     "byTrip": "여행별 비교",
     "perDayShort": "하루 {{amount}}",
     "none": "경비를 기록한 여행이 아직 없어요.",
