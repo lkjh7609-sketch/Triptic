@@ -40,7 +40,7 @@ const offer = (id: string, price: number, over: Partial<FlightOffer> = {}): Flig
   ...over,
 });
 const response = (offers: FlightOffer[]): FlightsResponse => ({ currency: 'KRW', offers, observedAt: null, bookingUrl: BOOKING, tracked: true });
-const times = () => screen.getAllByRole('listitem').map((li) => li.textContent ?? '');
+const times = () => screen.queryAllByRole('listitem').map((li) => li.textContent ?? '');
 
 describe('FlightResults — 우리 화면의 항공 운임 결과', () => {
   beforeEach(async () => {
@@ -100,7 +100,7 @@ describe('FlightResults — 우리 화면의 항공 운임 결과', () => {
     });
   });
 
-  it('정렬(최저가·최단 시간·출발 빠른 순)과 직항 필터·항공사 필터는 받은 결과 안에서 — 다시 호출하지 않는다', async () => {
+  it('정렬(최저가·최단 시간·출발 빠른 순)은 드롭다운, 필터는 접이식 — 받은 결과 안에서 거르고 다시 호출하지 않는다', async () => {
     const slow = offer('slow', 200000, { legs: [leg('KE', '대한항공', '09:00', '14:00', 1, 300), leg('KE', '대한항공', '10:00', '15:00', 1, 300, 'NRT', 'ICN')] });
     const fast = offer('fast', 400000, { legs: [leg('OZ', '아시아나항공', '18:00', '20:30', 0, 150), leg('OZ', '아시아나항공', '19:00', '21:30', 0, 150, 'NRT', 'ICN')] });
     const mid = offer('mid', 300000, { legs: [leg('7C', '제주항공', '12:00', '14:30', 0, 160), leg('7C', '제주항공', '13:00', '15:40', 0, 160, 'NRT', 'ICN')] });
@@ -108,26 +108,57 @@ describe('FlightResults — 우리 화면의 항공 운임 결과', () => {
     render(<FlightResults search={search} />);
     await screen.findAllByRole('listitem');
     const order = () => times().map((t) => (t.includes('대한항공') ? 'slow' : t.includes('아시아나') ? 'fast' : 'mid'));
+    expect(screen.getByText('항공편 3개')).toBeInTheDocument();
+    // 처음엔 필터가 접혀 있다
+    expect(screen.queryByRole('group', { name: '항공사' })).toBeNull();
     expect(order()).toEqual(['slow', 'mid', 'fast']); // 최저가순(기본)
-    fireEvent.click(screen.getByRole('button', { name: '최단 시간' }));
+    fireEvent.change(screen.getByLabelText('정렬'), { target: { value: 'duration' } });
     expect(order()).toEqual(['fast', 'mid', 'slow']); // 왕복 합계 300 < 320 < 600분
-    fireEvent.click(screen.getByRole('button', { name: '출발 빠른 순' }));
+    fireEvent.change(screen.getByLabelText('정렬'), { target: { value: 'depart' } });
     expect(order()).toEqual(['slow', 'mid', 'fast']);
+
+    fireEvent.click(screen.getByRole('button', { name: /^필터/ }));
     fireEvent.click(screen.getByRole('button', { name: '직항만' }));
     expect(order()).toEqual(['mid', 'fast']);
+    expect(screen.getByText('항공편 2개')).toBeInTheDocument();
+    // 출발 시간대(가는 편 출발) — 복수 선택
+    fireEvent.click(screen.getByRole('button', { name: '저녁 18–24시' }));
+    expect(order()).toEqual(['fast']);
+    fireEvent.click(screen.getByRole('button', { name: '오후 12–18시' }));
+    expect(order()).toEqual(['mid', 'fast']);
+    fireEvent.click(screen.getByRole('button', { name: '저녁 18–24시' }));
+    // 항공사 — 복수 선택
     const airlines = screen.getByRole('group', { name: '항공사' });
     fireEvent.click(within(airlines).getByRole('button', { name: '아시아나항공' }));
-    expect(order()).toEqual(['fast']);
+    expect(order()).toEqual([]); // 오후 + 아시아나(저녁 출발) = 없음
+    fireEvent.click(within(airlines).getByRole('button', { name: '제주항공' }));
+    expect(order()).toEqual(['mid']);
+    expect(screen.getByRole('button', { name: /^필터/ })).toHaveTextContent('4'); // 직항 + 오후 + 항공사 2
+    // 접으면 걸린 필터가 칩으로 남고, 눌러서 해제한다
+    fireEvent.click(screen.getByRole('button', { name: '완료' }));
+    expect(screen.queryByRole('group', { name: '항공사' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '직항만 필터 해제' }));
+    expect(screen.queryByRole('button', { name: '직항만 필터 해제' })).toBeNull();
+    expect(screen.getByRole('button', { name: /^필터/ })).toHaveTextContent('3');
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('필터에 맞는 게 없으면 안내(결과 자체가 없는 것과 구분)', async () => {
+  it('필터에 맞는 게 없으면 안내와 초기화(결과 자체가 없는 것과 구분)', async () => {
     const via = offer('v', 200000, { legs: [leg('KE', '대한항공', '09:00', '14:00', 1, 300)] });
     fetchMock.mockImplementation(ok(response([via])));
     render(<FlightResults search={search} />);
     await screen.findByRole('link', { name: /예약하기/ });
+    fireEvent.click(screen.getByRole('button', { name: /^필터/ }));
     fireEvent.click(screen.getByRole('button', { name: '직항만' }));
     expect(screen.getByText(/이 조건에 맞는 항공편이 없어요/)).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button', { name: '초기화' })[0]);
+    expect(await screen.findByRole('link', { name: /예약하기/ })).toBeInTheDocument();
+  });
+
+  it('아동·유아가 있으면 1인 가격 라벨을 "평균"으로 정직하게', async () => {
+    fetchMock.mockImplementation(ok(response([offer('a', 300000)])));
+    render(<FlightResults search={{ ...search, children: 1 }} />);
+    expect(await screen.findByText(/1인 평균\(아동·유아 포함\)/)).toBeInTheDocument();
   });
 
   it('경유·자가 환승 표시', async () => {
@@ -150,7 +181,7 @@ describe('FlightResults — 우리 화면의 항공 운임 결과', () => {
     render(<FlightResults search={search} />);
     expect(await screen.findByText('지금은 항공권 목록을 보여드릴 수 없어요')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /예약 사이트에서 검색/ })).toHaveAttribute('href', BOOKING);
-    expect(screen.queryByRole('button', { name: '최저가순' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^필터/ })).toBeNull();
   });
 
   it('그 밖의 오류는 다시 시도 안내(링크가 없으면 링크 없이)', async () => {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExternalLink, PlaneTakeoff, RefreshCw, TriangleAlert } from 'lucide-react';
+import { ExternalLink, PlaneTakeoff, RefreshCw, SlidersHorizontal, TriangleAlert, X } from 'lucide-react';
 import { showToast } from '@/shared/ui/toast';
 import { airlineDisplayName } from '@/features/plan/flightLookup/airlineNames';
 import type { FlightSearch } from '@/features/plan/partnerLinks';
@@ -10,7 +10,15 @@ import styles from './FlightResults.module.css';
 
 type Sort = 'price' | 'duration' | 'depart';
 type StopsFilter = 'any' | '0' | '1';
+type TimeBucket = 'dawn' | 'morning' | 'afternoon' | 'evening';
 const SORTS: Sort[] = ['price', 'duration', 'depart'];
+const TIMES: TimeBucket[] = ['dawn', 'morning', 'afternoon', 'evening'];
+
+/** 가는 편 출발 시각(현지) → 시간대: 새벽 0–6 · 오전 6–12 · 오후 12–18 · 저녁 18–24 */
+function timeBucket(iso: string): TimeBucket {
+  const h = Number(iso.slice(11, 13));
+  return h < 6 ? 'dawn' : h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+}
 
 /** 예약 사이트로 나가는 링크 속성 — 제휴 링크라 sponsored */
 const EXTERNAL = { target: '_blank', rel: 'sponsored nofollow noopener noreferrer' } as const;
@@ -71,7 +79,7 @@ function Leg({ leg, language }: { leg: FlightLeg; language: string }) {
   );
 }
 
-function OfferCard({ offer, bookingUrl, language, payers }: { offer: FlightOffer; bookingUrl: string; language: string; payers: number }) {
+function OfferCard({ offer, bookingUrl, language, payers, mixed }: { offer: FlightOffer; bookingUrl: string; language: string; payers: number; mixed: boolean }) {
   const { t } = useTranslation('home');
   const direct = offer.legs.every((l) => l.stops === 0);
   return (
@@ -94,7 +102,7 @@ function OfferCard({ offer, bookingUrl, language, payers }: { offer: FlightOffer
           {!offer.verified ? <span className={styles.approx}>{t('flights.results.approx')} </span> : null}
           {formatMoney(offer.perPerson, offer.currency, language)}
         </span>
-        <span className={styles.perPerson}>{t('flights.results.perPerson')}</span>
+        <span className={styles.perPerson}>{t(mixed ? 'flights.results.perPersonAvg' : 'flights.results.perPerson')}</span>
         {payers > 1 ? <span className={styles.total}>{t('flights.results.total', { price: formatMoney(offer.price, offer.currency, language) })}</span> : null}
         <a className={styles.book} href={bookingUrl} {...EXTERNAL} onClick={() => showToast(t('flights.results.redirecting'))}>
           {t('flights.results.book')} <ExternalLink size={14} aria-hidden="true" />
@@ -123,8 +131,18 @@ export function FlightResults({ search }: { search: FlightSearch }) {
   const { data, loading, error, fallbackUrl } = useFlightResults(search, i18n.language);
   const [sort, setSort] = useState<Sort>('price');
   const [stops, setStops] = useState<StopsFilter>('any');
-  const [airline, setAirline] = useState<string | null>(null);
+  const [airlineSel, setAirlineSel] = useState<string[]>([]);
+  const [timeSel, setTimeSel] = useState<TimeBucket[]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const payers = search.adults + (search.children ?? 0);
+  const filterCount = (stops !== 'any' ? 1 : 0) + airlineSel.length + timeSel.length;
+  const toggle = <T,>(list: T[], v: T) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const resetFilters = () => {
+    setStops('any');
+    setAirlineSel([]);
+    setTimeSel([]);
+  };
+  const lang = i18n.language.startsWith('ko') ? 'ko' : i18n.language;
 
   const airlines = useMemo(() => {
     const seen = new Map<string, { name: string; min: number }>();
@@ -133,13 +151,15 @@ export function FlightResults({ search }: { search: FlightSearch }) {
       const prev = seen.get(l.carrier.code);
       if (!prev || o.price < prev.min) seen.set(l.carrier.code, { name: l.carrier.name, min: o.price });
     }
-    return [...seen.entries()].sort((a, b) => a[1].min - b[1].min).slice(0, 8);
+    return [...seen.entries()].sort((a, b) => a[1].min - b[1].min).slice(0, 12);
   }, [data]);
 
   const offers = useMemo(() => {
     const list = (data?.offers ?? []).filter(
       (o) =>
-        (stops === 'any' || o.legs.every((l) => l.stops <= Number(stops))) && (!airline || o.legs[0].carrier.code === airline),
+        (stops === 'any' || o.legs.every((l) => l.stops <= Number(stops))) &&
+        (airlineSel.length === 0 || airlineSel.includes(o.legs[0].carrier.code)) &&
+        (timeSel.length === 0 || timeSel.includes(timeBucket(o.legs[0].depart))),
     );
     const by: Record<Sort, (a: FlightOffer, b: FlightOffer) => number> = {
       price: (a, b) => a.price - b.price,
@@ -147,7 +167,15 @@ export function FlightResults({ search }: { search: FlightSearch }) {
       depart: (a, b) => a.legs[0].depart.localeCompare(b.legs[0].depart) || a.price - b.price,
     };
     return [...list].sort(by[sort]);
-  }, [data, sort, stops, airline]);
+  }, [data, sort, stops, airlineSel, timeSel]);
+
+  const airlineName = (code: string, name: string) => airlineDisplayName(code, lang, name) || name;
+  /** 접힌 상태에서 보여 주는 지금 걸린 필터들(눌러서 해제) */
+  const active: { key: string; label: string; clear: () => void }[] = [
+    ...(stops !== 'any' ? [{ key: 'stops', label: t(`flights.results.stops.${stops}`), clear: () => setStops('any') }] : []),
+    ...timeSel.map((b) => ({ key: `t-${b}`, label: t(`flights.results.time.${b}`), clear: () => setTimeSel((l) => l.filter((x) => x !== b)) })),
+    ...airlineSel.map((c) => ({ key: `a-${c}`, label: airlineName(c, airlines.find(([code]) => code === c)?.[1].name ?? c), clear: () => setAirlineSel((l) => l.filter((x) => x !== c)) })),
+  ];
 
   if (error) {
     return (
@@ -178,29 +206,74 @@ export function FlightResults({ search }: { search: FlightSearch }) {
       {data && data.offers.length > 0 ? (
         <>
           <div className={styles.toolbar}>
-            <div className={styles.segment} role="group" aria-label={t('flights.results.sortLabel')}>
-              {SORTS.map((s) => (
-                <button key={s} type="button" aria-pressed={sort === s} className={sort === s ? styles.segOn : styles.segOff} onClick={() => setSort(s)}>
-                  {t(`flights.results.sort.${s}`)}
-                </button>
-              ))}
-            </div>
-            <div className={styles.chips} role="group" aria-label={t('flights.results.stopsLabel')}>
-              {(['any', '0', '1'] as const).map((v) => (
-                <button key={v} type="button" aria-pressed={stops === v} className={stops === v ? styles.chipOn : styles.chip} onClick={() => setStops(v)}>
-                  {t(`flights.results.stops.${v}`)}
-                </button>
-              ))}
+            <span className={styles.count} aria-live="polite">
+              {t('flights.results.count', { count: offers.length })}
+            </span>
+            <div className={styles.toolbarRight}>
+              <label className={styles.sortSelect}>
+                <span className={styles.srOnly}>{t('flights.results.sortLabel')}</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
+                  {SORTS.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`flights.results.sort.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button type="button" className={filterCount > 0 ? styles.filterBtnOn : styles.filterBtn} aria-expanded={filtersOpen} aria-controls="flight-filters" onClick={() => setFiltersOpen((o) => !o)}>
+                <SlidersHorizontal size={16} aria-hidden="true" /> {t('flights.results.filter')}
+                {filterCount > 0 ? <span className={styles.filterBadge}>{filterCount}</span> : null}
+              </button>
             </div>
           </div>
-          {airlines.length > 1 ? (
-            <div className={styles.chips} role="group" aria-label={t('flights.results.airlineLabel')}>
-              <button type="button" aria-pressed={!airline} className={!airline ? styles.chipOn : styles.chip} onClick={() => setAirline(null)}>
-                {t('flights.results.allAirlines')}
-              </button>
-              {airlines.map(([code, a]) => (
-                <button key={code} type="button" aria-pressed={airline === code} className={airline === code ? styles.chipOn : styles.chip} onClick={() => setAirline(airline === code ? null : code)}>
-                  {airlineDisplayName(code, i18n.language.startsWith('ko') ? 'ko' : i18n.language, a.name) || a.name}
+          {filtersOpen ? (
+            <div id="flight-filters" className={styles.panel}>
+              <div className={styles.panelSection} role="group" aria-label={t('flights.results.stopsLabel')}>
+                <span className={styles.panelTitle}>{t('flights.results.stopsLabel')}</span>
+                <div className={styles.panelChips}>
+                  {(['any', '0', '1'] as const).map((v) => (
+                    <button key={v} type="button" aria-pressed={stops === v} className={stops === v ? styles.chipOn : styles.chip} onClick={() => setStops(v)}>
+                      {t(`flights.results.stops.${v}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.panelSection} role="group" aria-label={t('flights.results.timeLabel')}>
+                <span className={styles.panelTitle}>{t('flights.results.timeLabel')}</span>
+                <div className={styles.panelChips}>
+                  {TIMES.map((b) => (
+                    <button key={b} type="button" aria-pressed={timeSel.includes(b)} className={timeSel.includes(b) ? styles.chipOn : styles.chip} onClick={() => setTimeSel((l) => toggle(l, b))}>
+                      {t(`flights.results.time.${b}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {airlines.length > 1 ? (
+                <div className={styles.panelSection} role="group" aria-label={t('flights.results.airlineLabel')}>
+                  <span className={styles.panelTitle}>{t('flights.results.airlineLabel')}</span>
+                  <div className={styles.panelChips}>
+                    {airlines.map(([code, a]) => (
+                      <button key={code} type="button" aria-pressed={airlineSel.includes(code)} className={airlineSel.includes(code) ? styles.chipOn : styles.chip} onClick={() => setAirlineSel((l) => toggle(l, code))}>
+                        {airlineName(code, a.name)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              <div className={styles.panelFooter}>
+                <button type="button" className={styles.resetBtn} disabled={filterCount === 0} onClick={resetFilters}>
+                  {t('flights.results.filterReset')}
+                </button>
+                <button type="button" className={styles.doneBtn} onClick={() => setFiltersOpen(false)}>
+                  {t('flights.results.filterDone')}
+                </button>
+              </div>
+            </div>
+          ) : active.length > 0 ? (
+            <div className={styles.activeChips}>
+              {active.map((a) => (
+                <button key={a.key} type="button" className={styles.activeChip} aria-label={t('flights.results.removeFilter', { name: a.label })} onClick={a.clear}>
+                  {a.label} <X size={12} aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -208,11 +281,16 @@ export function FlightResults({ search }: { search: FlightSearch }) {
           {offers.length > 0 ? (
             <ul className={styles.list}>
               {offers.map((o) => (
-                <OfferCard key={o.id} offer={o} bookingUrl={data.bookingUrl} language={i18n.language} payers={payers} />
+                <OfferCard key={o.id} offer={o} bookingUrl={data.bookingUrl} language={i18n.language} payers={payers} mixed={(search.children ?? 0) > 0 || (search.infants ?? 0) > 0} />
               ))}
             </ul>
           ) : (
-            <p className={styles.empty}>{t('flights.results.emptyFiltered')}</p>
+            <div className={styles.emptyBox}>
+              <p className={styles.empty}>{t('flights.results.emptyFiltered')}</p>
+              <button type="button" className={styles.linkBtn} onClick={resetFilters}>
+                {t('flights.results.filterReset')}
+              </button>
+            </div>
           )}
           <p className={styles.note}>{t('flights.results.priceNote')}</p>
         </>

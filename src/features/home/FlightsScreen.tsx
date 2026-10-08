@@ -66,7 +66,8 @@ export function FlightsScreen() {
         </header>
         <MyrealtripFlightSearch onSearch={runSearch} />
         <div ref={resultsRef} className={isKo ? styles.results : `${styles.results} ${styles.resultsLast}`}>
-          {search ? <FlightResults search={search} /> : null}
+          {/* 새 검색이면 정렬·필터도 처음으로(key) */}
+          {search ? <FlightResults key={JSON.stringify(search)} search={search} /> : null}
         </div>
         {isKo ? (
           <>
