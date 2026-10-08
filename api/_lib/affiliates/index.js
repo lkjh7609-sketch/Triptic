@@ -59,6 +59,9 @@ export const SALES_PROVIDERS = [
         fetchSales: myrealtrip.fetchSales,
         dashboardUrl: 'https://partner.myrealtrip.com',
     },
+    // 항공 예약 연결(2026-10-09) — 한국어는 Trip.com 직접 제휴(Allianceid), 그 외는 Kiwi.com을 Travelpayouts 링크로. 판매 내역 읽기는 연동 전(각 대시보드에서 확인)
+    { id: 'tripcom', name: 'Trip.com', isConfigured: () => false, fetchSales: null, dashboardUrl: 'https://www.trip.com/partners' },
+    { id: 'kiwi', name: 'Kiwi.com', isConfigured: () => false, fetchSales: null, dashboardUrl: 'https://app.travelpayouts.com' },
     // Klook — 제휴 연결 전(일반 링크). 트래블페이아웃을 거쳐 연결하던 것을 2026-10-04에 뺐다
     { id: 'klook', name: 'Klook', isConfigured: () => false, fetchSales: null, dashboardUrl: null },
     // 유심사 — 제휴 링크(usimsa.com/affiliate/…)만 붙어 있다(항공 탭 유심·eSIM). 판매 내역은 유심사 파트너 페이지에서
