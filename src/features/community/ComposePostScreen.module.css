@@ -376,6 +376,37 @@
   color: var(--brand);
 }
 
+/* 여행지 선택 알약과 자유게시판 버튼을 한 줄에 */
+.destRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pillInRow {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+/* 모바일은 좁아서 글자·여백을 조금 줄임 */
+.pillCompact {
+  padding: 0 14px;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.pillInRow .pillMain {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.freeChipInRow {
+  flex: 0 0 auto;
+  min-height: 48px;
+  white-space: nowrap;
+}
+
 .destChosen {
   display: flex;
   align-items: center;

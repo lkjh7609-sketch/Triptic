@@ -529,7 +529,7 @@
       "lockedHint": "目的地、分類與附加行程發布後無法變更。"
     },
     "board": {
-      "freeButton": "發佈到自由討論版（不選城市）",
+      "freeButton": "自由討論版",
       "freeChosen": "自由討論版"
     }
   },

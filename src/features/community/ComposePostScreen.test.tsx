@@ -158,7 +158,7 @@ describe('ComposePostScreen — 시안 구성', () => {
   it('도시를 안 고르고 자유게시판을 골라도 게시되고, 도시 없이(null) 보낸다', async () => {
     mutateAsync.mockResolvedValue({ id: 'p3', status: 'published' });
     renderScreen();
-    fireEvent.click(screen.getByRole('button', { name: /자유게시판에 쓰기/ }));
+    fireEvent.click(screen.getByRole('button', { name: /자유게시판/ }));
     expect(screen.getByRole('button', { name: '자유게시판' })).toBeInTheDocument();
     expect(screen.queryByRole('radio', { name: '질문·Q&A' })).not.toBeInTheDocument();
     fillTitle('자유 제목');
