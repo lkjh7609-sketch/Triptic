@@ -191,10 +191,10 @@ describe('FlightResults — 우리 화면의 항공 운임 결과', () => {
     expect(screen.queryByRole('link')).toBeNull();
   });
 
-  it('불러오는 동안 진행 안내(처음 검색은 느릴 수 있다)', async () => {
+  it('불러오는 동안 진행 안내', async () => {
     fetchMock.mockImplementation(() => new Promise(() => {}));
     render(<FlightResults search={search} />);
-    expect(await screen.findByRole('status')).toHaveTextContent('20초');
+    expect(await screen.findByRole('status')).toHaveTextContent('항공권을 찾는 중이에요');
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
   });
 

@@ -6,7 +6,7 @@
 import { parseLocale } from '../http.js';
 import { supabaseAdmin } from '../supabaseAdmin.js';
 import { parseFlightQuery } from '../affiliates/myrealtrip.js';
-import { isConfigured, ignavSearch, normalizeIgnav } from './ignav.js';
+import { isConfigured, ignavSearch, normalizeIgnav, callsFor } from './ignav.js';
 import { takeIgnavCall, IgnavCapError } from './cap.js';
 import { bookingLinkFor } from './deeplinks.js';
 
@@ -29,7 +29,7 @@ export async function handleFlights(req, res) {
 
     if (!isConfigured()) return withLink(503, { error: 'not_configured' });
     try {
-        await takeIgnavCall(db);
+        await takeIgnavCall(db, callsFor(search));
     } catch (e) {
         if (e instanceof IgnavCapError) {
             console.warn('[flights] monthly cap reached:', e.used, '/', e.limit);

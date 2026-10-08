@@ -19,14 +19,14 @@ export function ignavCap(env = process.env) {
 }
 
 /**
- * 호출 1회분을 쓴다. 이번 달 한도를 넘으면 IgnavCapError.
+ * 호출 count회분을 쓴다(왕복은 편도 2번). 이번 달 한도를 넘으면 IgnavCapError.
  * 확인할 수 없으면(DB 없음·오류) 돈이 나가는 호출을 막기 위해 통과시키지 않는다(닫힌 쪽으로 실패).
  */
-export async function takeIgnavCall(db) {
+export async function takeIgnavCall(db, count = 1) {
     if (!db) throw new Error('ignav cap unavailable');
     const limit = ignavCap();
     if (limit === 0) throw new IgnavCapError(0, 0);
-    const { data, error } = await db.rpc('take_google_call', { p_kind: 'ignav', p_limit: limit, p_count: 1 });
+    const { data, error } = await db.rpc('take_google_call', { p_kind: 'ignav', p_limit: limit, p_count: count });
     const row = Array.isArray(data) ? data[0] : data;
     if (error || !row) throw new Error('ignav cap unavailable');
     if (!row.allowed) throw new IgnavCapError(limit, row.used);

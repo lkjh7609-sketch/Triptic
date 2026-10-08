@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { buildIgnavBody, normalizeIgnav } from './ignav.js';
+import { buildIgnavBody, buildOneWayBody, callsFor, normalizeIgnav, pairOneWays } from './ignav.js';
 import { kiwiFlightUrl, tripcomFlightUrl } from './deeplinks.js';
 import { ignavCap, takeIgnavCall, IgnavCapError } from './cap.js';
 
@@ -171,6 +171,66 @@ describe('예약 링크 주소', () => {
     });
 });
 
+describe('왕복은 편도 2개를 짝짓는다(왕복 검색은 20초대, 편도는 4~5초)', () => {
+    const rt = { origin: 'SEL', destination: 'TYO', departDate: '2026-11-20', returnDate: '2026-11-25', adults: 2, children: 1, infants: 1, cabin: 'BUSINESS' };
+    const oneWay = (id, amount, code, no, from, to, depTime, arrTime, over = {}) => ({
+        price: { amount, currency: 'KRW', status: 'verified' },
+        outbound: {
+            carrier: code,
+            duration_minutes: 150,
+            segments: [{ ...seg(code, no, from, to, depTime, arrTime), departure_time_utc: depTime + 'Z', arrival_time_utc: arrTime + 'Z' }],
+        },
+        cabin_class: 'economy',
+        requires_self_transfer: false,
+        ignav_id: id,
+        ...over,
+    });
+
+    it('가는 편·오는 편 요청 본문: 오는 편은 출발·도착을 바꾸고 날짜를 귀국일로, 귀국일 필드는 없다', () => {
+        const base = { adults: 2, children: 1, infants_on_lap: 1, market: 'KR', cabin_class: 'business' };
+        expect(buildOneWayBody(rt, 'ko', 'out')).toEqual({ origin: 'SEL', destination: 'TYO', departure_date: '2026-11-20', ...base });
+        expect(buildOneWayBody(rt, 'ko', 'back')).toEqual({ origin: 'TYO', destination: 'SEL', departure_date: '2026-11-25', ...base });
+    });
+
+    it('호출 수: 편도 1, 왕복 2(월 상한에 그만큼 센다)', () => {
+        expect(callsFor({ returnDate: null })).toBe(1);
+        expect(callsFor({ returnDate: '2026-11-25' })).toBe(2);
+    });
+
+    it('가는 편 × 오는 편 전부 짝짓고 가격은 합, 하나라도 미확인이면 미확인, 자가 환승은 하나라도 있으면', () => {
+        const out = { itineraries: [oneWay('o1', 100, '7C', '1', 'ICN', 'NRT', '2026-11-20T10:00:00', '2026-11-20T12:00:00'), oneWay('o2', 150, 'KE', '2', 'ICN', 'NRT', '2026-11-20T11:00:00', '2026-11-20T13:00:00', { price: { amount: 150, currency: 'KRW', status: 'unverified' } })], observed_at: 'now' };
+        const back = { itineraries: [oneWay('b1', 200, 'LJ', '3', 'NRT', 'ICN', '2026-11-25T10:00:00', '2026-11-25T13:00:00', { requires_self_transfer: true })] };
+        const { itineraries, observed_at } = pairOneWays(out, back);
+        expect(observed_at).toBe('now');
+        expect(itineraries.map((i) => [i.ignav_id, i.price.amount, i.price.status, i.requires_self_transfer])).toEqual([
+            ['o1.b1', 300, 'verified', true],
+            ['o2.b1', 350, 'unverified', true],
+        ]);
+        expect(itineraries[0].outbound.segments[0].flight_number).toBe('1');
+        expect(itineraries[0].inbound.segments[0].flight_number).toBe('3');
+    });
+
+    it('같은 날 왕복이면 오는 편이 가는 편 도착 뒤에 떠나는 조합만', () => {
+        const out = { itineraries: [oneWay('o', 100, '7C', '1', 'ICN', 'NRT', '2026-11-20T10:00:00', '2026-11-20T12:00:00')] };
+        const back = { itineraries: [oneWay('early', 100, 'LJ', '2', 'NRT', 'ICN', '2026-11-20T11:00:00', '2026-11-20T14:00:00'), oneWay('late', 100, 'LJ', '4', 'NRT', 'ICN', '2026-11-20T15:00:00', '2026-11-20T18:00:00')] };
+        expect(pairOneWays(out, back).itineraries.map((i) => i.ignav_id)).toEqual(['o.late']);
+    });
+
+    it('한쪽이 비면 짝이 없다', () => {
+        const out = { itineraries: [oneWay('o', 100, '7C', '1', 'ICN', 'NRT', '2026-11-20T10:00:00', '2026-11-20T12:00:00')] };
+        expect(pairOneWays(out, { itineraries: [] }).itineraries).toEqual([]);
+        expect(pairOneWays(null, out).itineraries).toEqual([]);
+    });
+
+    it('짝 결과가 그대로 카드 정규화를 지난다(왕복 2구간, 합계 가격)', () => {
+        const out = { itineraries: [oneWay('o', 100, '7C', '1', 'ICN', 'NRT', '2026-11-20T10:00:00', '2026-11-20T12:00:00')] };
+        const back = { itineraries: [oneWay('b', 200, '7C', '2', 'NRT', 'ICN', '2026-11-25T10:00:00', '2026-11-25T13:00:00')] };
+        const [offer] = normalizeIgnav(pairOneWays(out, back), { adults: 1 }).offers;
+        expect(offer).toMatchObject({ id: 'o.b', price: 300, perPerson: 300 });
+        expect(offer.legs.map((l) => [l.origin, l.destination])).toEqual([['ICN', 'NRT'], ['NRT', 'ICN']]);
+    });
+});
+
 describe('월 상한', () => {
     it('기본 2,500건, 환경 변수로 바꾸되 잘못된 값은 기본값', () => {
         expect(ignavCap({})).toBe(2500);
@@ -189,6 +249,8 @@ describe('월 상한', () => {
         const rpc = vi.fn(async () => ({ data: [{ allowed: true, used: 7 }], error: null }));
         await expect(takeIgnavCall({ rpc })).resolves.toEqual({ limit: 2500, used: 7 });
         expect(rpc).toHaveBeenCalledWith('take_google_call', { p_kind: 'ignav', p_limit: 2500, p_count: 1 });
+        await takeIgnavCall({ rpc }, 2);
+        expect(rpc).toHaveBeenLastCalledWith('take_google_call', { p_kind: 'ignav', p_limit: 2500, p_count: 2 });
         await expect(takeIgnavCall({ rpc: async () => ({ data: [{ allowed: false, used: 2500 }], error: null }) })).rejects.toBeInstanceOf(IgnavCapError);
     });
 });
@@ -242,6 +304,41 @@ describe('핸들러', () => {
         expect(url).toBe('https://ignav.com/api/fares/one-way');
         expect(init.headers['X-Api-Key']).toBe('test-key');
         expect(JSON.parse(init.body).market).toBe('KR');
+    });
+
+    it('왕복: 편도 2개를 동시에 불러 짝지어 돌려주고, 월 상한에는 2회로 센다', async () => {
+        const one = (id, amount, from, to, dep, arr) => ({
+            ok: true,
+            status: 200,
+            json: async () => ({
+                itineraries: [
+                    {
+                        price: { amount, currency: 'KRW', status: 'verified' },
+                        outbound: { duration_minutes: 150, segments: [{ ...seg('7C', id, from, to, dep, arr), departure_time_utc: dep + 'Z', arrival_time_utc: arr + 'Z' }] },
+                        requires_self_transfer: false,
+                        ignav_id: id,
+                    },
+                ],
+            }),
+        });
+        const d1 = future();
+        const d2 = new Date(Date.now() + 45 * 86400_000).toISOString().slice(0, 10);
+        fetchMock.mockImplementation(async (_url, init) => {
+            const b = JSON.parse(init.body);
+            return b.origin === 'ICN' ? one('out', 100000, 'ICN', 'NRT', `${d1}T10:00:00`, `${d1}T12:00:00`) : one('back', 120000, 'NRT', 'ICN', `${d2}T10:00:00`, `${d2}T13:00:00`);
+        });
+        const rpc = vi.fn(async () => ({ data: [{ allowed: true, used: 2 }], error: null }));
+        db = { rpc };
+        const res = await call({ ...q(), return_date: d2 });
+        expect(res.statusCode).toBe(200);
+        expect(rpc).toHaveBeenCalledWith('take_google_call', { p_kind: 'ignav', p_limit: 2500, p_count: 2 });
+        expect(fetchMock.mock.calls.map((c) => [c[0], JSON.parse(c[1].body).origin, JSON.parse(c[1].body).departure_date])).toEqual([
+            ['https://ignav.com/api/fares/one-way', 'ICN', d1],
+            ['https://ignav.com/api/fares/one-way', 'NRT', d2],
+        ]);
+        expect(res.body.offers).toHaveLength(1);
+        expect(res.body.offers[0]).toMatchObject({ id: 'out.back', price: 220000 });
+        expect(res.body.offers[0].legs).toHaveLength(2);
     });
 
     it('외국어는 Kiwi 링크(토큰이 없으면 변환 없이 tracked:false)', async () => {

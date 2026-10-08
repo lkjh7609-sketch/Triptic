@@ -153,7 +153,7 @@
     },
     "results": {
       "label": "機票搜尋結果",
-      "searching": "正在搜尋機票…首次搜尋可能需要約 20 秒。",
+      "searching": "正在搜尋機票…請稍候數秒。",
       "sortLabel": "排序",
       "sort": {
         "price": "最低價",
