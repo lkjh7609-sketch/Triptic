@@ -51,7 +51,7 @@ import { cityDisplayName } from './cityName';
 import { CreateTripModal } from './CreateTripModal';
 import { FirstTripGuideDialog } from './FirstTripGuideDialog';
 import { markFirstTripGuideAnswered, shouldAskFirstTripGuide } from './firstTripGuide';
-import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
+import { openFlightsSearchForTrip } from './flightsSearchLink';
 import { DepartureChecklist } from './DepartureChecklist';
 import { SAMPLE_TRIP_ID } from './sampleTrip';
 import type { DayCitiesData, ExpensesData, FlightsData, HotelsData, PlannerData } from './types';
@@ -804,12 +804,10 @@ function hasNotStarted(trip: TripRow): boolean {
   return !trip.start_date || trip.start_date >= format(new Date(), 'yyyy-MM-dd');
 }
 
-/** 여행 도시·날짜로 항공 탭 검색을 바로 연다(출발지는 접속 위치) — flightsSearchLink.ts */
+/** 여행 도시·날짜로 항공 탭 검색을 바로 연다(출발지는 서울) — flightsSearchLink.ts */
 function FindFlightsButton({ trip, className }: { trip: TripRow; className?: string }) {
-  const { t, i18n } = useTranslation('plan');
+  const { t } = useTranslation('plan');
   const [busy, setBusy] = useState(false);
-  // 마이리얼트립 결과 링크를 미리 받아 두면 누르는 순간 바로 열린다
-  const prefetched = useTripFlightsLink(trip, i18n.language, true);
   return (
     <button
       type="button"
@@ -817,7 +815,7 @@ function FindFlightsButton({ trip, className }: { trip: TripRow; className?: str
       disabled={busy}
       onClick={() => {
         setBusy(true);
-        void openFlightsSearchForTrip(trip, i18n.language, prefetched).finally(() => setBusy(false));
+        void openFlightsSearchForTrip(trip).finally(() => setBusy(false));
       }}
     >
       <Search size={14} aria-hidden="true" /> {busy ? t('desktop.findFlightsBusy') : t('desktop.findFlights')}
