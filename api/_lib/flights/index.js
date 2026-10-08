@@ -18,29 +18,33 @@ export async function handleFlights(req, res) {
     const locale = parseLocale(query.locale);
     const db = supabaseAdmin();
 
-    // 예약 링크는 검색 조건만으로 정해지니 먼저(실패해도 던지지 않는다)
-    const link = await bookingLinkFor(search, locale, db);
-    const fallback = { bookingUrl: link.url, tracked: link.tracked };
+    // 예약 링크는 검색 조건만으로 정해진다. 제휴 변환(DB·Travelpayouts)이 있을 수 있어 운임 검색과 함께 진행하고(던지지 않는다),
+    // 어느 경로로 끝나든 마지막에 기다린다 — 순서대로 하면 느린 Ignav와 합쳐 함수 한도(30초)를 넘을 수 있다
+    const linkPromise = bookingLinkFor(search, locale, db);
+    const withLink = async (status, body, cache) => {
+        const link = await linkPromise;
+        if (cache) res.setHeader('Cache-Control', cache);
+        return res.status(status).json({ ...body, bookingUrl: link.url, tracked: link.tracked });
+    };
 
-    if (!isConfigured()) return res.status(503).json({ error: 'not_configured', ...fallback });
+    if (!isConfigured()) return withLink(503, { error: 'not_configured' });
     try {
         await takeIgnavCall(db);
     } catch (e) {
         if (e instanceof IgnavCapError) {
             console.warn('[flights] monthly cap reached:', e.used, '/', e.limit);
-            return res.status(503).json({ error: 'flights_cap', ...fallback });
+            return withLink(503, { error: 'flights_cap' });
         }
         console.warn('[flights] cap check failed:', e instanceof Error ? e.message : e);
-        return res.status(503).json({ error: 'flights_unavailable', ...fallback });
+        return withLink(503, { error: 'flights_unavailable' });
     }
 
     try {
         const out = normalizeIgnav(await ignavSearch(search, locale), search);
         // 같은 조건은 잠깐 CDN이 들고 있는다(가격은 바뀌니 오래 두지 않는다). 빈 결과는 캐시하지 않는다
-        res.setHeader('Cache-Control', out.offers.length > 0 ? 'public, s-maxage=180, stale-while-revalidate=300' : 'no-store');
-        return res.status(200).json({ ...out, ...fallback });
+        return withLink(200, out, out.offers.length > 0 ? 'public, s-maxage=180, stale-while-revalidate=300' : 'no-store');
     } catch (e) {
         console.warn('[flights] search failed:', e instanceof Error ? e.message : e);
-        return res.status(502).json({ error: 'flights_failed', ...fallback });
+        return withLink(502, { error: 'flights_failed' });
     }
 }

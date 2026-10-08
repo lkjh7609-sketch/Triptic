@@ -2,7 +2,8 @@
 // 그래서 한 검색의 모든 카드가 같은 링크 하나를 쓴다(제휴 변환도 검색당 1번).
 //  - 한국어: Trip.com KR (직접 제휴 — Allianceid·SID는 계정 값이라 비밀이 아니다, 호텔 때와 같다)
 //  - 그 외: Kiwi.com, Travelpayouts 제휴 링크로 변환(TRAVELPAYOUTS_API_TOKEN). 토큰이 없으면 변환 없는 일반 주소(수수료 없음)
-// 주소 모양은 파트너 센터가 만들어 준 것을 기준으로 했다. 짐작한 매개변수는 실제 브라우저에서 확인할 것.
+// 2026-10-09 실제 Chrome으로 확인: Trip.com(kr.trip.com·www.trip.com)은 노선·날짜·인원·좌석이 채워져 자동 검색되고, Kiwi는 /deep 형식만 된다(아래).
+// 아직 못 본 것: Trip.com 프리미엄 이코노미(class=s)·일등석(f) 값, 한국어 외 언어에서의 Travelpayouts 변환 링크.
 import * as travelpayouts from '../affiliates/travelpayouts.js';
 
 const TRIP_ALLIANCE_ID = process.env.TRIPCOM_ALLIANCE_ID || '10792895';
@@ -32,20 +33,25 @@ export function tripcomFlightUrl(search) {
     return `https://kr.trip.com/flights/${origin}-to-${destination}/tickets-${origin}-${destination}?${params.toString()}`;
 }
 
-const KIWI_PATH = { en: 'en', ja: 'ja', 'zh-TW': 'zh-tw' };
+const KIWI_LANG = { en: 'en', ja: 'ja', 'zh-TW': 'tw' };
 const KIWI_CURRENCY = { en: 'usd', ja: 'jpy', 'zh-TW': 'twd' };
+const KIWI_CABIN = { ECONOMY: 'economy', PREMIUM_ECONOMY: 'premium', BUSINESS: 'business', FIRST: 'first' };
 
-/** Kiwi.com 검색 결과 — 출발·도착은 IATA 코드(공항·도시 모두 받는다), 왕복이면 날짜를 하나 더 */
+/**
+ * Kiwi.com 검색 결과 — /deep 형식. 2026-10-09 실제 브라우저로 확인: 공항·도시 IATA 코드(SEL·ICN) 그대로 받고 결과 화면으로
+ * 넘겨 주며 성인·아동·유아·좌석 등급·언어·통화가 채워진다. 결과 경로(/search/results/icn/nrt/…)는 IATA 코드를 못 읽어
+ * 출발·도착이 빈 채로 열리고, 언어 코드는 번체가 zh-tw가 아니라 tw다(zh-tw·zh는 영어로 떨어진다).
+ */
 export function kiwiFlightUrl(search, locale) {
-    const dates = search.returnDate ? `${search.departDate}/${search.returnDate}` : search.departDate;
-    const params = new URLSearchParams({
-        adults: String(search.adults),
-        children: String(search.children ?? 0),
-        infants: String(search.infants ?? 0),
-        currency: KIWI_CURRENCY[locale] ?? 'usd',
-    });
-    const path = KIWI_PATH[locale] ?? 'en';
-    return `https://www.kiwi.com/${path}/search/results/${search.origin.toLowerCase()}/${search.destination.toLowerCase()}/${dates}/?${params.toString()}`;
+    const params = new URLSearchParams({ from: search.origin, to: search.destination, departure: search.departDate });
+    if (search.returnDate) params.set('return', search.returnDate);
+    params.set('adults', String(search.adults));
+    params.set('children', String(search.children ?? 0));
+    params.set('infants', String(search.infants ?? 0));
+    params.set('cabinClass', KIWI_CABIN[search.cabin] ?? 'economy');
+    params.set('lang', KIWI_LANG[locale] ?? 'en');
+    params.set('currency', KIWI_CURRENCY[locale] ?? 'usd');
+    return `https://www.kiwi.com/deep?${params.toString()}`;
 }
 
 const KIWI_SUB_ID = 'flights_results';
