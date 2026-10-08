@@ -1,13 +1,13 @@
-import { Briefcase, Flag, Globe, MapPin, Send, Sun, Users, Lock, type LucideIcon } from 'lucide-react';
+import { Briefcase, Flag, MapPin, Send, Sun, Users, Lock, type LucideIcon } from 'lucide-react';
 import styles from './Stats.module.css';
 
 export type BadgeKind =
-  | 'firstTrip' | 'firstAbroad' | 'firstCompanion' | 'oneLap'
+  | 'firstTrip' | 'firstAbroad' | 'firstCompanion'
   | 'countries3' | 'countries5' | 'countries10'
   | 'trips5' | 'trips10' | 'trips20'
-  | 'days30' | 'days100';
+  | 'days30' | 'days100' | 'days365';
 
-const SPECIAL: Record<string, LucideIcon> = { firstTrip: Flag, firstAbroad: Send, firstCompanion: Users, oneLap: Globe };
+const SPECIAL: Record<string, LucideIcon> = { firstTrip: Flag, firstAbroad: Send, firstCompanion: Users };
 const MINI: Record<string, LucideIcon> = { countries: MapPin, trips: Briefcase, days: Sun };
 
 /**
