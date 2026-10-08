@@ -154,43 +154,6 @@
       "meta": "From ₩{{price}} round trip",
       "metaAirline": "From ₩{{price}} round trip · {{airline}}",
       "open": "View flights to {{city}}"
-    },
-    "kayak": {
-      "results": "Flight results",
-      "sortLabel": "Sort",
-      "sort": {
-        "best": "Best",
-        "price": "Cheapest",
-        "duration": "Fastest"
-      },
-      "stopsLabel": "Stops",
-      "stops": {
-        "any": "Any",
-        "0": "Nonstop",
-        "1": "1 stop or fewer"
-      },
-      "airlineLabel": "Airlines",
-      "allAirlines": "All airlines",
-      "direct": "Nonstop",
-      "stopsN_one": "{{count}} stop",
-      "stopsN_other": "{{count}} stops",
-      "freeCancel": "Free cancellation",
-      "bagChecked": "Checked bag included",
-      "bagCarryOn": "Carry-on included",
-      "durationHM": "{{h}}h {{m}}m",
-      "durationM": "{{m}}m",
-      "perPerson": "per person",
-      "perPersonSolo": "total",
-      "book": "Book",
-      "via": "on {{provider}}",
-      "otherSites_one": "{{count}} other site",
-      "otherSites_other": "{{count}} other sites",
-      "searching": "Searching flights…",
-      "searchingMore": "Still searching… {{count}} so far",
-      "empty": "No flights match. Try different dates or filters",
-      "error": "Couldn't load flights. Please try again in a moment",
-      "priceNote": "Prices can change on the booking site. You book and pay with the provider Kayak connects you to",
-      "sandbox": "The data below is still being built and isn't ready for real use"
     }
   },
   "hotels": {
