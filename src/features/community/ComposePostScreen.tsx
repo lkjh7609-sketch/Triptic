@@ -351,7 +351,7 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const freeBoardButton = (
     <button
       type="button"
-      className={desktop ? styles.quickChip : `${styles.quickChip} ${styles.freeChipInRow}`}
+      className={`${styles.quickChip} ${styles.freeChipInRow}`}
       onClick={() => {
         setFreeBoard(true);
         clearInvalid(destRef.current);
@@ -406,11 +406,11 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           </button>
         </div>
       ) : (
-        <div className={desktop ? undefined : styles.destRow}>
+        <div className={styles.destRow}>
           <button
             type="button"
             ref={destRef}
-            className={`${styles.pill} ${missingDest ? styles.pillError : ''} ${desktop ? '' : styles.pillInRow}`}
+            className={`${styles.pill} ${missingDest ? styles.pillError : ''} ${styles.pillInRow} ${desktop ? '' : styles.pillCompact}`}
             onClick={() => {
               clearInvalid(destRef.current);
               setPickerOpen('destination');
@@ -425,10 +425,9 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
               <ChevronRight size={18} aria-hidden="true" />
             </span>
           </button>
-          {desktop ? null : freeBoardButton}
+          {freeBoardButton}
         </div>
       )}
-      {desktop && !selectedDestination && !freeBoard ? <div className={styles.quick}>{freeBoardButton}</div> : null}
       {desktop && featured.length > 0 ? (
         <div className={styles.quick}>
           <span className={styles.quickLabel}>{t('compose.dest.quick')}</span>
