@@ -122,8 +122,7 @@ export function SettingsScreen() {
       marketing: false,
     };
     updateProfile.mutate({ notification_prefs: { ...base, [key]: value } });
-    // 알림을 처음 켜는 순간 디바이스 토큰을 등록한다(네이티브 앱에서만 동작,
-    // 실제 발송 파이프라인은 아직 없다 — src/shared/push/registerPush.ts 참고).
+    // 알림을 켜는 순간 기기 등록도 확인한다(네이티브 앱에서만 동작 — src/shared/push/registerPush.ts. 보통은 로그인할 때 이미 등록돼 있다).
     if (value && user) {
       registerPushNotifications(user.id).catch((err) => captureError(err, { context: 'registerPushNotifications' }));
     }
