@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, ChevronLeft, ChevronRight, ExternalLink, ListChecks, Luggage, Plane, TriangleAlert } from 'lucide-react';
 import { tripService, type TripRow } from '@/shared/api/tripService';
 import { AFFILIATE_LINKS } from '@/shared/config';
-import { openFlightsSearchForTrip, useTripFlightsLink } from './flightsSearchLink';
+import { openFlightsSearchForTrip } from './flightsSearchLink';
 import {
   CHECKLIST_PAGES,
   FINAL_CABIN,
@@ -84,7 +84,7 @@ function CarryTag({ carry }: { carry: Carry }) {
  * 항공권·숙소는 일정에 들어가 있으면 자동 완료, eSIM·여행자보험은 제휴 링크, 나머지는 직접 체크.
  */
 export function DepartureChecklist({ trip }: { trip: TripRow }) {
-  const { t, i18n } = useTranslation('plan');
+  const { t } = useTranslation('plan');
   const [checked, setChecked] = useState<ItemKey[]>(() => readChecked(trip.id));
   const [acknowledged, setAcknowledged] = useState(() => readAck(trip.id));
   const [findingFlights, setFindingFlights] = useState(false);
@@ -105,9 +105,6 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
   const lastIndex = CHECKLIST_PAGES.length - 1;
   const page = CHECKLIST_PAGES[pageIndex];
   const pageComplete = isPageComplete(page, isDone);
-
-  // 항공권이 아직 없을 때만 마이리얼트립 결과 링크를 미리 받아 둔다(누르면 바로 열리게)
-  const prefetchedFlights = useTripFlightsLink(trip, i18n.language, !auto.flights);
 
   const advanceTimer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(advanceTimer.current), []);
@@ -144,7 +141,7 @@ export function DepartureChecklist({ trip }: { trip: TripRow }) {
             disabled={findingFlights}
             onClick={() => {
               setFindingFlights(true);
-              void openFlightsSearchForTrip(trip, i18n.language, prefetchedFlights).finally(() => setFindingFlights(false));
+              void openFlightsSearchForTrip(trip).finally(() => setFindingFlights(false));
             }}
           >
             {t('desktop.checklist.find')}

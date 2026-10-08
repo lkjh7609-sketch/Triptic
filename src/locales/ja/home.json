@@ -74,7 +74,7 @@
   "flights": {
     "title": "航空券を検索",
     "subtitle": "複数の航空会社・旅行会社の料金をまとめて比較できます",
-    "lead": "出発地と日程を選ぶだけで、マイリアルトリップの価格をすぐ比較できます。",
+    "lead": "出発地と日程を選ぶだけで、航空券の価格をこの画面ですぐ比較できます。",
     "form": {
       "tripType": "旅程",
       "roundTrip": "往復",
@@ -112,11 +112,8 @@
       "cabinECONOMY": "エコノミー",
       "cabinPREMIUM_ECONOMY": "プレミアムエコノミー",
       "cabinBUSINESS": "ビジネス",
-      "cabinFIRST": "ファースト"
-    },
-    "comingSoon": {
-      "title": "航空券検索を準備中です",
-      "body": "より多くの航空会社と路線を比較できる新しい航空券検索をまもなく公開します。"
+      "cabinFIRST": "ファースト",
+      "opensOnPartner": "予約は予約サイト（新しいタブ）で行います"
     },
     "essentials": {
       "title": "SIM・eSIMも必要ですか？",
@@ -153,6 +150,54 @@
       "meta": "往復最安 {{price}}ウォン~",
       "metaAirline": "往復最安 {{price}}ウォン~ · {{airline}}",
       "open": "{{city}}の航空券を見る"
+    },
+    "results": {
+      "label": "航空券の検索結果",
+      "searching": "航空券を検索中です。数秒お待ちください。",
+      "sortLabel": "並べ替え",
+      "sort": {
+        "price": "最安値",
+        "duration": "最短時間",
+        "depart": "出発が早い順"
+      },
+      "stopsLabel": "乗り継ぎ",
+      "stops": {
+        "any": "すべて",
+        "0": "直行のみ",
+        "1": "乗り継ぎ1回まで"
+      },
+      "airlineLabel": "航空会社",
+      "direct": "直行",
+      "stopsN_other": "乗り継ぎ{{count}}回",
+      "durationHM": "{{h}}時間{{m}}分",
+      "durationM": "{{m}}分",
+      "selfTransfer": "別々の航空券（乗り継ぎ時に手荷物の再預けが必要な場合があります）",
+      "approx": "約",
+      "perPerson": "1人あたり・検索時点の参考価格",
+      "perPersonAvg": "1人あたりの平均（子ども・幼児含む）・検索時点の参考価格",
+      "total": "合計 {{price}}",
+      "book": "予約する",
+      "redirecting": "選択した航空券の予約ページへ移動します。",
+      "priceNote": "表示価格は検索時点の参考価格です。座席状況の変動や支払い方法（カード割引など）により、予約ページの最終金額と多少異なる場合があります。予約ページは路線・日付・人数を入力した状態で開きます。同じ便を選び直す必要がある場合があります。",
+      "empty": "条件に合う航空券が見つかりませんでした。日付や空港を変えてお試しください。",
+      "emptyFiltered": "この条件に合う航空券がありません。絞り込みを変更してください。",
+      "searchOnSite": "予約サイトで検索",
+      "unavailableTitle": "現在、航空券の一覧を表示できません",
+      "unavailableBody": "予約サイトで同じ条件をそのまま検索できます。",
+      "failedTitle": "航空券を読み込めませんでした",
+      "failedBody": "しばらくしてからもう一度検索するか、予約サイトで同じ条件を検索してください。",
+      "count_other": "{{count}}便",
+      "filter": "絞り込み",
+      "filterReset": "リセット",
+      "filterDone": "完了",
+      "timeLabel": "出発時間（行き）",
+      "time": {
+        "dawn": "早朝 0–6時",
+        "morning": "午前 6–12時",
+        "afternoon": "午後 12–18時",
+        "evening": "夜 18–24時"
+      },
+      "removeFilter": "絞り込み解除: {{name}}"
     }
   },
   "hotels": {

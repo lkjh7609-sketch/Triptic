@@ -68,40 +68,11 @@
   color: var(--text-muted);
 }
 
-.comingSoon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  margin: var(--space-4) 0 calc(var(--space-6) + 72px);
-  padding: var(--space-8) var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-card);
-  text-align: center;
+.results {
+  scroll-margin-top: var(--space-4);
 }
 
-.comingSoonIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-pill);
-  background: var(--brand-tint);
-  color: var(--brand-text);
-}
-
-.comingSoonTitle {
-  margin: var(--space-2) 0 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.comingSoonBody {
-  margin: 0;
-  max-width: 28rem;
-  font-size: var(--font-body-size);
-  color: var(--text-muted);
+/* 한국어가 아니면 결과가 페이지 끝이라 하단 탭 바에 가리지 않게 */
+.resultsLast {
+  margin-bottom: calc(var(--space-6) + 72px);
 }

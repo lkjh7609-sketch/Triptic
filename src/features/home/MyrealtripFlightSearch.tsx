@@ -344,10 +344,11 @@ function PassengerPicker({ adults, kids, infants, cabin, onAdults, onChildren, o
 }
 
 /**
- * 항공 탭(한국어) — 마이리얼트립 항공권 검색. 결과는 마이리얼트립 사이트(새 탭)에서 열린다.
+ * 항공 탭 검색 폼. onSearch가 있으면 검색 조건만 넘겨 우리 화면 안에서 결과를 보여 준다(모든 언어, 예약만 새 탭).
+ * 없으면(옛 방식) 마이리얼트립 항공권 검색 결과를 새 탭으로 연다.
  * 여행에서 넘어오면 주소의 origin/destination/depart_date/return_date/adults/children/infants를 채워 둔다.
  */
-export function MyrealtripFlightSearch() {
+export function MyrealtripFlightSearch({ onSearch }: { onSearch?: (flight: FlightSearch) => void } = {}) {
   const { t, i18n } = useTranslation('home');
   const [searchParams] = useSearchParams();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -416,7 +417,7 @@ export function MyrealtripFlightSearch() {
     const id = window.setTimeout(() => setSettledKey(flightKey), 700);
     return () => window.clearTimeout(id);
   }, [flightKey]);
-  const prefetched = useMyrealtripLink(flight && settledKey === flightKey ? flightLinkParams(flight, 'flights') : null);
+  const prefetched = useMyrealtripLink(!onSearch && flight && settledKey === flightKey ? flightLinkParams(flight, 'flights') : null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -432,6 +433,10 @@ export function MyrealtripFlightSearch() {
       return;
     }
     setRecent(saveRecent(effectiveOrigin, destination));
+    if (onSearch) {
+      if (flight) onSearch(flight);
+      return;
+    }
     if (prefetched) {
       openExternal(prefetched);
       return;
@@ -624,7 +629,7 @@ export function MyrealtripFlightSearch() {
         </div>
       ) : null}
       <p className={styles.note}>
-        <ShieldCheck size={14} aria-hidden="true" /> {t('flights.form.opensOnMyrealtrip')}
+        <ShieldCheck size={14} aria-hidden="true" /> {t(onSearch ? 'flights.form.opensOnPartner' : 'flights.form.opensOnMyrealtrip')}
       </p>
     </form>
   );
