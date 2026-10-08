@@ -39,7 +39,7 @@ vi.mock('../flightDealsData', async () => ({
 }));
 vi.mock('./seasonService', () => ({
   useSeasonPicks: () => ({
-    data: [{ id: 'd-kyoto', slug: 'kyoto', country: 'JP', lat: 35, lng: 135, cover: null, featured: true, stat: [24, 14, 120, 9], kind: 'pleasant', name: '교토', nameEn: 'Kyoto' }],
+    data: [{ id: 'd-kyoto', slug: 'kyoto', country: 'JP', lat: 35, lng: 135, cover: null, featured: true, stat: [24, 14, 120], kind: 'pleasant', name: '교토', nameEn: 'Kyoto' }],
   }),
 }));
 vi.mock('@/features/weather/destinationWeather', () => ({

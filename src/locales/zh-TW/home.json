@@ -451,7 +451,7 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "現在最適合出發的旅遊地",
-      "sub": "以過去 10 年氣候資料挑選的本月推薦",
+      "sub": "以 20 年氣候平年值挑選的本月推薦",
       "subMobile": "依今天天氣與本月氣候挑選",
       "best": "{{range}}最佳時節",
       "kind": {
@@ -459,7 +459,7 @@
         "pleasant": "舒適的天氣",
         "cool": "涼爽的天氣"
       },
-      "desc": "平均 {{min}}～{{max}} · 每月下雨 {{wet}} 天"
+      "desc": "平均 {{min}}～{{max}} · 每月降雨量 {{rain}} 毫米"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

@@ -451,7 +451,7 @@
     "season": {
       "eyebrow": "SEASONAL CURATION",
       "title": "지금 가기 좋은 여행지",
-      "sub": "과거 10년의 기후 자료로 고른 이달의 추천 도시",
+      "sub": "20년 기후 평년값으로 고른 이달의 추천 도시",
       "subMobile": "오늘 날씨와 이달의 기후로 골랐어요",
       "best": "{{range}} 최적기",
       "kind": {
@@ -459,7 +459,7 @@
         "pleasant": "쾌적한 날씨",
         "cool": "선선한 날씨"
       },
-      "desc": "평균 {{min}}~{{max}} · 비 오는 날 월 {{wet}}일"
+      "desc": "평균 {{min}}~{{max}} · 월 강수량 {{rain}}mm"
     },
     "companions": {
       "eyebrow": "SAFE MATCHING",

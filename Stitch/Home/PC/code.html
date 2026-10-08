@@ -1,0 +1,814 @@
+<!DOCTYPE html><html lang="ko" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600&amp;family=Cormorant+Garamond:ital,wght@1,400;1,500&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-surface-variant": "#575249",
+          "surface-container-high": "#ebe4d8",
+          "on-primary-fixed": "#00201d",
+          "on-background": "#1c1917",
+          "primary-fixed": "#9cf2e8",
+          "background": "#FAF8F5",
+          "surface-container": "#f4efe6",
+          "on-primary": "#ffffff",
+          "surface-variant": "#ede5d8",
+          "inverse-surface": "#2d2a26",
+          "secondary-container": "#f3efe6",
+          "on-error-container": "#93000a",
+          "tertiary-fixed": "#d8e5e2",
+          "surface-container-low": "#f9f6f0",
+          "secondary": "#3f6760",
+          "outline": "#7d756b",
+          "on-secondary-fixed": "#00201e",
+          "secondary-fixed": "#abefe8",
+          "on-primary-container": "#e6f8f5",
+          "tertiary": "#6e6659",
+          "inverse-on-surface": "#f8f5f0",
+          "surface-container-lowest": "#ffffff",
+          "on-tertiary": "#ffffff",
+          "on-secondary": "#ffffff",
+          "surface-dim": "#e4ddd0",
+          "tertiary-fixed-dim": "#bcc9c6",
+          "surface": "#FAF8F5",
+          "on-tertiary-fixed-variant": "#494237",
+          "tertiary-container": "#dcd4c6",
+          "surface-container-highest": "#e4dcd0",
+          "on-secondary-fixed-variant": "#00504b",
+          "error-container": "#ffdad6",
+          "surface-tint": "#006a63",
+          "primary-container": "#005c55",
+          "on-tertiary-container": "#2f2920",
+          "on-surface": "#1c1917",
+          "error": "#ba1a1a",
+          "on-secondary-container": "#4a4235",
+          "secondary-fixed-dim": "#8fd3cc",
+          "inverse-primary": "#80d5cb",
+          "primary": "#005c55",
+          "on-tertiary-fixed": "#121e1c",
+          "on-primary-fixed-variant": "#00504a",
+          "outline-variant": "#d2c9bd",
+          "surface-bright": "#FAF8F5",
+          "primary-fixed-dim": "#80d5cb",
+          "on-error": "#ffffff",
+          "sand-50": "#FAF8F5",
+          "sand-100": "#F5EFE6",
+          "sand-200": "#EFE8DC",
+          "sand-300": "#E3D9C9",
+          "sand-500": "#968B7B",
+          "warm-amber": "#9c602a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin-mobile": "1rem",
+          "space-lg": "1.5rem",
+          "space-xs": "0.25rem",
+          "gutter-mobile": "1rem",
+          "margin": "2rem",
+          "space-sm": "0.5rem",
+          "space-md": "1rem",
+          "gutter": "1.5rem",
+          "space-xl": "2.5rem"
+        },
+        "fontFamily": {
+          "serif-kr": ["'Noto Serif KR'", "serif"],
+          "serif-editorial": ["'Cormorant Garamond'", "'Noto Serif KR'", "serif"],
+          "display-mobile": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-lg": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-md": [
+            "Plus Jakarta Sans"
+          ],
+          "body-lg": [
+            "Plus Jakarta Sans"
+          ],
+          "label-md": [
+            "Plus Jakarta Sans"
+          ],
+          "display": [
+            "Plus Jakarta Sans"
+          ],
+          "body-sm": [
+            "Plus Jakarta Sans"
+          ],
+          "label-lg": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-lg-mobile": [
+            "Plus Jakarta Sans"
+          ],
+          "label-sm": [
+            "Plus Jakarta Sans"
+          ],
+          "body-md": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-sm": [
+            "Plus Jakarta Sans"
+          ]
+        },
+        "fontSize": {
+          "display-mobile": [
+            "28px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "28px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "26px",
+              "fontWeight": "400"
+            }
+          ],
+          "label-md": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "display": [
+            "40px",
+            {
+              "lineHeight": "52px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-sm": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "label-lg": [
+            "15px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-lg-mobile": [
+            "22px",
+            {
+              "lineHeight": "30px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-sm": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-md": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-sm": [
+            "18px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.005em",
+              "fontWeight": "600"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body><header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-stone-200/70 shadow-sm"><div class="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm"><span class="material-symbols-outlined text-[20px]">explore</span></div><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-stone-900">TRIPTIC</span></div><nav class="hidden md:flex items-center gap-8 h-full" data-active-classes="text-stone-900 border-b-2 border-primary font-semibold pb-1"><a class="font-label-lg text-label-lg text-stone-900 font-semibold border-b-2 border-primary pb-1 transition-colors" data-path="home" href="#">홈</a><a class="font-label-lg text-label-lg text-stone-500 hover:text-stone-900 transition-colors" data-path="planner" href="#">계획</a><a class="font-label-lg text-label-lg text-stone-500 hover:text-stone-900 transition-colors" data-path="community" href="#">커뮤니티</a></nav><div class="flex items-center gap-4"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors font-label-md text-label-md" type="button"><span class="material-symbols-outlined text-[18px]">language</span><span class="">한국어</span></button><a class="hidden sm:inline-flex items-center justify-center font-label-md text-label-md font-semibold text-stone-600 hover:text-stone-900 px-3 py-1.5 transition-colors" data-path="login" href="#">로그인</a><a class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-white hover:bg-[#004e48] transition-colors font-label-md text-label-md font-semibold shadow-sm" data-path="login" href="#">시작하기</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-white text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-[#F8FAFC]"><div class="flex flex-col w-full">
+<!-- 1. Hero Section -->
+<section class="relative w-full -mt-16 pt-28 pb-20 bg-stone-900 overflow-hidden">
+<div class="absolute inset-0 z-0 bg-cover bg-center" data-alt="Breathtaking wide landscape of a serene coastal road merging into misty turquoise waters and lush emerald hills at sunrise, warm ambient glow with deep teal atmospheric undertones, high-end editorial travel photography." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBuLousYxMnreHG6j0ElwH_SJLXK-LVfUIsaAzf3b8khMTBWdEWofJsm1CqM64k0up9RQXLSQeVAsg4yOHRzs3Ay2QtvIRAiaYLH1Jwd53NSU3j1eXNTei41UKg_ca7_bKjrn7I_R8KdCoagAhSzt0wcyzQAEIpAwmL9i_k_02LS8YM_bVzRVHddzASUDjFAjCKD3fNsndX7QQG0143s2kNmpW57tz7yGjaFZwvXUsgej_xdG081jx2')"></div>
+<div class="absolute inset-0 z-0 bg-gradient-to-b from-stone-900/80 via-stone-900/40 to-[#F8FAFC] pointer-events-none"></div><div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-10 pointer-events-none"><svg class="relative block w-full h-12 sm:h-16 text-[#F8FAFC]" fill="currentColor" preserveAspectRatio="none" viewBox="0 0 1440 80"><path d="M0,32 C320,78 480,10 720,48 C960,86 1120,18 1440,42 L1440,80 L0,80 Z"></path></svg></div>
+<div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 flex flex-col items-center text-center">
+<!-- Liquid Glass Capsule Navigation Tabs -->
+<div class="backdrop-blur-xl bg-white/15 border border-white/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] rounded-full px-2 py-1.5 flex items-center gap-1.5 mb-8">
+<button class="bg-white/90 text-teal-900 font-semibold shadow-md rounded-full px-5 py-2 font-label-md text-label-md flex items-center gap-1.5 transition-all" type="button">
+
+<span class="">항공</span>
+</button>
+<button class="text-white/85 hover:text-white font-medium px-4 py-2 font-label-md text-label-md rounded-full hover:bg-white/10 flex items-center gap-1.5 transition-all" type="button">
+
+<span class="">호텔</span>
+</button>
+<button class="text-white/85 hover:text-white font-medium px-4 py-2 font-label-md text-label-md rounded-full hover:bg-white/10 flex items-center gap-1.5 transition-all" type="button">
+
+<span class="">투어·액티비티</span>
+</button>
+</div>
+
+<!-- Editorial Light Serif Headline (Option B) -->
+<div class="mb-5"><h1 class="text-[28px] sm:text-[36px] lg:text-[42px] font-semibold text-white tracking-tight drop-shadow-md whitespace-nowrap leading-tight">예약서 한 장으로 완성되는 여행의 모든 순간</h1><p class="mt-3 text-stone-200 text-body-md sm:text-body-lg font-light tracking-normal drop-shadow-sm opacity-95">복잡한 일정 계획부터 실시간 동행 관리까지, 트립틱에서 한눈에 시작하세요</p></div>
+</div>
+</section>
+<!-- Main Content Body -->
+<div class="w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 flex flex-col gap-16">
+<!-- 2. Personalized Upcoming Trips Strip -->
+<section class="w-full"><div class="flex items-center justify-between mb-6"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[22px]">calendar_today</span><h2 class="font-headline-md text-headline-md text-stone-900 font-bold">내 일정 &amp; 추천 샘플</h2></div><span class="font-label-md text-label-md text-stone-500">최근 동기화: 10분 전</span></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><!-- Card 1: My Trip --><div class="bg-white rounded-xl p-6 shadow-sm border border-stone-200/80 flex flex-col justify-between hover:shadow-md transition-all"><div class="flex flex-col"><div class="flex items-center justify-between gap-2 mb-3"><div class="flex items-center gap-2"><span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-bold bg-primary text-white">D-18</span><span class="font-label-sm text-label-sm text-stone-500 font-medium">2026.04.12 - 04.15 (3박 4일)</span></div><span class="font-label-sm text-label-sm font-semibold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">group</span> 동행자 2명과 함께 편집 중</span></div><h3 class="font-headline-sm text-headline-sm font-bold text-stone-900 mb-2">후쿠오카 미식 &amp; 온천 힐링 트립</h3><p class="font-body-sm text-body-sm text-stone-600 mb-5">숙소 예약 확정 · 텐진 야타이 및 유후인 료칸 동선 최적화 진행 중</p><div class="mb-5"><div class="flex items-center justify-between text-label-sm font-label-sm mb-1.5"><span class="text-stone-500 font-medium">일정 완성도</span><span class="font-bold text-primary">75% 완료</span></div><div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 75%"></div></div></div></div><div class="pt-4 border-t border-stone-100 flex items-center justify-between"><div class="flex -space-x-2 overflow-hidden"><div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-200 text-stone-700 flex items-center justify-center font-bold text-xs">나</div><div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-300 text-stone-700 flex items-center justify-center font-bold text-xs">민</div><div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-400 text-white flex items-center justify-center font-bold text-xs">준</div></div><button class="px-4 py-2 rounded-lg bg-primary hover:bg-[#004e48] text-white font-label-md text-label-md font-semibold transition-colors flex items-center gap-1.5 shadow-sm" type="button"><span class="material-symbols-outlined text-[18px]">edit_calendar</span><span class="">일정 편집하기</span></button></div></div><!-- Card 2: Recommended Sample --><div class="bg-white rounded-xl p-6 shadow-sm border border-stone-200/80 flex flex-col justify-between hover:shadow-md transition-all"><div class="flex flex-col"><div class="flex items-center justify-between gap-2 mb-3"><div class="flex items-center gap-2"><span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-stone-100 text-stone-700">추천 샘플</span><span class="font-label-sm text-label-sm text-stone-500 font-medium">봄 시즌 베스트 루트 (4박 5일)</span></div><span class="font-label-sm text-label-sm text-stone-400 flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">bookmark</span> 저장수 1,842회</span></div><h3 class="font-headline-sm text-headline-sm font-bold text-stone-900 mb-2">도쿄 4일 감성 카페 &amp; 디저트 산책 코스</h3><p class="font-body-sm text-body-sm text-stone-600 mb-4">나카메구로 벚꽃길, 지유가오카 베이커리 골목, 시부야 신상 셀렉샵까지 완벽 타임라인 동선 수록</p><div class="bg-stone-50 rounded-lg p-3 flex items-center gap-2.5 text-stone-600 border border-stone-200/60 mb-5"><span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0">content_copy</span><span class="font-body-sm text-body-sm text-stone-700">내 일정으로 클릭 한 번에 복제하여 바로 수정할 수 있어요.</span></div></div><div class="pt-4 border-t border-stone-100 flex items-center justify-end"><button class="px-4 py-2 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-800 border border-stone-200 font-label-md text-label-md font-semibold transition-colors flex items-center gap-1.5" type="button"><span class="material-symbols-outlined text-[18px]">visibility</span><span class="">샘플 일정 보기</span></button></div></div></div></section>
+<!-- 3. Seoul/Incheon Lowest Price Deals -->
+<section class="w-full">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline-md text-headline-md text-stone-900 font-bold">서울(인천) 출발 최저가 특가</h2>
+<span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-stone-100 text-stone-700">실시간 수집</span>
+</div>
+<p class="font-body-sm text-body-sm text-stone-500 mt-1">가격은 실시간이 아니라 저장된 최저가예요. 예약할 때 달라질 수 있어요.</p>
+</div>
+<a class="inline-flex items-center gap-1 font-label-lg text-label-lg font-semibold text-primary hover:text-stone-900 transition-colors" href="#">
+<span class="">전체보기</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Deal 1: Osaka -->
+<div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col border border-stone-200/80">
+<div class="relative h-44 bg-cover bg-center" data-alt="Charming twilight scene in Dotonbori Osaka Japan with illuminated neon signs, reflections on the calm canal, and traditional pedestrian bridges in cool evening light." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVPucrFJUCB1fOLAIi8BoscdsoNTsS0WWo5jo3kIRVN2YMyVmlOQFZ0_1aljBth6NsB7bPu6j7AbB_rtFKS3G_Xeum0WF-mC9XnzswV9EZ-i-rtORqrX_tG2fjdToPcAFq2ljNXDt4UFgzjyyCV1Md-4c-bM64G9eYbl26eW9kwYZwAvcwJvBUJP5I0QagUO9P_WaEqSYsWK8i77kXyjBvcYfvb1txRUV3rbw6MVvCC79ruPe382HU')">
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-error text-white shadow-sm">34% 특가</span>
+<div class="absolute bottom-3 left-3 text-white">
+<span class="font-label-sm text-label-sm font-medium opacity-90">일본</span>
+<h4 class="font-headline-sm text-headline-sm font-bold">오사카 (KIX)</h4>
+</div>
+</div>
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-stone-500 font-body-sm text-body-sm mb-1">
+<span class="">진에어 · 직항</span>
+<span class="">05.14 - 05.17</span>
+</div>
+<div class="font-body-sm text-body-sm text-stone-400">왕복 총액 기준</div>
+</div>
+<div class="mt-4 pt-3 bg-stone-50 -mx-4 -mb-4 px-4 py-3 flex items-center justify-between border-t border-stone-100">
+<span class="font-label-sm text-label-sm text-stone-400 line-through">289,000원</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">189,400원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 2: Fukuoka -->
+<div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col border border-stone-200/80">
+<div class="relative h-44 bg-cover bg-center" data-alt="Fukuoka Japan seaside Momochi beach park with Fukuoka Tower rising into a clear blue sky, modern waterfront architecture bathed in warm natural sunlight." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChQbwNtS_Sr-HE3aeKBBy4f9oKvq73bJLf4Y7vUu3Bjkv3qJtA_wL4DsXiInH1X1zUqqZR-0q5IZ6d0pXP0n4sDDr3qf0tfDuBt5pBoVIxT0fBwoU2Rpjbmr9_qBDp2amzrClyLu_JK9plmDc7t5Mr0BZd0_exhupoImOk7evzIG7NDPMxHsXlhVTQOmMkaGHABXE14aBZpZ6IHAGjOviGPhhrUSAiwIJ3WIEs-GpHY0dpfTrC1du4')">
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-error text-white shadow-sm">41% 특가</span>
+<div class="absolute bottom-3 left-3 text-white">
+<span class="font-label-sm text-label-sm font-medium opacity-90">일본</span>
+<h4 class="font-headline-sm text-headline-sm font-bold">후쿠오카 (FUK)</h4>
+</div>
+</div>
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-stone-500 font-body-sm text-body-sm mb-1">
+<span class="">티웨이항공 · 직항</span>
+<span class="">05.20 - 05.23</span>
+</div>
+<div class="font-body-sm text-body-sm text-stone-400">왕복 총액 기준</div>
+</div>
+<div class="mt-4 pt-3 bg-stone-50 -mx-4 -mb-4 px-4 py-3 flex items-center justify-between border-t border-stone-100">
+<span class="font-label-sm text-label-sm text-stone-400 line-through">245,000원</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">144,800원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 3: Taipei -->
+<div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col border border-stone-200/80">
+<div class="relative h-44 bg-cover bg-center" data-alt="Vibrant night market alley in Taipei Taiwan decorated with hanging red lanterns, steaming gourmet street food stalls, and bustling cozy atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJJ17HkIjsmWA_DjcpVSaXr_QfmT139kQs-ZYmUmZ1pX7kSO4Hi47MAYYFdQjCwsJ1zMZ9aQ9tLp5uDVuMUgR9-tb4grKQC7HK-wUwudvCgjFoD61KxcwmLAFOExUG7ES3Z2S25MiVpp3givFvrB_I0tGeG8EeD38iOqdu5HF3W6ZZ8I7Es-Er45xFlGxeU7AV76xx-MK3QRianpu_5x218sOkga1_bfqpFTUK6wZclBR22QaVXF_W')">
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-error text-white shadow-sm">28% 특가</span>
+<div class="absolute bottom-3 left-3 text-white">
+<span class="font-label-sm text-label-sm font-medium opacity-90">대만</span>
+<h4 class="font-headline-sm text-headline-sm font-bold">타이베이 (TPE)</h4>
+</div>
+</div>
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-stone-500 font-body-sm text-body-sm mb-1">
+<span class="">에어로케이 · 직항</span>
+<span class="">06.02 - 06.06</span>
+</div>
+<div class="font-body-sm text-body-sm text-stone-400">왕복 총액 기준</div>
+</div>
+<div class="mt-4 pt-3 bg-stone-50 -mx-4 -mb-4 px-4 py-3 flex items-center justify-between border-t border-stone-100">
+<span class="font-label-sm text-label-sm text-stone-400 line-through">350,000원</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">252,000원~</span>
+</div>
+</div>
+</div>
+<!-- Deal 4: Da Nang -->
+<div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col border border-stone-200/80">
+<div class="relative h-44 bg-cover bg-center" data-alt="Panoramic coastline view of My Khe beach in Da Nang Vietnam with pristine golden sand, palm trees swaying gently, and luxury beachfront resorts under a calm pastel sky." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAkgjTZ_19h-JFZgozV5uSqfVoGUZ4MCRAj-T5Avlzj2TygUCAsQWXaeYxG0At-w6P1eyY93FeqHTLX_5WoUAwj57m47xuuGHP3HafePaJvmTmpkR1LtEjLeY7u3gfLf8THBLXQlzu81ck9Xt9_1dns6NHGm-_TDINsTJRySGTO-D9APo80jj8aB0tOUPraCrBZ8PKyPzeVl8Php8QTuve6363mqcvWrpXoEyOjyZoCh4ECDi04UJpF')">
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-error text-white shadow-sm">31% 특가</span>
+<div class="absolute bottom-3 left-3 text-white">
+<span class="font-label-sm text-label-sm font-medium opacity-90">베트남</span>
+<h4 class="font-headline-sm text-headline-sm font-bold">다낭 (DAD)</h4>
+</div>
+</div>
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-stone-500 font-body-sm text-body-sm mb-1">
+<span class="">비엣젯항공 · 직항</span>
+<span class="">05.28 - 06.01</span>
+</div>
+<div class="font-body-sm text-body-sm text-stone-400">왕복 총액 기준</div>
+</div>
+<div class="mt-4 pt-3 bg-stone-50 -mx-4 -mb-4 px-4 py-3 flex items-center justify-between border-t border-stone-100">
+<span class="font-label-sm text-label-sm text-stone-400 line-through">390,000원</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">269,100원~</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Popular Travelogues -->
+<section class="w-full">
+<div class="flex items-center justify-between mb-6">
+<div>
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider mb-1">EDITOR'S SELECTION</div>
+<h2 class="font-headline-md text-headline-md text-stone-900 font-bold">인기 여행기 (최근 30일 추천)</h2>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="이전 여행기" class="w-10 h-10 rounded-full bg-white hover:bg-stone-100 border border-stone-200 shadow-sm flex items-center justify-center text-stone-700 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button aria-label="다음 여행기" class="w-10 h-10 rounded-full bg-white hover:bg-stone-100 border border-stone-200 shadow-sm flex items-center justify-center text-stone-700 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Story 1: Kyoto -->
+<article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group border border-stone-200/80">
+<div class="relative aspect-[4/3] bg-cover bg-center overflow-hidden" data-alt="Traditional serene Kyoto temple courtyard in spring, peaceful wooden corridor overlooking stone zen garden and vibrant Japanese maple leaves in morning mist." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCC4NdxEmMncC3lPGf1YGC4cNfAFFGhSxNJrTHNa_bSlq6fN_xSaOY3ozwt_mMHj8AAjeS5TwbIbccCSIpi_2gF6nOpqAQEtyohcLEEMYh8drVuGRARy2CCTUdj_i1nosZVoChD1rB8UbfhdCjX7HLOeMJOAk8LPSnFuspRhUhyCUuZ9RQ5idSkBya0eJtuQwszP-pOFHGe6iMJOPA_aDOz6jSb420lMeVe7om9qdaSmX4n2jZxSMlK')">
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-stone-900">교토 3박 4일</span>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-label-sm text-label-sm">
+<span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] flex items-center justify-center font-bold">M</span>민지스튜디오</span>
+<span class="">2일 전</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors line-clamp-2 mb-2">
+              골목 감성 가득, 조용한 교토 사찰 &amp; 킷사텐 산책
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-2 mb-4">
+              관광객 붐비는 청수사 대신 다녀온 숨은 고즈넉한 로컬 찻집과 나만 알고 싶은 아라시야마 새벽 산책로.
+            </p>
+<div class="flex items-center justify-between pt-3 bg-stone-50 -mx-5 -mb-5 px-5 py-3 text-stone-600 font-label-sm text-label-sm border-t border-stone-100">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-error">favorite</span> 482</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 37</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bookmark</span> 612</span>
+</div>
+</div>
+</article>
+<!-- Story 2: Paris -->
+<article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group border border-stone-200/80">
+<div class="relative aspect-[4/3] bg-cover bg-center overflow-hidden" data-alt="Picturesque Parisian street corner in Le Marais with classical Haussmann architecture, quaint sidewalk cafe tables, and golden hour sunlight reflecting off the Seine River." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGrBA__TsvNGAIKi815-cC2VwkI_5FpWhPcid03TBmt3kSLAFPNrru9GvODNNP6y5xmvSaVyPaStSWC1y7Dt0DiMMj83GH6qhlIHdB4js6vNlqAs7_ZwgAFryl9hdNGXevKNotzh5d6m0Tfniw440dVE3r_NwOyMLFgxvsaLIMBIW4cmoLfinSG3BLJPiRvDPla7ifuzBCOvvLq5Hy5OR6wI5LbtRJ9ZkcQ2pChij5ldv_l3OW_R7R')">
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-stone-900">파리 6박 7일</span>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-label-sm text-label-sm">
+<span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] flex items-center justify-center font-bold">J</span>준호의발걸음</span>
+<span class="">4일 전</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors line-clamp-2 mb-2">
+              뮤지엄 패스 100% 뽕뽑기: 마레지구와 센 강 노을
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-2 mb-4">
+              오르세에서 퐁피두까지 대기 시간 제로 예약 팁과 바게트 샌드위치 사들고 강변 피크닉 즐긴 기록.
+            </p>
+<div class="flex items-center justify-between pt-3 bg-stone-50 -mx-5 -mb-5 px-5 py-3 text-stone-600 font-label-sm text-label-sm border-t border-stone-100">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-error">favorite</span> 729</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 64</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bookmark</span> 1,024</span>
+</div>
+</div>
+</article>
+<!-- Story 3: Bangkok -->
+<article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group border border-stone-200/80">
+<div class="relative aspect-[4/3] bg-cover bg-center overflow-hidden" data-alt="Chic Bangkok rooftop infinity bar overlooking illuminated skyscraper skyline at dusk with warm tropical cocktails and glowing city lights." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDORZkrw64yvjDVTRZlCXiQKrpZPGcHDmkoaGsw-fb8gr2FfxfjSWdgh2TFbZ2GLiNeCsb3crQAl1j6So-t0-btngPTPIMUM8_3-uUHvLkJPBjxX9smLMIGn7gW3CN3WIN3FNKXFm81edX_LdIArlPO0uzkGP4U38tQiDaZq69HiUvuaFJsGU7YoZhonfFgthqvrD__w4ym4Okuw4OH582gB-qVLVxP-8LASMyLpRfRyuj7vs6mYRjg')">
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-stone-900">방콕 4박 5일</span>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-label-sm text-label-sm">
+<span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] flex items-center justify-center font-bold">S</span>수아_퇴사여행</span>
+<span class="">1주일 전</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors line-clamp-2 mb-2">
+              퇴근 후 바로 떠난 방콕 루프탑 &amp; 미식 힐링 트립
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-2 mb-4">
+              미쉐린 팟타이 맛집 투어와 통로 카페거리, 1일 1스파로 피로 싹 씻어낸 가성비 5성급 호캉스 코스.
+            </p>
+<div class="flex items-center justify-between pt-3 bg-stone-50 -mx-5 -mb-5 px-5 py-3 text-stone-600 font-label-sm text-label-sm border-t border-stone-100">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-error">favorite</span> 394</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 28</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bookmark</span> 541</span>
+</div>
+</div>
+</article>
+<!-- Story 4: Swiss -->
+<article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group border border-stone-200/80">
+<div class="relative aspect-[4/3] bg-cover bg-center overflow-hidden" data-alt="Majestic Swiss Alps in early summer, red panoramic train winding along alpine cliffs near Interlaken with turquoise glacial lake and snow-capped peaks in the background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCy7Rkabz8bjkRfGhoyHsybkAz6_-SzTmmfnah75UF_hZEDyZ_ifSyDUlunYpxv0vP1rgRSC9lhj05AvgjKdHVasoIUrTqpf4NvM6BQa6bYhAUHOXrlpc1ghhzXXSTrDsyCwsrBZB39TeUG6kDO3lNc-5wfHjRtt42KE7V08b_9wMRWpXsOrVqZ36NIvz8nB5D-E6huDrqmUuebz2VsnAinKrE31j_HvtWpvwtKZFWqn0yp-UMhy_uU')">
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-stone-900">스위스 7박 8일</span>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-label-sm text-label-sm">
+<span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] flex items-center justify-center font-bold">K</span>건우트래블</span>
+<span class="">2주일 전</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors line-clamp-2 mb-2">
+              인터라켄부터 체르마트까지, 스위스패스 알짜 여정
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-2 mb-4">
+              기차 환승 타이밍과 유람선 무료 탑승구간 팁, 마테호른 황금호른 직관 성공한 일출 명당 좌표 공유.
+            </p>
+<div class="flex items-center justify-between pt-3 bg-stone-50 -mx-5 -mb-5 px-5 py-3 text-stone-600 font-label-sm text-label-sm border-t border-stone-100">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-error">favorite</span> 1,120</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 92</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bookmark</span> 2,340</span>
+</div>
+</div>
+</article>
+</div>
+<!-- First Story Incentive Banner -->
+<div class="bg-white border border-stone-200 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+<div class="flex items-center gap-4 text-center sm:text-left">
+<div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">edit_note</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-bold text-stone-900">첫 여행기를 남겨보세요!</div>
+<div class="font-body-md text-body-md text-stone-600 mt-0.5">사진과 일정표를 업로드하면 <span class="font-bold text-primary">10,000 트립 포인트</span>를 드려요.</div>
+</div>
+</div>
+<a class="inline-flex items-center gap-1 font-label-lg text-label-lg font-semibold text-primary hover:text-stone-900 transition-colors flex-shrink-0" href="#">
+<span class="">여행기 작성 가이드 보기</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- 5. Best Places to Visit Right Now -->
+<section class="w-full">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
+<div>
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider mb-1">SEASONAL CURATION</div>
+<h2 class="font-headline-md text-headline-md text-stone-900 font-bold">지금 가기 좋은 여행지</h2>
+<p class="font-body-sm text-body-sm text-stone-500 mt-1">온도, 강수량, 현지 축제 시즌을 종합 분석한 이달의 추천 도시</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-3 py-1.5 rounded-full font-label-md text-label-md font-semibold bg-stone-100 text-stone-700">4월~5월 최적기</span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<!-- City 1 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="Spring blossom canopy over philosopher path in Kyoto Japan, soft pink petals on water stream, tranquil atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA3z8UjxnNpWA6ApMJlRbBiyh3db92JXTQFX7VGVwdfIr2CZZhWxlWPNs64whWDcDoiai6VeFZEf8tT704lZhGXSGKKWDEfel0YogSSfTilNpTCdctB6k1fiKnceVMKICq6LYv6YcDoMcaclZq3UZODzPpxuEC8RhrrOcGf0wslDkgFAJdsySW1jrcFgMJN2wyBAKQh31NDB7f1iu7UMGKp4GrBYrEgdWLArwBjZx1YlvcYdWVNN6UI')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">벚꽃 축제</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">교토</span>
+<span class="font-label-sm text-label-sm text-stone-500">일본 · 18°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">한적한 사찰 산책과 말차</span>
+</div>
+</a>
+<!-- City 2 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="Sunny spring day near Eiffel Tower Paris France with blooming magnolias and lush green champ de mars lawn." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMsEU7PkDkfcR9TkOtuXpbYiE35jViFVYQ-_hcxGHsnwDGpzbGiZJZXuw8KpDq0zhk-oL_9NuQjGFxAu5NfGSCWg3vZ54gHibr1MzpagDXvngkFdGcfiic2zuVhNTXQHtWNm3g08hv14gS8mZ-hEV4gcKr69918gHqGcdYPiiihHrv7jrsDliLJZng9aK6R4zR5Pw90k_E3cA3Wc67UCqiuv0hKOCTJYrfjnc7xkkO8o_8s5MRLDvB')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">피크닉 시즌</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">파리</span>
+<span class="font-label-sm text-label-sm text-stone-500">프랑스 · 16°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">야외 테라스와 미술관 투어</span>
+</div>
+</a>
+<!-- City 3 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="Central park New York in springtime with cherry trees in full bloom, boaters on lake, and midtown skyline in crisp daylight." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDNklgpd7jwCoLTsuLSxJRpQSfQdRcRymwD9_Q23-qPOeZGthzxwMnW2dY-GMZIpIZPc4T-bg4mI4ZF8Fl8ZyPLjV4TyW__VJI7tDArejtkBFmtR3DOLWMHS5228HeZ-4x2Qj5tizjjwtQQLsl4uYL5FZdhcirdKdSE7NF5b3HvfxtsWVro3m9NYVgBjsfPvyhixi9fiH9ApVWEU51sFdnKZBX8dM79Cz80t7453kNj5lCjUoI-JBhs')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">센트럴파크 절정</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">뉴욕</span>
+<span class="font-label-sm text-label-sm text-stone-500">미국 · 17°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">브로드웨이와 루프탑 라운지</span>
+</div>
+</a>
+<!-- City 4 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="London skyline with Big Ben and red double-decker bus crossing Westminster Bridge under clear mild spring weather." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGmYE3uw8YjXmAGSpXq_haLabwoLogeXw_JUzHeL-TSAc0AUjgOVqwAuR_sJgj4IwClU5UuHQqHFHOLNmnf5ULpKmJ2Kkl8OSGv_1FJYpO8Sk0Z3v6MKMgPdB73tMuGMhp-NAk7adR4cBhwUIzAIKwCpXmz3uYukLYfF8u4YQioUH1HmH2OVaQ9rk6ueTisrHK_FEu8EHwHaWeeUHF_E_3robKjQoG02JMSusMBzmLFH_nAy_NcfPP')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">쾌청한 날씨</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">런던</span>
+<span class="font-label-sm text-label-sm text-stone-500">영국 · 15°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">소호 빈티지 마켓 &amp; 웨스트엔드</span>
+</div>
+</a>
+<!-- City 5 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="Ancient Colosseum in Rome Italy under radiant Mediterranean sun, cobblestone streets adorned with blooming bougainvillea." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAk_NqPoVh4Pag9_rbMF4SI_wKUubWjSJXo_jZuGHCd0ThTZoxL_0EBzKeDBaeiROJsumIJA0kIaQRVBWSdYJPh1IrV2fLIv8MfbTvWYAoZrWraqAU2sHoB2M2zzxedrAVf-_AY4H-IGHLbEyfSNOEGTaVg4W3MSxZXLada5KPLwwq3izU5L2-zJ6qjrQ2JVml92sfpwyrzhP8w0eE8RCt9-CppNhY2fZnugAvmXhxsZeOCF_Hq2I9M')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">미식 탐방</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">로마</span>
+<span class="font-label-sm text-label-sm text-stone-500">이탈리아 · 21°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">젤라또와 고대 유적 도보 여행</span>
+</div>
+</a>
+<!-- City 6 -->
+<a class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 flex flex-col group text-left border border-stone-200/80" href="#">
+<div class="aspect-square bg-cover bg-center relative" data-alt="Tokyo Tower glowing orange against a twilight blue sky with urban green parks and spring flowers framing the landscape." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDodZ9NdDbDVgxWxBQ3SePXrNRyLE8iDV168zh5HmIpsyCnTh1voZNq0Ly14dDkK6FTWw0z4VQPxNa0cIGl807qVZdVbHq6conYksBV43KQaIwEmWEDYQJuaVmxRruF0cCHq0jmRL-R5BmouoB4z7vP98D_KZ44-rNLHcoZZbcAwAoqyMpI_CpIuyp7D-5JGu6DEOFBL6oEZ3FZBOfeZptk82uVwl4zn6b20Ks6Mz11K9g27m4IYuHq')">
+<span class="absolute top-2 left-2 px-2 py-0.5 rounded font-label-sm text-label-sm font-semibold bg-white/90 backdrop-blur-sm text-primary">근교 온천</span>
+</div>
+<div class="p-3.5 flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 group-hover:text-primary transition-colors">도쿄</span>
+<span class="font-label-sm text-label-sm text-stone-500">일본 · 19°C</span>
+<span class="font-body-sm text-body-sm text-stone-400 mt-1 truncate">신주쿠 쇼핑과 하코네 당일치기</span>
+</div>
+</a>
+</div>
+</section>
+<!-- 6. Find Travel Companions -->
+<section class="w-full">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+<div>
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider mb-1">SAFE MATCHING</div>
+<h2 class="font-headline-md text-headline-md text-stone-900 font-bold">같이 갈 사람 찾기</h2>
+<p class="font-body-sm text-body-sm text-stone-500 mt-1">취향과 일정 일치율을 AI로 대조해 안심하고 동행을 만나요.</p>
+</div>
+<button class="px-5 py-2.5 rounded-lg bg-primary hover:bg-[#004e48] text-white font-label-md text-label-md font-semibold transition-colors flex items-center gap-2 self-start sm:self-auto shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span class="">동행구하기 글쓰기</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Companion Card 1 -->
+<div class="bg-white rounded-xl p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-all border border-stone-200/80">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-stone-100 text-stone-800">모집중 1/2명</span>
+<span class="font-label-sm text-label-sm text-stone-500">20대 여성</span>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[15px]">verified</span> 98% 일치
+              </span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md font-semibold text-primary">방콕</span>
+<span class="text-stone-300">·</span>
+<span class="font-body-sm text-body-sm text-stone-500">05.02 - 05.07</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors mb-2">
+              방콕 미쉐린 맛집 &amp; 루프탑 칵테일 같이 가실 분!
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-3 mb-5">
+              혼자 가기 애매했던 티츄카 루프탑 테이블 쉐어하고 쩟페어 야시장 메뉴 여러 개 시켜서 나눠먹어요. 사진 찍어주는 거 좋아합니다!
+            </p>
+<div class="flex flex-wrap gap-1.5 mb-6">
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#미식탐방</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#사진촬영</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#부분동행가능</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 bg-stone-50 -mx-6 -mb-6 px-6 py-4 border-t border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-800 flex items-center justify-center font-bold text-sm">소</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900">소연 (Lv.4)</div>
+<div class="font-label-sm text-label-sm text-stone-400">본인인증 완료</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-[#004e48] text-white font-label-md text-label-md font-semibold transition-colors" type="button">
+              대화하기
+            </button>
+</div>
+</div>
+<!-- Companion Card 2 -->
+<div class="bg-white rounded-xl p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-all border border-stone-200/80">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-stone-100 text-stone-800">모집중 2/4명</span>
+<span class="font-label-sm text-label-sm text-stone-500">20-30대 무관</span>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[15px]">verified</span> 92% 일치
+              </span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md font-semibold text-primary">파리 &amp; 니스</span>
+<span class="text-stone-300">·</span>
+<span class="font-body-sm text-body-sm text-stone-500">06.10 - 06.19</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors mb-2">
+              남프랑스 에즈마을 &amp; 모나코 렌터카 당일 동행
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-3 mb-5">
+              니스 출발해서 근교 에즈마을과 모나코 드라이브 코스 렌터카 예약 완료했습니다. 운전은 제가 하니 기름값과 톨비만 N분의 1 해요!
+            </p>
+<div class="flex flex-wrap gap-1.5 mb-6">
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#렌터카동행</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#풍경드라이브</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#비흡연자</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 bg-stone-50 -mx-6 -mb-6 px-6 py-4 border-t border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-800 flex items-center justify-center font-bold text-sm">태</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900">태민 (Lv.6)</div>
+<div class="font-label-sm text-label-sm text-stone-400">국제면허 인증</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-[#004e48] text-white font-label-md text-label-md font-semibold transition-colors" type="button">
+              대화하기
+            </button>
+</div>
+</div>
+<!-- Companion Card 3 -->
+<div class="bg-white rounded-xl p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-all border border-stone-200/80">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold bg-stone-100 text-stone-800">모집중 1/1명</span>
+<span class="font-label-sm text-label-sm text-stone-500">30대 여성</span>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[15px]">verified</span> 89% 일치
+              </span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md font-semibold text-primary">도쿄</span>
+<span class="text-stone-300">·</span>
+<span class="font-body-sm text-body-sm text-stone-500">05.15 - 05.18</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 group-hover:text-primary transition-colors mb-2">
+              긴자 스시야 디너 오마카세 예약 쉐어하실 1분
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 line-clamp-3 mb-5">
+              긴자 예약 곤란 스시야 2인 테이블 예약권이 있습니다. 조용히 식사 즐기며 미식 이야기 나눌 분이면 좋겠습니다. 노쇼 방지 예약금 있어요.
+            </p>
+<div class="flex flex-wrap gap-1.5 mb-6">
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#스시오마카세</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#식사동행</span>
+<span class="px-2.5 py-1 rounded bg-stone-100 font-label-sm text-label-sm text-stone-700">#차분한무드</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 bg-stone-50 -mx-6 -mb-6 px-6 py-4 border-t border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-800 flex items-center justify-center font-bold text-sm">지</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900">지원 (Lv.5)</div>
+<div class="font-label-sm text-label-sm text-stone-400">본인인증 완료</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-[#004e48] text-white font-label-md text-label-md font-semibold transition-colors" type="button">
+              대화하기
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. How to Use Triptic -->
+<section class="w-full py-6">
+<div class="text-center max-w-xl mx-auto mb-12">
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider mb-2">HOW IT WORKS</div>
+<h2 class="font-headline-lg text-headline-lg text-stone-900 font-bold mb-3">트립틱 이렇게 써요</h2>
+<p class="font-body-md text-body-md text-stone-500">복잡한 여행 준비는 끝, 예약서만 던져두면 여행이 바로 시작됩니다.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Step 1 -->
+<div class="bg-white border border-stone-200/80 rounded-xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-stone-100 text-stone-800 flex items-center justify-center font-headline-sm text-headline-sm font-bold">1</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900">서류 드래그 &amp; 업로드</h3>
+</div>
+<p class="font-body-md text-body-md text-stone-600 mb-6">
+              항공권 e-티켓 PDF, 아고다/에어비앤비 예약 확인 메일을 그대로 끌어다 놓으세요. AI가 날짜, 도시, 체크인 시간을 자동 파싱합니다.
+            </p>
+</div>
+<!-- Mockup Box -->
+<div class="bg-stone-50 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center py-8 border border-stone-200/70">
+<span class="material-symbols-outlined text-[36px] text-primary mb-2">upload_file</span>
+<div class="font-label-md text-label-md font-semibold text-stone-900">flight_confirmation_2026.pdf</div>
+<div class="font-label-sm text-label-sm text-primary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> 1.2초 만에 분석 완료
+            </div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-white border border-stone-200/80 rounded-xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-stone-100 text-stone-800 flex items-center justify-center font-headline-sm text-headline-sm font-bold">2</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900">AI 동선 타임라인 생성</h3>
+</div>
+<p class="font-body-md text-body-md text-stone-600 mb-6">
+              공항 입국 수속부터 호텔 체크인까지의 이동 시간과 최적의 대중교통 경로를 계산해 1분 만에 낭비 없는 타임라인을 그려줍니다.
+            </p>
+</div>
+<!-- Mockup Box -->
+<div class="bg-stone-50 rounded-xl p-4 shadow-sm space-y-2.5 border border-stone-200/70">
+<div class="flex items-center justify-between text-stone-900 font-body-sm text-body-sm">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span> 10:30 간사이 공항 착륙</span>
+<span class="text-stone-400">라피트 38분</span>
+</div>
+<div class="w-full bg-stone-200 h-1 rounded"></div>
+<div class="flex items-center justify-between text-stone-900 font-body-sm text-body-sm">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span> 12:15 난바역 호텔 짐보관</span>
+<span class="text-stone-400">도보 4분</span>
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-white border border-stone-200/80 rounded-xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-stone-100 text-stone-800 flex items-center justify-center font-headline-sm text-headline-sm font-bold">3</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900">실시간 동행 공동 편집</h3>
+</div>
+<p class="font-body-md text-body-md text-stone-600 mb-6">
+              카톡 링크 하나로 친구를 초대해 일정을 실시간으로 조율하고, 가고 싶은 장소 투표 기능과 비용 정산 내역도 한 번에 관리하세요.
+            </p>
+</div>
+<!-- Mockup Box -->
+<div class="bg-stone-50 rounded-xl p-4 shadow-sm flex items-center justify-between border border-stone-200/70">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-200 text-stone-700 flex items-center justify-center font-bold text-xs">수</div>
+<div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-300 text-stone-700 flex items-center justify-center font-bold text-xs">현</div>
+<div class="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-stone-400 text-white flex items-center justify-center font-bold text-xs">민</div>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">sync</span> 3명 동시 접속 중
+            </span>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. Premium CTA Banner -->
+<section class="w-full rounded-2xl bg-[#004e48] text-white p-8 lg:p-12 shadow-md relative overflow-hidden">
+<div class="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+<div class="absolute -bottom-16 -left-16 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+<div class="max-w-2xl">
+<span class="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-white/15 text-amber-100 backdrop-blur-sm inline-block mb-3">
+            START FOR FREE
+          </span>
+<h2 class="font-headline-lg text-headline-lg font-bold mb-3 tracking-tight">
+            지금 바로 다음 여행을 계획해 보세요
+          </h2>
+<p class="font-body-md text-body-md text-stone-200 leading-relaxed">
+            회원가입 없이도 도쿄, 다낭 샘플 일정을 복사해서 손쉽게 수정하고 내 여행으로 만들 수 있습니다.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-3.5 flex-shrink-0">
+<button class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white hover:bg-stone-100 text-stone-900 font-label-lg text-label-lg font-bold shadow-lg transition-transform active:scale-95" type="button">
+            무료로 시작하기
+          </button>
+<button class="w-full sm:w-auto px-6 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-label-lg text-label-lg font-semibold transition-colors" type="button">
+            인기 샘플 둘러보기
+          </button>
+</div>
+</div>
+</section>
+</div>
+</div></main><footer class="w-full bg-white border-t border-stone-200 mt-12 py-10"><div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6"><div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 font-body-sm text-body-sm text-stone-600"><a class="hover:text-stone-900 transition-colors" data-path="terms" href="#">이용약관</a><span class="text-stone-300">·</span><a class="hover:text-stone-900 transition-colors font-semibold" data-path="privacy" href="#">개인정보처리방침</a><span class="text-stone-300">·</span><a class="hover:text-stone-900 transition-colors" data-path="support" href="#">고객센터</a><span class="text-stone-300">·</span><a class="hover:text-stone-900 transition-colors" data-path="partnership" href="#">제휴문의</a></div><div class="font-body-sm text-body-sm text-stone-400 text-center md:text-right">© 2026 Triptic. All rights reserved.</div></div></footer>
+
+</body></html>

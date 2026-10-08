@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>도쿄 (Tokyo) 여행 - 감성 여행 플래너</title>
+<!-- Tailwind CSS v3 with Forms & Container Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              DEFAULT: '#2D4B43',
+              50: '#F2F6F5',
+              100: '#E1EBE8',
+              700: '#233B35',
+              800: '#1B2F2A',
+            },
+            warmBg: '#F8F9F7',
+            cardBg: '#FFFFFF',
+            accentSand: '#F3EFEA',
+            subText: '#707774',
+            lightBorder: '#E9EBE8',
+          },
+          fontFamily: {
+            sans: [
+              '-apple-system',
+              'BlinkMacSystemFont',
+              '"Pretendard"',
+              '"Apple SD Gothic Neo"',
+              '"Noto Sans KR"',
+              'sans-serif'
+            ],
+          },
+          boxShadow: {
+            'soft': '0 2px 10px rgba(0, 0, 0, 0.03)',
+            'card': '0 4px 20px -2px rgba(45, 75, 67, 0.05)',
+            'fab': '0 6px 16px rgba(45, 75, 67, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Hide scrollbars for horizontal chip rows while keeping momentum */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Native iOS tap highlight reset */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-warmBg text-[#1C201E] font-sans antialiased min-h-screen pb-28 selection:bg-forest/10 selection:text-forest">
+<!-- BEGIN: MainMobileContainer -->
+<div class="max-w-[430px] mx-auto min-h-screen bg-warmBg relative shadow-sm border-x border-[#ECEEEB]">
+<!-- BEGIN: TopNavigation -->
+<header class="sticky top-0 z-30 bg-warmBg/90 backdrop-blur-md px-5 pt-3 pb-2 transition-all">
+<div class="flex items-center space-x-1.5 text-xs text-subText font-medium">
+<button aria-label="뒤로가기" class="p-1 -ml-1 text-gray-700 hover:text-black transition-colors" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<span class="hover:underline cursor-pointer">전체 도시 목록</span>
+<span class="text-gray-300">/</span>
+<span class="hover:underline cursor-pointer">아시아</span>
+<span class="text-gray-300">/</span>
+<span class="text-gray-900 font-semibold">도쿄</span>
+</div>
+</header>
+<!-- END: TopNavigation -->
+<main class="px-5 space-y-6 pt-1">
+<!-- BEGIN: HeroSection -->
+<section class="space-y-3.5" data-purpose="city-summary">
+<!-- Region Pill Tag -->
+<div>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide bg-[#E8EDE9] text-forest">
+<span class="w-1.5 h-1.5 rounded-full bg-forest mr-1.5 animate-pulse"></span>
+            JP · ASIA/TOKYO
+          </span>
+</div>
+<!-- City Main Title & Korean Subtitle -->
+<div class="flex items-baseline space-x-2.5">
+<h1 class="text-3xl font-bold tracking-tight text-gray-900">Tokyo</h1>
+<span class="text-xl font-medium text-gray-600">도쿄</span>
+</div>
+<!-- Live Metadata (Exchange & Weather) -->
+<div class="flex flex-wrap items-center gap-y-1.5 gap-x-3 text-[13px] text-gray-600">
+<div class="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-md border border-lightBorder shadow-soft">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="12" rx="2" width="20" x="2" y="6"></rect>
+<circle cx="12" cy="12" r="2"></circle>
+<path d="M6 12h.01M18 12h.01"></path>
+</svg>
+<span class="font-medium text-gray-800">1 JPY ≈ 8.52 KRW</span>
+</div>
+<div class="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-md border border-lightBorder shadow-soft">
+<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>19°C 구름 조금 <span class="text-xs text-gray-400">(체감 20°C)</span></span>
+</div>
+</div>
+<!-- Community Counters -->
+<div class="flex items-center space-x-2 text-xs text-subText pl-0.5">
+<svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>팔로워 <strong class="text-gray-800 font-semibold">1.2만명</strong></span>
+<span class="text-gray-300">•</span>
+<span>스토리 <strong class="text-gray-800 font-semibold">348개</strong></span>
+</div>
+<!-- Call to Action Buttons -->
+<div class="grid grid-cols-5 gap-2.5 pt-1">
+<button class="col-span-2 py-2.5 px-3 border border-forest text-forest bg-white hover:bg-forest/5 font-semibold text-sm rounded-full text-center transition-colors active:scale-[0.98]" type="button">
+            도시 팔로우
+          </button>
+<button class="col-span-3 py-2.5 px-3 bg-forest hover:bg-forest-700 text-white font-semibold text-sm rounded-full flex items-center justify-center space-x-1.5 shadow-sm active:scale-[0.98] transition-all" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>도쿄 일정 만들기</span>
+</button>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: RepresentativeSpots -->
+<section class="space-y-2" data-purpose="popular-landmarks">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold tracking-wider text-gray-500 uppercase">대표 명소</span>
+</div>
+<div class="flex items-center space-x-2 overflow-x-auto no-scrollbar -mx-5 px-5 py-0.5">
+<button class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium bg-[#EFEFEA] text-gray-700 hover:bg-gray-200 transition-colors" type="button">
+            # 시부야 스크램블 교차로
+          </button>
+<button class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium bg-[#EFEFEA] text-gray-700 hover:bg-gray-200 transition-colors" type="button">
+            # 센소지(아사쿠사)
+          </button>
+<button class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium bg-[#EFEFEA] text-gray-700 hover:bg-gray-200 transition-colors" type="button">
+            # 도쿄타워
+          </button>
+<button class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium bg-[#EFEFEA] text-gray-700 hover:bg-gray-200 transition-colors" type="button">
+            # 신주쿠 교엔
+          </button>
+<button class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium bg-[#EFEFEA] text-gray-700 hover:bg-gray-200 transition-colors" type="button">
+            # 오모테산도
+          </button>
+</div>
+</section>
+<!-- END: RepresentativeSpots -->
+<!-- BEGIN: CommunityFeedFilter & Search -->
+<section class="space-y-3 pt-1" data-purpose="community-navigation">
+<!-- Segmented Tab Chips -->
+<div class="flex items-center space-x-2 overflow-x-auto no-scrollbar pb-1">
+<button class="px-4 py-2 rounded-full text-xs font-semibold bg-forest text-white shadow-sm shrink-0" type="button">
+            전체
+          </button>
+<button class="px-3.5 py-2 rounded-full text-xs font-medium bg-white text-gray-600 border border-lightBorder hover:border-gray-300 shrink-0 flex items-center space-x-1 transition-colors" type="button">
+<span>✈️</span>
+<span>여행기·후기</span>
+</button>
+<button class="px-3.5 py-2 rounded-full text-xs font-medium bg-white text-gray-600 border border-lightBorder hover:border-gray-300 shrink-0 flex items-center space-x-1 transition-colors" type="button">
+<span>❔</span>
+<span>질문·Q&amp;A</span>
+</button>
+<button class="px-3.5 py-2 rounded-full text-xs font-medium bg-white text-gray-600 border border-lightBorder hover:border-gray-300 shrink-0 flex items-center space-x-1 transition-colors" type="button">
+<span>👥</span>
+<span>동행 구하기</span>
+</button>
+</div>
+<!-- Search Input Bar -->
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<input class="w-full pl-10 pr-4 py-2.5 text-xs bg-white rounded-xl border border-lightBorder focus:border-forest focus:ring-1 focus:ring-forest outline-none transition-all placeholder:text-gray-400" placeholder="도쿄 글·동행 검색..." type="search"/>
+</div>
+<!-- Sorting selector -->
+<div class="flex justify-end pt-0.5">
+<button class="inline-flex items-center space-x-1 text-xs font-medium text-gray-600 bg-white px-3 py-1.5 rounded-lg border border-lightBorder" type="button">
+<span>최신순</span>
+<svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M8 9l4-4 4 4m0 6l-4 4-4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</section>
+<!-- END: CommunityFeedFilter & Search -->
+<!-- BEGIN: EmptyStateBanner -->
+<section class="bg-white rounded-2xl p-6 text-center border border-lightBorder shadow-card space-y-3.5" data-purpose="empty-feed-card">
+<div class="w-12 h-12 rounded-full bg-forest-50 mx-auto flex items-center justify-center text-forest">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="space-y-1">
+<h2 class="text-base font-bold text-gray-900">아직 등록된 글이 없어요.</h2>
+<p class="text-xs text-subText leading-relaxed">
+            첫 번째 여행의 순간과 나만의 로컬 꿀팁을 공유해보세요.
+          </p>
+</div>
+<div class="pt-1">
+<button class="inline-flex items-center justify-center px-4 py-2 border border-forest text-forest hover:bg-forest/5 font-semibold text-xs rounded-full transition-colors" type="button">
+            첫 이야기 작성하기
+          </button>
+</div>
+</section>
+<!-- END: EmptyStateBanner -->
+<!-- BEGIN: ItineraryServiceCard -->
+<section class="bg-white rounded-2xl p-5 border border-lightBorder shadow-card space-y-4" data-purpose="trip-planner-card">
+<!-- Card Header -->
+<div class="space-y-1">
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-lg bg-forest-50 flex items-center justify-center text-forest">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h2 class="text-base font-bold text-gray-900">도쿄 여행 일정 만들기</h2>
+</div>
+<p class="text-xs text-subText leading-snug pl-9">
+            항공권·호텔 예약 서류를 올리면 일정에 자동으로 깔끔하게 정리해 드려요.
+          </p>
+</div>
+<!-- Overview Specs Box -->
+<div class="bg-[#F8F7F4] rounded-xl p-3.5 space-y-2 text-xs">
+<div class="flex justify-between items-center py-0.5">
+<span class="text-gray-500 font-normal">추천 여행 기간</span>
+<span class="text-gray-900 font-semibold">4박 5일</span>
+</div>
+<div class="w-full h-px bg-gray-200/60"></div>
+<div class="flex justify-between items-center py-0.5">
+<span class="text-gray-500 font-normal">최적 여행 시기</span>
+<span class="text-gray-900 font-semibold">3월~5월, 10월~11월</span>
+</div>
+<div class="w-full h-px bg-gray-200/60"></div>
+<div class="flex justify-between items-center py-0.5">
+<span class="text-gray-500 font-normal">시차</span>
+<span class="text-gray-900 font-semibold">시차 없음</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-3 bg-forest hover:bg-forest-700 active:scale-[0.99] text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5" type="button">
+<span>일정 만들기</span>
+</button>
+</section>
+<!-- END: ItineraryServiceCard -->
+<!-- BEGIN: ExchangeRateSection -->
+<section class="bg-white rounded-2xl p-5 border border-lightBorder shadow-card space-y-4" data-purpose="currency-calculator">
+<!-- Title & Update Badge -->
+<div class="flex items-center justify-between">
+<h2 class="text-base font-bold text-gray-900">실시간 환율 계산기</h2>
+<span class="text-[11px] text-forest font-medium bg-forest-50 px-2 py-0.5 rounded-full flex items-center space-x-1">
+<svg class="w-3 h-3 animate-spin text-forest" fill="none" viewbox="0 0 24 24">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v8H4z" fill="currentColor"></path>
+</svg>
+<span>실시간 연동</span>
+</span>
+</div>
+<!-- Calculator Input Cards -->
+<div class="space-y-2">
+<!-- JPY Box -->
+<div class="flex items-center justify-between bg-[#F7F7F5] rounded-xl px-4 py-3 border border-transparent focus-within:border-forest focus-within:bg-white transition-all">
+<span class="text-xs font-bold text-gray-600 tracking-wider">JPY</span>
+<input class="text-right text-base font-bold text-gray-900 bg-transparent border-0 p-0 focus:ring-0 w-32 outline-none" type="text" value="10,000"/>
+</div>
+<!-- KRW Box -->
+<div class="flex items-center justify-between bg-[#F7F7F5] rounded-xl px-4 py-3 border border-transparent focus-within:border-forest focus-within:bg-white transition-all">
+<span class="text-xs font-bold text-gray-600 tracking-wider">KRW</span>
+<input class="text-right text-base font-bold text-gray-900 bg-transparent border-0 p-0 focus:ring-0 w-32 outline-none cursor-default" readonly="" type="text" value="85,210"/>
+</div>
+</div>
+<!-- Tokyo Cost of Living Examples -->
+<div class="pt-2 border-t border-gray-100 space-y-2.5">
+<h3 class="text-xs font-semibold text-gray-800 tracking-tight">현지 물가 예시</h3>
+<div class="space-y-2 text-xs">
+<!-- Row 1 -->
+<div class="flex justify-between items-center">
+<span class="text-subText">스타벅스 아메리카노</span>
+<div class="text-right">
+<span class="font-bold text-gray-900">480 JPY</span>
+<span class="text-[11px] text-gray-400 block font-normal">≈ ₩4,100</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex justify-between items-center">
+<span class="text-subText">택시·차량호출 <span class="text-[10px] text-gray-400">(시내 기본거리)</span></span>
+<div class="text-right">
+<span class="font-bold text-gray-900">700~1,500 JPY</span>
+<span class="text-[11px] text-gray-400 block font-normal">≈ ₩6,000~₩12,800</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex justify-between items-center">
+<span class="text-subText">정식·라멘 한 끼</span>
+<div class="text-right">
+<span class="font-bold text-gray-900">1,000~1,500 JPY</span>
+<span class="text-[11px] text-gray-400 block font-normal">≈ ₩8,500~₩12,800</span>
+</div>
+</div>
+</div>
+<p class="text-[11px] text-gray-400 leading-relaxed pt-1.5">
+            현지 통화 기준 대략치예요. 원화는 실시간 환율로 환산한 어림값이에요.
+          </p>
+</div>
+</section>
+<!-- END: ExchangeRateSection -->
+</main>
+<!-- BEGIN: FloatingActionButton -->
+<aside class="fixed bottom-20 right-6 z-40 max-w-[430px]">
+<button aria-label="글쓰기" class="w-13 h-13 p-3.5 bg-forest hover:bg-forest-700 active:scale-95 text-white rounded-full shadow-fab flex items-center justify-center transition-all duration-150" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</aside>
+<!-- END: FloatingActionButton -->
+<!-- BEGIN: BottomNavigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-lightBorder max-w-[430px] mx-auto pb-safe">
+<div class="grid grid-cols-5 h-14">
+<!-- 홈 -->
+<button class="flex flex-col items-center justify-center text-gray-400 hover:text-forest transition-colors" type="button">
+<svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium">홈</span>
+</button>
+<!-- 내 여행 -->
+<button class="flex flex-col items-center justify-center text-gray-400 hover:text-forest transition-colors" type="button">
+<svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<rect height="15" rx="2" stroke-linecap="round" stroke-linejoin="round" width="12" x="6" y="6"></rect>
+<path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M10 10h4M10 14h4" stroke-linecap="round"></path>
+</svg>
+<span class="text-[10px] font-medium">내 여행</span>
+</button>
+<!-- 커뮤니티 (Active) -->
+<button class="flex flex-col items-center justify-center text-forest transition-colors" type="button">
+<svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-bold">커뮤니티</span>
+</button>
+<!-- 공항 -->
+<button class="flex flex-col items-center justify-center text-gray-400 hover:text-forest transition-colors" type="button">
+<svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium">공항</span>
+</button>
+<!-- 마이 -->
+<button class="flex flex-col items-center justify-center text-gray-400 hover:text-forest transition-colors" type="button">
+<svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium">마이</span>
+</button>
+</div>
+</nav>
+<!-- END: BottomNavigation -->
+</div>
+<!-- END: MainMobileContainer -->
+</body></html>
