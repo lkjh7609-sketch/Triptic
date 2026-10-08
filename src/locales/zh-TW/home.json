@@ -74,7 +74,7 @@
   "flights": {
     "title": "搜尋機票",
     "subtitle": "一次比較多家航空公司與旅行社的價格",
-    "lead": "選好出發地與日期，即可在 MyRealTrip 立即比價。",
+    "lead": "選好出發地與日期，即可在這裡直接比較機票價格。",
     "form": {
       "tripType": "行程類型",
       "roundTrip": "來回",
@@ -112,11 +112,8 @@
       "cabinECONOMY": "經濟艙",
       "cabinPREMIUM_ECONOMY": "豪華經濟艙",
       "cabinBUSINESS": "商務艙",
-      "cabinFIRST": "頭等艙"
-    },
-    "comingSoon": {
-      "title": "機票搜尋準備中",
-      "body": "我們正在打造能比較更多航空公司與航線的全新機票搜尋，敬請期待。"
+      "cabinFIRST": "頭等艙",
+      "opensOnPartner": "搜尋結果在此查看，預訂將在預訂網站（新分頁）進行"
     },
     "essentials": {
       "title": "也需要 SIM 卡或 eSIM 嗎？",
@@ -153,6 +150,42 @@
       "meta": "來回最低 {{price}}韓元起",
       "metaAirline": "來回最低 {{price}}韓元起 · {{airline}}",
       "open": "查看飛往{{city}}的機票"
+    },
+    "results": {
+      "label": "機票搜尋結果",
+      "searching": "正在搜尋機票…首次搜尋可能需要約 20 秒。",
+      "sortLabel": "排序",
+      "sort": {
+        "price": "最低價",
+        "duration": "最短時間",
+        "depart": "最早出發"
+      },
+      "stopsLabel": "轉機",
+      "stops": {
+        "any": "不限",
+        "0": "僅直飛",
+        "1": "最多轉機 1 次"
+      },
+      "airlineLabel": "航空公司",
+      "allAirlines": "全部航空公司",
+      "direct": "直飛",
+      "stopsN_other": "轉機 {{count}} 次",
+      "durationHM": "{{h}} 小時 {{m}} 分",
+      "durationM": "{{m}} 分",
+      "selfTransfer": "分開購票（轉機時可能需重新託運行李）",
+      "approx": "約",
+      "perPerson": "每人 · 搜尋時參考價",
+      "total": "總價 {{price}}",
+      "book": "前往預訂",
+      "redirecting": "即將前往所選機票的預訂頁面。",
+      "priceNote": "顯示價格為搜尋當下的參考價。座位即時變動與付款方式（信用卡優惠等）可能使預訂頁面的最終金額略有不同。預訂頁面會帶入航線、日期與人數，您可能需要重新選擇相同航班。",
+      "empty": "找不到符合條件的航班。請試試其他日期或機場。",
+      "emptyFiltered": "沒有符合這些篩選條件的航班，請調整篩選。",
+      "searchOnSite": "前往預訂網站搜尋",
+      "unavailableTitle": "目前無法顯示機票清單",
+      "unavailableBody": "您可以直接在預訂網站以相同條件搜尋。",
+      "failedTitle": "無法載入機票",
+      "failedBody": "請稍後再試，或到預訂網站以相同條件搜尋。"
     }
   },
   "hotels": {
