@@ -164,3 +164,13 @@
   align-items: center;
   gap: 3px;
 }
+
+/* 동행 모집 카드의 작성자 이름 — 일반 글 카드의 작성자 버튼과 같은 모양(카드 전체가 링크라 버튼이 아니다) */
+.authorStatic {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-weight: 600;
+}

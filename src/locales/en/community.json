@@ -311,7 +311,13 @@
     "searchPlaceholder": "Search region, keyword, traveler...",
     "emptySub": "Share the moments of your first trip and local insights.",
     "writeFirst": "Write your first story",
-    "searchError": "Could not find the board for this city."
+    "searchError": "Could not find the board for this city.",
+    "pager": {
+      "label": "Pagination",
+      "prev": "Previous page",
+      "next": "Next page",
+      "page": "Page {{page}}"
+    }
   },
   "destination": {
     "loadError": "Couldn't load the destination.",
