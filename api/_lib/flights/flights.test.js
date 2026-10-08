@@ -149,10 +149,25 @@ describe('예약 링크 주소', () => {
         expect(p.has('rdate')).toBe(false);
     });
 
-    it('Kiwi: 언어별 경로·통화, 왕복은 날짜 둘, 편도는 하나', () => {
-        expect(kiwiFlightUrl(search, 'en')).toBe('https://www.kiwi.com/en/search/results/sel/tyo/2026-11-20/2026-11-25/?adults=2&children=1&infants=1&currency=usd');
-        expect(kiwiFlightUrl({ ...search, returnDate: null }, 'ja')).toBe('https://www.kiwi.com/ja/search/results/sel/tyo/2026-11-20/?adults=2&children=1&infants=1&currency=jpy');
-        expect(kiwiFlightUrl(search, 'zh-TW')).toContain('https://www.kiwi.com/zh-tw/search/results/');
+    it('Kiwi /deep: 코드 그대로, 왕복은 return, 언어·통화·좌석 등급(번체 언어는 tw)', () => {
+        const url = new URL(kiwiFlightUrl(search, 'en'));
+        expect(url.origin + url.pathname).toBe('https://www.kiwi.com/deep');
+        expect(Object.fromEntries(url.searchParams)).toEqual({
+            from: 'SEL',
+            to: 'TYO',
+            departure: '2026-11-20',
+            return: '2026-11-25',
+            adults: '2',
+            children: '1',
+            infants: '1',
+            cabinClass: 'business',
+            lang: 'en',
+            currency: 'usd',
+        });
+        const oneWay = new URL(kiwiFlightUrl({ ...search, returnDate: null, cabin: 'PREMIUM_ECONOMY' }, 'ja')).searchParams;
+        expect(oneWay.has('return')).toBe(false);
+        expect([oneWay.get('lang'), oneWay.get('currency'), oneWay.get('cabinClass')]).toEqual(['ja', 'jpy', 'premium']);
+        expect(new URL(kiwiFlightUrl(search, 'zh-TW')).searchParams.get('lang')).toBe('tw');
     });
 });
 
@@ -231,7 +246,7 @@ describe('핸들러', () => {
 
     it('외국어는 Kiwi 링크(토큰이 없으면 변환 없이 tracked:false)', async () => {
         const res = await call({ ...q(), locale: 'en' });
-        expect(res.body.bookingUrl).toContain('https://www.kiwi.com/en/search/results/icn/nrt/');
+        expect(res.body.bookingUrl).toContain('https://www.kiwi.com/deep?from=ICN&to=NRT');
         expect(res.body.tracked).toBe(false);
     });
 
