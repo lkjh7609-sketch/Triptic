@@ -22,7 +22,7 @@
 
 ### 반드시 기억할 함정
 1. **`isNativeApp()`**: `window.Capacitor`가 있는지만 보면 안 된다 — `@capacitor/core`를 번들에 넣으면 웹에서도 그 전역이 생긴다. 2026-10-08 푸시 코드를 메인 번들에 넣었다가 **웹 호텔 탭·소셜 로그인이 앱 방식으로 바뀌는 사고**가 났다. 지금은 `isNativePlatform()`을 본다(`src/shared/platform.ts`, 시험 있음). 앱 전용 코드를 웹 번들에 정적으로 import하기 전에 웹 동작을 꼭 확인할 것.
-2. **약관·개인정보처리방침 원본은 루트 `terms.html`/`privacy.html`** 이다. 빌드(`scripts/build.js`)가 루트 → `public/`으로 덮어쓰므로 `public/`만 고치면 운영에 안 나간다(두 번 겪음). 현재 루트 문서에는 호텔 제휴 Agoda 전환·Open-Meteo 제거·담당자 '이재헌'이 **반영돼 있지 않다**(PR #10과 함께 되돌려짐) — 사용자에게 다시 반영할지 확인할 것.
+2. **약관·개인정보처리방침 원본은 루트 `terms.html`/`privacy.html`** 이다. 빌드(`scripts/build.js`)가 루트 → `public/`으로 덮어쓰므로 `public/`만 고치면 운영에 안 나간다(두 번 겪음). (2026-10-08 루트에 반영 완료 — 제휴사·방침을 바꿀 때마다 루트부터 고칠 것.)
 3. Xcode가 이 컴퓨터에 없다(명령줄 도구만) — iOS 빌드는 **Codemagic**에서. pbxproj·plist는 문법(`plutil -lint`)·참조만 검증했고 실제 빌드는 못 했다.
 4. 앱에서 구글 지도 키의 '웹 주소 제한'이 `capacitor://localhost`에서 막힐 수 있다 — 첫 TestFlight에서 지도가 뜨는지 확인.
 5. 사용자 질문은 한두 번에 묶어서, 불확실하면 임의로 정하지 말고 묻는다. 비밀값(키·토큰)은 채팅에 쓰지 않는다.
