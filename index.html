@@ -139,6 +139,84 @@
       })();
     </script>
     <script>
+      /* 첫 접속 스플래시(2026-10-08, 사용자 결정) — 탭(세션)당 1번, 모든 주소, 탭해도 넘기지 않고 끝까지, 다크 모드에도 보인다.
+         세로 화면은 9:16, 가로 화면은 16:9 Lottie(public/splash/, 3초). 앱 코드와 따로 여기서 먼저 띄우고 앱은 그 아래에서 그대로 받는다.
+         흰 화면·멈춤을 만들지 않게: 플레이어·JSON이 1.5초 안에 준비 안 되면 건너뛰고, 재생이 끝나면 앱이 뜰 때까지(최대 4초) 마지막 화면을 둔 뒤
+         걷는다. 어떤 경우에도 12초면 걷는다. 움직임 줄이기 설정·앱(네이티브)·검색 로봇은 건너뛴다. */
+      (function () {
+        var KEY = 'triptic-splash';
+        try {
+          if (sessionStorage.getItem(KEY)) return;
+          sessionStorage.setItem(KEY, '1');
+        } catch (e) { return; }
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) return;
+        if (/bot|crawl|spider|slurp|lighthouse|headless/i.test(navigator.userAgent || '')) return;
+        if (!window.fetch) return;
+
+        var DARK = '#1D3535';
+        var box = document.createElement('div');
+        box.id = 'splash';
+        box.setAttribute('aria-hidden', 'true');
+        box.setAttribute('style', 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;overflow:hidden;touch-action:none;background:' + DARK + ';transition:opacity .45s ease');
+        document.body.appendChild(box);
+        // 사파리 상단 막대 색도 첫 화면(짙은 초록)에 맞췄다가 베이지 와이프가 끝날 때 되돌린다
+        var meta = document.querySelector('meta[name="theme-color"]');
+        var metaWas = meta && meta.getAttribute('content');
+        if (meta) meta.setAttribute('content', DARK);
+        function restoreMeta() {
+          if (meta && meta.getAttribute('content') === DARK) meta.setAttribute('content', metaWas);
+        }
+
+        var anim = null, data = null, lib = false, done = false;
+        function remove() {
+          if (done) return;
+          done = true;
+          restoreMeta();
+          box.style.opacity = '0';
+          setTimeout(function () {
+            try { if (anim) anim.destroy(); } catch (e) {}
+            if (box.parentNode) box.parentNode.removeChild(box);
+          }, 500);
+        }
+        // 부팅 안전망(아래)과 같은 '앱이 떴다' 기준
+        function booted() {
+          var r = document.getElementById('root');
+          return !!(r && r.firstElementChild && r.firstElementChild.id !== 'seo-intro' && !r.querySelector('#boot-shell, [data-boot-pending]'));
+        }
+        function finish() {
+          var until = Date.now() + 4000;
+          (function wait() {
+            if (booted() || Date.now() > until) return remove();
+            setTimeout(wait, 100);
+          })();
+        }
+        var readyTimer = setTimeout(function () { if (!anim) remove(); }, 1500);
+        setTimeout(remove, 12000);
+        function start() {
+          if (done || anim || !data || !lib || !window.lottie) return;
+          clearTimeout(readyTimer);
+          try {
+            anim = window.lottie.loadAnimation({
+              container: box, renderer: 'svg', loop: false, autoplay: true, animationData: data,
+              rendererSettings: { preserveAspectRatio: 'xMidYMid slice' },
+            });
+            anim.addEventListener('complete', finish);
+            setTimeout(restoreMeta, 1500);
+          } catch (e) { remove(); }
+        }
+        var s = document.createElement('script');
+        s.src = '/splash/lottie_light.min.js';
+        s.async = true;
+        s.onload = function () { lib = true; start(); };
+        s.onerror = remove;
+        document.head.appendChild(s);
+        fetch('/splash/splash-' + (window.innerWidth > window.innerHeight ? 'pc' : 'mobile') + '.json')
+          .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+          .then(function (j) { data = j; start(); }, remove);
+      })();
+    </script>
+    <script>
       /* 부팅 안전망 — 앱이 안 떠서 흰 화면으로 멈추면(예전 index.html이 가리키는 파일이 사라졌거나, 첫 스크립트가 실패하거나, 시작 중 오류)
          한 번 자동으로 새로고침하고, 그래도 안 되면 새로고침 버튼을 보여 준다. 원인은 localStorage('triptic-boot-fail')에 남겨
          다음에 앱이 뜨면 모니터링으로 보낸다(src/app/main.tsx). 앱이 뜨면(#root에 검색 로봇용 #seo-intro·첫 화면 뼈대가 없어지면) 모두 걷는다. */
