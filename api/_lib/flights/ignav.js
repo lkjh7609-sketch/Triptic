@@ -1,6 +1,9 @@
 // 항공 운임 검색 — Ignav (https://ignav.com/docs). 요청 만들기·응답을 앱 카드 모양으로 줄이기
-// 키(IGNAV_API_KEY)는 서버 환경변수로만. 2026-10-09 실측: 처음 부르면 6~29초 걸리고(같은 검색은 1~2초),
-// 노선당 최대 1,300건·1.5MB가 와서 가격순+항공사별로 추려 내려준다. 가격은 승객 전체 합계다.
+// 키(IGNAV_API_KEY)는 서버 환경변수로만. 가격은 승객 전체 합계다.
+// 2026-10-09 실측: Ignav의 **왕복 검색은 처음 부르면 20~29초**(같은 검색은 1~2초, 직항만 걸어도 20초), **편도는 4~5초**다.
+// 그래서 왕복은 가는 편·오는 편 편도 2개를 동시에 불러(약 5초) 우리가 짝짓는다(pairOneWays). 짝 가격은 편도 합이라
+// 왕복 검색가와 88%는 같고 나머지는 왕복가가 최대 14%(같은 항공사 왕복 할인) 싸다 — 최저가 조합은 같았다.
+// 노선당 최대 1,300건·1.5MB가 와서 가격순+항공사별로 추려 내려준다.
 
 const BASE = 'https://ignav.com';
 // Vercel 함수 한도(vercel.json partnerProducts maxDuration 30초)보다 조금 짧게
@@ -36,12 +39,22 @@ export function buildIgnavBody(search, locale) {
     return body;
 }
 
-export async function ignavSearch(search, locale) {
-    const path = search.returnDate ? '/api/fares/round-trip' : '/api/fares/one-way';
+/** 편도 한 구간 요청 본문 — 'back'은 출발·도착을 바꾸고 날짜를 귀국일로 */
+export function buildOneWayBody(search, locale, direction = 'out') {
+    const body = buildIgnavBody({ ...search, returnDate: null }, locale);
+    if (direction === 'back') {
+        body.origin = search.destination;
+        body.destination = search.origin;
+        body.departure_date = search.returnDate;
+    }
+    return body;
+}
+
+async function post(path, body) {
     const res = await fetch(BASE + path, {
         method: 'POST',
         headers: { 'X-Api-Key': process.env.IGNAV_API_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildIgnavBody(search, locale)),
+        body: JSON.stringify(body),
         signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     let json = null;
@@ -53,6 +66,43 @@ export async function ignavSearch(search, locale) {
     if (!res.ok) throw new Error(`ignav ${path}: ${res.status} ${json?.error?.code ?? ''}`.trim());
     return json;
 }
+
+/** 가는 편 × 오는 편을 왕복 항목으로 — 같은 날 왕복이면 오는 편이 가는 편 도착 뒤에 떠나는 조합만 */
+export function pairOneWays(out, back) {
+    const outs = Array.isArray(out?.itineraries) ? out.itineraries : [];
+    const backs = Array.isArray(back?.itineraries) ? back.itineraries : [];
+    const arrives = (it) => it.outbound?.segments?.at(-1)?.arrival_time_utc ?? '';
+    const departs = (it) => it.outbound?.segments?.[0]?.departure_time_utc ?? '';
+    const pairs = [];
+    for (const a of outs) {
+        for (const b of backs) {
+            if (typeof a?.price?.amount !== 'number' || typeof b?.price?.amount !== 'number') continue;
+            if (arrives(a) && departs(b) && departs(b) <= arrives(a)) continue;
+            pairs.push({
+                price: { amount: a.price.amount + b.price.amount, currency: a.price.currency, status: a.price.status === 'verified' && b.price.status === 'verified' ? 'verified' : 'unverified' },
+                outbound: a.outbound,
+                inbound: b.outbound,
+                cabin_class: a.cabin_class,
+                requires_self_transfer: Boolean(a.requires_self_transfer || b.requires_self_transfer),
+                ignav_id: `${a.ignav_id}.${b.ignav_id}`,
+            });
+        }
+    }
+    return { itineraries: pairs, observed_at: out?.observed_at ?? null };
+}
+
+/** 검색 실행 — 편도는 1번, 왕복은 편도 2번을 동시에(호출 수는 callsFor(search)) */
+export async function ignavSearch(search, locale) {
+    if (!search.returnDate) return post('/api/fares/one-way', buildOneWayBody(search, locale));
+    const [out, back] = await Promise.all([
+        post('/api/fares/one-way', buildOneWayBody(search, locale, 'out')),
+        post('/api/fares/one-way', buildOneWayBody(search, locale, 'back')),
+    ]);
+    return pairOneWays(out, back);
+}
+
+/** 이 검색이 Ignav를 몇 번 부르나(월 상한에 센다) */
+export const callsFor = (search) => (search.returnDate ? 2 : 1);
 
 function normalizeLeg(leg) {
     const segs = Array.isArray(leg?.segments) ? leg.segments : [];

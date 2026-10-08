@@ -13,7 +13,7 @@ export interface FlightResultsState {
 const EMPTY: FlightResultsState = { data: null, loading: false, error: null, fallbackUrl: null };
 
 /**
- * 항공 검색 — 검색이 바뀔 때만 한 번 부른다(처음 검색은 20초 넘게 걸릴 수 있다). 정렬·필터는 받은 결과 안에서 화면이 한다.
+ * 항공 검색 — 검색이 바뀔 때만 한 번 부른다(왕복은 편도 2개를 짝지어 처음에도 5초 안팎). 정렬·필터는 받은 결과 안에서 화면이 한다.
  * 결과가 사용자 조건별이라 쿼리 캐시(기기 저장)에 넣지 않고 화면 안에서만 들고 있는다.
  */
 export function useFlightResults(search: FlightSearch | null, language: string): FlightResultsState {

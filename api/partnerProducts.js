@@ -67,7 +67,7 @@ export default async function handler(req, res) {
         if (isAgodaRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
         return handleAgoda(req, res);
     }
-    // 항공 검색 — 처리부는 _lib/flights. 첫 검색이 20초 넘게 걸리는 유료 호출이라 분당 횟수를 가장 좁게 둔다
+    // 항공 검색 — 처리부는 _lib/flights. 검색마다 유료 호출(왕복은 2회)이라 분당 횟수를 가장 좁게 둔다
     if (req.query?.provider === 'flights') {
         if (isFlightsRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
         return handleFlights(req, res);

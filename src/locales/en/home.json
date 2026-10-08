@@ -154,7 +154,7 @@
     },
     "results": {
       "label": "Flight search results",
-      "searching": "Searching flights… the first search can take up to 20 seconds.",
+      "searching": "Searching flights… this takes a few seconds.",
       "sortLabel": "Sort",
       "sort": {
         "price": "Cheapest",
