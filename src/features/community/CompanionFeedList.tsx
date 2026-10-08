@@ -70,7 +70,8 @@ export function CompanionFeedList({ destinationId, hostingOnly = false }: Compan
           hasMore={!!feed.hasNextPage}
           isFetchingMore={feed.isFetchingNextPage}
           fetchMore={() => void feed.fetchNextPage()}
-          gridClassName={tileStyles.grid}
+          gridClassName={styles.cardGrid}
+          pageSize={8}
           listClassName={styles.list}
         />
       )}
@@ -186,7 +187,8 @@ function HostingList({ userId }: { userId: string }) {
           hasMore={false}
           isFetchingMore={false}
           fetchMore={() => {}}
-          gridClassName={tileStyles.grid}
+          gridClassName={styles.cardGrid}
+          pageSize={8}
           listClassName={styles.list}
         />
       )}

@@ -941,12 +941,10 @@
     "applyBtn": "同行を申し込む",
     "moreMenu": "その他",
     "tripCard": {
-      "title": "{{city}}の旅行を作成",
-      "desc": "航空券・ホテルの予約書類をアップロードすると、日程に自動でまとめます。",
+      "title": "{{city}}の天気と時差",
+      "nowLabel": "{{city}}の現在時刻",
       "length": "おすすめ日数",
-      "season": "ベストシーズン",
-      "timeDiff": "時差",
-      "cta": "旅行を作成"
+      "season": "ベストシーズン"
     },
     "timeDiff": {
       "same": "時差なし",
