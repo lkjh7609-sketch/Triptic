@@ -13,8 +13,7 @@ type TFn = (key: string, options?: Record<string, unknown>) => string;
 
 /** 1. 요약 띠 */
 export function SummaryStrip({ stats }: { stats: TravelStats }) {
-  const { t, i18n } = useTranslation('stats');
-  const lang = i18n.language;
+  const { t } = useTranslation('stats');
   const tiles = [
     { label: t('summary.trips'), value: t('summary.tripsValue', { count: stats.pastCount }) },
     { label: t('summary.days'), value: t('summary.daysValue', { count: stats.totalDays }) },
@@ -31,10 +30,6 @@ export function SummaryStrip({ stats }: { stats: TravelStats }) {
           </div>
         ))}
       </div>
-      <p className={styles.note}>
-        {t('summary.km', { km: num(stats.totalKm, lang) })}
-        {stats.upcomingCount > 0 ? ` · ${t('summary.upcoming', { count: stats.upcomingCount })}` : ''}
-      </p>
     </section>
   );
 }
@@ -290,7 +285,7 @@ export function HabitsSection({ stats }: { stats: TravelStats }) {
           ) : null}
         </div>
       </div>
-      <div className={`${styles.styleBox} ${styles.oneLine}`}>
+      <div className={styles.styleBox}>
         <span className={styles.styleLabel}>{t('habits.styleTitle')}</span>
         {h.style ? t(`habits.style.${h.style}`) : t('habits.styleNeed')}
       </div>

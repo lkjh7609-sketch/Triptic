@@ -16,9 +16,7 @@
     "cities": "Cities visited",
     "citiesValue": "{{count}}",
     "countries": "Countries visited",
-    "countriesValue": "{{count}}",
-    "km": "{{km}} km traveled (straight-line)",
-    "upcoming": "{{count}} upcoming trip(s)"
+    "countriesValue": "{{count}}"
   },
   "map": {
     "title": "Where you've been",

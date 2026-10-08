@@ -16,9 +16,7 @@
     "cities": "방문 도시",
     "citiesValue": "{{count}}곳",
     "countries": "방문 나라",
-    "countriesValue": "{{count}}개국",
-    "km": "이동 {{km}}km (직선거리 기준)",
-    "upcoming": "예정된 여행 {{count}}건"
+    "countriesValue": "{{count}}개국"
   },
   "map": {
     "title": "다녀온 곳",
