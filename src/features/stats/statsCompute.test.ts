@@ -114,7 +114,7 @@ describe('buildStats', () => {
     expect(tokyo.distanceKm).toBeLessThan(2500);
     expect(stats.trips.find((t) => t.id === 'b')!.distanceKm).toBeGreaterThan(14000); // 인천↔파리 왕복
     expect(stats.trips.find((t) => t.id === 'c')!.distanceKm).toBe(0);
-    expect(stats.laps).toBeCloseTo(stats.totalKm / 40075);
+    expect(stats.totalKm).toBeGreaterThan(0);
   });
 
   it('습관 — 월별·연도별·성향·자주 간 도시', () => {
@@ -134,7 +134,7 @@ describe('buildStats', () => {
   it('여행이 없으면 빈 통계', () => {
     const s = buildStats({ trips: [], cities: CITIES, krwRate: rate, today });
     expect(s.pastCount).toBe(0);
-    expect(s.laps).toBe(0);
+    expect(s.totalKm).toBe(0);
     expect(s.badges).toEqual([]);
   });
 });
@@ -156,7 +156,7 @@ describe('computeBadges', () => {
     expect(at('firstAbroad')).toBe('2025-03-05');
     expect(at('firstCompanion')).toBe('2025-03-05');
     expect(at('countries3')).toBe('2025-06-05'); // KR·JP·FR
-    expect(at('oneLap')).toBe('2025-09-05'); // 누적 41,500km
+    expect(at('days365')).toBeUndefined();
     expect(at('trips5')).toBeUndefined();
   });
 });

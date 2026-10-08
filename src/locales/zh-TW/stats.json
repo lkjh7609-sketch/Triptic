@@ -17,8 +17,6 @@
     "citiesValue": "{{count}} 個",
     "countries": "造訪國家",
     "countriesValue": "{{count}} 個",
-    "laps": "繞地球",
-    "lapsValue": "{{value}} 圈",
     "km": "移動 {{km}} 公里(直線距離)",
     "upcoming": "即將出發的旅行 {{count}} 趟"
   },
@@ -40,10 +38,10 @@
     "byPayment": "付款方式",
     "byTrip": "各趟旅行比較",
     "perDayShort": "每天 {{amount}}",
-    "none": "還沒有記錄花費的旅行。在旅行中記下花費，就能在這裡彙整。",
-    "noRecord": "沒有花費記錄的 {{count}} 趟旅行不計入平均。",
-    "noRate": "貨幣沒有匯率的 {{count}} 趟旅行不計入合計。",
-    "note": "韓元金額是依旅行中記下的匯率換成基準貨幣，再以目前匯率換成韓元的數值。"
+    "none": "還沒有記錄花費的旅行。",
+    "noRecord": "沒有花費記錄的 {{count}} 趟不計入平均。",
+    "noRate": "沒有匯率的貨幣 {{count}} 趟不計入合計。",
+    "note": "韓元 = 記錄的匯率 → 目前匯率。"
   },
   "habits": {
     "title": "旅行習慣",
@@ -59,11 +57,11 @@
     "placesPerDayValue": "{{value}} 個",
     "categories": "最常去的類型",
     "styleTitle": "你的旅行風格",
-    "styleNeed": "累積有 5 個以上景點的旅行後，就能告訴你風格。",
+    "styleNeed": "累積有 5 個以上景點的旅行後告訴你。",
     "style": {
-      "food": "美食探訪型 — 三分之一以上的景點是餐廳。",
-      "sightseeing": "景點巡禮型 — 一半以上的景點是觀光地。",
-      "balanced": "均衡型。"
+      "food": "美食探訪型 — 餐廳佔三分之一以上",
+      "sightseeing": "景點巡禮型 — 景點佔一半以上",
+      "balanced": "均衡型"
     },
     "yearNone": "有結束的旅行後，會依年度彙整顯示。"
   },
@@ -86,7 +84,6 @@
   },
   "badges": {
     "title": "紀錄",
-    "locked": "尚未達成",
     "name": {
       "firstTrip": "完成第一趟旅行",
       "firstAbroad": "第一次出國旅行",
@@ -98,8 +95,8 @@
       "trips20": "第 20 趟旅行",
       "days30": "旅行滿 30 天",
       "days100": "旅行滿 100 天",
-      "oneLap": "繞地球一圈",
-      "firstCompanion": "第一次同行旅行"
+      "firstCompanion": "第一次同行旅行",
+      "days365": "旅行滿 365 天"
     }
   },
   "label": {
@@ -141,7 +138,6 @@
     "me": "我",
     "alone": "還沒有一起旅行的朋友，現在只有我一個人。",
     "together": "一起 {{count}} 趟",
-    "unnamed": "未命名的朋友",
-    "note": "只顯示受邀加入旅行的同行者。像素角色每個人的樣子都固定不變。"
+    "unnamed": "未命名的朋友"
   }
 }

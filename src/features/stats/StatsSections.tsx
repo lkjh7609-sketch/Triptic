@@ -20,7 +20,6 @@ export function SummaryStrip({ stats }: { stats: TravelStats }) {
     { label: t('summary.days'), value: t('summary.daysValue', { count: stats.totalDays }) },
     { label: t('summary.cities'), value: t('summary.citiesValue', { count: stats.cityCount }) },
     { label: t('summary.countries'), value: t('summary.countriesValue', { count: stats.countryCount }) },
-    { label: t('summary.laps'), value: t('summary.lapsValue', { value: num(stats.laps, lang, stats.laps < 10 ? 2 : 1) }) },
   ];
   return (
     <section className={styles.card} aria-label={t('title')}>
@@ -61,7 +60,6 @@ export function CompanionsSection({ friends, meId, meName }: { friends: Friend[]
         ))}
       </ul>
       {friends.length === 0 ? <p className={styles.note}>{t('friends.alone')}</p> : null}
-      <p className={styles.note}>{t('friends.note')}</p>
     </section>
   );
 }
@@ -157,8 +155,8 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
     return (
       <section className={styles.card} aria-labelledby="stats-exp-title">
         <h2 id="stats-exp-title" className={styles.cardTitle}>{t('expense.title')}</h2>
-        <p className={styles.note}>{t('expense.none')}</p>
-        {e.noRate > 0 ? <p className={styles.note}>{t('expense.noRate', { count: e.noRate })}</p> : null}
+        <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.none')}</p>
+        {e.noRate > 0 ? <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.noRate', { count: e.noRate })}</p> : null}
       </section>
     );
   }
@@ -224,9 +222,9 @@ export function ExpenseSection({ stats }: { stats: TravelStats }) {
           text: `${krw(x.expenseKrw ?? 0, lang, true)} · ${t('expense.perDayShort', { amount: krw((x.expenseKrw ?? 0) / x.days, lang, true) })}`,
         }))}
       />
-      {e.tripsWithoutExpense > 0 ? <p className={styles.note}>{t('expense.noRecord', { count: e.tripsWithoutExpense })}</p> : null}
-      {e.noRate > 0 ? <p className={styles.note}>{t('expense.noRate', { count: e.noRate })}</p> : null}
-      <p className={styles.note}>{t('expense.note')}</p>
+      {e.tripsWithoutExpense > 0 ? <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.noRecord', { count: e.tripsWithoutExpense })}</p> : null}
+      {e.noRate > 0 ? <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.noRate', { count: e.noRate })}</p> : null}
+      <p className={`${styles.note} ${styles.oneLine}`}>{t('expense.note')}</p>
     </section>
   );
 }
@@ -294,8 +292,8 @@ export function HabitsSection({ stats }: { stats: TravelStats }) {
           ) : null}
         </div>
       </div>
-      <div className={styles.styleBox}>
-        <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, opacity: 0.8 }}>{t('habits.styleTitle')}</span>
+      <div className={`${styles.styleBox} ${styles.oneLine}`}>
+        <span className={styles.styleLabel}>{t('habits.styleTitle')}</span>
         {h.style ? t(`habits.style.${h.style}`) : t('habits.styleNeed')}
       </div>
     </section>
@@ -385,7 +383,7 @@ export function TripsSection({ trips, expanded, onToggle }: { trips: TripStat[];
   );
 }
 
-const ALL_BADGES: Badge['key'][] = ['firstTrip', 'firstAbroad', 'firstCompanion', 'countries3', 'countries5', 'countries10', 'trips5', 'trips10', 'trips20', 'days30', 'days100', 'oneLap'];
+const ALL_BADGES: Badge['key'][] = ['firstTrip', 'firstAbroad', 'firstCompanion', 'countries3', 'countries5', 'countries10', 'trips5', 'trips10', 'trips20', 'days30', 'days100', 'days365'];
 
 /** 6. 기록(이정표) */
 export function BadgesSection({ badges }: { badges: Badge[] }) {
@@ -401,7 +399,7 @@ export function BadgesSection({ badges }: { badges: Badge[] }) {
             <div key={k} className={`${styles.badge} ${date ? '' : styles.badgeLocked}`}>
               <BadgeArt kind={k as BadgeKind} locked={!date} />
               <span className={styles.badgeName}>{t(`badges.name.${k}`)}</span>
-              <span className={styles.badgeDate}>{date ? shortDate(date, i18n.language) : t('badges.locked')}</span>
+              <span className={styles.badgeDate}>{date ? shortDate(date, i18n.language) : ''}</span>
             </div>
           );
         })}
