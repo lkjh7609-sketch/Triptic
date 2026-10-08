@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import i18next from '@/shared/i18n';
 import { onAuthStateChange } from '@/shared/api/authService';
 import { QueryClient } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router';
 import { LocaleSync } from '@/shared/i18n/useSyncLocale';
 import { offlinePersister, OFFLINE_CACHE_MAX_AGE_MS } from '@/shared/offline/persister';
 import { ToastHost } from '@/shared/ui/toast';
+import { installExternalLinkHandler } from '@/shared/externalLink';
 import { identifyUser, resetIdentity, track } from '@/shared/monitoring';
 import { SuspensionGate } from '@/features/auth/SuspensionGate';
 import { LoginConflictGate } from '@/features/auth/LoginConflictGate';
@@ -78,6 +79,8 @@ function refetchIfUserChanged(userId: string | null) {
 }
 
 export function App() {
+  // 앱에서는 호텔·항공·액티비티 등 바깥 사이트 링크를 인앱 브라우저로 연다(웹에서는 아무 일도 하지 않는다)
+  useEffect(() => installExternalLinkHandler(), []);
   return (
     <ErrorBoundary>
       <PersistQueryClientProvider
