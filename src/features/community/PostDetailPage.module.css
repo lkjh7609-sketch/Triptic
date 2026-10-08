@@ -1,6 +1,6 @@
 /* 글 상세 — Stitch 시안(Stitch/Community/Post)을 우리 베이지·포레스트 그린 토큰으로 옮긴 것 */
 .page {
-  max-width: 880px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-3) var(--space-4) calc(88px + env(safe-area-inset-bottom));
 }

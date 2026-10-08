@@ -89,7 +89,7 @@ export function CompanionDetailScreen() {
   }
 
   return (
-    <div className={postDetailStyles.wrap}>
+    <div className={`${postDetailStyles.wrap} ${styles.page}`}>
       <button type="button" className={postDetailStyles.backBtn} onClick={() => navigate(-1)}>
         ← {t('action.back', { ns: 'common' })}
       </button>
