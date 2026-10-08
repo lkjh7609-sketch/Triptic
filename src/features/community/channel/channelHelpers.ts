@@ -1,4 +1,5 @@
 import { CONTINENT_KEYS, COUNTRY_KEYS, type ContinentKey } from '../destinationRegions';
+import type { InternalConditionCode } from '@/features/weather/conditionMap';
 import type { LocalizedText } from '../types';
 
 /** 나라 코드가 속한 대륙(브레드크럼용). 목록에 없으면 null */
@@ -54,21 +55,30 @@ export function splitDiff(diffMinutes: number): { hours: number; minutes: number
   return { hours: Math.floor(abs / 60), minutes: abs % 60, ahead: diffMinutes > 0 };
 }
 
-/** Open-Meteo WMO 날씨 코드 → 문구 키(`channel.weather.<key>`) */
+/** 날씨 상태 문구 키(`channel.weather.<key>`) */
 export type WeatherKey =
-  'clear' | 'partly' | 'cloudy' | 'fog' | 'drizzle' | 'rain' | 'snow' | 'thunder';
+  'clear' | 'partly' | 'cloudy' | 'fog' | 'rain' | 'snow' | 'thunder';
 
-export function weatherKey(code: number | null | undefined): WeatherKey | null {
-  if (code == null) return null;
-  if (code === 0) return 'clear';
-  if (code === 1 || code === 2) return 'partly';
-  if (code === 3) return 'cloudy';
-  if (code === 45 || code === 48) return 'fog';
-  if (code >= 51 && code <= 57) return 'drizzle';
-  if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return 'rain';
-  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'snow';
-  if (code >= 95) return 'thunder';
-  return null;
+/** 날씨 상태 이름(channel.weather.*)을 고르는 키 — WeatherKit 코드를 줄인 9종(conditionMap)에서. 바람·모름은 이름 없이 아이콘만 */
+export function weatherKey(code: InternalConditionCode): WeatherKey | null {
+  switch (code) {
+    case 'clear':
+      return 'clear';
+    case 'partly_cloudy':
+      return 'partly';
+    case 'cloudy':
+      return 'cloudy';
+    case 'fog':
+      return 'fog';
+    case 'rain':
+      return 'rain';
+    case 'thunderstorm':
+      return 'thunder';
+    case 'snow':
+      return 'snow';
+    default:
+      return null;
+  }
 }
 
 /** 현지 통화 금액 — 원화는 "4,500원/₩4,500", 그 밖에는 "11 MYR" */
