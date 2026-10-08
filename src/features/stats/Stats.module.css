@@ -589,3 +589,47 @@
   font-weight: 700;
   text-decoration: none;
 }
+
+/* 다녀온 여행이 아직 없을 때의 안내 띠 — 아래 통계는 0건으로 그대로 보인다 */
+.emptyBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--brand);
+  border-radius: var(--radius-xl);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.emptyBanner > div {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.emptyBanner strong {
+  font-size: 0.9375rem;
+}
+
+.emptyBanner span {
+  color: var(--text-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.bannerCta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: var(--text-on-brand);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+}

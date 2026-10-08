@@ -64,7 +64,8 @@
       "food": "美食探訪型 — 三分之一以上的景點是餐廳。",
       "sightseeing": "景點巡禮型 — 一半以上的景點是觀光地。",
       "balanced": "均衡型。"
-    }
+    },
+    "yearNone": "有結束的旅行後，會依年度彙整顯示。"
   },
   "trips": {
     "title": "各趟旅行統計",
@@ -80,7 +81,8 @@
     "airlines": "航空公司",
     "distance": "移動距離",
     "categories": "景點類型",
-    "countries": "造訪國家"
+    "countries": "造訪國家",
+    "none": "有結束的旅行後，各趟旅行的統計會顯示在這裡。"
   },
   "badges": {
     "title": "紀錄",
