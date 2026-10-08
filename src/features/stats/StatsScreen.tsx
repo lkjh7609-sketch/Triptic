@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { BarChart3 } from 'lucide-react';
 import { trackScreenView } from '@/shared/monitoring';
-import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { ErrorState } from '@/shared/ui/states/ErrorState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { useTravelStats } from './useTravelStats';
@@ -35,18 +34,19 @@ export function StatsScreen() {
           <Skeleton height="260px" />
           <Skeleton height="260px" />
         </div>
-      ) : stats.pastCount === 0 ? (
-        <EmptyState
-          icon={<BarChart3 size={32} aria-hidden="true" />}
-          message={`${t('empty.title')} ${t('empty.body')}${stats.upcomingCount > 0 ? ` ${t('empty.upcoming', { count: stats.upcomingCount })}` : ''}`}
-          actions={
-            <Link to="/plan" className={styles.cta}>
-              {t('empty.cta')}
-            </Link>
-          }
-        />
       ) : (
         <div className={styles.sections}>
+          {stats.pastCount === 0 ? (
+            // 다녀온 여행이 없어도 어떤 통계가 쌓이는지 보이도록 0건으로 다 보여 준다(2026-10-09 사용자 결정)
+            <div className={styles.emptyBanner} role="status">
+              <BarChart3 size={20} aria-hidden="true" />
+              <div>
+                <strong>{t('empty.title')}</strong>
+                <span>{t('empty.body')}{stats.upcomingCount > 0 ? ` ${t('empty.upcoming', { count: stats.upcomingCount })}` : ''}</span>
+              </div>
+              <Link to="/plan" className={styles.bannerCta}>{t('empty.cta')}</Link>
+            </div>
+          ) : null}
           <SummaryStrip stats={stats} />
           <WorldSection stats={stats} />
           <ExpenseSection stats={stats} />

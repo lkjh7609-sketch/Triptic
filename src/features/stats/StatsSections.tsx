@@ -224,6 +224,7 @@ export function HabitsSection({ stats }: { stats: TravelStats }) {
             ))}
           </div>
           <h3 className={styles.subTitle}>{t('habits.byYear')}</h3>
+          {h.byYear.length === 0 ? <p className={styles.note}>{t('habits.yearNone')}</p> : null}
           <ul className={styles.table}>
             {h.byYear.map((y) => (
               <li key={y.year} className={styles.tableRow}>
@@ -279,6 +280,7 @@ export function TripsSection({ trips, expanded, onToggle }: { trips: TripStat[];
   return (
     <section className={styles.card} aria-labelledby="stats-trips-title">
       <h2 id="stats-trips-title" className={styles.cardTitle}>{t('trips.title')}</h2>
+      {trips.length === 0 ? <p className={styles.note}>{t('trips.none')}</p> : null}
       <ul className={styles.tripList}>
         {trips.map((trip) => {
           const open = expanded === trip.id;

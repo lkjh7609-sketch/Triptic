@@ -64,7 +64,8 @@
       "food": "Food explorer — over a third of your stops are restaurants.",
       "sightseeing": "Sightseer — over half of your stops are sights.",
       "balanced": "A well-rounded mix."
-    }
+    },
+    "yearNone": "Once you have finished trips, they will be grouped by year here."
   },
   "trips": {
     "title": "Trip by trip",
@@ -80,7 +81,8 @@
     "airlines": "Airlines",
     "distance": "Distance",
     "categories": "Stops by type",
-    "countries": "Countries"
+    "countries": "Countries",
+    "none": "Per-trip stats will appear here once you have a finished trip."
   },
   "badges": {
     "title": "Milestones",
