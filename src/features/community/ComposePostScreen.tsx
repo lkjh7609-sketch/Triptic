@@ -348,6 +348,20 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
   const publishLabel = pending ? t('compose.submitting') : editing ? t('compose.edit.submit') : t('compose.submit');
   const storyLabel = desktop ? t('compose.story.labelPc') : t('compose.story.label');
 
+  const freeBoardButton = (
+    <button
+      type="button"
+      className={`${styles.quickChip} ${styles.freeChipInRow}`}
+      onClick={() => {
+        setFreeBoard(true);
+        clearInvalid(destRef.current);
+      }}
+    >
+      <MessagesSquare size={14} aria-hidden="true" />
+      {t('compose.board.freeButton')}
+    </button>
+  );
+
   const destinationSection = (
     <section className={`${styles.section} ${desktop ? styles.card : ''}`} aria-labelledby="compose-dest-label">
       <div className={styles.labelRow}>
@@ -392,40 +406,28 @@ function ComposeForm({ userId, editing }: { userId: string; editing?: Post }) {
           </button>
         </div>
       ) : (
-        <button
-          type="button"
-          ref={destRef}
-          className={`${styles.pill} ${missingDest ? styles.pillError : ''}`}
-          onClick={() => {
-            clearInvalid(destRef.current);
-            setPickerOpen('destination');
-          }}
-        >
-          <span className={styles.pillMain}>
-            <MapPin size={18} aria-hidden="true" className={styles.pillIcon} />
-            {t('compose.dest.pick')}
-          </span>
-          <span className={styles.pillEnd}>
-            {desktop ? <span>{t('compose.dest.select')}</span> : null}
-            <ChevronRight size={18} aria-hidden="true" />
-          </span>
-        </button>
-      )}
-      {!selectedDestination && !freeBoard ? (
-        <div className={styles.quick}>
+        <div className={styles.destRow}>
           <button
             type="button"
-            className={styles.quickChip}
+            ref={destRef}
+            className={`${styles.pill} ${missingDest ? styles.pillError : ''} ${styles.pillInRow} ${desktop ? '' : styles.pillCompact}`}
             onClick={() => {
-              setFreeBoard(true);
               clearInvalid(destRef.current);
+              setPickerOpen('destination');
             }}
           >
-            <MessagesSquare size={14} aria-hidden="true" />
-            {t('compose.board.freeButton')}
+            <span className={styles.pillMain}>
+              <MapPin size={18} aria-hidden="true" className={styles.pillIcon} />
+              {t('compose.dest.pick')}
+            </span>
+            <span className={styles.pillEnd}>
+              {desktop ? <span>{t('compose.dest.select')}</span> : null}
+              <ChevronRight size={18} aria-hidden="true" />
+            </span>
           </button>
+          {freeBoardButton}
         </div>
-      ) : null}
+      )}
       {desktop && featured.length > 0 ? (
         <div className={styles.quick}>
           <span className={styles.quickLabel}>{t('compose.dest.quick')}</span>
