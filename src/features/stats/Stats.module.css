@@ -537,57 +537,80 @@
   background: var(--brand);
 }
 
-/* 기록(뱃지) */
+/* 기록(뱃지) — 작은 모노라인 메달을 촘촘히 */
 .badges {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-
-@media (min-width: 900px) {
-  .badges {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: var(--space-4) var(--space-2);
 }
 
 .badge {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--brand);
-  border-radius: var(--radius-lg);
-  background: var(--brand-tint);
-}
-
-.badgeLocked {
-  border-color: var(--border);
-  background: var(--surface-subtle);
-  opacity: 0.7;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
 }
 
 .badgeName {
   color: var(--text-primary);
-  font-size: 0.8125rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.badgeLocked .badgeName {
+  color: var(--text-tertiary);
+  font-weight: 600;
 }
 
 .badgeDate {
   color: var(--text-muted);
   font-size: 0.6875rem;
+  line-height: 1.2;
 }
 
-.cta {
+.medal {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--brand);
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.medalLocked {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background: transparent;
+  color: var(--text-placeholder);
+}
+
+.medalNum {
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.medalLock {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  margin-top: var(--space-3);
-  padding: 0 20px;
-  border-radius: var(--radius-pill);
-  background: var(--brand-solid);
-  color: var(--text-on-brand);
-  font-weight: 700;
-  text-decoration: none;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--surface-card);
+  color: var(--text-tertiary);
 }
 
 /* 다녀온 여행이 아직 없을 때의 안내 띠 — 아래 통계는 0건으로 그대로 보인다 */
@@ -632,4 +655,58 @@
   font-size: 0.8125rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+/* 도트 그림 */
+.friends {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 96px;
+  max-width: 120px;
+  text-align: center;
+}
+
+.avatar {
+  display: block;
+  padding: 6px 10px 2px;
+  border-radius: var(--radius-lg);
+  background: var(--brand-tint);
+  image-rendering: pixelated;
+}
+
+.avatarMe {
+  outline: 3px solid var(--brand);
+  outline-offset: -3px;
+}
+
+.friendName {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.friendSub {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  min-height: 1em;
 }
