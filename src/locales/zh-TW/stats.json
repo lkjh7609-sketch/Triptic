@@ -1,0 +1,137 @@
+{
+  "title": "旅行統計",
+  "subtitle": "用數字回顧到目前為止的旅行",
+  "loadError": "無法載入統計，請稍後再試。",
+  "empty": {
+    "title": "還沒有結束的旅行",
+    "body": "旅行結束後，統計會累積在這裡。只計算結束日已過的旅行。",
+    "upcoming": "即將出發的旅行 {{count}} 趟",
+    "cta": "前往我的旅行"
+  },
+  "summary": {
+    "trips": "去過的旅行",
+    "tripsValue": "{{count}} 趟",
+    "days": "旅行天數",
+    "daysValue": "{{count}} 天",
+    "cities": "造訪城市",
+    "citiesValue": "{{count}} 個",
+    "countries": "造訪國家",
+    "countriesValue": "{{count}} 個",
+    "laps": "繞地球",
+    "lapsValue": "{{value}} 圈",
+    "km": "移動 {{km}} 公里(直線距離)",
+    "upcoming": "即將出發的旅行 {{count}} 趟"
+  },
+  "map": {
+    "title": "去過的地方",
+    "aria": "標示已造訪國家的世界地圖",
+    "world": "全球 195 個國家中的 {{count}} 個({{percent}}%)",
+    "unknown": "有 {{count}} 個地點無法判斷國家，未計入國家與洲的統計。",
+    "continents": "各洲比例",
+    "continentNote": "依旅行次數"
+  },
+  "expense": {
+    "title": "花費",
+    "total": "總支出",
+    "perDay": "每天平均",
+    "perTrip": "每趟平均",
+    "mostExpensive": "最貴的旅行",
+    "byCategory": "花在哪裡",
+    "byPayment": "付款方式",
+    "byTrip": "各趟旅行比較",
+    "perDayShort": "每天 {{amount}}",
+    "none": "還沒有記錄花費的旅行。在旅行中記下花費，就能在這裡彙整。",
+    "noRecord": "沒有花費記錄的 {{count}} 趟旅行不計入平均。",
+    "noRate": "貨幣沒有匯率的 {{count}} 趟旅行不計入合計。",
+    "note": "韓元金額是依旅行中記下的匯率換成基準貨幣，再以目前匯率換成韓元的數值。"
+  },
+  "habits": {
+    "title": "旅行習慣",
+    "byMonth": "每月旅行次數",
+    "monthLabel": "{{month}} 月",
+    "byYear": "各年度",
+    "yearRow": "{{trips}} 趟 · {{days}} 天",
+    "avgDays": "平均旅行天數",
+    "longest": "最長的旅行",
+    "topCities": "最常去的城市",
+    "topCityTrips": "{{count}} 次",
+    "placesPerDay": "每天平均造訪景點",
+    "placesPerDayValue": "{{value}} 個",
+    "categories": "最常去的類型",
+    "styleTitle": "你的旅行風格",
+    "styleNeed": "累積有 5 個以上景點的旅行後，就能告訴你風格。",
+    "style": {
+      "food": "美食探訪型 — 三分之一以上的景點是餐廳。",
+      "sightseeing": "景點巡禮型 — 一半以上的景點是觀光地。",
+      "balanced": "均衡型。"
+    }
+  },
+  "trips": {
+    "title": "各趟旅行統計",
+    "days": "{{count}} 天",
+    "places": "{{count}} 個景點",
+    "flights": "{{count}} 段航班",
+    "companions": "有同行",
+    "expand": "詳細",
+    "collapse": "收合",
+    "dayExpense": "每日支出",
+    "dayLabel": "第 {{day}} 天",
+    "noExpense": "沒有花費記錄",
+    "airlines": "航空公司",
+    "distance": "移動距離",
+    "categories": "景點類型",
+    "countries": "造訪國家"
+  },
+  "badges": {
+    "title": "紀錄",
+    "locked": "尚未達成",
+    "name": {
+      "firstTrip": "完成第一趟旅行",
+      "firstAbroad": "第一次出國旅行",
+      "countries3": "達成 3 個國家",
+      "countries5": "達成 5 個國家",
+      "countries10": "達成 10 個國家",
+      "trips5": "第 5 趟旅行",
+      "trips10": "第 10 趟旅行",
+      "trips20": "第 20 趟旅行",
+      "days30": "旅行滿 30 天",
+      "days100": "旅行滿 100 天",
+      "oneLap": "繞地球一圈",
+      "firstCompanion": "第一次同行旅行"
+    }
+  },
+  "label": {
+    "expense": {
+      "food": "餐飲",
+      "transport": "交通",
+      "lodging": "住宿",
+      "shopping": "購物",
+      "activity": "活動",
+      "other": "其他"
+    },
+    "payment": {
+      "cash": "現金",
+      "card": "信用卡",
+      "other": "其他",
+      "unknown": "未填付款方式"
+    },
+    "place": {
+      "sight": "景點",
+      "meal": "用餐",
+      "restaurant": "餐廳",
+      "cafe": "咖啡廳",
+      "shopping": "購物",
+      "lodging": "住宿",
+      "transport": "交通",
+      "other": "其他"
+    },
+    "continent": {
+      "AS": "亞洲",
+      "EU": "歐洲",
+      "NA": "北美洲",
+      "SA": "南美洲",
+      "AF": "非洲",
+      "OC": "大洋洲"
+    }
+  }
+}

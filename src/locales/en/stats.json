@@ -1,0 +1,137 @@
+{
+  "title": "Travel stats",
+  "subtitle": "Look back on every trip you've taken, in numbers",
+  "loadError": "Couldn't load your stats. Please try again in a moment.",
+  "empty": {
+    "title": "No finished trips yet",
+    "body": "Stats build up here once a trip is over. Trips whose end date has passed are counted.",
+    "upcoming": "{{count}} upcoming trip(s)",
+    "cta": "Go to my trips"
+  },
+  "summary": {
+    "trips": "Trips taken",
+    "tripsValue": "{{count}}",
+    "days": "Days traveled",
+    "daysValue": "{{count}}",
+    "cities": "Cities visited",
+    "citiesValue": "{{count}}",
+    "countries": "Countries visited",
+    "countriesValue": "{{count}}",
+    "laps": "Around the Earth",
+    "lapsValue": "{{value}} laps",
+    "km": "{{km}} km traveled (straight-line)",
+    "upcoming": "{{count}} upcoming trip(s)"
+  },
+  "map": {
+    "title": "Where you've been",
+    "aria": "World map with the countries you've visited filled in",
+    "world": "{{count}} of 195 countries ({{percent}}%)",
+    "unknown": "{{count}} place(s) couldn't be matched to a country and are left out of country and continent stats.",
+    "continents": "By continent",
+    "continentNote": "Based on number of trips"
+  },
+  "expense": {
+    "title": "Spending",
+    "total": "Total spent",
+    "perDay": "Per day",
+    "perTrip": "Per trip",
+    "mostExpensive": "Most expensive trip",
+    "byCategory": "What you spent on",
+    "byPayment": "How you paid",
+    "byTrip": "Trip by trip",
+    "perDayShort": "{{amount}} / day",
+    "none": "No trip has expenses recorded yet. Log expenses on a trip to see them add up here.",
+    "noRecord": "{{count}} trip(s) without expenses were left out of the averages.",
+    "noRate": "{{count}} trip(s) in a currency without an exchange rate were left out of the totals.",
+    "note": "KRW amounts convert through the rate saved on each expense to the trip's base currency, then to won at today's rate."
+  },
+  "habits": {
+    "title": "Travel habits",
+    "byMonth": "Trips by month",
+    "monthLabel": "{{month}}",
+    "byYear": "By year",
+    "yearRow": "{{trips}} trips · {{days}} days",
+    "avgDays": "Average trip length",
+    "longest": "Longest trip",
+    "topCities": "Most visited cities",
+    "topCityTrips": "{{count}}x",
+    "placesPerDay": "Places per day",
+    "placesPerDayValue": "{{value}}",
+    "categories": "Where you stop most",
+    "styleTitle": "Your travel style",
+    "styleNeed": "Once you have trips with 5+ places, we'll describe your style.",
+    "style": {
+      "food": "Food explorer — over a third of your stops are restaurants.",
+      "sightseeing": "Sightseer — over half of your stops are sights.",
+      "balanced": "A well-rounded mix."
+    }
+  },
+  "trips": {
+    "title": "Trip by trip",
+    "days": "{{count}} days",
+    "places": "{{count}} places",
+    "flights": "{{count}} flight leg(s)",
+    "companions": "With companions",
+    "expand": "Details",
+    "collapse": "Hide",
+    "dayExpense": "Spending by day",
+    "dayLabel": "Day {{day}}",
+    "noExpense": "No expenses recorded",
+    "airlines": "Airlines",
+    "distance": "Distance",
+    "categories": "Stops by type",
+    "countries": "Countries"
+  },
+  "badges": {
+    "title": "Milestones",
+    "locked": "Not yet",
+    "name": {
+      "firstTrip": "First trip done",
+      "firstAbroad": "First trip abroad",
+      "countries3": "3 countries",
+      "countries5": "5 countries",
+      "countries10": "10 countries",
+      "trips5": "5th trip",
+      "trips10": "10th trip",
+      "trips20": "20th trip",
+      "days30": "30 days traveled",
+      "days100": "100 days traveled",
+      "oneLap": "Once around the Earth",
+      "firstCompanion": "First trip with companions"
+    }
+  },
+  "label": {
+    "expense": {
+      "food": "Food",
+      "transport": "Transport",
+      "lodging": "Lodging",
+      "shopping": "Shopping",
+      "activity": "Activities",
+      "other": "Other"
+    },
+    "payment": {
+      "cash": "Cash",
+      "card": "Card",
+      "other": "Other",
+      "unknown": "No payment method"
+    },
+    "place": {
+      "sight": "Sights",
+      "meal": "Meals",
+      "restaurant": "Restaurants",
+      "cafe": "Cafes",
+      "shopping": "Shopping",
+      "lodging": "Lodging",
+      "transport": "Transport",
+      "other": "Other"
+    },
+    "continent": {
+      "AS": "Asia",
+      "EU": "Europe",
+      "NA": "North America",
+      "SA": "South America",
+      "AF": "Africa",
+      "OC": "Oceania"
+    }
+  }
+}
