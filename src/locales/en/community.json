@@ -538,7 +538,7 @@
       "lockedHint": "Destination, category and attached trip can't be changed after posting."
     },
     "board": {
-      "freeButton": "Post to the free board (no city)",
+      "freeButton": "Free board",
       "freeChosen": "Free board"
     }
   },

@@ -529,7 +529,7 @@
       "lockedHint": "旅行先・カテゴリ・添付した旅程は投稿後に変更できません。"
     },
     "board": {
-      "freeButton": "自由掲示板に投稿（都市なし）",
+      "freeButton": "自由掲示板",
       "freeChosen": "自由掲示板"
     }
   },
