@@ -529,7 +529,7 @@
       "lockedHint": "여행지·분류·첨부 일정은 올린 뒤에는 바꿀 수 없어요."
     },
     "board": {
-      "freeButton": "자유게시판에 쓰기 (도시 없음)",
+      "freeButton": "자유게시판",
       "freeChosen": "자유게시판"
     }
   },
