@@ -254,7 +254,12 @@
         "reasonLabel": "Reason for suspension",
         "reasonPlaceholder": "Select a reason",
         "reasonTextLabel": "Reason (shown to the user as written)",
-        "reasonTextPlaceholder": "e.g. Repeatedly posted the same content"
+        "reasonTextPlaceholder": "e.g. Repeatedly posted the same content",
+        "next": "Next",
+        "pinTitle": "Enter your 6-digit security code",
+        "pinHint": "This can't be undone, so we confirm once more. It's the same code you use to sign in.",
+        "working": "Working on it…",
+        "back": "Back"
       },
       "suspended": {
         "title": "Suspended accounts",
@@ -268,7 +273,8 @@
         "liftCancel": "Cancel",
         "liftDone": "Suspension lifted.",
         "liftFailed": "Couldn't lift the suspension. Please try again.",
-        "loadFailed": "Couldn't load the suspended accounts."
+        "loadFailed": "Couldn't load the suspended accounts.",
+        "openHistory": "View suspension history"
       }
     }
   },
