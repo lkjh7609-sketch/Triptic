@@ -25,8 +25,8 @@ export function SummaryStrip({ stats }: { stats: TravelStats }) {
       <div className={styles.summary}>
         {tiles.map((x) => (
           <div key={x.label} className={styles.tile}>
-            <span className={styles.tileValue}>{x.value}</span>
             <span className={styles.tileLabel}>{x.label}</span>
+            <span className={styles.tileValue}>{x.value}</span>
           </div>
         ))}
       </div>

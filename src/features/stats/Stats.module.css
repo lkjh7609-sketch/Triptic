@@ -91,7 +91,7 @@
 .tile {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   padding: var(--space-4);
   border-radius: var(--radius-lg);
   background: var(--brand-tint);
@@ -99,16 +99,17 @@
 
 .tileValue {
   color: var(--brand-text);
-  font-size: 1.625rem;
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: 1.5rem;
+  /* 일정 카드(항공편 줄)와 같은 600 — 800은 너무 굵고 위협적이라는 사용자 의견(2026-10-09) */
+  font-weight: 600;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 
 .tileLabel {
   color: var(--text-muted);
   font-size: var(--font-caption-size);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* 세계 지도 */
