@@ -100,10 +100,20 @@
 
 .slide {
   box-sizing: border-box;
+  min-width: 0;
+}
+
+/* 쪽(slide)이 카드(.list 등)를 겸하므로, 바깥 여백은 카드를 감싸는 한 겹(.slideFrame)이 맡는다 — 폭 100% 한 장 안에서 좌우로 띄운다 */
+.slideFrame {
+  box-sizing: border-box;
   flex: 0 0 100%;
   min-width: 0;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+}
+
+.slideFrameBoard {
+  padding-inline: var(--space-4);
 }
 
 .dots {
