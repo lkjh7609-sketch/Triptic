@@ -252,7 +252,12 @@
         "reasonLabel": "停止の理由",
         "reasonPlaceholder": "理由を選択してください",
         "reasonTextLabel": "理由（利用者にそのまま表示されます）",
-        "reasonTextPlaceholder": "例：同じ内容の投稿を繰り返しました"
+        "reasonTextPlaceholder": "例：同じ内容の投稿を繰り返しました",
+        "next": "次へ",
+        "pinTitle": "6桁のセキュリティコードを押してください",
+        "pinHint": "元に戻せない操作なので、もう一度確認します。ログインに使うコードと同じです。",
+        "working": "処理中です…",
+        "back": "戻る"
       },
       "suspended": {
         "title": "利用停止アカウント",
@@ -266,7 +271,8 @@
         "liftCancel": "キャンセル",
         "liftDone": "利用停止を解除しました。",
         "liftFailed": "解除に失敗しました。もう一度お試しください。",
-        "loadFailed": "利用停止の一覧を読み込めませんでした。"
+        "loadFailed": "利用停止の一覧を読み込めませんでした。",
+        "openHistory": "停止履歴を見る"
       }
     }
   },

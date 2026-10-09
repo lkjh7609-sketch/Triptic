@@ -374,15 +374,27 @@ export async function adminGetTrip(tripId: string): Promise<AdminTripView> {
 }
 
 // ── 운영자 강제 탈퇴(api/deleteAccount.js) ────────────────────────────────────
+export type AdminRemoveMemberErrorCode =
+  | 'reauth_required' // 보안코드를 쓸 수 없을 때만(ADMIN_PIN 미설정) — 15분 안에 다시 로그인해야 한다
+  | 'admin_cannot_delete'
+  | 'forbidden'
+  | 'wrong_pin' // attemptsLeft
+  | 'locked' // retryAfter(초)
+  | 'pin_disabled'
+  | 'failed';
+
 export class AdminRemoveMemberError extends Error {
-  constructor(readonly code: 'reauth_required' | 'admin_cannot_delete' | 'forbidden' | 'failed') {
+  constructor(
+    readonly code: AdminRemoveMemberErrorCode,
+    readonly detail: { attemptsLeft?: number; retryAfter?: number } = {},
+  ) {
     super(code);
     this.name = 'AdminRemoveMemberError';
   }
 }
 
-/** 강제 탈퇴 — 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
-export async function adminRemoveMember(userId: string, reason: SuspensionReason, reasonText?: string): Promise<void> {
+/** 강제 탈퇴 — 관리자 6자리 보안코드(pin)로 한 번 더 확인한다. 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
+export async function adminRemoveMember(userId: string, reason: SuspensionReason, reasonText?: string, pin?: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -390,11 +402,14 @@ export async function adminRemoveMember(userId: string, reason: SuspensionReason
   const res = await fetch(apiUrl('/api/deleteAccount'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ targetUserId: userId, reason, ...(reason === 'custom' ? { reasonText } : {}) }),
+    body: JSON.stringify({ targetUserId: userId, reason, ...(reason === 'custom' ? { reasonText } : {}), ...(pin ? { pin } : {}) }),
   });
   if (res.ok) return;
-  const json = (await res.json().catch(() => ({}))) as { error?: string };
-  if (json.error === 'reauth_required' || json.error === 'admin_cannot_delete' || json.error === 'forbidden') {
+  const json = (await res.json().catch(() => ({}))) as { error?: string; attemptsLeft?: number; retryAfter?: number };
+  if (json.error === 'wrong_pin' || json.error === 'locked') {
+    throw new AdminRemoveMemberError(json.error, { attemptsLeft: json.attemptsLeft, retryAfter: json.retryAfter });
+  }
+  if (json.error === 'reauth_required' || json.error === 'admin_cannot_delete' || json.error === 'forbidden' || json.error === 'pin_disabled') {
     throw new AdminRemoveMemberError(json.error);
   }
   throw new AdminRemoveMemberError('failed');

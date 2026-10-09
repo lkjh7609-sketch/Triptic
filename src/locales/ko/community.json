@@ -252,7 +252,12 @@
         "reasonLabel": "정지 사유",
         "reasonPlaceholder": "사유를 선택해 주세요",
         "reasonTextLabel": "사유 입력 (사용자에게 그대로 보여요)",
-        "reasonTextPlaceholder": "예: 같은 내용의 글을 반복해서 올렸어요"
+        "reasonTextPlaceholder": "예: 같은 내용의 글을 반복해서 올렸어요",
+        "next": "다음",
+        "pinTitle": "보안코드 6자리를 눌러 주세요",
+        "pinHint": "되돌릴 수 없는 조치라 한 번 더 확인해요. 로그인할 때 쓰는 그 코드예요.",
+        "working": "처리하는 중이에요…",
+        "back": "이전"
       },
       "suspended": {
         "title": "이용 정지 계정",
@@ -266,7 +271,8 @@
         "liftCancel": "취소",
         "liftDone": "이용 정지를 해제했어요.",
         "liftFailed": "해제에 실패했어요. 다시 시도해 주세요.",
-        "loadFailed": "이용 정지 목록을 불러오지 못했어요."
+        "loadFailed": "이용 정지 목록을 불러오지 못했어요.",
+        "openHistory": "정지 기록 보기"
       }
     }
   },

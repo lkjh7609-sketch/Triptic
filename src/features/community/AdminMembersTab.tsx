@@ -17,7 +17,7 @@ import {
 } from './adminService';
 import type { SuspensionReason } from '@/shared/suspension';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
-import { RemoveMemberDialog } from './RemoveMemberDialog';
+import { RemoveMemberDialog, type RemoveOutcome } from './RemoveMemberDialog';
 import { AdminSuspensionsSection } from './AdminSuspensionsSection';
 import { AdminTripViewer } from './AdminTripViewer';
 import { COMPANION_AGES } from './companionPrefs';
@@ -98,16 +98,27 @@ function MemberRow({
     trip_limit: member.trip_limit,
   };
 
-  async function removeMember(reason: SuspensionReason, reasonText?: string) {
+  async function removeMember(reason: SuspensionReason, reasonText: string | undefined, pin: string | undefined): Promise<RemoveOutcome> {
     try {
-      await adminRemoveMember(member.id, reason, reasonText);
+      await adminRemoveMember(member.id, reason, reasonText, pin);
+      // 서버가 끝났으니 목록에서는 바로 뺀다(다시 불러오기를 기다리지 않는다) — 정지 명단은 뒤에서 새로 읽는다
+      queryClient.setQueriesData<{ rows: AdminMemberRow[]; total: number }>({ queryKey: ['admin', 'members'] }, (old) =>
+        old ? { rows: old.rows.filter((r) => r.id !== member.id), total: Math.max(0, old.total - 1) } : old,
+      );
       showToast(t('admin.members.remove.done'), { tone: 'success' });
       void queryClient.invalidateQueries({ queryKey: ['admin', 'members'] });
       void queryClient.invalidateQueries({ queryKey: ['admin', 'suspensions'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'suspension-history'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      return { ok: true };
     } catch (err) {
       const code = err instanceof AdminRemoveMemberError ? err.code : 'failed';
+      // 보안코드가 틀렸거나 잠긴 경우는 창이 직접 보여 준다(알림을 따로 띄우지 않는다)
+      if (err instanceof AdminRemoveMemberError && code === 'wrong_pin') return { ok: false, kind: 'wrong', attemptsLeft: err.detail.attemptsLeft ?? 0, retryAfter: err.detail.retryAfter };
+      if (err instanceof AdminRemoveMemberError && code === 'locked') return { ok: false, kind: 'locked', retryAfter: err.detail.retryAfter ?? 900 };
       if (code === 'failed') captureError(err, { context: 'adminRemoveMember' });
       showToast(code === 'reauth_required' ? t('admin.members.remove.reauth') : code === 'admin_cannot_delete' ? t('admin.members.remove.adminBlocked') : t('admin.members.remove.failed'), { tone: 'error' });
+      return { ok: false, kind: 'error' };
     }
   }
 
@@ -186,7 +197,7 @@ function MemberRow({
       {confirmRemove ? (
         <RemoveMemberDialog
           name={member.display_name || member.handle || member.id.slice(0, 6)}
-          onConfirm={(reason, reasonText) => void removeMember(reason, reasonText)}
+          onConfirm={removeMember}
           onClose={() => setConfirmRemove(false)}
         />
       ) : null}
