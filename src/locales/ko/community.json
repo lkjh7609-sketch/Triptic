@@ -709,7 +709,16 @@
       "withdrawKeep": "계속 지원 유지하기",
       "withdrawProceed": "지원 취소하기",
       "dateTbd": "날짜 협의",
-      "groupSize_other": "{{count}}명 남음"
+      "groupSize_other": "{{count}}명 남음",
+      "factDestination": "여행지",
+      "factDates": "일정",
+      "factSpots": "모집",
+      "factPrefs": "원하는 동행",
+      "statusChip": {
+        "recruiting": "모집 중",
+        "matched": "매칭 확정"
+      },
+      "groupTotal_other": "총 {{count}}명"
     },
     "apply": {
       "dialogLabel": "동행 지원",

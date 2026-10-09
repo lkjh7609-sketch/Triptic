@@ -67,7 +67,7 @@
 }
 
 .input {
-  padding: 0 var(--space-3) 0 calc(var(--space-3) + 26px);
+  padding: 0 var(--space-3);
 }
 
 .cellButton {
