@@ -116,7 +116,8 @@
       "soloSub": "Recorded as your own spending",
       "split": "Split with the group",
       "splitSub": "Share the cost and settle up"
-    }
+    },
+    "saveFailed": "Couldn't save. Please try again."
   },
   "flightCard": {
     "schedule": "Depart {{depTime}} → Arrive {{arrTime}}",

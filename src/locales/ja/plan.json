@@ -95,7 +95,8 @@
       "soloSub": "自分の支出として記録します",
       "split": "みんなで割り勘",
       "splitSub": "一緒に使ったお金を分けて精算します"
-    }
+    },
+    "saveFailed": "保存できませんでした。もう一度お試しください。"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出発 → {{arrTime}} 到着",

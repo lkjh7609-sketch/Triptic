@@ -1,0 +1,177 @@
+/* 운영 콘솔 틀 — 큰 화면: 왼쪽 고정 메뉴 / 작은 화면: 위쪽 줄 + 왼쪽에서 나오는 서랍 */
+.shell {
+  min-height: 100vh;
+  background: var(--surface-page);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-page);
+}
+
+.menuBtn,
+.closeBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.topTitle {
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--surface-overlay);
+}
+
+.sidebar,
+.sidebarOpen {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  width: min(300px, 85vw);
+  overflow-y: auto;
+  padding-bottom: var(--space-6);
+  border-right: 1px solid var(--border);
+  background: var(--surface-card);
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgb(0 0 0 / 0.25));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 var(--space-4);
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  color: var(--text-primary);
+}
+
+.group {
+  padding: var(--space-2) var(--space-3) 0;
+}
+
+.groupTitle {
+  margin: var(--space-3) var(--space-2) var(--space-1);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item,
+.itemActive {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-body);
+  font-size: var(--font-body-size);
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemActive {
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.main {
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+
+  .topbar,
+  .scrim,
+  .closeBtn {
+    display: none;
+  }
+
+  .sidebar,
+  .sidebarOpen {
+    position: sticky;
+    top: 0;
+    z-index: auto;
+    width: auto;
+    height: 100vh;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .main {
+    padding: var(--space-6);
+  }
+}

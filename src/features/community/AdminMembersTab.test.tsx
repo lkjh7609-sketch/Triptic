@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
@@ -14,11 +14,17 @@ vi.mock('./adminService', () => ({
   adminListSuspensions: (...args: unknown[]) => state.suspensions(...args),
   adminLiftSuspension: (...args: unknown[]) => state.lift(...args),
   AdminRemoveMemberError: class extends Error {
-    constructor(readonly code: string) {
+    constructor(
+      readonly code: string,
+      readonly detail: { attemptsLeft?: number; retryAfter?: number } = {},
+    ) {
       super(code);
     }
   },
 }));
+// 보안코드를 쓸 수 있는 상태(켜짐·안 잠김)가 기본
+const pin = vi.hoisted(() => ({ status: vi.fn() }));
+vi.mock('./adminPinService', async () => ({ ...(await vi.importActual<typeof import('./adminPinService')>('./adminPinService')), fetchPinStatus: () => pin.status() }));
 vi.mock('./analyticsService', () => ({ fetchAdminUserActivity: async () => ({ status: 'not_configured' }) }));
 vi.mock('./AdminUserPlanRow', () => ({ AdminUserPlanRow: () => <div>등급 줄</div> }));
 
@@ -52,6 +58,7 @@ function renderTab() {
 }
 
 beforeEach(() => {
+  pin.status.mockReset().mockResolvedValue({ enabled: true, locked: false, retryAfter: 0 });
   state.remove.mockReset().mockResolvedValue(undefined);
   state.suspensions.mockReset().mockResolvedValue([]);
   state.lift.mockReset().mockResolvedValue(undefined);
@@ -80,16 +87,43 @@ describe('AdminMembersTab', () => {
     expect(screen.getByText('등급 줄')).toBeInTheDocument();
   });
 
-  it('필터를 걸고 검색하면 그 조건으로 다시 조회한다(첫 쪽부터)', async () => {
+  it('필터 버튼을 눌러 알약을 고르면 바로 그 조건으로 다시 조회하고(첫 쪽부터), 걸린 필터는 칩으로 보인다', async () => {
     renderTab();
     await screen.findByText('traveler@example.com');
-    fireEvent.change(screen.getByLabelText('성별'), { target: { value: 'male' } });
-    fireEvent.change(screen.getByLabelText('나잇대'), { target: { value: 'none' } });
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    fireEvent.click(within(screen.getByRole('group', { name: '성별' })).getByRole('button', { name: '남성' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: 'male' }), 0, 20));
+    fireEvent.click(within(screen.getByRole('group', { name: '나잇대' })).getByRole('button', { name: '미입력' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: 'male', ageBand: 'none' }), 0, 20));
+    // 필터 버튼에 걸린 개수, 칩으로도 보인다
+    expect(screen.getByRole('button', { name: /필터.*2/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '성별 필터 해제' })).toBeInTheDocument();
+    // 칩을 누르면 그 필터만 풀린다
+    fireEvent.click(screen.getByRole('button', { name: '성별 필터 해제' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: '', ageBand: 'none' }), 0, 20));
+  });
+
+  it('검색어는 검색 버튼(Enter)을 눌러야 적용되고, 초기화하면 검색어와 필터가 모두 비워진다', async () => {
+    renderTab();
+    await screen.findByText('traveler@example.com');
     fireEvent.change(screen.getByLabelText('이름·핸들·이메일로 검색'), { target: { value: ' kim ' } });
-    fireEvent.click(screen.getByRole('button', { name: /검색/ }));
-    await waitFor(() =>
-      expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim', gender: 'male', ageBand: 'none' }), 0, 20),
-    );
+    expect(state.list).not.toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim' }), 0, 20); // 아직 적용 전
+    fireEvent.click(screen.getByRole('button', { name: '검색' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim' }), 0, 20));
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    fireEvent.click(screen.getByRole('button', { name: /초기화/ }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith({ query: '', gender: '', ageBand: '', plan: '', joinedFrom: '', joinedTo: '' }, 0, 20));
+    expect(screen.getByLabelText('이름·핸들·이메일로 검색')).toHaveValue('');
+  });
+
+  it('가입일 범위도 바로 적용된다', async () => {
+    renderTab();
+    await screen.findByText('traveler@example.com');
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    const group = screen.getByRole('group', { name: '가입일' });
+    fireEvent.change(within(group).getByLabelText('가입 시작일'), { target: { value: '2026-09-01' } });
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ joinedFrom: '2026-09-01', joinedTo: '' }), 0, 20));
+    expect(screen.getByRole('button', { name: '가입일 필터 해제' })).toBeInTheDocument();
   });
 
   it('여행의 "내용 보기"를 누르면 읽기 전용으로 일차별 장소·메모·숙소가 보인다', async () => {
@@ -103,32 +137,91 @@ describe('AdminMembersTab', () => {
     expect(screen.getByText('10:30')).toBeInTheDocument();
   });
 
-  it('강제 탈퇴는 사유를 골라야 눌러지고, 고른 사유와 함께 서버에 요청한다', async () => {
+  const nextBtn = () => within(screen.getByRole('dialog')).getByRole('button', { name: '다음' });
+  const pressCode = (code: string) => {
+    for (const d of code) fireEvent.click(screen.getByRole('button', { name: d }));
+  };
+  const openRemove = async () => {
     renderTab();
     fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
     fireEvent.click(screen.getByRole('button', { name: '강제 탈퇴' }));
+  };
+
+  it('강제 탈퇴는 사유를 골라 다음으로 가면 보안코드 6자리를 묻고, 6번째 숫자를 누르면 사유·코드와 함께 요청한다', async () => {
+    await openRemove();
     expect(state.remove).not.toHaveBeenCalled();
-    // 사유를 고르기 전에는 탈퇴시키기가 막혀 있다
-    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    // 사유를 고르기 전에는 다음이 막혀 있다
+    expect(nextBtn()).toBeDisabled();
     fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'spam' } });
-    fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
-    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam', undefined));
+    fireEvent.click(nextBtn());
+    expect(screen.getByText('보안코드 6자리를 눌러 주세요')).toBeInTheDocument();
+    pressCode('48291');
+    expect(state.remove).not.toHaveBeenCalled(); // 5자리까지는 보내지 않는다
+    pressCode('5');
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam', undefined, '482915'));
   });
 
-  it("'직접 입력'을 고르면 글을 써야 눌러지고, 쓴 글이 사유로 서버에 간다", async () => {
-    renderTab();
-    fireEvent.click(await screen.findByRole('button', { name: /여행자/ }));
-    fireEvent.click(screen.getByRole('button', { name: '강제 탈퇴' }));
+  it("'직접 입력'을 고르면 글을 써야 다음으로 가고, 쓴 글이 사유로 서버에 간다", async () => {
+    await openRemove();
     fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'custom' } });
-    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    expect(nextBtn()).toBeDisabled();
     fireEvent.change(screen.getByLabelText(/사유 입력/), { target: { value: '   ' } });
-    expect(screen.getByRole('button', { name: '탈퇴시키기' })).toBeDisabled();
+    expect(nextBtn()).toBeDisabled();
     fireEvent.change(screen.getByLabelText(/사유 입력/), { target: { value: '  같은 글 반복  ' } });
-    fireEvent.click(screen.getByRole('button', { name: '탈퇴시키기' }));
-    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'custom', '같은 글 반복'));
+    fireEvent.click(nextBtn());
+    pressCode('482915');
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'custom', '같은 글 반복', '482915'));
   });
 
-  it('이용 정지 계정 목록을 펼쳐 정지를 해제할 수 있다(이미 해제된 줄에는 버튼이 없다)', async () => {
+  it('보안코드가 틀리면 창을 닫지 않고 남은 횟수를 알려 주며, 입력은 지워진다', async () => {
+    const { AdminRemoveMemberError } = await import('./adminService');
+    state.remove.mockRejectedValue(new AdminRemoveMemberError('wrong_pin', { attemptsLeft: 3 }));
+    await openRemove();
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'abuse' } });
+    fireEvent.click(nextBtn());
+    pressCode('000111');
+    expect(await screen.findByText(/3번 더 틀리면 15분 동안 잠겨요/)).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '6자리 중 0자리 입력' })).toBeInTheDocument();
+    // 다시 눌러 볼 수 있다
+    state.remove.mockResolvedValue(undefined);
+    pressCode('482915');
+    await waitFor(() => expect(state.remove).toHaveBeenCalledTimes(2));
+  });
+
+  it('잠겨 있으면 숫자 버튼이 막히고 남은 시간이 보인다', async () => {
+    const { AdminRemoveMemberError } = await import('./adminService');
+    state.remove.mockRejectedValue(new AdminRemoveMemberError('locked', { retryAfter: 600 }));
+    await openRemove();
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'abuse' } });
+    fireEvent.click(nextBtn());
+    pressCode('482915');
+    expect(await screen.findByText(/10:00/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '1' })).toBeDisabled();
+  });
+
+  it('보안코드를 쓸 수 없게 꺼져 있으면 사유만 고르고 바로 탈퇴시킨다(서버가 15분 로그인 규칙으로 확인)', async () => {
+    pin.status.mockResolvedValue({ enabled: false, locked: false, retryAfter: 0 });
+    await openRemove();
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'spam' } });
+    fireEvent.click(await screen.findByRole('button', { name: '탈퇴시키기' }));
+    await waitFor(() => expect(state.remove).toHaveBeenCalledWith('u1', 'spam', undefined, undefined));
+  });
+
+  it('탈퇴가 끝나면 다시 불러오기를 기다리지 않고 그 회원 줄이 바로 사라진다', async () => {
+    state.remove.mockImplementation(async () => {
+      // 서버에서는 이미 지워졌으니 이후 목록 조회는 비어 있다
+      state.list.mockResolvedValue({ rows: [], total: 0 });
+    });
+    await openRemove();
+    fireEvent.change(screen.getByLabelText('정지 사유'), { target: { value: 'spam' } });
+    fireEvent.click(nextBtn());
+    pressCode('482915');
+    await waitFor(() => expect(screen.queryByText('traveler@example.com')).not.toBeInTheDocument());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('이용 정지 계정 목록에는 지금 정지 중인 줄만 보이고, 해제하면 그 줄이 바로 사라진다(기록은 정지 기록 화면)', async () => {
     state.suspensions.mockResolvedValue([
       { id: 7, email: 'bad@example.com', display_name: '나쁜사람', reason: 'fraud', reason_text: null, suspended_at: '2026-10-06T12:47:00Z', lifted_at: null },
       { id: 6, email: 'old@example.com', display_name: null, reason: 'custom', reason_text: '반복 도배', suspended_at: '2026-10-01T12:47:00Z', lifted_at: '2026-10-02T12:47:00Z' },
@@ -137,11 +230,31 @@ describe('AdminMembersTab', () => {
     fireEvent.click(await screen.findByRole('button', { name: /이용 정지 계정 \(1\)/ }));
     expect(await screen.findByText('bad@example.com')).toBeInTheDocument();
     expect(screen.getByText(/사기·허위 정보/)).toBeInTheDocument();
-    expect(screen.getByText(/반복 도배/)).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: '정지 해제' })).toHaveLength(1);
+    // 이미 해제된 줄은 이 목록에 없다
+    expect(screen.queryByText('old@example.com')).not.toBeInTheDocument();
+    expect(screen.queryByText(/반복 도배/)).not.toBeInTheDocument();
+    // 서버가 끝나기 전에도 줄이 먼저 사라진다
+    let finish: () => void = () => undefined;
+    state.lift.mockImplementation(() => new Promise<void>((resolve) => (finish = resolve)));
     fireEvent.click(screen.getByRole('button', { name: '정지 해제' }));
     expect(state.lift).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: '해제하기' }));
     await waitFor(() => expect(state.lift).toHaveBeenCalledWith(7));
+    await waitFor(() => expect(screen.queryByText('bad@example.com')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: /이용 정지 계정 \(0\)/ })).toBeInTheDocument();
+    finish();
+  });
+
+  it('해제가 실패하면 줄이 다시 나타난다', async () => {
+    state.suspensions.mockResolvedValue([
+      { id: 7, email: 'bad@example.com', display_name: '나쁜사람', reason: 'fraud', reason_text: null, suspended_at: '2026-10-06T12:47:00Z', lifted_at: null },
+    ]);
+    state.lift.mockRejectedValue(new Error('boom'));
+    renderTab();
+    fireEvent.click(await screen.findByRole('button', { name: /이용 정지 계정 \(1\)/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '정지 해제' }));
+    fireEvent.click(screen.getByRole('button', { name: '해제하기' }));
+    await waitFor(() => expect(state.lift).toHaveBeenCalled());
+    expect(await screen.findByText('bad@example.com')).toBeInTheDocument();
   });
 });

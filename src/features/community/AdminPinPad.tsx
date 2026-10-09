@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Delete, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { openLoginPrompt } from '@/features/auth/loginPrompt';
-import { fetchPinStatus, formatCountdown, submitAdminPin } from './adminPinService';
+import { PIN_LENGTH, fetchPinStatus, formatCountdown, submitAdminPin } from './adminPinService';
+import { PinKeypad } from './PinKeypad';
 import styles from './AdminPinPad.module.css';
-
-const PIN_LENGTH = 6;
-const DIGITS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as const;
 
 type Notice = { kind: 'wrong'; attemptsLeft: number } | { kind: 'error' } | null;
 
@@ -103,42 +101,22 @@ export function AdminPinPad() {
       <h1 className={styles.title}>{t('admin.pin.title')}</h1>
       <p className={styles.hint}>{t('admin.pin.hint')}</p>
 
-      <div className={`${styles.dots} ${shake ? styles.shake : ''}`} role="img" aria-label={t('admin.pin.entered', { count: digits.length, total: PIN_LENGTH })}>
-        {Array.from({ length: PIN_LENGTH }, (_, i) => (
-          <span key={i} className={i < digits.length ? styles.dotOn : styles.dot} />
-        ))}
-      </div>
-
-      <p className={styles.message} role="status" aria-live="polite">
-        {locked
-          ? t('admin.pin.locked', { time: formatCountdown(remaining) })
-          : notice?.kind === 'wrong'
-            ? t('admin.pin.wrong', { count: notice.attemptsLeft })
-            : notice?.kind === 'error'
-              ? t('admin.pin.error')
-              : ''}
-      </p>
-
-      <div className={styles.pad}>
-        {DIGITS.map((d) => (
-          <button key={d} type="button" className={styles.key} disabled={disabled} onClick={() => press(d)}>
-            {d}
-          </button>
-        ))}
-        <span aria-hidden="true" />
-        <button type="button" className={styles.key} disabled={disabled} onClick={() => press('0')}>
-          0
-        </button>
-        <button
-          type="button"
-          className={styles.keyMuted}
-          disabled={disabled || digits.length === 0}
-          aria-label={t('admin.pin.erase')}
-          onClick={() => setDigits((v) => v.slice(0, -1))}
-        >
-          <Delete size={20} aria-hidden="true" />
-        </button>
-      </div>
+      <PinKeypad
+        digits={digits}
+        shake={shake}
+        disabled={disabled}
+        message={
+          locked
+            ? t('admin.pin.locked', { time: formatCountdown(remaining) })
+            : notice?.kind === 'wrong'
+              ? t('admin.pin.wrong', { count: notice.attemptsLeft })
+              : notice?.kind === 'error'
+                ? t('admin.pin.error')
+                : ''
+        }
+        onDigit={press}
+        onErase={() => setDigits((v) => v.slice(0, -1))}
+      />
 
       <button type="button" className={styles.linkBtn} onClick={openLoginPrompt}>
         {t('admin.pin.useAccount')}
