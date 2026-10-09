@@ -13,7 +13,7 @@ import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { useCompanionMatchMembers, useCompanionPost } from './hooks/useCompanionPosts';
 import { useAddCompanionExpense, useCompanionExpenses, useDeleteCompanionExpense } from './companionExpenseService';
-import { settleExpenses } from './expenseSplit';
+import { settleExpenses } from '@/shared/utils/expenseSplit';
 import postDetailStyles from './PostDetailScreen.module.css';
 import styles from './CompanionExpensesScreen.module.css';
 
