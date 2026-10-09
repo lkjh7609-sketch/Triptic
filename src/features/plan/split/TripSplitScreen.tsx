@@ -405,6 +405,7 @@ export function TripSplitScreen() {
           meId={meId}
           currency={currency}
           totalDays={totalDays}
+          startDate={trip.start_date}
           defaultDay={null}
           initial={flow.initial}
           onClose={() => setFlow(null)}

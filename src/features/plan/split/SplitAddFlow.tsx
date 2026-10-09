@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseISO } from 'date-fns';
 import { Users } from 'lucide-react';
+import { formatLocalizedDay } from '../planDateFormat';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import { showToast } from '@/shared/ui/toast';
@@ -22,6 +24,8 @@ interface SplitAddFlowProps {
   /** 여행 기본 통화 */
   currency: string;
   totalDays: number;
+  /** 여행 시작일(yyyy-MM-dd) — 일차 옆에 날짜를 보여 주는 데 쓴다 */
+  startDate?: string | null;
   /** 새로 적을 때 기본으로 둘 일차(없으면 날짜 없음) */
   defaultDay: number | null;
   /** 있으면 이 기록을 고친다 */
@@ -33,7 +37,7 @@ interface SplitAddFlowProps {
  * 더치페이 추가·수정 — ① 누구와 나눌지(도트 캐릭터 + 이름으로 고름, 3명이 가도 2명만 나눌 수 있다)
  * → ② 분류·메모·금액·돈 낸 사람. 저장하면 정산 계산이 자동으로 다시 된다.
  */
-export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaultDay, initial, onClose }: SplitAddFlowProps) {
+export function SplitAddFlow({ tripId, people, meId, currency, totalDays, startDate, defaultDay, initial, onClose }: SplitAddFlowProps) {
   const { t, i18n } = useTranslation(['plan', 'common']);
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
   const add = useAddSplitExpense(tripId);
@@ -55,6 +59,12 @@ export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaul
   const symbol = (CURRENCIES[money] ?? CURRENCIES.KRW).symbol;
   const amountNum = Number(amount);
   const saving = add.isPending || update.isPending;
+  // 'Day 1 · 11/5 (목)' — 일차만 보면 어느 날인지 헷갈려서 날짜를 같이 보여 준다
+  const dayLabel = (d: number) => {
+    const base = startDate ? parseISO(startDate) : null;
+    const date = base && !Number.isNaN(base.getTime()) ? formatLocalizedDay(new Date(base.getTime() + (d - 1) * 86_400_000), i18n.language) : '';
+    return `${t('day.header', { index: d })}${date ? ` · ${date}` : ''}`;
+  };
 
   async function handleSave() {
     if (!desc.trim() || !(amountNum > 0)) {
@@ -120,7 +130,7 @@ export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaul
         ) : (
           <>
             <h3 className={styles.stepTitle}>{t('split.flow.step2')}</h3>
-            <div className={expenseStyles.inputSection}>
+            <div className={styles.flowFields}>
               <div className={expenseStyles.categoryRow} role="radiogroup" aria-label={t('expense.categoryAria')}>
                 {EXPENSE_CATEGORIES.map((cat) => (
                   <button
@@ -139,7 +149,7 @@ export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaul
               </div>
               <input
                 ref={descRef}
-                className={expenseStyles.descInput}
+                className={styles.textField}
                 placeholder={t('split.flow.descPlaceholder')}
                 value={desc}
                 maxLength={100}
@@ -147,7 +157,7 @@ export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaul
               />
               <input
                 ref={amountRef}
-                className={`${expenseStyles.amountInput} ${styles.fullInput}`}
+                className={styles.textField}
                 type="number"
                 inputMode="decimal"
                 placeholder={t('expense.amountPlaceholder', { symbol })}
@@ -177,7 +187,7 @@ export function SplitAddFlow({ tripId, people, meId, currency, totalDays, defaul
                 <option value="">{t('split.noDay')}</option>
                 {Array.from({ length: Math.max(1, totalDays) }, (_, i) => i + 1).map((d) => (
                   <option key={d} value={d}>
-                    {t('day.header', { index: d })}
+                    {dayLabel(d)}
                   </option>
                 ))}
               </select>
