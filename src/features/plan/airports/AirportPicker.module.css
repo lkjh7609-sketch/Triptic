@@ -57,6 +57,19 @@
   color: var(--text-primary);
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+
 .sub {
   font-size: var(--font-caption-size);
   color: var(--text-muted);

@@ -259,7 +259,8 @@
       "needDestination": "請從清單選擇目的地",
       "badDates": "請確認日期 — 退房須在入住日之後",
       "search": "搜尋住宿",
-      "searching": "搜尋中…"
+      "searching": "搜尋中…",
+      "hotelBadge": "飯店"
     },
     "discountN": "{{pct}}% 折扣",
     "wifi": "免費 Wi-Fi",
@@ -271,6 +272,11 @@
       "title": "推薦旅遊地",
       "sub": "來自你的行程與熱門城市",
       "myTrip": "我的行程"
+    },
+    "pinned": {
+      "tag": "您選的飯店",
+      "more": "{{city}}的其他推薦飯店",
+      "unavailable": "{{name}}在這些日期沒有空房，為您顯示同一城市的其他飯店。"
     }
   },
   "activities": {

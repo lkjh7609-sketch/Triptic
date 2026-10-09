@@ -4,6 +4,9 @@ import '@/shared/i18n';
 import type { HotelsResponse } from './hotelsApi';
 
 vi.mock('@/shared/hooks/useProfile', () => ({ useProfile: () => ({ data: { base_currency: 'KRW' } }) }));
+let native = false;
+vi.mock('@/shared/platform', () => ({ isNativeApp: () => native }));
+vi.mock('./HotelSearchWidget', () => ({ HotelSearchWidget: () => <div data-testid="widget" /> }));
 
 import { HotelResults } from './HotelResults';
 
@@ -92,10 +95,52 @@ describe('HotelResults — 우리 화면의 호텔 결과', () => {
     expect(await screen.findByText('이 지역 근처의 숙소를 찾지 못했어요')).toBeInTheDocument();
   });
 
-  it('서버에 제휴 키가 없으면(503) 준비 중 안내', async () => {
+  it('앱: 서버에 제휴 키가 없으면(503) 준비 중 안내', async () => {
+    native = true;
     fetchMock.mockImplementation(fail(503));
     render(<HotelResults search={search} />);
     expect(await screen.findByText('숙소 검색을 준비하고 있어요')).toBeInTheDocument();
+    expect(screen.queryByTestId('widget')).toBeNull();
+  });
+
+  it('웹: 우리 검색을 못 쓰면(503) 제휴사 검색창 위젯으로 대신한다', async () => {
+    native = false;
+    fetchMock.mockImplementation(fail(503));
+    render(<HotelResults search={search} />);
+    expect(await screen.findByTestId('widget')).toBeInTheDocument();
+  });
+
+  describe('호텔 이름으로 고른 검색 — 그 호텔 + 같은 도시 추천', () => {
+    const pinnedSearch = { ...search, name: '시그니엘 서울', hotelId: 2066635 };
+    const withPinned = (pinnedHotel: unknown, list: unknown[]) =>
+      ({ ...response(list, { id: 14690, name: '서울', country: 'KR', distanceKm: 0 }), pinned: pinnedHotel, pinnedId: '2066635' }) as HotelsResponse;
+
+    it('고른 호텔은 "선택한 호텔"로 맨 위, 같은 도시 추천은 제목과 함께 아래에, 개수는 합쳐서', async () => {
+      fetchMock.mockImplementation(ok(withPinned(hotel({ id: '2066635', name: '시그니엘 서울' }), [hotel({ id: '11', name: '다른 호텔 A' }), hotel({ id: '12', name: '다른 호텔 B' })])));
+      render(<HotelResults search={pinnedSearch} />);
+      expect(await screen.findByText('선택한 호텔')).toBeInTheDocument();
+      expect(screen.getByText('서울의 다른 추천 호텔')).toBeInTheDocument();
+      const names = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+      expect(names).toEqual(['시그니엘 서울', '서울의 다른 추천 호텔', '다른 호텔 A', '다른 호텔 B']);
+      expect(screen.getByText('숙소 3곳')).toBeInTheDocument();
+      expect(lastParams().get('hotelId')).toBe('2066635');
+    });
+
+    it('그 날짜에 고른 호텔 객실이 없으면 안내하고 같은 도시 호텔은 그대로 보여 준다', async () => {
+      fetchMock.mockImplementation(ok(withPinned(null, [hotel({ id: '11', name: '다른 호텔 A' })])));
+      render(<HotelResults search={pinnedSearch} />);
+      expect(await screen.findByText(/시그니엘 서울은\(는\) 이 날짜에 예약 가능한 객실이 없어요/)).toBeInTheDocument();
+      expect(screen.getByText('다른 호텔 A')).toBeInTheDocument();
+      expect(screen.queryByText('선택한 호텔')).toBeNull();
+    });
+
+    it('도시 검색(호텔 이름 없이)에는 선택한 호텔 표시가 없다', async () => {
+      fetchMock.mockImplementation(ok(response([hotel()])));
+      render(<HotelResults search={search} />);
+      await screen.findByText('그란데 센터 포인트');
+      expect(screen.queryByText('선택한 호텔')).toBeNull();
+      expect(lastParams().has('hotelId')).toBe(false);
+    });
   });
 
   it('호출이 실패하면 오류 안내', async () => {

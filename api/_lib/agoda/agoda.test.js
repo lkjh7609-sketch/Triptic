@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { nearestCity, MAX_DISTANCE_KM } from './cities.js';
-import { buildCriteria, httpsImage, normalizeHotels, parseHotelQuery, safeUrl, searchHotels } from './hotels.js';
+import { cityById, nearestCity, MAX_DISTANCE_KM } from './cities.js';
+import { buildCriteria, buildHotelListCriteria, httpsImage, normalizeHotels, parseHotelQuery, safeUrl, searchHotels } from './hotels.js';
 import { isConfigured } from './client.js';
 
 afterEach(() => {
@@ -144,6 +144,94 @@ describe('searchHotels', () => {
         const out = await searchHotels(parseHotelQuery({ lat: '0', lng: '-140', checkin: '2026-11-20', checkout: '2026-11-22' }));
         expect(out.city).toBeNull();
         expect(fetchMock).not.toHaveBeenCalled();
+    });
+});
+
+describe('호텔 이름으로 고른 검색 — 그 호텔 + 같은 도시 추천', () => {
+    const base = { lat: '37.5', lng: '127', checkin: '2026-11-20', checkout: '2026-11-22' };
+    const row = (id, name) => ({ hotelId: id, hotelName: name, dailyRate: 100000 + id, landingURL: `https://www.agoda.com/partners/partnersearch.aspx?cid=1&hid=${id}` });
+    const lookup = async (id) => (id === 2066635 ? { cityId: 14690, cityName: '서울', country: 'KR' } : null);
+
+    it('hotelId를 검증한다(숫자·범위)', () => {
+        expect(parseHotelQuery({ ...base, hotelId: '2066635' }).hotelId).toBe(2066635);
+        expect(parseHotelQuery(base).hotelId).toBeUndefined();
+        for (const bad of ['abc', '0', '-5', '1.5', '99999999999']) expect(parseHotelQuery({ ...base, hotelId: bad })).toBeNull();
+    });
+
+    it('호텔 ID 목록 검색(Hotel List Search) 요청: 필터 없이 그 호텔 하나, 인원·날짜·통화는 그대로', () => {
+        const f = parseHotelQuery({ ...base, hotelId: '2066635', adults: '3', childAges: '5', currency: 'KRW', minStars: '5', maxPrice: '100000' });
+        const c = buildHotelListCriteria(f, 2066635);
+        expect(c).toEqual({
+            additional: { currency: 'KRW', language: 'ko-kr', occupancy: { numberOfAdult: 3, numberOfChildren: 1, childrenAges: [5] } },
+            checkInDate: '2026-11-20',
+            checkOutDate: '2026-11-22',
+            hotelId: [2066635],
+        });
+    });
+
+    it('cityById: 도시 ID → 도시, 표에 없으면 null', () => {
+        expect(cityById(14690)?.name).toBe('서울');
+        expect(cityById(1)).toBeNull();
+    });
+
+    it('고른 호텔은 pinned로 맨 위, 같은 도시 목록에서는 빠지고, 호출은 2번(호텔 목록 + 도시)', async () => {
+        const bodies = [];
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async (_url, init) => {
+                const criteria = JSON.parse(init.body).criteria;
+                bodies.push(criteria);
+                const results = criteria.hotelId ? [row(2066635, '시그니엘 서울')] : [row(11, '다른 호텔 A'), row(2066635, '시그니엘 서울'), row(12, '다른 호텔 B')];
+                return { status: 200, text: async () => JSON.stringify({ results }) };
+            }),
+        );
+        const f = parseHotelQuery({ ...base, hotelId: '2066635' });
+        const out = await searchHotels(f, { lookupHotel: lookup });
+        expect(out.city.id).toBe(14690); // 좌표가 아니라 호텔의 도시
+        expect(out.pinned.id).toBe('2066635');
+        expect(out.pinnedId).toBe('2066635');
+        expect(out.hotels.map((h) => h.id)).toEqual(['11', '12']);
+        expect(bodies.find((b) => b.hotelId).hotelId).toEqual([2066635]);
+        expect(bodies.find((b) => b.cityId).cityId).toBe(14690);
+    });
+
+    it('그 날짜에 고른 호텔 객실이 없으면 pinned는 null, 같은 도시 목록은 그대로', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async (_url, init) => {
+                const criteria = JSON.parse(init.body).criteria;
+                if (criteria.hotelId) return { status: 200, text: async () => JSON.stringify({ error: { id: 911, message: 'No search result' } }) };
+                return { status: 200, text: async () => JSON.stringify({ results: [row(11, 'A')] }) };
+            }),
+        );
+        const out = await searchHotels(parseHotelQuery({ ...base, hotelId: '2066635' }), { lookupHotel: lookup });
+        expect(out.pinned).toBeNull();
+        expect(out.pinnedId).toBe('2066635');
+        expect(out.hotels.map((h) => h.id)).toEqual(['11']);
+    });
+
+    it('고른 호텔 한 곳이 실패해도 목록은 보여 준다(pinned만 null)', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async (_url, init) => {
+                const criteria = JSON.parse(init.body).criteria;
+                if (criteria.hotelId) return { status: 500, text: async () => '{}' };
+                return { status: 200, text: async () => JSON.stringify({ results: [row(11, 'A')] }) };
+            }),
+        );
+        const out = await searchHotels(parseHotelQuery({ ...base, hotelId: '2066635' }), { lookupHotel: lookup });
+        expect(out.pinned).toBeNull();
+        expect(out.hotels).toHaveLength(1);
+    });
+
+    it('색인에 없는 호텔 ID거나 색인을 못 읽으면 좌표 검색으로 돌아간다', async () => {
+        const fetchMock = vi.fn(async () => ({ status: 200, text: async () => JSON.stringify({ results: [row(11, 'A')] }) }));
+        vi.stubGlobal('fetch', fetchMock);
+        const f = parseHotelQuery({ lat: '13.7563', lng: '100.5018', checkin: '2026-11-20', checkout: '2026-11-22', hotelId: '999' });
+        const out = await searchHotels(f, { lookupHotel: async () => null });
+        expect(out.city.id).toBe(9395); // 좌표로 찾은 방콕
+        expect(out.pinned).toBeUndefined();
+        expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 });
 

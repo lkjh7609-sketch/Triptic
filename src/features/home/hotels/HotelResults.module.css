@@ -103,13 +103,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 var(--space-3);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-pill);
   background: var(--surface-card);
   color: var(--text-primary);
   font: inherit;
+  font-size: var(--font-caption-size);
   font-weight: 600;
   cursor: pointer;
 }
@@ -125,13 +126,14 @@
 }
 
 .sortSelect {
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 var(--space-3);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-pill);
   background: var(--surface-card);
   color: var(--text-primary);
   font: inherit;
+  font-size: var(--font-caption-size);
   font-weight: 600;
 }
 
@@ -503,4 +505,36 @@
   font-size: 0.8125rem;
   color: var(--text-tertiary);
   text-decoration: line-through;
+}
+
+/* 호텔 이름으로 고른 검색 — 고른 호텔 카드 강조 + 같은 도시 추천 제목 */
+.cardPinned {
+  border-color: var(--brand-solid);
+  box-shadow: 0 0 0 1px var(--brand-solid), var(--shadow-sm);
+}
+
+.pinnedTag {
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+}
+
+.pinnedMissing {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--warning-tint);
+  color: var(--warning-text);
+  font-size: var(--font-caption-size);
+}
+
+.recommendTitle {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
