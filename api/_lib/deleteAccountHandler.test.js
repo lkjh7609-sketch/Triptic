@@ -1,13 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, recordSuspension } = vi.hoisted(() => ({
+const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, recordSuspension, pinConfig, verifyAdminPin } = vi.hoisted(() => ({
     requireUser: vi.fn(),
     deleteAccountData: vi.fn(),
     maybeSingle: vi.fn(),
     sendAccountDeletedMail: vi.fn(),
     recordSuspension: vi.fn(),
+    pinConfig: vi.fn(),
+    verifyAdminPin: vi.fn(),
 }));
 vi.mock('./suspension.js', async () => ({ ...(await vi.importActual('./suspension.js')), recordSuspension }));
+vi.mock('./adminPin.js', async () => ({ ...(await vi.importActual('./adminPin.js')), pinConfig, verifyAdminPin }));
 vi.mock('./accountMail.js', () => ({ sendAccountDeletedMail }));
 vi.mock('./auth.js', () => ({ requireUser }));
 vi.mock('./supabaseAdmin.js', () => ({ supabaseAdmin: () => ({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }) }) }));
@@ -29,10 +32,16 @@ const fresh = () => new Date(Date.now() - 60_000).toISOString();
 
 beforeEach(() => {
     requireUser.mockReset().mockResolvedValue({ id: 'u1', last_sign_in_at: fresh() });
-    deleteAccountData.mockReset().mockResolvedValue({ files: 0 });
+    // 진짜 deleteAccountData처럼 before(이메일을 정지 명단에 올리기)를 먼저 끝낸다 — 실패하면 거기서 멈춘다
+    deleteAccountData.mockReset().mockImplementation(async (_db, _id, opts) => {
+        await opts?.before?.();
+        return { files: 0 };
+    });
     sendAccountDeletedMail.mockReset().mockResolvedValue(true);
     recordSuspension.mockReset().mockResolvedValue(true);
     maybeSingle.mockReset().mockResolvedValue({ data: { role: 'user' } });
+    pinConfig.mockReset().mockReturnValue({ enabled: true, pin: '482915' });
+    verifyAdminPin.mockReset().mockResolvedValue({ ok: true });
 });
 
 describe('POST /api/deleteAccount', () => {
@@ -117,7 +126,8 @@ describe('POST /api/deleteAccount', () => {
             await handler(adminPost({ targetUserId: target, reason: 'abuse' }), res);
             expect(res.statusCode).toBe(200);
             expect(recordSuspension).toHaveBeenCalledWith(expect.anything(), { userId: target, adminId: 'u1', reason: 'abuse', reasonText: null });
-            expect(recordSuspension.mock.invocationCallOrder[0]).toBeLessThan(deleteAccountData.mock.invocationCallOrder[0]);
+            // 정지 명단 기록은 계정 삭제 안에서 파일 삭제와 함께 돌되, 계정이 지워지기 전에 끝난다(deleteAccount.test.js에서 순서 확인)
+            expect(deleteAccountData).toHaveBeenCalledWith(expect.anything(), target, { before: expect.any(Function) });
             expect(sendAccountDeletedMail).not.toHaveBeenCalled();
         });
 
@@ -150,13 +160,12 @@ describe('POST /api/deleteAccount', () => {
             expect(deleteAccountData).toHaveBeenCalledTimes(1);
         });
 
-        it('정지 명단에 못 올리면 지우지 않고 500', async () => {
+        it('정지 명단에 못 올리면 500(계정 삭제 안에서 멈춘다)', async () => {
             recordSuspension.mockRejectedValue(new Error('insert failed'));
             asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
             const res = makeRes();
             await handler(adminPost({ targetUserId: target, reason: 'spam' }), res);
             expect(res.statusCode).toBe(500);
-            expect(deleteAccountData).not.toHaveBeenCalled();
         });
 
         it('관리자가 아니면 403', async () => {
@@ -164,6 +173,77 @@ describe('POST /api/deleteAccount', () => {
             await handler(adminPost({ targetUserId: target, reason: 'spam' }), res);
             expect(res.statusCode).toBe(403);
             expect(recordSuspension).not.toHaveBeenCalled();
+        });
+
+        describe('6자리 보안코드(15분 재로그인 대신)', () => {
+            const stale = () => new Date(Date.now() - 3600_000).toISOString();
+            const setup = () => asAdmin().mockResolvedValueOnce({ data: { role: 'user' } });
+
+            it('오래전에 로그인한 관리자 세션이어도 보안코드가 맞으면 탈퇴시킨다', async () => {
+                requireUser.mockResolvedValue({ id: 'u1', last_sign_in_at: stale() });
+                setup();
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'abuse', pin: '482915' }), res);
+                expect(res.statusCode).toBe(200);
+                expect(verifyAdminPin).toHaveBeenCalledWith(expect.anything(), '482915');
+                expect(deleteAccountData).toHaveBeenCalledTimes(1);
+            });
+
+            it('보안코드가 틀리면 남은 횟수를 알려 주고 아무것도 지우지 않는다', async () => {
+                verifyAdminPin.mockResolvedValue({ ok: false, status: 401, body: { error: 'wrong_pin', attemptsLeft: 3 } });
+                setup();
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'abuse', pin: '000111' }), res);
+                expect(res.statusCode).toBe(401);
+                expect(res.body).toEqual({ error: 'wrong_pin', attemptsLeft: 3 });
+                expect(recordSuspension).not.toHaveBeenCalled();
+                expect(deleteAccountData).not.toHaveBeenCalled();
+            });
+
+            it('잠겨 있으면 429와 남은 시간을 그대로 돌려준다', async () => {
+                verifyAdminPin.mockResolvedValue({ ok: false, status: 429, body: { error: 'locked', retryAfter: 600 } });
+                setup();
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'abuse', pin: '482915' }), res);
+                expect(res.statusCode).toBe(429);
+                expect(res.body).toEqual({ error: 'locked', retryAfter: 600 });
+                expect(deleteAccountData).not.toHaveBeenCalled();
+            });
+
+            it('사유·대상이 잘못된 요청은 보안코드 시도를 세지 않는다(코드 검사 전에 걸러 낸다)', async () => {
+                setup();
+                const res = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'whatever', pin: '482915' }), res);
+                expect(res.statusCode).toBe(400);
+                expect(verifyAdminPin).not.toHaveBeenCalled();
+            });
+
+            it('보안코드가 꺼져 있으면(ADMIN_PIN 미설정) 예전처럼 15분 안에 로그인한 세션만 받는다', async () => {
+                pinConfig.mockReturnValue({ enabled: false, reason: 'not_configured' });
+                requireUser.mockResolvedValue({ id: 'u1', last_sign_in_at: stale() });
+                setup();
+                const old = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'abuse' }), old);
+                expect(old.statusCode).toBe(403);
+                expect(old.body).toEqual({ error: 'reauth_required' });
+                expect(deleteAccountData).not.toHaveBeenCalled();
+
+                requireUser.mockResolvedValue({ id: 'u1', last_sign_in_at: fresh() });
+                setup();
+                const recent = makeRes();
+                await handler(adminPost({ targetUserId: target, reason: 'abuse' }), recent);
+                expect(recent.statusCode).toBe(200);
+                expect(verifyAdminPin).not.toHaveBeenCalled();
+            });
+
+            it('본인 탈퇴는 보안코드와 상관없이 방금 로그인한 세션만(그대로)', async () => {
+                requireUser.mockResolvedValue({ id: 'u1', last_sign_in_at: stale() });
+                const res = makeRes();
+                await handler(post({ body: { pin: '482915' } }), res);
+                expect(res.statusCode).toBe(403);
+                expect(res.body).toEqual({ error: 'reauth_required' });
+                expect(deleteAccountData).not.toHaveBeenCalled();
+            });
         });
     });
 });

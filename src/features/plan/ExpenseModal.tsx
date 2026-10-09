@@ -15,6 +15,8 @@ import { ExpenseChart } from './ExpenseChart';
 import { DoughnutChart } from './DoughnutChart';
 import { CATEGORY_ICON } from './expenseCategoryIcons';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
+import { showToast } from '@/shared/ui/toast';
+import { TripConflictError } from '@/shared/api/tripService';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import type { ExpenseCategory, ExpenseItem, ExpensePaymentMethod, ExpensesData } from './types';
 import { SplitAddFlow } from './split/SplitAddFlow';
@@ -59,7 +61,7 @@ const DAY_CHART_PAGE_SIZE = 5;
  * 제외한다.
  */
 export function ExpenseModal({ currentDay, totalDays, currency, expensesData, onClose, onSave, startDate, myExpenses: myExpensesProp, meId = null, ownerId = null, split }: ExpenseModalProps) {
-  const myExpenses: Record<number, MyExpenseItem[]> = myExpensesProp ?? expensesData;
+  const baseMyExpenses: Record<number, MyExpenseItem[]> = myExpensesProp ?? expensesData;
   const { t, i18n } = useTranslation(['plan', 'common']);
   const [desc, setDesc] = useState('');
   const [amount, setAmount] = useState('');
@@ -75,9 +77,22 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
   const amountRef = useRef<HTMLInputElement>(null);
   const labelOf = usePersonLabel(meId);
 
+  /**
+   * 추가·삭제를 누르면 서버 저장(전체 일정 저장이라 1초 남짓 걸린다)이 끝나길 기다리지 않고 화면부터 바꾼다.
+   * 저장이 끝나 새 데이터가 들어오면(expensesData가 바뀌면) 이 임시 목록은 버리고, 실패하면 되돌린다.
+   */
+  // 임시 목록은 "만들 때의 서버 데이터"와 짝으로 들고 있다 — 서버 데이터가 바뀌면(저장 성공·다른 사람의 변경) 자동으로 무효가 된다
+  const [local, setLocal] = useState<{ base: ExpensesData; list: ExpenseItem[] } | null>(null);
+  const localList = local && local.base === expensesData ? local.list : null;
+  const setLocalList = (list: ExpenseItem[] | null) => setLocal(list ? { base: expensesData, list } : null);
+
   /** 이 날의 전체 목록(일행 것 포함) — 저장·삭제는 이 목록과 원래 순번으로 한다 */
-  const list = expensesData[currentDay] ?? [];
+  const list = localList ?? expensesData[currentDay] ?? [];
   const mineEntries = myEntries(list, meId, ownerId);
+  // 임시 목록이 있으면 합계·그래프도 그걸 기준으로(내 더치페이 몫 줄은 그대로 둔다)
+  const myExpenses: Record<number, MyExpenseItem[]> = localList
+    ? { ...baseMyExpenses, [currentDay]: [...myEntries(localList, meId, ownerId).map((e) => e.item), ...(baseMyExpenses[currentDay] ?? []).filter((e) => e.split)] }
+    : baseMyExpenses;
   /** 내가 나눈 더치페이의 내 몫 줄(읽기 전용) */
   const shareRows = (myExpenses[currentDay] ?? []).filter((e) => e.split);
   const dayList = myExpenses[currentDay] ?? [];
@@ -95,29 +110,39 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
       flagInvalid(!desc.trim() ? descRef.current : null, !amountNum ? amountRef.current : null);
       return;
     }
-    setSaving(true);
-    try {
-      // 통화는 여행 통화로 고정 — 여행 도시에서 자동 지정되므로 입력할 때 고르지 않는다
-      const newItem: ExpenseItem = {
-        desc: desc.trim(),
-        amount: amountNum,
-        currency,
-        category,
-        ...(paymentMethod ? { paymentMethod } : {}),
-        ...(meId ? { paidBy: meId } : {}),
-      };
-      await onSave([...list, newItem]);
-      setDesc('');
-      setAmount('');
-    } finally {
-      setSaving(false);
-    }
+    // 통화는 여행 통화로 고정 — 여행 도시에서 자동 지정되므로 입력할 때 고르지 않는다
+    const newItem: ExpenseItem = {
+      desc: desc.trim(),
+      amount: amountNum,
+      currency,
+      category,
+      ...(paymentMethod ? { paymentMethod } : {}),
+      ...(meId ? { paidBy: meId } : {}),
+    };
+    const typed = { desc, amount };
+    // 화면부터 바꾼다(줄이 바로 생기고 입력칸이 비워진다) — 서버 저장은 뒤에서, 실패하면 입력을 되돌려 준다
+    setDesc('');
+    setAmount('');
+    await persist([...list, newItem], () => {
+      setDesc(typed.desc);
+      setAmount(typed.amount);
+    });
   }
 
   async function handleDelete(index: number) {
+    await persist(list.filter((_, i) => i !== index));
+  }
+
+  /** 임시 목록을 먼저 보이고 저장한다. 실패하면 임시 목록을 버리고(undo로 입력도 되돌린다) 알려 준다. 충돌 안내는 저장 훅이 이미 띄웠다 */
+  async function persist(next: ExpenseItem[], undo?: () => void) {
+    setLocalList(next);
     setSaving(true);
     try {
-      await onSave(list.filter((_, i) => i !== index));
+      await onSave(next);
+    } catch (err) {
+      setLocalList(null);
+      undo?.();
+      if (!(err instanceof TripConflictError)) showToast(t('expense.saveFailed'), { tone: 'error' });
     } finally {
       setSaving(false);
     }

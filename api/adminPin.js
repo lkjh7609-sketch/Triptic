@@ -7,7 +7,7 @@
 // PIN·요청 본문은 로그에 남기지 않는다.
 import { applyCors, createRateLimiter, ALLOWED_ORIGINS } from './_lib/http.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
-import { PIN_MAX_ATTEMPTS, mintAdminSession, pinConfig, pinMatches } from './_lib/adminPin.js';
+import { mintAdminSession, pinConfig, verifyAdminPin } from './_lib/adminPin.js';
 
 // 잠금이 진짜 방어선이고, 이건 DB를 덜 두드리게 하는 앞단의 가벼운 제한이다
 const isRateLimited = createRateLimiter(15);
@@ -49,20 +49,13 @@ export default async function handler(req, res) {
         }
     }
     const pin = typeof body?.pin === 'string' ? body.pin : '';
-    if (!/^\d{6}$/.test(pin)) return fail(res, 400, 'bad_format');
 
-    // 시도를 "먼저" 센다 — 잠겨 있으면 PIN을 보지 않고 돌려보낸다
-    const { data: begin, error: beginErr } = await db.rpc('admin_pin_begin', { p_max: PIN_MAX_ATTEMPTS });
-    const state = Array.isArray(begin) ? begin[0] : begin;
-    if (beginErr || !state) {
-        console.warn('[adminPin] lock check failed');
-        return fail(res, 503, 'lock_unavailable'); // 잠금을 확인 못 하면 시도를 받지 않는다
-    }
-    if (!state.allowed) return fail(res, 429, 'locked', { retryAfter: state.retry_after });
-
-    if (!pinMatches(pin, config.pin)) {
-        const attemptsLeft = Math.max(0, PIN_MAX_ATTEMPTS - state.attempt_no);
-        return fail(res, 401, 'wrong_pin', { attemptsLeft, ...(attemptsLeft === 0 ? { retryAfter: 900 } : {}) });
+    // 시도를 "먼저" 센다 — 잠겨 있으면 PIN을 보지 않고 돌려보낸다(검사는 강제 탈퇴 확인과 같은 함수). 틀린 횟수는 세션을 만든 뒤에 지운다
+    const checked = await verifyAdminPin(db, pin, { reset: false });
+    if (!checked.ok) {
+        if (checked.body.error === 'lock_unavailable') console.warn('[adminPin] lock check failed');
+        const { error, ...extra } = checked.body;
+        return fail(res, checked.status, error, extra);
     }
 
     try {

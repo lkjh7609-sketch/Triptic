@@ -64,3 +64,6 @@ export function formatCountdown(seconds: number): string {
   const s = Math.max(0, Math.ceil(seconds));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
+
+/** 보안코드 자리 수 */
+export const PIN_LENGTH = 6;

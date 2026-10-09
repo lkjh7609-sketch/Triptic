@@ -374,15 +374,27 @@ export async function adminGetTrip(tripId: string): Promise<AdminTripView> {
 }
 
 // ── 운영자 강제 탈퇴(api/deleteAccount.js) ────────────────────────────────────
+export type AdminRemoveMemberErrorCode =
+  | 'reauth_required' // 보안코드를 쓸 수 없을 때만(ADMIN_PIN 미설정) — 15분 안에 다시 로그인해야 한다
+  | 'admin_cannot_delete'
+  | 'forbidden'
+  | 'wrong_pin' // attemptsLeft
+  | 'locked' // retryAfter(초)
+  | 'pin_disabled'
+  | 'failed';
+
 export class AdminRemoveMemberError extends Error {
-  constructor(readonly code: 'reauth_required' | 'admin_cannot_delete' | 'forbidden' | 'failed') {
+  constructor(
+    readonly code: AdminRemoveMemberErrorCode,
+    readonly detail: { attemptsLeft?: number; retryAfter?: number } = {},
+  ) {
     super(code);
     this.name = 'AdminRemoveMemberError';
   }
 }
 
-/** 강제 탈퇴 — 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
-export async function adminRemoveMember(userId: string, reason: SuspensionReason, reasonText?: string): Promise<void> {
+/** 강제 탈퇴 — 관리자 6자리 보안코드(pin)로 한 번 더 확인한다. 그 이메일은 이용 정지 명단에 올라 다시 가입·로그인하지 못한다 */
+export async function adminRemoveMember(userId: string, reason: SuspensionReason, reasonText?: string, pin?: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -390,11 +402,14 @@ export async function adminRemoveMember(userId: string, reason: SuspensionReason
   const res = await fetch(apiUrl('/api/deleteAccount'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ targetUserId: userId, reason, ...(reason === 'custom' ? { reasonText } : {}) }),
+    body: JSON.stringify({ targetUserId: userId, reason, ...(reason === 'custom' ? { reasonText } : {}), ...(pin ? { pin } : {}) }),
   });
   if (res.ok) return;
-  const json = (await res.json().catch(() => ({}))) as { error?: string };
-  if (json.error === 'reauth_required' || json.error === 'admin_cannot_delete' || json.error === 'forbidden') {
+  const json = (await res.json().catch(() => ({}))) as { error?: string; attemptsLeft?: number; retryAfter?: number };
+  if (json.error === 'wrong_pin' || json.error === 'locked') {
+    throw new AdminRemoveMemberError(json.error, { attemptsLeft: json.attemptsLeft, retryAfter: json.retryAfter });
+  }
+  if (json.error === 'reauth_required' || json.error === 'admin_cannot_delete' || json.error === 'forbidden' || json.error === 'pin_disabled') {
     throw new AdminRemoveMemberError(json.error);
   }
   throw new AdminRemoveMemberError('failed');
@@ -420,6 +435,72 @@ export async function adminListSuspensions(): Promise<AdminSuspension[]> {
 export async function adminLiftSuspension(id: number): Promise<void> {
   const { error } = await getSupabaseClient().rpc('admin_lift_suspension', { p_id: id });
   if (error) throw error;
+}
+
+// ── 정지 기록(영구 내역, 0109) ────────────────────────────────────────────────
+export interface AdminSuspensionHistoryRow extends AdminSuspension {
+  suspended_by_name: string | null;
+  lifted_by_name: string | null;
+}
+
+export interface AdminSuspensionHistoryFilters {
+  query: string;
+  /** '' 전체 · active 정지 중 · lifted 해제됨 */
+  status: '' | 'active' | 'lifted';
+  /** '' 전체 */
+  reason: '' | SuspensionReason;
+  /** yyyy-MM-dd(한국 시간 기준 정지일), 비우면 제한 없음 */
+  from: string;
+  to: string;
+}
+
+export const NO_SUSPENSION_FILTER: AdminSuspensionHistoryFilters = { query: '', status: '', reason: '', from: '', to: '' };
+
+/** 해제한 기록까지 전부 — 지워지지 않는 영구 내역. 검색·상태·사유·정지일로 거르고 쪽을 나눠 읽는다 */
+export async function adminSuspensionHistory(
+  filters: AdminSuspensionHistoryFilters,
+  page: number,
+  pageSize: number,
+): Promise<{ rows: AdminSuspensionHistoryRow[]; total: number }> {
+  const { data, error } = await getSupabaseClient().rpc('admin_suspension_history', {
+    p_query: filters.query,
+    p_status: filters.status || null,
+    p_reason: filters.reason || null,
+    p_from: filters.from || null,
+    p_to: filters.to || null,
+    p_offset: page * pageSize,
+    p_limit: pageSize,
+  });
+  if (error) throw error;
+  const rows = ((data as (AdminSuspensionHistoryRow & { total_count: number })[]) ?? []).map(({ total_count: _total, ...row }) => row);
+  const total = Number((data as { total_count?: number }[] | null)?.[0]?.total_count ?? 0);
+  return { rows, total };
+}
+
+// ── 운영 대시보드 숫자(0109) ─────────────────────────────────────────────────
+export interface AdminDashboardStats {
+  reports_open: number;
+  pending_review: number;
+  suspensions_active: number;
+  feedback_new: number;
+  members_total: number;
+  members_today: number;
+  members_7d: number;
+  trips_total: number;
+  trips_7d: number;
+  /** 최근 14일(한국 날짜) 가입자 수, 오래된 날부터 */
+  signups_14d: { day: string; count: number }[];
+  recent_members: { id: string; display_name: string | null; handle: string | null; created_at: string }[];
+  recent_suspensions: { id: number; email: string; reason: SuspensionReason; suspended_at: string; lifted_at: string | null }[];
+}
+
+/** 대시보드·메뉴 배지가 같이 쓰는 조회 키 — 처리 뒤에 이 키를 새로 읽으면 숫자가 맞춰진다 */
+export const ADMIN_DASHBOARD_KEY = ['admin', 'dashboard'] as const;
+
+export async function adminDashboardStats(): Promise<AdminDashboardStats> {
+  const { data, error } = await getSupabaseClient().rpc('admin_dashboard_stats');
+  if (error) throw error;
+  return data as AdminDashboardStats;
 }
 
 // ── 보관함 삭제(0091) — 사진 파일을 먼저 지우고 행을 지운다. ids가 null이면 전부 비운다 ──────────────

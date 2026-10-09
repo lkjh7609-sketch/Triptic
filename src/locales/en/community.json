@@ -11,7 +11,9 @@
       "sales": "Sales",
       "analytics": "Analytics",
       "archive": "Archive",
-      "notices": "Notices"
+      "notices": "Notices",
+      "dashboard": "Dashboard",
+      "suspensions": "Suspensions"
     },
     "reportDetail": "Report detail: {{detail}}",
     "dismiss": "Dismiss",
@@ -254,7 +256,12 @@
         "reasonLabel": "Reason for suspension",
         "reasonPlaceholder": "Select a reason",
         "reasonTextLabel": "Reason (shown to the user as written)",
-        "reasonTextPlaceholder": "e.g. Repeatedly posted the same content"
+        "reasonTextPlaceholder": "e.g. Repeatedly posted the same content",
+        "next": "Next",
+        "pinTitle": "Enter your 6-digit security code",
+        "pinHint": "This can't be undone, so we confirm once more. It's the same code you use to sign in.",
+        "working": "Working on it…",
+        "back": "Back"
       },
       "suspended": {
         "title": "Suspended accounts",
@@ -268,8 +275,65 @@
         "liftCancel": "Cancel",
         "liftDone": "Suspension lifted.",
         "liftFailed": "Couldn't lift the suspension. Please try again.",
-        "loadFailed": "Couldn't load the suspended accounts."
+        "loadFailed": "Couldn't load the suspended accounts.",
+        "openHistory": "View suspension history"
+      },
+      "joinedRange": "Joined"
+    },
+    "filter": {
+      "button": "Filters",
+      "done": "Done",
+      "active": "Active filters",
+      "remove": "Remove {{name}} filter"
+    },
+    "suspensionHistory": {
+      "lead": "Every email suspended by a forced withdrawal. Records are kept even after a suspension is lifted.",
+      "searchPlaceholder": "Search by email, name or reason",
+      "status": "Status",
+      "statusActive": "Suspended",
+      "statusLifted": "Lifted",
+      "reason": "Reason",
+      "suspendedOn": "Suspended on",
+      "from": "From",
+      "to": "To",
+      "total": "{{count}} suspension record(s)",
+      "empty": "No suspension records match.",
+      "loadFailed": "Couldn't load suspension records.",
+      "suspendedAt": "Suspended {{time}}",
+      "liftedAt": "Lifted {{time}}"
+    },
+    "nav": {
+      "label": "Admin menu",
+      "open": "Open menu",
+      "close": "Close menu",
+      "pending_one": "{{count}} item to handle",
+      "pending_other": "{{count}} items to handle",
+      "groups": {
+        "moderation": "Moderation",
+        "members": "Members",
+        "content": "Content",
+        "insights": "Insights"
       }
+    },
+    "dashboard": {
+      "loadFailed": "Couldn't load the dashboard.",
+      "count_one": "{{count}}",
+      "count_other": "{{count}}",
+      "people_one": "{{count}}",
+      "people_other": "{{count}}",
+      "todo": "To handle",
+      "allClear": "All clear",
+      "status": "Overview",
+      "suspensionsActive": "Suspended now",
+      "membersTotal": "Total members",
+      "membersToday": "Joined today",
+      "members7d": "Joined in 7 days",
+      "trips7d": "New trips in 7 days",
+      "signups": "Sign-ups, last 14 days",
+      "recentMembers": "Newest members",
+      "recentSuspensions": "Recent suspensions",
+      "viewAll": "View all",
+      "none": "Nothing yet."
     }
   },
   "report": {

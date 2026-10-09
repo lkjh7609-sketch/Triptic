@@ -113,7 +113,8 @@
       "soloSub": "내 지출로만 기록돼요",
       "split": "일행과 더치페이",
       "splitSub": "함께 쓴 돈을 나눠서 정산해요"
-    }
+    },
+    "saveFailed": "저장하지 못했어요. 다시 시도해 주세요."
   },
   "flightCard": {
     "schedule": "{{depTime}} 출발 → {{arrTime}} 도착",

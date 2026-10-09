@@ -11,7 +11,9 @@
       "sales": "판매",
       "analytics": "분석",
       "archive": "보관함",
-      "notices": "공지"
+      "notices": "공지",
+      "dashboard": "대시보드",
+      "suspensions": "정지 기록"
     },
     "reportDetail": "신고 상세: {{detail}}",
     "dismiss": "기각",
@@ -252,7 +254,12 @@
         "reasonLabel": "정지 사유",
         "reasonPlaceholder": "사유를 선택해 주세요",
         "reasonTextLabel": "사유 입력 (사용자에게 그대로 보여요)",
-        "reasonTextPlaceholder": "예: 같은 내용의 글을 반복해서 올렸어요"
+        "reasonTextPlaceholder": "예: 같은 내용의 글을 반복해서 올렸어요",
+        "next": "다음",
+        "pinTitle": "보안코드 6자리를 눌러 주세요",
+        "pinHint": "되돌릴 수 없는 조치라 한 번 더 확인해요. 로그인할 때 쓰는 그 코드예요.",
+        "working": "처리하는 중이에요…",
+        "back": "이전"
       },
       "suspended": {
         "title": "이용 정지 계정",
@@ -266,8 +273,62 @@
         "liftCancel": "취소",
         "liftDone": "이용 정지를 해제했어요.",
         "liftFailed": "해제에 실패했어요. 다시 시도해 주세요.",
-        "loadFailed": "이용 정지 목록을 불러오지 못했어요."
+        "loadFailed": "이용 정지 목록을 불러오지 못했어요.",
+        "openHistory": "정지 기록 보기"
+      },
+      "joinedRange": "가입일"
+    },
+    "filter": {
+      "button": "필터",
+      "done": "완료",
+      "active": "적용된 필터",
+      "remove": "{{name}} 필터 해제"
+    },
+    "suspensionHistory": {
+      "lead": "강제 탈퇴로 이용 정지된 이메일의 전체 내역이에요. 정지를 해제해도 기록은 지워지지 않아요.",
+      "searchPlaceholder": "이메일·이름·사유로 검색",
+      "status": "상태",
+      "statusActive": "정지 중",
+      "statusLifted": "해제됨",
+      "reason": "사유",
+      "suspendedOn": "정지일",
+      "from": "시작일",
+      "to": "종료일",
+      "total": "정지 기록 {{count}}건",
+      "empty": "조건에 맞는 정지 기록이 없어요.",
+      "loadFailed": "정지 기록을 불러오지 못했어요.",
+      "suspendedAt": "{{time}} 정지",
+      "liftedAt": "{{time}} 해제"
+    },
+    "nav": {
+      "label": "운영 콘솔 메뉴",
+      "open": "메뉴 열기",
+      "close": "메뉴 닫기",
+      "pending_other": "처리할 일 {{count}}건",
+      "groups": {
+        "moderation": "운영",
+        "members": "회원",
+        "content": "콘텐츠",
+        "insights": "데이터"
       }
+    },
+    "dashboard": {
+      "loadFailed": "대시보드를 불러오지 못했어요.",
+      "count_other": "{{count}}건",
+      "people_other": "{{count}}명",
+      "todo": "처리할 일",
+      "allClear": "모두 처리했어요",
+      "status": "현황",
+      "suspensionsActive": "이용 정지 중",
+      "membersTotal": "전체 회원",
+      "membersToday": "오늘 가입",
+      "members7d": "최근 7일 가입",
+      "trips7d": "최근 7일 새 여행",
+      "signups": "최근 14일 가입",
+      "recentMembers": "최근 가입자",
+      "recentSuspensions": "최근 정지 기록",
+      "viewAll": "전체 보기",
+      "none": "아직 없어요."
     }
   },
   "report": {

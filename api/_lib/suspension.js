@@ -26,10 +26,13 @@ export async function recordSuspension(db, { userId, adminId, reason, reasonText
     if (error) throw new Error(`user lookup failed: ${error.message}`);
     const email = data?.user?.email?.trim().toLowerCase();
     if (!email) return false;
-    const { data: existing, error: findErr } = await db.from('suspended_accounts').select('id').eq('email', email).is('lifted_at', null).maybeSingle();
+    // 둘은 서로 상관이 없어 한꺼번에 읽는다
+    const [{ data: existing, error: findErr }, { data: profile }] = await Promise.all([
+        db.from('suspended_accounts').select('id').eq('email', email).is('lifted_at', null).maybeSingle(),
+        db.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
+    ]);
     if (findErr) throw new Error(`suspension lookup failed: ${findErr.message}`);
     if (existing) return true;
-    const { data: profile } = await db.from('profiles').select('display_name').eq('id', userId).maybeSingle();
     const { error: insertErr } = await db.from('suspended_accounts').insert({ email, display_name: profile?.display_name ?? null, reason, suspended_by: adminId, reason_text: reason === 'custom' ? reasonText : null });
     if (insertErr) throw new Error(`suspension insert failed: ${insertErr.message}`);
     return true;
