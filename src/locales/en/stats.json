@@ -29,7 +29,9 @@
     "zoomOut": "Zoom out",
     "reset": "Reset view",
     "hintTouch": "Use two fingers to zoom and move",
-    "hintMouse": "Drag to move · use +/− to zoom"
+    "hintMouse": "Drag to move · use +/− to zoom",
+    "countriesButton": "See {{count}} visited countries",
+    "countriesTitle": "Countries visited"
   },
   "expense": {
     "title": "Spending",
