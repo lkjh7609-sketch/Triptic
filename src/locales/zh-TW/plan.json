@@ -101,7 +101,19 @@
       "card": "刷卡",
       "other": "其他"
     },
-    "totalLabel": "合計"
+    "totalLabel": "合計",
+    "add": "新增支出",
+    "mineNote": "只顯示你自己花的錢，一起花的錢只計入你的份額。",
+    "openSplit": "查看分帳",
+    "splitBadge": "分帳",
+    "splitMeta_other": "{{count}} 人分攤 · {{name}} 先付",
+    "choice": {
+      "title": "是哪一種支出？",
+      "solo": "自己花的",
+      "soloSub": "只記為你自己的支出",
+      "split": "與旅伴分帳",
+      "splitSub": "把一起花的錢分攤並結清"
+    }
   },
   "flightCard": {
     "schedule": "{{depTime}} 出發 → {{arrTime}} 到達",
@@ -622,5 +634,66 @@
     "body": "從上傳預訂文件到 PDF 行程表，約一分鐘就能了解 Triptic 的用法。",
     "open": "查看指南",
     "skip": "直接建立"
+  },
+  "split": {
+    "title": "分帳",
+    "me": "我",
+    "left": "已退出的旅伴",
+    "unnamed": "未命名",
+    "noDay": "無日期",
+    "localOnly": "請登入並使用已儲存到帳號的旅行來分帳。",
+    "loadError": "無法載入分帳資料，請稍後再試。",
+    "solo": "這趟旅行還沒有旅伴。用分享連結邀請旅伴後就能分帳。",
+    "summary": {
+      "title": "結算摘要",
+      "total": "一起花的錢",
+      "paid": "我先付的金額",
+      "share": "我的份額",
+      "toGive": "我要付的錢",
+      "toGet": "我可收回的錢"
+    },
+    "unconverted_other": "沒有匯率的外幣 {{count}} 筆已排除在結算之外。",
+    "settle": {
+      "title": "誰付給誰",
+      "nothing": "還沒有一起花的錢。",
+      "done": "已全部結清",
+      "received": "已收到",
+      "sent": "已匯款",
+      "failed": "無法記錄，請稍後再試。"
+    },
+    "list": {
+      "title": "一起花的錢",
+      "empty": "目前沒有紀錄。請用下方按鈕新增分帳。",
+      "paidBy": "{{name}} 先付",
+      "splitWith_other": "{{count}} 人分攤",
+      "myShare": "我的份額 {{amount}}"
+    },
+    "transfers": {
+      "title": "匯款紀錄",
+      "line": "{{from}} → {{to}}",
+      "cancel": "取消匯款紀錄"
+    },
+    "add": "新增分帳",
+    "deleteTitle": "刪除分帳",
+    "deleteConfirm": "要刪除這筆紀錄嗎？結算結果會重新計算。",
+    "deleteKeep": "保留",
+    "deleteProceed": "刪除",
+    "flow": {
+      "title": "新增分帳",
+      "editTitle": "編輯分帳",
+      "step1": "要和誰分攤？",
+      "step1Hint": "請選出一起花錢的所有人，只選其中幾位也可以。",
+      "picked_other": "已選 {{count}} 人",
+      "next": "下一步",
+      "back": "上一步",
+      "step2": "請填寫內容",
+      "descPlaceholder": "備註（例如：晚餐）",
+      "perPerson": "每人約 {{amount}}",
+      "payer": "付款的人",
+      "day": "日期",
+      "errAlone": "只為自己花的錢，請記在「自己花的」。",
+      "saved": "已儲存分帳",
+      "saveFailed": "無法儲存，請稍後再試。"
+    }
   }
 }

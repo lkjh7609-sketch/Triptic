@@ -19,12 +19,6 @@ export function countryName(code: string, language: string): string {
   }
 }
 
-/** 나라 코드 → 국기 이모지(영문 지역 표시 문자 두 개) */
-export function flagOf(code: string): string {
-  if (!/^[A-Z]{2}$/.test(code)) return '';
-  return String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
-}
-
 /** 도넛·누적 막대에 쓰는 색 — 브랜드 초록 계열 + 호박색 한 가지 */
 export const CHART_COLORS = ['#2E4F4F', '#3F8F86', '#8FBFB4', '#D97706', '#B08968', '#A8A29E'];
 

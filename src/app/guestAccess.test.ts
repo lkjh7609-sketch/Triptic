@@ -36,6 +36,8 @@ describe('requiresLogin — 비로그인 둘러보기(커뮤니티는 회원 전
     '/community/companion/c1/chat',
     '/community/companion/c1/expenses',
     '/plan/7b0c-trip',
+    '/plan/7b0c-trip/split',
+    '/plan/sample-trip/split',
   ])('%s 는 로그인해야 한다', (path) => {
     expect(requiresLogin(path)).toBe(true);
   });

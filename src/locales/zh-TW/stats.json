@@ -23,7 +23,15 @@
     "world": "全球 195 個國家中的 {{count}} 個({{percent}}%)",
     "unknown": "有 {{count}} 個地點無法判斷國家，未計入國家與洲的統計。",
     "continents": "各洲比例",
-    "continentNote": "依旅行次數"
+    "continentNote": "依旅行次數",
+    "visits": "{{count}} 趟",
+    "zoomIn": "放大地圖",
+    "zoomOut": "縮小地圖",
+    "reset": "回到初始畫面",
+    "hintTouch": "可用兩指縮放與移動",
+    "hintMouse": "拖曳移動 · 用 +/− 縮放",
+    "countriesButton": "查看去過的 {{count}} 個國家",
+    "countriesTitle": "去過的國家"
   },
   "expense": {
     "title": "花費",

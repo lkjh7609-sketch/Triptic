@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Hotel as HotelIcon } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { MapPin, Hotel as HotelIcon, Users } from 'lucide-react';
+import { useTripPeople } from './split/useTripPeople';
+import splitStyles from './split/Split.module.css';
 import { tripService, type TripRow } from '@/shared/api/tripService';
 import { captureError } from '@/shared/monitoring';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
@@ -33,7 +36,9 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
   const [confirmReopen, setConfirmReopen] = useState(false);
   const reopenMutation = useReopenTrip(trip.id);
   const { user } = useSession();
+  const navigate = useNavigate();
   const isOwner = !!user && user.id === trip.owner_id;
+  const people = useTripPeople(trip.id, trip.owner_id, user?.id ?? null, []);
 
   const project = tripService.toLocalProject(trip);
   const totalDays = Math.max(1, Number(project.totalDays ?? trip.total_days ?? 1) || 1);
@@ -71,6 +76,13 @@ export function FinalizedTripView({ trip }: FinalizedTripViewProps) {
           {trip.start_date} ~ {trip.end_date}
         </p>
       </header>
+
+      {/* 끝난(확정된) 여행에서도 더치페이 정산은 계속 쓸 수 있다 — 일행이 있을 때만 */}
+      {people.members.length >= 2 ? (
+        <button type="button" className={splitStyles.newBtn} onClick={() => navigate(`/plan/${trip.id}/split`)}>
+          <Users size={18} aria-hidden="true" /> {t('split.title')}
+        </button>
+      ) : null}
 
       <DayChips
         totalDays={totalDays}

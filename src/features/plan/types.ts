@@ -70,6 +70,11 @@ export interface ExpenseItem {
    * 이후 환율이 바뀌어도 이 값은 절대 재계산하지 않는다(스펙 원문 요구사항).
    */
   fxRateToBase?: number | null;
+  /**
+   * 이 경비를 쓴 사람(사용자 id). 없으면 옛 데이터 — '여행 만든 사람의 지출'로 본다(0108).
+   * 여럿이 가는 여행의 경비 화면은 내 지출(혼자 쓴 돈)만 보여 주는 기준이다.
+   */
+  paidBy?: string;
 }
 
 export type ExpensesData = Record<number, ExpenseItem[]>;
