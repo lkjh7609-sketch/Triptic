@@ -20,6 +20,7 @@ import {
   PenTool,
   BookOpen,
   Map as MapIcon,
+  BarChart3,
 } from 'lucide-react';
 import { differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
 import type { TripRow } from '@/shared/api/tripService';
@@ -224,6 +225,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
             <button type="button" className={styles.btnCreate} onClick={openCreate}>
               <Plus size={20} /> {t('desktop.createTrip')}
             </button>
+            <Link to="/stats" className={styles.btnStats}>
+              <BarChart3 size={18} aria-hidden="true" /> {t('desktop.statsLink')}
+            </Link>
           </div>
         </div>
 
