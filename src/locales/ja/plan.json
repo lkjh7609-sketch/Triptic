@@ -330,6 +330,7 @@
     "subtitleCountdownDays_other": "{{count}}日",
     "subtitleCountdownAfter": "です。",
     "createTrip": "新しい旅行を作成",
+    "statsLink": "旅行の統計",
     "metricActive": "進行中・予定の旅行",
     "metricDays": "計画した日数",
     "metricPast": "過去の旅行",

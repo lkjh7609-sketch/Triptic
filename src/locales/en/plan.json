@@ -334,6 +334,7 @@
     "subtitleCountdownDays_one": "{{count}} day",
     "subtitleCountdownAfter": ".",
     "createTrip": "Create a trip",
+    "statsLink": "My travel stats",
     "metricActive": "Active trips",
     "metricDays": "Planned days",
     "metricPast": "Past trips",
