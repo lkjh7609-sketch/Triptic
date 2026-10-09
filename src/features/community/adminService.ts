@@ -437,6 +437,72 @@ export async function adminLiftSuspension(id: number): Promise<void> {
   if (error) throw error;
 }
 
+// ── 정지 기록(영구 내역, 0109) ────────────────────────────────────────────────
+export interface AdminSuspensionHistoryRow extends AdminSuspension {
+  suspended_by_name: string | null;
+  lifted_by_name: string | null;
+}
+
+export interface AdminSuspensionHistoryFilters {
+  query: string;
+  /** '' 전체 · active 정지 중 · lifted 해제됨 */
+  status: '' | 'active' | 'lifted';
+  /** '' 전체 */
+  reason: '' | SuspensionReason;
+  /** yyyy-MM-dd(한국 시간 기준 정지일), 비우면 제한 없음 */
+  from: string;
+  to: string;
+}
+
+export const NO_SUSPENSION_FILTER: AdminSuspensionHistoryFilters = { query: '', status: '', reason: '', from: '', to: '' };
+
+/** 해제한 기록까지 전부 — 지워지지 않는 영구 내역. 검색·상태·사유·정지일로 거르고 쪽을 나눠 읽는다 */
+export async function adminSuspensionHistory(
+  filters: AdminSuspensionHistoryFilters,
+  page: number,
+  pageSize: number,
+): Promise<{ rows: AdminSuspensionHistoryRow[]; total: number }> {
+  const { data, error } = await getSupabaseClient().rpc('admin_suspension_history', {
+    p_query: filters.query,
+    p_status: filters.status || null,
+    p_reason: filters.reason || null,
+    p_from: filters.from || null,
+    p_to: filters.to || null,
+    p_offset: page * pageSize,
+    p_limit: pageSize,
+  });
+  if (error) throw error;
+  const rows = ((data as (AdminSuspensionHistoryRow & { total_count: number })[]) ?? []).map(({ total_count: _total, ...row }) => row);
+  const total = Number((data as { total_count?: number }[] | null)?.[0]?.total_count ?? 0);
+  return { rows, total };
+}
+
+// ── 운영 대시보드 숫자(0109) ─────────────────────────────────────────────────
+export interface AdminDashboardStats {
+  reports_open: number;
+  pending_review: number;
+  suspensions_active: number;
+  feedback_new: number;
+  members_total: number;
+  members_today: number;
+  members_7d: number;
+  trips_total: number;
+  trips_7d: number;
+  /** 최근 14일(한국 날짜) 가입자 수, 오래된 날부터 */
+  signups_14d: { day: string; count: number }[];
+  recent_members: { id: string; display_name: string | null; handle: string | null; created_at: string }[];
+  recent_suspensions: { id: number; email: string; reason: SuspensionReason; suspended_at: string; lifted_at: string | null }[];
+}
+
+/** 대시보드·메뉴 배지가 같이 쓰는 조회 키 — 처리 뒤에 이 키를 새로 읽으면 숫자가 맞춰진다 */
+export const ADMIN_DASHBOARD_KEY = ['admin', 'dashboard'] as const;
+
+export async function adminDashboardStats(): Promise<AdminDashboardStats> {
+  const { data, error } = await getSupabaseClient().rpc('admin_dashboard_stats');
+  if (error) throw error;
+  return data as AdminDashboardStats;
+}
+
 // ── 보관함 삭제(0091) — 사진 파일을 먼저 지우고 행을 지운다. ids가 null이면 전부 비운다 ──────────────
 export async function adminDeleteArchived(ids: number[] | null): Promise<number> {
   const supabase = getSupabaseClient();
