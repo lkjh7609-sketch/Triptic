@@ -53,7 +53,7 @@ export function StatsScreen() {
               <BarChart3 size={20} aria-hidden="true" />
               <div>
                 <strong>{t('empty.title')}</strong>
-                <span>{t('empty.body')}{stats.upcomingCount > 0 ? ` ${t('empty.upcoming', { count: stats.upcomingCount })}` : ''}</span>
+                <span>{t('empty.body')}</span>
               </div>
               <Link to="/plan" className={styles.bannerCta}>{t('empty.cta')}</Link>
             </div>

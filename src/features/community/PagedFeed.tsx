@@ -45,6 +45,8 @@ interface PagedFeedProps<T> {
   pageSize?: number;
   /** PC에서 목록 맨 위에 붙는 머리줄(게시판형의 '제목·작성자…' 줄) */
   gridHeader?: ReactNode;
+  /** 게시판형(카드 한 장이 목록 전체) — 모바일에서 카드가 화면 가장자리에 붙지 않게 좌우로 띄운다 */
+  boardLike?: boolean;
 }
 
 /**
@@ -52,7 +54,7 @@ interface PagedFeedProps<T> {
  * PC는 번호 쪽 넘김, 모바일은 옆으로 밀어 넘기고 아래에 점으로 위치를 보여 준다.
  * 이미 불러온 글을 쪽으로 자를 뿐이고, 서버에서는 지금 쪽이 끝에서 한 쪽 안으로 다가오면 다음 묶음을 미리 불러온다.
  */
-export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMore, fetchMore, gridClassName, listClassName, pageSize = FEED_PAGE_SIZE, gridHeader }: PagedFeedProps<T>) {
+export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMore, fetchMore, gridClassName, listClassName, pageSize = FEED_PAGE_SIZE, gridHeader, boardLike = false }: PagedFeedProps<T>) {
   const { t } = useTranslation('community');
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [requested, setRequested] = useState(0);
@@ -134,12 +136,14 @@ export function PagedFeed<T>({ items, getKey, renderItem, hasMore, isFetchingMor
     <div>
       <div ref={trackRef} className={styles.track} onScroll={onTrackScroll}>
         {pages.map((pageItems, idx) => (
-          <div key={idx} className={`${styles.slide} ${listClassName}`}>
-            {pageItems.map((item) => (
-              <div key={getKey(item)} className={styles.cell}>
-                {renderItem(item)}
-              </div>
-            ))}
+          <div key={idx} className={`${styles.slideFrame} ${boardLike ? styles.slideFrameBoard : ''}`}>
+            <div className={`${styles.slide} ${listClassName}`}>
+              {pageItems.map((item) => (
+                <div key={getKey(item)} className={styles.cell}>
+                  {renderItem(item)}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>

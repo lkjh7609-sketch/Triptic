@@ -236,6 +236,7 @@ export function CommunityScreen() {
           listClassName={tab === 'all' ? boardStyles.list : styles.pageList}
           pageSize={tab === 'all' ? 8 : undefined}
           gridHeader={tab === 'all' ? <BoardHead /> : undefined}
+          boardLike={tab === 'all'}
         />
       )}
     </div>
