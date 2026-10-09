@@ -113,7 +113,8 @@
       "soloSub": "只記為你自己的支出",
       "split": "與旅伴分帳",
       "splitSub": "把一起花的錢分攤並結清"
-    }
+    },
+    "saveFailed": "無法儲存，請再試一次。"
   },
   "flightCard": {
     "schedule": "{{depTime}} 出發 → {{arrTime}} 到達",
