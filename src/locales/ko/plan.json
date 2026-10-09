@@ -330,6 +330,7 @@
     "subtitleCountdownDays_other": "{{count}}일",
     "subtitleCountdownAfter": " 남았어요.",
     "createTrip": "새 여행 만들기",
+    "statsLink": "내 여행 통계",
     "metricActive": "진행·예정 여행",
     "metricDays": "계획한 날",
     "metricPast": "다녀온 여행",
