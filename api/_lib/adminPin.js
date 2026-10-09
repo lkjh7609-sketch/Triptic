@@ -32,6 +32,31 @@ export function pinMatches(input, expected) {
 }
 
 /**
+ * 6자리 보안코드를 검사한다 — 로그인 키패드(/api/adminPin)와 강제 탈퇴 확인이 같이 쓴다.
+ * 시도를 "먼저" 센다(admin_pin_begin, 전역·원자적): 잠겨 있으면 코드를 보지 않고 돌려보낸다. 5번 틀리면 15분 잠금.
+ * 맞으면 틀린 횟수를 지운다(reset: false면 지우지 않는다 — 로그인은 세션을 만든 뒤에 지운다).
+ * 돌려주는 값: { ok: true } | { ok: false, status, body } — body는 /api/adminPin 응답과 같은 모양이다.
+ */
+export async function verifyAdminPin(db, pin, { env = process.env, reset = true } = {}) {
+    const config = pinConfig(env);
+    if (!config.enabled) return { ok: false, status: 503, body: { error: 'pin_disabled' } };
+    if (typeof pin !== 'string' || !/^\d{6}$/.test(pin)) return { ok: false, status: 400, body: { error: 'bad_format' } };
+
+    const { data: begin, error: beginErr } = await db.rpc('admin_pin_begin', { p_max: PIN_MAX_ATTEMPTS });
+    const state = Array.isArray(begin) ? begin[0] : begin;
+    // 잠금을 확인하지 못하면 시도를 받지 않는다(닫힌 쪽으로 실패)
+    if (beginErr || !state) return { ok: false, status: 503, body: { error: 'lock_unavailable' } };
+    if (!state.allowed) return { ok: false, status: 429, body: { error: 'locked', retryAfter: state.retry_after } };
+
+    if (!pinMatches(pin, config.pin)) {
+        const attemptsLeft = Math.max(0, PIN_MAX_ATTEMPTS - state.attempt_no);
+        return { ok: false, status: 401, body: { error: 'wrong_pin', attemptsLeft, ...(attemptsLeft === 0 ? { retryAfter: 900 } : {}) } };
+    }
+    if (reset) await db.rpc('admin_pin_reset');
+    return { ok: true };
+}
+
+/**
  * 관리자 계정으로 로그인 세션을 발급한다. 서비스 키로 그 계정의 로그인 링크(메일로 보내지 않음)를 만들고,
  * 그 링크의 토큰을 바로 확인해 세션(access/refresh 토큰)으로 바꾼다 — 그래서 이후의 모든 관리 기능은 지금처럼
  * 관리자 로그인 상태의 권한 검사(RLS·RPC)를 그대로 거친다.
