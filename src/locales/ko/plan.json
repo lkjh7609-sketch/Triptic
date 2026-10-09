@@ -101,7 +101,19 @@
       "card": "카드",
       "other": "기타"
     },
-    "totalLabel": "합계"
+    "totalLabel": "합계",
+    "add": "경비 추가",
+    "mineNote": "내가 쓴 돈만 보여요. 함께 쓴 돈은 내 몫만 더해져요.",
+    "openSplit": "더치페이 보기",
+    "splitBadge": "더치페이",
+    "splitMeta_other": "{{count}}명이 나눔 · {{name}} 결제",
+    "choice": {
+      "title": "어떤 경비인가요?",
+      "solo": "혼자 쓴 금액",
+      "soloSub": "내 지출로만 기록돼요",
+      "split": "일행과 더치페이",
+      "splitSub": "함께 쓴 돈을 나눠서 정산해요"
+    }
   },
   "flightCard": {
     "schedule": "{{depTime}} 출발 → {{arrTime}} 도착",
@@ -622,5 +634,66 @@
     "body": "예약 서류 올리기부터 PDF 일정표까지, 트립틱 사용법을 1분 안에 훑어볼 수 있어요.",
     "open": "가이드 보기",
     "skip": "바로 만들기"
+  },
+  "split": {
+    "title": "더치페이",
+    "me": "나",
+    "left": "나간 일행",
+    "unnamed": "이름 없음",
+    "noDay": "날짜 없음",
+    "localOnly": "로그인해서 서버에 저장한 여행에서 쓸 수 있어요.",
+    "loadError": "더치페이를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.",
+    "solo": "일행이 없는 여행이에요. 공유 링크로 일행을 초대하면 함께 쓴 돈을 나눠 정산할 수 있어요.",
+    "summary": {
+      "title": "정산 요약",
+      "total": "함께 쓴 돈",
+      "paid": "내가 낸 돈",
+      "share": "내 몫",
+      "toGive": "내가 줄 돈",
+      "toGet": "내가 받을 돈"
+    },
+    "unconverted_other": "환율이 없는 외화 {{count}}건은 정산에서 뺐어요.",
+    "settle": {
+      "title": "누가 누구에게",
+      "nothing": "아직 함께 쓴 돈이 없어요.",
+      "done": "정산이 모두 끝났어요",
+      "received": "받았어요",
+      "sent": "보냈어요",
+      "failed": "기록하지 못했어요. 잠시 뒤 다시 시도해 주세요."
+    },
+    "list": {
+      "title": "함께 쓴 돈",
+      "empty": "아직 적은 내용이 없어요. 아래 버튼으로 더치페이를 추가해 보세요.",
+      "paidBy": "{{name}} 결제",
+      "splitWith_other": "{{count}}명이 나눔",
+      "myShare": "내 몫 {{amount}}"
+    },
+    "transfers": {
+      "title": "송금 기록",
+      "line": "{{from}} → {{to}}",
+      "cancel": "송금 기록 취소"
+    },
+    "add": "더치페이 추가",
+    "deleteTitle": "더치페이 삭제",
+    "deleteConfirm": "이 기록을 지울까요? 정산 결과가 다시 계산돼요.",
+    "deleteKeep": "그대로 두기",
+    "deleteProceed": "삭제",
+    "flow": {
+      "title": "더치페이 추가",
+      "editTitle": "더치페이 수정",
+      "step1": "누구와 나눌까요?",
+      "step1Hint": "함께 쓴 사람을 모두 골라 주세요. 일부만 골라도 돼요.",
+      "picked_other": "{{count}}명 선택",
+      "next": "다음",
+      "back": "이전",
+      "step2": "내용을 적어 주세요",
+      "descPlaceholder": "메모 (예: 저녁 식사)",
+      "perPerson": "한 사람당 약 {{amount}}",
+      "payer": "돈 낸 사람",
+      "day": "날짜",
+      "errAlone": "혼자 쓴 돈은 '혼자 쓴 금액'으로 적어 주세요.",
+      "saved": "더치페이를 저장했어요",
+      "saveFailed": "저장하지 못했어요. 잠시 뒤 다시 시도해 주세요."
+    }
   }
 }
