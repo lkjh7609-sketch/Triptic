@@ -1,95 +1,190 @@
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-inline: var(--space-4);
+/* 동행글 상세 — 일반 게시글 상세(PostDetailPage.module.css)의 카드·제목·작성자 줄을 그대로 쓰고, 동행글에만 필요한 것만 여기에 둔다 */
+
+.statusOpen,
+.statusMatched {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
 }
 
-@media (min-width: 1024px) {
-  .page {
-    padding-inline: var(--space-6);
+.statusOpen {
+  background: var(--success-tint);
+  color: var(--success-text);
+}
+
+.statusMatched {
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+/* 요약 — 목적지·일정·남은 자리·원하는 동행 */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+}
+
+@media (min-width: 720px) {
+  .facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.title {
-  margin: var(--space-3) 0 0;
-  font-size: var(--font-headline-size);
-  font-weight: 500;
-  color: var(--text-primary);
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-top: var(--space-1);
+.fact dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: var(--font-caption-size);
+  font-weight: 600;
   color: var(--text-muted);
 }
 
-.ownerActions {
+.fact dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.dot {
+  margin: 0 6px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.body {
+  white-space: pre-wrap;
+  margin: 0 0 var(--space-4);
+}
+
+/* 하단 행동 줄 — 이 글에서 할 일(지원·모집 관리·채팅) */
+.actionBar {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ctaGroup {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-3);
+  min-width: 0;
+}
+
+.primaryBtn,
+.dangerBtn {
+  appearance: none;
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .primaryBtn {
-  appearance: none;
-  border: none;
+  border: 0;
   background: var(--brand-solid);
   color: var(--text-on-brand);
-  font-weight: 700;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-}
-.primaryBtn:disabled {
-  opacity: 0.5;
 }
 
 .dangerBtn {
-  appearance: none;
   border: 1px solid var(--danger);
   background: none;
   color: var(--danger-text);
   font-weight: 600;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  cursor: pointer;
 }
+
+.primaryBtn:disabled,
 .dangerBtn:disabled {
   opacity: 0.5;
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .primaryBtn:not(:disabled):hover {
+    background: var(--brand-pressed);
+  }
+}
+
+/* 폰에서는 주요 버튼이 한 줄을 다 쓰도록 */
+@media (max-width: 599px) {
+  .ctaGroup {
+    flex: 1 1 100%;
+  }
+
+  .ctaGroup .primaryBtn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (min-width: 600px) {
+  .primaryBtn {
+    min-width: 160px;
+  }
 }
 
 .applicationStatus {
-  font-size: var(--font-body-size);
-  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
 }
 
-.applicantList {
-  padding: var(--space-4);
-}
-
+/* 지원자 목록 */
 .applicantListTitle {
-  font-size: var(--font-body-size);
+  margin: 0 0 var(--space-3);
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 var(--space-3);
 }
 
 .applicantRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: var(--space-3);
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border);
 }
 
+.applicantRow:last-child {
+  border-bottom: 0;
+}
+
+.applicant {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
 .applicantMessage {
-  margin: var(--space-1) 0 0;
+  margin: 2px 0 0;
   font-size: var(--font-caption-size);
   color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 
 .applicantActions {
@@ -100,8 +195,8 @@
 
 .acceptBtn,
 .rejectBtn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-pill);
   border: none;
   display: flex;

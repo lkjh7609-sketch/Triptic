@@ -709,7 +709,16 @@
       "withdrawKeep": "応募を続ける",
       "withdrawProceed": "応募を取り消す",
       "dateTbd": "日程は相談",
-      "groupSize_other": "あと{{count}}名"
+      "groupSize_other": "あと{{count}}名",
+      "factDestination": "旅行先",
+      "factDates": "日程",
+      "factSpots": "募集",
+      "factPrefs": "希望する同行者",
+      "statusChip": {
+        "recruiting": "募集中",
+        "matched": "成立"
+      },
+      "groupTotal_other": "計{{count}}名"
     },
     "apply": {
       "dialogLabel": "同行に応募",

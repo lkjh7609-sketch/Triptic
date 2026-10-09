@@ -724,7 +724,17 @@
       "withdrawProceed": "Withdraw application",
       "dateTbd": "Dates flexible",
       "groupSize_one": "{{count}} spot left",
-      "groupSize_other": "{{count}} spots left"
+      "groupSize_other": "{{count}} spots left",
+      "factDestination": "Destination",
+      "factDates": "Dates",
+      "factSpots": "Spots",
+      "factPrefs": "Looking for",
+      "statusChip": {
+        "recruiting": "Recruiting",
+        "matched": "Matched"
+      },
+      "groupTotal_one": "{{count}} total",
+      "groupTotal_other": "{{count}} total"
     },
     "apply": {
       "dialogLabel": "Apply to join",

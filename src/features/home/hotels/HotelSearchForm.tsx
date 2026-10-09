@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, parseISO } from 'date-fns';
-import { CalendarDays, ChevronDown, MapPin, Minus, Plus, Search, Users } from 'lucide-react';
+import { CalendarDays, ChevronDown, Minus, Plus, Search, Users } from 'lucide-react';
 import { CityAutocomplete, type ExtraOption } from '@/features/plan/map/CityAutocomplete';
 import type { SelectedPlace } from '@/features/plan/map/usePlaceAutocomplete';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
@@ -56,7 +56,6 @@ function DestinationField({
     <div className={styles.field}>
       <span className={styles.label}>{t('hotels.form.destination')}</span>
       <span className={styles.inputWrap}>
-        <MapPin size={18} className={styles.inputIcon} aria-hidden="true" />
         <CityAutocomplete
           value={value}
           onSelect={onPick}
