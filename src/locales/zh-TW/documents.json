@@ -1,7 +1,5 @@
 {
   "confidenceField": {
-    "warning": " 請核對",
-    "empty": "辨識失敗——請手動輸入",
     "viewOriginal": "檢視原檔案"
   },
   "review": {

@@ -12,18 +12,6 @@
   color: var(--text-muted);
 }
 
-.warningBadge {
-  font-size: var(--font-caption-size);
-  color: var(--warning-text);
-  font-weight: 600;
-}
-
-.emptyBadge {
-  font-size: var(--font-caption-size);
-  color: var(--danger-text);
-  font-weight: 600;
-}
-
 .input {
   min-height: 44px;
   border: 1px solid var(--border-control);
@@ -32,28 +20,4 @@
   font-size: var(--font-body-size);
   width: 100%;
   color: var(--text-primary);
-}
-
-.mediumConfidence {
-  background: var(--warning-tint);
-  border-color: var(--warning);
-}
-
-.lowConfidence {
-  border-color: var(--danger);
-}
-.lowConfidence::placeholder {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.viewOriginal {
-  align-self: flex-start;
-  appearance: none;
-  border: none;
-  background: none;
-  color: var(--brand-text);
-  font-size: var(--font-caption-size);
-  padding: 2px 0;
-  cursor: pointer;
 }
