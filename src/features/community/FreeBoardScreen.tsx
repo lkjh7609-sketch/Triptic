@@ -1,4 +1,4 @@
-import { MessagesSquare, PenLine, Search, X } from 'lucide-react';
+import { ArrowLeft, MessagesSquare, PenLine, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +60,10 @@ export function FreeBoardScreen() {
         </span>
         <div>
           <p className={boardStyles.crumb}>
-            <Link to="/community">{t('detail.breadcrumbCommunity')}</Link>
+            <Link to="/community">
+              <ArrowLeft size={16} aria-hidden="true" />
+              {t('detail.breadcrumbCommunity')}
+            </Link>
           </p>
           <h1 className={boardStyles.title}>{t('board.free')}</h1>
           <p className={boardStyles.sub}>{t('board.subtitle')}</p>

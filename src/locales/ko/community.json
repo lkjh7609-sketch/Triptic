@@ -1038,6 +1038,9 @@
       "notePlain": "현지 통화 기준 대략치예요."
     },
     "urgent": {
+      "pagerAria": "급구 동행 쪽 넘김",
+      "prev": "이전 쪽",
+      "next": "다음 쪽",
       "title": "급구! 동행",
       "today": "오늘 출발",
       "tomorrow": "내일 출발",

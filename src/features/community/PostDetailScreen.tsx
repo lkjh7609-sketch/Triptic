@@ -379,7 +379,7 @@ export function PostDetailScreen() {
               targetId={post.id}
               authorId={post.author_id}
               onEdit={isOwn ? () => navigate(`/community/post/${post.id}/edit`) : undefined}
-              onDelete={isOwn ? handleDeletePost : undefined}
+              onDelete={isOwn || isAdminViewer ? handleDeletePost : undefined}
               onTogglePin={canPin ? togglePinned : undefined}
               pinned={!!post.pinned_at}
               onReported={() => navigate('/community', { replace: true })}
