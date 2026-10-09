@@ -230,21 +230,17 @@ function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBo
       <ConfidenceField
         label={t('review.flightNumberField')}
         value={edited.flightNumber.value}
-        confidence={edited.flightNumber.confidence}
         onChange={(v) => updateField('flightNumber', v)}
-        onViewOriginal={() => openVoucher(booking.document_id)}
       />
       <div className={styles.row}>
         <ConfidenceField
           label={t('review.departureAirportField')}
           value={edited.departure.airportIata.value}
-          confidence={edited.departure.airportIata.confidence}
           onChange={(v) => updateNested('departure', 'airportIata', v)}
         />
         <ConfidenceField
           label={t('review.arrivalAirportField')}
           value={edited.arrival.airportIata.value}
-          confidence={edited.arrival.airportIata.confidence}
           onChange={(v) => updateNested('arrival', 'airportIata', v)}
         />
       </div>
@@ -252,13 +248,11 @@ function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBo
         <ConfidenceField
           label={t('review.departureTimeField')}
           value={edited.departure.scheduledLocal.value}
-          confidence={edited.departure.scheduledLocal.confidence}
           onChange={(v) => updateNested('departure', 'scheduledLocal', v)}
         />
         <ConfidenceField
           label={t('review.arrivalTimeField')}
           value={edited.arrival.scheduledLocal.value}
-          confidence={edited.arrival.scheduledLocal.confidence}
           onChange={(v) => updateNested('arrival', 'scheduledLocal', v)}
         />
       </div>
