@@ -709,7 +709,16 @@
       "withdrawKeep": "保留我的申請",
       "withdrawProceed": "撤回申請",
       "dateTbd": "日期可商議",
-      "groupSize_other": "還剩 {{count}} 個名額"
+      "groupSize_other": "還剩 {{count}} 個名額",
+      "factDestination": "旅遊地",
+      "factDates": "行程",
+      "factSpots": "名額",
+      "factPrefs": "希望的旅伴",
+      "statusChip": {
+        "recruiting": "招募中",
+        "matched": "已成團"
+      },
+      "groupTotal_other": "共 {{count}} 人"
     },
     "apply": {
       "dialogLabel": "申請加入同行",
