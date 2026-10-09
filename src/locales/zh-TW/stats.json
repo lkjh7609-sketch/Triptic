@@ -29,7 +29,7 @@
     "zoomOut": "縮小地圖",
     "reset": "回到初始畫面",
     "hintTouch": "可用兩指縮放與移動",
-    "hintMouse": "拖曳移動 · 用 +/− 縮放",
+    "hintMouse": "拖曳移動 · 按兩下或用 +/− 縮放",
     "countriesButton": "查看去過的 {{count}} 個國家",
     "countriesTitle": "去過的國家"
   },

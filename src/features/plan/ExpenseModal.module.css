@@ -79,8 +79,9 @@
 
 .addBtn {
   flex: 0 0 auto;
+  min-width: 80px; /* 금액 칸을 조금 줄이고 추가 버튼을 조금 길게(사용자 요청 2026-10-09) */
   min-height: 44px;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-5);
   border-radius: var(--radius-md);
   border: none;
   background: var(--brand-solid);

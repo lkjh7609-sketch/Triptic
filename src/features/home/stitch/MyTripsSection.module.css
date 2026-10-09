@@ -373,6 +373,8 @@
   background: var(--h-accent);
   color: var(--h-on-accent);
   box-shadow: var(--h-shadow-sm);
+  /* 카드 안쪽 여백 쪽으로 살짝 — 왼쪽 상태 글자와 너무 붙어 보여서(사용자 요청 2026-10-09) */
+  margin-right: -6px;
 }
 
 .samplePill {

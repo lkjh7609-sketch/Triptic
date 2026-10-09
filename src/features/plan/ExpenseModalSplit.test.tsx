@@ -132,6 +132,28 @@ describe('ExpenseModal — 일행과 가는 여행(내 지출만)', () => {
   });
 });
 
+describe('더치페이 입력 — 금액 칸·날짜', () => {
+  it('날짜 고르기에 일차 옆에 날짜가 같이 나온다(Day 1 · 11/5 (목))', () => {
+    renderModal({ startDate: '2026-11-05' });
+    fireEvent.click(screen.getByRole('button', { name: /경비 추가/ }));
+    fireEvent.click(screen.getByText('일행과 더치페이'));
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    const select = screen.getByRole('combobox');
+    expect(within(select).getByRole('option', { name: 'Day 1 · 11/5 (목)' })).toBeInTheDocument();
+    expect(within(select).getByRole('option', { name: 'Day 2 · 11/6 (금)' })).toBeInTheDocument();
+  });
+
+  it('금액 칸은 한 줄 높이(44px)로 고정이고 늘어나는 경비 창 스타일을 안 물려받는다', () => {
+    renderModal();
+    fireEvent.click(screen.getByRole('button', { name: /경비 추가/ }));
+    fireEvent.click(screen.getByText('일행과 더치페이'));
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    const amount = screen.getByPlaceholderText(/금액/);
+    // 경비 창 한 줄 입력용 클래스(amountInput: flex 1 1 90px)를 붙이지 않는다 — 세로로 쌓인 칸에서 높이가 늘어난 원인
+    expect(amount.className).not.toMatch(/amountInput/);
+  });
+});
+
 describe('ExpenseModal — 일행 없는 여행', () => {
   it('종류를 묻지 않고 처음부터 입력칸이 열려 있다(예전 그대로)', () => {
     renderModal({ split: undefined, meId: ME, ownerId: ME, expensesData: {}, myExpenses: {} });

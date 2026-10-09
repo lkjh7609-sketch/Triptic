@@ -122,12 +122,16 @@
   background: var(--surface-subtle);
   /* 한 손가락은 페이지 스크롤, 두 손가락은 지도(확대·이동) — 브라우저 자체 확대는 막는다 */
   touch-action: pan-x pan-y;
-  cursor: grab;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.mapBox:active {
+/* 확대돼 있어서 끌 수 있을 때만 손 모양 */
+.mapBox[data-pannable='true'] {
+  cursor: grab;
+}
+
+.mapBox[data-pannable='true']:active {
   cursor: grabbing;
 }
 
