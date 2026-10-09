@@ -133,10 +133,19 @@ export class TripService {
     return user ?? null;
   }
 
+  /**
+   * 이 기기에 저장된 로그인 세션의 사용자 — 서버에 물어보지 않는다(getUser는 매번 인증 서버까지 다녀와 저장이 그만큼 느렸다).
+   * 신원은 저장 요청 자체(JWT + RLS)가 서버에서 다시 확인하므로 여기서는 id만 쓴다. 세션이 없을 때만 getUser로 확인한다.
+   */
+  private async getSessionUser() {
+    const { data } = await getSupabaseClient().auth.getSession();
+    return data.session?.user ?? (await this.getCurrentUser());
+  }
+
   /** 여행 저장 (신규 생성 또는 갱신) */
   async saveTrip(project: LocalProject, name: string): Promise<TripRow> {
     const supabase = getSupabaseClient();
-    const user = await this.getCurrentUser();
+    const user = await this.getSessionUser();
     if (!user) throw new Error('Not signed in');
 
     const isNewTrip = !project.supabaseId;
