@@ -273,7 +273,11 @@ export function CompanionDetailScreen() {
               ) : null
             ) : post.myApplication ? (
               <>
-                <span className={styles.applicationStatus}>{t(`companion.detail.myApplicationStatus.${post.myApplication.status}`)}</span>
+                {/* 매칭 확정 뒤(진행·완료)에는 '수락됨' 칩과 '지원 취소'를 숨긴다 — 채팅방 버튼이 곧 수락된 표시이고,
+                    나가기는 매칭 화면의 '그룹 나가기'(같은 withdraw 호출)로 한다. 폰에서도 버튼이 한 줄에 든다(2026-10-09 사용자 결정) */}
+                {!(post.myApplication.status === 'accepted' && (post.status === 'matched' || post.status === 'closed')) ? (
+                  <span className={styles.applicationStatus}>{t(`companion.detail.myApplicationStatus.${post.myApplication.status}`)}</span>
+                ) : null}
                 {post.myApplication.status === 'accepted' && post.status === 'matched' ? (
                   <>
                     <button type="button" className={styles.primaryBtn} onClick={() => navigate(`/community/companion/${post.id}/chat`)}>
@@ -295,7 +299,7 @@ export function CompanionDetailScreen() {
                     {t('companion.detail.apply')}
                   </button>
                 ) : null}
-                {post.myApplication.status === 'pending' || post.myApplication.status === 'accepted' ? (
+                {post.myApplication.status === 'pending' || (post.myApplication.status === 'accepted' && post.status === 'recruiting') ? (
                   <button type="button" className={styles.dangerBtn} disabled={withdrawApplication.isPending} onClick={() => setConfirmAction('withdraw')}>
                     {t('companion.detail.withdraw')}
                   </button>

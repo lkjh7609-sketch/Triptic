@@ -1,7 +1,5 @@
 {
   "confidenceField": {
-    "warning": " ご確認ください",
-    "empty": "抽出失敗 — 直接入力",
     "viewOriginal": "元の画像を見る"
   },
   "review": {

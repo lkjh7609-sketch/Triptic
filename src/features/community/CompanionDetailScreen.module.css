@@ -109,6 +109,7 @@
   background: none;
   color: var(--danger-text);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .primaryBtn:disabled,
@@ -123,14 +124,15 @@
   }
 }
 
-/* 폰에서는 주요 버튼이 한 줄을 다 쓰도록 */
+/* 폰에서는 주요 버튼이 줄의 남은 너비를 채운다 — 옆 버튼(모집글 삭제 등)과 한 줄에 나란히 놓이고,
+   버튼이 많아 한 줄에 안 들어갈 때만 다음 줄로 넘어간다(예전엔 100%라 늘 두 줄로 갈라졌다) */
 @media (max-width: 599px) {
   .ctaGroup {
     flex: 1 1 100%;
   }
 
   .ctaGroup .primaryBtn {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
   }
 }
 

@@ -1,7 +1,5 @@
 {
   "confidenceField": {
-    "warning": " 확인해 주세요",
-    "empty": "추출 실패 — 직접 입력",
     "viewOriginal": "원본 보기"
   },
   "review": {
