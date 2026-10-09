@@ -91,7 +91,7 @@
 .tile {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   padding: var(--space-4);
   border-radius: var(--radius-lg);
   background: var(--brand-tint);
