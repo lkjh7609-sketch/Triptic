@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import '@/shared/i18n';
@@ -7,7 +7,6 @@ let native = false;
 vi.mock('@/shared/platform', () => ({ isNativeApp: () => native }));
 vi.mock('@/shared/monitoring', () => ({ trackScreenView: () => {} }));
 vi.mock('./HomeSectionTabs', () => ({ HomeSectionTabs: () => null }));
-vi.mock('./hotels/HotelSearchWidget', () => ({ HotelSearchWidget: () => <div data-testid="widget" /> }));
 vi.mock('./hotels/HotelSearchForm', () => ({ HotelSearchForm: () => <div data-testid="form" /> }));
 vi.mock('./hotels/HotelResults', () => ({ HotelResults: () => <div data-testid="results" /> }));
 vi.mock('./hotels/RecommendedDestinations', () => ({ RecommendedDestinations: () => <div data-testid="recommend" /> }));
@@ -21,20 +20,9 @@ const at = (url: string) =>
     </MemoryRouter>,
   );
 
-describe('호텔 탭 — 웹은 위젯, 앱은 우리 검색', () => {
-  beforeEach(() => {
-    native = false;
-  });
-
-  it('웹: 검색창 위젯만(필터·추천 배너 없음)', () => {
-    at('/hotels');
-    expect(screen.getByTestId('widget')).toBeInTheDocument();
-    expect(screen.queryByTestId('form')).toBeNull();
-    expect(screen.queryByTestId('recommend')).toBeNull();
-  });
-
-  it('앱: 검색폼 + 추천 여행지, 검색 조건이 주소에 있으면 결과도', () => {
-    native = true;
+describe('호텔 탭 — 웹·앱 모두 우리 검색 화면', () => {
+  it.each([false, true])('검색폼 + 추천 여행지, 위젯은 안 띄운다(앱=%s)', (isNative) => {
+    native = isNative;
     at('/hotels');
     expect(screen.getByTestId('form')).toBeInTheDocument();
     expect(screen.getByTestId('recommend')).toBeInTheDocument();
@@ -42,8 +30,8 @@ describe('호텔 탭 — 웹은 위젯, 앱은 우리 검색', () => {
     expect(screen.queryByTestId('results')).toBeNull();
   });
 
-  it('앱: 주소에 검색 조건이 있으면 결과 목록을 보여 준다', () => {
-    native = true;
+  it.each([false, true])('주소에 검색 조건이 있으면 결과 목록을 보여 준다(앱=%s)', (isNative) => {
+    native = isNative;
     at('/hotels?name=%EB%B0%A9%EC%BD%95&lat=13.75&lng=100.5&checkin=2026-11-20&checkout=2026-11-22&adults=2');
     expect(screen.getByTestId('results')).toBeInTheDocument();
   });

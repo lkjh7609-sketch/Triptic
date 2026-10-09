@@ -269,7 +269,8 @@
       "needDestination": "Please pick a destination from the list",
       "badDates": "Check your dates — check-out must be after check-in",
       "search": "Search hotels",
-      "searching": "Searching…"
+      "searching": "Searching…",
+      "hotelBadge": "Hotel"
     },
     "discountN": "{{pct}}% off",
     "wifi": "Free Wi-Fi",
@@ -281,6 +282,11 @@
       "title": "Recommended destinations",
       "sub": "Cities from your trips and popular picks",
       "myTrip": "My trip"
+    },
+    "pinned": {
+      "tag": "Your hotel",
+      "more": "More hotels in {{city}}",
+      "unavailable": "{{name}} has no rooms available for these dates. Here are other hotels in the same city."
     }
   },
   "activities": {

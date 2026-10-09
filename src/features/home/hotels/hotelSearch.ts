@@ -11,6 +11,8 @@ export interface HotelSearch {
   checkout: string;
   adults: number;
   childAges: number[];
+  /** 호텔 이름으로 고른 검색이면 그 호텔(아고다 ID) — 결과 맨 위에 고정하고 같은 도시 추천을 아래에 */
+  hotelId?: number;
 }
 
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
@@ -47,7 +49,17 @@ export function parseHotelSearch(params: URLSearchParams): HotelSearch | null {
     .map(Number)
     .filter((a) => Number.isInteger(a) && a >= 0 && a <= 17)
     .slice(0, MAX_CHILDREN);
-  return { name: (params.get('name') ?? '').slice(0, 80), lat, lng, checkin, checkout, adults, childAges };
+  const hotelId = Number(params.get('hotel'));
+  return {
+    name: (params.get('name') ?? '').slice(0, 80),
+    lat,
+    lng,
+    checkin,
+    checkout,
+    adults,
+    childAges,
+    ...(Number.isInteger(hotelId) && hotelId > 0 ? { hotelId } : {}),
+  };
 }
 
 export function hotelSearchParams(s: HotelSearch): URLSearchParams {
@@ -60,5 +72,6 @@ export function hotelSearchParams(s: HotelSearch): URLSearchParams {
     adults: String(s.adults),
   });
   if (s.childAges.length) p.set('ages', s.childAges.join('|'));
+  if (s.hotelId) p.set('hotel', String(s.hotelId));
   return p;
 }

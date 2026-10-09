@@ -32,3 +32,9 @@ export function nearestCity(lat, lng, table = CITY_TABLE) {
     if (!best || bestDistance > MAX_DISTANCE_KM) return null;
     return { id: best[0], name: best[4], country: best[5], distanceKm: Math.round(bestDistance * 10) / 10 };
 }
+
+/** 도시 ID → 도시 정보(표에 없으면 null — 호텔이 25곳 미만인 작은 도시) */
+export function cityById(id, table = CITY_TABLE) {
+    const row = table.find((r) => r[0] === id);
+    return row ? { id: row[0], name: row[4], country: row[5], distanceKm: 0 } : null;
+}

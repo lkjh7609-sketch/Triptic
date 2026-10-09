@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BedDouble, Coffee, ExternalLink, RefreshCw, SlidersHorizontal, Star, Wifi, X } from 'lucide-react';
 import { useProfile } from '@/shared/hooks/useProfile';
+import { isNativeApp } from '@/shared/platform';
 import { HOTEL_SORTS, formatMoney, hotelCurrency, hotelLang, type Hotel, type HotelQuery, type HotelSort } from './hotelsApi';
+import { HotelSearchWidget } from './HotelSearchWidget';
 import { HotelFilters, NO_FILTERS, activeFilterCount, type HotelFilterState } from './HotelFilters';
 import type { HotelSearch } from './hotelSearch';
 import { useHotelResults } from './useHotelResults';
@@ -27,12 +29,13 @@ function Photo({ src, name }: { src: string | null; name: string }) {
   );
 }
 
-function HotelCard({ hotel, currency, language }: { hotel: Hotel; currency: string; language: string }) {
+function HotelCard({ hotel, currency, language, pinned = false }: { hotel: Hotel; currency: string; language: string; pinned?: boolean }) {
   const { t } = useTranslation('home');
   return (
-    <li className={styles.card}>
+    <li className={pinned ? `${styles.card} ${styles.cardPinned}` : styles.card}>
       <Photo src={hotel.image} name={hotel.name} />
       <div className={styles.info}>
+        {pinned ? <span className={styles.pinnedTag}>{t('hotels.pinned.tag')}</span> : null}
         <div className={styles.titleRow}>
           <h3 className={styles.name}>{hotel.name}</h3>
           {hotel.reviewScore !== null ? (
@@ -105,6 +108,7 @@ export function HotelResults({ search }: { search: HotelSearch }) {
       minPrice: null,
       maxPrice: filters.maxPrice,
       discountOnly: filters.discountOnly,
+      ...(search.hotelId ? { hotelId: search.hotelId } : {}),
     }),
     [search, currency, i18n.language, sort, filters],
   );
@@ -112,6 +116,7 @@ export function HotelResults({ search }: { search: HotelSearch }) {
   const filterCount = activeFilterCount(filters);
   const setF = useCallback((f: HotelFilterState) => setFilters(f), []);
   const hotels = r.data?.hotels ?? [];
+  const pinned = r.data?.pinned ?? null;
   const resultCurrency = r.data?.currency ?? currency;
 
   // 시트가 열리면 안으로 포커스, Esc로 닫기(바깥 눌러도 닫히지 않는다 — 앱 공통 규칙)
@@ -124,6 +129,8 @@ export function HotelResults({ search }: { search: HotelSearch }) {
   }, [sheetOpen]);
 
   if (r.error === 'unavailable') {
+    // 우리 검색을 못 쓸 때(제휴 키 없음 등) 웹은 제휴사 검색창 위젯으로 대신하고, 앱은 준비 중 안내
+    if (!isNativeApp()) return <HotelSearchWidget />;
     return (
       <section className={styles.state} aria-live="polite">
         <BedDouble size={24} aria-hidden="true" />
@@ -167,7 +174,7 @@ export function HotelResults({ search }: { search: HotelSearch }) {
                   <RefreshCw size={14} aria-hidden="true" className={styles.spin} /> {t('hotels.searching')}
                 </>
               ) : (
-                t('hotels.countN', { count: hotels.length })
+                t('hotels.countN', { count: hotels.length + (pinned ? 1 : 0) })
               )}
             </p>
             <div className={styles.tools}>
@@ -197,8 +204,16 @@ export function HotelResults({ search }: { search: HotelSearch }) {
                 <li key={i} className={styles.skeleton} />
               ))}
             </ul>
-          ) : hotels.length > 0 ? (
+          ) : pinned || hotels.length > 0 ? (
             <>
+              {/* 호텔 이름으로 고른 검색 — 그 호텔은 필터와 상관없이 맨 위에, 같은 도시 추천은 그 아래에 */}
+              {r.data?.pinnedId && !pinned ? <p className={styles.pinnedMissing}>{t('hotels.pinned.unavailable', { name: search.name })}</p> : null}
+              {pinned ? (
+                <ul className={styles.list}>
+                  <HotelCard hotel={pinned} currency={resultCurrency} language={i18n.language} pinned />
+                </ul>
+              ) : null}
+              {pinned && hotels.length > 0 ? <h3 className={styles.recommendTitle}>{t('hotels.pinned.more', { city: r.data?.city?.name ?? '' })}</h3> : null}
               <ul className={styles.list}>
                 {hotels.map((h) => (
                   <HotelCard key={h.id} hotel={h} currency={resultCurrency} language={i18n.language} />
