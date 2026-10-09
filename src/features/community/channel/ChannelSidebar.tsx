@@ -226,7 +226,7 @@ function FxCalculator({
 }
 
 /** 급구 카드 한 쪽에 보이는 글 수 — 넘으면 쪽 넘김 */
-export const URGENT_PAGE_SIZE = 3;
+const URGENT_PAGE_SIZE = 3;
 
 /** 급구! 동행 — 출발이 가장 가까운 모집 중 글, 한 쪽에 3개씩 */
 export function UrgentCompanionsCard({ posts }: { posts: CompanionPost[] }) {
