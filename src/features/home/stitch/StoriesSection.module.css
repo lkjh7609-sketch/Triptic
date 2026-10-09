@@ -280,19 +280,6 @@
   color: var(--h-badge);
 }
 
-.copyLink {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 44px;
-  margin-left: auto;
-  color: var(--h-accent-text);
-  font-weight: 600;
-  text-decoration: none;
-}
-
 .mFoot {
   display: flex;
   align-items: center;
@@ -323,19 +310,6 @@
   color: var(--h-accent-text);
   font-size: 0.75rem;
   font-weight: 700;
-}
-
-.mCopy {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  min-height: 44px;
-  color: var(--h-accent-text);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  text-decoration: none;
 }
 
 /* 첫 여행기 배너(PC) */
@@ -436,9 +410,15 @@
   .mLikes {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 8px;
     color: var(--h-ink-2);
     font-size: 0.75rem;
+  }
+
+  .mCount {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
   }
 
   .mAuthor {
@@ -448,11 +428,5 @@
 
   .mAuthor .mAvatar {
     display: none;
-  }
-
-  /* 두 장이 나란히라 '일정 복사하기'는 한 줄을 다 쓰게 */
-  .mCopy {
-    min-height: 32px;
-    font-size: 0.75rem;
   }
 }
