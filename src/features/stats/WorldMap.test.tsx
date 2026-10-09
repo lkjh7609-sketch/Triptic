@@ -101,6 +101,49 @@ describe('WorldMap 터치 조작', () => {
     expect(viewBoxOf(container)).toEqual(before);
   });
 
+  function pointer(type: string, init: { x: number; y: number; target?: EventTarget }) {
+    const e = new Event(type, { bubbles: true, cancelable: true });
+    Object.assign(e, { pointerType: 'mouse', pointerId: 1, button: 0, clientX: init.x, clientY: init.y });
+    return e;
+  }
+
+  it('PC: 마우스로 누른 채 끌면 지도가 움직인다', async () => {
+    const { box, container } = await renderMap();
+    await waitFor(() => expect(viewBoxOf(container)[2]).toBeLessThan(1000));
+    const before = viewBoxOf(container);
+    const svg = container.querySelector('svg') as SVGElement;
+    act(() => {
+      svg.dispatchEvent(pointer('pointerdown', { x: 100, y: 100 }));
+      box.dispatchEvent(pointer('pointermove', { x: 160, y: 130 }));
+    });
+    const after = viewBoxOf(container);
+    expect(after[2]).toBeCloseTo(before[2]); // 폭은 그대로
+    expect(after[0]).not.toBeCloseTo(before[0]); // 가로로 움직였다
+    act(() => {
+      box.dispatchEvent(pointer('pointerup', { x: 160, y: 130 }));
+    });
+  });
+
+  it('PC: 버튼을 누를 때는 끌기로 오인하지 않아 +/− 버튼이 그대로 눌린다', async () => {
+    const { container } = await renderMap();
+    await waitFor(() => expect(viewBoxOf(container)[2]).toBeLessThan(1000));
+    const before = viewBoxOf(container);
+    const zoomIn = screen.getByRole('button', { name: /지도 확대|Zoom in/ });
+    act(() => {
+      zoomIn.dispatchEvent(pointer('pointerdown', { x: 10, y: 10 }));
+    });
+    fireEvent.click(zoomIn);
+    expect(viewBoxOf(container)[2]).toBeLessThan(before[2]);
+  });
+
+  it('PC: 두 번 클릭하면 그 자리를 확대한다', async () => {
+    const { container, box } = await renderMap();
+    await waitFor(() => expect(viewBoxOf(container)[2]).toBeLessThan(1000));
+    const before = viewBoxOf(container);
+    fireEvent.doubleClick(box, { clientX: 150, clientY: 180 });
+    expect(viewBoxOf(container)[2]).toBeLessThan(before[2]);
+  });
+
   it('+/−/처음 모습 버튼이 동작한다', async () => {
     const { container } = await renderMap();
     await waitFor(() => expect(viewBoxOf(container)[2]).toBeLessThan(1000));

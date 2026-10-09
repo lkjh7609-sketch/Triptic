@@ -12,7 +12,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   gap: var(--space-2);
-  margin: var(--space-2) 0;
+  margin: var(--space-1) 0 var(--space-2);
 }
 
 .pickBtn,
@@ -76,16 +76,29 @@
   gap: 8px;
 }
 
-/* 세로로 쌓인 칸 안에서 늘어나지 않게(경비 창의 한 줄 입력칸 스타일을 그대로 쓰므로) */
-.fullInput {
-  flex: none;
-  width: 100%;
-  min-height: 44px;
+/* 메모·금액 입력칸 — 경비 창의 한 줄 입력 스타일(flex: 1 1 90px)을 물려받으면 세로로 쌓인 칸에서 높이가 늘어나서 따로 둔다 */
+.flowFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.textField {
+  display: block;
   box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-body-size);
 }
 
 .stepTitle {
-  margin: var(--space-3) 0 var(--space-1);
+  margin: var(--space-2) 0 var(--space-1);
   font-size: var(--font-body-size);
   font-weight: 700;
   color: var(--text-primary);

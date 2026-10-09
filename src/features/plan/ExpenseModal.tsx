@@ -34,6 +34,8 @@ interface ExpenseModalProps {
   expensesData: ExpensesData;
   onClose: () => void;
   onSave: (dayExpenses: ExpenseItem[]) => Promise<void>;
+  /** 여행 시작일(yyyy-MM-dd) — 더치페이 날짜 고르기에서 일차 옆에 날짜를 보여 준다 */
+  startDate?: string | null;
   /** 내 지출(혼자 쓴 돈 + 내 더치페이 몫) — 합계·그래프·목록의 기준. 없으면 전체 경비가 내 것 */
   myExpenses?: Record<number, MyExpenseItem[]>;
   /** 로그인 전·임시 여행처럼 모르면 비워 둔다 — 이때는 모든 경비가 내 것 */
@@ -56,7 +58,7 @@ const DAY_CHART_PAGE_SIZE = 5;
  * 첫 사용 등) 저장 자체는 막지 않고(입력을 통째로 막는 게 더 나쁘다고 판단) 합계에서만
  * 제외한다.
  */
-export function ExpenseModal({ currentDay, totalDays, currency, expensesData, onClose, onSave, myExpenses: myExpensesProp, meId = null, ownerId = null, split }: ExpenseModalProps) {
+export function ExpenseModal({ currentDay, totalDays, currency, expensesData, onClose, onSave, startDate, myExpenses: myExpensesProp, meId = null, ownerId = null, split }: ExpenseModalProps) {
   const myExpenses: Record<number, MyExpenseItem[]> = myExpensesProp ?? expensesData;
   const { t, i18n } = useTranslation(['plan', 'common']);
   const [desc, setDesc] = useState('');
@@ -330,6 +332,7 @@ export function ExpenseModal({ currentDay, totalDays, currency, expensesData, on
           meId={meId}
           currency={currency}
           totalDays={totalDays}
+          startDate={startDate}
           defaultDay={currentDay}
           onClose={() => setSplitFlowOpen(false)}
         />
