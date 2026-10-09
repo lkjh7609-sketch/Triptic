@@ -29,18 +29,20 @@ export async function listUserFiles(db, bucket, userId) {
 }
 
 export async function removeUserFiles(db, userId) {
-    let removed = 0;
-    for (const bucket of USER_BUCKETS) {
-        const files = await listUserFiles(db, bucket, userId);
-        // 안전 확인: 이 사용자 폴더 밖의 경로는 절대 지우지 않는다
-        const own = files.filter((p) => p.startsWith(`${userId}/`));
-        for (let i = 0; i < own.length; i += PAGE) {
-            const { error } = await db.storage.from(bucket).remove(own.slice(i, i + PAGE));
-            if (error) throw new Error(`storage remove failed (${bucket}): ${error.message}`);
-        }
-        removed += own.length;
-    }
-    return removed;
+    // 저장소 4곳은 서로 상관이 없어 한꺼번에 — 하나씩 돌면 목록 조회만 4번 줄을 서서 느렸다
+    const counts = await Promise.all(
+        USER_BUCKETS.map(async (bucket) => {
+            const files = await listUserFiles(db, bucket, userId);
+            // 안전 확인: 이 사용자 폴더 밖의 경로는 절대 지우지 않는다
+            const own = files.filter((p) => p.startsWith(`${userId}/`));
+            for (let i = 0; i < own.length; i += PAGE) {
+                const { error } = await db.storage.from(bucket).remove(own.slice(i, i + PAGE));
+                if (error) throw new Error(`storage remove failed (${bucket}): ${error.message}`);
+            }
+            return own.length;
+        }),
+    );
+    return counts.reduce((sum, n) => sum + n, 0);
 }
 
 /** 재로그인 없이 오래된 세션으로 지우지 못하게 — 방금(15분 안) 로그인한 세션만 */
@@ -50,8 +52,12 @@ export function isRecentlySignedIn(lastSignInAt, now = Date.now()) {
     return Number.isFinite(t) && now - t >= 0 && now - t < REAUTH_WINDOW_MS;
 }
 
-export async function deleteAccountData(db, userId) {
-    const files = await removeUserFiles(db, userId);
+/**
+ * `before`: 계정이 지워지기 전에 끝나야 하는 일(예: 이메일을 정지 명단에 올리기). 파일 삭제와 한꺼번에 돌지만,
+ * DB 정리(purge)와 로그인 계정 삭제는 둘 다 끝난 뒤에만 시작한다 — 이메일은 계정이 지워지면 읽을 수 없다.
+ */
+export async function deleteAccountData(db, userId, { before } = {}) {
+    const [files] = await Promise.all([removeUserFiles(db, userId), before ? before() : undefined]);
     const { error: purgeErr } = await db.rpc('purge_user_data', { p_user_id: userId });
     if (purgeErr) throw new Error(`purge failed: ${purgeErr.message}`);
     const { error: authErr } = await db.auth.admin.deleteUser(userId);
