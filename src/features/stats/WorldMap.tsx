@@ -283,11 +283,13 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
         </g>
         <g>
           {places.map((p) => {
-            // 지도 데이터에 모양이 없는 나라(싱가포르 등)는 점에 고리를 둘러 '다녀온 나라'를 보여 준다
+            // 도시 점은 찍지 않는다 — 칠한 나라 모양으로 충분하다.
+            // 다만 지도 데이터에 모양이 없는 나라(싱가포르 등)는 칠할 곳이 없어서 그 나라만 브랜드색 점과 고리로 보여 준다
             const noShape = p.country !== null && visited.has(p.country) && !world.paths[p.country];
+            if (!noShape) return null;
             return (
               <g key={p.key}>
-                {noShape ? <circle cx={x(p.lng)} cy={y(p.lat)} r={ring} className={styles.dotRing} vectorEffect="non-scaling-stroke" /> : null}
+                <circle cx={x(p.lng)} cy={y(p.lat)} r={ring} className={styles.dotRing} vectorEffect="non-scaling-stroke" />
                 <circle cx={x(p.lng)} cy={y(p.lat)} r={r} className={styles.dot} vectorEffect="non-scaling-stroke" />
               </g>
             );

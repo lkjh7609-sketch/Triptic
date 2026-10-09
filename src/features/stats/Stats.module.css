@@ -168,8 +168,9 @@
   opacity: 0.9;
 }
 
+/* 모양이 없는 나라의 표시 점(브랜드색) — 일반 도시에는 점을 찍지 않는다 */
 .dot {
-  fill: var(--warning);
+  fill: var(--brand);
   stroke: #fff;
   stroke-width: 1.5;
 }
