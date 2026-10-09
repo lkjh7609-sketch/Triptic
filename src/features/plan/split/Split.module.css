@@ -502,11 +502,19 @@
   color: var(--text-muted);
 }
 
+/* 기록 한 건 = 위 줄(분류·메모·금액) + 아래 줄(나눈 사람 캐릭터, 한 줄에 4명 이상 들어간다) */
+.recordStack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .faces {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 2px;
+  /* 분류 아이콘(36px) + 간격(12px)만큼 들여 메모 글자와 줄을 맞춘다 */
+  padding-left: 48px;
 }
 
 .faces .avatar {
