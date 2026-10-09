@@ -42,6 +42,13 @@ export const router = createBrowserRouter(
           },
         },
         {
+          path: 'plan/:tripId/split',
+          lazy: async () => {
+            const { TripSplitScreen } = await retryChunkLoad(() => import('@/features/plan/split/TripSplitScreen'));
+            return { Component: TripSplitScreen };
+          },
+        },
+        {
           path: 'notices',
           lazy: async () => {
             const { default: NoticesScreen } = await retryChunkLoad(() => import('@/features/notices/NoticesScreen'));

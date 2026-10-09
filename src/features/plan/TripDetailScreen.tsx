@@ -66,7 +66,11 @@ import type {
 import styles from './TripDetailScreen.module.css';
 import { AiNextPlaceModal } from './AiNextPlaceModal';
 import { FinalizedTripView } from './FinalizedTripView';
-import { ExternalLink, MapPin, Hotel as HotelIcon, Plane, FileText, Map, List } from 'lucide-react';
+import { ExternalLink, MapPin, Hotel as HotelIcon, Plane, FileText, Map, List, Users } from 'lucide-react';
+import { useSession } from '@/shared/hooks/useSession';
+import { useTripSplitExpenses } from './split/tripSplitService';
+import { useTripPeople } from './split/useTripPeople';
+import { buildMyExpenses } from './split/splitModel';
 import { cityDisplayName } from './cityName';
 import { isTripDatesLocked } from './tripStatus';
 import { returnFlightDay, tripEndExtension } from './flights';
@@ -123,6 +127,18 @@ export function TripDetailScreen() {
   const hotelsData = useMemo(() => (project?.hotels ?? {}) as HotelsData, [project]);
   const mealsData = useMemo(() => (project?.meals ?? {}) as MealsData, [project]);
   const expensesData = useMemo(() => (project?.expenses ?? {}) as ExpensesData, [project]);
+  // 경비 칸·경비 창은 '내 지출'(혼자 쓴 돈 + 내 더치페이 몫)만 보여 준다. 더치페이는 별도 화면(일행이 같이 봄)
+  const { user: sessionUser } = useSession();
+  const meId = isLocal ? null : (sessionUser?.id ?? null);
+  const ownerId = trip?.owner_id ?? null;
+  const tripCurrency = project?.currency ?? 'KRW';
+  const splitQuery = useTripSplitExpenses(isLocal ? undefined : tripId);
+  const tripPeople = useTripPeople(isLocal ? undefined : tripId, ownerId, meId, []);
+  const hasCompanions = !isLocal && tripPeople.members.length >= 2;
+  const myExpenses = useMemo(
+    () => buildMyExpenses(expensesData, splitQuery.data ?? [], meId, ownerId, tripCurrency),
+    [expensesData, splitQuery.data, meId, ownerId, tripCurrency],
+  );
   const flightsData = useMemo(
     () => (project?.flights ?? { outbound: null, return: null }) as FlightsData,
     [project],
@@ -466,6 +482,11 @@ export function TripDetailScreen() {
               <span className={styles.badge}>{pendingBookings.data!.length}</span>
             ) : null}
           </button>
+          {hasCompanions && tripId ? (
+            <button type="button" className={styles.toggleButton} aria-label={t('split.title')} onClick={() => navigate(`/plan/${tripId}/split`)}>
+              <Users size={18} />
+            </button>
+          ) : null}
           <button type="button" className={styles.toggleButton} aria-label={t('tripDetail.shareAria')} onClick={() => setShowShare(true)}>
             <ExternalLink size={18} />
           </button>
@@ -508,7 +529,7 @@ export function TripDetailScreen() {
             hotelName={endHotel?.name ?? null}
             showHotel={currentDay < totalDays}
             meals={mealsData[currentDay]}
-            expenses={expensesData[currentDay] ?? []}
+            expenses={myExpenses[currentDay] ?? []}
             currency={project?.currency ?? 'KRW'}
             onCity={() => setShowDayCityModal(true)}
             onHotel={() => setShowHotelModal(true)}
@@ -600,6 +621,14 @@ export function TripDetailScreen() {
           totalDays={totalDays}
           currency={project?.currency ?? 'KRW'}
           expensesData={expensesData}
+          myExpenses={myExpenses}
+          meId={meId}
+          ownerId={ownerId}
+          split={
+            hasCompanions && tripId
+              ? { tripId, people: tripPeople, onOpenSplit: () => navigate(`/plan/${tripId}/split`) }
+              : undefined
+          }
           onClose={() => setShowExpenseModal(false)}
           onSave={handleSaveExpenses}
         />

@@ -103,7 +103,20 @@
       "card": "Card",
       "other": "Other"
     },
-    "totalLabel": "Total"
+    "totalLabel": "Total",
+    "add": "Add expense",
+    "mineNote": "Only what you spent is shown. Shared costs count only your share.",
+    "openSplit": "View split bills",
+    "splitBadge": "Split",
+    "splitMeta_one": "Split with {{count}} person · paid by {{name}}",
+    "splitMeta_other": "Split among {{count}} people · paid by {{name}}",
+    "choice": {
+      "title": "What kind of expense?",
+      "solo": "Just mine",
+      "soloSub": "Recorded as your own spending",
+      "split": "Split with the group",
+      "splitSub": "Share the cost and settle up"
+    }
   },
   "flightCard": {
     "schedule": "Depart {{depTime}} → Arrive {{arrTime}}",
@@ -639,5 +652,69 @@
     "body": "From uploading bookings to a PDF itinerary, see how Triptic works in about a minute.",
     "open": "View guide",
     "skip": "Create now"
+  },
+  "split": {
+    "title": "Split bills",
+    "me": "Me",
+    "left": "Left the trip",
+    "unnamed": "No name",
+    "noDay": "No date",
+    "localOnly": "Sign in and use a trip saved to your account to split bills.",
+    "loadError": "Couldn't load split bills. Please try again in a moment.",
+    "solo": "This trip has no companions yet. Invite them with a share link to split costs.",
+    "summary": {
+      "title": "Summary",
+      "total": "Shared spending",
+      "paid": "You paid",
+      "share": "Your share",
+      "toGive": "You owe",
+      "toGet": "You get back"
+    },
+    "unconverted_one": "{{count}} foreign-currency entry without an exchange rate was left out.",
+    "unconverted_other": "{{count}} foreign-currency entries without an exchange rate were left out.",
+    "settle": {
+      "title": "Who pays whom",
+      "nothing": "No shared spending yet.",
+      "done": "Everyone is settled up",
+      "received": "Received",
+      "sent": "Sent",
+      "failed": "Couldn't record that. Please try again in a moment."
+    },
+    "list": {
+      "title": "Shared spending",
+      "empty": "Nothing here yet. Add a split bill with the button below.",
+      "paidBy": "Paid by {{name}}",
+      "splitWith_one": "Split with {{count}} person",
+      "splitWith_other": "Split among {{count}} people",
+      "myShare": "Your share {{amount}}"
+    },
+    "transfers": {
+      "title": "Payments made",
+      "line": "{{from}} → {{to}}",
+      "cancel": "Undo this payment record"
+    },
+    "add": "Add split bill",
+    "deleteTitle": "Delete split bill",
+    "deleteConfirm": "Delete this entry? The settlement will be recalculated.",
+    "deleteKeep": "Keep it",
+    "deleteProceed": "Delete",
+    "flow": {
+      "title": "Add split bill",
+      "editTitle": "Edit split bill",
+      "step1": "Who is sharing this?",
+      "step1Hint": "Pick everyone who shared the cost. You can pick just some of the group.",
+      "picked_one": "{{count}} person selected",
+      "picked_other": "{{count}} people selected",
+      "next": "Next",
+      "back": "Back",
+      "step2": "Add the details",
+      "descPlaceholder": "Note (e.g. dinner)",
+      "perPerson": "About {{amount}} each",
+      "payer": "Paid by",
+      "day": "Date",
+      "errAlone": "Spending only for yourself belongs under 'Just mine'.",
+      "saved": "Split bill saved",
+      "saveFailed": "Couldn't save. Please try again in a moment."
+    }
   }
 }

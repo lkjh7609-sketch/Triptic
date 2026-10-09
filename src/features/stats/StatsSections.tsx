@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Globe2 } from 'lucide-react';
+import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { ContinentKey } from '@/features/community/destinationRegions';
 import { WorldMap } from './WorldMap';
+import { CountryShape } from './CountryShape';
 import { PixelSprite } from './PixelSprite';
 import { avatarGrid } from './pixelArt';
 import { BadgeArt, type BadgeKind } from './BadgeArt';
 import type { Friend } from './friends';
 import type { Badge, TravelStats, TripStat } from './statsCompute';
-import { CHART_COLORS, countryName, flagOf, krw, num, shortDate } from './statsFormat';
+import { CHART_COLORS, countryName, krw, num, shortDate } from './statsFormat';
 import styles from './Stats.module.css';
 
 type TFn = (key: string, options?: Record<string, unknown>) => string;
@@ -81,19 +85,22 @@ function Bars({ rows }: { rows: { key: string; label: string; value: number; tex
 export function WorldSection({ stats }: { stats: TravelStats }) {
   const { t, i18n } = useTranslation('stats');
   const lang = i18n.language;
+  const [countriesOpen, setCountriesOpen] = useState(false);
   return (
     <section className={styles.card} aria-labelledby="stats-map-title">
       <h2 id="stats-map-title" className={styles.cardTitle}>{t('map.title')}</h2>
       <WorldMap countries={stats.countries.map((c) => c.code)} places={stats.visited} />
       <p className={styles.note}>{t('map.world', { count: stats.countryCount, percent: stats.countryPercentOfWorld })}</p>
       {stats.countries.length > 0 ? (
-        <div className={styles.chips}>
-          {stats.countries.map((c) => (
-            <span key={c.code} className={styles.chip}>
-              {flagOf(c.code)} {countryName(c.code, lang)}
-            </span>
-          ))}
-        </div>
+        <>
+          <button type="button" className={styles.listBtn} onClick={() => setCountriesOpen(true)} aria-haspopup="dialog">
+            <Globe2 size={16} aria-hidden="true" />
+            {t('map.countriesButton', { count: stats.countries.length })}
+          </button>
+          {countriesOpen ? (
+            <CountriesPopup countries={stats.countries} lang={lang} onClose={() => setCountriesOpen(false)} />
+          ) : null}
+        </>
       ) : null}
       {stats.continents.length > 0 ? (
         <>
@@ -111,6 +118,37 @@ export function WorldSection({ stats }: { stats: TravelStats }) {
       ) : null}
       {stats.unknownPlaces > 0 ? <p className={styles.note}>{t('map.unknown', { count: stats.unknownPlaces })}</p> : null}
     </section>
+  );
+}
+
+/** 다녀온 나라 목록 팝업 — 나라 모양 + 이름 · 다녀온 횟수를 한곳에 모아 본다 */
+function CountriesPopup({ countries, lang, onClose }: { countries: { code: string; trips: number }[]; lang: string; onClose: () => void }) {
+  const { t } = useTranslation(['stats', 'common']);
+  const trapRef = useFocusTrap<HTMLDivElement>(onClose);
+  return (
+    <div className={styles.popupOverlay} onClick={onClose}>
+      <div
+        ref={trapRef}
+        className={styles.popup}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('stats:map.countriesTitle')}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className={styles.popupTitle}>{t('stats:map.countriesTitle')}</h3>
+        <div className={styles.chips}>
+          {countries.map((c) => (
+            <span key={c.code} className={styles.chip}>
+              <CountryShape code={c.code} size={16} />
+              {countryName(c.code, lang)} · {t('stats:map.visits', { count: c.trips })}
+            </span>
+          ))}
+        </div>
+        <button type="button" className={styles.popupClose} onClick={onClose}>
+          {t('common:action.close')}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -328,7 +366,16 @@ export function TripsSection({ trips, expanded, onToggle }: { trips: TripStat[];
                   <dl className={styles.facts} style={{ marginTop: 12 }}>
                     <div className={styles.fact}>
                       <dt>{t('trips.countries')}</dt>
-                      <dd>{trip.countries.length > 0 ? trip.countries.map((c) => `${flagOf(c)} ${countryName(c, lang)}`).join(', ') : '–'}</dd>
+                      <dd className={styles.inlineCountries}>
+                        {trip.countries.length > 0
+                          ? trip.countries.map((c) => (
+                              <span key={c} className={styles.inlineCountry}>
+                                <CountryShape code={c} size={14} />
+                                {countryName(c, lang)}
+                              </span>
+                            ))
+                          : '–'}
+                      </dd>
                     </div>
                     <div className={styles.fact}>
                       <dt>{t('trips.distance')}</dt>

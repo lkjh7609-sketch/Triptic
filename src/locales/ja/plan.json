@@ -83,7 +83,19 @@
       "card": "カード",
       "other": "その他"
     },
-    "totalLabel": "合計"
+    "totalLabel": "合計",
+    "add": "支出を追加",
+    "mineNote": "自分が使ったお金だけ表示します。割り勘は自分の分だけ加算されます。",
+    "openSplit": "割り勘を見る",
+    "splitBadge": "割り勘",
+    "splitMeta_other": "{{count}}人で分担 · {{name}}さんが支払い",
+    "choice": {
+      "title": "どんな支出ですか？",
+      "solo": "自分だけの支出",
+      "soloSub": "自分の支出として記録します",
+      "split": "みんなで割り勘",
+      "splitSub": "一緒に使ったお金を分けて精算します"
+    }
   },
   "flightCard": {
     "schedule": "{{depTime}} 出発 → {{arrTime}} 到着",
@@ -622,5 +634,66 @@
     "body": "予約書類のアップロードからPDF旅程表まで、Tripticの使い方を1分ほどで確認できます。",
     "open": "ガイドを見る",
     "skip": "すぐ作成"
+  },
+  "split": {
+    "title": "割り勘",
+    "me": "自分",
+    "left": "退出した同行者",
+    "unnamed": "名前なし",
+    "noDay": "日付なし",
+    "localOnly": "ログインして、アカウントに保存した旅行で使えます。",
+    "loadError": "割り勘を読み込めませんでした。しばらくしてからもう一度お試しください。",
+    "solo": "同行者がいない旅行です。共有リンクで招待すると、割り勘ができます。",
+    "summary": {
+      "title": "精算の概要",
+      "total": "一緒に使ったお金",
+      "paid": "自分が払った額",
+      "share": "自分の負担分",
+      "toGive": "払う金額",
+      "toGet": "受け取る金額"
+    },
+    "unconverted_other": "為替レートがない外貨{{count}}件は精算から除外しました。",
+    "settle": {
+      "title": "誰が誰に",
+      "nothing": "まだ一緒に使ったお金がありません。",
+      "done": "精算はすべて完了しました",
+      "received": "受け取りました",
+      "sent": "送りました",
+      "failed": "記録できませんでした。しばらくしてからもう一度お試しください。"
+    },
+    "list": {
+      "title": "一緒に使ったお金",
+      "empty": "まだ記録がありません。下のボタンから割り勘を追加してください。",
+      "paidBy": "{{name}}さんが支払い",
+      "splitWith_other": "{{count}}人で分担",
+      "myShare": "自分の分 {{amount}}"
+    },
+    "transfers": {
+      "title": "送金の記録",
+      "line": "{{from}} → {{to}}",
+      "cancel": "送金記録を取り消す"
+    },
+    "add": "割り勘を追加",
+    "deleteTitle": "割り勘を削除",
+    "deleteConfirm": "この記録を削除しますか？精算結果は再計算されます。",
+    "deleteKeep": "削除しない",
+    "deleteProceed": "削除",
+    "flow": {
+      "title": "割り勘を追加",
+      "editTitle": "割り勘を編集",
+      "step1": "誰と分けますか？",
+      "step1Hint": "一緒に使った人をすべて選んでください。一部の人だけでも大丈夫です。",
+      "picked_other": "{{count}}人を選択",
+      "next": "次へ",
+      "back": "戻る",
+      "step2": "内容を入力してください",
+      "descPlaceholder": "メモ（例：夕食）",
+      "perPerson": "1人あたり約 {{amount}}",
+      "payer": "支払った人",
+      "day": "日付",
+      "errAlone": "自分だけで使ったお金は「自分だけの支出」に記録してください。",
+      "saved": "割り勘を保存しました",
+      "saveFailed": "保存できませんでした。しばらくしてからもう一度お試しください。"
+    }
   }
 }

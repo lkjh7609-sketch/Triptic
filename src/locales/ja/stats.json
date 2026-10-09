@@ -23,7 +23,15 @@
     "world": "全195か国のうち{{count}}か国({{percent}}%)",
     "unknown": "{{count}}か所は国を特定できず、国・大陸の統計から除きました。",
     "continents": "大陸別の割合",
-    "continentNote": "旅行の回数ベース"
+    "continentNote": "旅行の回数ベース",
+    "visits": "{{count}}回",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "reset": "元の表示に戻す",
+    "hintTouch": "2本の指で拡大・移動できます",
+    "hintMouse": "ドラッグで移動 · +/−で拡大",
+    "countriesButton": "訪れた国{{count}}か国を見る",
+    "countriesTitle": "訪れた国"
   },
   "expense": {
     "title": "費用",
