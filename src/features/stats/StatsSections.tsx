@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import type { ContinentKey } from '@/features/community/destinationRegions';
 import { WorldMap } from './WorldMap';
+import { CountryShape } from './CountryShape';
 import { PixelSprite } from './PixelSprite';
 import { avatarGrid } from './pixelArt';
 import { BadgeArt, type BadgeKind } from './BadgeArt';
 import type { Friend } from './friends';
 import type { Badge, TravelStats, TripStat } from './statsCompute';
-import { CHART_COLORS, countryName, flagOf, krw, num, shortDate } from './statsFormat';
+import { CHART_COLORS, countryName, krw, num, shortDate } from './statsFormat';
 import styles from './Stats.module.css';
 
 type TFn = (key: string, options?: Record<string, unknown>) => string;
@@ -90,7 +91,8 @@ export function WorldSection({ stats }: { stats: TravelStats }) {
         <div className={styles.chips}>
           {stats.countries.map((c) => (
             <span key={c.code} className={styles.chip}>
-              {flagOf(c.code)} {countryName(c.code, lang)}
+              <CountryShape code={c.code} size={16} />
+              {countryName(c.code, lang)} · {t('map.visits', { count: c.trips })}
             </span>
           ))}
         </div>
@@ -328,7 +330,16 @@ export function TripsSection({ trips, expanded, onToggle }: { trips: TripStat[];
                   <dl className={styles.facts} style={{ marginTop: 12 }}>
                     <div className={styles.fact}>
                       <dt>{t('trips.countries')}</dt>
-                      <dd>{trip.countries.length > 0 ? trip.countries.map((c) => `${flagOf(c)} ${countryName(c, lang)}`).join(', ') : '–'}</dd>
+                      <dd className={styles.inlineCountries}>
+                        {trip.countries.length > 0
+                          ? trip.countries.map((c) => (
+                              <span key={c} className={styles.inlineCountry}>
+                                <CountryShape code={c} size={14} />
+                                {countryName(c, lang)}
+                              </span>
+                            ))
+                          : '–'}
+                      </dd>
                     </div>
                     <div className={styles.fact}>
                       <dt>{t('trips.distance')}</dt>
