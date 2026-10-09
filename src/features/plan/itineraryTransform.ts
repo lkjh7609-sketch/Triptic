@@ -61,6 +61,8 @@ export interface ExpenseRow {
   currency: string;
   fx_rate_to_base: number | null;
   payment_method: string | null;
+  /** 0108 이전·옛 데이터는 없거나 null — 여행 만든 사람의 지출로 본다 */
+  paid_by?: string | null;
 }
 
 export interface TripItineraryRaw {
@@ -172,6 +174,7 @@ export function reconstructTripContent(
       category: (exp.category as ExpenseCategory | null) ?? undefined,
       paymentMethod: (exp.payment_method as ExpensePaymentMethod | null) ?? undefined,
       fxRateToBase: exp.fx_rate_to_base != null ? Number(exp.fx_rate_to_base) : undefined,
+      ...(exp.paid_by ? { paidBy: exp.paid_by } : {}),
     };
     expenses[dayIndex] = expenses[dayIndex] ?? [];
     expenses[dayIndex].push(item);
