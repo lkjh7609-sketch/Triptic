@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Bookmark, BookOpen, ChevronLeft, ChevronRight, Copy, Heart, MessageCircle, NotebookPen } from 'lucide-react';
+import { Bookmark, BookOpen, ChevronLeft, ChevronRight, Heart, MessageCircle, NotebookPen } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
 import { useRequireLogin } from '@/features/auth/loginPrompt';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
@@ -18,14 +18,12 @@ const PC_LIMIT = 8;
 const MOBILE_LIMIT = 2;
 
 function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
-  const { t, i18n } = useTranslation('home');
+  const { i18n } = useTranslation('home');
   const title = postTitleOf(post);
   const image = post.images?.[0] ? getPostImageUrl(post.images[0].storage_path) : null;
   const author = post.author?.display_name ?? '';
   const initial = author.slice(0, 1).toUpperCase();
   const destination = post.destination?.name;
-  // 일정이 첨부돼 있고 작성자가 복사를 허용한 글만(허용 여부 값이 아직 없으면 허용으로 본다)
-  const canCopy = !!post.trip_id && post.allow_copy !== false;
   const bookmarks = (post.bookmark_count ?? 0).toLocaleString(i18n.language);
 
   return (
@@ -81,12 +79,6 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
             <span className={styles.stat}>
               <Bookmark size={16} aria-hidden="true" /> {bookmarks}
             </span>
-            {canCopy ? (
-              <Link to={`/community/post/${post.id}/trip`} className={styles.copyLink}>
-                <Copy size={14} aria-hidden="true" />
-                {t('page.stories.copy')}
-              </Link>
-            ) : null}
           </div>
         ) : (
           <div className={styles.mFoot}>
@@ -95,14 +87,13 @@ function StoryCard({ post, desktop }: { post: Post; desktop: boolean }) {
               {author}
             </span>
             <span className={styles.mLikes}>
-              <Heart size={13} aria-hidden="true" /> {post.like_count.toLocaleString(i18n.language)}
+              <span className={styles.mCount}>
+                <Heart size={13} aria-hidden="true" /> {post.like_count.toLocaleString(i18n.language)}
+              </span>
+              <span className={styles.mCount}>
+                <MessageCircle size={13} aria-hidden="true" /> {post.comment_count.toLocaleString(i18n.language)}
+              </span>
             </span>
-            {canCopy ? (
-              <Link to={`/community/post/${post.id}/trip`} className={styles.mCopy}>
-                {t('page.stories.copy')}
-                <Copy size={14} aria-hidden="true" />
-              </Link>
-            ) : null}
           </div>
         )}
       </div>
