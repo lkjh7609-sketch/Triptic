@@ -1,7 +1,5 @@
 {
   "confidenceField": {
-    "warning": " Please check this",
-    "empty": "Couldn't read this — enter manually",
     "viewOriginal": "View original"
   },
   "review": {
