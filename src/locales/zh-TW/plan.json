@@ -330,6 +330,7 @@
     "subtitleCountdownDays_other": "{{count}} 天",
     "subtitleCountdownAfter": "。",
     "createTrip": "建立新行程",
+    "statsLink": "旅行統計",
     "metricActive": "進行中／預定行程",
     "metricDays": "規劃天數",
     "metricPast": "已完成行程",
