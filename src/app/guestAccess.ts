@@ -14,5 +14,7 @@ export function requiresLogin(pathname: string): boolean {
   // 내 여행 상세는 로그인이 필요하다. 샘플과 이 기기에 만든 임시 여행(guest-…)은 예외
   const trip = /^\/plan\/([^/]+)$/.exec(path);
   if (trip) return !isLocalTripId(trip[1]);
+  // 여행 더치페이는 일행과 서버에 같이 쓰는 기록이라 샘플·임시 여행이어도 로그인이 필요하다
+  if (/^\/plan\/[^/]+\/split$/.test(path)) return true;
   return false;
 }
