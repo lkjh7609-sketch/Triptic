@@ -1,23 +1,71 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, parseISO } from 'date-fns';
 import { CalendarDays, ChevronDown, MapPin, Minus, Plus, Search, Users } from 'lucide-react';
-import { CityAutocomplete } from '@/features/plan/map/CityAutocomplete';
+import { CityAutocomplete, type ExtraOption } from '@/features/plan/map/CityAutocomplete';
 import type { SelectedPlace } from '@/features/plan/map/usePlaceAutocomplete';
 import { CalendarRangePicker } from '@/shared/ui/CalendarRangePicker';
 import { clearInvalid, flagInvalid } from '@/shared/ui/invalidField';
 import { MAX_ADULTS, MAX_CHILDREN, defaultDates, nightsBetween, type HotelSearch } from './hotelSearch';
+import { hotelLang, suggestHotels } from './hotelsApi';
 import styles from './HotelSearchForm.module.css';
 
-/** 목적지 — 구글 자동완성(도시)으로 고른다. 고른 장소의 좌표를 서버에 넘겨 가장 가까운 도시를 검색한다 */
-function DestinationField({ value, onPick, inputRef }: { value: SelectedPlace | null; onPick: (p: SelectedPlace | null) => void; inputRef: React.Ref<HTMLInputElement> }) {
-  const { t } = useTranslation('home');
+/** 나라 이름(표시 언어) — 호텔 자동완성 한 줄의 작은 글씨 */
+function countryName(code: string | null, language: string): string {
+  if (!code) return '';
+  try {
+    return new Intl.DisplayNames([language], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/**
+ * 목적지 — 호텔 이름(우리 색인, 위) + 도시(구글 자동완성, 아래)를 한 칸에서 고른다.
+ * 도시를 고르면 그 좌표에서 가장 가까운 도시를, 호텔을 고르면 그 호텔(맨 위 고정)과 같은 도시 추천을 검색한다.
+ */
+function DestinationField({
+  value,
+  onPick,
+  onPickHotel,
+  inputRef,
+}: {
+  value: SelectedPlace | null;
+  onPick: (p: SelectedPlace | null) => void;
+  onPickHotel: (hotelId: number | null) => void;
+  inputRef: React.Ref<HTMLInputElement>;
+}) {
+  const { t, i18n } = useTranslation('home');
+  const lang = hotelLang(i18n.language);
+  const extraSearch = useCallback(
+    async (text: string, signal: AbortSignal): Promise<ExtraOption[]> => {
+      const list = await suggestHotels(text, lang, signal);
+      return list
+        .filter((h) => h.lat !== null && h.lng !== null)
+        .map((h) => ({
+          key: `hotel-${h.id}`,
+          title: h.name,
+          detail: [lang === 'ko' ? h.city : null, countryName(h.country, i18n.language)].filter(Boolean).join(', '),
+          badge: t('hotels.form.hotelBadge'),
+          place: { name: h.name, address: h.name, lat: h.lat as number, lng: h.lng as number, placeId: `agoda:${h.id}`, types: ['lodging'], countryCode: h.country ?? undefined },
+        }));
+    },
+    [lang, i18n.language, t],
+  );
   return (
     <div className={styles.field}>
       <span className={styles.label}>{t('hotels.form.destination')}</span>
       <span className={styles.inputWrap}>
         <MapPin size={18} className={styles.inputIcon} aria-hidden="true" />
-        <CityAutocomplete value={value} onSelect={onPick} placeholder={t('hotels.form.destinationPlaceholder')} className={styles.input} inputRef={inputRef} />
+        <CityAutocomplete
+          value={value}
+          onSelect={onPick}
+          extraSearch={extraSearch}
+          onSelectExtra={(o) => onPickHotel(o ? Number(o.key.slice('hotel-'.length)) : null)}
+          placeholder={t('hotels.form.destinationPlaceholder')}
+          className={styles.input}
+          inputRef={inputRef}
+        />
       </span>
     </div>
   );
@@ -125,12 +173,14 @@ function formatDay(ymd: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', weekday: 'short' }).format(parseISO(ymd));
 }
 
-/** 호텔 검색폼 — 목적지(구글 자동완성)·날짜(우리 달력)·인원. 검색하면 onSearch로 조건을 넘긴다 */
+/** 호텔 검색폼 — 목적지(호텔 이름 또는 도시)·날짜(우리 달력)·인원. 검색하면 onSearch로 조건을 넘긴다 */
 export function HotelSearchForm({ initial, busy, onSearch }: { initial: HotelSearch | null; busy: boolean; onSearch: (s: HotelSearch) => void }) {
   const { t, i18n } = useTranslation('home');
   const [destination, setDestination] = useState<SelectedPlace | null>(
-    initial ? { name: initial.name, address: initial.name, lat: initial.lat, lng: initial.lng, placeId: null, types: [] } : null,
+    initial ? { name: initial.name, address: initial.name, lat: initial.lat, lng: initial.lng, placeId: initial.hotelId ? `agoda:${initial.hotelId}` : null, types: [] } : null,
   );
+  // 호텔 이름으로 고른 경우 그 호텔(아고다 ID)
+  const [hotelId, setHotelId] = useState<number | null>(initial?.hotelId ?? null);
   const [dates, setDates] = useState(() => (initial ? { checkin: initial.checkin, checkout: initial.checkout } : defaultDates()));
   const [guests, setGuests] = useState<Guests>(() => ({ adults: initial?.adults ?? 2, childAges: initial?.childAges ?? [] }));
   const [showCalendar, setShowCalendar] = useState(false);
@@ -152,7 +202,15 @@ export function HotelSearchForm({ initial, busy, onSearch }: { initial: HotelSea
       flagInvalid(dateRef.current);
       return;
     }
-    onSearch({ name: destination.name, lat: destination.lat, lng: destination.lng, checkin: dates.checkin, checkout: dates.checkout, ...guests });
+    onSearch({
+      name: destination.name,
+      lat: destination.lat,
+      lng: destination.lng,
+      checkin: dates.checkin,
+      checkout: dates.checkout,
+      ...guests,
+      ...(hotelId ? { hotelId } : {}),
+    });
   }
 
   const nights = dates.checkout > dates.checkin ? nightsBetween(dates.checkin, dates.checkout) : 0;
@@ -160,7 +218,7 @@ export function HotelSearchForm({ initial, busy, onSearch }: { initial: HotelSea
   return (
     <form className={styles.card} onSubmit={submit}>
       <div className={styles.grid}>
-        <DestinationField value={destination} onPick={setDestination} inputRef={destRef} />
+        <DestinationField value={destination} onPick={setDestination} onPickHotel={setHotelId} inputRef={destRef} />
         <div className={styles.field}>
           <span className={styles.label}>{t('hotels.form.dates')}</span>
           <button ref={dateRef} type="button" className={styles.cellButton} onClick={() => setShowCalendar(true)}>

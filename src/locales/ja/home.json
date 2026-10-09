@@ -259,7 +259,8 @@
       "needDestination": "目的地を一覧から選んでください",
       "badDates": "日付を確認してください — チェックアウトはチェックインの翌日以降です",
       "search": "ホテルを検索",
-      "searching": "検索中…"
+      "searching": "検索中…",
+      "hotelBadge": "ホテル"
     },
     "discountN": "{{pct}}%オフ",
     "wifi": "無料Wi-Fi",
@@ -271,6 +272,11 @@
       "title": "おすすめの旅行先",
       "sub": "旅程の都市と人気の都市です",
       "myTrip": "旅程"
+    },
+    "pinned": {
+      "tag": "選んだホテル",
+      "more": "{{city}}のおすすめホテル",
+      "unavailable": "{{name}}はこの日程で空室がありません。同じ都市のホテルを表示します。"
     }
   },
   "activities": {
