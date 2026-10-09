@@ -621,6 +621,7 @@ export function TripDetailScreen() {
           totalDays={totalDays}
           currency={project?.currency ?? 'KRW'}
           expensesData={expensesData}
+          startDate={trip.start_date}
           myExpenses={myExpenses}
           meId={meId}
           ownerId={ownerId}
