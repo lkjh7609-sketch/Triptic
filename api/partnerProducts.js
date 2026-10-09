@@ -20,6 +20,8 @@ import { handleFlights } from './_lib/flights/index.js';
 const isRateLimited = createRateLimiter(60);
 // 호텔 검색(우리 화면의 필터·정렬을 바꿀 때마다 부른다) — 접속자당 분당 횟수를 따로 둔다
 const isAgodaRateLimited = createRateLimiter(40);
+// 호텔 이름 자동완성 — 글자를 칠 때마다 부르는 DB 조회(유료 API 아님)라 넉넉하게
+const isHotelSuggestRateLimited = createRateLimiter(150);
 const isFlightsRateLimited = createRateLimiter(12);
 
 const PROVIDERS = {
@@ -64,7 +66,8 @@ export default async function handler(req, res) {
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
     // 호텔 검색 — 처리부는 _lib/agoda(함수 개수 한도 때문에 이 함수가 대신 받는다)
     if (req.query?.provider === 'agoda') {
-        if (isAgodaRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
+        const limited = req.query?.kind === 'suggest' ? isHotelSuggestRateLimited(req) : isAgodaRateLimited(req);
+        if (limited) return res.status(429).json({ error: 'rate_limited' });
         return handleAgoda(req, res);
     }
     // 항공 검색 — 처리부는 _lib/flights. 검색마다 유료 호출(왕복은 2회)이라 분당 횟수를 가장 좁게 둔다

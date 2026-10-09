@@ -59,21 +59,52 @@
 }
 
 .pills {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  /* 선택지가 4개(전체 + 3개)라 2×2 또는 한 줄 4칸 — 칸 너비가 똑같고 마지막 칸이 혼자 떨어지지 않는다 */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
+}
+
+/* 폭이 넉넉한 시트(모바일 가로·태블릿)는 한 줄 4칸 */
+@media (min-width: 420px) {
+  .pills {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 옆 칸(PC)은 좁아서 항상 2×2 */
+@media (min-width: 1024px) {
+  .pills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .pill,
 .pillOn {
-  min-height: 44px;
-  padding: 0 var(--space-3);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--font-caption-size);
   font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
+}
+
+/* 보이는 높이는 34px, 눌리는 영역은 위아래로 넓혀 44px 이상 */
+.pill::after,
+.pillOn::after {
+  content: '';
+  position: absolute;
+  inset: -5px 0;
 }
 
 .pill {

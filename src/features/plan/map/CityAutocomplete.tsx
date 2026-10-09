@@ -16,9 +16,28 @@ interface CityAutocompleteProps {
   inputRef?: React.Ref<HTMLInputElement>;
   /** 처음 보여 줄 글자(고른 도시가 아직 확인되지 않았을 때) */
   initialText?: string;
+  /** 도시 말고 함께 보여 줄 항목(호텔 이름 등) — 목록 맨 위에 붙는다. 없으면 도시만 */
+  extraSearch?: (text: string, signal: AbortSignal) => Promise<ExtraOption[]>;
+  /** 추가 항목을 고르면 onSelect(그 장소)와 함께 불린다 */
+  onSelectExtra?: (option: ExtraOption | null) => void;
+}
+
+/** 도시 목록 위에 붙는 추가 항목 한 줄 */
+export interface ExtraOption {
+  key: string;
+  title: string;
+  detail?: string;
+  /** 줄 앞의 작은 표시(예: '호텔') */
+  badge?: string;
+  place: SelectedPlace;
 }
 
 const DEBOUNCE_MS = 200;
+
+/** 입력칸에 보일 글자 — 도시는 행정구역 접미사를 뗀 이름, 추가 항목(호텔 등)으로 고른 장소는 이름 그대로 */
+function shownText(place: SelectedPlace): string {
+  return place.placeId?.startsWith('agoda:') ? place.name : cityDisplayName(place.address || place.name);
+}
 
 /**
  * 여행 만들기의 도시 입력 — 구글 도시 자동완성(types: (cities))을 쓰되 목록은 우리가 그린다:
@@ -32,13 +51,17 @@ export function CityAutocomplete({
   className,
   inputRef,
   initialText = '',
+  extraSearch,
+  onSelectExtra,
 }: CityAutocompleteProps) {
   const { i18n } = useTranslation();
   const listId = useId();
   const [text, setText] = useState(
-    value ? cityDisplayName(value.address || value.name) : initialText,
+    value ? shownText(value) : initialText,
   );
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [extras, setExtras] = useState<ExtraOption[]>([]);
+  const extraAbort = useRef<AbortController | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const lastValue = useRef(value);
@@ -54,7 +77,7 @@ export function CityAutocomplete({
     if (lastValue.current !== value) {
       lastValue.current = value;
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (value) setText(cityDisplayName(value.address || value.name));
+      if (value) setText(shownText(value));
     }
   }, [value]);
 
@@ -65,14 +88,28 @@ export function CityAutocomplete({
     if (value) {
       lastValue.current = null;
       onSelect(null); // 글자를 고치면 이전 선택은 풀린다
+      onSelectExtra?.(null);
     }
     const id = ++requestId.current;
+    extraAbort.current?.abort();
     if (!next.trim()) {
       setPredictions([]);
+      setExtras([]);
       return;
     }
     window.setTimeout(async () => {
       if (id !== requestId.current) return; // 그 사이 더 새 입력이 있었다
+      if (extraSearch) {
+        const ac = new AbortController();
+        extraAbort.current = ac;
+        extraSearch(next, ac.signal)
+          .then((list) => {
+            if (id === requestId.current) setExtras(list);
+          })
+          .catch(() => {
+            if (id === requestId.current) setExtras([]);
+          });
+      }
       try {
         await loadGoogleMapsPlaces();
         token.current ??= new google.maps.places.AutocompleteSessionToken();
@@ -89,7 +126,16 @@ export function CityAutocomplete({
     }, DEBOUNCE_MS);
   }
 
+  function chooseExtra(option: ExtraOption) {
+    setText(option.title);
+    setOpen(false);
+    lastValue.current = option.place;
+    onSelect(option.place);
+    onSelectExtra?.(option);
+  }
+
   async function choose(prediction: google.maps.places.AutocompletePrediction) {
+    onSelectExtra?.(null);
     setText(options.find((o) => o.placeId === prediction.place_id)?.name ?? prediction.description);
     setOpen(false);
     try {
@@ -130,23 +176,30 @@ export function CityAutocomplete({
     }
   }
 
+  // 목록 = 추가 항목(호텔 등) 먼저, 그다음 도시
+  const total = extras.length + predictions.length;
+  function pick(index: number) {
+    if (index < extras.length) chooseExtra(extras[index]);
+    else void choose(predictions[index - extras.length]);
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!open || predictions.length === 0) return;
+    if (!open || total === 0) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActive((i) => Math.min(i + 1, predictions.length - 1));
+      setActive((i) => Math.min(i + 1, total - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault(); // 폼이 제출되지 않게
-      void choose(predictions[active]);
+      pick(Math.min(active, total - 1));
     } else if (e.key === 'Escape') {
       setOpen(false);
     }
   }
 
-  const showList = open && predictions.length > 0;
+  const showList = open && total > 0;
   return (
     <div style={{ position: 'relative' }}>
       <input
@@ -168,23 +221,46 @@ export function CityAutocomplete({
       />
       {showList ? (
         <ul id={listId} role="listbox" className={listStyles.list}>
-          {predictions.map((p, i) => (
-            // 한 줄: 도시(나라)
+          {extras.map((o, i) => (
+            // 한 줄: [표시] 이름 · 부가 설명(도시 등)
             <li
-              key={p.place_id}
+              key={o.key}
               id={`${listId}-${i}`}
               role="option"
               aria-selected={i === active}
               className={i === active ? listStyles.optionOn : listStyles.option}
               onMouseDown={(e) => {
                 e.preventDefault();
-                void choose(p);
+                chooseExtra(o);
               }}
               onMouseEnter={() => setActive(i)}
             >
-              <span className={listStyles.title}>{options[i]?.label ?? p.description}</span>
+              <span className={listStyles.title}>
+                {o.badge ? <span className={listStyles.badge}>{o.badge}</span> : null} {o.title}
+              </span>
+              {o.detail ? <span className={listStyles.sub}>{o.detail}</span> : null}
             </li>
           ))}
+          {predictions.map((p, j) => {
+            const i = extras.length + j;
+            return (
+              // 한 줄: 도시(나라)
+              <li
+                key={p.place_id}
+                id={`${listId}-${i}`}
+                role="option"
+                aria-selected={i === active}
+                className={i === active ? listStyles.optionOn : listStyles.option}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  void choose(p);
+                }}
+                onMouseEnter={() => setActive(i)}
+              >
+                <span className={listStyles.title}>{options[j]?.label ?? p.description}</span>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </div>

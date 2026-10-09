@@ -38,8 +38,23 @@ export interface HotelsResponse {
   /** 검색한 도시 — 좌표 근처에 도시가 없으면 null */
   city: { id: number; name: string; country: string; distanceKm: number } | null;
   hotels: Hotel[];
+  /** 호텔 이름으로 고른 검색: 그 호텔(그 날짜에 객실이 없으면 null) — hotels에는 들어 있지 않다 */
+  pinned?: Hotel | null;
+  pinnedId?: string;
   nights: number;
   currency: string;
+}
+
+/** 호텔 이름 자동완성 한 줄 */
+export interface HotelSuggestion {
+  id: number;
+  name: string;
+  /** 도시 이름(한국어) */
+  city: string | null;
+  country: string | null;
+  lat: number | null;
+  lng: number | null;
+  stars: number | null;
 }
 
 export interface HotelQuery {
@@ -57,6 +72,8 @@ export interface HotelQuery {
   minPrice: number | null;
   maxPrice: number | null;
   discountOnly: boolean;
+  /** 호텔 이름으로 고른 검색 */
+  hotelId?: number;
 }
 
 export async function fetchHotels(query: HotelQuery, signal?: AbortSignal): Promise<HotelsResponse> {
@@ -78,10 +95,22 @@ export async function fetchHotels(query: HotelQuery, signal?: AbortSignal): Prom
   if (query.minPrice !== null) q.set('minPrice', String(query.minPrice));
   if (query.maxPrice !== null) q.set('maxPrice', String(query.maxPrice));
   if (query.discountOnly) q.set('discountOnly', '1');
+  if (query.hotelId) q.set('hotelId', String(query.hotelId));
   const res = await fetch(apiUrl(`/api/partnerProducts?${q.toString()}`), { signal });
   if (res.status === 503) throw new HotelsUnavailableError();
   if (!res.ok) throw new Error(`hotels HTTP ${res.status}`);
   return (await res.json()) as HotelsResponse;
+}
+
+/** 호텔 이름 자동완성(우리 DB의 아고다 호텔 색인). 2글자 미만이면 부르지 않는다 */
+export async function suggestHotels(q: string, lang: HotelQuery['lang'], signal?: AbortSignal): Promise<HotelSuggestion[]> {
+  const text = q.trim();
+  if (text.length < 2) return [];
+  const params = new URLSearchParams({ provider: 'agoda', kind: 'suggest', q: text, lang });
+  const res = await fetch(apiUrl(`/api/partnerProducts?${params.toString()}`), { signal });
+  if (!res.ok) return [];
+  const json = (await res.json()) as { hotels?: HotelSuggestion[] };
+  return Array.isArray(json.hotels) ? json.hotels : [];
 }
 
 /** 표시 언어 → 호텔 검색 언어(서버 허용값) */
