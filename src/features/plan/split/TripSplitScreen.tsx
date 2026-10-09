@@ -87,7 +87,9 @@ export function TripSplitScreen() {
     () =>
       settleInBase(
         toCalcExpenses(expenses),
-        transfers.filter((x) => x.currency === currency).map((x) => ({ from: x.from_user, to: x.to_user, amount: x.amount })),
+        transfers
+          .filter((x) => x.currency === currency)
+          .map((x) => ({ from: x.from_user, to: x.to_user, amount: x.amount })),
         currency,
       ),
     [expenses, transfers, currency],
@@ -115,7 +117,10 @@ export function TripSplitScreen() {
   const dayTitle = (day: number | null) => {
     if (day === null) return t('split.noDay');
     const base = trip?.start_date ? parseISO(trip.start_date) : null;
-    const date = base && !Number.isNaN(base.getTime()) ? formatLocalizedDay(new Date(base.getTime() + (day - 1) * 86_400_000), i18n.language) : '';
+    const date =
+      base && !Number.isNaN(base.getTime())
+        ? formatLocalizedDay(new Date(base.getTime() + (day - 1) * 86_400_000), i18n.language)
+        : '';
     return `${t('day.header', { index: day })}${date ? ` · ${date}` : ''}`;
   };
 
@@ -150,7 +155,15 @@ export function TripSplitScreen() {
     );
   }
   if (isError || !trip || expensesQuery.isError) {
-    return <ErrorState summary={t('split.loadError')} onRetry={() => { void refetch(); void expensesQuery.refetch(); }} />;
+    return (
+      <ErrorState
+        summary={t('split.loadError')}
+        onRetry={() => {
+          void refetch();
+          void expensesQuery.refetch();
+        }}
+      />
+    );
   }
 
   const soloTrip = people.members.length < 2;
@@ -194,7 +207,11 @@ export function TripSplitScreen() {
                 tone={myFigures.net < 0 ? 'owe' : myFigures.net > 0 ? 'get' : undefined}
               />
             </div>
-            {settlement.unconverted > 0 ? <p className={styles.note}>{t('split.unconverted', { count: settlement.unconverted })}</p> : null}
+            {settlement.unconverted > 0 ? (
+              <p className={styles.note}>
+                {t('split.unconverted', { count: settlement.unconverted })}
+              </p>
+            ) : null}
           </section>
 
           <section className={styles.section} aria-labelledby="split-settle-title">
@@ -236,13 +253,17 @@ export function TripSplitScreen() {
             <section className={styles.section}>
               <ExpenseChart
                 title={t('expense.chartByDay')}
-                data={getDayTotalsSeries(chartData, totalDays, currency, (day) => t('day.header', { index: day }))}
+                data={getDayTotalsSeries(chartData, totalDays, currency, (day) =>
+                  t('day.header', { index: day }),
+                )}
                 currency={currency}
                 pageSize={DAY_CHART_PAGE_SIZE}
               />
               <DoughnutChart
                 title={t('expense.chartByCategory')}
-                data={getCategoryTotalsSeries(chartData, currency, (cat) => t(`expense.category.${cat}`))}
+                data={getCategoryTotalsSeries(chartData, currency, (cat) =>
+                  t(`expense.category.${cat}`),
+                )}
                 currency={currency}
               />
             </section>
@@ -263,32 +284,61 @@ export function TripSplitScreen() {
                     const inSplit = !!meId && e.split_among.includes(meId);
                     const unconverted = amountInBase(toCalcExpenses([e])[0], currency) === null;
                     return (
-                      <li key={e.id} className={styles.record}>
-                        <span className={styles.recordIcon}>{CATEGORY_ICON[e.category]}</span>
-                        <span className={styles.recordBody}>
-                          <span className={styles.recordDesc}>{e.description}</span>
-                          <span className={styles.recordMeta}>{t('split.list.paidBy', { name: labelOf(payer) })}</span>
-                          <span className={styles.faces} aria-label={t('split.list.splitWith', { count: e.split_among.length })}>
-                            {e.split_among.map((id) => (
-                              <PersonAvatar key={id} person={people.byId(id)} pixel={1} label={labelOf(people.byId(id))} />
-                            ))}
+                      <li key={e.id} className={styles.recordStack}>
+                        <div className={styles.record}>
+                          <span className={styles.recordIcon}>{CATEGORY_ICON[e.category]}</span>
+                          <span className={styles.recordBody}>
+                            <span className={styles.recordDesc}>{e.description}</span>
+                            <span className={styles.recordMeta}>
+                              {t('split.list.paidBy', { name: labelOf(payer) })}
+                            </span>
                           </span>
-                        </span>
-                        <span className={styles.recordAmount}>
-                          <span>{money(e.amount, e.currency)}</span>
-                          {unconverted ? <span className={styles.recordSub}>{t('expense.unconverted')}</span> : null}
-                          {inSplit && !unconverted ? <span className={styles.recordSub}>{t('split.list.myShare', { amount: money(mine) })}</span> : null}
-                        </span>
-                        {meId && e.created_by === meId ? (
-                          <span className={styles.recordActions}>
-                            <button type="button" className={styles.iconBtn} aria-label={t('action.edit', { ns: 'common' })} onClick={() => setFlow({ initial: e })}>
-                              <Pencil size={15} aria-hidden="true" />
-                            </button>
-                            <button type="button" className={styles.iconBtn} aria-label={t('action.delete', { ns: 'common' })} onClick={() => setConfirmDelete(e.id)}>
-                              <Trash2 size={15} aria-hidden="true" />
-                            </button>
+                          <span className={styles.recordAmount}>
+                            <span>{money(e.amount, e.currency)}</span>
+                            {unconverted ? (
+                              <span className={styles.recordSub}>{t('expense.unconverted')}</span>
+                            ) : null}
+                            {inSplit && !unconverted ? (
+                              <span className={styles.recordSub}>
+                                {t('split.list.myShare', { amount: money(mine) })}
+                              </span>
+                            ) : null}
                           </span>
-                        ) : null}
+                          {meId && e.created_by === meId ? (
+                            <span className={styles.recordActions}>
+                              <button
+                                type="button"
+                                className={styles.iconBtn}
+                                aria-label={t('action.edit', { ns: 'common' })}
+                                onClick={() => setFlow({ initial: e })}
+                              >
+                                <Pencil size={15} aria-hidden="true" />
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.iconBtn}
+                                aria-label={t('action.delete', { ns: 'common' })}
+                                onClick={() => setConfirmDelete(e.id)}
+                              >
+                                <Trash2 size={15} aria-hidden="true" />
+                              </button>
+                            </span>
+                          ) : null}
+                        </div>
+                        {/* 나눈 사람들 — 이름 줄 아래 한 줄에 4명까지(캐릭터는 작게) */}
+                        <span
+                          className={styles.faces}
+                          aria-label={t('split.list.splitWith', { count: e.split_among.length })}
+                        >
+                          {e.split_among.map((id) => (
+                            <PersonAvatar
+                              key={id}
+                              person={people.byId(id)}
+                              pixel={1}
+                              label={labelOf(people.byId(id))}
+                            />
+                          ))}
+                        </span>
                       </li>
                     );
                   })}
@@ -307,9 +357,14 @@ export function TripSplitScreen() {
                   <li key={tr.id} className={styles.record}>
                     <span className={styles.recordBody}>
                       <span className={styles.recordDesc}>
-                        {t('split.transfers.line', { from: labelOf(people.byId(tr.from_user)), to: labelOf(people.byId(tr.to_user)) })}
+                        {t('split.transfers.line', {
+                          from: labelOf(people.byId(tr.from_user)),
+                          to: labelOf(people.byId(tr.to_user)),
+                        })}
                       </span>
-                      <span className={styles.recordMeta}>{formatLocalizedDay(new Date(tr.created_at), i18n.language)}</span>
+                      <span className={styles.recordMeta}>
+                        {formatLocalizedDay(new Date(tr.created_at), i18n.language)}
+                      </span>
                     </span>
                     <span className={styles.recordAmount}>{money(tr.amount, tr.currency)}</span>
                     {meId && tr.created_by === meId ? (
@@ -318,7 +373,11 @@ export function TripSplitScreen() {
                         className={styles.iconBtn}
                         aria-label={t('split.transfers.cancel')}
                         disabled={deleteTransfer.isPending}
-                        onClick={() => deleteTransfer.mutate(tr.id, { onError: () => showToast(t('split.settle.failed')) })}
+                        onClick={() =>
+                          deleteTransfer.mutate(tr.id, {
+                            onError: () => showToast(t('split.settle.failed')),
+                          })
+                        }
                       >
                         <Undo2 size={15} aria-hidden="true" />
                       </button>
@@ -359,7 +418,11 @@ export function TripSplitScreen() {
           cancelLabel={t('split.deleteKeep')}
           confirmLabel={t('split.deleteProceed')}
           danger
-          onConfirm={() => deleteExpense.mutate(confirmDelete, { onError: () => showToast(t('split.flow.saveFailed')) })}
+          onConfirm={() =>
+            deleteExpense.mutate(confirmDelete, {
+              onError: () => showToast(t('split.flow.saveFailed')),
+            })
+          }
           onClose={() => setConfirmDelete(null)}
         />
       ) : null}
@@ -367,11 +430,24 @@ export function TripSplitScreen() {
   );
 }
 
-function ScreenHeader({ title, subtitle, onBack }: { title: string; subtitle?: string; onBack: () => void }) {
+function ScreenHeader({
+  title,
+  subtitle,
+  onBack,
+}: {
+  title: string;
+  subtitle?: string;
+  onBack: () => void;
+}) {
   const { t } = useTranslation('plan');
   return (
     <header className={styles.header}>
-      <button type="button" className={styles.back} aria-label={t('tripDetail.backAria')} onClick={onBack}>
+      <button
+        type="button"
+        className={styles.back}
+        aria-label={t('tripDetail.backAria')}
+        onClick={onBack}
+      >
         <ChevronLeft size={22} aria-hidden="true" />
       </button>
       <div>
@@ -386,7 +462,13 @@ function Figure({ label, value, tone }: { label: string; value: string; tone?: '
   return (
     <div className={styles.figure}>
       <span className={styles.figureLabel}>{label}</span>
-      <span className={tone === 'get' ? styles.figureGet : tone === 'owe' ? styles.figureOwe : styles.figureValue}>{value}</span>
+      <span
+        className={
+          tone === 'get' ? styles.figureGet : tone === 'owe' ? styles.figureOwe : styles.figureValue
+        }
+      >
+        {value}
+      </span>
     </div>
   );
 }
