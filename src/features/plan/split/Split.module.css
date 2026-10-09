@@ -1,0 +1,585 @@
+/* 도트 캐릭터 */
+.avatar {
+  display: block;
+  padding: 4px 6px 1px;
+  border-radius: var(--radius-lg);
+  background: var(--brand-tint);
+  image-rendering: pixelated;
+}
+
+/* 사람 고르기 */
+.picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.pickBtn,
+.pickBtnOn {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-1);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  color: var(--text-body);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.pickBtnOn {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.pickAvatar {
+  position: relative;
+  display: block;
+}
+
+.pickCheck {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+}
+
+.pickName {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* 더치페이 추가 흐름 */
+.flowOverlay {
+  z-index: 1100;
+}
+
+.titleRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 세로로 쌓인 칸 안에서 늘어나지 않게(경비 창의 한 줄 입력칸 스타일을 그대로 쓰므로) */
+.fullInput {
+  flex: none;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.stepTitle {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hint,
+.count {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.error {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--danger, #c0392b);
+}
+
+.dayField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.fieldLabel {
+  font-size: var(--font-caption-size);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.daySelect {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font-size: var(--font-body-size);
+}
+
+/* 경비 창: 내 지출 안내 + 더치페이로 가는 줄 + 종류 고르기 */
+.mineNote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.linkBtn {
+  appearance: none;
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  color: var(--brand-text);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.newBtn {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: var(--space-3);
+  border: 1.5px dashed var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  color: var(--brand-text);
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kindOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgb(0 0 0 / 0.45);
+}
+
+.kindCard {
+  width: min(360px, 100%);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgb(0 0 0 / 0.25));
+}
+
+.kindTitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kindBtn {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  margin-bottom: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  color: var(--text-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.kindBtn:active {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.kindName {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kindSub {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+/* 경비 목록의 '내 더치페이 몫' 줄 */
+.shareRow {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--brand-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.shareMeta {
+  display: block;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+/* 더치페이 화면 */
+.page {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+
+.back {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-headline-size);
+  font-weight: var(--font-headline-weight);
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.section {
+  margin: 0 var(--space-4) var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.done {
+  margin: 0;
+  font-weight: 700;
+  color: var(--brand-text);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.figureLabel {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.figureValue,
+.figureGet,
+.figureOwe {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.figureGet {
+  color: var(--brand-text);
+}
+
+.figureOwe {
+  color: var(--warning);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas:
+    'from mid to'
+    'action action action';
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lineMid {
+  grid-area: mid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lineWho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lineFrom {
+  grid-area: from;
+}
+
+.lineTo {
+  grid-area: to;
+}
+
+.lineName {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.arrow {
+  color: var(--text-muted);
+}
+
+.lineAmount {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.lineBtn {
+  grid-area: action;
+  appearance: none;
+  justify-self: stretch;
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lineBtn:disabled {
+  opacity: 0.5;
+}
+
+.dayGroup + .dayGroup {
+  margin-top: var(--space-4);
+}
+
+.dayTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-caption-size);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.records {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.recordIcon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-text);
+}
+
+.recordBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recordDesc {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.recordMeta,
+.recordSub {
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
+
+.faces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.faces .avatar {
+  padding: 2px 3px 0;
+  border-radius: var(--radius-md);
+}
+
+.recordAmount {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.recordActions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.iconBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.addBar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--surface-page) 70%, transparent);
+  pointer-events: none;
+}
+
+.addBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: min(420px, 100%);
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--brand-solid);
+  color: #fff;
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  box-shadow: var(--shadow-md, 0 4px 14px rgb(0 0 0 / 0.2));
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}
