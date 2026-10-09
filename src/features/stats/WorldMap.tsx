@@ -205,14 +205,25 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
     // iOS 사파리의 페이지 확대 제스처가 지도 위에서 끼어들지 않게
     const onGesture = (e: Event) => e.preventDefault();
 
-    let drag: { x: number; y: number; id: number } | null = null;
+    // 마우스 끌기 — 버튼 위에서 시작한 누름은 끌기가 아니다(지도가 포인터를 붙잡으면 +/− 버튼 클릭이 지도로 가 버린다).
+    // 포인터는 3px 넘게 움직여 실제로 끌기 시작한 뒤에 붙잡는다 → 그냥 클릭·두 번 클릭은 그대로 전달된다
+    let drag: { x: number; y: number; id: number; moving: boolean } | null = null;
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
-      el.setPointerCapture?.(e.pointerId);
+      if ((e.target as Element | null)?.closest?.('button')) return;
+      drag = { x: e.clientX, y: e.clientY, id: e.pointerId, moving: false };
     };
     const onPointerMove = (e: PointerEvent) => {
       if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.moving) {
+        if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 3) return;
+        drag.moving = true;
+        try {
+          el.setPointerCapture?.(e.pointerId);
+        } catch {
+          /* 붙잡지 못해도 지도 안에서는 계속 끌린다 */
+        }
+      }
       const { unit } = toMap(e.clientX, e.clientY);
       touched.current = true;
       apply(panBy(viewRef.current, -(e.clientX - drag.x) * unit, -(e.clientY - drag.y) * unit, aspectRef.current));
@@ -220,6 +231,12 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
     };
     const onPointerUp = (e: PointerEvent) => {
       if (drag && e.pointerId === drag.id) drag = null;
+    };
+    const onDoubleClick = (e: MouseEvent) => {
+      if ((e.target as Element | null)?.closest?.('button')) return;
+      touched.current = true;
+      const { mx, my } = toMap(e.clientX, e.clientY);
+      apply(zoomAt(viewRef.current, 2, mx, my, aspectRef.current));
     };
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey) return; // 그냥 휠은 페이지 스크롤
@@ -239,6 +256,7 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
     el.addEventListener('pointermove', onPointerMove);
     el.addEventListener('pointerup', onPointerUp);
     el.addEventListener('pointercancel', onPointerUp);
+    el.addEventListener('dblclick', onDoubleClick);
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => {
       el.removeEventListener('touchstart', onTouchStart);
@@ -251,6 +269,7 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
       el.removeEventListener('pointermove', onPointerMove);
       el.removeEventListener('pointerup', onPointerUp);
       el.removeEventListener('pointercancel', onPointerUp);
+      el.removeEventListener('dblclick', onDoubleClick);
       el.removeEventListener('wheel', onWheel);
     };
   }, [world, apply]);
@@ -263,7 +282,8 @@ export function WorldMap({ countries, places }: { countries: string[]; places: V
   const ring = r * 2;
 
   return (
-    <div className={styles.mapBox} ref={boxRef}>
+    // 세계 전체가 한눈에 보이는 상태에서는 끌 여지가 없으니 손 모양 커서도 확대했을 때만
+    <div className={styles.mapBox} ref={boxRef} data-pannable={view.w < WORLD_W - 0.5}>
       <svg
         className={styles.map}
         viewBox={viewBoxOf(view, aspect)}

@@ -29,7 +29,7 @@
     "zoomOut": "지도 축소",
     "reset": "처음 모습으로",
     "hintTouch": "두 손가락으로 확대·이동할 수 있어요",
-    "hintMouse": "끌어서 이동 · +/− 버튼으로 확대",
+    "hintMouse": "끌어서 이동 · 두 번 클릭이나 +/− 버튼으로 확대",
     "countriesButton": "다녀온 나라 {{count}}곳 보기",
     "countriesTitle": "다녀온 나라"
   },
