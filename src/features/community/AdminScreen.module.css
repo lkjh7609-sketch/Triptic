@@ -330,3 +330,23 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* 새 틀(AdminShell) 안의 본문 */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  display: none;
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .pageTitle {
+    display: block;
+  }
+}

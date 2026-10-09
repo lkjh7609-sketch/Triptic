@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, Lock as LockIcon } from 'lucide-react';
 import { useSession } from '@/shared/hooks/useSession';
@@ -8,6 +9,8 @@ import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { isAdmin } from './communityService';
 import {
+  ADMIN_DASHBOARD_KEY,
+  adminDashboardStats,
   adminListFeedback,
   adminMarkFeedbackReviewed,
   getFeedbackScreenshotSignedUrl,
@@ -31,9 +34,13 @@ import { AdminPinPad } from './AdminPinPad';
 import { AdminArchiveTab } from './AdminArchiveTab';
 import { AdminNoticesTab } from './AdminNoticesTab';
 import { AdminMembersTab } from './AdminMembersTab';
+import { AdminShell } from './AdminShell';
+import { AdminDashboard } from './AdminDashboard';
+import { AdminSuspensionHistory } from './AdminSuspensionHistory';
+import { AdminPillRow } from './AdminFilters';
+import { parseSection, type AdminSection } from './adminSections';
+import { useSectionLabel } from './useSectionLabel';
 import styles from './AdminScreen.module.css';
-
-type Tab = 'reports' | 'pending' | 'users' | 'feedback' | 'sales' | 'analytics' | 'archive' | 'notices';
 
 function FeedbackRow({ item, onChanged }: { item: AdminFeedbackRow; onChanged: (item: AdminFeedbackRow) => void }) {
   const { t } = useTranslation(['community', 'common']);
@@ -102,22 +109,15 @@ function FeedbackTab() {
 
   // 일반 문의 / 제휴문의를 나눠 본다(0071)
   const filters = (
-    <div className={styles.tabs} role="group" aria-label={t('admin.feedbackFilterLabel')}>
-      {(['all', 'general', 'partnership'] as const).map((key) => (
-        <button
-          key={key}
-          type="button"
-          className={filter === key ? styles.tabActive : styles.tab}
-          aria-pressed={filter === key}
-          onClick={() => {
-            setFilter(key);
-            setPage(0);
-          }}
-        >
-          {t(`admin.feedbackFilter.${key}`)}
-        </button>
-      ))}
-    </div>
+    <AdminPillRow
+      label={t('admin.feedbackFilterLabel')}
+      value={filter}
+      options={(['all', 'general', 'partnership'] as const).map((key) => ({ value: key, label: t(`admin.feedbackFilter.${key}`) }))}
+      onChange={(key) => {
+        setFilter(key as AdminFeedbackFilter);
+        setPage(0);
+      }}
+    />
   );
 
   if (feedbackQuery.isLoading) {
@@ -281,7 +281,11 @@ export function AdminScreen() {
   const { t } = useTranslation(['community', 'common']);
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<Tab>('reports');
+  const [params, setParams] = useSearchParams();
+  // 어느 메뉴인지는 주소(?tab=)에 둔다 — 새로고침·뒤로가기에도 그대로
+  const section = parseSection(params.get('tab'));
+  const labelOf = useSectionLabel();
+  const select = (next: AdminSection) => setParams(next === 'dashboard' ? {} : { tab: next });
 
   const { data: admin, isLoading: adminLoading } = useQuery({
     queryKey: ['admin', 'is-admin', user?.id ?? ''],
@@ -289,6 +293,8 @@ export function AdminScreen() {
     enabled: !!user,
   });
 
+  // 메뉴 옆 배지(건의·정지 중)와 대시보드가 같이 쓰는 숫자 — 아직 0109가 없어도 나머지 화면은 그대로 동작한다
+  const dashboardQuery = useQuery({ queryKey: ADMIN_DASHBOARD_KEY, queryFn: adminDashboardStats, enabled: !!admin, staleTime: 30_000, retry: false });
   const reportsQuery = useQuery({ queryKey: ['admin', 'reports'], queryFn: listOpenReports, enabled: !!admin });
   const pendingQuery = useQuery({
     queryKey: ['admin', 'pending'],
@@ -313,6 +319,7 @@ export function AdminScreen() {
   function refetchAll() {
     queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
     queryClient.invalidateQueries({ queryKey: ['admin', 'pending'] });
+    queryClient.invalidateQueries({ queryKey: ADMIN_DASHBOARD_KEY });
   }
 
   if (sessionLoading || adminLoading) {
@@ -330,102 +337,57 @@ export function AdminScreen() {
   }
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>{t('admin.title')}</h1>
-      <div className={styles.tabs}>
-        <button
-          type="button"
-          className={tab === 'reports' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('reports')}
-        >
-          {t('admin.tabs.reports')} {reportsQuery.data ? `(${reportsQuery.data.length})` : ''}
-        </button>
-        <button
-          type="button"
-          className={tab === 'pending' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('pending')}
-        >
-          {t('admin.tabs.pending')} {pendingQuery.data ? `(${pendingQuery.data.length})` : ''}
-        </button>
-        <button
-          type="button"
-          className={tab === 'users' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('users')}
-        >
-          {t('admin.tabs.users')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'feedback' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('feedback')}
-        >
-          {t('admin.tabs.feedback')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'sales' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('sales')}
-        >
-          {t('admin.tabs.sales')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'analytics' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('analytics')}
-        >
-          {t('admin.tabs.analytics')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'archive' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('archive')}
-        >
-          {t('admin.tabs.archive')}
-        </button>
-        <button
-          type="button"
-          className={tab === 'notices' ? styles.tabActive : styles.tab}
-          onClick={() => setTab('notices')}
-        >
-          {t('admin.tabs.notices')}
-        </button>
-      </div>
-
-      {tab === 'notices' ? (
-        <AdminNoticesTab />
-      ) : tab === 'archive' ? (
-        <AdminArchiveTab />
-      ) : tab === 'analytics' ? (
-        <AdminAnalyticsTab />
-      ) : tab === 'sales' ? (
-        <AdminSalesTab />
-      ) : tab === 'users' ? (
-        <AdminMembersTab />
-      ) : tab === 'feedback' ? (
-        <FeedbackTab />
-      ) : tab === 'reports' ? (
-        reportsQuery.isLoading ? (
+    <AdminShell
+      active={section}
+      onSelect={select}
+      badges={{
+        reports: reportsQuery.data?.length,
+        pending: pendingQuery.data?.length,
+        feedback: dashboardQuery.data?.feedback_new,
+      }}
+    >
+      <div className={styles.page}>
+        <h1 className={styles.pageTitle}>{labelOf(section)}</h1>
+        {section === 'dashboard' ? (
+          <AdminDashboard onNavigate={select} />
+        ) : section === 'notices' ? (
+          <AdminNoticesTab />
+        ) : section === 'archive' ? (
+          <AdminArchiveTab />
+        ) : section === 'analytics' ? (
+          <AdminAnalyticsTab />
+        ) : section === 'sales' ? (
+          <AdminSalesTab />
+        ) : section === 'members' ? (
+          <AdminMembersTab onOpenHistory={() => select('suspensions')} />
+        ) : section === 'suspensions' ? (
+          <AdminSuspensionHistory />
+        ) : section === 'feedback' ? (
+          <FeedbackTab />
+        ) : section === 'reports' ? (
+          reportsQuery.isLoading ? (
+            <Skeleton height="80px" />
+          ) : !reportsQuery.data || reportsQuery.data.length === 0 ? (
+            <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noReports')} />
+          ) : (
+            <div className={styles.list}>
+              {reportsQuery.data.map((r) => (
+                <ReportRow key={r.id} report={r} onResolved={refetchAll} />
+              ))}
+            </div>
+          )
+        ) : pendingQuery.isLoading ? (
           <Skeleton height="80px" />
-        ) : !reportsQuery.data || reportsQuery.data.length === 0 ? (
-          <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noReports')} />
+        ) : !pendingQuery.data || pendingQuery.data.length === 0 ? (
+          <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noPending')} />
         ) : (
           <div className={styles.list}>
-            {reportsQuery.data.map((r) => (
-              <ReportRow key={r.id} report={r} onResolved={refetchAll} />
+            {pendingQuery.data.map((p) => (
+              <PendingPostRow key={`${p.kind}-${p.id}`} item={p} onResolved={refetchAll} />
             ))}
           </div>
-        )
-      ) : pendingQuery.isLoading ? (
-        <Skeleton height="80px" />
-      ) : !pendingQuery.data || pendingQuery.data.length === 0 ? (
-        <EmptyState icon={<CheckCircle size={48} />} message={t('admin.noPending')} />
-      ) : (
-        <div className={styles.list}>
-          {pendingQuery.data.map((p) => (
-            <PendingPostRow key={`${p.kind}-${p.id}`} item={p} onResolved={refetchAll} />
-          ))}
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </AdminShell>
   );
 }
