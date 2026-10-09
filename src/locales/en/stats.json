@@ -23,7 +23,13 @@
     "world": "{{count}} of 195 countries ({{percent}}%)",
     "unknown": "{{count}} place(s) couldn't be matched to a country and are left out of country and continent stats.",
     "continents": "By continent",
-    "continentNote": "Based on number of trips"
+    "continentNote": "Based on number of trips",
+    "visits": "{{count}} trip(s)",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "reset": "Reset view",
+    "hintTouch": "Use two fingers to zoom and move",
+    "hintMouse": "Drag to move · use +/− to zoom"
   },
   "expense": {
     "title": "Spending",

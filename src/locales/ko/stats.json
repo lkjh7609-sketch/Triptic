@@ -23,7 +23,13 @@
     "world": "전 세계 195개국 중 {{count}}개국 ({{percent}}%)",
     "unknown": "도시 {{count}}곳은 나라를 알 수 없어 나라·대륙 통계에서 빠졌어요.",
     "continents": "대륙별 비율",
-    "continentNote": "여행 횟수 기준"
+    "continentNote": "여행 횟수 기준",
+    "visits": "{{count}}번",
+    "zoomIn": "지도 확대",
+    "zoomOut": "지도 축소",
+    "reset": "처음 모습으로",
+    "hintTouch": "두 손가락으로 확대·이동할 수 있어요",
+    "hintMouse": "끌어서 이동 · +/− 버튼으로 확대"
   },
   "expense": {
     "title": "경비",
