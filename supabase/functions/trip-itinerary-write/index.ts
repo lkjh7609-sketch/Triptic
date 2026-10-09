@@ -24,6 +24,7 @@ import { getDayCity } from '../../../src/features/plan/dayCities.ts';
 import { MEAL_META } from '../../../src/features/plan/map/meals.ts';
 import { haversineKm } from '../../../src/features/plan/map/geo.ts';
 import { dayIndexForDate } from '../../../src/features/documents/commitBooking.ts';
+import { carryPaidBy } from '../../../src/features/plan/expensePayer.ts';
 import type {
   PlaceItem,
   HotelsData,
@@ -318,9 +319,34 @@ Deno.serve(async (req) => {
     }
 
     const baseCurrency = trip.base_currency ?? 'KRW';
+
+    // 낸 사람(paidBy)을 모르는 옛 화면의 저장도 일행의 경비를 만든 사람 것으로 바꾸지 않게, DB에 이미 있는 같은 줄에서 채운다.
+    // 못 읽어도 저장은 막지 않는다(그때는 옛 화면의 낸 사람 없는 경비만 만든 사람 것으로 돌아간다).
+    const { data: storedRows } = await userClient
+      .from('expenses')
+      .select('description, amount, category, paid_by, trip_days(day_index)')
+      .eq('trip_id', trip.id)
+      .not('paid_by', 'is', null);
+    const expensesWithPayer = carryPaidBy(
+      expensesData,
+      ((storedRows ?? []) as unknown as {
+        description: string;
+        amount: number | string;
+        category: string | null;
+        paid_by: string | null;
+        trip_days: { day_index: number } | { day_index: number }[] | null;
+      }[]).map((r) => ({
+        day_index: Array.isArray(r.trip_days) ? (r.trip_days[0]?.day_index ?? null) : (r.trip_days?.day_index ?? null),
+        description: r.description,
+        amount: r.amount,
+        category: r.category,
+        paid_by: r.paid_by,
+      })),
+    );
+
     const expensesPayload: Record<string, unknown>[] = [];
     for (let day = 1; day <= totalDays; day++) {
-      for (const exp of expensesData[day] ?? []) {
+      for (const exp of expensesWithPayer[day] ?? []) {
         const expCurrency = exp.currency ?? baseCurrency;
         expensesPayload.push({
           day_index: day,
@@ -330,6 +356,7 @@ Deno.serve(async (req) => {
           currency: expCurrency,
           fx_rate_to_base: expCurrency !== baseCurrency ? (exp.fxRateToBase ?? null) : null,
           payment_method: exp.paymentMethod ?? null,
+          paid_by: exp.paidBy ?? null,
         });
       }
     }
