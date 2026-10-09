@@ -87,16 +87,43 @@ describe('AdminMembersTab', () => {
     expect(screen.getByText('등급 줄')).toBeInTheDocument();
   });
 
-  it('필터를 걸고 검색하면 그 조건으로 다시 조회한다(첫 쪽부터)', async () => {
+  it('필터 버튼을 눌러 알약을 고르면 바로 그 조건으로 다시 조회하고(첫 쪽부터), 걸린 필터는 칩으로 보인다', async () => {
     renderTab();
     await screen.findByText('traveler@example.com');
-    fireEvent.change(screen.getByLabelText('성별'), { target: { value: 'male' } });
-    fireEvent.change(screen.getByLabelText('나잇대'), { target: { value: 'none' } });
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    fireEvent.click(within(screen.getByRole('group', { name: '성별' })).getByRole('button', { name: '남성' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: 'male' }), 0, 20));
+    fireEvent.click(within(screen.getByRole('group', { name: '나잇대' })).getByRole('button', { name: '미입력' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: 'male', ageBand: 'none' }), 0, 20));
+    // 필터 버튼에 걸린 개수, 칩으로도 보인다
+    expect(screen.getByRole('button', { name: /필터.*2/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '성별 필터 해제' })).toBeInTheDocument();
+    // 칩을 누르면 그 필터만 풀린다
+    fireEvent.click(screen.getByRole('button', { name: '성별 필터 해제' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ gender: '', ageBand: 'none' }), 0, 20));
+  });
+
+  it('검색어는 검색 버튼(Enter)을 눌러야 적용되고, 초기화하면 검색어와 필터가 모두 비워진다', async () => {
+    renderTab();
+    await screen.findByText('traveler@example.com');
     fireEvent.change(screen.getByLabelText('이름·핸들·이메일로 검색'), { target: { value: ' kim ' } });
-    fireEvent.click(screen.getByRole('button', { name: /검색/ }));
-    await waitFor(() =>
-      expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim', gender: 'male', ageBand: 'none' }), 0, 20),
-    );
+    expect(state.list).not.toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim' }), 0, 20); // 아직 적용 전
+    fireEvent.click(screen.getByRole('button', { name: '검색' }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'kim' }), 0, 20));
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    fireEvent.click(screen.getByRole('button', { name: /초기화/ }));
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith({ query: '', gender: '', ageBand: '', plan: '', joinedFrom: '', joinedTo: '' }, 0, 20));
+    expect(screen.getByLabelText('이름·핸들·이메일로 검색')).toHaveValue('');
+  });
+
+  it('가입일 범위도 바로 적용된다', async () => {
+    renderTab();
+    await screen.findByText('traveler@example.com');
+    fireEvent.click(screen.getByRole('button', { name: /필터/ }));
+    const group = screen.getByRole('group', { name: '가입일' });
+    fireEvent.change(within(group).getByLabelText('가입 시작일'), { target: { value: '2026-09-01' } });
+    await waitFor(() => expect(state.list).toHaveBeenLastCalledWith(expect.objectContaining({ joinedFrom: '2026-09-01', joinedTo: '' }), 0, 20));
+    expect(screen.getByRole('button', { name: '가입일 필터 해제' })).toBeInTheDocument();
   });
 
   it('여행의 "내용 보기"를 누르면 읽기 전용으로 일차별 장소·메모·숙소가 보인다', async () => {

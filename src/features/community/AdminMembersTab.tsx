@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, Eye, MapPin, RotateCcw, Search, UserX } from 'lucide-react';
+import { ChevronDown, Eye, MapPin, UserX } from 'lucide-react';
 import { EmptyState } from '@/shared/ui/states/EmptyState';
 import { Skeleton } from '@/shared/ui/states/Skeleton';
 import { showToast } from '@/shared/ui/toast';
@@ -19,6 +19,7 @@ import type { SuspensionReason } from '@/shared/suspension';
 import { AdminUserPlanRow } from './AdminUserPlanRow';
 import { RemoveMemberDialog, type RemoveOutcome } from './RemoveMemberDialog';
 import { AdminSuspensionsSection } from './AdminSuspensionsSection';
+import { AdminFilterBar } from './AdminFilters';
 import { AdminTripViewer } from './AdminTripViewer';
 import { COMPANION_AGES } from './companionPrefs';
 import { fetchAdminUserActivity } from './analyticsService';
@@ -210,29 +211,30 @@ function MemberRow({
  * 한 줄을 눌러 이메일·가입일·최근 접속·대략적 위치·만든 여행 목록과 등급·무료 한도를 본다.
  * 최근 접속은 로그인 기록(auth)과 앱 접속 기록(profiles.last_seen_at), 위치는 접속 때 IP로 짐작한 국가·도시(정확한 위치는 모으지 않는다).
  */
-export function AdminMembersTab() {
+export function AdminMembersTab({ onOpenHistory }: { onOpenHistory?: () => void }) {
   const { t } = useTranslation('community');
-  const [draft, setDraft] = useState<AdminMemberFilters>(NO_FILTER);
-  const [applied, setApplied] = useState<AdminMemberFilters>(NO_FILTER);
+  // 검색어는 Enter/검색 버튼으로 적용하고, 알약·날짜 필터는 누르는 즉시 적용된다
+  const [queryDraft, setQueryDraft] = useState('');
+  const [filters, setFilters] = useState<AdminMemberFilters>(NO_FILTER);
   const [page, setPage] = useState(0);
   const [overrides, setOverrides] = useState<Record<string, AdminUserRow>>({});
   const members = useQuery({
-    queryKey: ['admin', 'members', applied, page],
-    queryFn: () => adminListMembers(applied, page, PAGE_SIZE),
+    queryKey: ['admin', 'members', filters, page],
+    queryFn: () => adminListMembers(filters, page, PAGE_SIZE),
   });
   // 회원별 이용 기록(PostHog) — 연결 전이거나 실패하면 그 줄만 숨긴다
   const activityQuery = useQuery({ queryKey: ['admin', 'user-activity'], queryFn: fetchAdminUserActivity, staleTime: 60_000, retry: false });
   const activityReady = activityQuery.data?.status === 'ok';
 
-  function apply() {
+  function change(patch: Partial<AdminMemberFilters>) {
     setOverrides({});
     setPage(0);
-    setApplied({ ...draft, query: draft.query.trim() });
+    setFilters((f) => ({ ...f, ...patch }));
   }
 
   function reset() {
-    setDraft(NO_FILTER);
-    setApplied(NO_FILTER);
+    setQueryDraft('');
+    setFilters(NO_FILTER);
     setPage(0);
     setOverrides({});
   }
@@ -243,55 +245,53 @@ export function AdminMembersTab() {
 
   return (
     <div className={memberStyles.wrap}>
-      <AdminSuspensionsSection />
-      <div className={memberStyles.filters}>
-        <input
-          className={styles.searchInput}
-          placeholder={t('admin.members.searchPlaceholder')}
-          aria-label={t('admin.members.searchPlaceholder')}
-          value={draft.query}
-          onChange={(e) => setDraft({ ...draft, query: e.target.value })}
-          onKeyDown={(e) => e.key === 'Enter' && apply()}
-        />
-        <select aria-label={t('admin.members.gender')} value={draft.gender} onChange={(e) => setDraft({ ...draft, gender: e.target.value })}>
-          <option value="">{t('admin.members.gender')}: {t('admin.members.all')}</option>
-          <option value="female">{t('companion.gender.female')}</option>
-          <option value="male">{t('companion.gender.male')}</option>
-          <option value="none">{t('admin.members.notEntered')}</option>
-        </select>
-        <select aria-label={t('admin.members.age')} value={draft.ageBand} onChange={(e) => setDraft({ ...draft, ageBand: e.target.value })}>
-          <option value="">{t('admin.members.age')}: {t('admin.members.all')}</option>
-          {COMPANION_AGES.map((a) => (
-            <option key={a} value={a}>
-              {t(`companion.ages.${a}`)}
-            </option>
-          ))}
-          <option value="none">{t('admin.members.notEntered')}</option>
-        </select>
-        <select aria-label={t('admin.members.plan')} value={draft.plan} onChange={(e) => setDraft({ ...draft, plan: e.target.value })}>
-          <option value="">{t('admin.members.plan')}: {t('admin.members.all')}</option>
-          <option value="free">{t('admin.members.planFree')}</option>
-          <option value="pro">PRO</option>
-        </select>
-        <label className={memberStyles.date}>
-          <span>{t('admin.members.joinedFrom')}</span>
-          <input type="date" value={draft.joinedFrom} onChange={(e) => setDraft({ ...draft, joinedFrom: e.target.value })} />
-        </label>
-        <label className={memberStyles.date}>
-          <span>{t('admin.members.joinedTo')}</span>
-          <input type="date" value={draft.joinedTo} onChange={(e) => setDraft({ ...draft, joinedTo: e.target.value })} />
-        </label>
-        <button type="button" className={styles.primaryBtn} onClick={apply}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <Search size={16} /> {t('admin.userSearchButton')}
-          </span>
-        </button>
-        <button type="button" className={styles.secondaryBtn} onClick={reset}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <RotateCcw size={14} /> {t('admin.members.reset')}
-          </span>
-        </button>
-      </div>
+      <AdminSuspensionsSection onOpenHistory={onOpenHistory} />
+      <AdminFilterBar
+        searchValue={queryDraft}
+        searchPlaceholder={t('admin.members.searchPlaceholder')}
+        onSearchChange={setQueryDraft}
+        onSearchSubmit={() => change({ query: queryDraft.trim() })}
+        onReset={reset}
+        pills={[
+          {
+            key: 'gender',
+            label: t('admin.members.gender'),
+            value: filters.gender,
+            onChange: (gender) => change({ gender }),
+            options: [
+              { value: 'female', label: t('companion.gender.female') },
+              { value: 'male', label: t('companion.gender.male') },
+              { value: 'none', label: t('admin.members.notEntered') },
+            ],
+          },
+          {
+            key: 'age',
+            label: t('admin.members.age'),
+            value: filters.ageBand,
+            onChange: (ageBand) => change({ ageBand }),
+            options: [...COMPANION_AGES.map((a) => ({ value: a, label: t(`companion.ages.${a}`) })), { value: 'none', label: t('admin.members.notEntered') }],
+          },
+          {
+            key: 'plan',
+            label: t('admin.members.plan'),
+            value: filters.plan,
+            onChange: (plan) => change({ plan }),
+            options: [
+              { value: 'free', label: t('admin.members.planFree') },
+              { value: 'pro', label: 'PRO' },
+            ],
+          },
+        ]}
+        dateRange={{
+          key: 'joined',
+          label: t('admin.members.joinedRange'),
+          from: filters.joinedFrom,
+          to: filters.joinedTo,
+          fromLabel: t('admin.members.joinedFrom'),
+          toLabel: t('admin.members.joinedTo'),
+          onChange: (joinedFrom, joinedTo) => change({ joinedFrom, joinedTo }),
+        }}
+      />
 
       <p className={memberStyles.total} role="status">
         {t('admin.members.total', { count: total })}
