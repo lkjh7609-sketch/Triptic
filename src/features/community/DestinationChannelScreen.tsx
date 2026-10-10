@@ -348,6 +348,7 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
           </main>
 
           <aside className={styles.side}>
+            <UrgentCompanionsCard posts={urgent ?? []} />
             <TripCard
               city={city}
               timezone={destination.timezone}
@@ -360,7 +361,6 @@ function DestinationChannel({ slug }: { slug: string | undefined }) {
                 guide={guide}
               />
             ) : null}
-            <UrgentCompanionsCard posts={urgent ?? []} />
             <PopularTagsCard city={city} tags={popularTags ?? []} onTagClick={filterByTag} />
           </aside>
         </div>

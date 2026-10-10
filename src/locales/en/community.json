@@ -1064,6 +1064,9 @@
       "notePlain": "Rough prices in local currency."
     },
     "urgent": {
+      "pagerAria": "Urgent companions pages",
+      "prev": "Previous page",
+      "next": "Next page",
       "title": "Leaving soon",
       "today": "Leaves today",
       "tomorrow": "Leaves tomorrow",

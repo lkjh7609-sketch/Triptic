@@ -11,7 +11,7 @@ interface PostActionsMenuProps {
   targetType: ReportTargetType;
   targetId: string;
   authorId: string;
-  /** 본인 글에서만 쓴다 — 없으면 해당 항목을 감춘다 */
+  /** 수정은 본인 글에서만 쓴다 — 없으면 해당 항목을 감춘다. 삭제는 본인 글이거나 관리자일 때만 넘긴다 */
   onEdit?: () => void;
   onDelete?: () => void;
   /** 관리자 전용 '도시 공식 가이드로 고정/해제' — 넘길 때만 보인다(권한은 서버 함수가 다시 확인한다) */
@@ -109,7 +109,7 @@ export function PostActionsMenu({
               {t(pinned ? 'detail.unpin' : 'detail.pin')}
             </button>
           ) : null}
-          {isOwn && onDelete ? (
+          {onDelete ? (
             <button
               type="button"
               role="menuitem"
