@@ -4,6 +4,14 @@
 
 ---
 
+### 2026-10-11 (19) — 설정 알림 토글을 묶음 4개로 (앱 저장소 0112와 맞춤)
+
+브랜치 `admin/notification-prefs-groups`. 앱 저장소(`tios`)에서 알림을 묶음 4개로 정리하고 운영 DB에 `0112_notifications_v2.sql`을 적용했다(2026-10-11). 웹 설정이 예전 키를 다시 쓰지 않도록 같은 키로 맞춘다.
+- `NotificationPrefs` = `trip`·`community`·`companion`·`collab`(+`enabled`). 예전 키(`preDeparture`·`communityReplies`)는 `normalizeNotificationPrefs`가 새 키로 옮기고, `flightChanges`·`marketing`은 버린다.
+- `SettingsScreen`·`SettingsDesktop`: 토글 4개(내 여행·커뮤니티·동행·공동 편집)로, 4개 언어 문구 교체.
+- 웹 종 알림(`alertNotices`·`tripReminders`)은 이번에 건드리지 않았다 — 서버 알림(`app_notifications`)을 웹 종이 읽게 하는 것은 별도 작업.
+- 확인: 타입·eslint·설정/API 시험 82개 통과.
+
 ### 2026-10-09 (18) — 홈 인기 여행기 카드에서 '일정 복사하기' 제거
 
 브랜치 `admin/stories-no-copy`. **사용자 지시**: 홈 인기 여행기 카드의 '일정 복사하기'를 모바일·PC 모두 지우고, 모바일은 좋아요 수·댓글 수를 보여 준다(복사는 게시글 안에서).

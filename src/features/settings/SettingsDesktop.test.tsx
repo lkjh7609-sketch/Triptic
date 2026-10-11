@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import '@/shared/i18n';
 
 const state = vi.hoisted(() => ({
-  profile: { id: 'u1', display_name: '관리자', handle: 'dfxrj', plan: 'pro', locale: 'ko', temp_unit: 'c', distance_unit: 'km', base_currency: 'KRW', notification_prefs: { preDeparture: true, flightChanges: false, communityReplies: true, marketing: false }, gender: null, age_band: null, demographics_skips: 0, avatar_url: null, trips_created_count: 3, trip_limit: 5 } as Record<string, unknown>,
+  profile: { id: 'u1', display_name: '관리자', handle: 'dfxrj', plan: 'pro', locale: 'ko', temp_unit: 'c', distance_unit: 'km', base_currency: 'KRW', notification_prefs: { trip: true, community: true, companion: false, collab: true }, gender: null, age_band: null, demographics_skips: 0, avatar_url: null, trips_created_count: 3, trip_limit: 5 } as Record<string, unknown>,
   mutate: vi.fn(),
 }));
 
@@ -97,7 +97,7 @@ describe('SettingsDesktop', () => {
   it('알림 스위치는 바꾸는 즉시 저장한다', () => {
     renderPage();
     fireEvent.click(screen.getByRole('button', { name: /알림 수신 설정/ }));
-    fireEvent.click(screen.getByRole('switch', { name: '마케팅 및 특가 소식' }));
-    expect(state.mutate).toHaveBeenCalledWith({ notification_prefs: { preDeparture: true, flightChanges: false, communityReplies: true, marketing: true } });
+    fireEvent.click(screen.getByRole('switch', { name: '동행' }));
+    expect(state.mutate).toHaveBeenCalledWith({ notification_prefs: { trip: true, community: true, companion: true, collab: true } });
   });
 });

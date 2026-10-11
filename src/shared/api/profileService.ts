@@ -12,11 +12,43 @@ export type DistanceUnit = 'km' | 'mi';
 export type MemberGender = 'female' | 'male';
 export type MemberAgeBand = '20s_early' | '20s_late' | '30s_early' | '30s_late' | '40s' | '50s_plus';
 
+/** 알림 묶음 — 커뮤니티(댓글·답글·좋아요) · 내 여행(출발 임박·여행경보) · 동행 · 공동 편집. 운영 조치 알림은 묶음 설정과 무관하게 항상 온다(0112) */
 export interface NotificationPrefs {
-  preDeparture: boolean;
-  flightChanges: boolean;
-  communityReplies: boolean;
-  marketing: boolean;
+  trip: boolean;
+  community: boolean;
+  companion: boolean;
+  collab: boolean;
+  /** 알림 전체 허용(설정 맨 위 토글). 없으면 켜진 것으로 본다. 끄면 서버가 운영 조치 알림까지 모두 만들지 않는다 — 묶음 설정은 그대로 둔다 */
+  enabled?: boolean;
+}
+
+/** 알림 묶음 이름(전체 허용 `enabled`는 뺀 것) */
+export type NotificationKey = Exclude<keyof NotificationPrefs, 'enabled'>;
+
+export const NOTIFICATION_KEYS: NotificationKey[] = ['trip', 'community', 'companion', 'collab'];
+
+/** 저장된 값(예전 키가 섞여 있을 수 있다)을 지금 묶음으로 — 모르는 키는 버리고, 없는 묶음은 켜진 것으로 */
+export function normalizeNotificationPrefs(raw: unknown): NotificationPrefs {
+  const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+  const flag = (v: unknown, fallback: boolean) => (typeof v === 'boolean' ? v : fallback);
+  const prefs: NotificationPrefs = {
+    trip: flag(r.trip, flag(r.preDeparture, true)),
+    community: flag(r.community, flag(r.communityReplies, true)),
+    companion: flag(r.companion, true),
+    collab: flag(r.collab, true),
+  };
+  if (typeof r.enabled === 'boolean') prefs.enabled = r.enabled;
+  return prefs;
+}
+
+/** 알림 전체 허용 여부 */
+export function notificationsEnabled(prefs: NotificationPrefs): boolean {
+  return prefs.enabled ?? true;
+}
+
+/** 알림 전체 허용을 바꾼 값 */
+export function withNotificationsEnabled(prefs: NotificationPrefs, enabled: boolean): NotificationPrefs {
+  return { ...prefs, enabled };
 }
 
 export interface ProfileRow {
@@ -45,13 +77,6 @@ export interface ProfileRow {
   trip_limit: number;
 }
 
-const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
-  preDeparture: true,
-  flightChanges: true,
-  communityReplies: true,
-  marketing: false,
-};
-
 const SELECT_COLUMNS = 'id, display_name, handle, plan, locale, temp_unit, distance_unit, base_currency, notification_prefs, gender, age_band, demographics_skips, avatar_url, pixel_avatar_seed, trips_created_count, trip_limit';
 
 export async function getMyProfile(userId: string): Promise<ProfileRow> {
@@ -60,7 +85,7 @@ export async function getMyProfile(userId: string): Promise<ProfileRow> {
   if (error) throw error;
   return {
     ...(data as ProfileRow),
-    notification_prefs: { ...DEFAULT_NOTIFICATION_PREFS, ...(data.notification_prefs ?? {}) },
+    notification_prefs: normalizeNotificationPrefs(data.notification_prefs),
   };
 }
 

@@ -27,11 +27,13 @@
     "unitSettings": "Unit Settings (Temp/Distance)"
   },
   "notifications": {
-    "preDeparture": "Pre-departure reminder",
-    "flightChanges": "Flight changes",
-    "communityReplies": "Community replies",
-    "marketing": "Marketing updates",
-    "hint": "Pre-departure reminders are emailed 3 days before your trip starts, at 9:00 AM Korea time. The other notifications will be supported in a future update."
+    "master": "Allow notifications",
+    "trip": "My trip alerts",
+    "community": "Community alerts",
+    "companion": "Companion alerts",
+    "collab": "Shared trip alerts",
+    "hint": "Trip: 7 days / 3 days / day-of reminders and destination travel advisories · Community: comments & replies (push) and likes (in-app only) · Companion: requests, acceptance, matches, chat, reviews · Shared trip: people joining or leaving. Moderation notices always come through.",
+    "osDenied": "Please allow Triptic notifications in iPhone Settings."
   },
   "data": {
     "offlineCache": "Offline cache",
@@ -181,23 +183,23 @@
     },
     "notifications": {
       "title": "Notification settings",
-      "desc": "Choose which updates you want to receive.",
+      "desc": "Choose which groups of updates you want. Moderation notices always come through.",
       "note": "Changes are saved instantly.",
-      "preDeparture": {
-        "title": "Pre-departure reminders",
-        "desc": "We remind you 7 days, 1 day and on the day of departure."
+      "trip": {
+        "title": "My trip",
+        "desc": "Reminders 7 days, 3 days and on the day before you leave, plus travel advisories for your destination."
       },
-      "flightChanges": {
-        "title": "Flight changes & delays",
-        "desc": "Alerts when a registered flight changes (coming soon)."
+      "community": {
+        "title": "Community",
+        "desc": "Push for comments and replies on your posts; likes show up in the in-app list only."
       },
-      "communityReplies": {
-        "title": "Community comments, replies & likes",
-        "desc": "The bell tells you when someone comments, replies or likes your posts and comments."
+      "companion": {
+        "title": "Companion",
+        "desc": "Requests, acceptances, matches, new chat messages and review requests."
       },
-      "marketing": {
-        "title": "Marketing & deals",
-        "desc": "News about deals and new features (coming soon)."
+      "collab": {
+        "title": "Shared trip",
+        "desc": "When someone joins or leaves your trip, or you're removed from one."
       }
     },
     "data": {
