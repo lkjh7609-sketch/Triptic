@@ -27,11 +27,13 @@
     "unitSettings": "單位設定 (溫度/距離)"
   },
   "notifications": {
-    "preDeparture": "出發前提醒",
-    "flightChanges": "航班變更",
-    "communityReplies": "社群回覆",
-    "marketing": "營銷資訊",
-    "hint": "出發前提醒會在旅行開始前 3 天的上午 9 點（韓國時間）以電子郵件寄出，其他通知將在後續版本中支援。"
+    "master": "允許通知",
+    "trip": "我的旅行通知",
+    "community": "社群通知",
+    "companion": "同行通知",
+    "collab": "共同編輯通知",
+    "hint": "我的旅行:出發前 7 天、3 天、當天與目的地旅遊警示 · 社群:留言與回覆(推播)及按讚(僅 App 內) · 同行:申請、通過、配對、聊天、評價 · 共同編輯:加入或離開。營運通知一律會收到。",
+    "osDenied": "請在 iPhone 設定中允許 Triptic 通知。"
   },
   "data": {
     "offlineCache": "離線快取",
@@ -178,23 +180,23 @@
     },
     "notifications": {
       "title": "通知設定",
-      "desc": "可自行選擇想接收的消息。",
+      "desc": "可以選擇想收到的通知類別。營運通知一律會收到。",
       "note": "變更會立即儲存。",
-      "preDeparture": {
-        "title": "出發前提醒",
-        "desc": "出發前 7 天、前一天與當天通知你。"
+      "trip": {
+        "title": "我的旅行",
+        "desc": "出發前 7 天、3 天、當天，以及目的地發布旅遊警示時通知你。"
       },
-      "flightChanges": {
-        "title": "航班異動與延誤通知",
-        "desc": "已登記的航班有變動時通知你（準備中）。"
+      "community": {
+        "title": "社群",
+        "desc": "貼文或留言收到留言與回覆時以推播通知，按讚僅顯示在 App 內通知。"
       },
-      "communityReplies": {
-        "title": "社群留言・回覆・按讚",
-        "desc": "有人對你的貼文或留言留言、回覆或按讚時，會以鈴鐺通知。"
+      "companion": {
+        "title": "同行",
+        "desc": "同行申請、通過、配對確認、新聊天訊息與評價邀請。"
       },
-      "marketing": {
-        "title": "行銷與優惠消息",
-        "desc": "優惠與新功能消息（準備中）。"
+      "collab": {
+        "title": "共同編輯",
+        "desc": "有人加入或離開你的旅行，或你被移出旅行時通知你。"
       }
     },
     "data": {

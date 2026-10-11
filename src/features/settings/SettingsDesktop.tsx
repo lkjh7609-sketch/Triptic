@@ -23,12 +23,12 @@ import {
   Palette,
   Pencil,
   Plane,
-  RefreshCw,
   Scale,
   ShieldCheck,
   Sun,
   Trash2,
   User,
+  UserPlus,
   UserX,
   Users,
 } from 'lucide-react';
@@ -46,7 +46,7 @@ import { captureError, trackScreenView } from '@/shared/monitoring';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
 import { clearOfflineCache } from '@/shared/offline/persister';
-import type { NotificationPrefs, ProfileRow } from '@/shared/api/profileService';
+import { NOTIFICATION_KEYS, normalizeNotificationPrefs, type NotificationKey, type NotificationPrefs, type ProfileRow } from '@/shared/api/profileService';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
 import { BlockedUsersList } from './BlockedUsersList';
 import { EditProfileModal } from './EditProfileModal';
@@ -76,13 +76,12 @@ const UNIT_OPTIONS = [
   { value: 'f-km', temp: 'f', dist: 'km', label: '°F · km' },
 ] as const;
 
-const NOTIFICATION_KEYS: (keyof NotificationPrefs)[] = ['preDeparture', 'flightChanges', 'communityReplies', 'marketing'];
 
-const NOTIFICATION_ICONS: Record<keyof NotificationPrefs, ReactNode> = {
-  preDeparture: <Plane size={18} />,
-  flightChanges: <RefreshCw size={18} />,
-  communityReplies: <MessagesSquare size={18} />,
-  marketing: <Megaphone size={18} />,
+const NOTIFICATION_ICONS: Record<NotificationKey, ReactNode> = {
+  trip: <Plane size={18} />,
+  community: <MessagesSquare size={18} />,
+  companion: <Users size={18} />,
+  collab: <UserPlus size={18} />,
 };
 
 /** 이 사이트가 이 기기에서 쓰는 저장 공간과 브라우저가 허용하는 한도(MB). 잴 수 없으면 null */
@@ -139,7 +138,7 @@ export function SettingsDesktop() {
   const isPro = profile?.plan === 'pro';
   const freeLeft = Math.max(0, (profile?.trip_limit ?? 0) - (profile?.trips_created_count ?? 0));
   const unitValue = `${profile?.temp_unit ?? 'c'}-${profile?.distance_unit ?? 'km'}`;
-  const prefs: NotificationPrefs = profile?.notification_prefs ?? { preDeparture: true, flightChanges: true, communityReplies: true, marketing: false };
+  const prefs: NotificationPrefs = normalizeNotificationPrefs(profile?.notification_prefs);
 
   /** 프로필 사진 — 고른 사진을 작은 정사각형으로 줄여 올린 뒤 적용한다 */
   async function changePhoto(file: File | undefined) {
@@ -449,7 +448,7 @@ export function SettingsDesktop() {
                         type="checkbox"
                         role="switch"
                         className={styles.switchInput}
-                        checked={prefs[key] ?? key !== 'marketing'}
+                        checked={prefs[key]}
                         aria-label={t(`desktop.notifications.${key}.title`)}
                         onChange={(e) => togglePref(key, e.target.checked)}
                       />

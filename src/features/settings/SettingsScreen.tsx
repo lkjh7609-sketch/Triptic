@@ -14,7 +14,7 @@ import { BackupModal } from '@/features/plan/BackupModal';
 import { getStoredTheme, setTheme, type ThemePreference } from '@/shared/theme';
 import { registerPushNotifications } from '@/shared/push/registerPush';
 import { clearOfflineCache } from '@/shared/offline/persister';
-import type { NotificationPrefs } from '@/shared/api/profileService';
+import { NOTIFICATION_KEYS, normalizeNotificationPrefs, type NotificationKey } from '@/shared/api/profileService';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { SettingsDesktop } from './SettingsDesktop';
 import { DeleteAccountFlow } from './DeleteAccountFlow';
@@ -30,11 +30,11 @@ import { FeedbackModal } from './FeedbackModal';
 import { useAppVersion } from '@/features/notices/useAppVersion';
 import styles from './SettingsScreen.module.css';
 
-const NOTIFICATION_LABEL_KEYS: Record<keyof NotificationPrefs, string> = {
-  preDeparture: 'notifications.preDeparture',
-  flightChanges: 'notifications.flightChanges',
-  communityReplies: 'notifications.communityReplies',
-  marketing: 'notifications.marketing',
+const NOTIFICATION_LABEL_KEYS: Record<NotificationKey, string> = {
+  trip: 'notifications.trip',
+  community: 'notifications.community',
+  companion: 'notifications.companion',
+  collab: 'notifications.collab',
 };
 
 /** 이 사이트가 이 기기에서 실제로 쓰는 저장 공간(MB). 잴 수 없는 환경이면 null */
@@ -114,13 +114,8 @@ export function SettingsScreen() {
     }
   }
 
-  function updateNotificationPref(key: keyof NotificationPrefs, value: boolean) {
-    const base: NotificationPrefs = profile?.notification_prefs ?? {
-      preDeparture: true,
-      flightChanges: true,
-      communityReplies: true,
-      marketing: false,
-    };
+  function updateNotificationPref(key: NotificationKey, value: boolean) {
+    const base = normalizeNotificationPrefs(profile?.notification_prefs);
     updateProfile.mutate({ notification_prefs: { ...base, [key]: value } });
     // 알림을 처음 켜는 순간 디바이스 토큰을 등록한다(네이티브 앱에서만 동작,
     // 실제 발송 파이프라인은 아직 없다 — src/shared/push/registerPush.ts 참고).
@@ -213,12 +208,12 @@ export function SettingsScreen() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}><Bell size={18}/> {t('section.notifications')}</h2>
         <div className={styles.card}>
-          {(Object.keys(NOTIFICATION_LABEL_KEYS) as (keyof NotificationPrefs)[]).map((key) => (
+          {NOTIFICATION_KEYS.map((key) => (
             <label className={styles.row} key={key}>
               <span>{t(NOTIFICATION_LABEL_KEYS[key])}</span>
               <input
                 type="checkbox"
-                checked={profile?.notification_prefs?.[key] ?? key !== 'marketing'}
+                checked={normalizeNotificationPrefs(profile?.notification_prefs)[key]}
                 onChange={(e) => updateNotificationPref(key, e.target.checked)}
               />
             </label>
