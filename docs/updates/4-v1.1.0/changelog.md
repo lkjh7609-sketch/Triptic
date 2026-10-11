@@ -12,6 +12,13 @@
 - 웹 종 알림(`alertNotices`·`tripReminders`)은 이번에 건드리지 않았다 — 서버 알림(`app_notifications`)을 웹 종이 읽게 하는 것은 별도 작업.
 - 확인: 타입·eslint·설정/API 시험 82개 통과.
 
+### 2026-10-12 (20) — iOS 앱 출시 준비: Universal Link 파일 + 약관·개인정보처리방침 최신화
+
+브랜치 `admin/aasa-universal-links`. 앱 저장소(`tios`)에서 iOS 앱 출시를 준비하면서 웹(triptic.my)에 있어야 하는 것만 옮긴다(앱 전용 코드는 넣지 않음).
+- **Universal Link**: `public/.well-known/apple-app-site-association`(앱 `37SRQ4NMPD.com.triptic.travel`이 `/plan/*`·`/shared/*`·`/community/*`를 연다)과 `vercel.json`의 `Content-Type: application/json` 헤더. 지금까지 이 주소는 사이트 첫 화면(`text/html`)이 대신 나가고 있었다.
+- **약관·개인정보처리방침**(루트 `terms.html`·`privacy.html`, 2026-10-12 시행): 앱 푸시 알림(푸시 토큰·알림 기록·Apple APNs), 카메라(QR)·위치(앱), 여행 출발 3일 전 이메일 중단, 태그 삭제, 광고 식별자 미수집, 무료 여행 한도, 항공 운임 정보 제공자(Ignav). App Store의 개인정보처리방침 URL이 이 페이지다.
+- 배포 후 확인: `curl -sI https://triptic.my/.well-known/apple-app-site-association`이 `200`·`application/json`.
+
 ### 2026-10-09 (18) — 홈 인기 여행기 카드에서 '일정 복사하기' 제거
 
 브랜치 `admin/stories-no-copy`. **사용자 지시**: 홈 인기 여행기 카드의 '일정 복사하기'를 모바일·PC 모두 지우고, 모바일은 좋아요 수·댓글 수를 보여 준다(복사는 게시글 안에서).
