@@ -204,6 +204,20 @@
   .head {
     display: grid;
   }
+
+  /* 동행 알약은 윗줄 하트 아이콘의 가운데에 맞춘다(하트+숫자는 좋아요 칸 오른쪽 끝에 붙는다) — 글자 폭이 언어마다 달라 가운데 기준으로 놓는다 */
+  .cSpots {
+    position: relative;
+    justify-content: flex-start;
+    padding-left: 90px;
+  }
+
+  .cSpots .pill {
+    position: absolute;
+    left: 44px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* 모바일 — 첫 줄 [분류] 제목(2줄까지), 둘째 줄 작성자·시간 / 숫자, 사진이 있으면 오른쪽에 썸네일 */

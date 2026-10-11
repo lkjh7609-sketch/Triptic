@@ -174,7 +174,7 @@ export async function listCompanionPosts(opts: {
 }
 
 /** 급구 동행 — 출발이 오늘 이후로 가장 가까운 모집 중 글(날짜 미정은 제외) */
-export async function listUrgentCompanionPosts(destinationId: string, limit = 2): Promise<CompanionPost[]> {
+export async function listUrgentCompanionPosts(destinationId: string, limit = 12): Promise<CompanionPost[]> {
   const { data, error } = await getSupabaseClient()
     .from('companion_posts')
     .select('*')

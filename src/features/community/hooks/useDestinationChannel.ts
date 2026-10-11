@@ -38,7 +38,7 @@ export function useDestinationFollowerCount(destinationId: string | undefined) {
 export function useUrgentCompanions(destinationId: string | undefined) {
   return useQuery({
     queryKey: ['community', 'companion', 'urgent', destinationId ?? ''],
-    queryFn: () => listUrgentCompanionPosts(destinationId!, 2),
+    queryFn: () => listUrgentCompanionPosts(destinationId!),
     enabled: !!destinationId,
     staleTime: 60 * 1000,
   });

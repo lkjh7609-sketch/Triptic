@@ -180,6 +180,40 @@
   list-style: none;
 }
 
+.urgentPager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.urgentPagerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-body);
+  cursor: pointer;
+}
+
+.urgentPagerBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.urgentPagerText {
+  min-width: 48px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-caption-size);
+  font-variant-numeric: tabular-nums;
+}
+
 .urgentItem {
   display: flex;
   flex-direction: column;
@@ -335,7 +369,7 @@
 
 .clockTime {
   color: var(--brand-text);
-  font-size: 1.75rem;
+  font-size: 1.1667rem;
   font-weight: 800;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;

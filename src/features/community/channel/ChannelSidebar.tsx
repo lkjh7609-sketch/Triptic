@@ -1,4 +1,4 @@
-import { Route as RouteIcon, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Route as RouteIcon, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -225,10 +225,17 @@ function FxCalculator({
   );
 }
 
-/** 급구! 동행 — 출발이 가장 가까운 모집 중 글 */
+/** 급구 카드 한 쪽에 보이는 글 수 — 넘으면 쪽 넘김 */
+const URGENT_PAGE_SIZE = 3;
+
+/** 급구! 동행 — 출발이 가장 가까운 모집 중 글, 한 쪽에 3개씩 */
 export function UrgentCompanionsCard({ posts }: { posts: CompanionPost[] }) {
   const { t } = useTranslation('community');
+  const [page, setPage] = useState(0);
   if (posts.length === 0) return null;
+  const pageCount = Math.ceil(posts.length / URGENT_PAGE_SIZE);
+  const current = Math.min(page, pageCount - 1);
+  const visible = posts.slice(current * URGENT_PAGE_SIZE, (current + 1) * URGENT_PAGE_SIZE);
 
   function departure(post: CompanionPost): string {
     if (!post.start_date) return '';
@@ -245,7 +252,7 @@ export function UrgentCompanionsCard({ posts }: { posts: CompanionPost[] }) {
         {t('channel.urgent.title')}
       </h2>
       <ul className={styles.urgentList}>
-        {posts.map((post) => (
+        {visible.map((post) => (
           <li key={post.id}>
             <Link to={`/community/companion/${post.id}`} className={styles.urgentItem}>
               <span className={styles.urgentBadge}>{departure(post)}</span>
@@ -261,6 +268,31 @@ export function UrgentCompanionsCard({ posts }: { posts: CompanionPost[] }) {
           </li>
         ))}
       </ul>
+      {pageCount > 1 ? (
+        <nav className={styles.urgentPager} aria-label={t('channel.urgent.pagerAria')}>
+          <button
+            type="button"
+            className={styles.urgentPagerBtn}
+            onClick={() => setPage(current - 1)}
+            disabled={current === 0}
+            aria-label={t('channel.urgent.prev')}
+          >
+            <ChevronLeft size={16} aria-hidden="true" />
+          </button>
+          <span className={styles.urgentPagerText} aria-live="polite">
+            {current + 1} / {pageCount}
+          </span>
+          <button
+            type="button"
+            className={styles.urgentPagerBtn}
+            onClick={() => setPage(current + 1)}
+            disabled={current >= pageCount - 1}
+            aria-label={t('channel.urgent.next')}
+          >
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </nav>
+      ) : null}
     </section>
   );
 }

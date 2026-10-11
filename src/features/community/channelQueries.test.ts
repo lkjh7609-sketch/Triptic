@@ -128,7 +128,7 @@ describe('listCompanionPosts — 도시 채널', () => {
     expect(find('range')).toEqual(['range', 20, 39]);
   });
 
-  it('급구 동행은 이 도시의 모집 중·오늘 이후 출발만 가까운 순으로 2개', async () => {
+  it('급구 동행은 이 도시의 모집 중·오늘 이후 출발만 가까운 순으로 12개(카드가 3개씩 쪽 넘김)', async () => {
     await listUrgentCompanionPosts('kl');
     expect(calls.table).toBe('companion_posts');
     expect(find('eq')).toEqual(['eq', 'status', 'recruiting']);
@@ -136,7 +136,7 @@ describe('listCompanionPosts — 도시 채널', () => {
       true,
     );
     expect(calls.log.find((c) => c[0] === 'gte')?.[1]).toBe('start_date');
-    expect(find('limit')).toEqual(['limit', 2]);
+    expect(find('limit')).toEqual(['limit', 12]);
   });
 });
 

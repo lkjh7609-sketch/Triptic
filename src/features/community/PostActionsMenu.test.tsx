@@ -42,6 +42,16 @@ describe('PostActionsMenu', () => {
     expect(onTogglePin).toHaveBeenCalled();
   });
 
+  it('남의 글이어도 삭제를 넘기면(관리자) 삭제 항목이 신고·차단과 함께 보인다', () => {
+    const onDelete = vi.fn();
+    render(<PostActionsMenu targetType="post" targetId="p" authorId="other" onDelete={onDelete} />);
+    open();
+    expect(screen.getByRole('menuitem', { name: '신고' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: '수정' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('menuitem', { name: '삭제' }));
+    expect(onDelete).toHaveBeenCalled();
+  });
+
   it('고정된 글이면 고정 해제로 보이고, 고정 항목은 넘기지 않으면 없다', () => {
     const { unmount } = render(<PostActionsMenu targetType="post" targetId="p" authorId="other" onTogglePin={vi.fn()} pinned />);
     open();
