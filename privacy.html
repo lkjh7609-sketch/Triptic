@@ -108,11 +108,40 @@
         margin-top: 10px;
     }
     a { color: var(--brand-primary); }
+
+    .lang-switch { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: -8px 0 20px; font-size: 13px; }
+    .lang-switch a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .lang-switch a[aria-current="page"] { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 3px; }
+    .tr-note { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }
+
+    .lang-switch { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: -8px 0 20px; font-size: 13px; }
+    .lang-switch a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .lang-switch a[aria-current="page"] { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 3px; }
+    th, td, p, li { overflow-wrap: anywhere; }
+    .tr-note { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }
 </style>
+<script>
+(function () {
+  try {
+    var kind = location.pathname.indexOf('privacy') !== -1 ? 'privacy' : 'terms';
+    var suffix = { ko: '', en: '-en', ja: '-ja', 'zh-TW': '-zh-TW' };
+    var q = new URLSearchParams(location.search).get('lang');
+    var saved = null;
+    try { saved = localStorage.getItem('triptic-legal-lang'); } catch (e) {}
+    var lang = q || saved;
+    if (!lang) {
+      var n = ((navigator.languages && navigator.languages[0]) || navigator.language || 'ko').toLowerCase();
+      lang = n.indexOf('ko') === 0 ? 'ko' : n.indexOf('ja') === 0 ? 'ja' : n.indexOf('zh') === 0 ? 'zh-TW' : 'en';
+    }
+    if (suffix[lang] !== undefined && lang !== 'ko') location.replace('/' + kind + suffix[lang] + '.html' + location.hash);
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
 <div class="wrap">
     <a class="top-link" href="/">← Triptic으로 돌아가기</a>
+    <nav class="lang-switch" aria-label="Language"><a href="/privacy.html?lang=ko" hreflang="ko" lang="ko" data-legal-lang="ko" aria-current="page">한국어</a> <a href="/privacy-en.html" hreflang="en" lang="en" data-legal-lang="en">English</a> <a href="/privacy-ja.html" hreflang="ja" lang="ja" data-legal-lang="ja">日本語</a> <a href="/privacy-zh-TW.html" hreflang="zh-Hant" lang="zh-Hant" data-legal-lang="zh-TW">繁體中文</a></nav>
     <h1>개인정보처리방침</h1>
     <p class="updated">공고일자 및 시행일자: 2026년 10월 12일 (최초 시행: 2026년 9월 18일)</p>
 
@@ -454,5 +483,15 @@
         </p>
     </div>
 </div>
+<script>
+(function () {
+  try {
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest && e.target.closest('a[data-legal-lang]');
+      if (a) localStorage.setItem('triptic-legal-lang', a.getAttribute('data-legal-lang'));
+    });
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

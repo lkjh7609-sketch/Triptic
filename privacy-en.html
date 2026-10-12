@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - Triptic</title>
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+    :root {
+        --bg-page: #F9F9F7;
+        --bg-card: #FFFFFF;
+        --text-title: #0F172A;
+        --text-body: #1E293B;
+        --text-muted: #475569;
+        --border-color: #E2E8F0;
+        --brand-primary: #1E3A5F;
+        --brand-light: #EDF3F8;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        background: var(--bg-page);
+        color: var(--text-body);
+        line-height: 1.7;
+        word-break: keep-all;
+    }
+    .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+    }
+    .top-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--brand-primary);
+        text-decoration: none;
+        margin-bottom: 24px;
+    }
+    h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text-title);
+        margin: 0 0 6px;
+    }
+    .updated {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 32px;
+    }
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 28px;
+        margin-bottom: 20px;
+    }
+    h2 {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--text-title);
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    h3 {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--text-title);
+        margin: 18px 0 6px;
+    }
+    p, li {
+        font-size: 14.5px;
+        color: var(--text-body);
+    }
+    ul, ol {
+        margin: 6px 0;
+        padding-left: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+        font-size: 13.5px;
+    }
+    th, td {
+        border: 1px solid var(--border-color);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    th {
+        background: var(--brand-light);
+        color: var(--text-title);
+        font-weight: 700;
+    }
+    .note {
+        background: var(--brand-light);
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 13.5px;
+        color: var(--text-muted);
+        margin-top: 10px;
+    }
+    a { color: var(--brand-primary); }
+
+    .lang-switch { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: -8px 0 20px; font-size: 13px; }
+    .lang-switch a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .lang-switch a[aria-current="page"] { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 3px; }
+    .tr-note { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }
+
+    .lang-switch { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: -8px 0 20px; font-size: 13px; }
+    .lang-switch a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .lang-switch a[aria-current="page"] { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 3px; }
+    th, td, p, li { overflow-wrap: anywhere; }
+    .tr-note { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <a class="top-link" href="/">← Back to Triptic</a>
+    <nav class="lang-switch" aria-label="Language"><a href="/privacy.html?lang=ko" hreflang="ko" lang="ko" data-legal-lang="ko">한국어</a> <a href="/privacy-en.html" hreflang="en" lang="en" data-legal-lang="en" aria-current="page">English</a> <a href="/privacy-ja.html" hreflang="ja" lang="ja" data-legal-lang="ja">日本語</a> <a href="/privacy-zh-TW.html" hreflang="zh-Hant" lang="zh-Hant" data-legal-lang="zh-TW">繁體中文</a></nav>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Effective date: October 12, 2026 (first effective: September 18, 2026)</p>
+    <p class="tr-note">This is a translation provided for your convenience. If there is any discrepancy between this translation and the Korean version, the Korean version prevails.</p>
+
+    <div class="card">
+        <p>
+            Triptic (the "Service") takes users' personal information seriously and complies with applicable laws, including the Personal Information Protection Act of Korea.
+            This policy explains openly how the Service processes personal information: the items processed, the purposes, the retention periods and users' rights.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>1. Personal Information Collected</h2>
+        <table>
+            <tr><th>Category</th><th>Items collected</th><th>How collected</th></tr>
+            <tr>
+                <td>Sign-in<br>(Google / Apple / Kakao / email)</td>
+                <td>Email address, name (nickname), profile photo URL (for social sign-in)</td>
+                <td>Received from each provider at sign-in, or entered directly by the user when signing up with email</td>
+            </tr>
+            <tr>
+                <td>Trip itinerary data</td>
+                <td>Trip name, cities visited, place names, addresses, coordinates, times and notes added to the itinerary, accommodation, flight and expense information, and the member who last edited the itinerary</td>
+                <td>Entered directly in the Service by the user (including co-editing members)</td>
+            </tr>
+            <tr>
+                <td>Booking documents</td>
+                <td>Flight and accommodation booking confirmations and vouchers uploaded by the user (PDF or image files), and recognition results (booker's name, booking number, flight or accommodation name, dates and times, etc.)</td>
+                <td>Uploaded directly by the user on the trip screen</td>
+            </tr>
+            <tr>
+                <td>Co-editing (share links)</td>
+                <td>Account identifier, time of joining and role (owner or editing member) of members who joined a trip through a share link</td>
+                <td>Recorded automatically when a signed-in member joins a trip through a share link</td>
+            </tr>
+            <tr>
+                <td>Profile photo <b>(optional)</b></td>
+                <td>The profile photo the user uploads (shrunk in the browser to a small 256px square file before saving). If you do not upload one, the photo address from your social sign-in provider is used as is.</td>
+                <td>Chosen by the user in Settings. It is shown on the community profile (posts, comments and companion screens) and can be changed or removed at any time.</td>
+            </tr>
+            <tr>
+                <td>Age range and gender <b>(optional)</b></td>
+                <td>The age range (early 20s, late 20s, early 30s, late 30s, 40s, 50s or older) and gender (female, male) the user chooses</td>
+                <td>Chosen by the user in the prompt shown when first entering the Community or in Settings. You can use the Service without entering them; if you tap "Later" in the prompt, you are asked once more and then not asked again. The number of times you skipped is also recorded.</td>
+            </tr>
+            <tr>
+                <td>Recent activity</td>
+                <td>For signed-in members: the time of last sign-in, the time the app was last opened, and the country of access (country level only; the exact location and IP address are not stored)</td>
+                <td>Recorded automatically when a signed-in member opens the app (once per 30 minutes on the same device). The country of access is estimated from the country information of the access request.</td>
+            </tr>
+            <tr>
+                <td>Community profile</td>
+                <td>Nickname, bio, display language, and a 5-character identifier issued automatically at sign-up (unrelated to the nickname; visible only to the member and the operator)</td>
+                <td>The nickname and similar items are entered by the user; the 5-character identifier is issued automatically by the server at sign-up</td>
+            </tr>
+            <tr>
+                <td>Contact (customer support)</td>
+                <td>The inquiry text and, optionally, one attached screenshot image</td>
+                <td>Written and attached directly by the user in Settings or customer support</td>
+            </tr>
+            <tr>
+                <td>Community posts</td>
+                <td>Posts (title and body), comments, replies and uploaded images written on destination boards and the free board; records of likes (posts and comments), bookmarks, follows, reports and blocks; and notification records about comments, replies and likes on my posts and comments (who did what on which post or comment)</td>
+                <td>Entered directly in the Service by the user</td>
+            </tr>
+            <tr>
+                <td>Companion finder</td>
+                <td>Recruitment posts (title, body, destination, dates, number of people), messages left when applying, and matched group chat messages</td>
+                <td>Entered directly in the Service by the user</td>
+            </tr>
+            <tr>
+                <td>Push notifications (app)</td>
+                <td>This device's push notification address (token) and device type, notification settings (My trips, Community, Companion, Co-editing, allow all), and notification records created by the server (upcoming departures and travel advisories, companion applications, acceptances, matches, chat and review requests, co-editing joins and leaves, moderation results)</td>
+                <td>When you allow notifications in the app, the token is received from the device and stored; notification records are created automatically by the server when the event occurs. When you turn notifications off or sign out, this device's token is deleted.</td>
+            </tr>
+            <tr>
+                <td>Camera (app)</td>
+                <td>The camera view while reading a companion's QR code (captured images are not stored or transmitted; only the scanned code value is used to confirm whether you are in the same group)</td>
+                <td>Processed on the device when you allow camera access in the app</td>
+            </tr>
+            <tr>
+                <td>Location</td>
+                <td>Latitude and longitude when the current-location button is used</td>
+                <td>Provided by the device when you approve the location permission of the browser or app (iOS) (see Section 5 below)</td>
+            </tr>
+            <tr>
+                <td>Usage analytics and error information</td>
+                <td>Screen navigation and records of main feature use (only which feature was used, such as completing sign-up, creating a trip, adding a place, uploading a booking document, or creating or joining a share link; trip titles, place names and text you entered are not included), a random account identifier (not name or email) for signed-in members, access IP, device and browser information, and error details when an error occurs</td>
+                <td>Collected automatically while you use the Service by an analytics tool (PostHog) and an error collection tool (Sentry). If you turn on "Do Not Track" in your browser, usage analytics records are not sent.</td>
+            </tr>
+            <tr>
+                <td>Automatically collected information</td>
+                <td>Access IP address, time of access, country of access</td>
+                <td>Collected automatically through server (Vercel and Cloudflare) access logs. The IP is used only temporarily to prevent API abuse (request rate limiting); the country of access is used only to choose the display language on the first visit, and the country of non-members is not stored (the country of signed-in members is stored as part of "Recent activity" above).</td>
+            </tr>
+        </table>
+        <p class="note">
+            The Service does not separately collect sensitive personal identifiers other than name and email, such as resident registration numbers or contact details.
+            However, booking document files uploaded by users may contain passport numbers, contact details and the like. These files are kept in private storage that only the person who uploaded them can see, and only the booking information needed for the itinerary is extracted and used; other information is not separately extracted or stored.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>2. Purposes of Collection and Use</h2>
+        <ul>
+            <li>Identifying members, keeping them signed in, and automatically syncing itineraries across devices</li>
+            <li>Providing storage, viewing and editing of trip itineraries</li>
+            <li>Co-editing the same itinerary with companions invited through a share link, and reflecting changes in real time</li>
+            <li>Automatically recognizing booking documents (flight and accommodation confirmations) and reflecting them in the itinerary</li>
+            <li>Providing additional features such as map and place search, AI nearby recommendations and city introductions, and weather</li>
+            <li>Showing first-time visitors a display language suited to their country of access</li>
+            <li>Operating the Community boards (posting and editing posts, comments, replies and images; follows; likes and bookmarks; handling reports and blocks) and providing notifications about reactions to my posts and comments</li>
+            <li>Handling companion recruitment, applications and matching; providing chat for matched groups; mutual confirmation of group members through QR codes when meeting offline; and <b>displaying the author's and applicant's age range and gender on companion recruitment posts and application screens (only where they chose to enter them)</b></li>
+            <li><b>Sending notice emails</b> needed to use the Service, such as sign-up and account deletion confirmations (not for promotion), and providing the app's <b>push notifications and notification list</b> (upcoming departures and travel advisories for my trips, comments and replies, companion and co-editing news, moderation results)</li>
+            <li>Receiving and answering inquiries, and improving the Service</li>
+            <li>Connecting to partner services (flights, hotels, tours, etc.)</li>
+            <li>Analyzing usage statistics and checking errors — understanding where use gets blocked and where errors occur in order to improve the Service</li>
+            <li>Preventing misuse and harmful content (receiving user reports and operator review, and automatic hiding when reports accumulate — since October 5, 2026, posts are not automatically screened before publication by AI or similar), and ensuring stability of the Service (request rate limiting, etc.)</li>
+            <li>Member management and responding to inquiries — in the member management screen, the operator can see a member's email, sign-up date, age range and gender, the title, city and period of trips they created, and the time and country of their latest access (used only for handling inquiries, preventing misuse and operating the Service, and accessible only to operator accounts)</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>3. Retention and Use Period</h2>
+        <p>
+            Users' personal information is destroyed without delay when they delete their account or when the purpose of retention is achieved. However, unless the user deletes it themself, trip itinerary data linked to a signed-in account is kept for as long as the Service is used.
+        </p>
+        <ul>
+            <li>Account information (email, name, profile photo), age range and gender, and recent activity records: until account deletion (age range and gender can be removed at any time in Settings, and are deleted immediately when removed)</li>
+            <li>Trip itinerary data: until the trip owner deletes it or the owner deletes their account (content entered by co-editing members is part of the trip and is kept for the same period)</li>
+            <li>Booking document files and recognition results: until the user deletes them, the trip is deleted, or the account is deleted</li>
+            <li>Co-editing participation records: until the member leaves, the owner removes the member, or the trip is deleted</li>
+            <li>Push notification address (token): this device's token is deleted when you turn notifications off or sign out, deleted immediately when Apple reports it can no longer be used, and all tokens are deleted when you delete your account. Notification records are kept until the user deletes them or the account is deleted.</li>
+            <li>Community posts, comments and images: until the user deletes them or the account is deleted (excluding content removed for violating operating policies). Notification records are kept until the user deletes them, the related post or comment is deleted, or the account is deleted. Photos removed while editing a post may remain in storage for a while and are cleaned up regularly.</li>
+            <li>Companion recruitment posts, application messages and chat messages: until the recruitment post is deleted or the account is deleted. When you leave a group, your access to that group's chat (including past messages) disappears immediately.</li>
+            <li>Inquiries and screenshots: until account deletion</li>
+            <li>Server access logs (IP): kept for up to 3 months under the Protection of Communications Secrets Act and then destroyed</li>
+            <li>Deleted posts and cancelled companion recruitments: they disappear from the screen immediately and are kept in a separate archive for operational needs such as handling reports and resolving disputes (not shown to users and visible only to the operator). The retention period is 2 months from the date of deletion or cancellation; attached photo files are deleted first after 1 month, and after 2 months all post and comment records are deleted. They are deleted together when the author deletes their account, and comments made by other members are also deleted from the archive when that member deletes their account.</li>
+            <li>Account deletion: when you delete your account in Settings, the account, trip itineraries, booking document files and recognition results, posts, comments, companion finder records, inquiries and the other items above are deleted immediately and cannot be recovered (trips being co-edited are deleted together when the owner deletes their account).</li>
+            <li>Members whom the operator forcibly removed for violating the Terms: to prevent signing up or signing in again with the same email, the <b>email address, name, reason for suspension and date and time of the measure</b> are kept until the suspension is lifted. All other data is deleted immediately as described above.</li>
+            <li>Usage analytics and error information: kept until the purpose of improving the Service is achieved, and deleted on the user's request (see Section 10 below)</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>4. Provision to Third Parties and Entrusted Processing</h2>
+        <p>The Service uses the external services below to provide its features smoothly, and the minimum necessary information may be passed to each of them in the process.</p>
+        <table>
+            <tr><th>Recipient</th><th>Items provided</th><th>Purpose</th></tr>
+            <tr><td>Supabase (authentication and database)</td><td>All service data, including account information, trip itinerary data, booking document files and inquiries</td><td>Member authentication, data storage and sync, real-time co-editing</td></tr>
+            <tr><td>Vercel Inc. (hosting provider, United States)</td><td>Access IP, country of access, request logs</td><td>Service hosting and operation of server functions</td></tr>
+            <tr><td>Cloudflare, Inc. (domain, CDN, security, United States)</td><td>Access IP, country of access, request logs</td><td>Domain connection, faster delivery, security (traffic filtering)</td></tr>
+            <tr><td>Apple Inc. (Apple Push Notification service, APNs, United States)</td><td>This device's push notification address (token), the notification title and text (post content is not included on the lock screen), and the in-app path to open when the notification is tapped</td><td>Delivering app push notifications</td></tr>
+            <tr><td>Resend, Inc. (email delivery, United States)</td><td>The recipient's email address and name, and the content of the email (sign-up and account deletion notices)</td><td>Sending notice emails needed to use the Service</td></tr>
+            <tr><td>Google, Apple, Kakao (social sign-in)</td><td>The email, name and profile photo that the provider passes on at sign-in</td><td>Member authentication</td></tr>
+            <tr><td>Google Maps Platform</td><td>Searched place names and coordinates for map display. When exporting a PDF itinerary: the coordinates of itinerary places and accommodation names (to look up addresses and phone numbers), and coordinates to look up routes between places</td><td>Map display, place search, and the map, accommodation information and travel time calculation in the PDF itinerary</td></tr>
+            <tr><td>Google Cloud Vision</td><td>The image of the first page of a photographed or scanned booking document</td><td>Text recognition (OCR) of booking documents</td></tr>
+            <tr><td>DeepSeek (fallback: OpenRouter)</td><td>Text read from booking documents (passport numbers, card numbers, resident registration numbers, birth dates, emails, phone numbers and membership numbers are masked before sending; the booker's name and booking number may be included)</td><td>Extracting booking information (flight, accommodation, dates)</td></tr>
+            <tr><td>DeepSeek (fallback: OpenRouter)</td><td>Place names and city names (no personally identifying information)</td><td>Generating AI nearby recommendations and city introductions</td></tr>
+            <tr><td>Apple WeatherKit</td><td>Destination coordinates and dates (no personally identifying information)</td><td>Showing destination weather</td></tr>
+            <tr><td>PostHog (usage analytics, United States)</td><td>Screen navigation and main feature use records, a random account identifier of signed-in members, access IP, device and browser information (trip content, name and email are not included)</td><td>Analyzing usage statistics and improving the Service</td></tr>
+            <tr><td>Sentry (error collection, United States)</td><td>Error details, device and browser information, a random account identifier of signed-in members</td><td>Checking errors and improving stability</td></tr>
+            <tr><td>Ignav (flight fare search)</td><td>Flight search conditions (departure and arrival airports, dates, number of passengers, cabin class, and the price region based on the display language). They are passed through our server, and personally identifying information such as name and email, and the access IP address and browser information, are not passed.</td><td>Showing the flight fare list</td></tr>
+            <tr><td>Travelpayouts / Aviasales (airline logo images)</td><td>Airline logos in the flight fare list (pics.avs.io) are loaded directly by the user's browser, so the access IP address and browser information may be passed (search conditions are not passed)</td><td>Showing airline logos</td></tr>
+            <tr><td>Partners such as Agoda, MyRealTrip, Trip.com, Kiwi.com (Travelpayouts), Klook and Usimsa</td><td>Hotel search — on both web and app: the coordinates and hotel number of the destination (a city, or a hotel chosen by name) and the search conditions you entered (dates, number of guests, children's ages) are passed to Agoda through our server (the access IP address and browser information are not passed). Only when our search cannot be used on the web, a search box provided by Agoda is loaded directly by the user's browser, and the access IP address, browser information and cookies may be passed. Conditions entered for flight and tour searches, and the search conditions included in the booking site address when you tap flight [Book] (route, dates, passengers, cabin class), as well as click information and cookies</td><td>Flight, hotel and tour search, booking links, and measuring partner performance</td></tr>
+        </table>
+        <p class="note">
+            These services may have servers overseas (international transfer). Each service manages information under its own privacy policy, and the Service passes information only within the scope of the user's explicit request (place search, AI recommendations, booking document recognition requests, etc.).
+            Information you enter during booking and payment on a partner's site that you reached through a partner link is collected and processed directly by that partner.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>5. Processing of Location Information</h2>
+        <p>
+            The Service may use the browser's location API (iOS location services in the app, only while you use the app) through the "current location" button on the map screen.
+            This location information is <b>used only inside the browser to move the map to the user's current location</b>, and is not sent to a server or stored. Providing location is entirely the user's choice, and you can revoke the location permission at any time in the browser (in iOS Settings for the app).
+        </p>
+        <p>
+            Separately, when a signed-in member opens the app, the <b>country of access (country level)</b> that can be known from the access request is stored together with the time of the latest access.
+            The exact location (latitude and longitude) and the IP address are not stored, and this is visible only to the operator for member management and misuse prevention.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>6. Processing of Companion Matching Information</h2>
+        <p>Because the companion finder is a feature premised on matching with other users, we explain it separately as follows.</p>
+        <ul>
+            <li>When a match is confirmed, only members of the same group can see each other's community profile (nickname and profile photo).</li>
+            <li>The QR code used for offline meetings contains no personal information such as real name or contact details, only a randomly generated confirmation code. Scanning a QR code only confirms "whether the person is a member of the same matched group"; if someone who is not in the same group scans it, no information is revealed.</li>
+            <li>Group chat messages can be read only by members of that group, and when you leave the group, your access to the chat and your QR code expire immediately.</li>
+            <li>The <b>age range and gender</b> that a member chooses to enter are displayed next to the nickname of the author or applicant on companion recruitment posts and application screens. Only those of members who wrote a post or applied in the companion finder are visible to <b>other signed-in members</b>, and they are not disclosed together with other information such as email. If you do not enter them, they are not displayed, and you can change or delete them at any time in Settings.</li>
+            <li>Companion recruitment posts, application messages and group chat messages are not automatically screened before publication, and are managed through the report and block features and operator review.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>7. Trip Co-editing (Share Links)</h2>
+        <ul>
+            <li>When a trip owner sends a share link, the recipient can join that trip as an editing member only after signing in. People who are not signed in cannot view the itinerary through a share link.</li>
+            <li>Members of the same trip can see each other's nicknames, profile photos and roles, and can view and edit the itinerary, accommodation, flights and expenses together. When someone edits, it is reflected immediately on the other members' screens.</li>
+            <li>The original booking document files can be seen only by the person who uploaded them. However, booking information recognized and reflected in the itinerary (flight or accommodation names, dates and times, booking numbers, etc.) can be seen by members of the same trip.</li>
+            <li>Members can leave a trip at any time, and the owner can remove members. A member who leaves or is removed immediately loses access to the trip. If the owner cuts the link, only new joining is blocked; members who have already joined remain.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>8. Community Visibility and Search Exposure</h2>
+        <p>
+            Since October 5, 2026, the Community (destination boards, the free board, posts, comments and the companion finder) <b>screens are available only to signed-in members</b> and are not exposed to search engines (Naver, Google, etc.). Comments are also blocked on the server so that only signed-in members can read them.
+            Posts that search engines collected earlier may take some time to disappear from search results.
+            However, in order to show the "Popular travel stories" and "Find travel companions" previews on the home screen, the title, cover photo and author nickname of some posts and recruitment posts may be visible even to people who are not signed in, and for this purpose post information can be read from the server without signing in.
+            Announcements, update history and the user guide (including the sample PDF) can be seen by anyone and contain no personal information.
+            Personal trip itineraries, companion chats and inquiries are not made public.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>9. Cookies and Local Storage</h2>
+        <p>The Service uses the browser's local storage (localStorage) for smooth use.</p>
+        <ul>
+            <li>An authentication token to keep your sign-in session</li>
+            <li>Cache data so that recently viewed itineraries can be seen even offline</li>
+            <li>User settings such as display language and screen theme (dark mode)</li>
+            <li>The share link code you were trying to join while signing in (to continue joining after sign-in; it becomes invalid after 30 minutes)</li>
+            <li>An anonymous identifier for the usage analytics tool (stored only in this storage, without using cookies)</li>
+            <li>Screen settings such as notification read/deleted records, the time when the latest-activity record was last sent, and whether the map card is collapsed</li>
+            <li>Temporary trips created before signing in (stored only on this device, and moved to your account and removed from this device when you sign in)</li>
+        </ul>
+        <p>
+            The Service does not display advertising. The app (iOS) also does not collect the advertising identifier (IDFA) and does not track your activity in other companies' apps or websites.
+            Partner sites that you reach by tapping a partner link may use their own cookies to measure performance.
+            You can refuse cookie storage in your browser settings, but some features may then be limited.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>10. Users' Rights and How to Exercise Them</h2>
+        <p>Users can exercise the following rights at any time.</p>
+        <ul>
+            <li>Viewing, editing and deleting the trip itineraries, booking documents and posts they registered</li>
+            <li>Leaving a trip that is being co-edited</li>
+            <li>Disconnecting the sign-in (account) link and requesting account deletion</li>
+            <li>Requesting access to, correction of, deletion of, or suspension of the processing of personal information</li>
+        </ul>
+        <p>
+            You can delete your account yourself in Settings. For other privacy-related requests, please contact customer support (contact form) in the Service or the contact below, and we will act without delay, except for periods set by law.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>11. Person in Charge of Personal Information Protection</h2>
+        <table>
+            <tr><th>Person in charge</th><td>Jaehun Lee (operator of Triptic)</td></tr>
+            <tr><th>Email</th><td><a href="mailto:admin@triptic.my">admin@triptic.my</a></td></tr>
+        </table>
+        <p class="note">For inquiries, complaints and deletion requests about the processing of personal information, please contact customer support (contact form) in the Service or the email above.</p>
+    </div>
+
+    <div class="card">
+        <h2>12. Changes to this Privacy Policy</h2>
+        <p>
+            This Privacy Policy may be revised due to changes in law, policy or the Service, and any change will be announced through the announcements in the Service or on this page.
+        </p>
+        <p class="note">
+            Amended on October 12, 2026 (preparation for the iOS app launch): ① With the addition of the app's <b>push notifications</b>, this device's push notification address (token), notification settings and notification records created by the server were added to the items collected (Section 1), purposes (Section 2) and retention periods (Section 3), and Apple (APNs), which delivers pushes, was added to the list of entrusted processing and international transfer (Section 4). The lock screen text does not include post content. ② Use of the <b>camera</b> for companion QR confirmation and of <b>location</b> on the map (app, Sections 1 and 5) was described. ③ The <b>email 3 days before departure was removed</b>, and notices 7 days before, 3 days before and on the day of departure are now given as app notifications (emails are sent only for sign-up and account deletion notices; Sections 2 and 4). ④ <b>Tags</b> on posts and companion recruitment posts were removed (Section 1). ⑤ It is stated that the app does not collect the advertising identifier and does not track activity in other apps or websites (Section 9).
+        </p>
+        <p class="note">
+            Amended on October 9, 2026 (2): ① <b>Hotel search is now also shown inside the Service screens on the web</b>. On the web too, the coordinates and hotel number of the destination (a city, or a hotel chosen by name) and the search conditions you entered (dates, guests, children's ages) are passed to Agoda through our server, and the access IP address and browser information are not passed. The Agoda search box (widget) is shown on the web instead only when our search cannot be used, and only then is it loaded directly by the browser from Agoda, so that the access IP address, browser information and cookies may be passed (Section 4).
+            ② Hotel name autocomplete sends the typed characters to our server and looks them up in the Service's hotel list (accommodation names, cities and coordinates provided by Agoda; not personal information), and does not pass them anywhere else. City autocomplete still passes the typed characters to Google Maps Platform as before (Section 4).
+            ③ The companion recruitment post detail screen was changed to look the same as ordinary posts; the information collected did not change.
+        </p>
+        <p class="note">
+            Amended on October 9, 2026: the flight tab now shows a flight fare list inside the Service screens in all languages. The search conditions you enter (departure and arrival airports, dates, number of passengers, cabin class and display language) are passed through our server to the fare information provider <b>Ignav</b>, and personally identifying information and the access IP address and browser information are not passed (added to Section 4).
+            Flight [Book] opens <b>Trip.com</b> for Korean and <b>Kiwi.com</b> (Travelpayouts partner link) for other languages in a new tab, and the search conditions are passed in the address (Sections 4 and 9). "Find flights" in itineraries and checklists now opens the Service's flight tab instead of MyRealTrip. The airline logo images in the flight fare list are loaded directly by the user's browser from Travelpayouts / Aviasales (pics.avs.io), so the access IP address and browser information may be passed (Section 4).
+        </p>
+        <p class="note">
+            Earlier amendments (summary; the Korean original has the full history): on October 8, 2026, the hotel search partnership was changed to Agoda, the flight search partnership (Kayak) for languages other than Korean was ended, links to partner sites in the app now open in the in-app browser, and weather was changed to Apple WeatherKit (retrieved by the server once a day, so the user's browser no longer calls an external weather service). On October 5, 2026, the optional age range and gender, the recent activity record and the operator's view of it, members-only Community and end of search exposure, removal of AI pre-screening, post titles and editing, the free board, comment likes and notification records, the optional profile photo, notice emails through Resend, and retention of the email, name and reason for suspension of forcibly removed members were added or changed. On September 26–30 and October 1–4, 2026, sign-in methods (Apple, email), the Community, companion finder and group chat items, the 5-character identifier, the inquiry screenshot, "co-editing" through share links, booking document recognition, usage analytics (PostHog) and error collection (Sentry), the archive retention periods (2 months; photos 1 month), immediate and unrecoverable deletion of data on account deletion, and changes of partner services (end of advertising and Travelpayouts, Kayak and others) were reflected.
+        </p>
+    </div>
+</div>
+<script>
+(function () {
+  try {
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest && e.target.closest('a[data-legal-lang]');
+      if (a) localStorage.setItem('triptic-legal-lang', a.getAttribute('data-legal-lang'));
+    });
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
