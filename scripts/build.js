@@ -20,7 +20,7 @@ if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
 }
 
-const STATIC_ASSETS = ['manifest.json', 'sw.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-1024.png', 'privacy.html', 'terms.html'];
+const STATIC_ASSETS = ['manifest.json', 'sw.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-1024.png', 'privacy.html', 'terms.html', 'privacy-en.html', 'terms-en.html', 'privacy-ja.html', 'terms-ja.html', 'privacy-zh-TW.html', 'terms-zh-TW.html'];
 
 console.log('📦 Syncing Triptic static assets → public/ ...');
 

@@ -57,6 +57,7 @@ import { AvatarError, isUploadedAvatar, removeAvatarFiles, uploadAvatar } from '
 import { showToast } from '@/shared/ui/toast';
 import { useAppVersion } from '@/features/notices/useAppVersion';
 import styles from './SettingsDesktop.module.css';
+import { useLegalLinks } from '@/shared/legalLinks';
 
 type SectionKey = 'account' | 'display' | 'matching' | 'notifications' | 'data' | 'community';
 
@@ -108,6 +109,7 @@ function formatSize(mb: number): string {
 export function SettingsDesktop() {
   const appVersion = useAppVersion();
   const { t, i18n } = useTranslation(['settings', 'common']);
+  const legalLinks = useLegalLinks();
   const { user } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -533,13 +535,13 @@ export function SettingsDesktop() {
                   </span>
                   <span className={styles.linkDesc}>{t('desktop.community.partnershipDesc')}</span>
                 </button>
-                <a href="/terms.html" target="_blank" rel="noopener" className={styles.linkCard}>
+                <a href={legalLinks.terms} target="_blank" rel="noopener" className={styles.linkCard}>
                   <span className={styles.linkTitle}>
                     <FileText size={16} aria-hidden="true" /> {t('legal.terms', { ns: 'common' })}
                   </span>
                   <span className={styles.linkDesc}>{t('desktop.community.termsDesc')}</span>
                 </a>
-                <a href="/privacy.html" target="_blank" rel="noopener" className={styles.linkCard}>
+                <a href={legalLinks.privacy} target="_blank" rel="noopener" className={styles.linkCard}>
                   <span className={styles.linkTitle}>
                     <Scale size={16} aria-hidden="true" /> {t('legal.privacy', { ns: 'common' })}
                   </span>

@@ -27,6 +27,7 @@ import tileStyles from './PostTile.module.css';
 import boardStyles from './BoardRow.module.css';
 import { BoardHead, BoardRow } from './BoardRow';
 import { CATEGORY_ICONS } from './categoryIcons';
+import { useLegalLinks } from '@/shared/legalLinks';
 
 type Sort = 'latest' | 'likes' | 'comments';
 
@@ -70,6 +71,7 @@ export function CommunityDesignBody({
   onToggleHosting,
 }: Props) {
   const { t } = useTranslation(['community', 'common']);
+  const legalLinks = useLegalLinks();
   const { user } = useSession();
   const requireLogin = useRequireLogin();
   const [sort, setSort] = useState<Sort>('latest');
@@ -384,7 +386,7 @@ export function CommunityDesignBody({
               <p className="font-body-sm text-body-sm text-on-surface-variant">{t('design.ethosBody')}</p>
               <a
                 className="font-label-sm text-label-sm text-outline hover:text-primary transition-colors underline underline-offset-2 mt-1"
-                href="/terms.html"
+                href={legalLinks.terms}
                 target="_blank"
                 rel="noopener noreferrer"
               >

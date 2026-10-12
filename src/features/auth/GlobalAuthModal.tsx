@@ -9,6 +9,7 @@ import { flagInvalid } from '@/shared/ui/invalidField';
 import { LoginButtons } from './LoginButtons';
 import { EmailAuthForm } from './EmailAuthForm';
 import styles from './GlobalAuthModal.module.css';
+import { useLegalLinks } from '@/shared/legalLinks';
 
 interface GlobalAuthModalProps {
   /** 샘플 여행 체험 중에 띄운 경우에만 넘긴다 — 닫으면 샘플로 돌아간다 */
@@ -24,6 +25,7 @@ interface GlobalAuthModalProps {
  */
 export function GlobalAuthModal({ onClose, notice }: GlobalAuthModalProps) {
   const { t } = useTranslation();
+  const legalLinks = useLegalLinks();
   const trapRef = useFocusTrap<HTMLDivElement>(onClose);
   const [agreed, setAgreed] = useState(false);
   const [consentMissing, setConsentMissing] = useState(false);
@@ -102,8 +104,8 @@ export function GlobalAuthModal({ onClose, notice }: GlobalAuthModalProps) {
                   t={t}
                   i18nKey="auth.consent"
                   components={{
-                    terms: <a href="/terms.html" target="_blank" rel="noopener" />,
-                    privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
+                    terms: <a href={legalLinks.terms} target="_blank" rel="noopener" />,
+                    privacy: <a href={legalLinks.privacy} target="_blank" rel="noopener" />,
                   }}
                 />
               </span>

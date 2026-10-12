@@ -4,6 +4,7 @@ import { signInWithProvider, type AuthProvider } from '@/shared/api/authService'
 import { captureError } from '@/shared/monitoring';
 import { flagInvalid } from '@/shared/ui/invalidField';
 import styles from './LoginButtons.module.css';
+import { useLegalLinks } from '@/shared/legalLinks';
 
 /**
  * 로그인 옵션 (02-screens.md §6)
@@ -23,6 +24,7 @@ interface LoginButtonsProps {
 
 export function LoginButtons({ consent, redirectPath }: LoginButtonsProps = {}) {
   const { t } = useTranslation();
+  const legalLinks = useLegalLinks();
   const [agreedOwn, setAgreedOwn] = useState(false);
   const external = consent !== undefined;
   const agreed = consent ? consent.agreed : agreedOwn;
@@ -59,8 +61,8 @@ export function LoginButtons({ consent, redirectPath }: LoginButtonsProps = {}) 
               t={t}
               i18nKey="auth.consent"
               components={{
-                terms: <a href="/terms.html" target="_blank" rel="noopener" />,
-                privacy: <a href="/privacy.html" target="_blank" rel="noopener" />,
+                terms: <a href={legalLinks.terms} target="_blank" rel="noopener" />,
+                privacy: <a href={legalLinks.privacy} target="_blank" rel="noopener" />,
               }}
             />
           </span>

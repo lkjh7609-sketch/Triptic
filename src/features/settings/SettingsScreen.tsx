@@ -29,6 +29,7 @@ import { FeedbackModal } from './FeedbackModal';
 
 import { useAppVersion } from '@/features/notices/useAppVersion';
 import styles from './SettingsScreen.module.css';
+import { useLegalLinks } from '@/shared/legalLinks';
 
 const NOTIFICATION_LABEL_KEYS: Record<NotificationKey, string> = {
   trip: 'notifications.trip',
@@ -59,6 +60,7 @@ async function readCacheUsageMB(): Promise<number | null> {
 export function SettingsScreen() {
   const appVersion = useAppVersion();
   const { t, i18n } = useTranslation(['settings', 'common']);
+  const legalLinks = useLegalLinks();
   const { user, loading } = useSession();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -267,12 +269,12 @@ export function SettingsScreen() {
           </Link>
         </div>
         <div className={styles.row}>
-          <a href="/terms.html" target="_blank" rel="noopener" className={styles.linkButton}>
+          <a href={legalLinks.terms} target="_blank" rel="noopener" className={styles.linkButton}>
             {t('legal.terms', { ns: 'common' })}
           </a>
         </div>
         <div className={styles.row}>
-          <a href="/privacy.html" target="_blank" rel="noopener" className={styles.linkButton}>
+          <a href={legalLinks.privacy} target="_blank" rel="noopener" className={styles.linkButton}>
             {t('legal.privacy', { ns: 'common' })}
           </a>
         </div>
