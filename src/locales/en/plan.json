@@ -524,10 +524,10 @@
   "errors": {
     "tripLimit": "You've reached the limit on how many trips you can create.",
     "shareUnavailable": "Sharing with companions isn't available right now.",
-    "reopenLimit": "Free users can reopen this trip for editing up to 5 times."
+    "reopenLimit": "You can reopen this trip for editing up to 5 times."
   },
   "quota": {
-    "tripCreatedToast": "Trip created. {{remaining}} free trip creates left.",
+    "tripCreatedToast": "Trip created. You can create {{remaining}} more.",
     "finalizeConfirm": "Finish editing this trip's itinerary? Once finalized it becomes view-only — you'll need to reopen it to edit again.",
     "finalizeKeep": "Keep editing",
     "finalizeProceed": "Finish",

@@ -63,10 +63,10 @@ describe('SettingsDesktop', () => {
     expect(screen.queryByText('Pro 혜택 활성화됨')).not.toBeInTheDocument();
   });
 
-  it('무료 회원에게는 무료 티어와 남은 여행 생성 개수가 보이고, 다 쓰면 소진 안내가 나온다', () => {
+  it('무료 회원에게는 여행 생성 한도와 남은 개수가 보이고, 다 쓰면 소진 안내가 나온다', () => {
     state.profile.plan = 'free';
     const { unmount } = renderPage();
-    expect(screen.getByText('무료 티어')).toBeInTheDocument();
+    expect(screen.getByText('여행 생성 한도')).toBeInTheDocument();
     expect(screen.getByText('여행 생성 3 / 5개 사용')).toBeInTheDocument();
     expect(screen.getByText('남은 여행 생성 2개')).toBeInTheDocument();
     unmount();

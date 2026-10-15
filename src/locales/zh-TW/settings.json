@@ -219,7 +219,7 @@
       "licensesDesc": "開源軟體聲明"
     },
     "free": {
-      "title": "免費方案",
+      "title": "行程建立上限",
       "used": "已建立 {{used}} / {{limit}} 個行程",
       "left": "還可建立 {{left}} 個行程",
       "full": "行程建立次數已用完"

@@ -98,7 +98,7 @@
     "draftBannerText": "這個行程只儲存在這台裝置 — 登入後會移到你的帳號",
     "draftBannerCta": "登入並儲存",
     "importedToast": "已將 {{count}} 個暫存行程儲存到你的帳號",
-    "importLimit": "已達免費行程數量上限，部分暫存行程留在這台裝置",
+    "importLimit": "已達行程數量上限，部分暫存行程留在這台裝置",
     "importFailed": "無法將暫存行程移到帳號，下次會再試一次",
     "draftLocked": "尚未儲存到帳號的暫存行程無法使用此功能"
   },
