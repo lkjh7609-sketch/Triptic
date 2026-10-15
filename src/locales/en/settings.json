@@ -222,7 +222,7 @@
       "licensesDesc": "Open-source software notices"
     },
     "free": {
-      "title": "Free tier",
+      "title": "Trip limit",
       "used": "{{used}} / {{limit}} trips created",
       "left": "{{left}} trips left to create",
       "full": "You've used all your trip creations"

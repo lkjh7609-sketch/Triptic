@@ -510,10 +510,10 @@
   "errors": {
     "tripLimit": "已達可建立的行程數量上限。",
     "shareUnavailable": "目前無法使用同行者分享。",
-    "reopenLimit": "免費使用者最多只能重新編輯這個行程 5 次。"
+    "reopenLimit": "這個行程最多只能重新編輯 5 次。"
   },
   "quota": {
-    "tripCreatedToast": "已建立行程。免費建立次數還剩 {{remaining}} 次。",
+    "tripCreatedToast": "已建立行程。還可以再建立 {{remaining}} 個。",
     "finalizeConfirm": "要結束這個行程的編輯嗎？完成後會變成唯讀，之後要修改需要重新開啟編輯。",
     "finalizeKeep": "繼續編輯",
     "finalizeProceed": "完成",
