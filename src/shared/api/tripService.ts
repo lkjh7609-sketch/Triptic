@@ -20,7 +20,6 @@ import { getSupabaseClient } from './supabaseClient';
 import { generateShortId } from '@/shared/utils/id';
 import { captureError, track } from '@/shared/monitoring';
 import { can } from '@/shared/entitlements';
-import { showToast } from '@/shared/ui/toast';
 import { forkDates, shiftYmd } from '@/features/plan/forkDates';
 import { reconstructTripContent, type TripItineraryRaw, type TripDayRow, type ItineraryItemRow } from '@/features/plan/itineraryTransform';
 
@@ -239,28 +238,7 @@ export class TripService {
       if (touched.data) data = touched.data as Omit<TripRow, 'content'>;
     }
 
-    if (isNewTrip) await this.notifyQuotaAfterCreate(user.id);
-
     return { ...data, content };
-  }
-
-  /** 새 여행 생성 직후 무료 사용자에게 남은 횟수를 토스트로 안내한다(요구사항:
-   * "횟수가 하나씩 차감될 때마다 사용자에게 토스트알람"). 실패해도 저장 자체는
-   * 이미 끝난 뒤라 조용히 무시한다(안내가 실제 게이트는 아니다). */
-  private async notifyQuotaAfterCreate(userId: string): Promise<void> {
-    try {
-      const supabase = getSupabaseClient();
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('plan, trips_created_count, trip_limit')
-        .eq('id', userId)
-        .maybeSingle();
-      if (!profile || profile.plan !== 'free') return;
-      const remaining = Math.max(0, (profile.trip_limit as number) - (profile.trips_created_count as number));
-      showToast(i18next.t('plan:quota.tripCreatedToast', { remaining }), { tone: 'success' });
-    } catch {
-      // 안내용 토스트일 뿐이라 실패해도 무시한다.
-    }
   }
 
   /** 여행 삭제 */

@@ -24,7 +24,6 @@ import {
   Pencil,
   Plane,
   Scale,
-  ShieldCheck,
   Sun,
   Trash2,
   User,
@@ -36,7 +35,6 @@ import { SUPPORTED_LOCALES, normalizeLocale, type SupportedLocale } from '@/shar
 import { LANGUAGE_AUTONYMS } from '@/shared/i18n/languageNames';
 import { useSession } from '@/shared/hooks/useSession';
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile';
-import { ProBadge } from '@/shared/ui/ProBadge';
 import { useTrips } from '@/features/plan/hooks/useTrips';
 import { CURRENCIES, currencyName } from '@/features/plan/expenses';
 import { BackupModal } from '@/features/plan/BackupModal';
@@ -137,8 +135,6 @@ export function SettingsDesktop() {
   if (showDelete) return <DeleteAccountFlow />;
   if (!user) return null;
 
-  const isPro = profile?.plan === 'pro';
-  const freeLeft = Math.max(0, (profile?.trip_limit ?? 0) - (profile?.trips_created_count ?? 0));
   const unitValue = `${profile?.temp_unit ?? 'c'}-${profile?.distance_unit ?? 'km'}`;
   const prefs: NotificationPrefs = normalizeNotificationPrefs(profile?.notification_prefs);
 
@@ -245,34 +241,6 @@ export function SettingsDesktop() {
             ))}
           </nav>
 
-          {!isPro && profile ? (
-            <div className={styles.proBox}>
-              <ShieldCheck size={20} aria-hidden="true" />
-              <div>
-                <h4 className={styles.proTitle}>{t('desktop.free.title')}</h4>
-                <ul className={styles.proList}>
-                  <li>{t('desktop.free.used', { used: profile.trips_created_count ?? 0, limit: profile.trip_limit ?? 0 })}</li>
-                  <li className={freeLeft === 0 ? styles.limitFull : undefined}>
-                    {freeLeft === 0 ? t('desktop.free.full') : t('desktop.free.left', { left: freeLeft })}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          ) : null}
-
-          {isPro ? (
-            <div className={styles.proBox}>
-              <ShieldCheck size={20} aria-hidden="true" />
-              <div>
-                <h4 className={styles.proTitle}>{t('desktop.pro.title')}</h4>
-                <ul className={styles.proList}>
-                  <li>{t('desktop.pro.trips')}</li>
-                  <li>{t('desktop.pro.pdf')}</li>
-                  <li>{t('desktop.pro.ai')}</li>
-                </ul>
-              </div>
-            </div>
-          ) : null}
         </aside>
 
         <main className={styles.content}>
@@ -308,7 +276,6 @@ export function SettingsDesktop() {
                   <div>
                     <p className={styles.nameRow}>
                       <span className={styles.name}>{profile?.display_name || user.user_metadata?.name || t('account.fallbackName')}</span>
-                      {isPro ? <ProBadge /> : null}
                     </p>
                     <p className={styles.meta}>
                       {profile?.handle ? <span className={styles.handle}>@{profile.handle}</span> : null}

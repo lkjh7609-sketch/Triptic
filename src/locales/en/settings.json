@@ -145,12 +145,6 @@
       "data": "Data & storage",
       "community": "Community & info"
     },
-    "pro": {
-      "title": "Pro benefits active",
-      "trips": "Unlimited trips",
-      "pdf": "Unlimited PDF exports",
-      "ai": "Unlimited AI use"
-    },
     "account": {
       "edit": "Edit profile",
       "passwordTitle": "Password",
@@ -220,12 +214,6 @@
       "termsDesc": "Terms of service",
       "privacyDesc": "Data protection and retention",
       "licensesDesc": "Open-source software notices"
-    },
-    "free": {
-      "title": "Trip limit",
-      "used": "{{used}} / {{limit}} trips created",
-      "left": "{{left}} trips left to create",
-      "full": "You've used all your trip creations"
     }
   },
   "password": {

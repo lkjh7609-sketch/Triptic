@@ -54,26 +54,14 @@ describe('SettingsDesktop', () => {
     expect(state.mutate).toHaveBeenCalledWith({ gender: 'female', age_band: null });
   });
 
-  it('Pro 박스는 프로 회원에게만 보인다', () => {
-    const { unmount } = renderPage();
-    expect(screen.getByText('Pro 혜택 활성화됨')).toBeInTheDocument();
-    unmount();
-    state.profile.plan = 'free';
-    renderPage();
-    expect(screen.queryByText('Pro 혜택 활성화됨')).not.toBeInTheDocument();
-  });
-
-  it('무료 회원에게는 여행 생성 한도와 남은 개수가 보이고, 다 쓰면 소진 안내가 나온다', () => {
-    state.profile.plan = 'free';
-    const { unmount } = renderPage();
-    expect(screen.getByText('여행 생성 한도')).toBeInTheDocument();
-    expect(screen.getByText('여행 생성 3 / 5개 사용')).toBeInTheDocument();
-    expect(screen.getByText('남은 여행 생성 2개')).toBeInTheDocument();
-    unmount();
-    state.profile.trips_created_count = 5;
-    renderPage();
-    expect(screen.getByText('여행 생성 한도를 모두 썼어요')).toBeInTheDocument();
-    state.profile.trips_created_count = 3;
+  it('등급을 나누는 표시가 없다 — 프로 배지·혜택 박스·여행 생성 한도 박스 모두 안 보인다', () => {
+    for (const plan of ['pro', 'free']) {
+      state.profile.plan = plan;
+      const { unmount } = renderPage();
+      expect(screen.queryByText(/Pro 혜택|Premium|여행 생성 한도|남은 여행 생성/)).not.toBeInTheDocument();
+      unmount();
+    }
+    state.profile.plan = 'pro';
   });
 
   it('프로필 사진 변경 버튼이 있고, 올린 사진이 있을 때만 사진 삭제가 보인다', () => {

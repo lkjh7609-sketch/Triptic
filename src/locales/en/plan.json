@@ -333,7 +333,7 @@
     "aiNotice": "These are AI-generated suggestions. Check opening hours and prices before you go.",
     "button": "AI ideas",
     "buttonTitle": "Get AI ideas for where to go next",
-    "dailyLimit": "You've used all {{limit}} AI suggestions for today. Please try again tomorrow. Premium members get more."
+    "dailyLimit": "You've used all {{limit}} AI suggestions for today. Please try again tomorrow."
   },
   "desktop": {
     "badge": "My journeys",
@@ -527,7 +527,6 @@
     "reopenLimit": "You can reopen this trip for editing up to 5 times."
   },
   "quota": {
-    "tripCreatedToast": "Trip created. You can create {{remaining}} more.",
     "finalizeConfirm": "Finish editing this trip's itinerary? Once finalized it becomes view-only — you'll need to reopen it to edit again.",
     "finalizeKeep": "Keep editing",
     "finalizeProceed": "Finish",

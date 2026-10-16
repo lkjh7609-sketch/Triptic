@@ -142,12 +142,6 @@
       "data": "데이터 & 저장공간",
       "community": "커뮤니티 및 정보"
     },
-    "pro": {
-      "title": "Pro 혜택 활성화됨",
-      "trips": "여행 무제한 생성 가능",
-      "pdf": "PDF 무제한 생성 가능",
-      "ai": "AI 무제한 사용 가능"
-    },
     "account": {
       "edit": "내 정보 수정",
       "passwordTitle": "비밀번호 관리",
@@ -217,12 +211,6 @@
       "termsDesc": "서비스 이용 약관 안내",
       "privacyDesc": "데이터 보호 및 보관 규정",
       "licensesDesc": "오픈소스 소프트웨어 고지"
-    },
-    "free": {
-      "title": "여행 생성 한도",
-      "used": "여행 생성 {{used}} / {{limit}}개 사용",
-      "left": "남은 여행 생성 {{left}}개",
-      "full": "여행 생성 한도를 모두 썼어요"
     }
   },
   "password": {
