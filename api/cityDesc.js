@@ -14,7 +14,7 @@ const NEVER_EXPIRES = '9999-12-31T00:00:00Z';
 const isRateLimited = createRateLimiter(30);
 
 export default async function handler(req, res) {
-    applyCors(req, res, 'GET,OPTIONS');
+    applyCors(req, res, 'GET,OPTIONS', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });

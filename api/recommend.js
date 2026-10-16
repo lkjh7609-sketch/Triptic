@@ -444,7 +444,7 @@ async function handlePlaceSearch(req, res) {
 }
 
 export default async function handler(req, res) {
-    applyCors(req, res, 'POST,OPTIONS');
+    applyCors(req, res, 'POST,OPTIONS', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
     if (req.body?.mode === 'placeSearch') return handlePlaceSearch(req, res);
