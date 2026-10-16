@@ -17,15 +17,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { SignJWT, importPKCS8 } from 'jose';
 import { createClient } from '@supabase/supabase-js';
 import { refreshDestinations } from './_lib/weather/refresh.js';
-
-const ALLOWED_ORIGINS = new Set([
-    'https://triptic.my',
-    'https://www.triptic.my',
-    'https://triptic-ten.vercel.app',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'capacitor://localhost'
-]);
+import { applyPublicCors } from './_lib/http.js';
 
 const hits = new Map();
 function isRateLimited(ip, limit = 30, windowMs = 60_000) {
@@ -37,16 +29,6 @@ function isRateLimited(ip, limit = 30, windowMs = 60_000) {
     }
     rec.count += 1;
     return rec.count > limit;
-}
-
-function applyCors(req, res) {
-    const origin = req.headers.origin;
-    if (origin && ALLOWED_ORIGINS.has(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -251,7 +233,8 @@ async function handleDailyRefresh(req, res) {
 }
 
 export default async function handler(req, res) {
-    applyCors(req, res);
+    // CDN에 캐시되는 공개 조회 — 출처별 허용이면 웹이 채운 캐시를 앱이 못 쓴다(_lib/http.js applyPublicCors)
+    applyPublicCors(res);
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();

@@ -4,6 +4,13 @@
 
 ---
 
+### 2026-10-17 (23) — 앱에서 항공 특가가 로딩만 뜨다 사라지던 문제(CDN 캐시 + CORS)
+
+브랜치 `admin/public-cors`. **증상**: iOS 앱(1.0.1 TestFlight)의 모든 화면에서 최저가 항공 특가가 로딩 후 사라짐. **원인**: `api/partnerProducts`는 출처별로 CORS를 허용(`applyCors`)하는데, 응답이 Vercel CDN에 캐시(`s-maxage`)되고 캐시 키가 출처를 가리지 않는다. 웹(같은 출처라 Origin 헤더 없음)이 먼저 채운 캐시에는 `Access-Control-Allow-Origin`이 없어, 그 캐시를 받은 앱(`capacitor://localhost`)은 CORS로 막혔다(확인: 캐시 HIT 응답엔 허용 헤더 없음, 캐시를 피한 MISS 응답엔 있음). 누가 먼저 캐시를 채우느냐에 따라 될 때도, 안 될 때도 있었다.
+- **수정**: 로그인 없이 보는 공개 조회 응답(`partnerProducts`·`partnerLink`·`weather`)은 `applyPublicCors`로 `Access-Control-Allow-Origin: *`. 쿠키·인증을 쓰지 않는 응답이라 안전하다. 로그인이 필요한 API(`cityDesc` 등)는 그대로 출처별 허용.
+- 앱 재빌드는 필요 없다(서버만). 배포 뒤 남아 있는 옛 캐시는 최대 `s-maxage`(특가 3시간·운임 6시간·제휴 링크 캐시 시간) 동안 남을 수 있다 — 바로 확인하려면 배포 후 Vercel 캐시를 비운다.
+- 확인: `api/_lib/http.test.js` 추가, api 시험 전체 통과, eslint 통과.
+
 ### 2026-10-16 (22) — 등급 표시 전부 제거(앱 tios #34와 동일)
 
 브랜치 `admin/remove-tier-ui`. **사용자 지시**: 서비스가 그냥 무료로 보여야 하고 등급을 나누면 안 된다(iOS 1.0.0 승인 뒤).
