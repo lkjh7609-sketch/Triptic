@@ -104,28 +104,8 @@
   opacity: 0.6;
 }
 
-.proBox {
-  display: flex;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--brand-tint);
-  border-radius: var(--radius-lg);
-  background: var(--brand-tint);
-  color: var(--brand-text);
-}
 
-.proTitle {
-  margin: 0 0 4px;
-  font-size: 0.875rem;
-  font-weight: 800;
-}
 
-.proList {
-  margin: 0;
-  padding-left: 1.1em;
-  font-size: 0.8125rem;
-  line-height: 1.6;
-}
 
 /* ── 오른쪽 내용 ── */
 .content {
@@ -703,7 +683,3 @@
   cursor: pointer;
 }
 
-.limitFull {
-  color: var(--danger-text);
-  font-weight: 700;
-}

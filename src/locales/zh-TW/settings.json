@@ -142,12 +142,6 @@
       "data": "資料與儲存空間",
       "community": "社群與資訊"
     },
-    "pro": {
-      "title": "Pro 權益已啟用",
-      "trips": "無限建立行程",
-      "pdf": "無限產生 PDF",
-      "ai": "無限使用 AI"
-    },
     "account": {
       "edit": "編輯個人資料",
       "passwordTitle": "密碼管理",
@@ -217,12 +211,6 @@
       "termsDesc": "服務條款說明",
       "privacyDesc": "資料保護與保存規定",
       "licensesDesc": "開源軟體聲明"
-    },
-    "free": {
-      "title": "行程建立上限",
-      "used": "已建立 {{used}} / {{limit}} 個行程",
-      "left": "還可建立 {{left}} 個行程",
-      "full": "行程建立次數已用完"
     }
   },
   "password": {
