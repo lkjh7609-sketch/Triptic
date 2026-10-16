@@ -20,6 +20,18 @@ export function applyCors(req, res, methods = 'GET,POST,OPTIONS', headers = 'Con
 }
 
 /**
+ * 로그인 없이 누구나 보는 조회용 응답(CDN에 캐시되는 GET)에 쓴다 — 출처를 가리지 않고 허용(*).
+ * 출처별로 허용하면(applyCors) 웹(출처 없음)이 먼저 채운 CDN 캐시에는 허용 헤더가 없어,
+ * 그 캐시를 받은 앱(capacitor://localhost)은 CORS로 막힌다(2026-10-17 앱 항공 특가가 로딩만 뜨다 사라짐).
+ * 쿠키·인증을 쓰지 않는 응답에만 쓴다.
+ */
+export function applyPublicCors(res, methods = 'GET,OPTIONS', headers = 'Content-Type') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', methods);
+    res.setHeader('Access-Control-Allow-Headers', headers);
+}
+
+/**
  * 인스턴스 메모리 기반 고정 윈도 rate limit. 서버리스 인스턴스마다 따로 세므로
  * 완벽한 차단은 아니지만, 한 IP가 유료 LLM을 연속 호출하는 걸 막는 1차 방어선이다.
  */

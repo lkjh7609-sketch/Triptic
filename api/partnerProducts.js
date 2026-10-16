@@ -11,7 +11,7 @@
 //
 // 제휴사 상품 검색 API 결과를 앱 카드 모양으로 돌려준다. 상품을 누를 때만 /api/partnerLink로
 // 추적 링크를 만든다(카드마다 미리 만들면 화면 한 번에 유료 호출이 N번).
-import { applyCors, createRateLimiter, sanitizeInput } from './_lib/http.js';
+import { applyPublicCors, createRateLimiter, sanitizeInput } from './_lib/http.js';
 import * as myrealtrip from './_lib/affiliates/myrealtrip.js';
 import { handleAgoda } from './_lib/agoda/index.js';
 import { handleFlights } from './_lib/flights/index.js';
@@ -61,7 +61,7 @@ export function parseListFilters(query) {
 }
 
 export default async function handler(req, res) {
-    applyCors(req, res, 'GET,OPTIONS');
+    applyPublicCors(res, 'GET,OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
     // 호텔 검색 — 처리부는 _lib/agoda(함수 개수 한도 때문에 이 함수가 대신 받는다)

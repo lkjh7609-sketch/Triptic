@@ -8,7 +8,7 @@
 //
 // 브랜드 주소(예: Klook "Osaka" 검색 결과)를 그 제휴사 API로 추적 링크로 바꾼다. 같은 (주소, sub_id)는
 // partner_links(0051/0052/0054)에 저장해 한 번만 변환한다. 키는 서버 환경변수로만 — 앱에는 절대 내려보내지 않는다.
-import { applyCors, createRateLimiter, parseLocale } from './_lib/http.js';
+import { applyPublicCors, createRateLimiter, parseLocale } from './_lib/http.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
 import { LINK_BRANDS, NETWORKS } from './_lib/affiliates/index.js';
 
@@ -29,7 +29,7 @@ const SUB_ID = {
 const CACHED = 'public, s-maxage=86400, stale-while-revalidate=604800';
 
 export default async function handler(req, res) {
-    applyCors(req, res, 'GET,OPTIONS');
+    applyPublicCors(res, 'GET,OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' });
     if (isRateLimited(req)) return res.status(429).json({ error: 'rate_limited' });
