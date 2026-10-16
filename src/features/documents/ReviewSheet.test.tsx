@@ -9,6 +9,12 @@ vi.mock('./useDocuments', () => ({
   useRejectBooking: () => ({ mutateAsync: vi.fn(async () => undefined) }),
 }));
 
+const airports = [
+  { iata: 'ICN', country_code: 'KR', name: { ko: '인천국제공항', en: 'Incheon International Airport' }, city: { ko: '인천', en: 'Incheon' }, lat: 37.46, lng: 126.44, timezone: 'Asia/Seoul' },
+  { iata: 'KIX', country_code: 'JP', name: { ko: '간사이국제공항', en: 'Kansai International Airport' }, city: { ko: '오사카', en: 'Osaka' }, lat: 34.43, lng: 135.24, timezone: 'Asia/Tokyo' },
+];
+vi.mock('../plan/airports/useAirports', () => ({ useAirports: () => ({ data: airports, isLoading: false }) }));
+
 const { ReviewSheet } = await import('./ReviewSheet');
 
 const f = <T,>(value: T | null) => ({ value, confidence: 0.9 });
@@ -100,5 +106,35 @@ describe('ReviewSheet', () => {
     expect(screen.getByText('예약을 불러오는 중…')).toBeInTheDocument();
     rerender(<ReviewSheet {...props} loading={false} />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('공항은 우리 공항 목록에서 고른다 — 서류에서 코드 대신 도시 이름을 읽었으면 반영을 막고, 목록에서 고르면 코드·좌표가 들어간다', async () => {
+    const saved: FlightsData[] = [];
+    render(
+      <ReviewSheet
+        tripId="t1"
+        bookings={[row('b2', leg('RS714', '오사카', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25'))]}
+        tripStartDate="2026-07-17"
+        tripEndDate="2026-07-20"
+        flightsData={{ outbound: null, return: null }}
+        onClose={() => {}}
+        onCommitFlight={async (next) => {
+          saved.push(next);
+        }}
+      />,
+    );
+    const apply = screen.getByRole('button', { name: '일정에 반영' });
+    expect(apply).toBeDisabled();
+    const [dep, arr] = screen.getAllByRole('combobox');
+    expect((arr as HTMLInputElement).value).toContain('ICN');
+    fireEvent.change(dep, { target: { value: '간사이' } });
+    fireEvent.mouseDown(await screen.findByRole('option', { name: /KIX/ }));
+    expect((dep as HTMLInputElement).value).toContain('KIX');
+    expect(apply).toBeEnabled();
+    fireEvent.click(apply);
+    await waitFor(() => expect(saved).toHaveLength(1));
+    const flight = saved[0].return ?? saved[0].outbound;
+    expect(flight?.dep.iata).toBe('KIX');
+    expect(flight?.dep.lat).toBe(34.43);
   });
 });

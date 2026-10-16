@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfidenceField } from './ConfidenceField';
@@ -7,10 +7,15 @@ import { isFlightOutsideTrip, proposeTripPeriod, type Period } from './tripPerio
 import { getVoucherSignedUrlByDocumentId, type BookingRow } from './documentService';
 import { useConfirmBooking, useRejectBooking } from './useDocuments';
 import { captureError } from '@/shared/monitoring';
+import { FeedbackModal } from '@/features/settings/FeedbackModal';
+import { AirportPicker, selectedAirportOf, type SelectedAirport } from '../plan/airports/AirportPicker';
+import { useAirports } from '../plan/airports/useAirports';
+import type { Airport } from '../plan/airports/airportData';
 import type { FlightsData } from '../plan/types';
 import type { ParsedFlight } from './parseBooking/schema';
 import modalStyles from '../plan/AddPlaceModal.module.css';
 import styles from './ReviewSheet.module.css';
+import fieldStyles from './ConfidenceField.module.css';
 
 interface ReviewSheetProps {
   tripId: string;
@@ -182,14 +187,32 @@ interface FlightBookingCardProps {
   onCommit: (booking: BookingRow, edited: ParsedFlight) => Promise<boolean>;
 }
 
+/** 읽은 공항 → 선택 창 값. 우리 공항 목록에 있으면 "도시(나라) 코드" 모양, 없으면 읽은 그대로(사용자가 목록에서 다시 고른다) */
+function airportValue(side: ParsedFlight['departure'], list: readonly Airport[] | undefined, language: string): SelectedAirport | null {
+  const iata = side.airportIata.value;
+  if (!iata) return null;
+  const known = list?.find((a) => a.iata === iata.toUpperCase());
+  if (known) return selectedAirportOf(known, language);
+  return { iata, name: side.airportName.value ?? iata, lat: side.airportLat ?? null, lng: side.airportLng ?? null };
+}
+
 function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBookingCardProps) {
-  const { t } = useTranslation(['documents', 'common']);
+  const { t, i18n } = useTranslation(['documents', 'common', 'plan']);
+  // 공항은 항공편 추가 화면(FlightModal)처럼 우리 공항 목록에서 고른다. 목록을 못 받으면 예전처럼 코드 입력 칸
+  const { data: airportList, isLoading: airportsLoading } = useAirports();
+  const listMode = airportsLoading || !!airportList?.length;
+  const [requestText, setRequestText] = useState<string | null>(null);
   const confirmMutation = useConfirmBooking(tripId);
   const rejectMutation = useRejectBooking(tripId);
   const [saving, setSaving] = useState(false);
   const [edited, setEdited] = useState<ParsedFlight>(flight);
   // 기간 밖 항공편은 반영해도 저장되지 않아 사라진다 — 막고 이유를 보여준다(날짜를 고치면 다시 풀림)
   const outsideTrip = !!trip.start && !!trip.end && isFlightOutsideTrip(edited, trip);
+  const depAirport = useMemo(() => airportValue(edited.departure, airportList, i18n.language), [edited.departure, airportList, i18n.language]);
+  const arrAirport = useMemo(() => airportValue(edited.arrival, airportList, i18n.language), [edited.arrival, airportList, i18n.language]);
+  // 공항 코드(영문 3자)가 없으면 반영할 수 없다 — 지우고 다시 안 골랐거나, 서류에서 코드 대신 도시 이름을 읽은 경우(예: '오사카')
+  const isIata = (v: string | null) => !!v && /^[A-Z]{3}$/.test(v);
+  const missingAirport = !isIata(edited.departure.airportIata.value) || !isIata(edited.arrival.airportIata.value);
 
   function updateField<K extends 'flightNumber'>(key: K, value: string) {
     setEdited((prev) => ({ ...prev, [key]: { value, confidence: 1 } }));
@@ -199,6 +222,37 @@ function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBo
       ...prev,
       [side]: { ...prev[side], [key]: { value: key === 'airportIata' ? value.toUpperCase() : value, confidence: 1 } },
     }));
+  }
+
+  function pickAirport(side: 'departure' | 'arrival', a: SelectedAirport | null) {
+    setEdited((prev) => ({
+      ...prev,
+      [side]: {
+        ...prev[side],
+        airportIata: { value: a?.iata || null, confidence: 1 },
+        airportName: { value: a?.name ?? null, confidence: 1 },
+        airportLat: a?.lat ?? null,
+        airportLng: a?.lng ?? null,
+      },
+    }));
+  }
+
+  function airportField(side: 'departure' | 'arrival', label: string, value: SelectedAirport | null) {
+    if (!listMode) {
+      return <ConfidenceField label={label} value={edited[side].airportIata.value} onChange={(v) => updateNested(side, 'airportIata', v)} />;
+    }
+    return (
+      <label className={fieldStyles.field}>
+        <span className={fieldStyles.label}>{label}</span>
+        <AirportPicker
+          airports={airportList ?? []}
+          value={value}
+          onSelect={(a) => pickAirport(side, a)}
+          placeholder={t('flight.airportListPlaceholder', { ns: 'plan' })}
+          onRequest={setRequestText}
+        />
+      </label>
+    );
   }
 
   async function handleConfirm() {
@@ -233,16 +287,8 @@ function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBo
         onChange={(v) => updateField('flightNumber', v)}
       />
       <div className={styles.row}>
-        <ConfidenceField
-          label={t('review.departureAirportField')}
-          value={edited.departure.airportIata.value}
-          onChange={(v) => updateNested('departure', 'airportIata', v)}
-        />
-        <ConfidenceField
-          label={t('review.arrivalAirportField')}
-          value={edited.arrival.airportIata.value}
-          onChange={(v) => updateNested('arrival', 'airportIata', v)}
-        />
+        {airportField('departure', t('review.departureAirportField'), depAirport)}
+        {airportField('arrival', t('review.arrivalAirportField'), arrAirport)}
       </div>
       <div className={styles.row}>
         <ConfidenceField
@@ -261,10 +307,13 @@ function FlightBookingCard({ tripId, booking, flight, trip, onCommit }: FlightBo
         <button type="button" className={modalStyles.secondary} onClick={handleReject} disabled={saving}>
           {t('review.ignore')}
         </button>
-        <button type="button" className={modalStyles.primary} onClick={handleConfirm} disabled={saving || outsideTrip}>
+        <button type="button" className={modalStyles.primary} onClick={handleConfirm} disabled={saving || outsideTrip || missingAirport}>
           {saving ? t('review.applying') : t('review.applyToItinerary')}
         </button>
       </div>
+      {requestText !== null ? (
+        <FeedbackModal initialBody={t('flight.airportRequestPrefill', { ns: 'plan', query: requestText })} onClose={() => setRequestText(null)} />
+      ) : null}
     </div>
   );
 }
