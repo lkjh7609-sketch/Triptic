@@ -27,7 +27,11 @@
     "useTicketDates": "Use ticket dates",
     "keepTripDates": "Keep trip dates",
     "changingDates": "Updating…",
-    "outsideTripHint": "This flight is outside your trip dates, so it can't be added"
+    "outsideTripHint": "This flight is outside your trip dates, so it can't be added",
+    "pickDate": "Pick a date",
+    "timeAria": "time",
+    "autoLooking": "Looking up airports and times by flight number…",
+    "autoFilled": "Filled the empty fields from the flight number. Please check them."
   },
   "upload": {
     "title": "Fill your itinerary from a booking document",

@@ -27,7 +27,11 @@
     "useTicketDates": "航空券の期間に変更",
     "keepTripDates": "今の旅行期間のまま",
     "changingDates": "変更中…",
-    "outsideTripHint": "旅行期間外のため日程に追加できません"
+    "outsideTripHint": "旅行期間外のため日程に追加できません",
+    "pickDate": "日付を選択",
+    "timeAria": "時刻",
+    "autoLooking": "便名で空港・時刻を検索中…",
+    "autoFilled": "便名から空欄を補いました。内容をご確認ください。"
   },
   "upload": {
     "title": "予約書類からスケジュールを自動入力",

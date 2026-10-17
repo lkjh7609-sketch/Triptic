@@ -86,3 +86,49 @@
   font-size: var(--font-caption-size);
   color: var(--danger-text);
 }
+
+/* 출발·도착 시각: 날짜 버튼 + 시간 입력(FlightModal과 같은 모양) */
+.dateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dateText,
+.datePlaceholder {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.datePlaceholder {
+  color: var(--text-muted);
+}
+.timeInput {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-card);
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+}
+.timeInput::-webkit-date-and-time-value {
+  text-align: left;
+}
+.row > * {
+  min-width: 0;
+}
+
+/* 편명으로 빈 칸을 찾는 중 / 채웠음 */
+.autoNote {
+  margin: 0;
+  font-size: var(--font-caption-size);
+  color: var(--text-muted);
+}
