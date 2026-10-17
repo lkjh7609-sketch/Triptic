@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { BookingRow } from './documentService';
 import type { ParsedFlight } from './parseBooking/schema';
@@ -8,6 +8,15 @@ vi.mock('./useDocuments', () => ({
   useConfirmBooking: () => ({ mutateAsync: vi.fn(async () => undefined) }),
   useRejectBooking: () => ({ mutateAsync: vi.fn(async () => undefined) }),
 }));
+
+const airports = [
+  { iata: 'ICN', country_code: 'KR', name: { ko: '인천국제공항', en: 'Incheon International Airport' }, city: { ko: '인천', en: 'Incheon' }, lat: 37.46, lng: 126.44, timezone: 'Asia/Seoul' },
+  { iata: 'KIX', country_code: 'JP', name: { ko: '간사이국제공항', en: 'Kansai International Airport' }, city: { ko: '오사카', en: 'Osaka' }, lat: 34.43, lng: 135.24, timezone: 'Asia/Tokyo' },
+  { iata: 'ITM', country_code: 'JP', name: { ko: '이타미공항', en: 'Itami Airport' }, city: { ko: '오사카', en: 'Osaka' }, lat: 34.78, lng: 135.43, timezone: 'Asia/Tokyo' },
+];
+const lookup = vi.fn(async (..._args: unknown[]) => ({ found: false, reason: 'not_found' }) as unknown);
+vi.mock('../plan/flightLookup/flightLookupService', () => ({ lookupFlightSchedule: (...args: unknown[]) => lookup(...args) }));
+vi.mock('../plan/airports/useAirports', () => ({ useAirports: () => ({ data: airports, isLoading: false }) }));
 
 const { ReviewSheet } = await import('./ReviewSheet');
 
@@ -38,6 +47,7 @@ const row = (id: string, parsed: ParsedFlight): BookingRow => ({
 });
 
 describe('ReviewSheet', () => {
+  beforeEach(() => lookup.mockClear());
   const roundTrip = () => [
     row('b1', leg('RS717', 'ICN', '2026-07-17T19:05', 'KIX', '2026-07-17T20:50')),
     row('b2', leg('RS714', 'KIX', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25')),
@@ -100,5 +110,92 @@ describe('ReviewSheet', () => {
     expect(screen.getByText('예약을 불러오는 중…')).toBeInTheDocument();
     rerender(<ReviewSheet {...props} loading={false} />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('공항은 우리 공항 목록에서 고른다 — 서류에서 코드 대신 도시 이름을 읽었으면 반영을 막고, 목록에서 고르면 코드·좌표가 들어간다', async () => {
+    const saved: FlightsData[] = [];
+    render(
+      <ReviewSheet
+        tripId="t1"
+        bookings={[row('b2', leg('RS714', '오사카', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25'))]}
+        tripStartDate="2026-07-17"
+        tripEndDate="2026-07-20"
+        flightsData={{ outbound: null, return: null }}
+        onClose={() => {}}
+        onCommitFlight={async (next) => {
+          saved.push(next);
+        }}
+      />,
+    );
+    const apply = screen.getByRole('button', { name: '일정에 반영' });
+    expect(apply).toBeDisabled();
+    const [dep, arr] = screen.getAllByRole('combobox');
+    expect((arr as HTMLInputElement).value).toContain('ICN');
+    fireEvent.change(dep, { target: { value: '간사이' } });
+    fireEvent.mouseDown(await screen.findByRole('option', { name: /KIX/ }));
+    expect((dep as HTMLInputElement).value).toContain('KIX');
+    expect(apply).toBeEnabled();
+    fireEvent.click(apply);
+    await waitFor(() => expect(saved).toHaveLength(1));
+    const flight = saved[0].return ?? saved[0].outbound;
+    expect(flight?.dep.iata).toBe('KIX');
+    expect(flight?.dep.lat).toBe(34.43);
+  });
+
+  it('출발·도착 시각은 날짜 버튼 + 시간 입력 — 날짜는 읽기 쉽게, 시간을 바꾸면 그대로 저장', async () => {
+    const saved: FlightsData[] = [];
+    render(
+      <ReviewSheet
+        tripId="t1"
+        bookings={[row('b2', leg('RS714', 'KIX', '2026-07-20T16:15', 'ICN', '2026-07-20T18:25'))]}
+        tripStartDate="2026-07-17"
+        tripEndDate="2026-07-20"
+        flightsData={{ outbound: null, return: null }}
+        onClose={() => {}}
+        onCommitFlight={async (next) => {
+          saved.push(next);
+        }}
+      />,
+    );
+    expect(screen.getByRole('button', { name: /출발 시각: 7월 20일/ })).toBeInTheDocument();
+    const depTime = screen.getByLabelText('출발 시각 시간') as HTMLInputElement;
+    expect(depTime.value).toBe('16:15');
+    fireEvent.change(depTime, { target: { value: '16:40' } });
+    fireEvent.click(screen.getByRole('button', { name: '일정에 반영' }));
+    await waitFor(() => expect(saved).toHaveLength(1));
+    expect((saved[0].return ?? saved[0].outbound)?.dep.time).toBe('16:40');
+    expect(lookup).not.toHaveBeenCalled();
+  });
+
+  it('공항이 비어 있으면 편명+출발일로 조회해 채운다', async () => {
+    lookup.mockResolvedValueOnce({
+      found: true,
+      flight: {
+        flightNo: 'RS714',
+        date: '2026-07-20',
+        airlineKo: '에어서울',
+        airlineCode: 'RS',
+        dep: { iata: 'KIX', nameKo: '간사이', time: '16:15', terminal: null },
+        arr: { iata: 'ICN', nameKo: '인천', time: '18:25', terminal: null },
+      },
+    });
+    render(
+      <ReviewSheet
+        tripId="t1"
+        bookings={[row('b3', leg('RS714', null as unknown as string, '2026-07-20T16:15', null as unknown as string, '2026-07-20T18:25'))]}
+        tripStartDate="2026-07-17"
+        tripEndDate="2026-07-20"
+        flightsData={{ outbound: null, return: null }}
+        onClose={() => {}}
+        onCommitFlight={async () => {}}
+      />,
+    );
+    await screen.findByText(/편명으로 조회해 비어 있던 칸을 채웠어요/);
+    expect(lookup).toHaveBeenCalledWith('RS714', '2026-07-20');
+    const [dep, arr] = screen.getAllByRole('combobox') as HTMLInputElement[];
+    // 선택 창 글자는 값이 바뀐 다음 렌더에서 맞춰진다
+    await waitFor(() => expect(dep.value).toContain('KIX'));
+    expect(arr.value).toContain('ICN');
+    expect(screen.getByRole('button', { name: '일정에 반영' })).toBeEnabled();
   });
 });

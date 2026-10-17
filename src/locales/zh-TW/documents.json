@@ -27,7 +27,11 @@
     "useTicketDates": "改為機票期間",
     "keepTripDates": "維持目前旅行期間",
     "changingDates": "變更中…",
-    "outsideTripHint": "此航班不在旅行期間內，無法加入行程"
+    "outsideTripHint": "此航班不在旅行期間內，無法加入行程",
+    "pickDate": "選擇日期",
+    "timeAria": "時間",
+    "autoLooking": "正在以航班號查詢機場與時間…",
+    "autoFilled": "已依航班號補上空白欄位，請確認。"
   },
   "upload": {
     "title": "上傳預訂單據填充行程",

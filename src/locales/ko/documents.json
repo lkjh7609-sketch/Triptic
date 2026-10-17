@@ -27,7 +27,11 @@
     "useTicketDates": "항공권 기간으로 변경",
     "keepTripDates": "지금 여행 기간 유지",
     "changingDates": "바꾸는 중…",
-    "outsideTripHint": "여행 기간 밖이라 일정에 넣을 수 없어요"
+    "outsideTripHint": "여행 기간 밖이라 일정에 넣을 수 없어요",
+    "pickDate": "날짜 선택",
+    "timeAria": "시간",
+    "autoLooking": "편명으로 공항·시각을 찾는 중…",
+    "autoFilled": "편명으로 조회해 비어 있던 칸을 채웠어요. 맞는지 확인해 주세요."
   },
   "upload": {
     "title": "예약 서류로 일정 채우기",
