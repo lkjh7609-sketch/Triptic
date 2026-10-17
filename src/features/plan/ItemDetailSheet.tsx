@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import type { PlaceItem } from './types';
 import styles from './ItemDetailSheet.module.css';
+import { TimeBox } from '@/shared/ui/TimeBox';
 
 interface ItemDetailSheetProps {
   item: PlaceItem;
@@ -96,13 +97,7 @@ export function ItemDetailSheet({
           <label className={styles.label} htmlFor="item-time">
             {t('itemDetail.timeLabel')}
           </label>
-          <input
-            id="item-time"
-            type="time"
-            className={styles.input}
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+          <TimeBox id="item-time" value={time} ariaLabel={t('itemDetail.timeLabel')} onChange={setTime} />
         </div>
 
         <div className={styles.field}>

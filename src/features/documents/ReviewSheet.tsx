@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import { DatePickerSheet } from '@/shared/ui/DatePickerSheet';
+import { TimeBox } from '@/shared/ui/TimeBox';
 import { useFocusTrap } from '@/shared/a11y/useFocusTrap';
 import { ConfidenceField } from './ConfidenceField';
 import { commitFlightBooking } from './commitBooking';
@@ -231,13 +232,7 @@ function DateTimeField({
         <CalendarDays size={16} aria-hidden="true" />
         <span className={date ? styles.dateText : styles.datePlaceholder}>{dateLabel}</span>
       </button>
-      <input
-        type="time"
-        className={`${fieldStyles.input} ${styles.timeInput}`}
-        aria-label={`${label} ${t('review.timeAria')}`}
-        value={time}
-        onChange={(e) => onChange('time', e.target.value)}
-      />
+      <TimeBox value={time} ariaLabel={`${label} ${t('review.timeAria')}`} onChange={(v) => onChange('time', v)} />
       {sheetOpen ? (
         <DatePickerSheet
           title={label}
