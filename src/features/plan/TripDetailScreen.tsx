@@ -226,7 +226,8 @@ export function TripDetailScreen() {
     try {
       const next = [...dayItems];
       next.splice(insertIndex + 1, 0, item);
-      await persistDayItems(next);
+      // AI 추천은 기준 장소 바로 뒤에 넣되, 시각이 있으면 그 시각 자리로(장소 추가와 같은 규칙 — itemOrder.ts)
+      await persistDayItems(placeByTime(next, insertIndex + 1));
     } catch (err) {
       captureError(err, { context: "insertPlace" });
     }

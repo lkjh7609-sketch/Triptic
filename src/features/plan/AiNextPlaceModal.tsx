@@ -96,7 +96,8 @@ export function AiNextPlaceModal({ trip, currentDay, baseItem, onClose, onAddPla
   );
   const [attempt, setAttempt] = useState(0);
   const [confirming, setConfirming] = useState<Recommendation | null>(null);
-  const [time, setTime] = useState('');
+  // 시간 휠이 처음에 12:00을 보여 주므로 건드리지 않고 추가해도 12:00으로 저장한다(장소 추가 창과 같음)
+  const [time, setTime] = useState('12:00');
 
   useEffect(() => {
     const controller = new AbortController();
