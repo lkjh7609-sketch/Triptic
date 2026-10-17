@@ -493,7 +493,7 @@ function CompactTripCard({
   actions: TripActions;
 }) {
   const { t, i18n } = useTranslation('plan');
-  const bgImage = useCityImage(trip.city);
+  const bgImage = useCityImage(trip.city, { lat: trip.city_lat, lng: trip.city_lng });
   const dday = getDDay(trip.start_date);
   const isOngoing = getTripPhase(trip.start_date, trip.end_date) === 'ongoing';
   const range = formatRange(trip, i18n.language);
@@ -627,7 +627,7 @@ function CompactTripCard({
 
 function PastTripCard({ trip, summary, actions }: { trip: TripRow; summary: TripSummary; actions: TripActions }) {
   const { t, i18n } = useTranslation('plan');
-  const bgImage = useCityImage(trip.city);
+  const bgImage = useCityImage(trip.city, { lat: trip.city_lat, lng: trip.city_lng });
   const range = formatRange(trip, i18n.language);
 
   return (
@@ -821,7 +821,7 @@ function FlightBox({ trip }: { trip: TripRow }) {
 
 function PdfBox({ trip, members }: { trip: TripRow; members: TripMember[] }) {
   const { t } = useTranslation('plan');
-  const coverUrl = useCityImage(trip.city);
+  const coverUrl = useCityImage(trip.city, { lat: trip.city_lat, lng: trip.city_lng });
   const [busy, setBusy] = useState(false);
 
   async function handleExport() {

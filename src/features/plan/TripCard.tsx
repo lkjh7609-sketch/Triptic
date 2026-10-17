@@ -20,7 +20,7 @@ export function TripCard({ trip, onRename, onDuplicate, onDelete, showMenu = tru
   const { t } = useTranslation(['plan', 'common']);
   const [menuOpen, setMenuOpen] = useState(false);
   const dday = getDDay(trip.start_date);
-  const bgImage = useCityImage(trip.city);
+  const bgImage = useCityImage(trip.city, { lat: trip.city_lat, lng: trip.city_lng });
 
   function handleMenuClick(e: React.MouseEvent) {
     e.preventDefault();

@@ -12,7 +12,7 @@ import styles from './RecommendedDestinations.module.css';
 
 function Card({ item, onPick }: { item: RecommendedItem; onPick: (item: RecommendedItem) => void }) {
   const { t } = useTranslation('home');
-  const fallback = useCityImage(item.name);
+  const fallback = useCityImage(item.name, { lat: item.lat, lng: item.lng });
   const image = item.cover ?? fallback;
   return (
     <li className={styles.item}>
