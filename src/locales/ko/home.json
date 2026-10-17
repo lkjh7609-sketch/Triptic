@@ -26,15 +26,6 @@
     "dayIndex": "{{day}}일차 · {{date}}",
     "noItemsToday": "오늘은 등록된 일정이 없어요"
   },
-  "tile": {
-    "trips": "여행",
-    "countries": "국가",
-    "days": "일수",
-    "cities": "도시",
-    "places": "장소",
-    "distanceKm": "이동 km",
-    "companions": "동행"
-  },
   "worldMap": {
     "caption_other": "{{count}}개국"
   },

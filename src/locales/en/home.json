@@ -26,15 +26,6 @@
     "dayIndex": "Day {{day}} · {{date}}",
     "noItemsToday": "No plans scheduled for today"
   },
-  "tile": {
-    "trips": "Trips",
-    "countries": "Countries",
-    "days": "Days",
-    "cities": "Cities",
-    "places": "Places",
-    "distanceKm": "Distance (km)",
-    "companions": "Companions"
-  },
   "worldMap": {
     "caption_one": "{{count}} country",
     "caption_other": "{{count}} countries"

@@ -26,15 +26,6 @@
     "dayIndex": "第{{day}}天 · {{date}}",
     "noItemsToday": "今天還沒有安排行程"
   },
-  "tile": {
-    "trips": "旅行",
-    "countries": "國家",
-    "days": "天數",
-    "cities": "城市",
-    "places": "地點",
-    "distanceKm": "里程(km)",
-    "companions": "同行"
-  },
   "worldMap": {
     "caption_other": "{{count}}個國家"
   },

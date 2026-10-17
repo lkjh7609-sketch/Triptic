@@ -40,7 +40,6 @@ import { showToast } from '@/shared/ui/toast';
 import { useHomeStats, type TravelStats } from '@/features/home/useHomeStats';
 import { requireLogin } from '@/features/auth/loginPrompt';
 import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
-import { StatsTiles } from '@/features/home/StatsTiles';
 import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
@@ -280,10 +279,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
         </div>
       </section>
 
-      {/* 다녀온 여행이 하나도 없으면 0만 가득한 타일이 첫 화면을 차지한다 — 숨긴다 */}
+      {/* 숫자 타일 6개(여행·국가·일수·도시·장소·동행)는 '내 여행 통계'와 겹쳐 뺐다(2026-10-17 사용자). 다녀온 여행이 없으면 지도도 숨긴다 */}
       {statsData && statsData.tripCount > 0 ? (
         <section className={styles.statsSection}>
-          <StatsTiles stats={statsData} />
           <WorldMapCard countries={statsData.countries} />
         </section>
       ) : null}

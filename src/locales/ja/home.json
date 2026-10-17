@@ -26,15 +26,6 @@
     "dayIndex": "{{day}}日目 · {{date}}",
     "noItemsToday": "今日は登録された予定がありません"
   },
-  "tile": {
-    "trips": "旅行数",
-    "countries": "訪問国",
-    "days": "日数",
-    "cities": "都市",
-    "places": "場所",
-    "distanceKm": "移動距離(km)",
-    "companions": "同行"
-  },
   "worldMap": {
     "caption_other": "{{count}}カ国"
   },
