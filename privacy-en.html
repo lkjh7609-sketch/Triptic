@@ -126,7 +126,7 @@
     <a class="top-link" href="/">← Back to Triptic</a>
     <nav class="lang-switch" aria-label="Language"><a href="/privacy.html?lang=ko" hreflang="ko" lang="ko" data-legal-lang="ko">한국어</a> <a href="/privacy-en.html" hreflang="en" lang="en" data-legal-lang="en" aria-current="page">English</a> <a href="/privacy-ja.html" hreflang="ja" lang="ja" data-legal-lang="ja">日本語</a> <a href="/privacy-zh-TW.html" hreflang="zh-Hant" lang="zh-Hant" data-legal-lang="zh-TW">繁體中文</a></nav>
     <h1>Privacy Policy</h1>
-    <p class="updated">Effective date: October 12, 2026 (first effective: September 18, 2026)</p>
+    <p class="updated">Effective date: October 17, 2026 (first effective: September 18, 2026)</p>
     <p class="tr-note">This is a translation provided for your convenience. If there is any discrepancy between this translation and the Korean version, the Korean version prevails.</p>
 
     <div class="card">
@@ -206,8 +206,18 @@
                 <td>Processed on the device when you allow camera access in the app</td>
             </tr>
             <tr>
+                <td>Widgets and Apple Watch (app)</td>
+                <td>The name and dates of trips in progress or starting within 14 days, the names, coordinates and times of each day's places, and the display language</td>
+                <td>When you open the app while signed in, stored only on this iPhone (in app storage shared with the widgets) and on your paired Apple Watch. Not sent to a server or anywhere else, and deleted when you sign out</td>
+            </tr>
+            <tr>
+                <td>Live Activities (app)</td>
+                <td>A random identifier the app creates for each device (not linked to account information such as your name or email), the Live Activity push address (token), and what the Lock Screen shows at each moment from today until the trip ends (trip identifier, name and day number, the current and next place names and times, travel time, departure time, departure alert text, display language)</td>
+                <td>Calculated by the device and uploaded to the server when you open the app during a trip. Not uploaded if Live Activities are turned off in iOS Settings, and this device's records on the server are deleted when you sign out</td>
+            </tr>
+            <tr>
                 <td>Location</td>
-                <td>Latitude and longitude when the current-location button is used</td>
+                <td>Latitude and longitude when you use the current-location button on the map, while you use the Apple Watch app, and when you open the app on a trip day (Live Activities) — all used only on the device and never sent to a server or stored</td>
                 <td>Provided by the device when you approve the location permission of the browser or app (iOS) (see Section 5 below)</td>
             </tr>
             <tr>
@@ -233,8 +243,9 @@
             <li>Identifying members, keeping them signed in, and automatically syncing itineraries across devices</li>
             <li>Providing storage, viewing and editing of trip itineraries</li>
             <li>Co-editing the same itinerary with companions invited through a share link, and reflecting changes in real time</li>
-            <li>Automatically recognizing booking documents (flight and accommodation confirmations) and reflecting them in the itinerary</li>
+            <li>Automatically recognizing booking documents (flight and accommodation confirmations) and reflecting them in the itinerary (if the airports or times cannot be read, the flight schedule is looked up by flight number and departure date to fill them in)</li>
             <li>Providing additional features such as map and place search, AI nearby recommendations and city introductions, and weather</li>
+            <li>Showing today's current and next stops and departure times in the app's Home Screen and Lock Screen widgets, the Apple Watch app and Live Activities (Lock Screen, Dynamic Island and Apple Watch), and alerting you at departure time</li>
             <li>Showing first-time visitors a display language suited to their country of access</li>
             <li>Operating the Community boards (posting and editing posts, comments, replies and images; follows; likes and bookmarks; handling reports and blocks) and providing notifications about reactions to my posts and comments</li>
             <li>Handling companion recruitment, applications and matching; providing chat for matched groups; mutual confirmation of group members through QR codes when meeting offline; and <b>displaying the author's and applicant's age range and gender on companion recruitment posts and application screens (only where they chose to enter them)</b></li>
@@ -258,6 +269,8 @@
             <li>Booking document files and recognition results: until the user deletes them, the trip is deleted, or the account is deleted</li>
             <li>Co-editing participation records: until the member leaves, the owner removes the member, or the trip is deleted</li>
             <li>Push notification address (token): this device's token is deleted when you turn notifications off or sign out, deleted immediately when Apple reports it can no longer be used, and all tokens are deleted when you delete your account. Notification records are kept until the user deletes them or the account is deleted.</li>
+            <li>Live Activity records: what is shown at each moment is deleted 2 days after that moment. The device identifier and tokens are deleted as soon as you sign out (including account deletion), a token Apple reports as no longer usable is deleted immediately, and records are deleted if nothing new is uploaded from the app for 60 days.</li>
+            <li>Itinerary for widgets and Apple Watch: kept only on this iPhone and your paired Apple Watch, replaced each time you open the app, and deleted when you sign out.</li>
             <li>Community posts, comments and images: until the user deletes them or the account is deleted (excluding content removed for violating operating policies). Notification records are kept until the user deletes them, the related post or comment is deleted, or the account is deleted. Photos removed while editing a post may remain in storage for a while and are cleaned up regularly.</li>
             <li>Companion recruitment posts, application messages and chat messages: until the recruitment post is deleted or the account is deleted. When you leave a group, your access to that group's chat (including past messages) disappears immediately.</li>
             <li>Inquiries and screenshots: until account deletion</li>
@@ -277,7 +290,7 @@
             <tr><td>Supabase (authentication and database)</td><td>All service data, including account information, trip itinerary data, booking document files and inquiries</td><td>Member authentication, data storage and sync, real-time co-editing</td></tr>
             <tr><td>Vercel Inc. (hosting provider, United States)</td><td>Access IP, country of access, request logs</td><td>Service hosting and operation of server functions</td></tr>
             <tr><td>Cloudflare, Inc. (domain, CDN, security, United States)</td><td>Access IP, country of access, request logs</td><td>Domain connection, faster delivery, security (traffic filtering)</td></tr>
-            <tr><td>Apple Inc. (Apple Push Notification service, APNs, United States)</td><td>This device's push notification address (token), the notification title and text (post content is not included on the lock screen), and the in-app path to open when the notification is tapped</td><td>Delivering app push notifications</td></tr>
+            <tr><td>Apple Inc. (Apple Push Notification service, APNs, United States)</td><td>This device's push notification address (token), the notification title and text (post content is not included on the lock screen), and the in-app path to open when the notification is tapped. For Live Activities, that push address (token) and the itinerary content shown on the Lock Screen (trip name and day number, the current and next place names and times, travel time, departure time, departure alert text)</td><td>Delivering app push notifications; starting, updating and ending Live Activities</td></tr>
             <tr><td>Resend, Inc. (email delivery, United States)</td><td>The recipient's email address and name, and the content of the email (sign-up and account deletion notices)</td><td>Sending notice emails needed to use the Service</td></tr>
             <tr><td>Google, Apple, Kakao (social sign-in)</td><td>The email, name and profile photo that the provider passes on at sign-in</td><td>Member authentication</td></tr>
             <tr><td>Google Maps Platform</td><td>Searched place names and coordinates for map display. When exporting a PDF itinerary: the coordinates of itinerary places and accommodation names (to look up addresses and phone numbers), and coordinates to look up routes between places</td><td>Map display, place search, and the map, accommodation information and travel time calculation in the PDF itinerary</td></tr>
@@ -300,8 +313,17 @@
     <div class="card">
         <h2>5. Processing of Location Information</h2>
         <p>
-            The Service may use the browser's location API (iOS location services in the app, only while you use the app) through the "current location" button on the map screen.
-            This location information is <b>used only inside the browser to move the map to the user's current location</b>, and is not sent to a server or stored. Providing location is entirely the user's choice, and you can revoke the location permission at any time in the browser (in iOS Settings for the app).
+            The Service uses the device's location (the browser's location API; iOS and watchOS location services in the app, only while you use the app) only when you allow it, for the purposes below.
+            All location information is <b>used only on the device</b>, and is not sent to a server or stored.
+        </p>
+        <ul>
+            <li>The "current location" button on the map screen: moves the map to your current location.</li>
+            <li>Apple Watch app: if you are within 300 m of the current or the next stop in today's itinerary, it is shown as "Arrived", and within 30 km the distance and the travel time from where you are are shown. The watch asks for permission separately the first time it uses location.</li>
+            <li>Live Activities: when you open the app on a trip day, only if you have already allowed location "While Using the App", the location is read once to show the distance and arrival in the same way. No new permission is requested, and your location is not tracked while the screen is locked.</li>
+        </ul>
+        <p>
+            Providing location is entirely the user's choice, and you can revoke the location permission at any time in the browser (in iOS and Apple Watch Settings for the app).
+            Even without location, the current and next stops are shown based on the times in your itinerary.
         </p>
         <p>
             Separately, when a signed-in member opens the app, the <b>country of access (country level)</b> that can be known from the access request is stored together with the time of the latest access.
@@ -353,6 +375,7 @@
             <li>An anonymous identifier for the usage analytics tool (stored only in this storage, without using cookies)</li>
             <li>Screen settings such as notification read/deleted records, the time when the latest-activity record was last sent, and whether the map card is collapsed</li>
             <li>Temporary trips created before signing in (stored only on this device, and moved to your account and removed from this device when you sign in)</li>
+            <li>In the app (iOS), the itinerary of trips in progress or starting soon (see "Widgets and Apple Watch" in Section 1) and the device identifier for Live Activities are stored in app storage shared with the widgets and Apple Watch (the itinerary is deleted when you sign out)</li>
         </ul>
         <p>
             The Service does not display advertising. The app (iOS) also does not collect the advertising identifier (IDFA) and does not track your activity in other companies' apps or websites.
@@ -388,6 +411,9 @@
         <h2>12. Changes to this Privacy Policy</h2>
         <p>
             This Privacy Policy may be revised due to changes in law, policy or the Service, and any change will be announced through the announcements in the Service or on this page.
+        </p>
+        <p class="note">
+            Amended on October 17, 2026 (app 1.0.1 — widgets, Apple Watch and Live Activities): ① For the Home Screen and Lock Screen <b>widgets</b> and the <b>Apple Watch app</b>, we added that the itinerary of trips in progress or starting within 14 days (place names, coordinates and times) is stored only on this iPhone and your paired Apple Watch (Sections 1, 3 and 9). It is not sent to a server or anywhere else. ② For <b>Live Activities</b> (today's itinerary and departure time on the Lock Screen, Dynamic Island and Apple Watch, with an alert at departure time), we added that a random per-device identifier, push address (token) and what is shown at each moment are stored on the server and sent to Apple (APNs), and how long they are kept (Sections 1, 2, 3 and 4). Live Activities show the trip name and place names on the Lock Screen and can be turned off in iOS Settings. ③ We described how the Apple Watch app and Live Activities use <b>location</b> (arrival within 300 m and distance within 30 km, processed only on the device) in Section 5. ④ We stated that if the airports or times in a booking document cannot be read, the flight schedule is looked up by flight number and departure date to fill them in (Section 2).
         </p>
         <p class="note">
             Amended on October 12, 2026 (preparation for the iOS app launch): ① With the addition of the app's <b>push notifications</b>, this device's push notification address (token), notification settings and notification records created by the server were added to the items collected (Section 1), purposes (Section 2) and retention periods (Section 3), and Apple (APNs), which delivers pushes, was added to the list of entrusted processing and international transfer (Section 4). The lock screen text does not include post content. ② Use of the <b>camera</b> for companion QR confirmation and of <b>location</b> on the map (app, Sections 1 and 5) was described. ③ The <b>email 3 days before departure was removed</b>, and notices 7 days before, 3 days before and on the day of departure are now given as app notifications (emails are sent only for sign-up and account deletion notices; Sections 2 and 4). ④ <b>Tags</b> on posts and companion recruitment posts were removed (Section 1). ⑤ It is stated that the app does not collect the advertising identifier and does not track activity in other apps or websites (Section 9).
