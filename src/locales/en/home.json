@@ -26,10 +26,6 @@
     "dayIndex": "Day {{day}} · {{date}}",
     "noItemsToday": "No plans scheduled for today"
   },
-  "worldMap": {
-    "caption_one": "{{count}} country",
-    "caption_other": "{{count}} countries"
-  },
   "desktop": {
     "heroTitle": "Your next great adventure starts here",
     "searchPlaceholder": "Where do you want to go?",

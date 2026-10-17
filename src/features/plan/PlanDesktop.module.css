@@ -320,12 +320,6 @@
   padding: 0;
   margin-left: 0.5rem;
 }
-.searchDivider {
-  width: 1px;
-  height: 20px;
-  background: var(--pd-line);
-  margin: 0 0.5rem;
-}
 .filterBtn {
   display: flex;
   align-items: center;
@@ -352,11 +346,6 @@
   cursor: pointer;
 }
 
-.statsSection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 
 /* Layout */
 .pageLayout {
@@ -782,6 +771,10 @@
     justify-content: space-between;
   }
 }
+/* 탭 줄은 목록 맨 위 — 아래 목록과는 칸 사이 간격(2.5rem)보다 가깝게 */
+.mainColumn > .tabsRow {
+  margin-bottom: -1.5rem;
+}
 .tabsList {
   display: flex;
   align-items: center;
@@ -808,32 +801,6 @@
   color: var(--pd-ink);
   border-bottom-color: var(--pd-ink);
   font-size: 1rem;
-}
-.viewToggles {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--pd-soft);
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
-}
-.viewToggle {
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.25rem;
-  font-size: var(--font-caption-size);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: transparent;
-  color: var(--pd-muted);
-  border: none;
-  cursor: pointer;
-}
-.viewToggle.active {
-  background: var(--pd-surface);
-  color: var(--pd-ink);
-  box-shadow: var(--shadow-sm);
 }
 
 .pastGrid {
@@ -921,15 +888,6 @@
 .btnCreateSmall {
   padding: 0.375rem 1rem;
   font-size: 0.8125rem;
-}
-.statusSelect {
-  border: none;
-  background: transparent;
-  color: var(--pd-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.375rem 0.5rem;
-  cursor: pointer;
 }
 .statusDotOngoing {
   background: var(--pd-success);
@@ -1082,23 +1040,6 @@
   font-size: 0.8125rem;
   color: var(--pd-muted);
   margin: 0;
-}
-.pastList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.pastCardList {
-  flex-direction: row;
-}
-.pastCardList .pastImageWrap {
-  width: 10rem;
-  height: auto;
-  min-height: 7rem;
-  flex-shrink: 0;
-}
-.pastCardList .pastBody {
-  flex: 1;
 }
 .pastBadge {
   position: absolute;

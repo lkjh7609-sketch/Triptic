@@ -348,19 +348,13 @@
     "metricDays": "계획한 날",
     "metricPast": "다녀온 여행",
     "searchPlaceholder": "여행 이름, 도시 검색",
-    "statusFilterAria": "여행 상태 필터",
-    "filterAll": "전체",
-    "filterActive": "진행·예정",
-    "filterPast": "지난 여행",
     "activeSection": "진행 중·예정된 여행",
     "activeCount_other": "{{count}}개",
     "tabAll_other": "전체 ({{count}})",
     "tabActive_other": "진행·예정 ({{count}})",
     "tabPast_other": "지난 여행 ({{count}})",
-    "viewGrid": "카드",
-    "viewList": "목록",
     "noResultsTitle": "조건에 맞는 여행이 없어요",
-    "noResultsDesc": "검색어나 필터를 바꿔 보세요.",
+    "noResultsDesc": "검색어를 바꾸거나 다른 탭을 눌러 보세요.",
     "emptyTitle": "첫 여행을 만들어 보세요",
     "emptyDesc": "날짜별 동선을 짜고, 숙소와 항공편을 한곳에서 관리할 수 있어요.",
     "emptyCta": "여행 만들기",
@@ -499,7 +493,8 @@
       },
       "find": "찾기",
       "view": "보기"
-    }
+    },
+    "pastSection": "지난 여행"
   },
   "hotel": {
     "title": "숙소 설정",

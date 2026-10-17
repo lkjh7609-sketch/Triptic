@@ -26,9 +26,6 @@
     "dayIndex": "{{day}}日目 · {{date}}",
     "noItemsToday": "今日は登録された予定がありません"
   },
-  "worldMap": {
-    "caption_other": "{{count}}カ国"
-  },
   "desktop": {
     "heroTitle": "次の素晴らしい冒険がここから始まります",
     "searchPlaceholder": "どこへ行きたいですか？",

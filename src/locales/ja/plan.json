@@ -348,19 +348,13 @@
     "metricDays": "計画した日数",
     "metricPast": "過去の旅行",
     "searchPlaceholder": "旅行名・都市で検索",
-    "statusFilterAria": "旅行の状態で絞り込み",
-    "filterAll": "すべて",
-    "filterActive": "進行中・予定",
-    "filterPast": "過去の旅行",
     "activeSection": "進行中・予定の旅行",
     "activeCount_other": "{{count}}件",
     "tabAll_other": "すべて ({{count}})",
     "tabActive_other": "進行中・予定 ({{count}})",
     "tabPast_other": "過去の旅行 ({{count}})",
-    "viewGrid": "カード",
-    "viewList": "リスト",
     "noResultsTitle": "条件に合う旅行はありません",
-    "noResultsDesc": "検索語や絞り込みを変えてみてください。",
+    "noResultsDesc": "検索語を変えるか、別のタブを選んでみてください。",
     "emptyTitle": "最初の旅行を作成しましょう",
     "emptyDesc": "日ごとのルートを組み、宿泊や航空便をまとめて管理できます。",
     "emptyCta": "旅行を作成",
@@ -499,7 +493,8 @@
       },
       "find": "探す",
       "view": "見る"
-    }
+    },
+    "pastSection": "過去の旅行"
   },
   "hotel": {
     "title": "宿泊先の設定",

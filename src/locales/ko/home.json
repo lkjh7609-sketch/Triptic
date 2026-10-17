@@ -26,9 +26,6 @@
     "dayIndex": "{{day}}일차 · {{date}}",
     "noItemsToday": "오늘은 등록된 일정이 없어요"
   },
-  "worldMap": {
-    "caption_other": "{{count}}개국"
-  },
   "desktop": {
     "heroTitle": "다음 멋진 모험이 시작되는 곳",
     "searchPlaceholder": "어디로 떠나고 싶으신가요?",
