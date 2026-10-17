@@ -95,7 +95,7 @@ export function TripDetailScreen() {
   const updateSnapshot = useUpdateTripSnapshot(tripId);
   const [currentDay, setCurrentDay] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const bgImage = useCityImage(trip?.city ?? '');
+  const bgImage = useCityImage(trip?.city ?? '', { lat: trip?.city_lat, lng: trip?.city_lng });
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<{index: number, type: "item" | "startHotel" | "endHotel"} | null>(null);
