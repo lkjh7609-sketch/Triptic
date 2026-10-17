@@ -38,7 +38,6 @@ export const OSS_LICENSES: LicenseEntry[] = [
   { name: 'react-hook-form', version: '7.88.0', license: 'MIT' },
   { name: 'react-i18next', version: '16.6.6', license: 'MIT' },
   { name: 'react-router', version: '7.18.4', license: 'MIT' },
-  { name: 'react-svg-worldmap', version: '2.0.2', license: 'MIT' },
   { name: 'zod', version: '4.6.5', license: 'MIT' },
   { name: 'zustand', version: '5.0.15', license: 'MIT' },
 ].sort((a, b) => a.name.localeCompare(b.name));

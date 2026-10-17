@@ -37,10 +37,8 @@ import { formatTemp } from '@/features/weather/weatherRules';
 import { captureError } from '@/shared/monitoring';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { showToast } from '@/shared/ui/toast';
-import { useHomeStats, type TravelStats } from '@/features/home/useHomeStats';
 import { requireLogin } from '@/features/auth/loginPrompt';
 import { LoginRequiredDialog } from '@/features/auth/LoginRequiredDialog';
-import { WorldMapCard } from '@/features/home/WorldMapCard';
 import { getDDay, getTripPhase } from './tripStatus';
 import { summarizeTrip, type TripSummary } from './tripSummary';
 import { useFinalizeTrip, useGuestTrips, useLeaveTrip, useTrip, useTripSummaries } from './hooks/useTrips';
@@ -71,7 +69,6 @@ interface PlanDesktopProps {
 }
 
 type StatusFilter = 'all' | 'active' | 'past';
-type PastView = 'grid' | 'list';
 
 interface TripActions {
   onRename: (id: string, newTitle: string) => void;
@@ -83,18 +80,6 @@ interface TripActions {
   /** 있으면 메뉴 항목이 잠겨 있고, 누르면 이것만 부른다(비로그인 샘플 여행) */
   onLocked?: () => void;
 }
-
-/** 비로그인은 통계가 없다 — 막 가입한 사용자와 같은 빈 통계로 보여 준다 */
-const GUEST_STATS: TravelStats = {
-  tripCount: 0,
-  countryCount: 0,
-  cityCount: 0,
-  dayCount: 0,
-  placeCount: 0,
-  groundMeters: 0,
-  countries: [],
-  companionCount: 0,
-};
 
 const byStartDate = (a: TripRow, b: TripRow) => (a.start_date ?? '9999').localeCompare(b.start_date ?? '9999');
 
@@ -119,13 +104,11 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const { t } = useTranslation(['plan', 'common']);
   const { user } = useSession();
   const { data: profile } = useProfile();
-  const stats = useHomeStats();
   const [searchParams, setSearchParams] = useSearchParams();
   const autoCreateCity = searchParams.get('autoCreate');
   const autoCreatePlaceId = searchParams.get('placeId');
   const [filter, setFilter] = useState<StatusFilter>('all');
   const [query, setQuery] = useState('');
-  const [pastView, setPastView] = useState<PastView>('grid');
   const [showCreate, setShowCreate] = useState(false);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
   // 가입하고 처음 새 여행을 만들려 할 때 가이드를 볼지 한 번 묻는다(firstTripGuide.ts)
@@ -136,7 +119,6 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
   const actions: TripActions = guest
     ? { onRename, onDuplicate, onDelete, onLocked: () => setShowLoginRequired(true) }
     : { onRename, onDuplicate, onDelete, onLeave: (id) => leaveTrip.mutate(id), currentUserId: user?.id };
-  const statsData = guest ? GUEST_STATS : stats.data;
   // 비로그인은 이 기기에 임시 여행을 만든다(GUEST_TRIP_LIMIT개까지) — 로그인하면 계정으로 옮겨진다.
   // 한도가 차면 로그인 창을 연다
   const guestTrips = useGuestTrips();
@@ -264,30 +246,34 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <div className={styles.searchDivider} />
-            <select
-              className={styles.statusSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as StatusFilter)}
-              aria-label={t('desktop.statusFilterAria')}
-            >
-              <option value="all">{t('desktop.filterAll')}</option>
-              <option value="active">{t('desktop.filterActive')}</option>
-              <option value="past">{t('desktop.filterPast')}</option>
-            </select>
           </div>
         </div>
       </section>
 
-      {/* 숫자 타일 6개(여행·국가·일수·도시·장소·동행)는 '내 여행 통계'와 겹쳐 뺐다(2026-10-17 사용자). 다녀온 여행이 없으면 지도도 숨긴다 */}
-      {statsData && statsData.tripCount > 0 ? (
-        <section className={styles.statsSection}>
-          <WorldMapCard countries={statsData.countries} />
-        </section>
-      ) : null}
-
+      {/* 숫자 타일 6개·세계지도는 '내 여행 통계'와 겹쳐 뺐다(2026-10-17 사용자) */}
       <div className={styles.pageLayout}>
         <div className={styles.mainColumn}>
+          {/* 전체·진행·예정·지난 여행 — 검색창 옆 필터 대신 이 탭 하나로. 어느 탭을 골라도 탭 줄은 그대로 있다 */}
+          <div className={styles.tabsRow}>
+            <div className={styles.tabsList} role="tablist">
+              {(['all', 'active', 'past'] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === key}
+                  className={`${styles.tabBtn} ${filter === key ? styles.active : ''}`}
+                  onClick={() => setFilter(key)}
+                >
+                  {key === 'all'
+                    ? t('desktop.tabAll', { count: trips.length })
+                    : key === 'active'
+                      ? t('desktop.tabActive', { count: activeTrips.length })
+                      : t('desktop.tabPast', { count: past.length })}
+                </button>
+              ))}
+            </div>
+          </div>
           {shownActive.length > 0 && (
             <section className={styles.sectionStack}>
               <div className={styles.sectionHeader}>
@@ -312,52 +298,19 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
 
           {shownPast.length > 0 && (
             <section className={styles.sectionStack}>
-              <div className={styles.tabsRow}>
-                <div className={styles.tabsList} role="tablist">
-                  {(['all', 'active', 'past'] as const).map((key) => (
-                    <button
-                      key={key}
-                      type="button"
-                      role="tab"
-                      aria-selected={filter === key}
-                      className={`${styles.tabBtn} ${filter === key ? styles.active : ''}`}
-                      onClick={() => setFilter(key)}
-                    >
-                      {key === 'all'
-                        ? t('desktop.tabAll', { count: trips.length })
-                        : key === 'active'
-                          ? t('desktop.tabActive', { count: activeTrips.length })
-                          : t('desktop.tabPast', { count: past.length })}
-                    </button>
-                  ))}
-                </div>
-                <div className={styles.viewToggles}>
-                  <button
-                    type="button"
-                    className={`${styles.viewToggle} ${pastView === 'grid' ? styles.active : ''}`}
-                    aria-pressed={pastView === 'grid'}
-                    onClick={() => setPastView('grid')}
-                  >
-                    {t('desktop.viewGrid')}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.viewToggle} ${pastView === 'list' ? styles.active : ''}`}
-                    aria-pressed={pastView === 'list'}
-                    onClick={() => setPastView('list')}
-                  >
-                    {t('desktop.viewList')}
-                  </button>
+              <div className={styles.sectionHeader}>
+                <div className={styles.sectionTitleRow}>
+                  <h2 className={styles.sectionTitle}>{t('desktop.pastSection')}</h2>
+                  <span className={styles.sectionBadge}>{t('desktop.activeCount', { count: shownPast.length })}</span>
                 </div>
               </div>
-              <div className={pastView === 'grid' ? styles.pastGrid : styles.pastList}>
+              <div className={styles.pastGrid}>
                 {shownPast.map((trip) => (
                   <PastTripCard
                     key={trip.id}
                     trip={trip}
                     summary={summaries.get(trip.id) ?? summarizeTrip(trip)}
                     actions={actions}
-                    list={pastView === 'list'}
                   />
                 ))}
               </div>
@@ -672,13 +625,13 @@ function CompactTripCard({
   );
 }
 
-function PastTripCard({ trip, summary, actions, list }: { trip: TripRow; summary: TripSummary; actions: TripActions; list: boolean }) {
+function PastTripCard({ trip, summary, actions }: { trip: TripRow; summary: TripSummary; actions: TripActions }) {
   const { t, i18n } = useTranslation('plan');
   const bgImage = useCityImage(trip.city);
   const range = formatRange(trip, i18n.language);
 
   return (
-    <Link to={`/plan/${trip.id}`} className={`${styles.pastCard} ${list ? styles.pastCardList : ''}`}>
+    <Link to={`/plan/${trip.id}`} className={styles.pastCard}>
       <div className={styles.pastImageWrap}>
         <img src={bgImage} className={styles.pastImage} alt="" />
         <div className={styles.pastBadge}>{t('desktop.pastBadge', { count: summary.totalDays })}</div>
