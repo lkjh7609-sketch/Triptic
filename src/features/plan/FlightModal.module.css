@@ -206,16 +206,4 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.timeInput {
-  display: block;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  appearance: none;
-  text-align: left;
-}
 
-.timeInput::-webkit-date-and-time-value {
-  text-align: left;
-}

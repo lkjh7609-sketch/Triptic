@@ -74,6 +74,7 @@ import { buildMyExpenses } from './split/splitModel';
 import { cityDisplayName } from './cityName';
 import { isTripDatesLocked } from './tripStatus';
 import { returnFlightDay, tripEndExtension } from './flights';
+import { placeByTime } from './itemOrder';
 
 /**
  * 여행 상세 화면 (02-screens.md §3.2) ⭐ 핵심 화면
@@ -231,14 +232,18 @@ export function TripDetailScreen() {
     }
   }
 
+  // 시각이 있으면 그 시각 자리로(itemOrder.ts) — 없으면 예전처럼 맨 끝
   async function handleAddPlace(item: PlaceItem) {
-    await persistDayItems([...dayItems, item]);
+    const next = [...dayItems, item];
+    await persistDayItems(placeByTime(next, next.length - 1));
     if (!isSample) track('place_added');
   }
 
   async function handleUpdateItem(index: number, patch: Partial<PlaceItem>) {
     const next = dayItems.map((it, i) => (i === index ? { ...it, ...patch } : it));
-    await persistDayItems(next);
+    // 시각을 바꿨으면 바뀐 시각 자리로 옮긴다(더 이르면 앞으로) — 저장하면 목록이 바로 그 순서로 바뀐다
+    const timeChanged = 'time' in patch && patch.time !== dayItems[index]?.time;
+    await persistDayItems(timeChanged ? placeByTime(next, index) : next);
   }
 
   /** 식사 항목이면 이 날의 식사 슬롯도 같이 비운다 — 식사 아이콘의 1/3 숫자가 일정과 어긋나지 않게 한 스냅샷으로 저장 */

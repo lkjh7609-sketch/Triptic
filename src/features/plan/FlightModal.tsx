@@ -17,6 +17,7 @@ import styles from './FlightModal.module.css';
 import modalStyles from './AddPlaceModal.module.css';
 import { Plane, Pencil, Trash2, CheckCircle, Search, CalendarDays } from 'lucide-react';
 import { DatePickerSheet } from '@/shared/ui/DatePickerSheet';
+import { TimeBox } from '@/shared/ui/TimeBox';
 
 interface FlightModalProps {
   flightsData: FlightsData;
@@ -545,18 +546,17 @@ function FlightSlotEditor({
                     />
                   )}
                 </label>
-                <label className={styles.field}>
-                  <span className={styles.fieldLabel}>{t('flight.depTimeAria')}</span>
-                  <input
-                    type="time"
-                    className={`${styles.fieldInput} ${styles.timeInput}`}
+                <div className={styles.field}>
+                  <span className={styles.fieldLabel} aria-hidden="true">{t('flight.depTimeAria')}</span>
+                  <TimeBox
                     value={depTime}
-                    onChange={(e) => {
-                      setDepTime(e.target.value);
+                    ariaLabel={t('flight.depTimeAria')}
+                    onChange={(v) => {
+                      setDepTime(v);
                       setAutoFilled(false);
                     }}
                   />
-                </label>
+                </div>
 
                 <label className={styles.field}>
                   <span className={styles.fieldLabel}>{t('flight.arrLabel')}</span>
@@ -578,18 +578,17 @@ function FlightSlotEditor({
                     />
                   )}
                 </label>
-                <label className={styles.field}>
-                  <span className={styles.fieldLabel}>{t('flight.arrTimeAria')}</span>
-                  <input
-                    type="time"
-                    className={`${styles.fieldInput} ${styles.timeInput}`}
+                <div className={styles.field}>
+                  <span className={styles.fieldLabel} aria-hidden="true">{t('flight.arrTimeAria')}</span>
+                  <TimeBox
                     value={arrTime}
-                    onChange={(e) => {
-                      setArrTime(e.target.value);
+                    ariaLabel={t('flight.arrTimeAria')}
+                    onChange={(v) => {
+                      setArrTime(v);
                       setAutoFilled(false);
                     }}
                   />
-                </label>
+                </div>
 
                 {error ? (
                   <p className={styles.error} role="alert">

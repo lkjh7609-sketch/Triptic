@@ -26,7 +26,8 @@ interface AddPlaceModalProps {
 export function AddPlaceModal({ onClose, onAdd, initialSearch, bias }: AddPlaceModalProps) {
   const { t } = useTranslation(['plan', 'common']);
   const [selected, setSelected] = useState<SelectedPlace | null>(null);
-  const [time, setTime] = useState('');
+  // 시간 휠이 처음에 12:00을 보여 주므로 건드리지 않고 추가해도 12:00으로 저장한다(예전엔 빈 값이라 시간 없이 저장됨)
+  const [time, setTime] = useState('12:00');
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
   const { inputRef, ready, fallback } = usePlaceAutocomplete(setSelected, { bias, textSearchFallback: true });
