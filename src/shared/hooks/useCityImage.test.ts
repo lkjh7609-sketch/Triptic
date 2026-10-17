@@ -1,18 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { destinationCover, matchCuratedCity } from './useCityImage';
-
-describe('matchCuratedCity', () => {
-  it('도시명을 단어 단위로 매칭한다', () => {
-    expect(matchCuratedCity('Tokyo, Japan')).toContain('photo-1540959733332');
-    expect(matchCuratedCity('일본 오사카부 오사카시')).toContain('photo-1528698827591');
-  });
-
-  it('부분 문자열로 엉뚱한 도시에 걸리지 않는다', () => {
-    expect(matchCuratedCity('Manila, Philippines')).toBeNull();
-    expect(matchCuratedCity('Atlanta, GA, USA')).toBeNull();
-    expect(matchCuratedCity('Jerome, Idaho')).toBeNull();
-  });
-});
+import { destinationCover, fallbackCityImage } from './useCityImage';
 
 describe('destinationCover — 우리 도시 목록(DB) 사진', () => {
   const list = [
@@ -29,5 +16,12 @@ describe('destinationCover — 우리 도시 목록(DB) 사진', () => {
     expect(destinationCover('Da-Nang, Vietnam', undefined, list)).toBe('db://dad');
     expect(destinationCover('하노이', { lat: 21.03, lng: 105.85 }, list)).toBeNull();
     expect(destinationCover('호치민', undefined, undefined)).toBeNull();
+  });
+});
+
+describe('fallbackCityImage — 목록에 없는 도시', () => {
+  it('같은 도시는 늘 같은 기본 사진(외부에서 새로 불러오지 않음)', () => {
+    expect(fallbackCityImage('작은마을')).toBe(fallbackCityImage('작은마을'));
+    expect(fallbackCityImage('작은마을')).toMatch(/^https:\/\/images\.unsplash\.com\//);
   });
 });
