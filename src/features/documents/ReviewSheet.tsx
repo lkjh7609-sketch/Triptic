@@ -198,7 +198,8 @@ function formatDay(ymd: string, language: string): string {
   const d = new Date(`${ymd}T00:00:00`);
   if (Number.isNaN(d.getTime())) return ymd;
   const withYear = d.getFullYear() !== new Date().getFullYear();
-  const day = new Intl.DateTimeFormat(language, { ...(withYear ? { year: 'numeric' } : {}), month: 'long', day: 'numeric' }).format(d);
+  // 짧은 달 이름 — 영어 'November 20'은 반쪽 칸에서 잘린다('Nov 20'). 한·일·중은 long과 같다(11월·11月)
+  const day = new Intl.DateTimeFormat(language, { ...(withYear ? { year: 'numeric' } : {}), month: 'short', day: 'numeric' }).format(d);
   const weekday = new Intl.DateTimeFormat(language, { weekday: 'short' }).format(d);
   return `${day} (${weekday})`;
 }
