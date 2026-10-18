@@ -7,6 +7,8 @@
 // 보안코드를 쓸 수 없게 꺼져 있으면(ADMIN_PIN 미설정) 예전처럼 방금(15분 안) 다시 로그인한 세션만 받는다.
 // 본인 탈퇴는 방금(15분 안) 다시 로그인한 본인의 세션만 받는다. 저장소 파일 → DB 데이터(여행·서류·게시글·동행 기록 등, 되돌릴 수 없음) → 로그인 계정 순서로
 // 지우고, 성공하면 200. 관리자 계정은 이 경로로 지우지 않는다. 도중에 실패하면 500을 주고, 다시 요청하면 이어서 끝난다.
+// Apple 로그인 계정이면 삭제 뒤 Apple 토큰을 철회한다(심사 지침 5.1.1(v)) — 본문 appleToken/appleTokenType(탈퇴 직전 다시 로그인한 세션의 Apple 토큰).
+// 철회 설정이 없거나 실패해도 탈퇴 결과는 그대로(기록만). 운영자 강제 탈퇴는 그 사람의 Apple 토큰이 없어 철회하지 않는다.
 import { applyCors, createRateLimiter, ALLOWED_ORIGINS } from './_lib/http.js';
 import { requireUser } from './_lib/auth.js';
 import { supabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -14,6 +16,7 @@ import { deleteAccountData, isRecentlySignedIn } from './_lib/deleteAccount.js';
 import { sendAccountDeletedMail } from './_lib/accountMail.js';
 import { pinConfig, verifyAdminPin } from './_lib/adminPin.js';
 import { isSuspensionReason, normalizeReasonText, recordSuspension } from './_lib/suspension.js';
+import { hasAppleIdentity, readAppleToken, revokeAppleToken } from './_lib/appleRevoke.js';
 
 const isRateLimited = createRateLimiter(6);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -77,6 +80,11 @@ export default async function handler(req, res) {
 
     try {
         await deleteAccountData(db, user.id);
+        if (hasAppleIdentity(user)) {
+            const revoked = await revokeAppleToken(readAppleToken(req.body));
+            if (revoked.ok) console.info('[deleteAccount] apple token revoked');
+            else console.warn('[deleteAccount] apple token not revoked:', revoked.reason);
+        }
         // 탈퇴 완료 안내 메일 — 본인이 직접 탈퇴한 경우만(운영자 강제 탈퇴는 보내지 않는다). 실패해도 탈퇴는 이미 끝났으니 결과는 그대로 200
         await sendAccountDeletedMail({ email: user.email, locale: profile?.locale, name: profile?.display_name });
         return res.status(200).json({ ok: true });

@@ -63,6 +63,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
   const [consented, setConsented] = useState(hasDocumentUploadConsent());
   const [category, setCategory] = useState<DocumentCategory | null>(null);
   const categoryRowRef = useRef<HTMLDivElement>(null);
+  const categoryButtons = () => Array.from(categoryRowRef.current?.querySelectorAll<HTMLButtonElement>('button') ?? []);
   const [fileError, setFileError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const upload = useUploadDocument(tripId);
@@ -250,7 +251,7 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
               className={category === c ? styles.categoryBtnActive : styles.categoryBtn}
               onClick={() => {
                 setCategory(c);
-                clearInvalid(categoryRowRef.current);
+                categoryButtons().forEach((b) => clearInvalid(b));
               }}
             >
               {t(`upload.category.${c}`)}
@@ -269,7 +270,8 @@ export function UploadModal({ tripId, onClose, onParsed }: UploadModalProps) {
           onClick={(e) => {
             if (!category) {
               e.preventDefault();
-              flagInvalid(categoryRowRef.current);
+              // 줄 전체가 아니라 버튼마다 빨간 테두리(사용자 요청 2026-10-18)
+              flagInvalid(...categoryButtons());
             }
           }}
           className={styles.fileInput}

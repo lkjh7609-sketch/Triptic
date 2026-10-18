@@ -353,9 +353,6 @@
     "metricDays": "Planned days",
     "metricPast": "Past trips",
     "searchPlaceholder": "Search trips or cities",
-    "activeSection": "Upcoming & in progress",
-    "activeCount_other": "{{count}} trips",
-    "activeCount_one": "{{count}} trip",
     "tabAll_other": "All ({{count}})",
     "tabAll_one": "All ({{count}})",
     "tabActive_other": "Active ({{count}})",
@@ -507,8 +504,7 @@
       },
       "find": "Find",
       "view": "View"
-    },
-    "pastSection": "Past trips"
+    }
   },
   "hotel": {
     "title": "Set your stay",

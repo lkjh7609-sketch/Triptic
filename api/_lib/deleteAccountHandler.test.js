@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, recordSuspension, pinConfig, verifyAdminPin } = vi.hoisted(() => ({
+const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, recordSuspension, pinConfig, verifyAdminPin, revokeAppleToken } = vi.hoisted(() => ({
+    revokeAppleToken: vi.fn(),
     requireUser: vi.fn(),
     deleteAccountData: vi.fn(),
     maybeSingle: vi.fn(),
@@ -12,6 +13,7 @@ const { requireUser, deleteAccountData, maybeSingle, sendAccountDeletedMail, rec
 vi.mock('./suspension.js', async () => ({ ...(await vi.importActual('./suspension.js')), recordSuspension }));
 vi.mock('./adminPin.js', async () => ({ ...(await vi.importActual('./adminPin.js')), pinConfig, verifyAdminPin }));
 vi.mock('./accountMail.js', () => ({ sendAccountDeletedMail }));
+vi.mock('./appleRevoke.js', async () => ({ ...(await vi.importActual('./appleRevoke.js')), revokeAppleToken }));
 vi.mock('./auth.js', () => ({ requireUser }));
 vi.mock('./supabaseAdmin.js', () => ({ supabaseAdmin: () => ({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle }) }) }) }) }));
 vi.mock('./deleteAccount.js', async () => ({ ...(await vi.importActual('./deleteAccount.js')), deleteAccountData }));
@@ -42,6 +44,7 @@ beforeEach(() => {
     maybeSingle.mockReset().mockResolvedValue({ data: { role: 'user' } });
     pinConfig.mockReset().mockReturnValue({ enabled: true, pin: '482915' });
     verifyAdminPin.mockReset().mockResolvedValue({ ok: true });
+    revokeAppleToken.mockReset().mockResolvedValue({ ok: true });
 });
 
 describe('POST /api/deleteAccount', () => {
@@ -62,12 +65,34 @@ describe('POST /api/deleteAccount', () => {
         expect(deleteAccountData.mock.invocationCallOrder[0]).toBeLessThan(sendAccountDeletedMail.mock.invocationCallOrder[0]);
     });
 
+    it('Apple 로그인 계정이면 삭제 뒤 보내 준 Apple 토큰을 철회한다', async () => {
+        requireUser.mockResolvedValue({ id: 'u1', app_metadata: { provider: 'apple' }, last_sign_in_at: fresh() });
+        const res = makeRes();
+        await handler(post({ body: { appleToken: 'r1', appleTokenType: 'refresh_token' } }), res);
+        expect(res.statusCode).toBe(200);
+        expect(revokeAppleToken).toHaveBeenCalledWith({ token: 'r1', type: 'refresh_token' });
+        expect(deleteAccountData.mock.invocationCallOrder[0]).toBeLessThan(revokeAppleToken.mock.invocationCallOrder[0]);
+    });
+
+    it('Apple 철회가 실패해도 탈퇴는 200, Apple이 아닌 계정은 철회하지 않는다', async () => {
+        requireUser.mockResolvedValue({ id: 'u1', app_metadata: { provider: 'apple' }, last_sign_in_at: fresh() });
+        revokeAppleToken.mockResolvedValue({ ok: false, reason: 'rejected' });
+        const res = makeRes();
+        await handler(post({ body: { appleToken: 'r1' } }), res);
+        expect(res.statusCode).toBe(200);
+        requireUser.mockResolvedValue({ id: 'u2', app_metadata: { provider: 'google' }, last_sign_in_at: fresh() });
+        revokeAppleToken.mockClear();
+        await handler(post({ body: { appleToken: 'r1' } }), makeRes());
+        expect(revokeAppleToken).not.toHaveBeenCalled();
+    });
+
     it('삭제가 실패하면 메일을 보내지 않는다', async () => {
         deleteAccountData.mockRejectedValue(new Error('boom'));
         const res = makeRes();
         await handler(post(), res);
         expect(res.statusCode).toBe(500);
         expect(sendAccountDeletedMail).not.toHaveBeenCalled();
+        expect(revokeAppleToken).not.toHaveBeenCalled();
     });
 
     it('로그인 토큰이 없으면 삭제하지 않는다(401은 requireUser가 응답)', async () => {
