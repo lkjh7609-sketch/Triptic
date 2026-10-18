@@ -274,14 +274,9 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
               ))}
             </div>
           </div>
+          {/* '진행 중·예정된 여행'·'지난 여행' 제목 줄은 위 탭과 겹쳐 뺐다(2026-10-18 사용자) — 카드가 탭 바로 아래 */}
           {shownActive.length > 0 && (
-            <section className={styles.sectionStack}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.sectionTitleRow}>
-                  <h2 className={styles.sectionTitle}>{t('desktop.activeSection')}</h2>
-                  <span className={styles.sectionBadge}>{t('desktop.activeCount', { count: shownActive.length })}</span>
-                </div>
-              </div>
+            <section className={styles.sectionStack} aria-label={t('desktop.tabActive', { count: shownActive.length })}>
               <div className={styles.compactGrid}>
                 {shownActive.map((trip) => (
                   <CompactTripCard
@@ -297,13 +292,7 @@ export function PlanDesktop({ trips, ongoing, upcoming, past, onRename, onDuplic
           )}
 
           {shownPast.length > 0 && (
-            <section className={styles.sectionStack}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.sectionTitleRow}>
-                  <h2 className={styles.sectionTitle}>{t('desktop.pastSection')}</h2>
-                  <span className={styles.sectionBadge}>{t('desktop.activeCount', { count: shownPast.length })}</span>
-                </div>
-              </div>
+            <section className={styles.sectionStack} aria-label={t('desktop.tabPast', { count: shownPast.length })}>
               <div className={styles.pastGrid}>
                 {shownPast.map((trip) => (
                   <PastTripCard

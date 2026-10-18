@@ -348,8 +348,6 @@
     "metricDays": "規劃天數",
     "metricPast": "已完成行程",
     "searchPlaceholder": "搜尋行程名稱或城市",
-    "activeSection": "進行中與即將出發",
-    "activeCount_other": "{{count}} 個",
     "tabAll_other": "全部 ({{count}})",
     "tabActive_other": "進行中／預定 ({{count}})",
     "tabPast_other": "過去的行程 ({{count}})",
@@ -493,8 +491,7 @@
       },
       "find": "尋找",
       "view": "查看"
-    },
-    "pastSection": "過去的行程"
+    }
   },
   "hotel": {
     "title": "設定住宿",

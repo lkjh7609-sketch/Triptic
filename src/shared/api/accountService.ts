@@ -32,15 +32,35 @@ export class AccountDeletionError extends Error {
 }
 
 /**
+ * Apple 로그인 계정이면 탈퇴 직전 다시 로그인한 세션의 Apple 토큰 — 서버가 Apple에 철회한다(심사 지침 5.1.1(v)).
+ * Supabase는 Apple 로그인 직후 세션에만 provider_refresh_token/provider_token을 넣어 준다. 없으면 null(서버는 탈퇴만 한다).
+ */
+export function appleTokenForRevoke(
+  session: { provider_token?: string | null; provider_refresh_token?: string | null; user?: { app_metadata?: { provider?: string } } } | null | undefined,
+): { appleToken: string; appleTokenType: 'refresh_token' | 'access_token' } | null {
+  // 탈퇴 전 재로그인은 처음 가입한 방법(app_metadata.provider)으로 한다 — 그게 Apple일 때만 세션의 토큰이 Apple 것이다
+  // (Google로 가입하고 Apple을 나중에 연결한 계정이면 세션 토큰은 Google 것이라 보내지 않는다)
+  if (session?.user?.app_metadata?.provider !== 'apple') return null;
+  if (session?.provider_refresh_token) return { appleToken: session.provider_refresh_token, appleTokenType: 'refresh_token' };
+  if (session?.provider_token) return { appleToken: session.provider_token, appleTokenType: 'access_token' };
+  return null;
+}
+
+/**
  * 회원 탈퇴 — 서버(api/deleteAccount.js)가 그 자리에서 삭제한다: 예약 서류 파일, 여행·게시글·동행 기록 등 모든 데이터, 로그인 계정.
- * 되돌릴 수 없다. 방금(15분 안) 다시 로그인한 세션만 받고, 아니면 reauth_required.
+ * 되돌릴 수 없다. 방금(15분 안) 다시 로그인한 세션만 받고, 아니면 reauth_required. Apple 로그인 계정이면 Apple 토큰도 함께 보낸다.
  */
 export async function requestAccountDeletion(): Promise<void> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new AccountDeletionError('failed');
-  const res = await fetch(apiUrl('/api/deleteAccount'), { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+  const apple = appleTokenForRevoke(data.session);
+  const res = await fetch(apiUrl('/api/deleteAccount'), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, ...(apple ? { 'Content-Type': 'application/json' } : {}) },
+    ...(apple ? { body: JSON.stringify(apple) } : {}),
+  });
   if (res.ok) return;
   const json = (await res.json().catch(() => ({}))) as { error?: string };
   if (json.error === 'reauth_required') throw new AccountDeletionError('reauth_required');

@@ -348,8 +348,6 @@
     "metricDays": "계획한 날",
     "metricPast": "다녀온 여행",
     "searchPlaceholder": "여행 이름, 도시 검색",
-    "activeSection": "진행 중·예정된 여행",
-    "activeCount_other": "{{count}}개",
     "tabAll_other": "전체 ({{count}})",
     "tabActive_other": "진행·예정 ({{count}})",
     "tabPast_other": "지난 여행 ({{count}})",
@@ -493,8 +491,7 @@
       },
       "find": "찾기",
       "view": "보기"
-    },
-    "pastSection": "지난 여행"
+    }
   },
   "hotel": {
     "title": "숙소 설정",
